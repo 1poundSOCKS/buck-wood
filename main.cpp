@@ -31,6 +31,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 {
   app_globals ag = InitApp(hInstance, nCmdShow);
 
+  ag.d2d_rendertarget->BeginDraw();
+
+	ag.d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+	ID2D1SolidColorBrush* brush = NULL;
+  HRESULT hr = ag.d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 0.0f, 0.5f, 1.0f)), &brush);
+  if( SUCCEEDED(hr) )
+  {
+		D2D1_RECT_F rectangle = D2D1::RectF(0, 0, 100, 100);
+    ag.d2d_rendertarget->FillRectangle(&rectangle, brush);
+    SafeRelease(brush);
+  }
+
+  ag.d2d_rendertarget->EndDraw();
+
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0))
   {
