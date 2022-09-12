@@ -5,9 +5,11 @@
 #include <iostream>
 #include <tchar.h>
 #include <d2d1.h>
+#include <dwrite.h>
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
+#pragma comment(lib, "Dwrite")
 
 struct app_globals
 {
@@ -17,6 +19,9 @@ struct app_globals
   HWND wnd;
   ID2D1Factory* d2d_factory;
   ID2D1HwndRenderTarget* d2d_rendertarget;
+  double pFrequency;
+  IDWriteFactory* writeFactory;
+  IDWriteTextFormat* writeTextFormat;
 };
 
 struct render_state
@@ -49,6 +54,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   {
     if( ag->terminating ) continue;
     DoRender(ag);
+    LARGE_INTEGER ticks;
+    if (!QueryPerformanceCounter(&ticks)) {}
+    ticks.QuadPart;
 	}
 
   DeinitApp(ag);
@@ -71,10 +79,15 @@ void DoRender(app_globals* ag)
     return;
   }
 
+  static const WCHAR sc_helloWorld[] = L"Hello, World!";
+
+  D2D1_SIZE_F renderTargetSize = ag->d2d_rendertarget->GetSize();
   ag->d2d_rendertarget->BeginDraw();
+  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
   ag->d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   D2D1_RECT_F rectangle = D2D1::RectF(0, 0, 100, 100);
   ag->d2d_rendertarget->FillRectangle(&rectangle, rs.brush);
+  ag->d2d_rendertarget->DrawTextW(sc_helloWorld,ARRAYSIZE(sc_helloWorld) - 1,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs.brush);
   ag->d2d_rendertarget->EndDraw();
 
   CleanRenderState(rs);
@@ -119,11 +132,26 @@ app_globals* InitApp(HINSTANCE instance, int nCmdShow)
     D2D1::HwndRenderTargetProperties(ag->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),&ag->d2d_rendertarget);
   if( FAILED(hr) ) return ag;
 
+  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(ag->writeFactory),reinterpret_cast<IUnknown **>(&ag->writeFactory));
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,50,L"", &ag->writeTextFormat);
+  if( FAILED(hr) ) return ag;
+
+  ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+  ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+  LARGE_INTEGER liFrequency;
+  QueryPerformanceFrequency(&liFrequency);
+  ag->pFrequency = static_cast<double>(liFrequency.QuadPart);
+  
   return ag;
 }
 
 void DeinitApp(app_globals *ag)
 {
+  SafeRelease(ag->writeTextFormat);
+  SafeRelease(ag->writeFactory);
   SafeRelease(ag->d2d_rendertarget);
   SafeRelease(ag->d2d_factory);
 }
@@ -180,15 +208,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if( message == WM_PAINT )
   {
     app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
-    // if( ag->wnd == hWnd )
-    // {
     DoRender(ag);
-    // ValidateRect(hWnd, NULL);
-    //   return true;
-    // }
 		ValidateRect(hWnd, NULL);
-    // break;
-    return 0;//DefWindowProc(hWnd, message, wParam, lParam);
+    return 0;
 	}
 
   if( message == WM_SIZE )
