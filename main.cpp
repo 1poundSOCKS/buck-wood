@@ -19,7 +19,6 @@ struct app_globals
   HWND wnd;
   ID2D1Factory* d2d_factory;
   ID2D1HwndRenderTarget* d2d_rendertarget;
-  double pFrequency;
   IDWriteFactory* writeFactory;
   IDWriteTextFormat* writeTextFormat;
 };
@@ -28,6 +27,13 @@ struct render_state
 {
   bool valid;
   ID2D1SolidColorBrush* brush;
+};
+
+struct perf_data
+{
+  int64_t totalTicks;
+  int64_t frameTicks;
+  int64_t fps;
 };
 
 LPWSTR lpszWndClass = L"cpp_test";
@@ -41,7 +47,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance);
 void InitInstance(app_globals*);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 bool ProcessMessage(MSG*);
-void DoRender(app_globals*);
+void DoRender(app_globals*,perf_data*);
 
 #define SafeRelease(i) if( i ) i->Release()
 
@@ -50,13 +56,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   app_globals *ag = InitApp(hInstance, nCmdShow);
 
   MSG msg;
-	while (ProcessMessage(&msg))
+
+  LARGE_INTEGER perfFrequency;
+  QueryPerformanceFrequency(&perfFrequency);
+
+  LARGE_INTEGER initialTicks,ticks,previousTicks;
+  ticks.QuadPart = 0;
+  
+  QueryPerformanceCounter(&initialTicks);
+	
+  while (ProcessMessage(&msg))
   {
     if( ag->terminating ) continue;
-    DoRender(ag);
-    LARGE_INTEGER ticks;
-    if (!QueryPerformanceCounter(&ticks)) {}
-    ticks.QuadPart;
+
+    previousTicks = ticks;
+    QueryPerformanceCounter(&ticks);
+
+    perf_data pd;
+    pd.totalTicks = ticks.QuadPart - initialTicks.QuadPart;
+    pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
+    pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
+    DoRender(ag,&pd);
 	}
 
   DeinitApp(ag);
@@ -65,7 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-void DoRender(app_globals* ag)
+void DoRender(app_globals* ag,perf_data* pd)
 {
   if( ag->d2d_rendertarget == NULL ) return;
 
@@ -79,15 +99,25 @@ void DoRender(app_globals* ag)
     return;
   }
 
-  static const WCHAR sc_helloWorld[] = L"Hello, World!";
-
   D2D1_SIZE_F renderTargetSize = ag->d2d_rendertarget->GetSize();
   ag->d2d_rendertarget->BeginDraw();
   ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
   ag->d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  
+  if( pd == nullptr )
+  {
+    ag->d2d_rendertarget->EndDraw();
+    CleanRenderState(rs);
+    return;
+  }
+
+  WCHAR textMsg[256];
+  _ui64tow(pd->fps,textMsg,10);
+  int msgLen = wcslen(textMsg);
+
   D2D1_RECT_F rectangle = D2D1::RectF(0, 0, 100, 100);
   ag->d2d_rendertarget->FillRectangle(&rectangle, rs.brush);
-  ag->d2d_rendertarget->DrawTextW(sc_helloWorld,ARRAYSIZE(sc_helloWorld) - 1,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs.brush);
+  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs.brush);
   ag->d2d_rendertarget->EndDraw();
 
   CleanRenderState(rs);
@@ -140,10 +170,6 @@ app_globals* InitApp(HINSTANCE instance, int nCmdShow)
 
   ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
   ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-
-  LARGE_INTEGER liFrequency;
-  QueryPerformanceFrequency(&liFrequency);
-  ag->pFrequency = static_cast<double>(liFrequency.QuadPart);
   
   return ag;
 }
@@ -208,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if( message == WM_PAINT )
   {
     app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
-    DoRender(ag);
+    DoRender(ag,nullptr);
 		ValidateRect(hWnd, NULL);
     return 0;
 	}
