@@ -6,6 +6,7 @@
 #include <tchar.h>
 #include <d2d1.h>
 #include <dwrite.h>
+#include <DirectXMath.h>
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -39,10 +40,10 @@ struct perf_data
 LPWSTR lpszWndClass = L"cpp_test";
 LPWSTR lpszTitle = L"cpp_test";
 
-app_globals *InitApp(HINSTANCE,int);
+std::unique_ptr<app_globals> InitApp(HINSTANCE,int);
 void DeinitApp(app_globals*);
-render_state InitRenderState(const app_globals*);
-void CleanRenderState(const render_state&);
+std::unique_ptr<render_state> InitRenderState(const app_globals*);
+void CleanRenderState(render_state*);
 ATOM MyRegisterClass(HINSTANCE hInstance);
 void InitInstance(app_globals*);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -53,7 +54,7 @@ void DoRender(app_globals*,perf_data*);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
-  app_globals *ag = InitApp(hInstance, nCmdShow);
+  std::unique_ptr<app_globals> ag = InitApp(hInstance, nCmdShow);
 
   MSG msg;
 
@@ -76,11 +77,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     pd.totalTicks = ticks.QuadPart - initialTicks.QuadPart;
     pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
     pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
-    DoRender(ag,&pd);
+    DoRender(ag.get(),&pd);
 	}
 
-  DeinitApp(ag);
-  delete ag;
+  DeinitApp(ag.get());
 
   return (int) msg.wParam;
 }
@@ -89,11 +89,11 @@ void DoRender(app_globals* ag,perf_data* pd)
 {
   if( ag->d2d_rendertarget == NULL ) return;
 
-  render_state rs = InitRenderState(ag);
+  std::unique_ptr<render_state> rs = InitRenderState(ag);
 
-  if( !rs.valid )
+  if( !rs->valid )
   {
-    CleanRenderState(rs);
+    CleanRenderState(rs.get());
     ::PostQuitMessage(0);
     ag->terminating = true;
     return;
@@ -107,7 +107,7 @@ void DoRender(app_globals* ag,perf_data* pd)
   if( pd == nullptr )
   {
     ag->d2d_rendertarget->EndDraw();
-    CleanRenderState(rs);
+    CleanRenderState(rs.get());
     return;
   }
 
@@ -116,40 +116,40 @@ void DoRender(app_globals* ag,perf_data* pd)
   int msgLen = wcslen(textMsg);
 
   D2D1_RECT_F rectangle = D2D1::RectF(0, 0, 100, 100);
-  ag->d2d_rendertarget->FillRectangle(&rectangle, rs.brush);
-  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs.brush);
+  ag->d2d_rendertarget->FillRectangle(&rectangle, rs->brush);
+  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
   ag->d2d_rendertarget->EndDraw();
 
-  CleanRenderState(rs);
+  CleanRenderState(rs.get());
 }
 
-render_state InitRenderState(const app_globals *ag)
+std::unique_ptr<render_state> InitRenderState(const app_globals *ag)
 {
-  render_state rs;
-  ::ZeroMemory(&rs,sizeof(render_state));
+  std::unique_ptr<render_state> rs = std::make_unique<render_state>();
+  ::ZeroMemory(rs.get(),sizeof(render_state));
 
-  HRESULT hr = ag->d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 0.0f, 0.5f, 1.0f)), &rs.brush);
+  HRESULT hr = ag->d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 0.0f, 0.5f, 1.0f)), &rs->brush);
   if( FAILED(hr) ) return rs;
 
-  rs.valid = true;
+  rs->valid = true;
   return rs;
 }
 
-void CleanRenderState(const render_state& rs)
+void CleanRenderState(render_state* rs)
 {
-  SafeRelease(rs.brush);
+  SafeRelease(rs->brush);
 }
 
-app_globals* InitApp(HINSTANCE instance, int nCmdShow)
+std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
 {
-  app_globals *ag = new app_globals;
-  ::ZeroMemory(ag, sizeof(app_globals));
+  std::unique_ptr<app_globals> ag = std::make_unique<app_globals>();
+  ::ZeroMemory(ag.get(), sizeof(app_globals));
   ag->inst = instance;
   ag->cmdShow = nCmdShow;
 
   MyRegisterClass(ag->inst);
 
-	InitInstance(ag);
+	InitInstance(ag.get());
 	if( !ag->wnd ) return ag;
 
 	RECT rc;
@@ -170,7 +170,7 @@ app_globals* InitApp(HINSTANCE instance, int nCmdShow)
 
   ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
   ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-  
+
   return ag;
 }
 
