@@ -2,6 +2,7 @@
 #define UNICODE
 
 #include <windows.h>
+#include <windowsx.h>
 #include <iostream>
 #include <tchar.h>
 #include <d2d1.h>
@@ -22,6 +23,7 @@ struct app_globals
   ID2D1HwndRenderTarget* d2d_rendertarget;
   IDWriteFactory* writeFactory;
   IDWriteTextFormat* writeTextFormat;
+  int mouseX, mouseY;
 };
 
 struct render_state
@@ -111,13 +113,20 @@ void DoRender(app_globals* ag,perf_data* pd)
     return;
   }
 
-  WCHAR textMsg[256];
-  _ui64tow(pd->fps,textMsg,10);
-  int msgLen = wcslen(textMsg);
-
-  D2D1_RECT_F rectangle = D2D1::RectF(0, 0, 100, 100);
+  D2D1_RECT_F rectangle = D2D1::RectF(ag->mouseX - 10, ag->mouseY - 10, ag->mouseX + 10, ag->mouseY + 10);
   ag->d2d_rendertarget->FillRectangle(&rectangle, rs->brush);
+
+  WCHAR textMsg[256];
+  int msgLen = 0;
+
+  // _ui64tow(pd->fps,textMsg,10);
+  // msgLen = wcslen(textMsg);
+
+  wsprintf(textMsg, L"%i,%i", ag->mouseX, ag->mouseY);
+  msgLen = wcslen(textMsg);
+
   ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
+
   ag->d2d_rendertarget->EndDraw();
 
   CleanRenderState(rs.get());
@@ -128,7 +137,7 @@ std::unique_ptr<render_state> InitRenderState(const app_globals *ag)
   std::unique_ptr<render_state> rs = std::make_unique<render_state>();
   ::ZeroMemory(rs.get(),sizeof(render_state));
 
-  HRESULT hr = ag->d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 0.0f, 0.5f, 1.0f)), &rs->brush);
+  HRESULT hr = ag->d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), &rs->brush);
   if( FAILED(hr) ) return rs;
 
   rs->valid = true;
@@ -165,7 +174,7 @@ std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
   hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(ag->writeFactory),reinterpret_cast<IUnknown **>(&ag->writeFactory));
   if( FAILED(hr) ) return ag;
 
-  hr = ag->writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,50,L"", &ag->writeTextFormat);
+  hr = ag->writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", &ag->writeTextFormat);
   if( FAILED(hr) ) return ag;
 
   ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -231,6 +240,14 @@ void InitInstance(app_globals* ag)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+  if( message == WM_MOUSEMOVE )
+  {
+    app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    ag->mouseX = GET_X_LPARAM(lParam);
+    ag->mouseY = GET_Y_LPARAM(lParam);
+    return 0;
+  }
+
   if( message == WM_PAINT )
   {
     app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
