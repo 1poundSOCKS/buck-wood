@@ -124,7 +124,7 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
   ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
   ag->d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  if( gs == NULL || pd == nullptr )
+  if( gs == NULL )
   {
     ag->d2d_rendertarget->EndDraw();
     CleanRenderState(rs.get());
@@ -140,8 +140,11 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
   msgLen = wcslen(textMsg);
   ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
 
-  _ui64tow(pd->fps,textMsg,10);
-  msgLen = wcslen(textMsg);
+  if( pd )
+  {
+    _ui64tow(pd->fps,textMsg,10);
+    msgLen = wcslen(textMsg);
+  }
 
   ag->d2d_rendertarget->EndDraw();
 
