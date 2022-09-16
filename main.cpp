@@ -13,6 +13,8 @@
 #pragma comment(lib,"d2d1")
 #pragma comment(lib, "Dwrite")
 
+#define SafeRelease(i) if( i ) i->Release()
+
 struct app_globals
 {
   bool terminating;
@@ -24,6 +26,7 @@ struct app_globals
   IDWriteFactory* writeFactory;
   IDWriteTextFormat* writeTextFormat;
   int mouseX, mouseY;
+  bool mouseLButtonDown;
 };
 
 struct render_state
@@ -39,24 +42,37 @@ struct perf_data
   int64_t fps;
 };
 
-LPWSTR lpszWndClass = L"cpp_test";
-LPWSTR lpszTitle = L"cpp_test";
+struct game_state
+{
+  double xPos;
+  double yPos;
+  double xVelocity;
+  double yVelocity;
+};
+
+LPWSTR lpszWndClass = L"buck wood";
+LPWSTR lpszTitle = L"buck wood";
 
 std::unique_ptr<app_globals> InitApp(HINSTANCE,int);
 void DeinitApp(app_globals*);
+
 std::unique_ptr<render_state> InitRenderState(const app_globals*);
 void CleanRenderState(render_state*);
+
+std::unique_ptr<game_state> InitGameState();
+void UpdateGameState(app_globals*,game_state*);
+
+void DoRender(app_globals*,game_state*,perf_data*);
+
 ATOM MyRegisterClass(HINSTANCE hInstance);
 void InitInstance(app_globals*);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 bool ProcessMessage(MSG*);
-void DoRender(app_globals*,perf_data*);
-
-#define SafeRelease(i) if( i ) i->Release()
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<app_globals> ag = InitApp(hInstance, nCmdShow);
+  std::unique_ptr<game_state> gs = InitGameState();
 
   MSG msg;
 
@@ -79,7 +95,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     pd.totalTicks = ticks.QuadPart - initialTicks.QuadPart;
     pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
     pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
-    DoRender(ag.get(),&pd);
+    
+    UpdateGameState(ag.get(),gs.get());
+    DoRender(ag.get(),gs.get(),&pd);
 	}
 
   DeinitApp(ag.get());
@@ -87,7 +105,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-void DoRender(app_globals* ag,perf_data* pd)
+void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
 {
   if( ag->d2d_rendertarget == NULL ) return;
 
@@ -106,30 +124,55 @@ void DoRender(app_globals* ag,perf_data* pd)
   ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
   ag->d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  if( pd == nullptr )
+  if( gs == NULL || pd == nullptr )
   {
     ag->d2d_rendertarget->EndDraw();
     CleanRenderState(rs.get());
     return;
   }
 
-  D2D1_RECT_F rectangle = D2D1::RectF(ag->mouseX - 10, ag->mouseY - 10, ag->mouseX + 10, ag->mouseY + 10);
+  D2D1_RECT_F rectangle = D2D1::RectF(gs->xPos - 10, gs->yPos - 10, gs->xPos + 10, gs->yPos + 10);
   ag->d2d_rendertarget->FillRectangle(&rectangle, rs->brush);
 
   WCHAR textMsg[256];
   int msgLen = 0;
-
-  // _ui64tow(pd->fps,textMsg,10);
-  // msgLen = wcslen(textMsg);
-
   wsprintf(textMsg, L"%i,%i", ag->mouseX, ag->mouseY);
   msgLen = wcslen(textMsg);
-
   ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
+
+  _ui64tow(pd->fps,textMsg,10);
+  msgLen = wcslen(textMsg);
 
   ag->d2d_rendertarget->EndDraw();
 
   CleanRenderState(rs.get());
+}
+
+std::unique_ptr<game_state> InitGameState()
+{
+  std::unique_ptr<game_state> gs = std::make_unique<game_state>();
+
+  gs->xPos = gs->yPos = 0;
+  gs->xVelocity = gs->yVelocity = 0;
+  
+  return gs;
+}
+
+void UpdateGameState(app_globals* ag,game_state* gs)
+{
+  if( ag->mouseLButtonDown )
+  {
+    double xDist = static_cast<double>(ag->mouseX) - gs->xPos;
+    double xAccel = xDist / 1000.0;
+    gs->xVelocity += xAccel;
+
+    double yDist = static_cast<double>(ag->mouseY) - gs->yPos;
+    double yAccel = yDist / 1000.0;
+    gs->yVelocity += yAccel;
+  }
+
+  gs->xPos = gs->xPos + gs->xVelocity;
+  gs->yPos = gs->yPos + gs->yVelocity;
 }
 
 std::unique_ptr<render_state> InitRenderState(const app_globals *ag)
@@ -248,10 +291,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
   }
 
+  if( message == WM_LBUTTONDOWN )
+  {
+    app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    ag->mouseLButtonDown = true;
+    return 0;
+  }
+
+  if( message == WM_LBUTTONUP )
+  {
+    app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    ag->mouseLButtonDown = false;
+    return 0;
+  }
+
   if( message == WM_PAINT )
   {
     app_globals *ag = reinterpret_cast<app_globals *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
-    DoRender(ag,nullptr);
+    DoRender(ag,nullptr,nullptr);
 		ValidateRect(hWnd, NULL);
     return 0;
 	}
