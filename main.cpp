@@ -1,6 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
 
+#define DIRECTINPUT_VERSION 0x0800
+
 #include <windows.h>
 #include <windowsx.h>
 #include <iostream>
@@ -8,15 +10,19 @@
 #include <d2d1.h>
 #include <dwrite.h>
 #include <DirectXMath.h>
+#include <dinput.h>
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
 #pragma comment(lib, "Dwrite")
+#pragma comment(lib, "Dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
 
 #define SafeRelease(i) if( i ) i->Release()
 
 struct app_globals
 {
+  bool initComplete;
   bool terminating;
   HINSTANCE inst;
   int cmdShow;
@@ -25,6 +31,8 @@ struct app_globals
   ID2D1HwndRenderTarget* d2d_rendertarget;
   IDWriteFactory* writeFactory;
   IDWriteTextFormat* writeTextFormat;
+  IDirectInput8* directInput;
+  LPDIRECTINPUTDEVICE8 keyboard;
   int mouseX, mouseY;
   bool mouseLButtonDown;
 };
@@ -50,6 +58,14 @@ struct game_state
   double yVelocity;
 };
 
+struct control_state
+{
+  bool quit;
+  bool left;
+  bool right;
+  bool accelerate;
+};
+
 LPWSTR lpszWndClass = L"buck wood";
 LPWSTR lpszTitle = L"buck wood";
 
@@ -59,8 +75,10 @@ void DeinitApp(app_globals*);
 std::unique_ptr<render_state> InitRenderState(const app_globals*);
 void CleanRenderState(render_state*);
 
+std::unique_ptr<control_state> GetControlState(app_globals*);
+
 std::unique_ptr<game_state> InitGameState();
-void UpdateGameState(app_globals*,game_state*);
+void UpdateGameState(app_globals*,control_state*,game_state*);
 
 void DoRender(app_globals*,game_state*,perf_data*);
 
@@ -72,6 +90,12 @@ bool ProcessMessage(MSG*);
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<app_globals> ag = InitApp(hInstance, nCmdShow);
+  if( !ag->initComplete )
+  {
+    DeinitApp(ag.get());
+    return 1;
+  }
+
   std::unique_ptr<game_state> gs = InitGameState();
 
   MSG msg;
@@ -96,7 +120,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
     pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
     
-    UpdateGameState(ag.get(),gs.get());
+    std::unique_ptr<control_state> cs = GetControlState(ag.get());
+    
+    if( cs->quit )
+    {
+      ::PostQuitMessage(0);
+      ag->terminating = true;
+      continue;
+    }
+
+    UpdateGameState(ag.get(),cs.get(),gs.get());
     DoRender(ag.get(),gs.get(),&pd);
 	}
 
@@ -161,7 +194,7 @@ std::unique_ptr<game_state> InitGameState()
   return gs;
 }
 
-void UpdateGameState(app_globals* ag,game_state* gs)
+void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
 {
   if( ag->mouseLButtonDown )
   {
@@ -226,15 +259,53 @@ std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
   ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
   ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
+  hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID*>(&ag->directInput), NULL);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->directInput->CreateDevice(GUID_SysKeyboard, &ag->keyboard, NULL);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->SetDataFormat(&c_dfDIKeyboard);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->SetCooperativeLevel(ag->wnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->Acquire();
+  if( FAILED(hr) ) return ag;
+  
+  ag->initComplete = true;
+
   return ag;
 }
 
 void DeinitApp(app_globals *ag)
 {
+  SafeRelease(ag->keyboard);
+  SafeRelease(ag->directInput);
   SafeRelease(ag->writeTextFormat);
   SafeRelease(ag->writeFactory);
   SafeRelease(ag->d2d_rendertarget);
   SafeRelease(ag->d2d_factory);
+}
+
+std::unique_ptr<control_state> GetControlState(app_globals* ag)
+{
+  std::unique_ptr<control_state> cs = std::make_unique<control_state>();
+  ZeroMemory(cs.get(),sizeof(control_state));
+
+  unsigned char keyboardState[256];
+  HRESULT hr = ag->keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+	if(FAILED(hr))
+	{
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) hr = ag->keyboard->Acquire();
+		else return cs;
+    if( FAILED(hr) ) return cs;
+	}
+
+  if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
+
+  return cs;
 }
 
 bool ProcessMessage(MSG* msg)
