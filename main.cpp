@@ -31,6 +31,7 @@ struct game_state
   double yPos;
   double xVelocity;
   double yVelocity;
+  double shipAngle;
 };
 
 struct control_state
@@ -46,7 +47,7 @@ void CleanRenderState(render_state*);
 
 std::unique_ptr<control_state> GetControlState(app_globals*);
 
-std::unique_ptr<game_state> InitGameState();
+std::unique_ptr<game_state> InitGameState(app_globals*);
 void UpdateGameState(app_globals*,control_state*,game_state*);
 
 void DoRender(app_globals*,game_state*,perf_data*);
@@ -65,7 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     return 1;
   }
 
-  std::unique_ptr<game_state> gs = InitGameState();
+  std::unique_ptr<game_state> gs = InitGameState(ag.get());
 
   MSG msg;
 
@@ -133,8 +134,12 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
     return;
   }
 
+  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Rotation(gs->shipAngle,D2D1::Point2F(gs->xPos,gs->yPos)));
+
   D2D1_RECT_F rectangle = D2D1::RectF(gs->xPos - 10, gs->yPos - 10, gs->xPos + 10, gs->yPos + 10);
   ag->d2d_rendertarget->FillRectangle(&rectangle, rs->brush);
+
+  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   WCHAR textMsg[256];
   int msgLen = 0;
@@ -153,11 +158,14 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
   CleanRenderState(rs.get());
 }
 
-std::unique_ptr<game_state> InitGameState()
+std::unique_ptr<game_state> InitGameState(app_globals* ag)
 {
   std::unique_ptr<game_state> gs = std::make_unique<game_state>();
 
-  gs->xPos = gs->yPos = 0;
+  D2D_SIZE_F rtSize = ag->d2d_rendertarget->GetSize();
+
+  gs->xPos = rtSize.width / 2;
+  gs->yPos = rtSize.height / 2;
   gs->xVelocity = gs->yVelocity = 0;
   
   return gs;
@@ -174,6 +182,16 @@ void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
     double yDist = static_cast<double>(ag->mouseY) - gs->yPos;
     double yAccel = yDist / 1000.0;
     gs->yVelocity += yAccel;
+  }
+
+  if( cs->left )
+  {
+    gs->shipAngle -= 1;
+  }
+
+  if( cs->right )
+  {
+    gs->shipAngle += 1;
   }
 
   gs->xPos = gs->xPos + gs->xVelocity;
@@ -212,21 +230,8 @@ std::unique_ptr<control_state> GetControlState(app_globals* ag)
 	}
 
   if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
+  else if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
+  else if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
 
   return cs;
-}
-
-bool ProcessMessage(MSG* msg)
-{
-	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
-    {
-      TranslateMessage(msg);
-      DispatchMessage(msg);
-    }
-    return (msg->message != WM_QUIT);
-	}
-
-  return true;
 }

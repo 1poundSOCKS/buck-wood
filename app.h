@@ -26,5 +26,6 @@ struct app_globals
   bool mouseLButtonDown;
 };
 
+bool ProcessMessage(MSG* msg);
 std::unique_ptr<app_globals> InitApp(HINSTANCE,int);
 void DeinitApp(app_globals*);
