@@ -26,6 +26,8 @@ struct app_globals
   bool mouseLButtonDown;
 };
 
+ATOM MyRegisterClass(HINSTANCE hInstance);
+void InitInstance(app_globals* ag);
 bool ProcessMessage(MSG* msg);
 std::unique_ptr<app_globals> InitApp(HINSTANCE,int);
 void DeinitApp(app_globals*);

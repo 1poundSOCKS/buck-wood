@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <tchar.h>
+#include <math.h>
 
 #include "app.h"
 
@@ -11,6 +12,8 @@
 #pragma comment(lib, "Dwrite")
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+
+#define PI 3.14159265
 
 struct render_state
 {
@@ -194,6 +197,14 @@ void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
     gs->shipAngle += 1;
   }
 
+  gs->xVelocity = gs->yVelocity = 0;
+
+  if( cs->accelerate )
+  {
+    gs->xVelocity = 1.0 * cos(gs->shipAngle * PI / 180.0);
+    gs->yVelocity = 1.0 * sin(gs->shipAngle * PI / 180.0);
+  }
+
   gs->xPos = gs->xPos + gs->xVelocity;
   gs->yPos = gs->yPos + gs->yVelocity;
 }
@@ -230,8 +241,9 @@ std::unique_ptr<control_state> GetControlState(app_globals* ag)
 	}
 
   if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
-  else if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
-  else if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
+  if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
+  if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
+  if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
 
   return cs;
 }

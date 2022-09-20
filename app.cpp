@@ -3,6 +3,68 @@
 LPWSTR lpszWndClass = L"buck wood";
 LPWSTR lpszTitle = L"buck wood";
 
+
+std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
+{
+  std::unique_ptr<app_globals> ag = std::make_unique<app_globals>();
+  ::ZeroMemory(ag.get(), sizeof(app_globals));
+  ag->inst = instance;
+  ag->cmdShow = nCmdShow;
+
+  MyRegisterClass(ag->inst);
+
+	InitInstance(ag.get());
+	if( !ag->wnd ) return ag;
+
+	RECT rc;
+	GetClientRect(ag->wnd, &rc);
+
+	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,&ag->d2d_factory);
+  if( FAILED(hr) ) return ag;
+
+	hr = ag->d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
+    D2D1::HwndRenderTargetProperties(ag->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),&ag->d2d_rendertarget);
+  if( FAILED(hr) ) return ag;
+
+  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(ag->writeFactory),reinterpret_cast<IUnknown **>(&ag->writeFactory));
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", &ag->writeTextFormat);
+  if( FAILED(hr) ) return ag;
+
+  ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+  ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+  hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID*>(&ag->directInput), NULL);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->directInput->CreateDevice(GUID_SysKeyboard, &ag->keyboard, NULL);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->SetDataFormat(&c_dfDIKeyboard);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->SetCooperativeLevel(ag->wnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+  if( FAILED(hr) ) return ag;
+
+  hr = ag->keyboard->Acquire();
+  if( FAILED(hr) ) return ag;
+  
+  ag->initComplete = true;
+
+  return ag;
+}
+
+void DeinitApp(app_globals *ag)
+{
+  SafeRelease(ag->keyboard);
+  SafeRelease(ag->directInput);
+  SafeRelease(ag->writeTextFormat);
+  SafeRelease(ag->writeFactory);
+  SafeRelease(ag->d2d_rendertarget);
+  SafeRelease(ag->d2d_factory);
+}
+
 bool ProcessMessage(MSG* msg)
 {
 	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
@@ -112,65 +174,4 @@ void InitInstance(app_globals* ag)
 
    ShowWindow(ag->wnd, ag->cmdShow);
    UpdateWindow(ag->wnd);
-}
-
-std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
-{
-  std::unique_ptr<app_globals> ag = std::make_unique<app_globals>();
-  ::ZeroMemory(ag.get(), sizeof(app_globals));
-  ag->inst = instance;
-  ag->cmdShow = nCmdShow;
-
-  MyRegisterClass(ag->inst);
-
-	InitInstance(ag.get());
-	if( !ag->wnd ) return ag;
-
-	RECT rc;
-	GetClientRect(ag->wnd, &rc);
-
-	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,&ag->d2d_factory);
-  if( FAILED(hr) ) return ag;
-
-	hr = ag->d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
-    D2D1::HwndRenderTargetProperties(ag->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),&ag->d2d_rendertarget);
-  if( FAILED(hr) ) return ag;
-
-  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(ag->writeFactory),reinterpret_cast<IUnknown **>(&ag->writeFactory));
-  if( FAILED(hr) ) return ag;
-
-  hr = ag->writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", &ag->writeTextFormat);
-  if( FAILED(hr) ) return ag;
-
-  ag->writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-  ag->writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-
-  hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<LPVOID*>(&ag->directInput), NULL);
-  if( FAILED(hr) ) return ag;
-
-  hr = ag->directInput->CreateDevice(GUID_SysKeyboard, &ag->keyboard, NULL);
-  if( FAILED(hr) ) return ag;
-
-  hr = ag->keyboard->SetDataFormat(&c_dfDIKeyboard);
-  if( FAILED(hr) ) return ag;
-
-  hr = ag->keyboard->SetCooperativeLevel(ag->wnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-  if( FAILED(hr) ) return ag;
-
-  hr = ag->keyboard->Acquire();
-  if( FAILED(hr) ) return ag;
-  
-  ag->initComplete = true;
-
-  return ag;
-}
-
-void DeinitApp(app_globals *ag)
-{
-  SafeRelease(ag->keyboard);
-  SafeRelease(ag->directInput);
-  SafeRelease(ag->writeTextFormat);
-  SafeRelease(ag->writeFactory);
-  SafeRelease(ag->d2d_rendertarget);
-  SafeRelease(ag->d2d_factory);
 }
