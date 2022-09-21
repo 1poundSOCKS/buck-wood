@@ -1,3 +1,5 @@
+#define WIN32_LEAN_AND_MEAN
+#define UNICODE
 #define DIRECTINPUT_VERSION 0x0800
 
 #include <windows.h>
@@ -6,6 +8,7 @@
 #include <dwrite.h>
 #include <dinput.h>
 #include <memory>
+#include <winrt/base.h>
 
 #define SafeRelease(i) if( i ) i->Release()
 
@@ -16,7 +19,7 @@ struct app_globals
   HINSTANCE inst;
   int cmdShow;
   HWND wnd;
-  ID2D1Factory* d2d_factory;
+  winrt::com_ptr<ID2D1Factory> d2d_factory;
   ID2D1HwndRenderTarget* d2d_rendertarget;
   IDWriteFactory* writeFactory;
   IDWriteTextFormat* writeTextFormat;

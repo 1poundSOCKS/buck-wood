@@ -19,8 +19,10 @@ std::unique_ptr<app_globals> InitApp(HINSTANCE instance, int nCmdShow)
 	RECT rc;
 	GetClientRect(ag->wnd, &rc);
 
-	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,&ag->d2d_factory);
+  ID2D1Factory* d2d_factory_tmp;
+	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,&d2d_factory_tmp);
   if( FAILED(hr) ) return ag;
+  ag->d2d_factory.attach(d2d_factory_tmp);
 
 	hr = ag->d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
     D2D1::HwndRenderTargetProperties(ag->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),&ag->d2d_rendertarget);
@@ -62,7 +64,7 @@ void DeinitApp(app_globals *ag)
   SafeRelease(ag->writeTextFormat);
   SafeRelease(ag->writeFactory);
   SafeRelease(ag->d2d_rendertarget);
-  SafeRelease(ag->d2d_factory);
+  // SafeRelease(ag->d2d_factory);
 }
 
 bool ProcessMessage(MSG* msg)

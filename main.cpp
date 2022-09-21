@@ -1,4 +1,3 @@
-#define WIN32_LEAN_AND_MEAN
 #define UNICODE
 
 #include <iostream>
@@ -197,12 +196,12 @@ void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
     gs->shipAngle += 1;
   }
 
-  gs->xVelocity = gs->yVelocity = 0;
+  if( gs->yVelocity < 1.0 ) gs->yVelocity += 0.05; // gravity
 
   if( cs->accelerate )
   {
-    gs->xVelocity = 1.0 * cos(gs->shipAngle * PI / 180.0);
-    gs->yVelocity = 1.0 * sin(gs->shipAngle * PI / 180.0);
+    gs->yVelocity -= 0.1 * cos(gs->shipAngle * PI / 180.0);
+    gs->xVelocity += 0.1 * sin(gs->shipAngle * PI / 180.0);
   }
 
   gs->xPos = gs->xPos + gs->xVelocity;
