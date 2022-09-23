@@ -1,0 +1,155 @@
+#include "d2d_app.h"
+
+LPWSTR lpszWndClass = L"d2d app";
+LPWSTR lpszTitle = L"d2d app";
+
+ATOM MyRegisterClass(HINSTANCE hInstance);
+void InitInstance(d2d_app* ag);
+bool ProcessMessage(MSG* msg);
+std::unique_ptr<d2d_app> InitApp(HINSTANCE,int);
+void DeinitApp(d2d_app*);
+
+d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
+   : initComplete(false), terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)
+{
+  MyRegisterClass(inst);
+
+	InitInstance(this);
+	if( !wnd ) throw L"error";
+
+	RECT rc;
+	GetClientRect(wnd, &rc);
+
+	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,d2d_factory.put());
+  if( FAILED(hr) ) throw L"error";
+
+	hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
+    D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
+  if( FAILED(hr) ) throw L"error";
+
+  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(writeFactory),reinterpret_cast<IUnknown**>(writeFactory.put()));
+  if( FAILED(hr) ) throw L"error";
+
+  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", writeTextFormat.put());
+  if( FAILED(hr) ) throw L"error";
+
+  writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+  writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+  hr = DirectInput8Create(inst, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = keyboard->SetDataFormat(&c_dfDIKeyboard);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = keyboard->SetCooperativeLevel(wnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = keyboard->Acquire();
+  if( FAILED(hr) ) throw L"error";
+
+  hr = directInput->CreateDevice(GUID_SysMouse, mouse.put(), NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = mouse->SetCooperativeLevel(wnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = mouse->SetDataFormat(&c_dfDIMouse);
+  if( FAILED(hr) ) throw L"error";
+
+  initComplete = true;
+}
+
+bool ProcessMessage(MSG* msg)
+{
+	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
+  {
+    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
+    {
+      TranslateMessage(msg);
+      DispatchMessage(msg);
+    }
+    return (msg->message != WM_QUIT);
+	}
+
+  return true;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  if( message == WM_PAINT )
+  {
+		ValidateRect(hWnd, NULL);
+    return 0;
+	}
+
+  if( message == WM_SIZE )
+  {
+    d2d_app *ag = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( ag == NULL || !ag->d2d_rendertarget.get() ) return 0;
+
+    UINT width = LOWORD(lParam);
+    UINT height = HIWORD(lParam);
+    if( ag->d2d_rendertarget ) ag->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
+ 
+    return 0;
+  }
+
+  if( message == WM_DISPLAYCHANGE )
+  {
+    InvalidateRect(hWnd, NULL, FALSE);
+    return 0;
+  }
+
+  if( message == WM_CREATE )
+  {
+    LPCREATESTRUCT pcs = NULL;
+    d2d_app *ag = NULL;
+    pcs = (LPCREATESTRUCT)lParam;
+    ag = reinterpret_cast<d2d_app*>(pcs->lpCreateParams);
+    ::SetWindowLongPtrW(hWnd,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(ag));
+    return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+
+  if( message == WM_DESTROY )
+  {
+    ::PostQuitMessage(0);
+  }
+
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+ATOM MyRegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEXW wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc    = WndProc;
+    wcex.cbClsExtra     = 0;
+    wcex.cbWndExtra     = 0;
+    wcex.hInstance      = hInstance;
+    wcex.hIcon          = NULL;
+    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.lpszMenuName   = NULL;
+    wcex.lpszClassName  = lpszWndClass;
+    wcex.hIconSm        = NULL;
+
+    return RegisterClassExW(&wcex);
+}
+
+void InitInstance(d2d_app* ag)
+{
+   ag->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, ag->inst, ag);
+
+   if (!ag->wnd) return;
+
+   ShowWindow(ag->wnd, ag->cmdShow);
+   UpdateWindow(ag->wnd);
+}

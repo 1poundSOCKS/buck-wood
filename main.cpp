@@ -4,7 +4,7 @@
 #include <tchar.h>
 #include <math.h>
 
-#include "app.h"
+#include "d2d_app.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -13,6 +13,8 @@
 #pragma comment(lib, "dxguid.lib")
 
 #define PI 3.14159265
+
+#define SafeRelease(i) if( i ) i->Release()
 
 struct render_state
 {
@@ -42,31 +44,27 @@ struct control_state
   bool left;
   bool right;
   bool accelerate;
+  int mouseX, mouseY;
 };
 
-std::unique_ptr<render_state> InitRenderState(const app_globals*);
+std::unique_ptr<render_state> InitRenderState(const d2d_app*);
 void CleanRenderState(render_state*);
 
-std::unique_ptr<control_state> GetControlState(app_globals*);
+std::unique_ptr<control_state> GetControlState(d2d_app*);
 
-std::unique_ptr<game_state> InitGameState(app_globals*);
-void UpdateGameState(app_globals*,control_state*,game_state*);
+std::unique_ptr<game_state> InitGameState(d2d_app*);
+void UpdateGameState(d2d_app*,control_state*,game_state*);
 
-void DoRender(app_globals*,game_state*,perf_data*);
+void DoRender(d2d_app*,game_state*,perf_data*);
 
 ATOM MyRegisterClass(HINSTANCE hInstance);
-void InitInstance(app_globals*);
+void InitInstance(d2d_app*);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 bool ProcessMessage(MSG*);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
-  std::unique_ptr<app_globals> ag = InitApp(hInstance, nCmdShow);
-  if( !ag->initComplete )
-  {
-    DeinitApp(ag.get());
-    return 1;
-  }
+  std::unique_ptr<d2d_app> ag = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
   std::unique_ptr<game_state> gs = InitGameState(ag.get());
 
@@ -105,12 +103,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     DoRender(ag.get(),gs.get(),&pd);
 	}
 
-  DeinitApp(ag.get());
-
   return (int) msg.wParam;
 }
 
-void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
+void DoRender(d2d_app* ag, game_state* gs, perf_data* pd)
 {
   if( ag->d2d_rendertarget == NULL ) return;
 
@@ -143,11 +139,11 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
 
   ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
-  WCHAR textMsg[256];
+  WCHAR textMsg[256] = L"";
   int msgLen = 0;
-  wsprintf(textMsg, L"%i,%i", ag->mouseX, ag->mouseY);
+  // wsprintf(textMsg, L"%i,%i", cs->mouseX, cs->mouseY);
   msgLen = wcslen(textMsg);
-  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat,D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
+  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
 
   if( pd )
   {
@@ -160,7 +156,7 @@ void DoRender(app_globals* ag, game_state* gs, perf_data* pd)
   CleanRenderState(rs.get());
 }
 
-std::unique_ptr<game_state> InitGameState(app_globals* ag)
+std::unique_ptr<game_state> InitGameState(d2d_app* ag)
 {
   std::unique_ptr<game_state> gs = std::make_unique<game_state>();
 
@@ -173,19 +169,8 @@ std::unique_ptr<game_state> InitGameState(app_globals* ag)
   return gs;
 }
 
-void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
+void UpdateGameState(d2d_app* ag,control_state* cs,game_state* gs)
 {
-  if( ag->mouseLButtonDown )
-  {
-    double xDist = static_cast<double>(ag->mouseX) - gs->xPos;
-    double xAccel = xDist / 1000.0;
-    gs->xVelocity += xAccel;
-
-    double yDist = static_cast<double>(ag->mouseY) - gs->yPos;
-    double yAccel = yDist / 1000.0;
-    gs->yVelocity += yAccel;
-  }
-
   if( cs->left )
   {
     gs->shipAngle -= 1;
@@ -208,7 +193,7 @@ void UpdateGameState(app_globals* ag,control_state* cs,game_state* gs)
   gs->yPos = gs->yPos + gs->yVelocity;
 }
 
-std::unique_ptr<render_state> InitRenderState(const app_globals *ag)
+std::unique_ptr<render_state> InitRenderState(const d2d_app *ag)
 {
   std::unique_ptr<render_state> rs = std::make_unique<render_state>();
   ::ZeroMemory(rs.get(),sizeof(render_state));
@@ -225,7 +210,7 @@ void CleanRenderState(render_state* rs)
   SafeRelease(rs->brush);
 }
 
-std::unique_ptr<control_state> GetControlState(app_globals* ag)
+std::unique_ptr<control_state> GetControlState(d2d_app* ag)
 {
   std::unique_ptr<control_state> cs = std::make_unique<control_state>();
   ZeroMemory(cs.get(),sizeof(control_state));
@@ -234,15 +219,30 @@ std::unique_ptr<control_state> GetControlState(app_globals* ag)
   HRESULT hr = ag->keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 	if(FAILED(hr))
 	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) hr = ag->keyboard->Acquire();
-		else return cs;
-    if( FAILED(hr) ) return cs;
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) ag->keyboard->Acquire();
 	}
 
-  if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
-  if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
-  if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
-  if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
+  if( SUCCEEDED(hr) )
+  {
+    if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
+    if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
+    if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
+    if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
+  }
+
+  DIMOUSESTATE mouseState;
+  hr = ag->mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
+  if( FAILED(hr) )
+  {
+    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) ag->mouse->Acquire();
+  }
+
+  if( SUCCEEDED(hr) )
+  {
+    cs->mouseX = mouseState.lX;
+    cs->mouseY = mouseState.lY;
+    if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
+  }
 
   return cs;
 }
