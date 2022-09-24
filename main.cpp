@@ -3,8 +3,10 @@
 #include <iostream>
 #include <tchar.h>
 #include <math.h>
+#include <dwrite.h>
 
 #include "d2d_app.h"
+#include "d2d_frame.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -13,14 +15,6 @@
 #pragma comment(lib, "dxguid.lib")
 
 #define PI 3.14159265
-
-#define SafeRelease(i) if( i ) i->Release()
-
-struct render_state
-{
-  bool valid;
-  ID2D1SolidColorBrush* brush;
-};
 
 struct perf_data
 {
@@ -47,15 +41,12 @@ struct control_state
   int mouseX, mouseY;
 };
 
-std::unique_ptr<render_state> InitRenderState(const d2d_app*);
-void CleanRenderState(render_state*);
-
 std::unique_ptr<control_state> GetControlState(d2d_app*);
 
 std::unique_ptr<game_state> InitGameState(d2d_app*);
-void UpdateGameState(d2d_app*,control_state*,game_state*);
+void UpdateGameState(control_state*,game_state*);
 
-void DoRender(d2d_app*,game_state*,perf_data*);
+void DoRender(d2d_frame*,game_state*,perf_data*);
 
 ATOM MyRegisterClass(HINSTANCE hInstance);
 void InitInstance(d2d_app*);
@@ -64,9 +55,9 @@ bool ProcessMessage(MSG*);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
-  std::unique_ptr<d2d_app> ag = std::make_unique<d2d_app>(hInstance,nCmdShow);
+  std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
-  std::unique_ptr<game_state> gs = InitGameState(ag.get());
+  std::unique_ptr<game_state> gs = InitGameState(app.get());
 
   MSG msg;
 
@@ -80,7 +71,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 	
   while (ProcessMessage(&msg))
   {
-    if( ag->terminating ) continue;
+    if( app->terminating ) continue;
 
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
@@ -90,60 +81,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
     pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
     
-    std::unique_ptr<control_state> cs = GetControlState(ag.get());
+    std::unique_ptr<control_state> cs = GetControlState(app.get());
     
     if( cs->quit )
     {
       ::PostQuitMessage(0);
-      ag->terminating = true;
+      app->terminating = true;
       continue;
     }
 
-    UpdateGameState(ag.get(),cs.get(),gs.get());
-    DoRender(ag.get(),gs.get(),&pd);
+    UpdateGameState(cs.get(),gs.get());
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
+    DoRender(frame.get(),gs.get(),&pd);
 	}
 
   return (int) msg.wParam;
 }
 
-void DoRender(d2d_app* ag, game_state* gs, perf_data* pd)
+void DoRender(d2d_frame* rs, game_state* gs, perf_data* pd)
 {
-  if( ag->d2d_rendertarget == NULL ) return;
-
-  std::unique_ptr<render_state> rs = InitRenderState(ag);
-
-  if( !rs->valid )
-  {
-    CleanRenderState(rs.get());
-    ::PostQuitMessage(0);
-    ag->terminating = true;
-    return;
-  }
-
-  D2D1_SIZE_F renderTargetSize = ag->d2d_rendertarget->GetSize();
-  ag->d2d_rendertarget->BeginDraw();
-  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  ag->d2d_rendertarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  D2D1_SIZE_F renderTargetSize = rs->renderTarget->GetSize();
+  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  rs->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  if( gs == NULL )
-  {
-    ag->d2d_rendertarget->EndDraw();
-    CleanRenderState(rs.get());
-    return;
-  }
-
-  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Rotation(gs->shipAngle,D2D1::Point2F(gs->xPos,gs->yPos)));
+  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(gs->shipAngle,D2D1::Point2F(gs->xPos,gs->yPos)));
 
   D2D1_RECT_F rectangle = D2D1::RectF(gs->xPos - 10, gs->yPos - 10, gs->xPos + 10, gs->yPos + 10);
-  ag->d2d_rendertarget->FillRectangle(&rectangle, rs->brush);
+  rs->renderTarget->FillRectangle(&rectangle, rs->brush.get());
 
-  ag->d2d_rendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   WCHAR textMsg[256] = L"";
   int msgLen = 0;
   // wsprintf(textMsg, L"%i,%i", cs->mouseX, cs->mouseY);
   msgLen = wcslen(textMsg);
-  ag->d2d_rendertarget->DrawTextW(textMsg,msgLen,ag->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush);
+  rs->renderTarget->DrawTextW(textMsg,msgLen,rs->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush.get());
 
   if( pd )
   {
@@ -151,9 +123,7 @@ void DoRender(d2d_app* ag, game_state* gs, perf_data* pd)
     msgLen = wcslen(textMsg);
   }
 
-  ag->d2d_rendertarget->EndDraw();
-
-  CleanRenderState(rs.get());
+  rs->renderTarget->EndDraw();
 }
 
 std::unique_ptr<game_state> InitGameState(d2d_app* ag)
@@ -169,7 +139,7 @@ std::unique_ptr<game_state> InitGameState(d2d_app* ag)
   return gs;
 }
 
-void UpdateGameState(d2d_app* ag,control_state* cs,game_state* gs)
+void UpdateGameState(control_state* cs,game_state* gs)
 {
   if( cs->left )
   {
@@ -191,23 +161,6 @@ void UpdateGameState(d2d_app* ag,control_state* cs,game_state* gs)
 
   gs->xPos = gs->xPos + gs->xVelocity;
   gs->yPos = gs->yPos + gs->yVelocity;
-}
-
-std::unique_ptr<render_state> InitRenderState(const d2d_app *ag)
-{
-  std::unique_ptr<render_state> rs = std::make_unique<render_state>();
-  ::ZeroMemory(rs.get(),sizeof(render_state));
-
-  HRESULT hr = ag->d2d_rendertarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), &rs->brush);
-  if( FAILED(hr) ) return rs;
-
-  rs->valid = true;
-  return rs;
-}
-
-void CleanRenderState(render_state* rs)
-{
-  SafeRelease(rs->brush);
 }
 
 std::unique_ptr<control_state> GetControlState(d2d_app* ag)

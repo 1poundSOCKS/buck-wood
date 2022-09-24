@@ -3,18 +3,16 @@
 LPWSTR lpszWndClass = L"d2d app";
 LPWSTR lpszTitle = L"d2d app";
 
-ATOM MyRegisterClass(HINSTANCE hInstance);
-void InitInstance(d2d_app* ag);
+ATOM RegisterMainWindowClass(HINSTANCE hInstance);
+void CreateMainWindow(d2d_app* ag);
 bool ProcessMessage(MSG* msg);
-std::unique_ptr<d2d_app> InitApp(HINSTANCE,int);
-void DeinitApp(d2d_app*);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
-   : initComplete(false), terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)
+   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)
 {
-  MyRegisterClass(inst);
+  RegisterMainWindowClass(inst);
 
-	InitInstance(this);
+	CreateMainWindow(this);
 	if( !wnd ) throw L"error";
 
 	RECT rc;
@@ -26,15 +24,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 	hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
     D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
   if( FAILED(hr) ) throw L"error";
-
-  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(writeFactory),reinterpret_cast<IUnknown**>(writeFactory.put()));
-  if( FAILED(hr) ) throw L"error";
-
-  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", writeTextFormat.put());
-  if( FAILED(hr) ) throw L"error";
-
-  writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-  writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
   hr = DirectInput8Create(inst, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
   if( FAILED(hr) ) throw L"error";
@@ -59,8 +48,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 
   hr = mouse->SetDataFormat(&c_dfDIMouse);
   if( FAILED(hr) ) throw L"error";
-
-  initComplete = true;
 }
 
 bool ProcessMessage(MSG* msg)
@@ -122,7 +109,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-ATOM MyRegisterClass(HINSTANCE hInstance)
+ATOM RegisterMainWindowClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
 
@@ -143,7 +130,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-void InitInstance(d2d_app* ag)
+void CreateMainWindow(d2d_app* ag)
 {
    ag->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, ag->inst, ag);
