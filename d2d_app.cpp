@@ -5,7 +5,6 @@ LPWSTR lpszTitle = L"d2d app";
 
 ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* ag);
-bool ProcessMessage(MSG* msg);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
    : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)

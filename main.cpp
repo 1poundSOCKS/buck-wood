@@ -3,12 +3,12 @@
 #include <iostream>
 #include <tchar.h>
 #include <math.h>
-#include <dwrite.h>
 
 #include "d2d_app.h"
 #include "d2d_frame.h"
 #include "game_state.h"
 #include "control_state.h"
+#include "perf_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -18,22 +18,9 @@
 
 #define PI 3.14159265
 
-struct perf_data
-{
-  int64_t totalTicks;
-  int64_t frameTicks;
-  int64_t fps;
-};
-
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
-
-void DoRender(d2d_frame*,game_state*,perf_data*);
-
-ATOM MyRegisterClass(HINSTANCE hInstance);
-void InitInstance(d2d_app*);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-bool ProcessMessage(MSG*);
+void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -59,10 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
 
-    perf_data pd;
-    pd.totalTicks = ticks.QuadPart - initialTicks.QuadPart;
-    pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
-    pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
+    const std::unique_ptr<perf_data> pd = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
     
     std::unique_ptr<control_state> cs = GetControlState(app);
     
@@ -74,14 +58,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     }
 
     UpdateGameState(cs,gs);
+
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
-    DoRender(frame.get(),gs.get(),&pd);
+    
+    DoRender(frame,gs,pd);
 	}
 
   return (int) msg.wParam;
 }
 
-void DoRender(d2d_frame* rs, game_state* gs, perf_data* pd)
+void DoRender(const std::unique_ptr<d2d_frame>& rs, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
 {
   D2D1_SIZE_F renderTargetSize = rs->renderTarget->GetSize();
   rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -94,34 +80,33 @@ void DoRender(d2d_frame* rs, game_state* gs, perf_data* pd)
 
   rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
-  WCHAR textMsg[256] = L"";
+  WCHAR textMsg[256] = L"D2D Demo";
   int msgLen = 0;
-  // wsprintf(textMsg, L"%i,%i", cs->mouseX, cs->mouseY);
+  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->xPos), static_cast<int>(gs->yPos));
   msgLen = wcslen(textMsg);
   rs->renderTarget->DrawTextW(textMsg,msgLen,rs->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush.get());
 
-  if( pd )
-  {
-    _ui64tow(pd->fps,textMsg,10);
-    msgLen = wcslen(textMsg);
-  }
-
-  rs->renderTarget->EndDraw();
+  _ui64tow(pd->fps,textMsg,10);
+  msgLen = wcslen(textMsg);
 }
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
 {
+  if( !gs->started && !cs->accelerate ) return;
+
+  gs->started = true;
+
   if( cs->left )
   {
-    gs->shipAngle -= 1;
+    gs->shipAngle -= 2;
   }
 
   if( cs->right )
   {
-    gs->shipAngle += 1;
+    gs->shipAngle += 2;
   }
 
-  if( gs->yVelocity < 1.0 ) gs->yVelocity += 0.05; // gravity
+  if( gs->yVelocity < 2.0 ) gs->yVelocity += 0.05; // gravity
 
   if( cs->accelerate )
   {
