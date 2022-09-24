@@ -7,6 +7,8 @@
 
 #include "d2d_app.h"
 #include "d2d_frame.h"
+#include "game_state.h"
+#include "control_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -23,28 +25,8 @@ struct perf_data
   int64_t fps;
 };
 
-struct game_state
-{
-  double xPos;
-  double yPos;
-  double xVelocity;
-  double yVelocity;
-  double shipAngle;
-};
-
-struct control_state
-{
-  bool quit;
-  bool left;
-  bool right;
-  bool accelerate;
-  int mouseX, mouseY;
-};
-
-std::unique_ptr<control_state> GetControlState(d2d_app*);
-
-std::unique_ptr<game_state> InitGameState(d2d_app*);
-void UpdateGameState(control_state*,game_state*);
+std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
+void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 
 void DoRender(d2d_frame*,game_state*,perf_data*);
 
@@ -57,7 +39,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 {
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
-  std::unique_ptr<game_state> gs = InitGameState(app.get());
+  D2D_SIZE_F rtSize = app->d2d_rendertarget->GetSize();
+  std::unique_ptr<game_state> gs = std::make_unique<game_state>(static_cast<int>(rtSize.width / 2), static_cast<int>(rtSize.height / 2));
 
   MSG msg;
 
@@ -81,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     pd.frameTicks = ticks.QuadPart - previousTicks.QuadPart;
     pd.fps = pd.frameTicks ? perfFrequency.QuadPart / pd.frameTicks : 0;
     
-    std::unique_ptr<control_state> cs = GetControlState(app.get());
+    std::unique_ptr<control_state> cs = GetControlState(app);
     
     if( cs->quit )
     {
@@ -90,7 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    UpdateGameState(cs.get(),gs.get());
+    UpdateGameState(cs,gs);
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     DoRender(frame.get(),gs.get(),&pd);
 	}
@@ -126,20 +109,7 @@ void DoRender(d2d_frame* rs, game_state* gs, perf_data* pd)
   rs->renderTarget->EndDraw();
 }
 
-std::unique_ptr<game_state> InitGameState(d2d_app* ag)
-{
-  std::unique_ptr<game_state> gs = std::make_unique<game_state>();
-
-  D2D_SIZE_F rtSize = ag->d2d_rendertarget->GetSize();
-
-  gs->xPos = rtSize.width / 2;
-  gs->yPos = rtSize.height / 2;
-  gs->xVelocity = gs->yVelocity = 0;
-  
-  return gs;
-}
-
-void UpdateGameState(control_state* cs,game_state* gs)
+void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
 {
   if( cs->left )
   {
@@ -163,16 +133,15 @@ void UpdateGameState(control_state* cs,game_state* gs)
   gs->yPos = gs->yPos + gs->yVelocity;
 }
 
-std::unique_ptr<control_state> GetControlState(d2d_app* ag)
+std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)
 {
   std::unique_ptr<control_state> cs = std::make_unique<control_state>();
-  ZeroMemory(cs.get(),sizeof(control_state));
 
   unsigned char keyboardState[256];
-  HRESULT hr = ag->keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+  HRESULT hr = app->keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 	if(FAILED(hr))
 	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) ag->keyboard->Acquire();
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app->keyboard->Acquire();
 	}
 
   if( SUCCEEDED(hr) )
@@ -184,10 +153,10 @@ std::unique_ptr<control_state> GetControlState(d2d_app* ag)
   }
 
   DIMOUSESTATE mouseState;
-  hr = ag->mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
+  hr = app->mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
   if( FAILED(hr) )
   {
-    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) ag->mouse->Acquire();
+    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app->mouse->Acquire();
   }
 
   if( SUCCEEDED(hr) )
