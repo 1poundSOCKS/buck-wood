@@ -21,13 +21,14 @@
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
+bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
   D2D_SIZE_F rtSize = app->d2d_rendertarget->GetSize();
-  std::unique_ptr<game_state> gs = std::make_unique<game_state>(static_cast<int>(rtSize.width / 2), static_cast<int>(rtSize.height / 2));
+  std::unique_ptr<game_state> gameState = std::make_unique<game_state>(static_cast<int>(rtSize.width / 2), static_cast<int>(rtSize.height / 2));
 
   MSG msg;
 
@@ -46,22 +47,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
 
-    const std::unique_ptr<perf_data> pd = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
+    const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
     
-    std::unique_ptr<control_state> cs = GetControlState(app);
+    std::unique_ptr<control_state> controlState = GetControlState(app);
     
-    if( cs->quit )
+    if( controlState->quit )
     {
       ::PostQuitMessage(0);
       app->terminating = true;
       continue;
     }
 
-    UpdateGameState(cs,gs);
+    UpdateGameState(controlState,gameState);
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     
-    DoRender(frame,gs,pd);
+    DoRender(frame,gameState,perfData);
 	}
 
   return (int) msg.wParam;
@@ -152,4 +153,19 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
   }
 
   return cs;
+}
+
+bool ProcessMessage(MSG* msg)
+{
+	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
+  {
+    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
+    {
+      TranslateMessage(msg);
+      DispatchMessage(msg);
+    }
+    return (msg->message != WM_QUIT);
+	}
+
+  return true;
 }

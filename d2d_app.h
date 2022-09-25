@@ -23,5 +23,3 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectInputDevice8> mouse;
 };
-
-bool ProcessMessage(MSG* msg);

@@ -49,21 +49,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   if( FAILED(hr) ) throw L"error";
 }
 
-bool ProcessMessage(MSG* msg)
-{
-	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
-    {
-      TranslateMessage(msg);
-      DispatchMessage(msg);
-    }
-    return (msg->message != WM_QUIT);
-	}
-
-  return true;
-}
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   if( message == WM_PAINT )
