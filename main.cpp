@@ -22,6 +22,7 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 bool ProcessMessage(MSG* msg);
+void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -68,27 +69,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-void DoRender(const std::unique_ptr<d2d_frame>& rs, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
+void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
 {
-  D2D1_SIZE_F renderTargetSize = rs->renderTarget->GetSize();
-  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  rs->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
+  frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(gs->shipAngle,D2D1::Point2F(gs->xPos,gs->yPos)));
+  DrawGameObject(gs->player, frame->renderTarget, frame->brush);
 
-  D2D1_RECT_F rectangle = D2D1::RectF(gs->xPos - 10, gs->yPos - 10, gs->xPos + 10, gs->yPos + 10);
-  rs->renderTarget->FillRectangle(&rectangle, rs->brush.get());
-
-  rs->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   WCHAR textMsg[256] = L"D2D Demo";
   int msgLen = 0;
-  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->xPos), static_cast<int>(gs->yPos));
+  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->player.xPos), static_cast<int>(gs->player.yPos));
   msgLen = wcslen(textMsg);
-  rs->renderTarget->DrawTextW(textMsg,msgLen,rs->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),rs->brush.get());
+  frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
 
   _ui64tow(pd->fps,textMsg,10);
   msgLen = wcslen(textMsg);
+}
+
+void DrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
+{
+  D2D1_RECT_F rectangle = gameObject.GetRectangleForRender();
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(gameObject.xPos,gameObject.yPos)));
+  renderTarget->FillRectangle(&rectangle, brush.get());
 }
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
@@ -99,24 +104,23 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
 
   if( cs->left )
   {
-    gs->shipAngle -= 2;
+    gs->player.angle -= 2;
   }
 
   if( cs->right )
   {
-    gs->shipAngle += 2;
+    gs->player.angle += 2;
   }
 
-  if( gs->yVelocity < 2.0 ) gs->yVelocity += 0.05; // gravity
+  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
 
   if( cs->accelerate )
   {
-    gs->yVelocity -= 0.1 * cos(gs->shipAngle * PI / 180.0);
-    gs->xVelocity += 0.1 * sin(gs->shipAngle * PI / 180.0);
+    gs->player.yVelocity -= 0.1 * cos(gs->player.angle * PI / 180.0);
+    gs->player.xVelocity += 0.1 * sin(gs->player.angle * PI / 180.0);
   }
 
-  gs->xPos = gs->xPos + gs->xVelocity;
-  gs->yPos = gs->yPos + gs->yVelocity;
+  gs->player.UpdatePosition();
 }
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)
