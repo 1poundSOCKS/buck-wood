@@ -127,7 +127,10 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
     std::unique_ptr<d2d_object> bullet = std::make_unique<d2d_object>();
     bullet->xPos = gs->player.xPos;
     bullet->yPos = gs->player.yPos;
-    bullet->yVelocity = -10;
+    double cx = gs->targetPosX - gs->player.xPos;
+    double cy = gs->targetPosY - gs->player.yPos;
+    bullet->xVelocity = cx / 100;
+    bullet->yVelocity = cy / 100;
     gs->bullets.push_front(std::move(bullet));
   }
 
