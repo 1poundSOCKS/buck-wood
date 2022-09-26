@@ -45,7 +45,9 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   hr = mouse->SetCooperativeLevel(wnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
   if( FAILED(hr) ) throw L"error";
 
-  hr = mouse->SetDataFormat(&c_dfDIMouse);
+  DIDATAFORMAT DIDataFormat = c_dfDIMouse;
+  DIDataFormat.dwFlags = DIDF_RELAXIS;
+  hr = mouse->SetDataFormat(&DIDataFormat);
   if( FAILED(hr) ) throw L"error";
 }
 

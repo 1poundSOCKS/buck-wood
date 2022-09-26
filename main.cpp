@@ -21,8 +21,8 @@
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
-bool ProcessMessage(MSG* msg);
 void DrawGameObject(const d2d_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
+bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -86,7 +86,7 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
 
   WCHAR textMsg[256] = L"D2D Demo";
   int msgLen = 0;
-  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->player.xPos), static_cast<int>(gs->player.yPos));
+  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->targetPosX), static_cast<int>(gs->targetPosY));
   msgLen = wcslen(textMsg);
   frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
 
@@ -103,6 +103,9 @@ void DrawGameObject(const d2d_object& gameObject, winrt::com_ptr<ID2D1HwndRender
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
 {
+  gs->targetPosX = cs->mouseX;
+  gs->targetPosY = cs->mouseY;
+
   if( !gs->started && !cs->accelerate ) return;
 
   gs->started = true;
@@ -165,8 +168,12 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
 
   if( SUCCEEDED(hr) )
   {
-    cs->mouseX = mouseState.lX;
-    cs->mouseY = mouseState.lY;
+    POINT point;
+    if( GetCursorPos(&point) )
+    {
+      cs->mouseX = point.x;
+      cs->mouseY = point.y;
+    }
     if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
     if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
   }
