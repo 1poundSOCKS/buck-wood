@@ -22,7 +22,7 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 bool ProcessMessage(MSG* msg);
-void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
+void DrawGameObject(const d2d_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -77,6 +77,11 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   
   DrawGameObject(gs->player, frame->renderTarget, frame->brush);
 
+  for( const std::unique_ptr<d2d_object>& bullet : gs->bullets )
+  {
+    DrawGameObject(*bullet, frame->renderTarget, frame->brush);
+  }
+
   frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   WCHAR textMsg[256] = L"D2D Demo";
@@ -89,7 +94,7 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   msgLen = wcslen(textMsg);
 }
 
-void DrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
+void DrawGameObject(const d2d_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
 {
   D2D1_RECT_F rectangle = gameObject.GetRectangleForRender();
   renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(gameObject.xPos,gameObject.yPos)));
@@ -114,13 +119,22 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
 
   if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
 
+  if( cs->shoot )
+  {
+    std::unique_ptr<d2d_object> bullet = std::make_unique<d2d_object>();
+    bullet->xPos = gs->player.xPos;
+    bullet->yPos = gs->player.yPos;
+    bullet->yVelocity = -10;
+    gs->bullets.push_front(std::move(bullet));
+  }
+
   if( cs->accelerate )
   {
     gs->player.yVelocity -= 0.1 * cos(gs->player.angle * PI / 180.0);
     gs->player.xVelocity += 0.1 * sin(gs->player.angle * PI / 180.0);
   }
 
-  gs->player.UpdatePosition();
+  gs->UpdatePositions();
 }
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)
@@ -153,6 +167,7 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
   {
     cs->mouseX = mouseState.lX;
     cs->mouseY = mouseState.lY;
+    if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
     if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
   }
 

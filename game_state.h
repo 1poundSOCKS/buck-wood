@@ -1,22 +1,11 @@
-#include <d2d1.h>
-#include <winrt/base.h>
-
-struct game_object
-{
-  game_object() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0) {}
-  D2D1_RECT_F GetRectangleForRender() const;
-  void UpdatePosition();
-
-  double xPos, yPos;
-  double xVelocity, yVelocity;
-  double angle;
-  D2D1_RECT_F rectangle = D2D1::RectF(-10, -10, 10, 10);
-};
+#include "d2d_object.h"
 
 struct game_state
 {
   game_state(int frameWidth, int frameHeight);
+  void UpdatePositions();
 
   bool started;
-  game_object player;
+  d2d_object player;
+  std::list<std::unique_ptr<d2d_object>> bullets;
 };
