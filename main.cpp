@@ -16,8 +16,6 @@
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#define PI 3.14159265
-
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
@@ -110,16 +108,9 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
 
   gs->started = true;
 
-  if( cs->left )
-  {
-    gs->player.angle -= 2;
-  }
-
-  if( cs->right )
-  {
-    gs->player.angle += 2;
-  }
-
+  if( cs->left ) gs->player.angle -= 2;
+  if( cs->right ) gs->player.angle += 2;
+  
   if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
 
   if( cs->shoot )
@@ -127,18 +118,17 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
     std::unique_ptr<d2d_object> bullet = std::make_unique<d2d_object>();
     bullet->xPos = gs->player.xPos;
     bullet->yPos = gs->player.yPos;
-    double cx = gs->targetPosX - gs->player.xPos;
-    double cy = gs->targetPosY - gs->player.yPos;
-    bullet->xVelocity = cx / 100;
-    bullet->yVelocity = cy / 100;
+    double x2 = gs->targetPosX - gs->player.xPos;
+    double x1 = 0;
+    double y2 = gs->targetPosY - gs->player.yPos;
+    double y1 = -1.0;
+    double angle = atan2(y1 - y2, x1 - x2);
+    bullet->angle = RADTODEG(angle);
+    bullet->Accelerate(5);
     gs->bullets.push_front(std::move(bullet));
   }
 
-  if( cs->accelerate )
-  {
-    gs->player.yVelocity -= 0.1 * cos(gs->player.angle * PI / 180.0);
-    gs->player.xVelocity += 0.1 * sin(gs->player.angle * PI / 180.0);
-  }
+  if( cs->accelerate ) gs->player.Accelerate(0.1);
 
   gs->UpdatePositions();
 }

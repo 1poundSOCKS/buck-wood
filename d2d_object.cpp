@@ -10,3 +10,9 @@ void d2d_object::UpdatePosition()
   xPos += xVelocity;
   yPos += yVelocity;
 }
+
+void d2d_object::Accelerate(double increase)
+{
+  yVelocity -= increase * cos(DEGTORAD(angle));
+  xVelocity += increase * sin(DEGTORAD(angle));
+}
