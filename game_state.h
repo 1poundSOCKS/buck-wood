@@ -1,4 +1,4 @@
-#include "d2d_object.h"
+#include "game_objects.h"
 
 struct game_state
 {
@@ -6,7 +6,7 @@ struct game_state
   void Update(double seconds);
 
   bool started;
-  d2d_object cursor;
-  d2d_object player;
+  game_object cursor;
+  game_object player;
   std::list<std::unique_ptr<bullet>> bullets;
 };

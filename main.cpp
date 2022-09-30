@@ -22,7 +22,8 @@
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
-void DrawGameObject(const d2d_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
+void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
+void SetTransformAndDrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
@@ -76,13 +77,15 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  DrawGameObject(gs->player, frame->renderTarget, frame->brush);
+  SetTransformAndDrawGameObject(gs->player, frame->renderTarget, frame->brush);
 
-  for( const std::unique_ptr<bullet>& b : gs->bullets )
+  for( const std::unique_ptr<bullet>& bullet : gs->bullets )
   {
-    DrawGameObject(b->d2dObject, frame->renderTarget, frame->brush);
+    SetTransformAndDrawGameObject(bullet->gameObject, frame->renderTarget, frame->brush);
   }
 
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gs->cursor.xPos, gs->cursor.yPos);
+  frame->renderTarget->SetTransform(translate);
   DrawGameObject(gs->cursor, frame->renderTarget, frame->brush);
 
   frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -97,10 +100,22 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   msgLen = wcslen(textMsg);
 }
 
-void DrawGameObject(const d2d_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
+void SetTransformAndDrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
 {
-  D2D1_RECT_F rectangle = gameObject.GetRectangleForRender();
-  renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(gameObject.xPos,gameObject.yPos)));
+  const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(0,0));
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gameObject.xPos, gameObject.yPos);
+  D2D1_SIZE_F size;
+  size.width = 2;
+  size.height = 2;
+  const D2D1::Matrix3x2F scale = D2D1::Matrix3x2F::Scale(size);
+  const D2D1::Matrix3x2F transform = rotate * translate * scale;
+  renderTarget->SetTransform(transform);
+  DrawGameObject(gameObject, renderTarget, brush);
+}
+
+void DrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
+{
+  D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
   renderTarget->FillRectangle(&rectangle, brush.get());
 }
 
@@ -121,11 +136,11 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
   if( cs->shoot )
   {
     std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
-    newBullet->d2dObject.xPos = gs->player.xPos;
-    newBullet->d2dObject.yPos = gs->player.yPos;
+    newBullet->gameObject.xPos = gs->player.xPos;
+    newBullet->gameObject.yPos = gs->player.yPos;
     double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
-    newBullet->d2dObject.angle = angle;
-    newBullet->d2dObject.Accelerate(timespanSeconds * 500.0);
+    newBullet->gameObject.angle = angle;
+    newBullet->gameObject.Accelerate(timespanSeconds * 500.0);
     gs->bullets.push_front(std::move(newBullet));
   }
 

@@ -2,13 +2,10 @@
 #include <winrt/base.h>
 #include "math.h"
 
-struct d2d_object
+struct game_object
 {
-  d2d_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
-  {
-  }
+  game_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0) {}
 
-  D2D1_RECT_F GetRectangleForRender() const;
   void Update(double seconds);
   void Accelerate(double);
 
@@ -20,13 +17,13 @@ struct d2d_object
 
 struct bullet
 {
-  bullet() : lifespanSeconds(2)
+  bullet() : lifespanSeconds(0.5)
   {
-    d2dObject.size = 5.0;
+    gameObject.size = 5.0;
   }
 
   void Update(double timespanSeconds);
 
-  d2d_object d2dObject;
+  game_object gameObject;
   double lifespanSeconds;
 };
