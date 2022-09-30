@@ -104,7 +104,7 @@ void DrawGameObject(const d2d_object& gameObject, winrt::com_ptr<ID2D1HwndRender
   renderTarget->FillRectangle(&rectangle, brush.get());
 }
 
-void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
+void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, double timespanSeconds)
 {
   gs->cursor.xPos = cs->mouseX;
   gs->cursor.yPos = cs->mouseY;
@@ -116,7 +116,7 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
   if( cs->left ) gs->player.angle -= 2;
   if( cs->right ) gs->player.angle += 2;
   
-  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
+  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += ( timespanSeconds * 5 ); // gravity
 
   if( cs->shoot )
   {
@@ -125,13 +125,13 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
     newBullet->d2dObject.yPos = gs->player.yPos;
     double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
     newBullet->d2dObject.angle = angle;
-    newBullet->d2dObject.Accelerate(5);
+    newBullet->d2dObject.Accelerate(timespanSeconds * 100.0);
     gs->bullets.push_front(std::move(newBullet));
   }
 
-  if( cs->accelerate ) gs->player.Accelerate(0.1);
+  if( cs->accelerate ) gs->player.Accelerate(timespanSeconds * 10.0);
 
-  gs->Update(0.01);
+  gs->Update(timespanSeconds);
 }
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)

@@ -2,7 +2,7 @@
 
 D2D1_RECT_F d2d_object::GetRectangleForRender() const
 {
-  return D2D1::RectF(xPos + rectangle.left, yPos + rectangle.top, xPos + rectangle.right, yPos + rectangle.bottom);
+  return D2D1::RectF(xPos - size / 2, yPos - size / 2, xPos + size / 2, yPos + size / 2);
 }
 
 void d2d_object::Update(double seconds)
