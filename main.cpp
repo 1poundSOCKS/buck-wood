@@ -9,12 +9,15 @@
 #include "game_state.h"
 #include "control_state.h"
 #include "perf_data.h"
+#include "math.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
 #pragma comment(lib, "Dwrite")
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib,"gtest.lib")
+#pragma comment(lib,"gtest_main.lib")
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
@@ -80,11 +83,16 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
     DrawGameObject(*bullet, frame->renderTarget, frame->brush);
   }
 
+  // DrawGameObject(*gs->bullet, frame->renderTarget, frame->brush);
+
+  DrawGameObject(gs->cursor, frame->renderTarget, frame->brush);
+
   frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   WCHAR textMsg[256] = L"D2D Demo";
   int msgLen = 0;
-  wsprintf(textMsg, L"%i,%i", static_cast<int>(gs->targetPosX), static_cast<int>(gs->targetPosY));
+  // int angle = gs->bullets.size() ? gs->bullets.front()->angle : 0;
+  wsprintf(textMsg, L"%i", static_cast<int>(gs->bullets.size()));
   msgLen = wcslen(textMsg);
   frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
 
@@ -101,34 +109,37 @@ void DrawGameObject(const d2d_object& gameObject, winrt::com_ptr<ID2D1HwndRender
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs)
 {
-  gs->targetPosX = cs->mouseX;
-  gs->targetPosY = cs->mouseY;
+  gs->cursor.xPos = cs->mouseX;
+  gs->cursor.yPos = cs->mouseY;
 
-  if( !gs->started && !cs->accelerate ) return;
+  // if( !gs->started && !cs->accelerate ) return;
 
   gs->started = true;
 
   if( cs->left ) gs->player.angle -= 2;
   if( cs->right ) gs->player.angle += 2;
   
-  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
+  // if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
 
   if( cs->shoot )
   {
     std::unique_ptr<d2d_object> bullet = std::make_unique<d2d_object>();
     bullet->xPos = gs->player.xPos;
     bullet->yPos = gs->player.yPos;
-    double x2 = gs->targetPosX - gs->player.xPos;
-    double x1 = 0;
-    double y2 = gs->targetPosY - gs->player.yPos;
-    double y1 = -1.0;
-    double angle = atan2(y1 - y2, x1 - x2);
-    bullet->angle = RADTODEG(angle);
+    double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
+    bullet->angle = angle;
     bullet->Accelerate(5);
+    // gs->bullet->angle = angle;
+    // gs->bullet->xPos = gs->player.xPos;
+    // gs->bullet->yPos = gs->player.yPos;
+    // gs->bullet->xVelocity = 0;
+    // gs->bullet->yVelocity = 0;
+    // gs->bullet->Accelerate(1);
+    // gs->bullet = std::move(bullet);
     gs->bullets.push_front(std::move(bullet));
   }
 
-  if( cs->accelerate ) gs->player.Accelerate(0.1);
+  // if( cs->accelerate ) gs->player.Accelerate(0.1);
 
   gs->UpdatePositions();
 }
@@ -161,11 +172,15 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
 
   if( SUCCEEDED(hr) )
   {
-    POINT point;
-    if( GetCursorPos(&point) )
+    POINT p;
+    if( GetCursorPos(&p) )
     {
-      cs->mouseX = point.x;
-      cs->mouseY = point.y;
+      POINT clientPos;
+      if( ScreenToClient(app->wnd, &p) )
+      {
+        cs->mouseX = p.x;
+        cs->mouseY = p.y;
+      }
     }
     if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
     if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;

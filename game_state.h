@@ -6,7 +6,8 @@ struct game_state
   void UpdatePositions();
 
   bool started;
+  d2d_object cursor;
   d2d_object player;
   std::list<std::unique_ptr<d2d_object>> bullets;
-  double targetPosX, targetPosY;
+  // std::unique_ptr<d2d_object> bullet;
 };

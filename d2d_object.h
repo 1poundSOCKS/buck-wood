@@ -1,9 +1,6 @@
 #include <d2d1.h>
 #include <winrt/base.h>
-
-#define PI 3.14159265
-#define DEGTORAD(D)((D * PI) / 180.0)
-#define RADTODEG(R)((180.0 * R) / PI)
+#include "math.h"
 
 struct d2d_object
 {
