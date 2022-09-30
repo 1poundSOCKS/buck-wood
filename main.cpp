@@ -78,12 +78,10 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   
   DrawGameObject(gs->player, frame->renderTarget, frame->brush);
 
-  for( const std::unique_ptr<d2d_object>& bullet : gs->bullets )
+  for( const std::unique_ptr<bullet>& b : gs->bullets )
   {
-    DrawGameObject(*bullet, frame->renderTarget, frame->brush);
+    DrawGameObject(b->d2dObject, frame->renderTarget, frame->brush);
   }
-
-  // DrawGameObject(*gs->bullet, frame->renderTarget, frame->brush);
 
   DrawGameObject(gs->cursor, frame->renderTarget, frame->brush);
 
@@ -91,8 +89,7 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
 
   WCHAR textMsg[256] = L"D2D Demo";
   int msgLen = 0;
-  // int angle = gs->bullets.size() ? gs->bullets.front()->angle : 0;
-  wsprintf(textMsg, L"%i", static_cast<int>(gs->bullets.size()));
+  wsprintf(textMsg, L"%i", gs->bullets.size());
   msgLen = wcslen(textMsg);
   frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
 
@@ -112,36 +109,29 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
   gs->cursor.xPos = cs->mouseX;
   gs->cursor.yPos = cs->mouseY;
 
-  // if( !gs->started && !cs->accelerate ) return;
+  if( !gs->started && !cs->accelerate ) return;
 
   gs->started = true;
 
   if( cs->left ) gs->player.angle -= 2;
   if( cs->right ) gs->player.angle += 2;
   
-  // if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
+  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += 0.05; // gravity
 
   if( cs->shoot )
   {
-    std::unique_ptr<d2d_object> bullet = std::make_unique<d2d_object>();
-    bullet->xPos = gs->player.xPos;
-    bullet->yPos = gs->player.yPos;
+    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
+    newBullet->d2dObject.xPos = gs->player.xPos;
+    newBullet->d2dObject.yPos = gs->player.yPos;
     double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
-    bullet->angle = angle;
-    bullet->Accelerate(5);
-    // gs->bullet->angle = angle;
-    // gs->bullet->xPos = gs->player.xPos;
-    // gs->bullet->yPos = gs->player.yPos;
-    // gs->bullet->xVelocity = 0;
-    // gs->bullet->yVelocity = 0;
-    // gs->bullet->Accelerate(1);
-    // gs->bullet = std::move(bullet);
-    gs->bullets.push_front(std::move(bullet));
+    newBullet->d2dObject.angle = angle;
+    newBullet->d2dObject.Accelerate(5);
+    gs->bullets.push_front(std::move(newBullet));
   }
 
-  // if( cs->accelerate ) gs->player.Accelerate(0.1);
+  if( cs->accelerate ) gs->player.Accelerate(0.1);
 
-  gs->UpdatePositions();
+  gs->Update(0.01);
 }
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)
