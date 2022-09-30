@@ -7,5 +7,6 @@ struct perf_data
 
   int64_t totalTicks;
   int64_t frameTicks;
+  double frameTimeSeconds;
   int64_t fps;
 };

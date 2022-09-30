@@ -4,6 +4,7 @@
 game_state::game_state(int frameWidth, int frameHeight) 
 : started(false)
 {
+  cursor.size = 5.0;
   player.xPos = frameWidth / 2;
   player.yPos = frameHeight / 2;
 }

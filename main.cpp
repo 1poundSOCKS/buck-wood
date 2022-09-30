@@ -20,7 +20,7 @@
 #pragma comment(lib,"gtest_main.lib")
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
-void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&);
+void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 void DrawGameObject(const d2d_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 bool ProcessMessage(MSG* msg);
@@ -60,7 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    UpdateGameState(controlState,gameState);
+    UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     
@@ -125,7 +125,7 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
     newBullet->d2dObject.yPos = gs->player.yPos;
     double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
     newBullet->d2dObject.angle = angle;
-    newBullet->d2dObject.Accelerate(timespanSeconds * 100.0);
+    newBullet->d2dObject.Accelerate(timespanSeconds * 500.0);
     gs->bullets.push_front(std::move(newBullet));
   }
 
