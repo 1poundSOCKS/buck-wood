@@ -1,5 +1,21 @@
 #include "render.h"
 
+void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
+{
+  frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  
+  switch( gs->screen )
+  {
+    case game_state::main:
+      RenderMainScreen(frame,gs,pd);
+      break;
+    case game_state::title:
+      RenderTitleScreen(frame);
+      break;
+  }
+}
+
 void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
 {
   D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
@@ -29,10 +45,12 @@ void RenderTitleScreen(const std::unique_ptr<d2d_frame>& frame)
 {
   D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
 
-  WCHAR textMsg[256] = L"Press SPACE to start";
-  int msgLen = 0;
-  msgLen = wcslen(textMsg);
-  frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
+  std::wstring titleText = L"Z - rotate ship left\n";
+  titleText += L"X - rotate ship right\n";
+  titleText += L"Right mouse button - accelerate\n";
+  titleText += L"Left mouse button - shoot\n";
+  titleText += L"\nPress SPACE to start";
+  frame->renderTarget->DrawTextW(titleText.c_str(),titleText.length(),frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
 }
 
 void SetTransformAndDrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)

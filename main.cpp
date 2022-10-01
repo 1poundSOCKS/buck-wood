@@ -19,7 +19,6 @@
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
-void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 void SetTransformAndDrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 bool ProcessMessage(MSG* msg);
@@ -56,7 +55,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     
     UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
     
-    controlState->quitPress = false;
     previousControlState = std::move(controlState);
 
     if( !gameState->running )
@@ -72,22 +70,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 	}
 
   return (int) msg.wParam;
-}
-
-void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
-{
-  frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  
-  switch( gs->screen )
-  {
-    case game_state::main:
-      RenderMainScreen(frame,gs,pd);
-      break;
-    case game_state::title:
-      RenderTitleScreen(frame);
-      break;
-  }
 }
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, double timespanSeconds)

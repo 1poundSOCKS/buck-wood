@@ -8,7 +8,7 @@ d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget) 
   hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(writeFactory),reinterpret_cast<IUnknown**>(writeFactory.put()));
   if( FAILED(hr) ) throw L"error";
 
-  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,10,L"", writeTextFormat.put());
+  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,20,L"", writeTextFormat.put());
   if( FAILED(hr) ) throw L"error";
 
   hr = writeTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
