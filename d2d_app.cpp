@@ -66,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     UINT width = LOWORD(lParam);
     UINT height = HIWORD(lParam);
-    if( ag->d2d_rendertarget ) ag->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
+    ag->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
  
     return 0;
   }

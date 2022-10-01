@@ -54,7 +54,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
     
     UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
-    
+
+    D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
+    const int gameScreenWidth = 1000;
+    const int gameScreenHeight = 500;
+    const double scaleX = static_cast<double>(frameSize.width) / static_cast<double>(gameScreenWidth);
+    const double scaleY = static_cast<double>(frameSize.height) / static_cast<double>(gameScreenHeight);
+    gameState->cursor.xPos = controlState->mouseX / scaleX;
+    gameState->cursor.yPos = controlState->mouseY / scaleY;
+
     previousControlState = std::move(controlState);
 
     if( !gameState->running )
@@ -64,8 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
-    
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget,scaleX,scaleY);
     DoRender(frame,gameState,perfData);
 	}
 
@@ -86,9 +93,6 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
         break;
     }
   }
-
-  gs->cursor.xPos = cs->mouseX / RENDER_SCALE_WIDTH;
-  gs->cursor.yPos = cs->mouseY / RENDER_SCALE_HEIGHT;
 
   if( gs->screen == game_state::title )
   {

@@ -13,5 +13,5 @@
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd);
 void RenderTitleScreen(const std::unique_ptr<d2d_frame>& frame);
-void SetTransformAndDrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush);
-void DrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush);
+void SetTransformAndDrawGameObject(const game_object& gameObject, const std::unique_ptr<d2d_frame>& frame);
+void DrawGameObject(const game_object& gameObject, const std::unique_ptr<d2d_frame>& frame);

@@ -1,6 +1,6 @@
 #include "d2d_frame.h"
 
-d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget) : renderTarget(renderTarget)
+d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, double scaleX, double scaleY) : renderTarget(renderTarget)
 {
   HRESULT hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brush.put());
   if( FAILED(hr) ) throw(L"error");
@@ -16,6 +16,11 @@ d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget) 
 
   hr = writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
   if( FAILED(hr) ) throw L"error";
+
+  D2D1_SIZE_F size;
+  size.width = scaleX;
+  size.height = scaleY;
+  scale = std::make_unique<D2D1::Matrix3x2F>(D2D1::Matrix3x2F::Scale(size));
 
   renderTarget->BeginDraw();
 }
