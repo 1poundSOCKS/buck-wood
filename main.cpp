@@ -5,10 +5,8 @@
 #include <math.h>
 
 #include "d2d_app.h"
-#include "d2d_frame.h"
-#include "game_state.h"
+#include "render.h"
 #include "control_state.h"
-#include "perf_data.h"
 #include "math.h"
 
 #pragma comment(lib,"user32.lib")
@@ -19,7 +17,7 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
-std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>&);
+std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
 void DoRender(const std::unique_ptr<d2d_frame>&, const std::unique_ptr<game_state>&, const std::unique_ptr<perf_data>&);
 void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
@@ -43,6 +41,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   
   QueryPerformanceCounter(&initialTicks);
 	
+  std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
+
   while (ProcessMessage(&msg))
   {
     if( app->terminating ) continue;
@@ -52,16 +52,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
     
-    std::unique_ptr<control_state> controlState = GetControlState(app);
+    std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
     
-    if( controlState->quit )
+    UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
+    
+    controlState->quitPress = false;
+    previousControlState = std::move(controlState);
+
+    if( !gameState->running )
     {
       ::PostQuitMessage(0);
       app->terminating = true;
       continue;
     }
-
-    UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     
@@ -73,60 +76,47 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
 void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
 {
-  D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
-  frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  
-  SetTransformAndDrawGameObject(gs->player, frame->renderTarget, frame->brush);
-
-  for( const std::unique_ptr<bullet>& bullet : gs->bullets )
-  {
-    SetTransformAndDrawGameObject(bullet->gameObject, frame->renderTarget, frame->brush);
-  }
-
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gs->cursor.xPos, gs->cursor.yPos);
-  frame->renderTarget->SetTransform(translate);
-  DrawGameObject(gs->cursor, frame->renderTarget, frame->brush);
-
   frame->renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  WCHAR textMsg[256] = L"D2D Demo";
-  int msgLen = 0;
-  wsprintf(textMsg, L"%i", gs->bullets.size());
-  msgLen = wcslen(textMsg);
-  frame->renderTarget->DrawTextW(textMsg,msgLen,frame->writeTextFormat.get(),D2D1::RectF(0, 0, renderTargetSize.width, renderTargetSize.height),frame->brush.get());
-
-  _ui64tow(pd->fps,textMsg,10);
-  msgLen = wcslen(textMsg);
-}
-
-void SetTransformAndDrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
-{
-  const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(0,0));
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gameObject.xPos, gameObject.yPos);
-  D2D1_SIZE_F size;
-  size.width = 2;
-  size.height = 2;
-  const D2D1::Matrix3x2F scale = D2D1::Matrix3x2F::Scale(size);
-  const D2D1::Matrix3x2F transform = rotate * translate * scale;
-  renderTarget->SetTransform(transform);
-  DrawGameObject(gameObject, renderTarget, brush);
-}
-
-void DrawGameObject(const game_object& gameObject, winrt::com_ptr<ID2D1HwndRenderTarget> renderTarget, winrt::com_ptr<ID2D1SolidColorBrush> brush)
-{
-  D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
-  renderTarget->FillRectangle(&rectangle, brush.get());
+  
+  switch( gs->screen )
+  {
+    case game_state::main:
+      RenderMainScreen(frame,gs,pd);
+      break;
+    case game_state::title:
+      RenderTitleScreen(frame);
+      break;
+  }
 }
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, double timespanSeconds)
 {
-  gs->cursor.xPos = cs->mouseX;
-  gs->cursor.yPos = cs->mouseY;
+  if( cs->quitPress )
+  {
+    switch( gs->screen )
+    {
+      case game_state::title:
+        gs->running = false;
+        return;
+      case game_state::main:
+        gs->screen = game_state::title;
+        break;
+    }
+  }
 
-  if( !gs->started && !cs->accelerate ) return;
+  gs->cursor.xPos = cs->mouseX / RENDER_SCALE_WIDTH;
+  gs->cursor.yPos = cs->mouseY / RENDER_SCALE_HEIGHT;
 
-  gs->started = true;
+  if( gs->screen == game_state::title )
+  {
+    if( cs->startGame )
+    {
+      gs->screen = game_state::main;
+    }
+
+    return;
+  }
 
   if( cs->left ) gs->player.angle -= 2;
   if( cs->right ) gs->player.angle += 2;
@@ -149,7 +139,7 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
   gs->Update(timespanSeconds);
 }
 
-std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app)
+std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState)
 {
   std::unique_ptr<control_state> cs = std::make_unique<control_state>();
 
@@ -162,7 +152,12 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
 
   if( SUCCEEDED(hr) )
   {
-    if( keyboardState[DIK_ESCAPE] & 0x80 ) cs->quit = true;
+    if( keyboardState[DIK_ESCAPE] & 0x80 )
+    {
+      cs->quit = true;
+      if( !previousControlState->quit ) cs->quitPress = true;
+    }
+    if( keyboardState[DIK_SPACE] & 0x80 ) cs->startGame = true;
     if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
     if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
     if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;

@@ -2,7 +2,7 @@
 #include <list>
 
 game_state::game_state(int frameWidth, int frameHeight) 
-: started(false)
+: running(true), screen(title)
 {
   cursor.size = 5.0;
   player.xPos = frameWidth / 2;
