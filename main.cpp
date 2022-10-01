@@ -17,10 +17,11 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
+const int gameScreenWidth = 1000;
+const int gameScreenHeight = 500;
+
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
-void DrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
-void SetTransformAndDrawGameObject(const game_object&, winrt::com_ptr<ID2D1HwndRenderTarget>,winrt::com_ptr<ID2D1SolidColorBrush>);
 bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
@@ -48,22 +49,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
-
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
-    
+
     std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
-    
     UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
-
-    D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
-    const int gameScreenWidth = 1000;
-    const int gameScreenHeight = 500;
-    const double scaleX = static_cast<double>(frameSize.width) / static_cast<double>(gameScreenWidth);
-    const double scaleY = static_cast<double>(frameSize.height) / static_cast<double>(gameScreenHeight);
-    gameState->cursor.xPos = controlState->mouseX / scaleX;
-    gameState->cursor.yPos = controlState->mouseY / scaleY;
-
-    previousControlState = std::move(controlState);
 
     if( !gameState->running )
     {
@@ -72,8 +61,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget,scaleX,scaleY);
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget,gameScreenWidth,gameScreenHeight);
+    gameState->cursor.xPos = controlState->mouseX / frame->scaleX;
+    gameState->cursor.yPos = controlState->mouseY / frame->scaleY;
     DoRender(frame,gameState,perfData);
+
+    previousControlState = std::move(controlState);
 	}
 
   return (int) msg.wParam;

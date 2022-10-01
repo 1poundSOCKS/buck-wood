@@ -4,7 +4,7 @@ LPWSTR lpszWndClass = L"d2d app";
 LPWSTR lpszTitle = L"d2d app";
 
 ATOM RegisterMainWindowClass(HINSTANCE hInstance);
-void CreateMainWindow(d2d_app* ag);
+void CreateMainWindow(d2d_app* app);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
    : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)
@@ -61,12 +61,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
   if( message == WM_SIZE )
   {
-    d2d_app *ag = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
-    if( ag == NULL || !ag->d2d_rendertarget.get() ) return 0;
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL || !app->d2d_rendertarget.get() ) return 0;
 
     UINT width = LOWORD(lParam);
     UINT height = HIWORD(lParam);
-    ag->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
+    app->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
  
     return 0;
   }
@@ -80,10 +80,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if( message == WM_CREATE )
   {
     LPCREATESTRUCT pcs = NULL;
-    d2d_app *ag = NULL;
+    d2d_app *app = NULL;
     pcs = (LPCREATESTRUCT)lParam;
-    ag = reinterpret_cast<d2d_app*>(pcs->lpCreateParams);
-    ::SetWindowLongPtrW(hWnd,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(ag));
+    app = reinterpret_cast<d2d_app*>(pcs->lpCreateParams);
+    ::SetWindowLongPtrW(hWnd,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(app));
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
@@ -116,13 +116,13 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance)
     return RegisterClassExW(&wcex);
 }
 
-void CreateMainWindow(d2d_app* ag)
+void CreateMainWindow(d2d_app* app)
 {
-   ag->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, ag->inst, ag);
+   app->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, app->inst, app);
 
-   if (!ag->wnd) return;
+   if (!app->wnd) return;
 
-   ShowWindow(ag->wnd, ag->cmdShow);
-   UpdateWindow(ag->wnd);
+   ShowWindow(app->wnd, app->cmdShow);
+   UpdateWindow(app->wnd);
 }
