@@ -3,13 +3,16 @@
 
 void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
 {
+  const bool renderDiagnostics = false;
+
   frame->renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   frame->renderTarget->SetTransform(*frame->scale.get());
   
   switch( gs->screen )
   {
     case game_state::main:
-      RenderMainScreen(frame,gs,pd);
+      RenderMainScreen(frame, gs);
+      if( renderDiagnostics ) RenderDiagnostics(frame, gs, pd);
       break;
     case game_state::title:
       RenderTitleScreen(frame);
@@ -17,17 +20,8 @@ void DoRender(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<gam
   }
 }
 
-void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
+void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs)
 {
-  wchar_t fps[32];
-  _ui64tow(pd->fps, fps, 10);
-
-  wchar_t bulletCount[32];
-  wsprintf(bulletCount, L"%i", gs->bullets.size());
-
-  std::wstring msg = std::wstring(fps) + std::wstring(L"\n") + bulletCount;
-  D2D1_RECT_F gameRect = D2D1::RectF(0, 0, frame->gameScreenWidth - 1, frame->gameScreenHeight - 1);
-  frame->renderTarget->DrawTextW(msg.c_str(),msg.length(),frame->writeTextFormat.get(),gameRect,frame->brush.get());
 
   D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
 
@@ -39,6 +33,19 @@ void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique
   }
 
   SetTransformAndDrawGameObject(gs->cursor, frame);
+}
+
+void RenderDiagnostics(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
+{
+  wchar_t fps[32];
+  _ui64tow(pd->fps, fps, 10);
+
+  wchar_t bulletCount[32];
+  wsprintf(bulletCount, L"%i", gs->bullets.size());
+
+  std::wstring msg = std::wstring(fps) + std::wstring(L"\n") + bulletCount;
+  D2D1_RECT_F gameRect = D2D1::RectF(0, 0, frame->gameScreenWidth - 1, frame->gameScreenHeight - 1);
+  frame->renderTarget->DrawTextW(msg.c_str(),msg.length(),frame->writeTextFormat.get(),gameRect,frame->brush.get());
 }
 
 void RenderTitleScreen(const std::unique_ptr<d2d_frame>& frame)

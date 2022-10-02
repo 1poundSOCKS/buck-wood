@@ -17,8 +17,8 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
-const int gameScreenWidth = 1000;
-const int gameScreenHeight = 500;
+const int gameScreenWidth = 2000;
+const int gameScreenHeight = 1000;
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
