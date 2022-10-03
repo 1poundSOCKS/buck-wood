@@ -12,7 +12,7 @@
 				"/std:c++17",
 				"/MD",
 				"/Fe${workspaceFolder}/app.exe",
-				"${workspaceFolder}/*.cpp",
+				"${workspaceFolder}/source/*.cpp",
 				"/IC:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/include",
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/ucrt",
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um",
@@ -45,7 +45,7 @@
 				"/std:c++17",
 				"/MD",
 				"/Fe${workspaceFolder}/test.exe",
-				"${workspaceFolder}/*.cpp",
+				"${workspaceFolder}/source/*.cpp",
 				"/IC:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/include",
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/ucrt",
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/um",
@@ -55,9 +55,6 @@
 				"/link /LIBPATH:\"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/lib/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/ucrt/x64\" /LIBPATH:\"${workspaceFolder}/packages/gtest/lib/x64/Release\"",
 				"/SUBSYSTEM:CONSOLE"
 			],
-			"options": {
-				"cwd": "${fileDirname}"
-			},
 			"problemMatcher": [
 				"$msCompile"
 			],

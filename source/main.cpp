@@ -4,10 +4,11 @@
 #include <tchar.h>
 #include <math.h>
 
+#include "math.h"
 #include "d2d_app.h"
 #include "render.h"
 #include "control_state.h"
-#include "math.h"
+#include "game_level.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"d2d1")
@@ -17,19 +18,23 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
-const int gameScreenWidth = 2000;
-const int gameScreenHeight = 1000;
-
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
-void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,double timespanSeconds);
+void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,float timespanSeconds);
 bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
+  const float levelWidth = 2000.0f;
+  const float levelHeight = 1000.0f;
+  std::unique_ptr<game_level> gameLevel = std::make_unique<game_level>(levelWidth, levelHeight, std::list<float>());
+
   D2D_SIZE_F rtSize = app->d2d_rendertarget->GetSize();
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>(static_cast<int>(rtSize.width / 2), static_cast<int>(rtSize.height / 2));
+  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
+  gameState->currentLevel = std::move(gameLevel);
+  gameState->player.xPos = gameState->currentLevel->width / 2.0f;
+  gameState->player.yPos = gameState->currentLevel->height / 2.0f;
 
   MSG msg;
 
@@ -52,7 +57,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
     std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
+    DoRender(app->d2d_rendertarget, gameState, perfData, controlState->mouseX, controlState->mouseY);
     UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
+    previousControlState = std::move(controlState);
 
     if( !gameState->running )
     {
@@ -60,19 +67,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       app->terminating = true;
       continue;
     }
-
-    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget,gameScreenWidth,gameScreenHeight);
-    gameState->cursor.xPos = controlState->mouseX / frame->scaleX;
-    gameState->cursor.yPos = controlState->mouseY / frame->scaleY;
-    DoRender(frame,gameState,perfData);
-
-    previousControlState = std::move(controlState);
 	}
 
   return (int) msg.wParam;
 }
 
-void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, double timespanSeconds)
+void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, float timespanSeconds)
 {
   if( cs->quitPress )
   {
@@ -100,14 +100,15 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
   if( cs->left ) gs->player.angle -= 2;
   if( cs->right ) gs->player.angle += 2;
   
-  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += ( timespanSeconds * 5 ); // gravity
+  const float forceOfGravity = 5.0;
+  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += ( timespanSeconds * forceOfGravity );
 
   if( cs->shoot )
   {
     std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
     newBullet->gameObject.xPos = gs->player.xPos;
     newBullet->gameObject.yPos = gs->player.yPos;
-    double angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
+    float angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
     newBullet->gameObject.angle = angle;
     newBullet->gameObject.Accelerate(timespanSeconds * 500.0);
     gs->bullets.push_front(std::move(newBullet));

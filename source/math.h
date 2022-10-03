@@ -2,4 +2,4 @@
 #define DEGTORAD(D)((D * PI) / 180.0)
 #define RADTODEG(R)((180.0 * R) / PI)
 
-int CalculateAngle(double x1, double y1, double x2, double y2);
+int CalculateAngle(float x1, float y1, float x2, float y2);

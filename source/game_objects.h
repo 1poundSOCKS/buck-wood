@@ -6,13 +6,13 @@ struct game_object
 {
   game_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0) {}
 
-  void Update(double seconds);
-  void Accelerate(double);
+  void Update(float seconds);
+  void Accelerate(float);
 
-  double size;
-  double xPos, yPos;
-  double xVelocity, yVelocity;
-  double angle;
+  float size;
+  float xPos, yPos;
+  float xVelocity, yVelocity;
+  float angle;
 };
 
 struct bullet
@@ -22,8 +22,8 @@ struct bullet
     gameObject.size = 5.0;
   }
 
-  void Update(double timespanSeconds);
+  void Update(float timespanSeconds);
 
   game_object gameObject;
-  double lifespanSeconds;
+  float lifespanSeconds;
 };
