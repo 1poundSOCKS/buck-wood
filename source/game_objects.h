@@ -4,7 +4,7 @@
 
 struct game_object
 {
-  game_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0) {}
+  game_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), spin(0) {}
 
   void Update(float seconds);
   void Accelerate(float);
@@ -13,6 +13,7 @@ struct game_object
   float xPos, yPos;
   float xVelocity, yVelocity;
   float angle;
+  float spin;
 };
 
 struct bullet

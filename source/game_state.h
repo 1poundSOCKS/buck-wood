@@ -7,6 +7,8 @@ struct game_state
 
   game_state();
   void Update(float seconds);
+  bool PlayerIsOutOfBounds() const;
+  void OnPlayerShoot();
 
   bool running;
   SCREEN screen;

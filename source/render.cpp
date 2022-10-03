@@ -34,6 +34,8 @@ void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique
   gs->cursor.xPos = mouseX * gs->currentLevel->width / frameSize.width;
   gs->cursor.yPos = mouseY * gs->currentLevel->height / frameSize.height;
 
+  DrawLevel(*gs->currentLevel, *frame);
+
   DrawGameObject(gs->player, frame, scaleTransform);
 
   for( const std::unique_ptr<bullet>& bullet : gs->bullets )
@@ -83,6 +85,11 @@ void DrawGameObject(const game_object& gameObject, const std::unique_ptr<d2d_fra
 {
   D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
   frame->renderTarget->FillRectangle(&rectangle, frame->brush.get());
+}
+
+void DrawLevel(const game_level& level, const d2d_frame& frame)
+{
+  
 }
 
 std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, float screenWidth, float screenHeight)

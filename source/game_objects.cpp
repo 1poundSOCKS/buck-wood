@@ -2,14 +2,15 @@
 
 void game_object::Update(float seconds)
 {
-  xPos += xVelocity;
-  yPos += yVelocity;
+  xPos += xVelocity * seconds;
+  yPos += yVelocity * seconds;
+  angle += spin * seconds;
 }
 
-void game_object::Accelerate(float increase)
+void game_object::Accelerate(float amount)
 {
-  yVelocity -= increase * cos(DEGTORAD(angle));
-  xVelocity += increase * sin(DEGTORAD(angle));
+  yVelocity -= amount * cos(DEGTORAD(angle));
+  xVelocity += amount * sin(DEGTORAD(angle));
 }
 
 void bullet::Update(float timespanSeconds)

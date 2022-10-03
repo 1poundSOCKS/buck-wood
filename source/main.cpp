@@ -21,20 +21,13 @@
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
 void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,float timespanSeconds);
 bool ProcessMessage(MSG* msg);
+std::unique_ptr<game_state> CreateGameState();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
-  const float levelWidth = 2000.0f;
-  const float levelHeight = 1000.0f;
-  std::unique_ptr<game_level> gameLevel = std::make_unique<game_level>(levelWidth, levelHeight, std::list<float>());
-
-  D2D_SIZE_F rtSize = app->d2d_rendertarget->GetSize();
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
-  gameState->currentLevel = std::move(gameLevel);
-  gameState->player.xPos = gameState->currentLevel->width / 2.0f;
-  gameState->player.yPos = gameState->currentLevel->height / 2.0f;
+  std::unique_ptr<game_state> gameState = CreateGameState();
 
   MSG msg;
 
@@ -58,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
     DoRender(app->d2d_rendertarget, gameState, perfData, controlState->mouseX, controlState->mouseY);
-    UpdateGameState(controlState,gameState,perfData->frameTimeSeconds);
+    UpdateGameState(controlState, gameState, perfData->frameTimeSeconds);
     previousControlState = std::move(controlState);
 
     if( !gameState->running )
@@ -70,6 +63,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 	}
 
   return (int) msg.wParam;
+}
+
+std::unique_ptr<game_state> CreateGameState()
+{
+  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
+  gameState->currentLevel = CreateGameLevel();
+  gameState->player.xPos = gameState->currentLevel->width / 2.0f;
+  gameState->player.yPos = gameState->currentLevel->height / 2.0f;
+  return gameState;
 }
 
 void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, float timespanSeconds)
@@ -89,33 +91,23 @@ void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<g
 
   if( gs->screen == game_state::title )
   {
-    if( cs->startGame )
-    {
-      gs->screen = game_state::main;
-    }
-
+    if( cs->startGame ) gs->screen = game_state::main;
     return;
   }
 
-  if( cs->left ) gs->player.angle -= 2;
-  if( cs->right ) gs->player.angle += 2;
+  if( cs->left ) gs->player.spin = -100.0f;
+  else if( cs->right ) gs->player.spin = 100.0f;
+  else gs->player.spin = 0.0f;
   
-  const float forceOfGravity = 5.0;
-  if( gs->player.yVelocity < 2.0 ) gs->player.yVelocity += ( timespanSeconds * forceOfGravity );
+  static const float forceOfGravity = 10.0f;
+  static const float maxPlayerFallVelocity = 300.0f;
+  static const float playerThrust = 20.0f;
 
-  if( cs->shoot )
-  {
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
-    newBullet->gameObject.xPos = gs->player.xPos;
-    newBullet->gameObject.yPos = gs->player.yPos;
-    float angle = CalculateAngle(gs->player.xPos, gs->player.yPos, gs->cursor.xPos, gs->cursor.yPos);
-    newBullet->gameObject.angle = angle;
-    newBullet->gameObject.Accelerate(timespanSeconds * 500.0);
-    gs->bullets.push_front(std::move(newBullet));
-  }
-
-  if( cs->accelerate ) gs->player.Accelerate(timespanSeconds * 10.0);
-
+  gs->player.yVelocity += ( forceOfGravity );
+  if( gs->player.yVelocity > maxPlayerFallVelocity ) gs->player.yVelocity = maxPlayerFallVelocity;
+  if( cs->shoot ) gs->OnPlayerShoot();
+  if( cs->accelerate ) gs->player.Accelerate(playerThrust);
+  
   gs->Update(timespanSeconds);
 }
 
