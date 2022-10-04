@@ -18,7 +18,7 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
-std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
+std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 bool ProcessMessage(MSG* msg);
 std::unique_ptr<game_state> CreateInitialGameState();
 
@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     QueryPerformanceCounter(&ticks);
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
-    std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
+    std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
     
     D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
     gameState->cursor.xPos = controlState->mouseX * gameState->currentLevel->width / frameSize.width;
@@ -78,15 +78,15 @@ std::unique_ptr<game_state> CreateInitialGameState()
   return gameState;
 }
 
-std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState)
+std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState)
 {
   std::unique_ptr<control_state> cs = std::make_unique<control_state>();
 
   unsigned char keyboardState[256];
-  HRESULT hr = app->keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+  HRESULT hr = app.keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 	if(FAILED(hr))
 	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app->keyboard->Acquire();
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app.keyboard->Acquire();
 	}
 
   if( SUCCEEDED(hr) )
@@ -94,7 +94,7 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
     if( keyboardState[DIK_ESCAPE] & 0x80 )
     {
       cs->quit = true;
-      if( !previousControlState->quit ) cs->quitPress = true;
+      if( !previousControlState.quit ) cs->quitPress = true;
     }
     if( keyboardState[DIK_SPACE] & 0x80 ) cs->startGame = true;
     if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
@@ -103,10 +103,10 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
   }
 
   DIMOUSESTATE mouseState;
-  hr = app->mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
+  hr = app.mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
   if( FAILED(hr) )
   {
-    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app->mouse->Acquire();
+    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app.mouse->Acquire();
   }
 
   if( SUCCEEDED(hr) )
@@ -115,7 +115,7 @@ std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& a
     if( GetCursorPos(&p) )
     {
       POINT clientPos;
-      if( ScreenToClient(app->wnd, &p) )
+      if( ScreenToClient(app.wnd, &p) )
       {
         cs->mouseX = p.x;
         cs->mouseY = p.y;

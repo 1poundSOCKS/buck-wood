@@ -1,3 +1,6 @@
+#ifndef _render_
+#define _render_
+
 #define UNICODE
 
 #include <memory>
@@ -15,3 +18,5 @@ void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const
 void DrawGameObject(const game_object& gameObject, const d2d_frame& frame);
 void DrawLevel(const game_level& level, const d2d_frame& frame);
 std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, float screenWidth, float screenHeight);
+
+#endif
