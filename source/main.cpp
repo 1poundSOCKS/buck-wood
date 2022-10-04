@@ -54,7 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     gameState->cursor.xPos = controlState->mouseX * gameState->currentLevel->width / frameSize.width;
     gameState->cursor.yPos = controlState->mouseY * gameState->currentLevel->height / frameSize.height;
 
-    DoRender(app->d2d_rendertarget, *gameState, perfData, controlState->mouseX, controlState->mouseY);
+    DoRender(app->d2d_rendertarget, *gameState, *perfData, controlState->mouseX, controlState->mouseY);
     gameState->Update(*controlState, perfData->frameTimeSeconds);
     previousControlState = std::move(controlState);
 
