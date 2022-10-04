@@ -5,7 +5,7 @@ const float titleScreenWidth = 1000.0f;
 const float titleScreenHeight = 500.0f;
 
 void DoRender(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, 
-              const std::unique_ptr<game_state>& gameState, 
+              const game_state& gameState, 
               const std::unique_ptr<perf_data>& pd, 
               float mouseX, float mouseY)
 {
@@ -14,7 +14,7 @@ void DoRender(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget,
   std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(renderTarget);
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
-  switch( gameState->screen )
+  switch( gameState.screen )
   {
     case game_state::main:
       RenderMainScreen(frame, gameState, mouseX, mouseY);
@@ -26,19 +26,15 @@ void DoRender(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget,
   }
 }
 
-void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, float mouseX, float mouseY)
+void RenderMainScreen(const std::unique_ptr<d2d_frame>& frame, const game_state& gameState, float mouseX, float mouseY)
 {
-  std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame->renderTarget, gs->currentLevel->width, gs->currentLevel->height);
+  std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame->renderTarget, gameState.currentLevel->width, gameState.currentLevel->height);
 
-  D2D1_SIZE_F frameSize = frame->renderTarget->GetSize();
-  gs->cursor.xPos = mouseX * gs->currentLevel->width / frameSize.width;
-  gs->cursor.yPos = mouseY * gs->currentLevel->height / frameSize.height;
+  DrawLevel(*gameState.currentLevel, *frame);
 
-  DrawLevel(*gs->currentLevel, *frame);
+  DrawGameObject(gameState.player, frame, scaleTransform);
 
-  DrawGameObject(gs->player, frame, scaleTransform);
-
-  for( const std::unique_ptr<bullet>& bullet : gs->bullets )
+  for( const std::unique_ptr<bullet>& bullet : gameState.bullets )
   {
     DrawGameObject(bullet->gameObject, frame, scaleTransform);
   }
@@ -58,13 +54,13 @@ void RenderTitleScreen(const std::unique_ptr<d2d_frame>& frame)
   frame->renderTarget->DrawTextW(titleText.c_str(),titleText.length(),frame->writeTextFormat.get(),rect,frame->brush.get());
 }
 
-void RenderDiagnostics(const std::unique_ptr<d2d_frame>& frame, const std::unique_ptr<game_state>& gs, const std::unique_ptr<perf_data>& pd)
+void RenderDiagnostics(const std::unique_ptr<d2d_frame>& frame, const game_state& gameState, const std::unique_ptr<perf_data>& pd)
 {
   wchar_t fps[32];
   _ui64tow(pd->fps, fps, 10);
 
   wchar_t bulletCount[32];
-  wsprintf(bulletCount, L"%i", gs->bullets.size());
+  wsprintf(bulletCount, L"%i", gameState.bullets.size());
 
   std::wstring msg = std::wstring(fps) + std::wstring(L"\n") + bulletCount;
   D2D_SIZE_F size = frame->renderTarget->GetSize();

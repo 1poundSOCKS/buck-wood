@@ -1,12 +1,13 @@
 #include "game_objects.h"
 #include "game_level.h"
+#include "control_state.h"
 
 struct game_state
 {
   enum SCREEN { title, main };
 
   game_state();
-  void Update(float seconds);
+  void Update(const control_state& cs, float seconds);
   bool PlayerIsOutOfBounds() const;
   void OnPlayerShoot();
 

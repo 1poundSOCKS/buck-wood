@@ -19,15 +19,14 @@
 #pragma comment(lib,"gtest_main.lib")
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState);
-void UpdateGameState(const std::unique_ptr<control_state>&, std::unique_ptr<game_state>&,float timespanSeconds);
 bool ProcessMessage(MSG* msg);
-std::unique_ptr<game_state> CreateGameState();
+std::unique_ptr<game_state> CreateInitialGameState();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
-  std::unique_ptr<game_state> gameState = CreateGameState();
+  std::unique_ptr<game_state> gameState = CreateInitialGameState();
 
   MSG msg;
 
@@ -50,8 +49,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
     std::unique_ptr<control_state> controlState = GetControlState(app, previousControlState);
-    DoRender(app->d2d_rendertarget, gameState, perfData, controlState->mouseX, controlState->mouseY);
-    UpdateGameState(controlState, gameState, perfData->frameTimeSeconds);
+    
+    D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
+    gameState->cursor.xPos = controlState->mouseX * gameState->currentLevel->width / frameSize.width;
+    gameState->cursor.yPos = controlState->mouseY * gameState->currentLevel->height / frameSize.height;
+
+    DoRender(app->d2d_rendertarget, *gameState, perfData, controlState->mouseX, controlState->mouseY);
+    gameState->Update(*controlState, perfData->frameTimeSeconds);
     previousControlState = std::move(controlState);
 
     if( !gameState->running )
@@ -65,50 +69,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-std::unique_ptr<game_state> CreateGameState()
+std::unique_ptr<game_state> CreateInitialGameState()
 {
   std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
   gameState->currentLevel = CreateGameLevel();
   gameState->player.xPos = gameState->currentLevel->width / 2.0f;
   gameState->player.yPos = gameState->currentLevel->height / 2.0f;
   return gameState;
-}
-
-void UpdateGameState(const std::unique_ptr<control_state>& cs, std::unique_ptr<game_state>& gs, float timespanSeconds)
-{
-  if( cs->quitPress )
-  {
-    switch( gs->screen )
-    {
-      case game_state::title:
-        gs->running = false;
-        return;
-      case game_state::main:
-        gs->screen = game_state::title;
-        break;
-    }
-  }
-
-  if( gs->screen == game_state::title )
-  {
-    if( cs->startGame ) gs->screen = game_state::main;
-    return;
-  }
-
-  if( cs->left ) gs->player.spin = -100.0f;
-  else if( cs->right ) gs->player.spin = 100.0f;
-  else gs->player.spin = 0.0f;
-  
-  static const float forceOfGravity = 10.0f;
-  static const float maxPlayerFallVelocity = 300.0f;
-  static const float playerThrust = 20.0f;
-
-  gs->player.yVelocity += ( forceOfGravity );
-  if( gs->player.yVelocity > maxPlayerFallVelocity ) gs->player.yVelocity = maxPlayerFallVelocity;
-  if( cs->shoot ) gs->OnPlayerShoot();
-  if( cs->accelerate ) gs->player.Accelerate(playerThrust);
-  
-  gs->Update(timespanSeconds);
 }
 
 std::unique_ptr<control_state> GetControlState(const std::unique_ptr<d2d_app>& app, const std::unique_ptr<control_state>& previousControlState)
