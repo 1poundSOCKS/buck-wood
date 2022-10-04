@@ -17,6 +17,6 @@ void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, cons
 void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);
 void DrawGameObject(const game_object& gameObject, const d2d_frame& frame);
 void DrawLevel(const game_level& level, const d2d_frame& frame);
-std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, float screenWidth, float screenHeight);
+std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const d2d_frame& frame, float screenWidth, float screenHeight);
 
 #endif

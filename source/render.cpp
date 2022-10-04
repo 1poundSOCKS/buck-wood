@@ -28,7 +28,7 @@ void DoRender(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget,
 
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float mouseX, float mouseY)
 {
-  std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame.renderTarget, gameState.currentLevel->width, gameState.currentLevel->height);
+  std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, gameState.currentLevel->width, gameState.currentLevel->height);
 
   DrawLevel(*gameState.currentLevel, frame);
 
@@ -85,11 +85,26 @@ void DrawGameObject(const game_object& gameObject, const d2d_frame& frame)
 
 void DrawLevel(const game_level& level, const d2d_frame& frame)
 {
+  std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, level.width, level.height);
+  frame.renderTarget->SetTransform(*scaleTransform);
+
+  for( const auto& line : level.boundary )
+  {
+    D2D1_POINT_2F startPoint;
+    startPoint.x = line.first.x;
+    startPoint.y = line.first.y;
+
+    D2D1_POINT_2F endPoint;
+    endPoint.x = line.second.x;
+    endPoint.y = line.second.y;
+
+    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brush.get());
+  }
 }
 
-std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, float screenWidth, float screenHeight)
+std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const d2d_frame& frame, float screenWidth, float screenHeight)
 {
-  D2D1_SIZE_F frameSize = renderTarget->GetSize();
+  D2D1_SIZE_F frameSize = frame.renderTarget->GetSize();
   D2D1_SIZE_F size;
   size.width = frameSize.width / screenWidth;
   size.height = frameSize.height / screenHeight;
