@@ -88,8 +88,8 @@ std::unique_ptr<game_state> CreateInitialGameState()
 {
   std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
   gameState->currentLevel = GetInitialGameLevel();
-  gameState->player.xPos = gameState->currentLevel->width / 2.0f;
-  gameState->player.yPos = gameState->currentLevel->height / 2.0f;
+  gameState->player->xPos = gameState->currentLevel->width / 2.0f;
+  gameState->player->yPos = gameState->currentLevel->height / 2.0f;
   return gameState;
 }
 

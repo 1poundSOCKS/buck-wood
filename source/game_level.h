@@ -12,7 +12,7 @@ struct point
   float x, y;
 };
 
-static const point end_point = point(-1, -1);
+typedef std::list<std::pair<point, point>> shape;
 
 struct game_level
 {
@@ -21,9 +21,10 @@ struct game_level
 
   const float width, height;
   const float playerStartPosX, playerStartPosY;
-  std::list<std::pair<point, point>> boundary;
+  shape boundary;
 };
 
 std::unique_ptr<game_level> GetInitialGameLevel();
+void InitializeShape(const point* points, int pointCount, shape& boundary);
 
 #endif

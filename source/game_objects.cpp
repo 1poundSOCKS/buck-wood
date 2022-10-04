@@ -18,3 +18,20 @@ void bullet::Update(float timespanSeconds)
   gameObject.Update(timespanSeconds);
   lifespanSeconds -= timespanSeconds;
 }
+
+std::unique_ptr<game_object> CreatePlayerObject()
+{
+  std::unique_ptr<game_object> player = std::make_unique<game_object>();
+
+  const point points[] = {
+    point(0, -15),
+    point(10, 15),
+    point(-10, 15)
+  };
+
+  const int pointCount = sizeof(points) / sizeof(point);
+  
+  InitializeShape(points, pointCount, player->outline);
+
+  return player;
+}

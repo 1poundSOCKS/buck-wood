@@ -32,7 +32,7 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float
 
   DrawLevel(*gameState.currentLevel, frame);
 
-  DrawGameObject(gameState.player, frame, *scaleTransform);
+  DrawGameObject(*gameState.player, frame, *scaleTransform);
 
   for( const std::unique_ptr<bullet>& bullet : gameState.bullets )
   {
@@ -79,16 +79,27 @@ void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const
 
 void DrawGameObject(const game_object& gameObject, const d2d_frame& frame)
 {
-  D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
-  frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
+  if( gameObject.outline.size() > 0 )
+  {
+    DrawShape(gameObject.outline, frame);
+  }
+  else
+  {
+    D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
+    frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
+  }
 }
 
 void DrawLevel(const game_level& level, const d2d_frame& frame)
 {
   std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, level.width, level.height);
   frame.renderTarget->SetTransform(*scaleTransform);
+  DrawShape(level.boundary, frame);
+}
 
-  for( const auto& line : level.boundary )
+void DrawShape(const shape& shape, const d2d_frame& frame)
+{
+  for( const auto& line : shape )
   {
     D2D1_POINT_2F startPoint;
     startPoint.x = line.first.x;

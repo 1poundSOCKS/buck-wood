@@ -1,6 +1,10 @@
+#ifndef _game_object_
+#define _game_object_
+
 #include <d2d1.h>
 #include <winrt/base.h>
 #include "math.h"
+#include "game_level.h"
 
 struct game_object
 {
@@ -14,6 +18,7 @@ struct game_object
   float xVelocity, yVelocity;
   float angle;
   float spin;
+  shape outline;
 };
 
 struct bullet
@@ -28,3 +33,7 @@ struct bullet
   game_object gameObject;
   float lifespanSeconds;
 };
+
+std::unique_ptr<game_object> CreatePlayerObject();
+
+#endif
