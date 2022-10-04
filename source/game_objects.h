@@ -4,7 +4,16 @@
 #include <d2d1.h>
 #include <winrt/base.h>
 #include "math.h"
-#include "game_level.h"
+
+struct point
+{
+  point() : x(0), y(0) {}
+  point(float x, float y) : x(x), y(y) {}
+
+  float x, y;
+};
+
+typedef std::list<std::pair<point, point>> shape;
 
 struct game_object
 {
@@ -35,5 +44,6 @@ struct bullet
 };
 
 std::unique_ptr<game_object> CreatePlayerObject();
+void InitializeShape(const point* points, int pointCount, shape& boundary);
 
 #endif

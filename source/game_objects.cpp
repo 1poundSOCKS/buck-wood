@@ -35,3 +35,12 @@ std::unique_ptr<game_object> CreatePlayerObject()
 
   return player;
 }
+
+void InitializeShape(const point* points, int pointCount, shape& boundary)
+{
+  for( int i = 0; i < pointCount; i++)
+  {
+    int endPointIndex = (i + 1) % pointCount;
+    boundary.push_back(std::make_pair(points[i], points[endPointIndex]));
+  }
+}

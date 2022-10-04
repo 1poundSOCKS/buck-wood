@@ -3,16 +3,7 @@
 
 #include <list>
 #include <memory>
-
-struct point
-{
-  point() : x(0), y(0) {}
-  point(float x, float y) : x(x), y(y) {}
-
-  float x, y;
-};
-
-typedef std::list<std::pair<point, point>> shape;
+#include "game_objects.h"
 
 struct game_level
 {
@@ -25,6 +16,5 @@ struct game_level
 };
 
 std::unique_ptr<game_level> GetInitialGameLevel();
-void InitializeShape(const point* points, int pointCount, shape& boundary);
 
 #endif
