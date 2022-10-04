@@ -13,6 +13,6 @@ struct game_level
   const float playerStartPosX, playerStartPosY;
 };
 
-std::unique_ptr<game_level> CreateGameLevel();
+std::unique_ptr<game_level> GetInitialGameLevel();
 
 #endif

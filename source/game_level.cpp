@@ -10,7 +10,7 @@ bool game_level::OutOfBounds(float x, float y) const
   return ( x<0 || y<0 || x>width || y>height );
 }
 
-std::unique_ptr<game_level> CreateGameLevel()
+std::unique_ptr<game_level> GetInitialGameLevel()
 {
   const float levelWidth = 2000.0f;
   const float levelHeight = 1000.0f;

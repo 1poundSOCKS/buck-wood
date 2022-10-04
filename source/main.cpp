@@ -18,9 +18,9 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 
-std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 bool ProcessMessage(MSG* msg);
 std::unique_ptr<game_state> CreateInitialGameState();
+std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -69,10 +69,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
+bool ProcessMessage(MSG* msg)
+{
+	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
+  {
+    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
+    {
+      TranslateMessage(msg);
+      DispatchMessage(msg);
+    }
+    return (msg->message != WM_QUIT);
+	}
+
+  return true;
+}
+
 std::unique_ptr<game_state> CreateInitialGameState()
 {
   std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
-  gameState->currentLevel = CreateGameLevel();
+  gameState->currentLevel = GetInitialGameLevel();
   gameState->player.xPos = gameState->currentLevel->width / 2.0f;
   gameState->player.yPos = gameState->currentLevel->height / 2.0f;
   return gameState;
@@ -126,19 +141,4 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
   }
 
   return cs;
-}
-
-bool ProcessMessage(MSG* msg)
-{
-	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
-    {
-      TranslateMessage(msg);
-      DispatchMessage(msg);
-    }
-    return (msg->message != WM_QUIT);
-	}
-
-  return true;
 }
