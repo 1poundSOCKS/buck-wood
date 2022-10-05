@@ -57,5 +57,6 @@ bool PointInside(const game_point& point, const game_shape& shape);
 bool ShapeInside(const game_shape& shape1, const game_shape& shape2);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
+std::list<game_point>& CalculateTransformedPoints(const game_object& gameObject);
 
 #endif

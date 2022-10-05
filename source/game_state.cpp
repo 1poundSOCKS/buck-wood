@@ -57,6 +57,8 @@ void game_state::Update(const control_state& controlState, float seconds)
   
   bullets.remove_if(BulletHasExpired);
 
+  std::list<game_point>& points = CalculateTransformedPoints(*player);
+
   if( PlayerIsOutOfBounds() || !PointInside(game_point(player->xPos, player->yPos), currentLevel->boundary) )
   {
     player->xPos = currentLevel->width / 2;
