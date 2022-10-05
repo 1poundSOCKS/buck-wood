@@ -7,7 +7,7 @@
 
 struct game_point
 {
-  game_point() : x(0), y(0) {}
+  game_point() : game_point(0.0f, 0.0f) {}
   game_point(float x, float y) : x(x), y(y) {}
 
   float x, y;
@@ -53,6 +53,9 @@ struct bullet
 std::unique_ptr<game_object> CreatePlayerObject();
 std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
+bool PointInside(const game_point& point, const game_shape& shape);
 bool ShapeInside(const game_shape& shape1, const game_shape& shape2);
+bool AddLineToInterceptCount(const game_line& line, const game_point& point);
+float GetYIntercept(float x, const game_line& line);
 
 #endif

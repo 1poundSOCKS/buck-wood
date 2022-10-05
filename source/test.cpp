@@ -62,7 +62,7 @@ TEST(ShapeInside,noOverlap)
   game_shape shape1, shape2;
 
   InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s1_points, s2_pointCount, shape2);
+  InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(ShapeInside(shape1, shape2), false);
   EXPECT_EQ(ShapeInside(shape2, shape1), false);
@@ -72,6 +72,7 @@ TEST(ShapeInside,fully)
 {
   const game_point s1_points[] = {
     game_point(0, 0),
+    game_point(100, 0),
     game_point(100, 100),
     game_point(0, 100)
   };
@@ -88,7 +89,7 @@ TEST(ShapeInside,fully)
   game_shape shape1, shape2;
 
   InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s1_points, s2_pointCount, shape2);
+  InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(ShapeInside(shape1, shape2), false);
   EXPECT_EQ(ShapeInside(shape2, shape1), true);
@@ -114,7 +115,7 @@ TEST(ShapeInside,partially)
   game_shape shape1, shape2;
 
   InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s1_points, s2_pointCount, shape2);
+  InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(ShapeInside(shape1, shape2), false);
   EXPECT_EQ(ShapeInside(shape2, shape1), false);

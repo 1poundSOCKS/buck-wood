@@ -57,7 +57,7 @@ void game_state::Update(const control_state& controlState, float seconds)
   
   bullets.remove_if(BulletHasExpired);
 
-  if( PlayerIsOutOfBounds() || !ShapeInside(*player->outline, currentLevel->boundary) )
+  if( PlayerIsOutOfBounds() || !PointInside(game_point(player->xPos, player->yPos), currentLevel->boundary) )
   {
     player->xPos = currentLevel->width / 2;
     player->yPos = currentLevel->height / 2;

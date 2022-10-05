@@ -57,13 +57,43 @@ void InitializeShape(const game_point* points, int pointCount, game_shape& shape
   }
 }
 
+bool PointInside(const game_point& point, const game_shape& shape)
+{
+  int matchingLines = 0;
+  for( const auto& line: shape.lines )
+  {
+    if( AddLineToInterceptCount(line, point) ) matchingLines++;
+  }
+  
+  return ( matchingLines % 2 > 0 );
+}
+
 bool ShapeInside(const game_shape& shape1, const game_shape& shape2)
 {
-  for( const auto& shape1Point: shape1.points )
+  int matchingPointCount = 0;
+  for( const auto& point: shape1.points )
   {
-    shape1Point.x;
-    shape1Point.y;
+    if( PointInside(point, shape2) ) matchingPointCount++;
   }
 
-  return true;
+  return matchingPointCount == shape1.points.size();
+}
+
+bool AddLineToInterceptCount(const game_line& line, const game_point& point)
+{
+  if( point.x >= line.first.x && point.x < line.second.x || point.x < line.first.x && point.x >= line.second.x )
+  {
+    float yIntercept = GetYIntercept(point.x, line);
+    return yIntercept <= point.y;
+  }
+  return false;
+}
+
+float GetYIntercept(float x, const game_line& line)
+{
+  float cx = line.second.x - line.first.x;
+  float cy = line.second.y - line.first.y;
+  if( cy == 0 ) return line.first.y;
+  float m = cy / cx;
+  return m * x;
 }
