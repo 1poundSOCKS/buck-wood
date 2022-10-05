@@ -79,9 +79,9 @@ void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const
 
 void DrawGameObject(const game_object& gameObject, const d2d_frame& frame)
 {
-  if( gameObject.outline.size() > 0 )
+  if( gameObject.outline->lines.size() > 0 )
   {
-    DrawShape(gameObject.outline, frame);
+    DrawShape(*gameObject.outline, frame);
   }
   else
   {
@@ -97,9 +97,9 @@ void DrawLevel(const game_level& level, const d2d_frame& frame)
   DrawShape(level.boundary, frame);
 }
 
-void DrawShape(const shape& shape, const d2d_frame& frame)
+void DrawShape(const game_shape& shape, const d2d_frame& frame)
 {
-  for( const auto& line : shape )
+  for( const auto& line : shape.lines )
   {
     D2D1_POINT_2F startPoint;
     startPoint.x = line.first.x;

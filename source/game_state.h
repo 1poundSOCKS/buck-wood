@@ -16,7 +16,7 @@ struct game_state
 
   bool running;
   SCREEN screen;
-  game_object cursor;
+  std::unique_ptr<game_object> cursor;
   std::unique_ptr<game_object> player;
   std::list<std::unique_ptr<bullet>> bullets;
   std::unique_ptr<game_level> currentLevel;

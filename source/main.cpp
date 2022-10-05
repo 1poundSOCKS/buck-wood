@@ -51,8 +51,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
     
     D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
-    gameState->cursor.xPos = controlState->mouseX * gameState->currentLevel->width / frameSize.width;
-    gameState->cursor.yPos = controlState->mouseY * gameState->currentLevel->height / frameSize.height;
+    gameState->cursor->xPos = controlState->mouseX * gameState->currentLevel->width / frameSize.width;
+    gameState->cursor->yPos = controlState->mouseY * gameState->currentLevel->height / frameSize.height;
 
     DoRender(app->d2d_rendertarget, *gameState, *perfData, controlState->mouseX, controlState->mouseY);
     gameState->Update(*controlState, perfData->frameTimeSeconds);

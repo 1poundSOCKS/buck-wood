@@ -12,7 +12,7 @@ struct game_level
 
   const float width, height;
   const float playerStartPosX, playerStartPosY;
-  shape boundary;
+  game_shape boundary;
 };
 
 std::unique_ptr<game_level> GetInitialGameLevel();

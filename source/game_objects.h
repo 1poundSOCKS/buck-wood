@@ -5,19 +5,26 @@
 #include <winrt/base.h>
 #include "math.h"
 
-struct point
+struct game_point
 {
-  point() : x(0), y(0) {}
-  point(float x, float y) : x(x), y(y) {}
+  game_point() : x(0), y(0) {}
+  game_point(float x, float y) : x(x), y(y) {}
 
   float x, y;
 };
 
-typedef std::list<std::pair<point, point>> shape;
+typedef std::pair<game_point, game_point> game_line;
+
+struct game_shape
+{
+  std::list<game_point> points;
+  std::list<game_line> lines;
+};
 
 struct game_object
 {
-  game_object() : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), spin(0) {}
+  game_object();
+  game_object(const game_point* points, int pointCount);
 
   void Update(float seconds);
   void Accelerate(float);
@@ -27,7 +34,7 @@ struct game_object
   float xVelocity, yVelocity;
   float angle;
   float spin;
-  shape outline;
+  std::unique_ptr<game_shape> outline;
 };
 
 struct bullet
@@ -44,6 +51,8 @@ struct bullet
 };
 
 std::unique_ptr<game_object> CreatePlayerObject();
-void InitializeShape(const point* points, int pointCount, shape& boundary);
+std::unique_ptr<game_object> CreateCursorObject();
+void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
+bool ShapeInside(const game_shape& shape1, const game_shape& shape2);
 
 #endif
