@@ -15,6 +15,6 @@ struct game_level
   game_shape boundary;
 };
 
-std::unique_ptr<game_level> GetInitialGameLevel();
+std::unique_ptr<game_level> CreateInitialGameLevel();
 
 #endif

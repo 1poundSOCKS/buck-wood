@@ -50,6 +50,11 @@ struct bullet
   float lifespanSeconds;
 };
 
+struct explosion
+{
+  game_object object;
+};
+
 std::unique_ptr<game_object> CreatePlayerObject();
 std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);

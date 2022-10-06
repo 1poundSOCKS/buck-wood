@@ -17,6 +17,7 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
+#pragma comment(lib,"jsoncpp.lib")
 
 bool ProcessMessage(MSG* msg);
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);

@@ -34,3 +34,6 @@
 # MS files
 *.pdb
 *.ilk
+
+# DLL required to run
+!jsoncpp.dll

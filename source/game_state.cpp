@@ -1,14 +1,6 @@
 #include "game_state.h"
 #include <list>
 
-std::unique_ptr<game_state> CreateInitialGameState()
-{
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>(GetInitialGameLevel());
-  gameState->player->xPos = gameState->currentLevel->width / 2.0f;
-  gameState->player->yPos = gameState->currentLevel->height / 2.0f;
-  return gameState;
-}
-
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 : running(true), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
 {
@@ -106,4 +98,12 @@ void game_state::OnPlayerShoot()
   newBullet->gameObject.angle = angle;
   newBullet->gameObject.Accelerate(800.0f);
   bullets.push_front(std::move(newBullet));
+}
+
+std::unique_ptr<game_state> CreateInitialGameState()
+{
+  std::unique_ptr<game_state> gameState = std::make_unique<game_state>(CreateInitialGameLevel());
+  gameState->player->xPos = gameState->currentLevel->width / 2.0f;
+  gameState->player->yPos = gameState->currentLevel->height / 2.0f;
+  return gameState;
 }
