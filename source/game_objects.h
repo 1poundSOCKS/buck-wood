@@ -54,9 +54,9 @@ std::unique_ptr<game_object> CreatePlayerObject();
 std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 bool PointInside(const game_point& point, const game_shape& shape);
-bool ShapeInside(const game_shape& shape1, const game_shape& shape2);
+bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
-std::list<game_point>& CalculateTransformedPoints(const game_object& gameObject);
+void CalculateTransformedPoints(const game_object& gameObject, std::list<game_point>& transformedPoints);
 
 #endif

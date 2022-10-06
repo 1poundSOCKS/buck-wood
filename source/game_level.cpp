@@ -15,7 +15,7 @@ std::unique_ptr<game_level> GetInitialGameLevel()
   const float levelWidth = 2000.0f;
   const float levelHeight = 1000.0f;
   std::unique_ptr<game_level> level = std::make_unique<game_level>(levelWidth, levelHeight);
-  const float boundarySize = 100.0f;
+  const float boundarySize = 20.0f;
 
   const game_point points[] = {
     game_point(boundarySize, boundarySize),

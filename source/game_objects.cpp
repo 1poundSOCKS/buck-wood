@@ -69,15 +69,15 @@ bool PointInside(const game_point& point, const game_shape& shape)
   return ( matchingLines % 2 > 0 );
 }
 
-bool ShapeInside(const game_shape& shape1, const game_shape& shape2)
+bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
 {
   int matchingPointCount = 0;
-  for( const auto& point: shape1.points )
+  for( const auto& point: points )
   {
-    if( PointInside(point, shape2) ) matchingPointCount++;
+    if( PointInside(point, shape) ) matchingPointCount++;
   }
 
-  return matchingPointCount == shape1.points.size();
+  return matchingPointCount == points.size();
 }
 
 bool AddLineToInterceptCount(const game_line& line, const game_point& point)
@@ -99,14 +99,12 @@ float GetYIntercept(float x, const game_line& line)
   return m * x;
 }
 
-std::list<game_point>& CalculateTransformedPoints(const game_object& gameObject)
+void CalculateTransformedPoints(const game_object& gameObject, std::list<game_point>& transformedPoints)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gameObject.xPos, gameObject.yPos);
   const D2D1::Matrix3x2F matrix = rotate * translate;
 
-  std::list<game_point> transformedPoints;
-  
   for( auto point: gameObject.outline->points )
   {
     D2D1_POINT_2F inPoint;
@@ -115,6 +113,4 @@ std::list<game_point>& CalculateTransformedPoints(const game_object& gameObject)
     D2D1_POINT_2F outPoint = matrix.TransformPoint(inPoint);
     transformedPoints.push_back(game_point(outPoint.x, outPoint.y));
   }
-
-  return std::move(transformedPoints);
 }

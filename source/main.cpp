@@ -19,7 +19,6 @@
 #pragma comment(lib,"gtest_main.lib")
 
 bool ProcessMessage(MSG* msg);
-std::unique_ptr<game_state> CreateInitialGameState();
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
@@ -82,15 +81,6 @@ bool ProcessMessage(MSG* msg)
 	}
 
   return true;
-}
-
-std::unique_ptr<game_state> CreateInitialGameState()
-{
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
-  gameState->currentLevel = GetInitialGameLevel();
-  gameState->player->xPos = gameState->currentLevel->width / 2.0f;
-  gameState->player->yPos = gameState->currentLevel->height / 2.0f;
-  return gameState;
 }
 
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState)

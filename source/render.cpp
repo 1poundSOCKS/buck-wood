@@ -38,6 +38,16 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float
   {
     DrawGameObject(bullet->gameObject, frame, *scaleTransform);
   }
+
+  if( gameState.playerState == game_state::dead )
+  {
+    std::wstring text = L"game over";
+
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
+  }
 }
 
 void RenderTitleScreen(const d2d_frame& frame)

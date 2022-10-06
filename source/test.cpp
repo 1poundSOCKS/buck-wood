@@ -64,8 +64,8 @@ TEST(ShapeInside,noOverlap)
   InitializeShape(s1_points, s1_pointCount, shape1);
   InitializeShape(s2_points, s2_pointCount, shape2);
 
-  EXPECT_EQ(ShapeInside(shape1, shape2), false);
-  EXPECT_EQ(ShapeInside(shape2, shape1), false);
+  EXPECT_EQ(PointsInside(shape1.points, shape2), false);
+  EXPECT_EQ(PointsInside(shape2.points, shape1), false);
 }
 
 TEST(ShapeInside,fully)
@@ -91,8 +91,8 @@ TEST(ShapeInside,fully)
   InitializeShape(s1_points, s1_pointCount, shape1);
   InitializeShape(s2_points, s2_pointCount, shape2);
 
-  EXPECT_EQ(ShapeInside(shape1, shape2), false);
-  EXPECT_EQ(ShapeInside(shape2, shape1), true);
+  EXPECT_EQ(PointsInside(shape1.points, shape2), false);
+  EXPECT_EQ(PointsInside(shape2.points, shape1), true);
 }
 
 TEST(ShapeInside,partially)
@@ -117,8 +117,8 @@ TEST(ShapeInside,partially)
   InitializeShape(s1_points, s1_pointCount, shape1);
   InitializeShape(s2_points, s2_pointCount, shape2);
 
-  EXPECT_EQ(ShapeInside(shape1, shape2), false);
-  EXPECT_EQ(ShapeInside(shape2, shape1), false);
+  EXPECT_EQ(PointsInside(shape1.points, shape2), false);
+  EXPECT_EQ(PointsInside(shape2.points, shape1), false);
 }
 
 int main(int argc, char* argv[])
