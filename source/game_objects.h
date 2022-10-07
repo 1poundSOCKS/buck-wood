@@ -41,10 +41,9 @@ struct game_object
 
 struct bullet
 {
-  bullet() : lifespanSeconds(0.5), outsideLevel(false)
+  bullet() : lifespanSeconds(1.0), outsideLevel(false)
   {
     gameObject.size = 5.0;
-    
   }
 
   void Update(float timespanSeconds);

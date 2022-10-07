@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <d2d1.h>
+#include <dxgi.h>
 #include <dinput.h>
 #include <memory>
 #include <winrt/base.h>

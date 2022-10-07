@@ -34,7 +34,7 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
   const game_point objectPoints[] = {
     game_point(1600, 700),
     game_point(1700, 750),
-    game_point(1800, 800),
+    game_point(1700, 800),
     game_point(1750, 750),
     game_point(1700, 600)
   };
