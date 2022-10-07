@@ -17,6 +17,7 @@ struct game_state
   void OnPlayerShoot();
 
   bool running;
+  float speed;
   SCREEN screen;
   PLAYER_STATE playerState;
   std::unique_ptr<game_object> cursor;

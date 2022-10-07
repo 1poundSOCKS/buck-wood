@@ -1,13 +1,18 @@
 #include "game_objects.h"
 #include <d2d1helper.h>
 
+game_shape::game_shape(const game_point* points, int pointCount)
+{
+  InitializeShape(points, pointCount, *this);
+}
+
 game_object::game_object() : game_object(NULL, 0)
 {
 }
 
 game_object::game_object(const game_point* points, int pointCount) : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), spin(0)
 {
-  outline = std::make_unique<game_shape>();
+  outline = std::make_unique<game_shape>(points, pointCount);
   InitializeShape(points, pointCount, *outline);
 }
 
@@ -58,17 +63,6 @@ void InitializeShape(const game_point* points, int pointCount, game_shape& shape
   }
 }
 
-bool PointInside(const game_point& point, const game_shape& shape)
-{
-  int matchingLines = 0;
-  for( const auto& line: shape.lines )
-  {
-    if( AddLineToInterceptCount(line, point) ) matchingLines++;
-  }
-  
-  return ( matchingLines % 2 > 0 );
-}
-
 bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
 {
   int matchingPointCount = 0;
@@ -78,6 +72,28 @@ bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
   }
 
   return matchingPointCount == points.size();
+}
+
+bool PointInside(const std::list<game_point>& points, const game_shape& shape)
+{
+  int matchingPointCount = 0;
+  for( const auto& point: points )
+  {
+    if( PointInside(point, shape) ) return true;
+  }
+
+  return false;
+}
+
+bool PointInside(const game_point& point, const game_shape& shape)
+{
+  int matchingLines = 0;
+  for( const auto& line: shape.lines )
+  {
+    if( AddLineToInterceptCount(line, point) ) matchingLines++;
+  }
+  
+  return ( matchingLines % 2 > 0 );
 }
 
 bool AddLineToInterceptCount(const game_line& line, const game_point& point)
@@ -94,9 +110,9 @@ float GetYIntercept(float x, const game_line& line)
 {
   float cx = line.second.x - line.first.x;
   float cy = line.second.y - line.first.y;
-  if( cy == 0 ) return line.first.y;
   float m = cy / cx;
-  return m * x;
+  float b = line.first.y - m * line.first.x;
+  return m * x + b;
 }
 
 void CalculateTransformedPoints(const game_object& gameObject, std::list<game_point>& transformedPoints)

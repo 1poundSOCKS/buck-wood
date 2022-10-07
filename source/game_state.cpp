@@ -2,7 +2,7 @@
 #include <list>
 
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
-: running(true), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
+: running(true), speed(0.5f), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
 {
   cursor = CreateCursorObject();
   cursor->size = 5.0;
@@ -12,11 +12,13 @@ game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 
 bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
 {
-  return bullet->lifespanSeconds <= 0;
+  return bullet->lifespanSeconds <= 0 || bullet->outsideLevel;
 }
 
 void game_state::Update(const control_state& controlState, float seconds)
 {
+  seconds *= speed;
+
   if( controlState.quitPress )
   {
     switch( screen )
@@ -58,9 +60,15 @@ void game_state::Update(const control_state& controlState, float seconds)
     
     player->Update(seconds);
 
-    for(const std::unique_ptr<bullet>& bullet : bullets)
+    for(const auto& bullet : bullets)
     {
       bullet->Update(seconds);
+      const game_point bulletPoint(bullet->gameObject.xPos, bullet->gameObject.yPos);
+      bullet->outsideLevel = !PointInside(bulletPoint, *currentLevel->boundary);
+      for( const auto& shape : currentLevel->objects)
+      {
+        if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
+      }
     }
     
     bullets.remove_if(BulletHasExpired);
@@ -68,9 +76,11 @@ void game_state::Update(const control_state& controlState, float seconds)
     std::list<game_point> transformedPoints;
     CalculateTransformedPoints(*player, transformedPoints);
 
-    if( PlayerIsOutOfBounds() || !PointsInside(transformedPoints, currentLevel->boundary) )
+    if( PlayerIsOutOfBounds() || !PointsInside(transformedPoints, *currentLevel->boundary) ) playerState = game_state::dead;
+    
+    for( const auto& shape : currentLevel->objects)
     {
-      playerState = game_state::dead;
+      if( PointInside(transformedPoints, *shape) ) playerState = game_state::dead;
     }
   }
 }

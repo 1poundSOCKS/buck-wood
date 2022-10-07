@@ -17,6 +17,8 @@ typedef std::pair<game_point, game_point> game_line;
 
 struct game_shape
 {
+  game_shape(const game_point* points, int pointCount);
+
   std::list<game_point> points;
   std::list<game_line> lines;
 };
@@ -39,15 +41,17 @@ struct game_object
 
 struct bullet
 {
-  bullet() : lifespanSeconds(0.5)
+  bullet() : lifespanSeconds(0.5), outsideLevel(false)
   {
     gameObject.size = 5.0;
+    
   }
 
   void Update(float timespanSeconds);
 
   game_object gameObject;
   float lifespanSeconds;
+  bool outsideLevel;
 };
 
 struct explosion
@@ -58,8 +62,9 @@ struct explosion
 std::unique_ptr<game_object> CreatePlayerObject();
 std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
-bool PointInside(const game_point& point, const game_shape& shape);
 bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
+bool PointInside(const std::list<game_point>& points, const game_shape& shape);
+bool PointInside(const game_point& point, const game_shape& shape);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
 void CalculateTransformedPoints(const game_object& gameObject, std::list<game_point>& transformedPoints);

@@ -7,12 +7,13 @@
 
 struct game_level
 {
-  game_level(float width, float height);
+  game_level(float width, float height, std::unique_ptr<game_shape>& boundary);
   bool OutOfBounds(float x, float y) const;
 
   const float width, height;
   const float playerStartPosX, playerStartPosY;
-  game_shape boundary;
+  std::unique_ptr<game_shape> boundary;
+  std::list<std::unique_ptr<game_shape>> objects;
 };
 
 std::unique_ptr<game_level> CreateInitialGameLevel();

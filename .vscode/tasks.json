@@ -55,8 +55,8 @@
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/shared",
 				"/IC:/Program Files (x86)/Windows Kits/10/Include/10.0.19041.0/cppwinrt",
 				"/I${workspaceFolder}/packages/gtest/include",
-				"/IC:/Users/mathe/source/repos/vcpkg/vcpkg/packages/jsoncpp_x64-windows/include",
-				"/link /LIBPATH:\"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/lib/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/ucrt/x64\" /LIBPATH:\"${workspaceFolder}/packages/gtest/lib/x64/Release\"",
+				"/IC:/Users/mathe/source/repos/vcpkg/vcpkg/packages/jsoncpp_x64-windows/include/json",
+				"/link /LIBPATH:\"C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.33.31629/lib/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/um/x64\" /LIBPATH:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.19041.0/ucrt/x64\" /LIBPATH:\"${workspaceFolder}/packages/gtest/lib/x64/Release\"  /LIBPATH:\"C:/Users/mathe/source/repos/vcpkg/vcpkg/packages/jsoncpp_x64-windows/lib\"",
 				"/SUBSYSTEM:CONSOLE"
 			],
 			"problemMatcher": [

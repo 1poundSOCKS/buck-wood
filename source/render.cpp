@@ -104,7 +104,12 @@ void DrawLevel(const game_level& level, const d2d_frame& frame)
 {
   std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, level.width, level.height);
   frame.renderTarget->SetTransform(*scaleTransform);
-  DrawShape(level.boundary, frame);
+  DrawShape(*level.boundary, frame);
+
+  for( const auto& shape: level.objects )
+  {
+    DrawShape(*shape, frame);
+  }
 }
 
 void DrawShape(const game_shape& shape, const d2d_frame& frame)

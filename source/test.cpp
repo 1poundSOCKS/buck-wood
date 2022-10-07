@@ -59,10 +59,10 @@ TEST(ShapeInside,noOverlap)
   const int s1_pointCount = sizeof(s1_points) / sizeof(game_point);
   const int s2_pointCount = sizeof(s2_points) / sizeof(game_point);
 
-  game_shape shape1, shape2;
+  game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s2_points, s2_pointCount, shape2);
+  // InitializeShape(s1_points, s1_pointCount, shape1);
+  // InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), false);
@@ -86,10 +86,10 @@ TEST(ShapeInside,fully)
   const int s1_pointCount = sizeof(s1_points) / sizeof(game_point);
   const int s2_pointCount = sizeof(s2_points) / sizeof(game_point);
 
-  game_shape shape1, shape2;
+  game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s2_points, s2_pointCount, shape2);
+  // InitializeShape(s1_points, s1_pointCount, shape1);
+  // InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), true);
@@ -112,13 +112,34 @@ TEST(ShapeInside,partially)
   const int s1_pointCount = sizeof(s1_points) / sizeof(game_point);
   const int s2_pointCount = sizeof(s2_points) / sizeof(game_point);
 
-  game_shape shape1, shape2;
+  game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  InitializeShape(s1_points, s1_pointCount, shape1);
-  InitializeShape(s2_points, s2_pointCount, shape2);
+  // InitializeShape(s1_points, s1_pointCount, shape1);
+  // InitializeShape(s2_points, s2_pointCount, shape2);
 
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), false);
+}
+
+TEST(PointInside,Test1)
+{
+  const game_point points[] = {
+    game_point(20, 20),
+    game_point(1980, 20),
+    game_point(1980, 980),
+    game_point(1200, 900),
+    game_point(800, 700),
+    game_point(20, 980)
+  };
+
+  const int pointCount = sizeof(points) / sizeof(game_point);
+  
+  game_shape shape(points, pointCount);
+  // InitializeShape(points, pointCount, shape);
+
+  game_point point(500.0f,500.0f);
+
+  EXPECT_EQ(PointInside(point,shape),true);
 }
 
 int main(int argc, char* argv[])
