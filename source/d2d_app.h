@@ -6,6 +6,7 @@
 #include <windowsx.h>
 #include <d2d1.h>
 #include <dxgi.h>
+#include <d3d11.h>
 #include <dinput.h>
 #include <memory>
 #include <winrt/base.h>
@@ -18,6 +19,7 @@ struct d2d_app
   HINSTANCE inst;
   int cmdShow;
   HWND wnd;
+  winrt::com_ptr<IDXGISwapChain> swapChain;
   winrt::com_ptr<ID2D1Factory> d2d_factory;
   winrt::com_ptr<ID2D1HwndRenderTarget> d2d_rendertarget;
   winrt::com_ptr<IDirectInput8> directInput;

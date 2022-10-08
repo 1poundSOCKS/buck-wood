@@ -17,11 +17,39 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 	RECT rc;
 	GetClientRect(wnd, &rc);
 
-	HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,d2d_factory.put());
+  HRESULT hr = S_OK;
+
+  DXGI_SWAP_CHAIN_DESC swapChainDesc;
+  ZeroMemory(&swapChain, sizeof(swapChain));
+  swapChainDesc.BufferCount = 1;
+  swapChainDesc.BufferDesc.Width = rc.right - rc.left;
+  swapChainDesc.BufferDesc.Height = rc.bottom - rc.top;
+  swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+  swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+  swapChainDesc.OutputWindow = wnd;
+  swapChainDesc.SampleDesc.Count = 1;
+  swapChainDesc.SampleDesc.Quality = 0;
+  swapChainDesc.Windowed = TRUE;
+
+  D3D_FEATURE_LEVEL featureLevels[] =
+  {
+      D3D_FEATURE_LEVEL_11_0,
+      D3D_FEATURE_LEVEL_10_1,
+      D3D_FEATURE_LEVEL_10_0,
+  };
+
+  hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, swapChain.put(), NULL, NULL, NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = swapChain->SetFullscreenState(TRUE, NULL);
+
+	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,d2d_factory.put());
   if( FAILED(hr) ) throw L"error";
 
 	hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
-    D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
+  D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
   if( FAILED(hr) ) throw L"error";
 
   hr = DirectInput8Create(inst, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
