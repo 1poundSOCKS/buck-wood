@@ -61,9 +61,6 @@ TEST(ShapeInside,noOverlap)
 
   game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  // InitializeShape(s1_points, s1_pointCount, shape1);
-  // InitializeShape(s2_points, s2_pointCount, shape2);
-
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), false);
 }
@@ -88,9 +85,6 @@ TEST(ShapeInside,fully)
 
   game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  // InitializeShape(s1_points, s1_pointCount, shape1);
-  // InitializeShape(s2_points, s2_pointCount, shape2);
-
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), true);
 }
@@ -114,9 +108,6 @@ TEST(ShapeInside,partially)
 
   game_shape shape1(s1_points, s1_pointCount), shape2(s2_points, s2_pointCount);
 
-  // InitializeShape(s1_points, s1_pointCount, shape1);
-  // InitializeShape(s2_points, s2_pointCount, shape2);
-
   EXPECT_EQ(PointsInside(shape1.points, shape2), false);
   EXPECT_EQ(PointsInside(shape2.points, shape1), false);
 }
@@ -135,7 +126,6 @@ TEST(PointInside,Test1)
   const int pointCount = sizeof(points) / sizeof(game_point);
   
   game_shape shape(points, pointCount);
-  // InitializeShape(points, pointCount, shape);
 
   game_point point(500.0f,500.0f);
 

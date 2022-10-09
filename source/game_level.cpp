@@ -31,7 +31,7 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   std::unique_ptr<game_level> level = std::make_unique<game_level>(levelWidth, levelHeight, std::make_unique<game_shape>(boundaryPoints, boundaryPointCount));
 
-  const game_point objectPoints[] = {
+  const game_point object1Points[] = {
     game_point(1600, 700),
     game_point(1700, 750),
     game_point(1700, 800),
@@ -39,10 +39,17 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
     game_point(1700, 600)
   };
 
-  const int objectPointCount = sizeof(objectPoints) / sizeof(game_point);
+  level->objects.push_back(std::move(std::make_unique<game_shape>(object1Points, static_cast<int>(sizeof(object1Points) / sizeof(game_point)))));
 
-  std::unique_ptr<game_shape> levelShape = std::make_unique<game_shape>(objectPoints, objectPointCount);
-  level->objects.push_back(std::move(levelShape));
+  const game_point object2Points[] = {
+    game_point(300, 200),
+    game_point(400, 350),
+    game_point(400, 600),
+    game_point(350, 550),
+    game_point(320, 400)
+  };
+
+  level->objects.push_back(std::move(std::make_unique<game_shape>(object2Points, static_cast<int>(sizeof(object2Points) / sizeof(game_point)))));
 
   return level;
 }

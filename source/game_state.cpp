@@ -36,7 +36,7 @@ void game_state::Update(const control_state& controlState, float seconds)
   {
     if( controlState.startGame )
     {
-      screen = game_state::main;
+       screen = game_state::main;
       playerState = game_state::alive;
       ResetPlayer();
       bullets.clear();

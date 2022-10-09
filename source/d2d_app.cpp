@@ -14,16 +14,11 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 	CreateMainWindow(this);
 	if( !wnd ) throw L"error";
 
-	RECT rc;
-	GetClientRect(wnd, &rc);
-
-  HRESULT hr = S_OK;
-
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-  swapChainDesc.BufferCount = 1;
-  swapChainDesc.BufferDesc.Width = 1024;
-  swapChainDesc.BufferDesc.Height = 768;
+  swapChainDesc.BufferCount = 2;
+  swapChainDesc.BufferDesc.Width = 1920;
+  swapChainDesc.BufferDesc.Height = 1080;
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
   swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -40,6 +35,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
       D3D_FEATURE_LEVEL_10_0,
   };
 
+  HRESULT hr = S_OK;
   hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_BGRA_SUPPORT, featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, dxgi_swapChain.put(), d3d_device.put(), NULL, NULL);
   if( FAILED(hr) ) throw L"error";
 
@@ -76,8 +72,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   hr = keyboard->SetCooperativeLevel(wnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
   if( FAILED(hr) ) throw L"error";
 
-  hr = keyboard->Acquire();
-  if( FAILED(hr) ) throw L"error";
+  keyboard->Acquire();
 
   hr = directInput->CreateDevice(GUID_SysMouse, mouse.put(), NULL);
   if( FAILED(hr) ) throw L"error";
@@ -108,12 +103,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   {
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
-    // if( app == NULL || !app->d2d_rendertarget.get() ) return 0;
 
     app->windowWidth = LOWORD(lParam);
     app->windowHeight = HIWORD(lParam);
-    // app->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
- 
+
     return 0;
   }
 
