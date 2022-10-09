@@ -20,6 +20,7 @@ struct d2d_app
   HINSTANCE inst;
   int cmdShow;
   HWND wnd;
+  UINT windowWidth, windowHeight;
   winrt::com_ptr<ID3D11Device> d3d_device;
   winrt::com_ptr<IDXGISwapChain> dxgi_swapChain;
   winrt::com_ptr<IDXGIDevice> dxgi_device;

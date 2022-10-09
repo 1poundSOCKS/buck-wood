@@ -10,7 +10,7 @@ game_object::game_object() : game_object(NULL, 0)
 {
 }
 
-game_object::game_object(const game_point* points, int pointCount) : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), spin(0)
+game_object::game_object(const game_point* points, int pointCount) : size(20.0), xPos(0), yPos(0), forceX(0), forceY(0), xVelocity(0), yVelocity(0), angle(0), spin(0)
 {
   outline = std::make_unique<game_shape>(points, pointCount);
   InitializeShape(points, pointCount, *outline);
@@ -18,15 +18,17 @@ game_object::game_object(const game_point* points, int pointCount) : size(20.0),
 
 void game_object::Update(float seconds)
 {
-  xPos += xVelocity * seconds;
-  yPos += yVelocity * seconds;
+  xVelocity += forceX * seconds;
+  yVelocity += forceY * seconds;
+  xPos += xVelocity;
+  yPos += yVelocity;
   angle += spin * seconds;
 }
 
-void game_object::Accelerate(float amount)
+void game_object::SetVelocity(float amount)
 {
-  yVelocity -= amount * cos(DEGTORAD(angle));
-  xVelocity += amount * sin(DEGTORAD(angle));
+  yVelocity = -amount * cos(DEGTORAD(angle));
+  xVelocity = amount * sin(DEGTORAD(angle));
 }
 
 void bullet::Update(float timespanSeconds)

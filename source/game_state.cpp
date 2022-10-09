@@ -46,20 +46,25 @@ void game_state::Update(const control_state& controlState, float seconds)
 
   if( playerState == game_state::alive )
   {
-    if( controlState.left ) player->spin = -200.0f;
-    else if( controlState.right ) player->spin = 200.0f;
-    else player->spin = 0.0f;
+    player->spin = 0.0f;
+    if( controlState.left ) player->spin = -400.0f;
+    else if( controlState.right ) player->spin = 400.0f;
     
-    static const float forceOfGravity = 10.0f;
+    static const float forceOfGravity = 1.0f;
     static const float maxPlayerFallVelocity = 300.0f;
-    static const float playerThrust = 20.0f;
+    static const float playerThrust = 3.0f;
 
-    player->yVelocity += ( forceOfGravity );
-    if( player->yVelocity > maxPlayerFallVelocity ) player->yVelocity = maxPlayerFallVelocity;
-    if( controlState.shoot ) OnPlayerShoot();
-    if( controlState.accelerate ) player->Accelerate(playerThrust);
+    player->forceY = forceOfGravity;
+    player->forceX = 0.0f;
+    if( controlState.accelerate )
+    {
+      player->forceY -= playerThrust * cos(DEGTORAD(player->angle));
+      player->forceX += playerThrust * sin(DEGTORAD(player->angle));
+    }
     
     player->Update(seconds);
+
+    if( controlState.shoot ) OnPlayerShoot();
 
     for(const auto& bullet : bullets)
     {
@@ -107,7 +112,7 @@ void game_state::OnPlayerShoot()
   newBullet->gameObject.yPos = player->yPos;
   float angle = CalculateAngle(player->xPos, player->yPos, cursor->xPos, cursor->yPos);
   newBullet->gameObject.angle = angle;
-  newBullet->gameObject.Accelerate(800.0f);
+  newBullet->gameObject.SetVelocity(1.0f);
   bullets.push_front(std::move(newBullet));
 }
 

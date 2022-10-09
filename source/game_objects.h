@@ -29,10 +29,11 @@ struct game_object
   game_object(const game_point* points, int pointCount);
 
   void Update(float seconds);
-  void Accelerate(float);
+  void SetVelocity(float);
 
   float size;
   float xPos, yPos;
+  float forceX, forceY;
   float xVelocity, yVelocity;
   float angle;
   float spin;

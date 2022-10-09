@@ -7,7 +7,7 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* app);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
-   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL)
+   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0)
 {
   RegisterMainWindowClass(inst);
 
@@ -22,8 +22,8 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
   swapChainDesc.BufferCount = 1;
-  swapChainDesc.BufferDesc.Width = rc.right - rc.left;
-  swapChainDesc.BufferDesc.Height = rc.bottom - rc.top;
+  swapChainDesc.BufferDesc.Width = 1024;
+  swapChainDesc.BufferDesc.Height = 768;
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
   swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -46,22 +46,10 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   hr = dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) throw L"error";
 
-  // hr = swapChain->Present(1, 0);
-  // if( FAILED(hr) ) throw L"error";
-
-  // winrt::com_ptr<ID3D11Texture2D> renderTarget;
-  // hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), renderTarget.put_void());
-  // if( FAILED(hr) ) throw L"error";
-
   winrt::com_ptr<IDXGISurface> dxgi_surface;
   hr = dxgi_swapChain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_surface.put_void());
   if( FAILED(hr) ) throw L"error";
 
-  // winrt::com_ptr<ID3D11RenderTargetView> renderTargetView;
-  // hr = d3dDevice->CreateRenderTargetView(renderTarget.get(), NULL, renderTargetView.put());
-  // if( FAILED(hr) ) throw L"error";
-
-  // dxgi_device.as(d3d_device);
   hr = d3d_device->QueryInterface(dxgi_device.put());
   if( FAILED(hr) ) throw L"error";
 
@@ -75,10 +63,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 
   hr = d2d_factory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, d2d_rendertarget.put());
   if( FAILED(hr) ) throw L"error";
-
-	// hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
-  // D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
-  // if( FAILED(hr) ) throw L"error";
 
   hr = DirectInput8Create(inst, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
   if( FAILED(hr) ) throw L"error";
@@ -123,10 +107,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
   if( message == WM_SIZE )
   {
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
-    if( app == NULL || !app->d2d_rendertarget.get() ) return 0;
+    if( app == NULL ) return 0;
+    // if( app == NULL || !app->d2d_rendertarget.get() ) return 0;
 
-    UINT width = LOWORD(lParam);
-    UINT height = HIWORD(lParam);
+    app->windowWidth = LOWORD(lParam);
+    app->windowHeight = HIWORD(lParam);
     // app->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
  
     return 0;
