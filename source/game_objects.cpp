@@ -16,27 +16,6 @@ game_object::game_object(const game_point* points, int pointCount) : size(20.0),
   InitializeShape(points, pointCount, *outline);
 }
 
-void game_object::Update(float seconds)
-{
-  xVelocity += forceX * seconds;
-  yVelocity += forceY * seconds;
-  xPos += xVelocity;
-  yPos += yVelocity;
-  angle += spin * seconds;
-}
-
-void game_object::SetVelocity(float amount)
-{
-  yVelocity = -amount * cos(DEGTORAD(angle));
-  xVelocity = amount * sin(DEGTORAD(angle));
-}
-
-void bullet::Update(float timespanSeconds)
-{
-  gameObject.Update(timespanSeconds);
-  lifespanSeconds -= timespanSeconds;
-}
-
 std::unique_ptr<game_object> CreatePlayerObject()
 {
   const game_point points[] = {

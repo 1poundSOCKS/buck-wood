@@ -12,7 +12,9 @@ struct game_state
 
   game_state(std::unique_ptr<game_level>& firstLevel);
   void Update(const control_state& cs, float seconds);
+  void UpdatePlayer(const control_state& controlState, float seconds);
   void ResetPlayer();
+  void UpdateBullets(const control_state& controlState, float seconds);
   bool PlayerIsOutOfBounds() const;
   void OnPlayerShoot();
 
