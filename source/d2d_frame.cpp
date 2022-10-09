@@ -1,6 +1,6 @@
 #include "d2d_frame.h"
 
-d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget)
+d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
  : renderTarget(renderTarget)
 {
   HRESULT hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brush.put());

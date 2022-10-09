@@ -20,7 +20,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   HRESULT hr = S_OK;
 
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
-  ZeroMemory(&swapChain, sizeof(swapChain));
+  ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
   swapChainDesc.BufferCount = 1;
   swapChainDesc.BufferDesc.Width = rc.right - rc.left;
   swapChainDesc.BufferDesc.Height = rc.bottom - rc.top;
@@ -40,17 +40,45 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
       D3D_FEATURE_LEVEL_10_0,
   };
 
-  hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, swapChain.put(), NULL, NULL, NULL);
+  hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_BGRA_SUPPORT, featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, dxgi_swapChain.put(), d3d_device.put(), NULL, NULL);
   if( FAILED(hr) ) throw L"error";
 
-  hr = swapChain->SetFullscreenState(TRUE, NULL);
+  hr = dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  if( FAILED(hr) ) throw L"error";
 
+  // hr = swapChain->Present(1, 0);
+  // if( FAILED(hr) ) throw L"error";
+
+  // winrt::com_ptr<ID3D11Texture2D> renderTarget;
+  // hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), renderTarget.put_void());
+  // if( FAILED(hr) ) throw L"error";
+
+  winrt::com_ptr<IDXGISurface> dxgi_surface;
+  hr = dxgi_swapChain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_surface.put_void());
+  if( FAILED(hr) ) throw L"error";
+
+  // winrt::com_ptr<ID3D11RenderTargetView> renderTargetView;
+  // hr = d3dDevice->CreateRenderTargetView(renderTarget.get(), NULL, renderTargetView.put());
+  // if( FAILED(hr) ) throw L"error";
+
+  // dxgi_device.as(d3d_device);
+  hr = d3d_device->QueryInterface(dxgi_device.put());
+  if( FAILED(hr) ) throw L"error";
+
+  D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+    D2D1_RENDER_TARGET_TYPE_DEFAULT,
+    D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)
+  );
+  
 	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,d2d_factory.put());
   if( FAILED(hr) ) throw L"error";
 
-	hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
-  D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
+  hr = d2d_factory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, d2d_rendertarget.put());
   if( FAILED(hr) ) throw L"error";
+
+	// hr = d2d_factory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(),
+  // D2D1::HwndRenderTargetProperties(this->wnd,D2D1::SizeU(rc.right - rc.left,rc.bottom - rc.top)),d2d_rendertarget.put());
+  // if( FAILED(hr) ) throw L"error";
 
   hr = DirectInput8Create(inst, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
   if( FAILED(hr) ) throw L"error";
@@ -79,6 +107,11 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   if( FAILED(hr) ) throw L"error";
 }
 
+d2d_app::~d2d_app()
+{
+  if( dxgi_swapChain ) dxgi_swapChain->SetFullscreenState(FALSE, NULL);
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   if( message == WM_PAINT )
@@ -94,7 +127,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     UINT width = LOWORD(lParam);
     UINT height = HIWORD(lParam);
-    app->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
+    // app->d2d_rendertarget->Resize(D2D1::SizeU(width, height));
  
     return 0;
   }

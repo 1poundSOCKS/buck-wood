@@ -19,6 +19,7 @@
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 #pragma comment(lib,"jsoncpp.lib")
+#pragma comment(lib, "RuntimeObject.lib")
 
 bool ProcessMessage(MSG* msg);
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
@@ -56,6 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     gameState->cursor->yPos = controlState->mouseY * gameState->currentLevel->height / frameSize.height;
 
     DoRender(app->d2d_rendertarget, *gameState, *perfData, controlState->mouseX, controlState->mouseY);
+    app->dxgi_swapChain->Present(0, 0);
     gameState->Update(*controlState, perfData->frameTimeSeconds);
     previousControlState = std::move(controlState);
 

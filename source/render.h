@@ -10,7 +10,7 @@
 #include "game_state.h"
 #include "perf_data.h"
 
-void DoRender(const winrt::com_ptr<ID2D1HwndRenderTarget>& renderTarget, const game_state& gameState, const perf_data& pd, float mouseX, float mouseY);
+void DoRender(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState, const perf_data& pd, float mouseX, float mouseY);
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float mouseX, float mouseY);
 void RenderTitleScreen(const d2d_frame& frame);
 void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, const perf_data& pd);
