@@ -1,6 +1,6 @@
 #include "d2d_frame.h"
 
-d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
+d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float yOffset)
  : renderTarget(renderTarget)
 {
   HRESULT hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brush.put());
@@ -17,6 +17,8 @@ d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
 
   hr = writeTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
   if( FAILED(hr) ) throw L"error";
+
+  transform = D2D1::Matrix3x2F::Translation(0, yOffset);
 
   renderTarget->BeginDraw();
 }

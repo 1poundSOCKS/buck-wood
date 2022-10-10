@@ -11,7 +11,7 @@ void RenderFrame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget,
 {
   const bool renderDiagnostics = false;
 
-  std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(renderTarget);
+  std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(renderTarget, gameState.currentLevel->height / 2 - gameState.player->yPos);
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   
   switch( gameState.screen )
@@ -82,7 +82,7 @@ void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::M
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
-  const D2D1::Matrix3x2F transform = rotate * translate * scaleTransform;
+  const D2D1::Matrix3x2F transform = rotate * translate * scaleTransform * frame.transform;
   frame.renderTarget->SetTransform(transform);
   DrawShape(*player.outline, frame);
 }
@@ -92,7 +92,7 @@ void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix
   static const float bulletSize = 3.0f;
 
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  const D2D1::Matrix3x2F transform = translate * scaleTransform;
+  const D2D1::Matrix3x2F transform = translate * scaleTransform * frame.transform;
   frame.renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
   frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
@@ -101,7 +101,8 @@ void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix
 void DrawLevel(const game_level& level, const d2d_frame& frame)
 {
   std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, level.width, level.height);
-  frame.renderTarget->SetTransform(*scaleTransform);
+  D2D1::Matrix3x2F transform = *scaleTransform * frame.transform;
+  frame.renderTarget->SetTransform(transform);
   DrawShape(*level.boundary, frame);
 
   for( const auto& shape: level.objects )
