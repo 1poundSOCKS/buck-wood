@@ -1,8 +1,8 @@
 #ifndef _game_object_
 #define _game_object_
 
-#include <d2d1.h>
-#include <winrt/base.h>
+#include <memory>
+#include <list>
 
 struct game_point
 {
@@ -45,6 +45,5 @@ struct bullet
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
-void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
 
 #endif
