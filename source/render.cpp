@@ -4,10 +4,10 @@
 const float titleScreenWidth = 1000.0f;
 const float titleScreenHeight = 500.0f;
 
-void DoRender(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
-              const game_state& gameState, 
-              const perf_data& pd, 
-              float mouseX, float mouseY)
+void RenderFrame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
+                 const game_state& gameState, 
+                 const perf_data& pd, 
+                 float mouseX, float mouseY)
 {
   const bool renderDiagnostics = false;
 

@@ -1,3 +1,6 @@
+#ifndef _d2d_app_
+#define _d2d_app_
+
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
 #define DIRECTINPUT_VERSION 0x0800
@@ -30,3 +33,5 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectInputDevice8> mouse;
 };
+
+#endif
