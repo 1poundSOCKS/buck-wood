@@ -2,10 +2,9 @@
 #include <list>
 
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
-: running(true), speed(0.5f), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
+: running(true), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
 {
   player = CreatePlayerShip();
-  Reset(*this);
 }
 
 bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
@@ -13,64 +12,63 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return bullet->lifespanSeconds <= 0 || bullet->outsideLevel;
 }
 
-void game_state::Update(const control_state& controlState, float seconds)
+void UpdateGameState(game_state& gameState, const control_state& controlState, float seconds)
 {
+  static const float speed = 0.3f;
   seconds *= speed;
 
   if( controlState.quitPress )
   {
-    switch( screen )
+    switch( gameState.screen )
     {
       case game_state::title:
-        running = false;
+        gameState.running = false;
         return;
       case game_state::main:
-        screen = game_state::title;
+        gameState.screen = game_state::title;
         break;
     }
   }
 
-  if( screen == game_state::title )
+  if( gameState.screen == game_state::title )
   {
     if( controlState.startGame ){
-      screen = game_state::main;
-      playerState = game_state::alive;
-      Reset(*this);
+      gameState.screen = game_state::main;
+      ResetGameState(gameState);
     }
     return;
   }
 
-  if( playerState == game_state::alive )
+  if( gameState.playerState == game_state::alive )
   {
-    ::UpdatePlayer(*player, controlState, seconds);
-    ::UpdateBullets(*this, controlState, seconds);
+    UpdatePlayer(gameState, controlState, seconds);
+    UpdateBullets(gameState, controlState, seconds);
 
     std::list<game_point> transformedPoints;
-    TransformPlayerShip(*player, transformedPoints);
+    TransformPlayerShip(*gameState.player, transformedPoints);
 
-    if( PlayerIsOutOfBounds() || !PointsInside(transformedPoints, *currentLevel->boundary) ) playerState = game_state::dead;
+    if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) ) gameState.playerState = game_state::dead;
     
-    for( const auto& shape : currentLevel->objects)
+    for( const auto& shape : gameState.currentLevel->objects)
     {
-      if( PointInside(transformedPoints, *shape) ) playerState = game_state::dead;
+      if( PointInside(transformedPoints, *shape) ) gameState.playerState = game_state::dead;
     }
   }
 }
 
-bool game_state::PlayerIsOutOfBounds() const
+bool PlayerIsOutOfBounds(const game_state& gameState)
 {
-  return currentLevel->OutOfBounds(player->xPos, player->yPos);  
+  return gameState.currentLevel->OutOfBounds(gameState.player->xPos, gameState.player->yPos);  
 }
 
 std::unique_ptr<game_state> CreateInitialGameState()
 {
   std::unique_ptr<game_state> gameState = std::make_unique<game_state>(CreateInitialGameLevel());
-  gameState->player->xPos = gameState->currentLevel->width / 2.0f;
-  gameState->player->yPos = gameState->currentLevel->height / 2.0f;
+  ResetGameState(*gameState);
   return gameState;
 }
 
-void UpdatePlayer(player_ship& player, const control_state& controlState, float seconds)
+void UpdatePlayer(game_state& gameState, const control_state& controlState, float seconds)
 {
   static const float forceOfGravity = 1.0f;
   static const float playerThrust = 3.0f;
@@ -81,19 +79,19 @@ void UpdatePlayer(player_ship& player, const control_state& controlState, float 
 
   if( controlState.accelerate )
   {
-    forceX += playerThrust * sin(DEGTORAD(player.angle));
-    forceY -= playerThrust * cos(DEGTORAD(player.angle));
+    forceX += playerThrust * sin(DEGTORAD(gameState.player->angle));
+    forceY -= playerThrust * cos(DEGTORAD(gameState.player->angle));
   }
   
   float spin = 0.0f;
   if( controlState.left ) spin = -rotationSpeed;
   else if( controlState.right ) spin = rotationSpeed;
   
-  player.xVelocity += forceX * seconds;
-  player.yVelocity += forceY * seconds;
-  player.xPos += player.xVelocity;
-  player.yPos += player.yVelocity;
-  player.angle += spin * seconds;
+  gameState.player->xVelocity += forceX * seconds;
+  gameState.player->yVelocity += forceY * seconds;
+  gameState.player->xPos += gameState.player->xVelocity;
+  gameState.player->yPos += gameState.player->yVelocity;
+  gameState.player->angle += spin * seconds;
 }
 
 void UpdateBullets(game_state& gameState, const control_state& controlState, float seconds)
@@ -131,13 +129,13 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
   gameState.bullets.remove_if(BulletHasExpired);
 }
 
-void Reset(game_state& gameState)
+void ResetGameState(game_state& gameState)
 {
   gameState.player->xPos = gameState.currentLevel->playerStartPosX;
   gameState.player->yPos = gameState.currentLevel->playerStartPosY;
   gameState.player->xVelocity = 0;
   gameState.player->yVelocity = 0;
   gameState.player->angle = 0;
-  
+  gameState.playerState = game_state::alive;
   gameState.bullets.clear();
 }

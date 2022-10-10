@@ -44,10 +44,6 @@ struct bullet
   bool outsideLevel;
 };
 
-struct explosion
-{
-};
-
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
