@@ -6,16 +6,6 @@ game_shape::game_shape(const game_point* points, int pointCount)
   InitializeShape(points, pointCount, *this);
 }
 
-game_object::game_object() : game_object(NULL, 0)
-{
-}
-
-game_object::game_object(const game_point* points, int pointCount) : size(20.0), xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
-{
-  outline = std::make_unique<game_shape>(points, pointCount);
-  InitializeShape(points, pointCount, *outline);
-}
-
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
   static const game_point points[] = {
@@ -36,11 +26,6 @@ bullet::bullet() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), lifes
 std::unique_ptr<player_ship> CreatePlayerShip()
 {
   return std::make_unique<player_ship>();
-}
-
-std::unique_ptr<game_object> CreateCursorObject()
-{
-  return std::make_unique<game_object>();
 }
 
 void InitializeShape(const game_point* points, int pointCount, game_shape& shape)

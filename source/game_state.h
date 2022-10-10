@@ -22,7 +22,6 @@ struct game_state
   float speed;
   SCREEN screen;
   PLAYER_STATE playerState;
-  std::unique_ptr<game_object> cursor;
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
   std::unique_ptr<game_level> currentLevel;

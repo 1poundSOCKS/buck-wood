@@ -23,18 +23,6 @@ struct game_shape
   std::list<game_line> lines;
 };
 
-struct game_object
-{
-  game_object();
-  game_object(const game_point* points, int pointCount);
-
-  float size;
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  std::unique_ptr<game_shape> outline;
-};
-
 struct player_ship
 {
   player_ship();
@@ -58,11 +46,9 @@ struct bullet
 
 struct explosion
 {
-  game_object object;
 };
 
 std::unique_ptr<player_ship> CreatePlayerShip();
-std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
 bool PointInside(const std::list<game_point>& points, const game_shape& shape);

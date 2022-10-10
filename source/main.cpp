@@ -51,14 +51,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
-    
-    D2D1_SIZE_F frameSize = app->d2d_rendertarget->GetSize();
-    gameState->cursor->xPos = controlState->mouseX * gameState->currentLevel->width / static_cast<float>(app->windowWidth);//frameSize.width;
-    gameState->cursor->yPos = controlState->mouseY * gameState->currentLevel->height / static_cast<float>(app->windowHeight);//frameSize.height;
 
     DoRender(app->d2d_rendertarget, *gameState, *perfData, controlState->mouseX, controlState->mouseY);
+
     app->dxgi_swapChain->Present(0, 0);
+
     gameState->Update(*controlState, perfData->frameTimeSeconds);
+
     previousControlState = std::move(controlState);
 
     if( !gameState->running )
@@ -111,6 +110,17 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
     if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
   }
 
+  POINT p;
+  if( GetCursorPos(&p) )
+  {
+    POINT clientPos;
+    if( ScreenToClient(app.wnd, &p) )
+    {
+      cs->mouseX = static_cast<float>(p.x) / static_cast<float>(app.windowWidth);
+      cs->mouseY = static_cast<float>(p.y) / static_cast<float>(app.windowHeight);
+    }
+  }
+
   DIMOUSESTATE mouseState;
   hr = app.mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
   if( FAILED(hr) )
@@ -120,16 +130,7 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
 
   if( SUCCEEDED(hr) )
   {
-    POINT p;
-    if( GetCursorPos(&p) )
-    {
-      POINT clientPos;
-      if( ScreenToClient(app.wnd, &p) )
-      {
-        cs->mouseX = p.x;
-        cs->mouseY = p.y;
-      }
-    }
+
     if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
     if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
   }

@@ -12,7 +12,7 @@ struct control_state
   bool right;
   bool accelerate;
   bool shoot;
-  int mouseX, mouseY;
+  float mouseX, mouseY;
 };
 
 #endif

@@ -4,8 +4,6 @@
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 : running(true), speed(0.5f), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
 {
-  cursor = CreateCursorObject();
-  cursor->size = 5.0;
   player = CreatePlayerShip();
   ResetPlayer();
 }
@@ -100,10 +98,13 @@ void game_state::UpdateBullets(const control_state& controlState, float seconds)
 {
   if( controlState.shoot )
   {
+    float cursorX = controlState.mouseX * currentLevel->width;
+    float cursorY = controlState.mouseY * currentLevel->height;
+
     std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
     newBullet->xPos = player->xPos;
     newBullet->yPos = player->yPos;
-    float angle = CalculateAngle(player->xPos, player->yPos, cursor->xPos, cursor->yPos);
+    float angle = CalculateAngle(player->xPos, player->yPos, cursorX, cursorY);
     newBullet->angle = angle;
     newBullet->yVelocity = -1.0f * cos(DEGTORAD(angle));
     newBullet->xVelocity = 1.0f * sin(DEGTORAD(angle));
