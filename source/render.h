@@ -14,8 +14,8 @@ void DoRender(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float mouseX, float mouseY);
 void RenderTitleScreen(const d2d_frame& frame);
 void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, const perf_data& pd);
-void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);
-void DrawGameObject(const game_object& gameObject, const d2d_frame& frame);
+void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);
+void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);
 void DrawLevel(const game_level& level, const d2d_frame& frame);
 void DrawShape(const game_shape& shape, const d2d_frame& frame);
 std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const d2d_frame& frame, float screenWidth, float screenHeight);

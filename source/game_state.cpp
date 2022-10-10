@@ -6,7 +6,7 @@ game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 {
   cursor = CreateCursorObject();
   cursor->size = 5.0;
-  player = CreatePlayerObject();
+  player = CreatePlayerShip();
   ResetPlayer();
 }
 
@@ -50,7 +50,7 @@ void game_state::Update(const control_state& controlState, float seconds)
     UpdateBullets(controlState, seconds);
 
     std::list<game_point> transformedPoints;
-    CalculateTransformedPoints(*player, transformedPoints);
+    TransformPlayerShip(*player, transformedPoints);
 
     if( PlayerIsOutOfBounds() || !PointsInside(transformedPoints, *currentLevel->boundary) ) playerState = game_state::dead;
     
@@ -63,27 +63,28 @@ void game_state::Update(const control_state& controlState, float seconds)
 
 void game_state::UpdatePlayer(const control_state& controlState, float seconds)
 {
-  player->spin = 0.0f;
-  if( controlState.left ) player->spin = -400.0f;
-  else if( controlState.right ) player->spin = 400.0f;
-  
   static const float forceOfGravity = 1.0f;
-  static const float maxPlayerFallVelocity = 300.0f;
   static const float playerThrust = 3.0f;
+  static const float rotationSpeed = 400.0f;
 
-  player->forceY = forceOfGravity;
-  player->forceX = 0.0f;
+  float forceX = 0.0f;
+  float forceY = forceOfGravity;
+
   if( controlState.accelerate )
   {
-    player->forceY -= playerThrust * cos(DEGTORAD(player->angle));
-    player->forceX += playerThrust * sin(DEGTORAD(player->angle));
+    forceX += playerThrust * sin(DEGTORAD(player->angle));
+    forceY -= playerThrust * cos(DEGTORAD(player->angle));
   }
   
-  player->xVelocity += player->forceX * seconds;
-  player->yVelocity += player->forceY * seconds;
+  float spin = 0.0f;
+  if( controlState.left ) spin = -rotationSpeed;
+  else if( controlState.right ) spin = rotationSpeed;
+  
+  player->xVelocity += forceX * seconds;
+  player->yVelocity += forceY * seconds;
   player->xPos += player->xVelocity;
   player->yPos += player->yVelocity;
-  player->angle += player->spin * seconds;
+  player->angle += spin * seconds;
 }
 
 void game_state::ResetPlayer()
@@ -100,22 +101,22 @@ void game_state::UpdateBullets(const control_state& controlState, float seconds)
   if( controlState.shoot )
   {
     std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
-    newBullet->gameObject.xPos = player->xPos;
-    newBullet->gameObject.yPos = player->yPos;
+    newBullet->xPos = player->xPos;
+    newBullet->yPos = player->yPos;
     float angle = CalculateAngle(player->xPos, player->yPos, cursor->xPos, cursor->yPos);
-    newBullet->gameObject.angle = angle;
-    newBullet->gameObject.yVelocity = -1.0f * cos(DEGTORAD(angle));
-    newBullet->gameObject.xVelocity = 1.0f * sin(DEGTORAD(angle));
+    newBullet->angle = angle;
+    newBullet->yVelocity = -1.0f * cos(DEGTORAD(angle));
+    newBullet->xVelocity = 1.0f * sin(DEGTORAD(angle));
     bullets.push_front(std::move(newBullet));
   }
 
   for(const auto& bullet : bullets)
   {
-    bullet->gameObject.xPos += bullet->gameObject.xVelocity;
-    bullet->gameObject.yPos += bullet->gameObject.yVelocity;
+    bullet->xPos += bullet->xVelocity;
+    bullet->yPos += bullet->yVelocity;
     bullet->lifespanSeconds -= seconds;
 
-    const game_point bulletPoint(bullet->gameObject.xPos, bullet->gameObject.yPos);
+    const game_point bulletPoint(bullet->xPos, bullet->yPos);
     bullet->outsideLevel = !PointInside(bulletPoint, *currentLevel->boundary);
 
     for( const auto& shape : currentLevel->objects)

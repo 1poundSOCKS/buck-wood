@@ -32,11 +32,11 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float
 
   DrawLevel(*gameState.currentLevel, frame);
 
-  DrawGameObject(*gameState.player, frame, *scaleTransform);
+  DrawPlayer(*gameState.player, frame, *scaleTransform);
 
   for( const std::unique_ptr<bullet>& bullet : gameState.bullets )
   {
-    DrawGameObject(bullet->gameObject, frame, *scaleTransform);
+    DrawBullet(*bullet, frame, *scaleTransform);
   }
 
   if( gameState.playerState == game_state::dead )
@@ -78,26 +78,24 @@ void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, cons
   frame.renderTarget->DrawTextW(msg.c_str(), msg.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
 }
 
-void DrawGameObject(const game_object& gameObject, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
+void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
 {
-  const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(gameObject.angle,D2D1::Point2F(0,0));
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gameObject.xPos, gameObject.yPos);
+  const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
   const D2D1::Matrix3x2F transform = rotate * translate * scaleTransform;
   frame.renderTarget->SetTransform(transform);
-  DrawGameObject(gameObject, frame);
+  DrawShape(*player.outline, frame);
 }
 
-void DrawGameObject(const game_object& gameObject, const d2d_frame& frame)
+void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
 {
-  if( gameObject.outline->lines.size() > 0 )
-  {
-    DrawShape(*gameObject.outline, frame);
-  }
-  else
-  {
-    D2D1_RECT_F rectangle = D2D1::RectF(- gameObject.size / 2, - gameObject.size / 2, gameObject.size / 2, gameObject.size / 2);
-    frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
-  }
+  static const float bulletSize = 3.0f;
+
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
+  const D2D1::Matrix3x2F transform = translate * scaleTransform;
+  frame.renderTarget->SetTransform(transform);
+  D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
+  frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
 }
 
 void DrawLevel(const game_level& level, const d2d_frame& frame)

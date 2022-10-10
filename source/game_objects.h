@@ -30,21 +30,28 @@ struct game_object
 
   float size;
   float xPos, yPos;
-  float forceX, forceY;
   float xVelocity, yVelocity;
   float angle;
-  float spin;
+  std::unique_ptr<game_shape> outline;
+};
+
+struct player_ship
+{
+  player_ship();
+
+  float xPos, yPos;
+  float xVelocity, yVelocity;
+  float angle;
   std::unique_ptr<game_shape> outline;
 };
 
 struct bullet
 {
-  bullet() : lifespanSeconds(1.0), outsideLevel(false)
-  {
-    gameObject.size = 5.0;
-  }
+  bullet();
 
-  game_object gameObject;
+  float xPos, yPos;
+  float xVelocity, yVelocity;
+  float angle;
   float lifespanSeconds;
   bool outsideLevel;
 };
@@ -54,7 +61,7 @@ struct explosion
   game_object object;
 };
 
-std::unique_ptr<game_object> CreatePlayerObject();
+std::unique_ptr<player_ship> CreatePlayerShip();
 std::unique_ptr<game_object> CreateCursorObject();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
@@ -62,6 +69,6 @@ bool PointInside(const std::list<game_point>& points, const game_shape& shape);
 bool PointInside(const game_point& point, const game_shape& shape);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
-void CalculateTransformedPoints(const game_object& gameObject, std::list<game_point>& transformedPoints);
+void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
 
 #endif
