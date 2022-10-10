@@ -3,7 +3,6 @@
 
 #include <d2d1.h>
 #include <winrt/base.h>
-#include "math.h"
 
 struct game_point
 {
@@ -46,11 +45,6 @@ struct bullet
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
-bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
-bool PointInside(const std::list<game_point>& points, const game_shape& shape);
-bool PointInside(const game_point& point, const game_shape& shape);
-bool AddLineToInterceptCount(const game_line& line, const game_point& point);
-float GetYIntercept(float x, const game_line& line);
 void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
 
 #endif

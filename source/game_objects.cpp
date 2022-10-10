@@ -38,58 +38,6 @@ void InitializeShape(const game_point* points, int pointCount, game_shape& shape
   }
 }
 
-bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
-{
-  int matchingPointCount = 0;
-  for( const auto& point: points )
-  {
-    if( PointInside(point, shape) ) matchingPointCount++;
-  }
-
-  return matchingPointCount == points.size();
-}
-
-bool PointInside(const std::list<game_point>& points, const game_shape& shape)
-{
-  int matchingPointCount = 0;
-  for( const auto& point: points )
-  {
-    if( PointInside(point, shape) ) return true;
-  }
-
-  return false;
-}
-
-bool PointInside(const game_point& point, const game_shape& shape)
-{
-  int matchingLines = 0;
-  for( const auto& line: shape.lines )
-  {
-    if( AddLineToInterceptCount(line, point) ) matchingLines++;
-  }
-  
-  return ( matchingLines % 2 > 0 );
-}
-
-bool AddLineToInterceptCount(const game_line& line, const game_point& point)
-{
-  if( point.x >= line.first.x && point.x < line.second.x || point.x < line.first.x && point.x >= line.second.x )
-  {
-    float yIntercept = GetYIntercept(point.x, line);
-    return yIntercept <= point.y;
-  }
-  return false;
-}
-
-float GetYIntercept(float x, const game_line& line)
-{
-  float cx = line.second.x - line.first.x;
-  float cy = line.second.y - line.first.y;
-  float m = cy / cx;
-  float b = line.first.y - m * line.first.x;
-  return m * x + b;
-}
-
 void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));

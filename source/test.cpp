@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
-#include "math.h"
-#include "game_objects.h"
+#include "game_math.h"
 
 TEST(angle,0)
 {

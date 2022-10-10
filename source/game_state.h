@@ -1,7 +1,7 @@
 #ifndef _game_state_
 #define _game_state_
 
-#include "game_objects.h"
+#include "game_math.h"
 #include "game_level.h"
 #include "control_state.h"
 
