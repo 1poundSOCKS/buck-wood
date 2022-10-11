@@ -5,7 +5,7 @@
 
 struct control_state
 {
-  control_state() : quit(false), quitPress(false), startGame(false), left(false), right(false), accelerate(false), shoot(false), mouseX(0), mouseY(0) {}
+  control_state();
   
   bool quit;
   bool quitPress;
@@ -16,6 +16,7 @@ struct control_state
   bool shoot;
   float mouseX, mouseY;
   float renderTargetMouseX, renderTargetMouseY;
+  float gameMouseX, gameMouseY;
 };
 
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);

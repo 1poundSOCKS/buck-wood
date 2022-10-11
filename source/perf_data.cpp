@@ -5,5 +5,6 @@ perf_data::perf_data(const LARGE_INTEGER& perfFrequency, const LARGE_INTEGER& in
   totalTicks = ticks.QuadPart - initialTicks.QuadPart;
   frameTicks = ticks.QuadPart - previousTicks.QuadPart;
   frameTimeSeconds = static_cast<float>(frameTicks) / static_cast<float>(perfFrequency.QuadPart);
-  fps = frameTicks ? perfFrequency.QuadPart / frameTicks : 0;
+  float fpsTmp = static_cast<float>(perfFrequency.QuadPart) / static_cast<float>(frameTicks);
+  fps = static_cast<int64_t>(fpsTmp + 0.5f);//frameTicks ? perfFrequency.QuadPart / frameTicks : 0;
 }

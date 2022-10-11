@@ -104,8 +104,8 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
     static const float bulletSpeed = 5.0f;
     static const float bulletRange = 1000.0f;
 
-    float cursorX = controlState.mouseX * gameState.currentLevel->width;
-    float cursorY = controlState.mouseY * gameState.currentLevel->height;
+    float cursorX = controlState.gameMouseX;
+    float cursorY = controlState.gameMouseY;
 
     std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(gameState.player->xPos, gameState.player->yPos, bulletRange);
     float angle = CalculateAngle(gameState.player->xPos, gameState.player->yPos, cursorX, cursorY);

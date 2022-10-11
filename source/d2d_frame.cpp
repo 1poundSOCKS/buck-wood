@@ -27,3 +27,19 @@ d2d_frame::~d2d_frame()
 {
   renderTarget->EndDraw();
 }
+
+std::unique_ptr<game_point> GetMousePositionInFrame(float mouseX, float mouseY, const d2d_frame& frame)
+{
+  std::unique_ptr<game_point> mousePosition = std::make_unique<game_point>();
+
+  // D2D1_SIZE_F renderTargetSize = frame.renderTarget->GetSize();
+  // float mouseX = mouseX * renderTargetSize.width;
+  // float mouseY = mouseY * renderTargetSize.height;
+
+  // D2D1_POINT_2F inPoint;
+  // inPoint.x = mouseX;
+  // inPoint.y = mouseY;
+  // D2D1_POINT_2F outPoint = frame.transform.TransformPoint(inPoint);
+
+  return mousePosition;
+}
