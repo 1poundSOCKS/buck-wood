@@ -51,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
 
-    float viewOffsetY = gameState->currentLevel->height / 2 - gameState->player->yPos;
+    float viewOffsetY = 300.0f - gameState->player->yPos;//gameState->currentLevel->height / 2 - gameState->player->yPos;
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, viewOffsetY);
     

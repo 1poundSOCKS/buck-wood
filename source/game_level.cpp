@@ -1,8 +1,8 @@
 #include "game_level.h"
 #include "game_level_file.h"
 
-game_level::game_level(float width, float height, std::unique_ptr<game_shape>& boundary)
- : width(width), height(height), boundary(std::move(boundary)), playerStartPosX(width / 2), playerStartPosY(height / 2)
+game_level::game_level(float width, float height, std::unique_ptr<game_shape>& boundary, float playerStartX, float playerStartY)
+ : width(width), height(height), boundary(std::move(boundary)), playerStartPosX(playerStartX), playerStartPosY(playerStartY)
 {
 }
 
@@ -16,12 +16,17 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
   game_level_file file;
 
   const float levelWidth = 2000.0f;
-  const float levelHeight = 1000.0f;
-
+  const float levelHeight = 2200.0f;
+  const float playerStartX = 1000.0f;
+  const float playerStartY = 200.0f;
+  
   const game_point boundaryPoints[] = {
     game_point(20, 20),
     game_point(1980, 20),
     game_point(1980, 980),
+    game_point(1300, 980),
+    game_point(1300, 2000),
+    game_point(1200, 2000),
     game_point(1200, 900),
     game_point(800, 700),
     game_point(20, 980)
@@ -29,7 +34,8 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   const int boundaryPointCount = sizeof(boundaryPoints) / sizeof(game_point);
 
-  std::unique_ptr<game_level> level = std::make_unique<game_level>(levelWidth, levelHeight, std::make_unique<game_shape>(boundaryPoints, boundaryPointCount));
+  std::unique_ptr<game_level> level = std::make_unique<game_level>
+    (levelWidth, levelHeight, std::make_unique<game_shape>(boundaryPoints, boundaryPointCount), playerStartX, playerStartY);
 
   const game_point object1Points[] = {
     game_point(1600, 700),

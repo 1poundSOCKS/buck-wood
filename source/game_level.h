@@ -7,7 +7,7 @@
 
 struct game_level
 {
-  game_level(float width, float height, std::unique_ptr<game_shape>& boundary);
+  game_level(float width, float height, std::unique_ptr<game_shape>& boundary, float playerStartX, float playerStartY);
   bool OutOfBounds(float x, float y) const;
 
   const float width, height;
