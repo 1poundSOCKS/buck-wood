@@ -23,8 +23,6 @@ void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1
 
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform)
 {
-  // std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, gameState.currentLevel->width, gameState.currentLevel->height);
-
   DrawLevel(*gameState.currentLevel, frame, transform);
 
   DrawPlayer(*gameState.player, frame, transform);
@@ -91,31 +89,29 @@ void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, cons
   frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
 }
 
-void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
+void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
-  const D2D1::Matrix3x2F transform = rotate * translate * scaleTransform;// * frame.transform;
+  const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
   DrawShape(*player.outline, frame);
 }
 
-void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
+void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   static const float bulletSize = 3.0f;
 
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  const D2D1::Matrix3x2F transform = translate * scaleTransform;// * frame.transform;
+  const D2D1::Matrix3x2F transform = translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
   frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
 }
 
-void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform)
+void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
-  // std::unique_ptr<D2D1::Matrix3x2F> scaleTransform = CreateScaleTransform(frame, level.width, level.height);
-  D2D1::Matrix3x2F transform = scaleTransform;// * frame.transform;
-  frame.renderTarget->SetTransform(transform);
+  frame.renderTarget->SetTransform(viewTransform);
   DrawShape(*level.boundary, frame);
 
   for( const auto& shape: level.objects )
@@ -140,20 +136,16 @@ void DrawShape(const game_shape& shape, const d2d_frame& frame)
   }
 }
 
-std::unique_ptr<D2D1::Matrix3x2F> CreateScaleTransform(const d2d_frame& frame, float screenWidth, float screenHeight)
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float widthToScale, float heightToTranslate)
 {
-  D2D1_SIZE_F frameSize = frame.renderTarget->GetSize();
-  D2D1_SIZE_F size;
-  size.width = frameSize.width / screenWidth;
-  size.height = size.width;
-  return std::make_unique<D2D1::Matrix3x2F>(D2D1::Matrix3x2F::Scale(size));
-}
+  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
+  
+  D2D1::Matrix3x2F shift = D2D1::Matrix3x2F::Translation(0, heightToTranslate);
+  
+  D2D1_SIZE_F scaleSize;
+  scaleSize.width = renderTargetSize.width / widthToScale;
+  scaleSize.height = scaleSize.width;
+  D2D1::Matrix3x2F scale = D2D1::Matrix3x2F::Scale(scaleSize);
 
-std::unique_ptr<D2D1::Matrix3x2F> CreateWidthScaleTransform(const d2d_frame& frame, float width)
-{
-  D2D1_SIZE_F frameSize = frame.renderTarget->GetSize();
-  D2D1_SIZE_F size;
-  size.width = frameSize.width / width;
-  size.height = size.width;
-  return std::make_unique<D2D1::Matrix3x2F>(D2D1::Matrix3x2F::Scale(size));
+  return scale * shift;
 }

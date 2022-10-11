@@ -51,14 +51,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
 
-    float viewOffsetY = 300.0f - gameState->player->yPos;//gameState->currentLevel->height / 2 - gameState->player->yPos;
-
-    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, viewOffsetY);
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     
-    std::unique_ptr<D2D1::Matrix3x2F> frameTransform = CreateWidthScaleTransform(*frame, gameState->currentLevel->width);
-    D2D1::Matrix3x2F transform = *frameTransform * D2D1::Matrix3x2F::Translation(0, viewOffsetY);
+    D2D1::Matrix3x2F viewTransform = CreateViewTransform(frame->renderTarget, gameState->currentLevel->width, 400.0f - gameState->player->yPos);
 
-    RenderFrame(*frame, *gameState, transform);
+    RenderFrame(*frame, *gameState, viewTransform);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
@@ -66,12 +63,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     controlState->renderTargetMouseX = controlState->mouseX * renderTargetSize.width;
     controlState->renderTargetMouseY = controlState->mouseY * renderTargetSize.height;
 
-    if( transform.Invert() )
+    if( viewTransform.Invert() )
     {
       D2D1_POINT_2F inPoint;
       inPoint.x = controlState->renderTargetMouseX;
       inPoint.y = controlState->renderTargetMouseY;
-      D2D1_POINT_2F outPoint = transform.TransformPoint(inPoint);
+      D2D1_POINT_2F outPoint = viewTransform.TransformPoint(inPoint);
       controlState->gameMouseX = outPoint.x;
       controlState->gameMouseY = outPoint.y;
     }
@@ -79,10 +76,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
     wchar_t text[32];
-    wsprintf(text, L"mouse x: %i", static_cast<int>(controlState->gameMouseX));
+    wsprintf(text, L"mouse x: %i", static_cast<int>(controlState->renderTargetMouseX));
     perfData->additionalInfo.push_back(text);
 
-    wsprintf(text, L"mouse y: %i", static_cast<int>(controlState->gameMouseY));
+    wsprintf(text, L"mouse y: %i", static_cast<int>(controlState->renderTargetMouseY));
     perfData->additionalInfo.push_back(text);
 
     RenderDiagnostics(*frame, *gameState, *perfData);
