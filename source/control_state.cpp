@@ -32,6 +32,9 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
     {
       cs->mouseX = static_cast<float>(p.x) / static_cast<float>(app.windowWidth);
       cs->mouseY = static_cast<float>(p.y) / static_cast<float>(app.windowHeight);
+      D2D1_SIZE_F renderTargetSize = app.d2d_rendertarget->GetSize();
+      float renderTargetMouseX = cs->mouseX * renderTargetSize.width;
+      float renderTargetMouseY = cs->mouseX * renderTargetSize.width;
     }
   }
 

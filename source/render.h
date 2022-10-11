@@ -10,8 +10,8 @@
 #include "game_state.h"
 #include "perf_data.h"
 
-void RenderFrame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState, const perf_data& pd, float mouseX, float mouseY);
-void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, float mouseX, float mouseY);
+void RenderFrame(const d2d_frame& frame, const game_state& gameState, const perf_data& pd);
+void RenderMainScreen(const d2d_frame& frame, const game_state& gameState);
 void RenderTitleScreen(const d2d_frame& frame);
 void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, const perf_data& pd);
 void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);

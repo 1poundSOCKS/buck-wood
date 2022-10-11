@@ -34,12 +34,13 @@ struct player_ship
 
 struct bullet
 {
-  bullet();
+  bullet(float x, float y, float range);
 
+  float startX, startY;
   float xPos, yPos;
   float xVelocity, yVelocity;
   float angle;
-  float lifespanSeconds;
+  float range;
   bool outsideLevel;
 };
 

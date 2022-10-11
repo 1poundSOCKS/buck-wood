@@ -15,6 +15,7 @@ struct control_state
   bool accelerate;
   bool shoot;
   float mouseX, mouseY;
+  float renderTargetMouseX, renderTargetMouseY;
 };
 
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);

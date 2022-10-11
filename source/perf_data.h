@@ -1,5 +1,10 @@
+#ifndef _perf_data_
+#define _perf_data_
+
 #include <cstdint>
 #include <windows.h>
+#include <list>
+#include <string>
 
 struct perf_data
 {
@@ -9,4 +14,7 @@ struct perf_data
   int64_t frameTicks;
   float frameTimeSeconds;
   int64_t fps;
+  std::list<std::wstring> additionalInfo;
 };
+
+#endif

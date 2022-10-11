@@ -25,6 +25,9 @@ bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
+  const int fps = 60;
+  const float frameTime = 1.0f / static_cast<float>(fps);
+  
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
 
   std::unique_ptr<game_state> gameState = CreateInitialGameState();
@@ -43,19 +46,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   while (ProcessMessage(&msg))
   {
-     if( app->terminating ) continue;
+    if( app->terminating ) continue;
 
     previousTicks = ticks;
     QueryPerformanceCounter(&ticks);
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
+    perfData->additionalInfo.push_back(L"testing...");
+
+    float viewOffsetY = 0;//gameState->currentLevel->height / 2 - gameState->player->yPos;
+
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, viewOffsetY);
+    
+    RenderFrame(*frame, *gameState, *perfData);
+
+    app->dxgi_swapChain->Present(1, 0);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
-    RenderFrame(app->d2d_rendertarget, *gameState, *perfData, controlState->mouseX, controlState->mouseY);
-
-    app->dxgi_swapChain->Present(0, 0);
-
-    UpdateGameState(*gameState, *controlState, perfData->frameTimeSeconds);
+    UpdateGameState(*gameState, *controlState, frameTime);
 
     previousControlState = std::move(controlState);
 

@@ -18,7 +18,7 @@ player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle
   outline = std::make_unique<game_shape>(points, pointCount);
 }
 
-bullet::bullet() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0), lifespanSeconds(1.0), outsideLevel(false)
+bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
 {
 }
 

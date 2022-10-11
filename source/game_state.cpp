@@ -9,12 +9,15 @@ game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 
 bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
 {
-  return bullet->lifespanSeconds <= 0 || bullet->outsideLevel;
+  float cx = bullet->xPos - bullet->startX;
+  float cy = bullet->yPos - bullet->startY;
+  float distance = sqrt(cx * cx + cy * cy);
+  return distance > bullet->range || bullet->outsideLevel;
 }
 
 void UpdateGameState(game_state& gameState, const control_state& controlState, float seconds)
 {
-  static const float speed = 0.3f;
+  static const float speed = 2.0f;
   seconds *= speed;
 
   if( controlState.quitPress )
@@ -72,7 +75,7 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
 {
   static const float forceOfGravity = 1.0f;
   static const float playerThrust = 3.0f;
-  static const float rotationSpeed = 400.0f;
+  static const float rotationSpeed = 100.0f;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -98,16 +101,17 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
 {
   if( controlState.shoot )
   {
+    static const float bulletSpeed = 5.0f;
+    static const float bulletRange = 1000.0f;
+
     float cursorX = controlState.mouseX * gameState.currentLevel->width;
     float cursorY = controlState.mouseY * gameState.currentLevel->height;
 
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>();
-    newBullet->xPos = gameState.player->xPos;
-    newBullet->yPos = gameState.player->yPos;
+    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(gameState.player->xPos, gameState.player->yPos, bulletRange);
     float angle = CalculateAngle(gameState.player->xPos, gameState.player->yPos, cursorX, cursorY);
     newBullet->angle = angle;
-    newBullet->yVelocity = -1.0f * cos(DEGTORAD(angle));
-    newBullet->xVelocity = 1.0f * sin(DEGTORAD(angle));
+    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
+    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
     gameState.bullets.push_front(std::move(newBullet));
   }
 
@@ -115,7 +119,6 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
   {
     bullet->xPos += bullet->xVelocity;
     bullet->yPos += bullet->yVelocity;
-    bullet->lifespanSeconds -= seconds;
 
     const game_point bulletPoint(bullet->xPos, bullet->yPos);
     bullet->outsideLevel = !PointInside(bulletPoint, *gameState.currentLevel->boundary);
