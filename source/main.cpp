@@ -28,7 +28,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const int fps = 60;
   const float frameTime = 1.0f / static_cast<float>(fps);
   
-  std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance,nCmdShow);
+  std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
 
   std::unique_ptr<game_state> gameState = CreateInitialGameState();
 
