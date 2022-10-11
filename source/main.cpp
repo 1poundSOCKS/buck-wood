@@ -66,14 +66,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     controlState->renderTargetMouseX = controlState->mouseX * renderTargetSize.width;
     controlState->renderTargetMouseY = controlState->mouseY * renderTargetSize.height;
 
-    if( !transform.Invert() ) throw L"error";
-
-    D2D1_POINT_2F inPoint;
-    inPoint.x = controlState->renderTargetMouseX;
-    inPoint.y = controlState->renderTargetMouseY;
-    D2D1_POINT_2F outPoint = transform.TransformPoint(inPoint);
-    controlState->gameMouseX = outPoint.x;
-    controlState->gameMouseY = outPoint.y;
+    if( transform.Invert() )
+    {
+      D2D1_POINT_2F inPoint;
+      inPoint.x = controlState->renderTargetMouseX;
+      inPoint.y = controlState->renderTargetMouseY;
+      D2D1_POINT_2F outPoint = transform.TransformPoint(inPoint);
+      controlState->gameMouseX = outPoint.x;
+      controlState->gameMouseY = outPoint.y;
+    }
 
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
 
