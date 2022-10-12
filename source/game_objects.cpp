@@ -3,6 +3,9 @@
 game_line::game_line(float startX, float startY, float endX, float endY) : start(startX, startY), end(endX, endY)
 {
 }
+game_shape::game_shape()
+{
+}
 
 game_shape::game_shape(const game_point* points, int pointCount)
 {
@@ -35,6 +38,22 @@ player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle
 
 bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
 {
+}
+
+target::target(float x, float y, float size) : state(DEACTIVATED), x(x), y(y)
+{
+  size /= 2;
+
+  static const game_point points[] = {
+    game_point(0, -size ),
+    game_point(size, 0),
+    game_point(0, size ),
+    game_point(-size, 0)
+  };
+
+  static const int pointCount = sizeof(points) / sizeof(game_point);
+
+  InitializeShape(points, pointCount, shape);
 }
 
 std::unique_ptr<player_ship> CreatePlayerShip()

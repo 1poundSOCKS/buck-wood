@@ -93,7 +93,7 @@ void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
 {
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(mouseCursor.xPos, mouseCursor.yPos);
   frame.renderTarget->SetTransform(translate);
-  DrawLines(mouseCursor.lines, frame);
+  DrawLines(mouseCursor.lines, frame.renderTarget, frame.brush);
 }
 
 void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
@@ -102,7 +102,7 @@ void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::M
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
   const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
-  DrawShape(*player.outline, frame);
+  DrawShape(*player.outline, frame.renderTarget, frame.brush);
 }
 
 void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
@@ -119,20 +119,24 @@ void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix
 void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   frame.renderTarget->SetTransform(viewTransform);
-  DrawShape(*level.boundary, frame);
+  DrawShape(*level.boundary, frame.renderTarget, frame.brush);
 
   for( const auto& shape: level.objects )
   {
-    DrawShape(*shape, frame);
+    DrawShape(*shape, frame.renderTarget, frame.brush);
   }
+
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(level.target->x, level.target->y);
+  frame.renderTarget->SetTransform(translate * viewTransform);
+  DrawShape(level.target->shape, frame.renderTarget, frame.brushDeactivated);
 }
 
-void DrawShape(const game_shape& shape, const d2d_frame& frame)
+void DrawShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
-  DrawLines(shape.lines, frame);
+  DrawLines(shape.lines, renderTarget, brush);
 }
 
-void DrawLines(const std::list<game_line>& lines, const d2d_frame& frame)
+void DrawLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   for( const auto& line : lines )
   {
@@ -144,7 +148,7 @@ void DrawLines(const std::list<game_line>& lines, const d2d_frame& frame)
     endPoint.x = line.end.x;
     endPoint.y = line.end.y;
 
-    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brush.get(), 2.0f);
+    renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
   }
 }
 

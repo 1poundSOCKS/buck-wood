@@ -27,6 +27,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 {
   const int fps = 60;
   const float frameTime = 1.0f / static_cast<float>(fps);
+
+  float fpsFrames[10];
+  const int fpsFrameCount = sizeof(fpsFrames) / sizeof(float);
+  for( int i = 0; i < fpsFrameCount; i++ ) { fpsFrames[i] = fps; }
+  int fpsFrameIndex = 0;
   
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
 
@@ -74,8 +79,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     }
 
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
+    fpsFrames[fpsFrameIndex] = perfData->fps;
+    fpsFrameIndex = fpsFrameIndex % fpsFrameCount;
+    float fpsTotal = 0;
+    for( int i = 0; i < fpsFrameCount; i++ ) { fpsTotal += fpsFrames[i]; }
+    int fpsAverage = ( fpsTotal / fpsFrameCount + 0.5f );
 
     wchar_t text[32];
+
+    wsprintf(text, L"fps average: %i", fpsAverage);
+    perfData->additionalInfo.push_back(text);
+
     wsprintf(text, L"mouse x: %i", static_cast<int>(controlState->renderTargetMouseX));
     perfData->additionalInfo.push_back(text);
 

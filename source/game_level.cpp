@@ -57,5 +57,7 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   level->objects.push_back(std::move(std::make_unique<game_shape>(object2Points, static_cast<int>(sizeof(object2Points) / sizeof(game_point)))));
 
+  level->target = std::make_unique<target>(1250.0f, 1950.0f, 20.0f);
+
   return level;
 }

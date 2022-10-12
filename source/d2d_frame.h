@@ -11,6 +11,8 @@ struct d2d_frame
 
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushDeactivated;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
   winrt::com_ptr<IDWriteFactory> writeFactory;
   winrt::com_ptr<IDWriteTextFormat> writeTextFormat;
 };

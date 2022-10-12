@@ -21,6 +21,7 @@ struct game_line
 
 struct game_shape
 {
+  game_shape();
   game_shape(const game_point* points, int pointCount);
 
   std::list<game_point> points;
@@ -55,6 +56,17 @@ struct bullet
   float angle;
   float range;
   bool outsideLevel;
+};
+
+struct target
+{
+  target(float x, float y, float size);
+
+  enum STATE { DEACTIVATED, ACTIVATED };
+
+  STATE state;
+  float x, y;
+  game_shape shape;
 };
 
 std::unique_ptr<player_ship> CreatePlayerShip();

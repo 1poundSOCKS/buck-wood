@@ -14,6 +14,7 @@ struct game_level
   const float playerStartPosX, playerStartPosY;
   std::unique_ptr<game_shape> boundary;
   std::list<std::unique_ptr<game_shape>> objects;
+  std::unique_ptr<target> target;
 };
 
 std::unique_ptr<game_level> CreateInitialGameLevel();
