@@ -32,6 +32,7 @@ struct d2d_app
   winrt::com_ptr<IDirectInput8> directInput;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectInputDevice8> mouse;
+  float mouseX, mouseY;
 };
 
 #endif

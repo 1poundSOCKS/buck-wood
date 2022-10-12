@@ -7,7 +7,7 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* app);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
-   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0)
+   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0), mouseX(0), mouseY(0)
 {
   RegisterMainWindowClass(inst);
 
@@ -93,6 +93,20 @@ d2d_app::~d2d_app()
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+  if( message == WM_MOUSEMOVE )
+  {
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL ) return 0;
+
+    LPARAM mouseX = GET_X_LPARAM(lParam);
+    LPARAM mouseY = GET_Y_LPARAM(lParam);
+    RECT clientRect;
+    GetClientRect(hWnd, &clientRect);
+    app->mouseX = static_cast<float>(mouseX) / static_cast<float>(clientRect.right - clientRect.left);
+    app->mouseY = static_cast<float>(mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+    return 0;
+  }
+
   if( message == WM_PAINT )
   {
 		ValidateRect(hWnd, NULL);

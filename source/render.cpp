@@ -144,7 +144,7 @@ void DrawLines(const std::list<game_line>& lines, const d2d_frame& frame)
     endPoint.x = line.end.x;
     endPoint.y = line.end.y;
 
-    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brush.get());
+    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brush.get(), 2.0f);
   }
 }
 

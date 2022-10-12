@@ -61,10 +61,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
-    D2D1_SIZE_F renderTargetSize = frame->renderTarget->GetSize();
-    controlState->renderTargetMouseX = controlState->mouseX * renderTargetSize.width;
-    controlState->renderTargetMouseY = controlState->mouseY * renderTargetSize.height;
-
     if( viewTransform.Invert() )
     {
       D2D1_POINT_2F inPoint;
