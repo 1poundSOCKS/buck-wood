@@ -44,6 +44,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 	
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
 
+  std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
+
   while (ProcessMessage(&msg))
   {
     if( app->terminating ) continue;
@@ -71,6 +73,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       D2D1_POINT_2F outPoint = viewTransform.TransformPoint(inPoint);
       controlState->gameMouseX = outPoint.x;
       controlState->gameMouseY = outPoint.y;
+      mouseCursor->xPos = controlState->renderTargetMouseX;
+      mouseCursor->yPos = controlState->renderTargetMouseY;
     }
 
     const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
@@ -83,6 +87,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     perfData->additionalInfo.push_back(text);
 
     RenderDiagnostics(*frame, *gameState, *perfData);
+
+    RenderMouseCursor(*frame, *mouseCursor);
 
     app->dxgi_swapChain->Present(1, 0);
 

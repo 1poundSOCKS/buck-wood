@@ -12,13 +12,26 @@ struct game_point
   float x, y;
 };
 
-typedef std::pair<game_point, game_point> game_line;
+struct game_line
+{
+  game_line(float startX, float startY, float endX, float endY);
+
+  game_point start, end;
+};
 
 struct game_shape
 {
   game_shape(const game_point* points, int pointCount);
 
   std::list<game_point> points;
+  std::list<game_line> lines;
+};
+
+struct mouse_cursor
+{
+  mouse_cursor();
+
+  float xPos, yPos;
   std::list<game_line> lines;
 };
 

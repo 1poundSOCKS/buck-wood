@@ -43,7 +43,7 @@ bool PointInside(const game_point& point, const game_shape& shape)
 
 bool AddLineToInterceptCount(const game_line& line, const game_point& point)
 {
-  if( point.x >= line.first.x && point.x < line.second.x || point.x < line.first.x && point.x >= line.second.x )
+  if( point.x >= line.start.x && point.x < line.end.x || point.x < line.start.x && point.x >= line.end.x )
   {
     float yIntercept = GetYIntercept(point.x, line);
     return yIntercept <= point.y;
@@ -53,10 +53,10 @@ bool AddLineToInterceptCount(const game_line& line, const game_point& point)
 
 float GetYIntercept(float x, const game_line& line)
 {
-  float cx = line.second.x - line.first.x;
-  float cy = line.second.y - line.first.y;
+  float cx = line.end.x - line.start.x;
+  float cy = line.end.y - line.start.y;
   float m = cy / cx;
-  float b = line.first.y - m * line.first.x;
+  float b = line.start.y - m * line.start.x;
   return m * x + b;
 }
 

@@ -131,6 +131,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     ::PostQuitMessage(0);
   }
 
+  if( message == WM_SETCURSOR )
+  {
+    SetCursor(NULL);
+    return TRUE;
+  }
+
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
@@ -146,7 +152,7 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance)
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
     wcex.hIcon          = NULL;
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hCursor        = NULL;//LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = NULL;
     wcex.lpszClassName  = lpszWndClass;

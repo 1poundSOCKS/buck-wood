@@ -1,8 +1,23 @@
 #include "game_objects.h"
 
+game_line::game_line(float startX, float startY, float endX, float endY) : start(startX, startY), end(endX, endY)
+{
+}
+
 game_shape::game_shape(const game_point* points, int pointCount)
 {
   InitializeShape(points, pointCount, *this);
+}
+
+mouse_cursor::mouse_cursor() : xPos(0), yPos(0)
+{
+  static const float cursorSize = 20.0f;
+  static const float cursorSizeGap = 10.0f;
+
+  lines.push_back(game_line(0,-cursorSize,0,-cursorSizeGap));
+  lines.push_back(game_line(0,cursorSize,0,cursorSizeGap));
+  lines.push_back(game_line(-cursorSize,0,-cursorSizeGap,0));
+  lines.push_back(game_line(cursorSize,0,cursorSizeGap,0));
 }
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
@@ -33,6 +48,6 @@ void InitializeShape(const game_point* points, int pointCount, game_shape& shape
   {
     shape.points.push_back(points[i]);
     int endPointIndex = (i + 1) % pointCount;
-    shape.lines.push_back(std::make_pair(points[i], points[endPointIndex]));
+    shape.lines.push_back(game_line(points[i].x, points[i].y, points[endPointIndex].x, points[endPointIndex].y));
   }
 }

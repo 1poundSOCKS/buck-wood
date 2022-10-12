@@ -89,6 +89,13 @@ void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, cons
   frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
 }
 
+void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
+{
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(mouseCursor.xPos, mouseCursor.yPos);
+  frame.renderTarget->SetTransform(translate);
+  DrawLines(mouseCursor.lines, frame);
+}
+
 void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
@@ -122,15 +129,20 @@ void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matr
 
 void DrawShape(const game_shape& shape, const d2d_frame& frame)
 {
-  for( const auto& line : shape.lines )
+  DrawLines(shape.lines, frame);
+}
+
+void DrawLines(const std::list<game_line>& lines, const d2d_frame& frame)
+{
+  for( const auto& line : lines )
   {
     D2D1_POINT_2F startPoint;
-    startPoint.x = line.first.x;
-    startPoint.y = line.first.y;
+    startPoint.x = line.start.x;
+    startPoint.y = line.start.y;
 
     D2D1_POINT_2F endPoint;
-    endPoint.x = line.second.x;
-    endPoint.y = line.second.y;
+    endPoint.x = line.end.x;
+    endPoint.y = line.end.y;
 
     frame.renderTarget->DrawLine(startPoint, endPoint, frame.brush.get());
   }
