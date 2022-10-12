@@ -22,41 +22,29 @@
 #pragma comment(lib, "RuntimeObject.lib")
 
 bool ProcessMessage(MSG* msg);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
   const int fps = 60;
   const float frameTime = 1.0f / static_cast<float>(fps);
 
-  float fpsFrames[10];
-  const int fpsFrameCount = sizeof(fpsFrames) / sizeof(float);
-  for( int i = 0; i < fpsFrameCount; i++ ) { fpsFrames[i] = fps; }
-  int fpsFrameIndex = 0;
+  const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   
   std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
-
-  std::unique_ptr<game_state> gameState = CreateInitialGameState();
-
-  MSG msg;
-
-  LARGE_INTEGER perfFrequency;
-  QueryPerformanceFrequency(&perfFrequency);
-
-  LARGE_INTEGER initialTicks,ticks,previousTicks;
-  ticks.QuadPart = 0;
   
-  QueryPerformanceCounter(&initialTicks);
-	
+  std::unique_ptr<game_state> gameState = CreateInitialGameState();
+  
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
-
+  
   std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
 
+  MSG msg;
   while (ProcessMessage(&msg))
   {
     if( app->terminating ) continue;
 
-    previousTicks = ticks;
-    QueryPerformanceCounter(&ticks);
+    UpdatePerformanceData(*perfData);
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
     
@@ -78,25 +66,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       mouseCursor->yPos = controlState->renderTargetMouseY;
     }
 
-    const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>(perfFrequency,initialTicks,ticks,previousTicks);
-    fpsFrames[fpsFrameIndex] = perfData->fps;
-    fpsFrameIndex = fpsFrameIndex % fpsFrameCount;
-    float fpsTotal = 0;
-    for( int i = 0; i < fpsFrameCount; i++ ) { fpsTotal += fpsFrames[i]; }
-    int fpsAverage = ( fpsTotal / fpsFrameCount + 0.5f );
-
-    wchar_t text[32];
-
-    wsprintf(text, L"fps average: %i", fpsAverage);
-    perfData->additionalInfo.push_back(text);
-
-    wsprintf(text, L"mouse x: %i", static_cast<int>(controlState->renderTargetMouseX));
-    perfData->additionalInfo.push_back(text);
-
-    wsprintf(text, L"mouse y: %i", static_cast<int>(controlState->renderTargetMouseY));
-    perfData->additionalInfo.push_back(text);
-
-    RenderDiagnostics(*frame, *gameState, *perfData);
+    std::list<std::wstring> diagnostics;
+    FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData);
+    RenderDiagnostics(*frame, diagnostics);
 
     RenderMouseCursor(*frame, *mouseCursor);
 
@@ -130,4 +102,24 @@ bool ProcessMessage(MSG* msg)
 	}
 
   return true;
+}
+
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData)
+{
+  static wchar_t text[64];
+
+  _ui64tow(perfData.fps, text, 10);
+  diagnostics.push_back(std::wstring(L"fps: ") + std::wstring(text));
+
+  wsprintf(text, L"fps average: %i", perfData.fpsAverage);
+  diagnostics.push_back(text);
+
+  wsprintf(text, L"bullet count: %i", gameState.bullets.size());
+  diagnostics.push_back(text);
+
+  wsprintf(text, L"mouse x: %i", static_cast<int>(controlState.renderTargetMouseX));
+  diagnostics.push_back(text);
+
+  wsprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
+  diagnostics.push_back(text);
 }

@@ -13,7 +13,7 @@
 void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform);
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform);
 void RenderTitleScreen(const d2d_frame& frame);
-void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, const perf_data& pd);
+void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics);
 void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor);
 void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);
 void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);

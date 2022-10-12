@@ -57,30 +57,16 @@ void RenderTitleScreen(const d2d_frame& frame)
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
 }
 
-void RenderDiagnostics(const d2d_frame& frame, const game_state& gameState, const perf_data& pd)
+void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
 {
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  wchar_t fps[32];
-  _ui64tow(pd.fps, fps, 10);
-
-  wchar_t bulletCount[32];
-  wsprintf(bulletCount, L"bullet count: %i", gameState.bullets.size());
-
-  static const std::wstring eol = std::wstring(L"\n");
-
-  std::wstring msg = std::wstring(L"fps: ") + std::wstring(fps);
-  msg += eol;
-  msg += std::wstring(bulletCount);
-  msg += eol;
-
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
 
   rect = D2D1::RectF(0, 0, size.width / 4, size.height / 4);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
-  for( const auto& text: pd.additionalInfo )
+  std::wstring msg;
+  for( const auto& text: diagnostics )
   {
     msg += text;
     msg += L"\n";
