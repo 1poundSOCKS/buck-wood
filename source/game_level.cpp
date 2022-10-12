@@ -61,3 +61,8 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   return level;
 }
+
+void ResetGameLevel(game_level& level)
+{
+  level.target->state = target::DEACTIVATED;
+}

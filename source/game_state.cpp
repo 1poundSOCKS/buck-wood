@@ -127,6 +127,12 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
     {
       if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
     }
+
+    if( PointInside(bulletPoint, gameState.currentLevel->target->shape) )
+    {
+      bullet->outsideLevel = true;
+      gameState.currentLevel->target->state = target::ACTIVATED;
+    }
   }
   
   gameState.bullets.remove_if(BulletHasExpired);
@@ -141,4 +147,5 @@ void ResetGameState(game_state& gameState)
   gameState.player->angle = 0;
   gameState.playerState = game_state::alive;
   gameState.bullets.clear();
+  ResetGameLevel(*gameState.currentLevel);
 }

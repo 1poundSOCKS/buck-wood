@@ -18,5 +18,6 @@ struct game_level
 };
 
 std::unique_ptr<game_level> CreateInitialGameLevel();
+void ResetGameLevel(game_level& level);
 
 #endif

@@ -40,15 +40,15 @@ bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), y
 {
 }
 
-target::target(float x, float y, float size) : state(DEACTIVATED), x(x), y(y)
+target::target(float x, float y, float size) : state(DEACTIVATED)
 {
   size /= 2;
 
   static const game_point points[] = {
-    game_point(0, -size ),
-    game_point(size, 0),
-    game_point(0, size ),
-    game_point(-size, 0)
+    game_point(x, y-size ),
+    game_point(x + size, y),
+    game_point(x, y+size),
+    game_point(x - size, y)
   };
 
   static const int pointCount = sizeof(points) / sizeof(game_point);

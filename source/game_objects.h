@@ -65,7 +65,6 @@ struct target
   enum STATE { DEACTIVATED, ACTIVATED };
 
   STATE state;
-  float x, y;
   game_shape shape;
 };
 
