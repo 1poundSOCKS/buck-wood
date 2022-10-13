@@ -1,6 +1,11 @@
 #include "game_state.h"
 #include <list>
 
+game_state_timer::game_state_timer(const system_timer& systemTimer)
+{
+  startTicks = systemTimer.totalTicks;
+}
+
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
 : running(true), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
 {
@@ -47,7 +52,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState, c
   if( gameState.playerState == game_state::alive )
   {
     UpdatePlayer(gameState, controlState, gameUpdateInterval);
-    UpdateBullets(gameState, controlState, gameUpdateInterval);
+    UpdateBullets(gameState, controlState, gameUpdateInterval, systemTimer);
 
     std::list<game_point> transformedPoints;
     TransformPlayerShip(*gameState.player, transformedPoints);
@@ -99,7 +104,7 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
   gameState.player->angle += spin * gameUpdateInterval;
 }
 
-void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
+void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval, const system_timer& systemTimer)
 {
   if( controlState.shoot )
   {
@@ -130,10 +135,11 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
       if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
     }
 
-    if( PointInside(bulletPoint, gameState.currentLevel->target->shape) )
+    if( gameState.currentLevel->target->state == target::DEACTIVATED && PointInside(bulletPoint, gameState.currentLevel->target->shape) )
     {
       bullet->outsideLevel = true;
       gameState.currentLevel->target->state = target::ACTIVATED;
+      gameState.timer = std::make_unique<game_state_timer>(systemTimer);
     }
   }
   
@@ -150,4 +156,10 @@ void ResetGameState(game_state& gameState)
   gameState.playerState = game_state::alive;
   gameState.bullets.clear();
   ResetGameLevel(*gameState.currentLevel);
+}
+
+float GetGameStateTimerInSeconds(const game_state& gameState, const system_timer& systemTimer)
+{
+  if( !gameState.timer ) return 0.0f;
+  return static_cast<float>(systemTimer.totalTicks - gameState.timer->startTicks) / static_cast<float>(systemTimer.ticksPerSecond);
 }

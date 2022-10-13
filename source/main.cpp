@@ -23,7 +23,7 @@
 #pragma comment(lib, "RuntimeObject.lib")
 
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& systemTimer);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
 {
@@ -102,12 +102,12 @@ bool ProcessMessage(MSG* msg)
   return true;
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& systemTimer)
 {
   static wchar_t text[64];
 
-  float runTime = GetRunTimeInSeconds(timer);
-  float intervalTime = GetIntervalTimeInSeconds(timer);
+  float runTime = GetRunTimeInSeconds(systemTimer);
+  float intervalTime = GetIntervalTimeInSeconds(systemTimer);
 
   swprintf(text, L"run time: %.1f", runTime);
   diagnostics.push_back(text);
@@ -122,5 +122,8 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   diagnostics.push_back(text);
 
   wsprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
+  diagnostics.push_back(text);
+
+  swprintf(text, L"game state timer: %.1f", GetGameStateTimerInSeconds(gameState, systemTimer));
   diagnostics.push_back(text);
 }
