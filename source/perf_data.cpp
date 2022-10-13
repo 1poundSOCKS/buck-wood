@@ -3,11 +3,14 @@
 perf_data::perf_data()
 {
   for( int i = 0; i < fpsFrameCount; i++ ) { fpsFrames[i] = 0; }
+  timer = std::make_unique<system_timer>();
 }
 
-void UpdatePerformanceData(perf_data& perfData, const system_timer& systemTimer)
+void UpdatePerformanceData(perf_data& perfData)
 {
-  perfData.fps = static_cast<float>(systemTimer.ticksPerSecond) / static_cast<float>(systemTimer.intervalTicks);
+  UpdateSystemTimer(*perfData.timer);
+
+  perfData.fps = static_cast<float>(perfData.timer->ticksPerSecond) / static_cast<float>(perfData.timer->intervalTicks);
   
   perfData.fpsFrames[perfData.fpsFrameIndex] = perfData.fps;
   perfData.fpsFrameIndex = ++perfData.fpsFrameIndex % perfData.fpsFrameCount;

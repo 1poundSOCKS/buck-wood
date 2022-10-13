@@ -3,8 +3,8 @@
 
 #include <cstdint>
 #include <windows.h>
-#include <list>
 #include <string>
+#include <memory>
 #include "system_timer.h"
 
 struct perf_data
@@ -16,8 +16,9 @@ struct perf_data
   const int fpsFrameCount = sizeof(fpsFrames) / sizeof(float);
   int fpsFrameIndex = 0;
   int fpsAverage = 0;
+  std::unique_ptr<system_timer> timer;
 };
 
-void UpdatePerformanceData(perf_data& perfData, const system_timer& systemTimer);
+void UpdatePerformanceData(perf_data& perfData);
 
 #endif

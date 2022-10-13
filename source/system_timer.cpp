@@ -19,12 +19,17 @@ void UpdateSystemTimer(system_timer& timer)
   timer.totalTicks = totalTicks;
 }
 
-float GetRunTimeInSeconds(const system_timer& timer)
+float GetTotalTimeInSeconds(const system_timer& timer)
 {
-  return static_cast<float>(timer.totalTicks - timer.initialTicks) / static_cast<float>(timer.ticksPerSecond);
+  return GetElapsedTimeInSeconds(timer.initialTicks, timer.totalTicks, timer.ticksPerSecond);
 }
 
 float GetIntervalTimeInSeconds(const system_timer& timer)
 {
-  return static_cast<float>(timer.intervalTicks) / static_cast<float>(timer.ticksPerSecond);
+  return GetElapsedTimeInSeconds(0, timer.intervalTicks, timer.ticksPerSecond);
+}
+
+float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t ticksPerSecond)
+{
+  return static_cast<float>(endTicks - startTicks) / static_cast<float>(ticksPerSecond);
 }

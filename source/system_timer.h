@@ -15,7 +15,8 @@ struct system_timer
 };
 
 void UpdateSystemTimer(system_timer& timer);
-float GetRunTimeInSeconds(const system_timer& timer);
+float GetTotalTimeInSeconds(const system_timer& timer);
 float GetIntervalTimeInSeconds(const system_timer& timer);
+float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t ticksPerSecond);
 
 #endif

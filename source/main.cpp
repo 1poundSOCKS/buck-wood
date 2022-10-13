@@ -23,19 +23,14 @@
 #pragma comment(lib, "RuntimeObject.lib")
 
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& systemTimer);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR    lpCmdLine,_In_ int       nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
-  const int fps = 60;
-  const float frameTime = 1.0f / static_cast<float>(fps);
-
-  const std::unique_ptr<system_timer> systemTimer = std::make_unique<system_timer>();
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();  
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
-  const std::unique_ptr<game_state> gameState = CreateInitialGameState(*systemTimer);
+  const std::unique_ptr<game_state> gameState = CreateInitialGameState();
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
-
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
 
   MSG msg;
@@ -57,22 +52,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       D2D1_POINT_2F outPoint = viewTransform.TransformPoint(inPoint);
       controlState->gameMouseX = outPoint.x;
       controlState->gameMouseY = outPoint.y;
-      mouseCursor->xPos = controlState->renderTargetMouseX;
-      mouseCursor->yPos = controlState->renderTargetMouseY;
     }
 
-    UpdateSystemTimer(*systemTimer);
-    UpdatePerformanceData(*perfData, *systemTimer);
+    UpdatePerformanceData(*perfData);
 
     std::list<std::wstring> diagnostics;
-    FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData, *systemTimer);
+    FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData);
     RenderDiagnostics(*frame, diagnostics);
 
+    mouseCursor->xPos = controlState->renderTargetMouseX;
+    mouseCursor->yPos = controlState->renderTargetMouseY;
     RenderMouseCursor(*frame, *mouseCursor);
 
     app->dxgi_swapChain->Present(1, 0);
 
-    UpdateGameState(*gameState, *controlState, *systemTimer);
+    UpdateGameState(*gameState, *controlState);
 
     previousControlState = std::move(controlState);
 
@@ -102,12 +96,12 @@ bool ProcessMessage(MSG* msg)
   return true;
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& systemTimer)
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData)
 {
   static wchar_t text[64];
 
-  float runTime = GetRunTimeInSeconds(systemTimer);
-  float intervalTime = GetIntervalTimeInSeconds(systemTimer);
+  float runTime = GetTotalTimeInSeconds(*gameState.timer);
+  float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
 
   swprintf(text, L"run time: %.1f", runTime);
   diagnostics.push_back(text);
@@ -124,6 +118,10 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   wsprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
   diagnostics.push_back(text);
 
-  swprintf(text, L"level timer: %.2f", GetGameStateTimerInSeconds(*gameState.timer, systemTimer));
+  float levelTimeInSeconds = gameState.levelTimerStop == 0 ? 
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.timer->totalTicks, gameState.timer->ticksPerSecond) :
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.levelTimerStop, gameState.timer->ticksPerSecond);
+  
+  swprintf(text, L"level timer: %.2f", levelTimeInSeconds);
   diagnostics.push_back(text);
 }
