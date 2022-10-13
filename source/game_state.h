@@ -4,6 +4,7 @@
 #include "game_math.h"
 #include "game_level.h"
 #include "control_state.h"
+#include "system_timer.h"
 
 struct game_state
 {
@@ -22,9 +23,9 @@ struct game_state
 };
 
 std::unique_ptr<game_state> CreateInitialGameState();
-void UpdateGameState(game_state& gameState, const control_state& cs, float seconds);
-void UpdatePlayer(game_state& gameState, const control_state& controlState, float seconds);
-void UpdateBullets(game_state& gameState, const control_state& controlState, float seconds);
+void UpdateGameState(game_state& gameState, const control_state& cs, const system_timer& systemTimer);
+void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
+void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void ResetGameState(game_state& gameState);
 bool PlayerIsOutOfBounds(const game_state& gameState);
 

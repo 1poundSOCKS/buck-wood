@@ -72,7 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     app->dxgi_swapChain->Present(1, 0);
 
-    UpdateGameState(*gameState, *controlState, frameTime);
+    UpdateGameState(*gameState, *controlState, *systemTimer);
 
     previousControlState = std::move(controlState);
 

@@ -15,10 +15,12 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateGameState(game_state& gameState, const control_state& controlState, float seconds)
+void UpdateGameState(game_state& gameState, const control_state& controlState, const system_timer& systemTimer)
 {
-  static const float speed = 2.0f;
-  seconds *= speed;
+  float intervalTime = GetIntervalTimeInSeconds(systemTimer);
+
+  static const float gameSpeedMultiplier = 2.0f;
+  const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
 
   if( controlState.quitPress )
   {
@@ -44,8 +46,8 @@ void UpdateGameState(game_state& gameState, const control_state& controlState, f
 
   if( gameState.playerState == game_state::alive )
   {
-    UpdatePlayer(gameState, controlState, seconds);
-    UpdateBullets(gameState, controlState, seconds);
+    UpdatePlayer(gameState, controlState, gameUpdateInterval);
+    UpdateBullets(gameState, controlState, gameUpdateInterval);
 
     std::list<game_point> transformedPoints;
     TransformPlayerShip(*gameState.player, transformedPoints);
@@ -71,7 +73,7 @@ std::unique_ptr<game_state> CreateInitialGameState()
   return gameState;
 }
 
-void UpdatePlayer(game_state& gameState, const control_state& controlState, float seconds)
+void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
 {
   static const float forceOfGravity = 1.0f;
   static const float playerThrust = 3.0f;
@@ -90,19 +92,19 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
   if( controlState.left ) spin = -rotationSpeed;
   else if( controlState.right ) spin = rotationSpeed;
   
-  gameState.player->xVelocity += forceX * seconds;
-  gameState.player->yVelocity += forceY * seconds;
+  gameState.player->xVelocity += forceX * gameUpdateInterval;
+  gameState.player->yVelocity += forceY * gameUpdateInterval;
   gameState.player->xPos += gameState.player->xVelocity;
   gameState.player->yPos += gameState.player->yVelocity;
-  gameState.player->angle += spin * seconds;
+  gameState.player->angle += spin * gameUpdateInterval;
 }
 
-void UpdateBullets(game_state& gameState, const control_state& controlState, float seconds)
+void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
 {
   if( controlState.shoot )
   {
-    static const float bulletSpeed = 5.0f;
-    static const float bulletRange = 1000.0f;
+    static const float bulletSpeed = 200.0f * gameUpdateInterval;
+    static const float bulletRange = 2000.0f;
 
     float cursorX = controlState.gameMouseX;
     float cursorY = controlState.gameMouseY;
