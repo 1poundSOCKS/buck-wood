@@ -2,22 +2,12 @@
 
 perf_data::perf_data()
 {
-  QueryPerformanceFrequency(&perfFrequency);
-  QueryPerformanceCounter(&initialTicks);
   for( int i = 0; i < fpsFrameCount; i++ ) { fpsFrames[i] = 0; }
 }
 
-void UpdatePerformanceData(perf_data& perfData)
+void UpdatePerformanceData(perf_data& perfData, const system_timer& systemTimer)
 {
-  LARGE_INTEGER ticks;
-  QueryPerformanceCounter(&ticks);
-  
-  perfData.totalTicks = ticks.QuadPart - perfData.initialTicks.QuadPart;
-  perfData.frameTicks = ticks.QuadPart - perfData.previousTicks.QuadPart;
-  perfData.frameTimeSeconds = static_cast<float>(perfData.frameTicks) / static_cast<float>(perfData.perfFrequency.QuadPart);
-  float fpsTmp = static_cast<float>(perfData.perfFrequency.QuadPart) / static_cast<float>(perfData.frameTicks);
-  perfData.fps = static_cast<int64_t>(fpsTmp + 0.5f);
-  perfData.previousTicks = ticks;
+  perfData.fps = static_cast<float>(systemTimer.ticksPerSecond) / static_cast<float>(systemTimer.intervalTicks);
   
   perfData.fpsFrames[perfData.fpsFrameIndex] = perfData.fps;
   perfData.fpsFrameIndex = ++perfData.fpsFrameIndex % perfData.fpsFrameCount;
