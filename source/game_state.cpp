@@ -44,7 +44,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState, c
   {
     if( controlState.startGame ){
       gameState.screen = game_state::main;
-      ResetGameState(gameState);
+      ResetGameState(gameState, systemTimer);
     }
     return;
   }
@@ -57,11 +57,19 @@ void UpdateGameState(game_state& gameState, const control_state& controlState, c
     std::list<game_point> transformedPoints;
     TransformPlayerShip(*gameState.player, transformedPoints);
 
-    if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) ) gameState.playerState = game_state::dead;
+    if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) )
+    {
+      gameState.playerState = game_state::dead;
+      StopGameStateTimer(*gameState.timer, systemTimer);
+    }
     
     for( const auto& shape : gameState.currentLevel->objects)
     {
-      if( PointInside(transformedPoints, *shape) ) gameState.playerState = game_state::dead;
+      if( PointInside(transformedPoints, *shape) )
+      {
+        gameState.playerState = game_state::dead;
+        StopGameStateTimer(*gameState.timer, systemTimer);
+      }
     }
   }
 }
@@ -71,10 +79,10 @@ bool PlayerIsOutOfBounds(const game_state& gameState)
   return gameState.currentLevel->OutOfBounds(gameState.player->xPos, gameState.player->yPos);  
 }
 
-std::unique_ptr<game_state> CreateInitialGameState()
+std::unique_ptr<game_state> CreateInitialGameState(const system_timer& systemTimer)
 {
   std::unique_ptr<game_state> gameState = std::make_unique<game_state>(CreateInitialGameLevel());
-  ResetGameState(*gameState);
+  ResetGameState(*gameState, systemTimer);
   return gameState;
 }
 
@@ -139,14 +147,14 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
     {
       bullet->outsideLevel = true;
       gameState.currentLevel->target->state = target::ACTIVATED;
-      gameState.timer = std::make_unique<game_state_timer>(systemTimer);
+      StopGameStateTimer(*gameState.timer, systemTimer);
     }
   }
   
   gameState.bullets.remove_if(BulletHasExpired);
 }
 
-void ResetGameState(game_state& gameState)
+void ResetGameState(game_state& gameState, const system_timer& systemTimer)
 {
   gameState.player->xPos = gameState.currentLevel->playerStartPosX;
   gameState.player->yPos = gameState.currentLevel->playerStartPosY;
@@ -156,10 +164,16 @@ void ResetGameState(game_state& gameState)
   gameState.playerState = game_state::alive;
   gameState.bullets.clear();
   ResetGameLevel(*gameState.currentLevel);
+  gameState.timer = std::make_unique<game_state_timer>(systemTimer);
 }
 
-float GetGameStateTimerInSeconds(const game_state& gameState, const system_timer& systemTimer)
+float GetGameStateTimerInSeconds(const game_state_timer& gameStateTimer, const system_timer& systemTimer)
 {
-  if( !gameState.timer ) return 0.0f;
-  return static_cast<float>(systemTimer.totalTicks - gameState.timer->startTicks) / static_cast<float>(systemTimer.ticksPerSecond);
+  if( gameStateTimer.stopTicks != 0 ) return static_cast<float>(gameStateTimer.stopTicks - gameStateTimer.startTicks) / static_cast<float>(systemTimer.ticksPerSecond);
+  return static_cast<float>(systemTimer.totalTicks - gameStateTimer.startTicks) / static_cast<float>(systemTimer.ticksPerSecond);
+}
+
+void StopGameStateTimer(game_state_timer& gameStateTimer, const system_timer& systemTimer)
+{
+  gameStateTimer.stopTicks = systemTimer.totalTicks;
 }

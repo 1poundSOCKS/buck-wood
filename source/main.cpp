@@ -33,7 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const std::unique_ptr<system_timer> systemTimer = std::make_unique<system_timer>();
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();  
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
-  const std::unique_ptr<game_state> gameState = CreateInitialGameState();
+  const std::unique_ptr<game_state> gameState = CreateInitialGameState(*systemTimer);
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
 
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
@@ -124,6 +124,6 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   wsprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
   diagnostics.push_back(text);
 
-  swprintf(text, L"game state timer: %.1f", GetGameStateTimerInSeconds(gameState, systemTimer));
+  swprintf(text, L"level timer: %.2f", GetGameStateTimerInSeconds(*gameState.timer, systemTimer));
   diagnostics.push_back(text);
 }

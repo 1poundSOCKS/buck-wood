@@ -10,7 +10,8 @@ struct game_state_timer
 {
   game_state_timer(const system_timer& systemTimer);
 
-  int64_t startTicks;
+  int64_t startTicks = 0;
+  int64_t stopTicks = 0;
 };
 
 struct game_state
@@ -30,12 +31,13 @@ struct game_state
   std::unique_ptr<game_state_timer> timer;
 };
 
-std::unique_ptr<game_state> CreateInitialGameState();
+std::unique_ptr<game_state> CreateInitialGameState(const system_timer& systemTimer);
 void UpdateGameState(game_state& gameState, const control_state& cs, const system_timer& systemTimer);
 void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval, const system_timer& systemTimer);
-void ResetGameState(game_state& gameState);
+void ResetGameState(game_state& gameState, const system_timer& systemTimer);
 bool PlayerIsOutOfBounds(const game_state& gameState);
-float GetGameStateTimerInSeconds(const game_state& gameState, const system_timer& systemTimer);
+void StopGameStateTimer(game_state_timer& gameStateTimer, const system_timer& systemTimer);
+float GetGameStateTimerInSeconds(const game_state_timer& gameStateTimer, const system_timer& systemTimer);
 
 #endif
