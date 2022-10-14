@@ -23,13 +23,13 @@ void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1
 
 void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform)
 {
-  DrawLevel(*gameState.currentLevel, frame, transform);
+  RenderLevel(*gameState.currentLevel, frame, transform);
 
-  DrawPlayer(*gameState.player, frame, transform);
+  RenderPlayer(*gameState.player, frame, transform);
 
   for( const std::unique_ptr<bullet>& bullet : gameState.bullets )
   {
-    DrawBullet(*bullet, frame, transform);
+    RenderBullet(*bullet, frame, transform);
   }
 
   if( gameState.playerState == game_state::dead )
@@ -79,19 +79,19 @@ void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
 {
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(mouseCursor.xPos, mouseCursor.yPos);
   frame.renderTarget->SetTransform(translate);
-  DrawLines(mouseCursor.lines, frame.renderTarget, frame.brush);
+  RenderLines(mouseCursor.lines, frame.renderTarget, frame.brush);
 }
 
-void DrawPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
   const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
-  DrawShape(*player.outline, frame.renderTarget, frame.brush);
+  RenderShape(*player.outline, frame.renderTarget, frame.brush);
 }
 
-void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   static const float bulletSize = 3.0f;
 
@@ -102,29 +102,29 @@ void DrawBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix
   frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
 }
 
-void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   frame.renderTarget->SetTransform(viewTransform);
-  DrawShape(*level.boundary, frame.renderTarget, frame.brush);
+  RenderShape(*level.boundary, frame.renderTarget, frame.brush);
 
   for( const auto& shape: level.objects )
   {
-    DrawShape(*shape, frame.renderTarget, frame.brush);
+    RenderShape(*shape, frame.renderTarget, frame.brush);
   }
 
   for( const auto& target: level.targets)
   {
     const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == target::ACTIVATED ? frame.brushActivated : frame.brushDeactivated;
-    DrawShape(target->shape, frame.renderTarget, targetBrush);
+    RenderShape(target->shape, frame.renderTarget, targetBrush);
   }
 }
 
-void DrawShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
-  DrawLines(shape.lines, renderTarget, brush);
+  RenderLines(shape.lines, renderTarget, brush);
 }
 
-void DrawLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   for( const auto& line : lines )
   {
