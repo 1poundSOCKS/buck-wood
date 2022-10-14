@@ -31,7 +31,9 @@ struct d2d_app
   winrt::com_ptr<ID2D1RenderTarget> d2d_rendertarget;
   winrt::com_ptr<IDirectInput8> directInput;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
+#ifdef USE_DIRECTINPUT_MOUSE
   winrt::com_ptr<IDirectInputDevice8> mouse;
+#endif
   float mouseX, mouseY;
   bool mouseLButtonDown = false, mouseRButtonDown = false;
 };

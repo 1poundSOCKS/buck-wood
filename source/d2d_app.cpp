@@ -74,6 +74,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 
   keyboard->Acquire();
 
+#ifdef USE_DIRECTINPUT_MOUSE
   hr = directInput->CreateDevice(GUID_SysMouse, mouse.put(), NULL);
   if( FAILED(hr) ) throw L"error";
 
@@ -84,6 +85,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   DIDataFormat.dwFlags = DIDF_RELAXIS;
   hr = mouse->SetDataFormat(&DIDataFormat);
   if( FAILED(hr) ) throw L"error";
+#endif
 }
 
 d2d_app::~d2d_app()
