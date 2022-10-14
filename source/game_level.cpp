@@ -25,8 +25,9 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
     game_point(1980, 20),
     game_point(1980, 980),
     game_point(1300, 980),
-    game_point(1300, 2000),
-    game_point(1200, 2000),
+    game_point(1400, 2000),
+    game_point(1300, 2100),
+    game_point(1100, 2000),
     game_point(1200, 900),
     game_point(800, 700),
     game_point(20, 980)
@@ -57,12 +58,17 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   level->objects.push_back(std::move(std::make_unique<game_shape>(object2Points, static_cast<int>(sizeof(object2Points) / sizeof(game_point)))));
 
-  level->target = std::make_unique<target>(1250.0f, 1950.0f, 20.0f);
+  level->targets.push_back(std::make_unique<target>(1250.0f, 1950.0f, 20.0f));
+  level->targets.push_back(std::make_unique<target>(100.0f, 300.0f, 20.0f));
+  level->targets.push_back(std::make_unique<target>(1800.0f, 900.0f, 20.0f));
 
   return level;
 }
 
 void ResetGameLevel(game_level& level)
 {
-  level.target->state = target::DEACTIVATED;
+  for( const auto& target: level.targets )
+  {
+    target->state = target::DEACTIVATED;
+  }
 }

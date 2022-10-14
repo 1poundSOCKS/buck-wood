@@ -140,11 +140,14 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
       if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
     }
 
-    if( gameState.currentLevel->target->state == target::DEACTIVATED && PointInside(bulletPoint, gameState.currentLevel->target->shape) )
+    for( const auto& target: gameState.currentLevel->targets )
     {
-      bullet->outsideLevel = true;
-      gameState.currentLevel->target->state = target::ACTIVATED;
-      gameState.levelTimerStop = gameState.timer->totalTicks;
+    if( target->state == target::DEACTIVATED && PointInside(bulletPoint, target->shape) )
+      {
+        bullet->outsideLevel = true;
+        target->state = target::ACTIVATED;
+        gameState.levelTimerStop = gameState.timer->totalTicks;
+      }
     }
   }
   

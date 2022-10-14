@@ -112,8 +112,11 @@ void DrawLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matr
     DrawShape(*shape, frame.renderTarget, frame.brush);
   }
 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = level.target->state == target::ACTIVATED ? frame.brushActivated : frame.brushDeactivated;
-  DrawShape(level.target->shape, frame.renderTarget, targetBrush);
+  for( const auto& target: level.targets)
+  {
+    const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == target::ACTIVATED ? frame.brushActivated : frame.brushDeactivated;
+    DrawShape(target->shape, frame.renderTarget, targetBrush);
+  }
 }
 
 void DrawShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
