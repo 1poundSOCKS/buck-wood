@@ -128,7 +128,7 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   float scale = renderTargetSize.width / levelWidth;
   float shiftY = renderTargetSize.height / 2 * scale;
   
-  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(0, -playerPosY + shiftY);
+  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(0, shiftY - playerPosY);
   
   D2D1_SIZE_F scaleSize;
   scaleSize.width = scale;
