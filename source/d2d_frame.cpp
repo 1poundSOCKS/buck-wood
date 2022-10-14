@@ -8,6 +8,9 @@ d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brush.put());
   if( FAILED(hr) ) throw(L"error");
 
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 0.0f, 0.0f, 0.5f)), brushThrusters.put());
+  if( FAILED(hr) ) throw(L"error");
+
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)), brushDiagnostics.put());
   if( FAILED(hr) ) throw(L"error");
 

@@ -33,6 +33,7 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectInputDevice8> mouse;
   float mouseX, mouseY;
+  bool mouseLButtonDown = false, mouseRButtonDown = false;
 };
 
 #endif

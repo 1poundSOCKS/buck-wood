@@ -114,6 +114,19 @@ void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1:
   const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
   RenderShape(*player.outline, frame.renderTarget, frame.brush);
+
+  if( player.thrusterOn )
+  {
+    D2D1_POINT_2F startPoint;
+    startPoint.x = player.thruster->start.x;
+    startPoint.y = player.thruster->start.y;
+
+    D2D1_POINT_2F endPoint;
+    endPoint.x = player.thruster->end.x;
+    endPoint.y = player.thruster->end.y;
+
+    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brushThrusters.get(), 6.0f);
+  }
 }
 
 void RenderBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)

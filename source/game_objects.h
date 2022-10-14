@@ -14,6 +14,7 @@ struct game_point
 
 struct game_line
 {
+  game_line(const game_point& start, const game_point& end);
   game_line(float startX, float startY, float endX, float endY);
 
   game_point start, end;
@@ -44,6 +45,8 @@ struct player_ship
   float xVelocity, yVelocity;
   float angle;
   std::unique_ptr<game_shape> outline;
+  std::unique_ptr<game_line> thruster;
+  bool thrusterOn = false;
 };
 
 struct bullet

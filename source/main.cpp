@@ -19,8 +19,11 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
-#pragma comment(lib,"jsoncpp.lib")
 #pragma comment(lib, "RuntimeObject.lib")
+
+#ifdef USE_JSON
+#pragma comment(lib,"jsoncpp.lib")
+#endif
 
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);

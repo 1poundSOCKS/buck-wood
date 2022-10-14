@@ -92,10 +92,12 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
   float forceX = 0.0f;
   float forceY = forceOfGravity;
 
+  gameState.player->thrusterOn = false;
   if( controlState.accelerate )
   {
     forceX += playerThrust * sin(DEGTORAD(gameState.player->angle));
     forceY -= playerThrust * cos(DEGTORAD(gameState.player->angle));
+    gameState.player->thrusterOn = true;
   }
   
   float spin = 0.0f;

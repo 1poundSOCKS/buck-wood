@@ -3,7 +3,10 @@
 
 #include <iostream>
 #include <fstream>
+
+#ifdef USE_JSON
 #include <json.h>
+#endif
 
 struct game_level_file
 {

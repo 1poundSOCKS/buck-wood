@@ -1,8 +1,13 @@
 #include "game_objects.h"
 
+game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
+{
+}
+
 game_line::game_line(float startX, float startY, float endX, float endY) : start(startX, startY), end(endX, endY)
 {
 }
+
 game_shape::game_shape()
 {
 }
@@ -34,6 +39,7 @@ player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle
   static const int pointCount = sizeof(points) / sizeof(game_point);
 
   outline = std::make_unique<game_shape>(points, pointCount);
+  thruster = std::make_unique<game_line>(game_point(5, 14), game_point(-5, 14));
 }
 
 bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)

@@ -44,6 +44,7 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
     }
   }
 
+#ifdef USE_DIRECTINPUT_MOUSE
   DIMOUSESTATE mouseState;
   hr = app.mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
   if( FAILED(hr) )
@@ -57,6 +58,10 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
     if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
     if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
   }
+#else
+  if( app.mouseLButtonDown ) cs->shoot = true;
+  if( app.mouseRButtonDown ) cs->accelerate = true;
+#endif
 
   return cs;
 }

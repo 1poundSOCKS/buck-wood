@@ -107,6 +107,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
   }
 
+  if( message == WM_LBUTTONDOWN )
+  {
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL ) return 0;
+
+    app->mouseLButtonDown = true;
+    return 0;    
+  }
+
+  if( message == WM_LBUTTONUP )
+  {
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL ) return 0;
+
+    app->mouseLButtonDown = false;
+    return 0;    
+  }
+
+  if( message == WM_RBUTTONDOWN )
+  {
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL ) return 0;
+
+    app->mouseRButtonDown = true;
+    return 0;
+  }
+
+  if( message == WM_RBUTTONUP )
+  {
+    d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
+    if( app == NULL ) return 0;
+
+    app->mouseRButtonDown = false;
+    return 0;
+  }
+
   if( message == WM_PAINT )
   {
 		ValidateRect(hWnd, NULL);
