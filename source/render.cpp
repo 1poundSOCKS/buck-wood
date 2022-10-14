@@ -42,7 +42,7 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
   }
   else if( gameState.playerState == game_state::player_dead )
   {
-    std::wstring text = L"GAME OVER";
+    std::wstring text = L"YOU LOSE";
     D2D_SIZE_F size = frame.renderTarget->GetSize();
     D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -163,18 +163,4 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
 
     renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
   }
-}
-
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float widthToScale, float heightToTranslate)
-{
-  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
-  
-  D2D1::Matrix3x2F shift = D2D1::Matrix3x2F::Translation(0, heightToTranslate);
-  
-  D2D1_SIZE_F scaleSize;
-  scaleSize.width = renderTargetSize.width / widthToScale;
-  scaleSize.height = scaleSize.width;
-  D2D1::Matrix3x2F scale = D2D1::Matrix3x2F::Scale(scaleSize);
-
-  return scale * shift;
 }
