@@ -41,6 +41,12 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
   }
+
+  float levelTimerInSeconds = gameState.levelTimerStop == 0 ? 
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.timer->totalTicks, gameState.timer->ticksPerSecond) :
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.levelTimerStop, gameState.timer->ticksPerSecond);
+
+  RenderTimer(frame, levelTimerInSeconds);
 }
 
 void RenderTitleScreen(const d2d_frame& frame)
@@ -72,7 +78,19 @@ void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& di
     msg += L"\n";
   }
 
-  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
+  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.writeTextFormat.get(), rect, frame.brushDiagnostics.get());
+}
+
+void RenderTimer(const d2d_frame& frame, float seconds)
+{
+  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 8, size.width - 1, size.height * 2 / 8);
+
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+  static wchar_t timeText[64];
+  swprintf(timeText, L"%.2f", seconds);
+  frame.renderTarget->DrawTextW(timeText,wcslen(timeText), frame.levelTimerTextFormat.get(), rect, frame.brushTimer.get());
 }
 
 void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)

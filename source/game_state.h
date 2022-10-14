@@ -31,6 +31,5 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
 void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void ResetGameState(game_state& gameState);
 bool PlayerIsOutOfBounds(const game_state& gameState);
-float GetGameStateTimerInSeconds(const game_state& gameState);
 
 #endif

@@ -106,22 +106,15 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   swprintf(text, L"run time: %.1f", runTime);
   diagnostics.push_back(text);
 
-  wsprintf(text, L"fps: %i", perfData.fpsAverage);
+  swprintf(text, L"fps: %i", perfData.fpsAverage);
   diagnostics.push_back(text);
 
-  wsprintf(text, L"bullet count: %i", gameState.bullets.size());
+  swprintf(text, L"bullet count: %I64u", gameState.bullets.size());
   diagnostics.push_back(text);
 
-  wsprintf(text, L"mouse x: %i", static_cast<int>(controlState.renderTargetMouseX));
+  swprintf(text, L"mouse x: %i", static_cast<int>(controlState.renderTargetMouseX));
   diagnostics.push_back(text);
 
-  wsprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
-  diagnostics.push_back(text);
-
-  float levelTimeInSeconds = gameState.levelTimerStop == 0 ? 
-    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.timer->totalTicks, gameState.timer->ticksPerSecond) :
-    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.levelTimerStop, gameState.timer->ticksPerSecond);
-  
-  swprintf(text, L"level timer: %.2f", levelTimeInSeconds);
+  swprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
   diagnostics.push_back(text);
 }
