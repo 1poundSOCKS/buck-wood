@@ -12,6 +12,7 @@ struct game_state
 
   enum SCREEN { title, main };
   enum PLAYER_STATE { alive, dead };
+  enum LEVEL_STATE { level_incomplete, level_complete };
 
   bool running;
   float speed;
@@ -20,6 +21,7 @@ struct game_state
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
   std::unique_ptr<game_level> currentLevel;
+  LEVEL_STATE levelState = level_incomplete;
   std::unique_ptr<system_timer> timer;
   int64_t levelTimerStart = 0;
   int64_t levelTimerStop = 0;

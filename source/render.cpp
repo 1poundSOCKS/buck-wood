@@ -32,14 +32,21 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
     RenderBullet(*bullet, frame, transform);
   }
 
-  if( gameState.playerState == game_state::dead )
+  if( gameState.levelState == game_state::level_complete )
   {
-    std::wstring text = L"game over";
-
+    std::wstring text = L"F*CK YEAH";
     D2D_SIZE_F size = frame.renderTarget->GetSize();
     D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.levelEndTextFormat.get(), rect, frame.brushLevelEndText.get());
+  }
+  else if( gameState.playerState == game_state::dead )
+  {
+    std::wstring text = L"GAME OVER";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.levelEndTextFormat.get(), rect, frame.brushLevelEndText.get());
   }
 
   float levelTimerInSeconds = gameState.levelTimerStop == 0 ? 
@@ -60,7 +67,7 @@ void RenderTitleScreen(const d2d_frame& frame)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.writeTextFormat.get(), rect, frame.brush.get());
+  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.menuTextFormat.get(), rect, frame.brushLevelEndText.get());
 }
 
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
@@ -68,7 +75,7 @@ void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& di
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
 
-  rect = D2D1::RectF(0, 0, size.width / 4, size.height / 4);
+  rect = D2D1::RectF(0, 0, size.width / 8, size.height / 6);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   std::wstring msg;
@@ -84,7 +91,7 @@ void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& di
 void RenderTimer(const d2d_frame& frame, float seconds)
 {
   D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 8, size.width - 1, size.height * 2 / 8);
+  D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 16, size.width - 1, size.height * 3 / 16);
 
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

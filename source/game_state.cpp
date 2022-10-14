@@ -19,10 +19,6 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
 void UpdateGameState(game_state& gameState, const control_state& controlState)
 {
   UpdateSystemTimer(*gameState.timer);
-  float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
-
-  static const float gameSpeedMultiplier = 2.0f;
-  const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
 
   if( controlState.quitPress )
   {
@@ -46,8 +42,12 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     return;
   }
 
-  if( gameState.playerState == game_state::alive )
+  if( gameState.playerState == game_state::alive && gameState.levelState == game_state::level_incomplete )
   {
+    float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
+    static const float gameSpeedMultiplier = 2.0f;
+    const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
+
     UpdatePlayer(gameState, controlState, gameUpdateInterval);
     UpdateBullets(gameState, controlState, gameUpdateInterval);
 
@@ -140,14 +140,25 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
       if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
     }
 
+    int activatedTargetCount = 0;
     for( const auto& target: gameState.currentLevel->targets )
     {
-    if( target->state == target::DEACTIVATED && PointInside(bulletPoint, target->shape) )
+      if( target->state == target::ACTIVATED )
+      {
+        activatedTargetCount++;
+      }
+      else if( target->state == target::DEACTIVATED && PointInside(bulletPoint, target->shape) )
       {
         bullet->outsideLevel = true;
         target->state = target::ACTIVATED;
-        gameState.levelTimerStop = gameState.timer->totalTicks;
+        activatedTargetCount++;
       }
+    }
+
+    if( activatedTargetCount == gameState.currentLevel->targets.size() )
+    {
+      gameState.levelTimerStop = gameState.timer->totalTicks;
+      gameState.levelState = game_state::level_complete;
     }
   }
   
@@ -164,6 +175,7 @@ void ResetGameState(game_state& gameState)
   gameState.playerState = game_state::alive;
   gameState.bullets.clear();
   ResetGameLevel(*gameState.currentLevel);
+  gameState.levelState = game_state::level_incomplete;
   gameState.levelTimerStart = gameState.timer->totalTicks;
   gameState.levelTimerStop = 0;
 }
