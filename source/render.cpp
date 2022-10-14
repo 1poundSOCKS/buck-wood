@@ -40,7 +40,7 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.levelEndTextFormat.get(), rect, frame.brushLevelEndText.get());
   }
-  else if( gameState.playerState == game_state::dead )
+  else if( gameState.playerState == game_state::player_dead )
   {
     std::wstring text = L"GAME OVER";
     D2D_SIZE_F size = frame.renderTarget->GetSize();

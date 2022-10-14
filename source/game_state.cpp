@@ -2,7 +2,7 @@
 #include <list>
 
 game_state::game_state(std::unique_ptr<game_level>& firstLevel)
-: running(true), screen(title), playerState(alive), currentLevel(std::move(firstLevel))
+: running(true), screen(title), playerState(player_alive), currentLevel(std::move(firstLevel))
 {
   player = CreatePlayerShip();
   timer = std::make_unique<system_timer>();
@@ -42,7 +42,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     return;
   }
 
-  if( gameState.playerState == game_state::alive && gameState.levelState == game_state::level_incomplete )
+  if( gameState.playerState == game_state::player_alive && gameState.levelState == game_state::level_incomplete )
   {
     float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
     static const float gameSpeedMultiplier = 2.0f;
@@ -56,7 +56,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
 
     if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) )
     {
-      gameState.playerState = game_state::dead;
+      gameState.playerState = game_state::player_dead;
       gameState.levelTimerStop = gameState.timer->totalTicks;
     }
     
@@ -64,7 +64,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     {
       if( PointInside(transformedPoints, *shape) )
       {
-        gameState.playerState = game_state::dead;
+        gameState.playerState = game_state::player_dead;
         gameState.levelTimerStop = gameState.timer->totalTicks;
       }
     }
@@ -172,7 +172,7 @@ void ResetGameState(game_state& gameState)
   gameState.player->xVelocity = 0;
   gameState.player->yVelocity = 0;
   gameState.player->angle = 0;
-  gameState.playerState = game_state::alive;
+  gameState.playerState = game_state::player_alive;
   gameState.bullets.clear();
   ResetGameLevel(*gameState.currentLevel);
   gameState.levelState = game_state::level_incomplete;
