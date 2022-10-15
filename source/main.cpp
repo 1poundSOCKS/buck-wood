@@ -10,6 +10,8 @@
 #include "control_state.h"
 #include "game_level.h"
 #include "system_timer.h"
+#include "game_data.h"
+#include "sound_buffer.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
@@ -17,6 +19,7 @@
 #pragma comment(lib, "Dwrite")
 #pragma comment(lib, "Dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dsound.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 #pragma comment(lib, "RuntimeObject.lib")
@@ -28,14 +31,24 @@
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
+std::unique_ptr<wav_file_data> LoadThemeTuneData();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
-  const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();  
+  wchar_t currentDirectory[MAX_PATH];
+  GetCurrentDirectory(MAX_PATH, currentDirectory);
+  std::unique_ptr<wav_file_data> themeTuneData = LoadThemeTuneData();
+
+  const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
   const std::unique_ptr<game_state> gameState = CreateInitialGameState();
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
+
+  sound_buffer themeTune(app->directSound, *themeTuneData);
+
+  HRESULT hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  if( FAILED(hr) ) return 0;
 
   MSG msg;
   while (ProcessMessage(&msg))
@@ -139,4 +152,9 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   D2D1::Matrix3x2F matrixScale = D2D1::Matrix3x2F::Scale(scaleSize);
 
   return matrixScale * matrixShift;
+}
+
+std::unique_ptr<wav_file_data> LoadThemeTuneData()
+{
+  return std::make_unique<wav_file_data>("C:/Users/mathe/source/repos/buck-wood/data/sound/StarWars60.wav");
 }

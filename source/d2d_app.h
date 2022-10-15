@@ -11,6 +11,8 @@
 #include <dxgi.h>
 #include <d3d11.h>
 #include <dinput.h>
+#include <mmsystem.h>
+#include <dsound.h>
 #include <memory>
 #include <winrt/base.h>
 
@@ -34,6 +36,7 @@ struct d2d_app
 #ifdef USE_DIRECTINPUT_MOUSE
   winrt::com_ptr<IDirectInputDevice8> mouse;
 #endif
+  winrt::com_ptr<IDirectSound8> directSound;
   float mouseX, mouseY;
   bool mouseLButtonDown = false, mouseRButtonDown = false;
 };

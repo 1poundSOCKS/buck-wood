@@ -39,9 +39,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_BGRA_SUPPORT, featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, dxgi_swapChain.put(), d3d_device.put(), NULL, NULL);
   if( FAILED(hr) ) throw L"error";
 
-  hr = dxgi_swapChain->SetFullscreenState(TRUE, NULL);
-  if( FAILED(hr) ) throw L"error";
-
   winrt::com_ptr<IDXGISurface> dxgi_surface;
   hr = dxgi_swapChain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_surface.put_void());
   if( FAILED(hr) ) throw L"error";
@@ -86,6 +83,12 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   hr = mouse->SetDataFormat(&DIDataFormat);
   if( FAILED(hr) ) throw L"error";
 #endif
+
+  hr = DirectSoundCreate8(NULL, directSound.put(), NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = directSound->SetCooperativeLevel(wnd, DSSCL_PRIORITY);
+  if( FAILED(hr) ) throw L"error";
 }
 
 d2d_app::~d2d_app()
