@@ -15,6 +15,16 @@ struct wav_file_header
   uint8_t format[4];
 };
 
+struct wav_file_data_format
+{
+  unsigned short audioFormat;
+  unsigned short numChannels;
+  unsigned long sampleRate;
+  unsigned long bytesPerSecond;
+  unsigned short blockAlign;
+  unsigned short bitsPerSample;
+};
+
 struct wav_file_chunk
 {
   wav_file_chunk(std::ifstream& stream);
@@ -31,6 +41,7 @@ struct wav_file_data
   std::unique_ptr<wav_file_header> header;
   std::unique_ptr<wav_file_chunk> format;
   std::unique_ptr<wav_file_chunk> data;
+  wav_file_data_format dataFormat;
 };
 
 int GetWavFileDataSize(const wav_file_data& data);

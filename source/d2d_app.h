@@ -37,8 +37,11 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> mouse;
 #endif
   winrt::com_ptr<IDirectSound8> directSound;
+  winrt::com_ptr<IDirectSoundBuffer> primarySoundBuffer;
   float mouseX, mouseY;
   bool mouseLButtonDown = false, mouseRButtonDown = false;
 };
+
+winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
 
 #endif

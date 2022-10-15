@@ -27,6 +27,7 @@ wav_file_data::wav_file_data(const char* filename)
   header = std::make_unique<wav_file_header>(fileReader);
   format = std::make_unique<wav_file_chunk>(fileReader);
   data = std::make_unique<wav_file_chunk>(fileReader);
+  memcpy(&dataFormat, format->data.get(), sizeof(dataFormat));
 }
 
 int GetWavFileDataSize(const wav_file_data& wavFileData)

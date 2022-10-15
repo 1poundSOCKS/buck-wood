@@ -89,6 +89,8 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
 
   hr = directSound->SetCooperativeLevel(wnd, DSSCL_PRIORITY);
   if( FAILED(hr) ) throw L"error";
+
+  primarySoundBuffer = CreatePrimarySoundBuffer(directSound);
 }
 
 d2d_app::~d2d_app()
@@ -218,11 +220,40 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance)
 
 void CreateMainWindow(d2d_app* app)
 {
-   app->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, app->inst, app);
+  app->wnd = CreateWindowW(lpszWndClass, lpszTitle, WS_OVERLAPPEDWINDOW,
+    CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, app->inst, app);
 
-   if (!app->wnd) return;
+  if (!app->wnd) return;
 
-   ShowWindow(app->wnd, app->cmdShow);
-   UpdateWindow(app->wnd);
+  ShowWindow(app->wnd, app->cmdShow);
+  UpdateWindow(app->wnd);
+}
+
+winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound)
+{
+  DSBUFFERDESC bufferDesc;
+  bufferDesc.dwSize = sizeof(DSBUFFERDESC);
+	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
+	bufferDesc.dwBufferBytes = 0;
+	bufferDesc.dwReserved = 0;
+	bufferDesc.lpwfxFormat = NULL;
+	bufferDesc.guid3DAlgorithm = GUID_NULL;
+
+  winrt::com_ptr<IDirectSoundBuffer> primaryBuffer;
+  HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
+  if( FAILED(hr) ) throw L"error";
+
+  WAVEFORMATEX waveFormat;
+	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+	waveFormat.nSamplesPerSec = 44100;
+	waveFormat.wBitsPerSample = 16;
+	waveFormat.nChannels = 2;
+	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+	waveFormat.cbSize = 0;
+ 
+	hr = primaryBuffer->SetFormat(&waveFormat);
+  if( FAILED(hr) ) throw L"error";
+  
+  return primaryBuffer;
 }

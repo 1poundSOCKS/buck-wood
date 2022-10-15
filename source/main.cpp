@@ -47,7 +47,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   sound_buffer themeTune(app->directSound, *themeTuneData);
 
-  HRESULT hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  HRESULT hr = S_OK;
+  hr = themeTune.buffer->SetCurrentPosition(0);
+  if( FAILED(hr) ) return 0;
+
+  hr = themeTune.buffer->Play(0, 0, DSBPLAY_LOOPING);
+  if( FAILED(hr) ) return 0;
+
+  hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
   MSG msg;
@@ -156,5 +163,5 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
 
 std::unique_ptr<wav_file_data> LoadThemeTuneData()
 {
-  return std::make_unique<wav_file_data>("C:/Users/mathe/source/repos/buck-wood/data/sound/StarWars60.wav");
+  return std::make_unique<wav_file_data>("C:/Users/mathe/source/repos/buck-wood/data/sound/main_theme.wav");
 }
