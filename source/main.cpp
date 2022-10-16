@@ -3,6 +3,7 @@
 #include <iostream>
 #include <tchar.h>
 #include <math.h>
+#include <filesystem>
 
 #include "math.h"
 #include "d2d_app.h"
@@ -24,6 +25,8 @@
 #pragma comment(lib,"gtest_main.lib")
 #pragma comment(lib, "RuntimeObject.lib")
 
+namespace fs = std::filesystem;
+
 #ifdef USE_JSON
 #pragma comment(lib,"jsoncpp.lib")
 #endif
@@ -31,13 +34,15 @@
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-std::unique_ptr<wav_file_data> LoadThemeTuneData();
+std::unique_ptr<wav_file_data> LoadThemeTuneData(const std::wstring& path);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
   GetCurrentDirectory(MAX_PATH, currentDirectory);
-  std::unique_ptr<wav_file_data> themeTuneData = LoadThemeTuneData();
+
+  config_file configFile(L"config.txt");
+  std::unique_ptr<wav_file_data> themeTuneData = LoadThemeTuneData(configFile.settings[L"data_path"]);
 
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
@@ -161,7 +166,9 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return matrixScale * matrixShift;
 }
 
-std::unique_ptr<wav_file_data> LoadThemeTuneData()
+std::unique_ptr<wav_file_data> LoadThemeTuneData(const std::wstring& path)
 {
-  return std::make_unique<wav_file_data>("C:/Users/mathe/source/repos/buck-wood/data/sound/main_theme.wav");
+  fs::path filename = path;
+  filename /= L"sound\\main_theme.wav";
+  return std::make_unique<wav_file_data>(filename.c_str());
 }

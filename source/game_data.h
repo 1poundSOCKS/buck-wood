@@ -4,7 +4,24 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include <list>
+#include <string>
+#include <map>
+#include <codecvt>
+
+struct config_file
+{
+  struct setting
+  {
+    setting(const std::wstring& text);
+
+    std::wstring key;
+    std::wstring value;
+  };
+
+  config_file(const wchar_t* filename);
+
+  std::map<std::wstring, std::wstring> settings;
+};
 
 struct wav_file_header
 {
@@ -36,7 +53,7 @@ struct wav_file_chunk
 
 struct wav_file_data
 {
-  wav_file_data(const char* filename);
+  wav_file_data(const wchar_t* filename);
 
   std::unique_ptr<wav_file_header> header;
   std::unique_ptr<wav_file_chunk> format;
