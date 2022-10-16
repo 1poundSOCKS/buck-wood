@@ -34,7 +34,7 @@ namespace fs = std::filesystem;
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-std::unique_ptr<wav_file_data> LoadThemeTuneData(const std::wstring& path);
+std::unique_ptr<wav_file_data> LoadSoundData(const std::wstring& path, const std::wstring& file);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -42,7 +42,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
   config_file configFile(L"config.txt");
-  std::unique_ptr<wav_file_data> themeTuneData = LoadThemeTuneData(configFile.settings[L"data_path"]);
 
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
@@ -50,17 +49,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
 
+  std::unique_ptr<wav_file_data> themeTuneData = LoadSoundData(configFile.settings[L"data_path"], L"main_theme.wav");
+  std::unique_ptr<wav_file_data> shootEffectData = LoadSoundData(configFile.settings[L"data_path"], L"shoot_effect.wav");
+  std::unique_ptr<wav_file_data> thrustEffectData = LoadSoundData(configFile.settings[L"data_path"], L"thrust_effect.wav");
+
   sound_buffer themeTune(app->directSound, *themeTuneData);
+  sound_buffer shootEffect(app->directSound, *shootEffectData);
+  sound_buffer thrustEffect(app->directSound, *thrustEffectData);
 
   HRESULT hr = S_OK;
-  hr = themeTune.buffer->SetCurrentPosition(0);
-  if( FAILED(hr) ) return 0;
-
-  hr = themeTune.buffer->Play(0, 0, DSBPLAY_LOOPING);
-  if( FAILED(hr) ) return 0;
 
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
+
+#ifdef PLAY_THEME_TUNE
+  themeTune.buffer->SetCurrentPosition(0);
+  themeTune.buffer->Play(0, 0, DSBPLAY_LOOPING);
+#endif
 
   MSG msg;
   while (ProcessMessage(&msg))
@@ -73,6 +78,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     RenderFrame(*frame, *gameState, viewTransform);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
+
+    if( controlState->shoot )
+    {
+      shootEffect.buffer->SetCurrentPosition(0);
+      shootEffect.buffer->Play(0, 0, 0);
+    }
+
+    if( controlState->accelerate )
+    {
+      if( !previousControlState->accelerate )
+      {
+        thrustEffect.buffer->SetCurrentPosition(0);
+        thrustEffect.buffer->Play(0, 0, DSBPLAY_LOOPING);
+      }
+    }
+    else
+    {
+      thrustEffect.buffer->Stop();
+    }
 
     if( viewTransform.Invert() )
     {
@@ -166,9 +190,10 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return matrixScale * matrixShift;
 }
 
-std::unique_ptr<wav_file_data> LoadThemeTuneData(const std::wstring& path)
+std::unique_ptr<wav_file_data> LoadSoundData(const std::wstring& path, const std::wstring& file)
 {
   fs::path filename = path;
-  filename /= L"sound\\main_theme.wav";
+  filename /= L"sound";
+  filename /= file;
   return std::make_unique<wav_file_data>(filename.c_str());
 }
