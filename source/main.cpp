@@ -1,4 +1,5 @@
 #define UNICODE
+#define PLAY_THEME_TUNE
 
 #include <iostream>
 #include <tchar.h>
@@ -12,7 +13,7 @@
 #include "game_level.h"
 #include "system_timer.h"
 #include "game_data.h"
-#include "sound_buffer.h"
+#include "sound_buffers.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
@@ -34,7 +35,7 @@ namespace fs = std::filesystem;
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-std::unique_ptr<wav_file_data> LoadSoundData(const std::wstring& path, const std::wstring& file);
+void PlaySoundEffects(const sound_buffers& soundBuffers, const control_state& controlState, const control_state& previousControlState);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -49,13 +50,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
 
-  std::unique_ptr<wav_file_data> themeTuneData = LoadSoundData(configFile.settings[L"data_path"], L"main_theme.wav");
-  std::unique_ptr<wav_file_data> shootEffectData = LoadSoundData(configFile.settings[L"data_path"], L"shoot_effect.wav");
-  std::unique_ptr<wav_file_data> thrustEffectData = LoadSoundData(configFile.settings[L"data_path"], L"thrust_effect.wav");
-
-  sound_buffer themeTune(app->directSound, *themeTuneData);
-  sound_buffer shootEffect(app->directSound, *shootEffectData);
-  sound_buffer thrustEffect(app->directSound, *thrustEffectData);
+  sound_buffers_ptr soundBuffers = std::make_unique<sound_buffers>(app->directSound, configFile.settings[L"data_path"]);
 
   HRESULT hr = S_OK;
 
@@ -63,8 +58,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   if( FAILED(hr) ) return 0;
 
 #ifdef PLAY_THEME_TUNE
-  themeTune.buffer->SetCurrentPosition(0);
-  themeTune.buffer->Play(0, 0, DSBPLAY_LOOPING);
+  soundBuffers->themeTune->buffer->SetCurrentPosition(0);
+  soundBuffers->themeTune->buffer->Play(0, 0, DSBPLAY_LOOPING);
 #endif
 
   MSG msg;
@@ -79,24 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
-    if( controlState->shoot )
-    {
-      shootEffect.buffer->SetCurrentPosition(0);
-      shootEffect.buffer->Play(0, 0, 0);
-    }
-
-    if( controlState->accelerate )
-    {
-      if( !previousControlState->accelerate )
-      {
-        thrustEffect.buffer->SetCurrentPosition(0);
-        thrustEffect.buffer->Play(0, 0, DSBPLAY_LOOPING);
-      }
-    }
-    else
-    {
-      thrustEffect.buffer->Stop();
-    }
+    PlaySoundEffects(*soundBuffers, *controlState, *previousControlState);
 
     if( viewTransform.Invert() )
     {
@@ -190,10 +168,24 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return matrixScale * matrixShift;
 }
 
-std::unique_ptr<wav_file_data> LoadSoundData(const std::wstring& path, const std::wstring& file)
+void PlaySoundEffects(const sound_buffers& soundBuffers, const control_state& controlState, const control_state& previousControlState)
 {
-  fs::path filename = path;
-  filename /= L"sound";
-  filename /= file;
-  return std::make_unique<wav_file_data>(filename.c_str());
+  if( controlState.shoot )
+  {
+    soundBuffers.shootEffect->buffer->SetCurrentPosition(0);
+    soundBuffers.shootEffect->buffer->Play(0, 0, 0);
+  }
+
+  if( controlState.accelerate )
+  {
+    if( !previousControlState.accelerate )
+    {
+      soundBuffers.thrustEffect->buffer->SetCurrentPosition(0);
+      soundBuffers.thrustEffect->buffer->Play(0, 0, DSBPLAY_LOOPING);
+    }
+  }
+  else
+  {
+    soundBuffers.thrustEffect->buffer->Stop();
+  }
 }

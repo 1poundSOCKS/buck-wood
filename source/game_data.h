@@ -63,4 +63,6 @@ struct wav_file_data
 
 int GetWavFileDataSize(const wav_file_data& data);
 
+using wav_file_data_ptr = std::unique_ptr<wav_file_data>;
+
 #endif
