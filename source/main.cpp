@@ -170,15 +170,19 @@ void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& even
     soundBuffers.shoot->buffer->Play(0, 0, 0);
   }
 
-  if( events.playerBoosterOn )
+  DWORD bufferStatus = 0;
+  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
   {
-    soundBuffers.thrust->buffer->SetCurrentPosition(0);
-    soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
-  }
+    if( events.playerBoosterOn && !(bufferStatus & DSBSTATUS_PLAYING) )
+    {
+      soundBuffers.thrust->buffer->SetCurrentPosition(0);
+      soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
+    }
 
-  if( events.playerBoosterOff )
-  {
-    soundBuffers.thrust->buffer->Stop();
+    if( events.playerBoosterOff && (bufferStatus & DSBSTATUS_PLAYING) )
+    {
+      soundBuffers.thrust->buffer->Stop();
+    }
   }
 
   if( events.targetShot )
@@ -189,6 +193,7 @@ void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& even
 
   if( events.startTitleMusic )
   {
+    soundBuffers.thrust->buffer->Stop();
     soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
     soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
   }
