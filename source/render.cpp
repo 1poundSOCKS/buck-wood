@@ -38,7 +38,7 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
     D2D_SIZE_F size = frame.renderTarget->GetSize();
     D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.levelEndTextFormat.get(), rect, frame.brushLevelEndText.get());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
   else if( gameState.playerState == game_state::player_dead )
   {
@@ -46,7 +46,7 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
     D2D_SIZE_F size = frame.renderTarget->GetSize();
     D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.levelEndTextFormat.get(), rect, frame.brushLevelEndText.get());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
 
   float levelTimerInSeconds = gameState.levelTimerStop == 0 ? 
@@ -67,7 +67,7 @@ void RenderTitleScreen(const d2d_frame& frame)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.menuTextFormat.get(), rect, frame.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
@@ -85,7 +85,7 @@ void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& di
     msg += L"\n";
   }
 
-  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.writeTextFormat.get(), rect, frame.brushDiagnostics.get());
+  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.textFormats->writeTextFormat.get(), rect, frame.brushes->brushDiagnostics.get());
 }
 
 void RenderTimer(const d2d_frame& frame, float seconds)
@@ -97,14 +97,14 @@ void RenderTimer(const d2d_frame& frame, float seconds)
 
   static wchar_t timeText[64];
   swprintf(timeText, L"%.2f", seconds);
-  frame.renderTarget->DrawTextW(timeText,wcslen(timeText), frame.levelTimerTextFormat.get(), rect, frame.brushTimer.get());
+  frame.renderTarget->DrawTextW(timeText,wcslen(timeText), frame.textFormats->levelTimerTextFormat.get(), rect, frame.brushes->brushTimer.get());
 }
 
 void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
 {
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(mouseCursor.xPos, mouseCursor.yPos);
   frame.renderTarget->SetTransform(translate);
-  RenderLines(mouseCursor.lines, frame.renderTarget, frame.brush);
+  RenderLines(mouseCursor.lines, frame.renderTarget, frame.brushes->brush);
 }
 
 void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
@@ -113,7 +113,7 @@ void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1:
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
   const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
-  RenderShape(*player.outline, frame.renderTarget, frame.brush);
+  RenderShape(*player.outline, frame.renderTarget, frame.brushes->brush);
 
   if( player.thrusterOn )
   {
@@ -125,7 +125,7 @@ void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1:
     endPoint.x = player.thruster->end.x;
     endPoint.y = player.thruster->end.y;
 
-    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brushThrusters.get(), 6.0f);
+    frame.renderTarget->DrawLine(startPoint, endPoint, frame.brushes->brushThrusters.get(), 6.0f);
   }
 }
 
@@ -137,22 +137,24 @@ void RenderBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matr
   const D2D1::Matrix3x2F transform = translate * viewTransform;
   frame.renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
-  frame.renderTarget->FillRectangle(&rectangle, frame.brush.get());
+  frame.renderTarget->FillRectangle(&rectangle, frame.brushes->brush.get());
 }
 
 void RenderLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
 {
   frame.renderTarget->SetTransform(viewTransform);
-  RenderShape(*level.boundary, frame.renderTarget, frame.brush);
+  RenderShape(*level.boundary, frame.renderTarget, frame.brushes->brush);
 
   for( const auto& shape: level.objects )
   {
-    RenderShape(*shape, frame.renderTarget, frame.brush);
+    RenderShape(*shape, frame.renderTarget, frame.brushes->brush);
   }
 
   for( const auto& target: level.targets)
   {
-    const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == target::ACTIVATED ? frame.brushActivated : frame.brushDeactivated;
+    const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == 
+      target::ACTIVATED ? frame.brushes->brushActivated : frame.brushes->brushDeactivated;
+    
     RenderShape(target->shape, frame.renderTarget, targetBrush);
   }
 }

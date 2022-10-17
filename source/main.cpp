@@ -1,5 +1,5 @@
 #define UNICODE
-#define PLAY_THEME_TUNE
+#define DISABLE_SOUND
 
 #include <iostream>
 #include <tchar.h>
@@ -57,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-#ifdef PLAY_THEME_TUNE
+#ifndef DISABLE_SOUND
   soundBuffers->themeTune->buffer->SetCurrentPosition(0);
   soundBuffers->themeTune->buffer->Play(0, 0, DSBPLAY_LOOPING);
 #endif
@@ -67,14 +67,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   {
     if( app->terminating ) continue;
 
-    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget);
+    std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, app->brushes, app->textFormats);
 
     D2D1::Matrix3x2F viewTransform = CreateViewTransform(frame->renderTarget, gameState->currentLevel->width, gameState->player->yPos);
     RenderFrame(*frame, *gameState, viewTransform);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
+#ifndef DISABLE_SOUND
     PlaySoundEffects(*soundBuffers, *controlState, *previousControlState);
+#endif
 
     if( viewTransform.Invert() )
     {

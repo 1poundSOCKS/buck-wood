@@ -91,6 +91,9 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   if( FAILED(hr) ) throw L"error";
 
   primarySoundBuffer = CreatePrimarySoundBuffer(directSound);
+
+  brushes = std::make_shared<d2d_brushes>(d2d_rendertarget);
+  textFormats = std::make_shared<dwrite_text_formats>();
 }
 
 d2d_app::~d2d_app()

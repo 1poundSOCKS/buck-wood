@@ -15,6 +15,8 @@
 #include <dsound.h>
 #include <memory>
 #include <winrt/base.h>
+#include "d2d_brushes.h"
+#include "dwrite_text_formats.h"
 
 struct d2d_app
 {
@@ -38,6 +40,8 @@ struct d2d_app
 #endif
   winrt::com_ptr<IDirectSound8> directSound;
   winrt::com_ptr<IDirectSoundBuffer> primarySoundBuffer;
+  d2d_brushes_ptr brushes;
+  dwrite_text_formats_ptr textFormats;
   float mouseX, mouseY;
   bool mouseLButtonDown = false, mouseRButtonDown = false;
 };

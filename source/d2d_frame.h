@@ -2,24 +2,15 @@
 #include <dwrite.h>
 #include <winrt/base.h>
 
-#include "game_objects.h"
+#include "d2d_brushes.h"
+#include "dwrite_text_formats.h"
 
 struct d2d_frame
 {
-  d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget);
+  d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const d2d_brushes_ptr& brushes, const dwrite_text_formats_ptr& textFormats);
   ~d2d_frame();
 
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
-  winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushThrusters;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushDiagnostics;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushTimer;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushDeactivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushLevelEndText;
-  winrt::com_ptr<IDWriteFactory> writeFactory;
-  winrt::com_ptr<IDWriteTextFormat> writeTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> menuTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> levelTimerTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> levelEndTextFormat;
+  d2d_brushes_ptr brushes;
+  dwrite_text_formats_ptr textFormats;
 };
