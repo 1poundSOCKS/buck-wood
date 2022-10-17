@@ -1,5 +1,4 @@
 #define UNICODE
-#define DISABLE_SOUND
 
 #include <iostream>
 #include <tchar.h>
@@ -35,7 +34,7 @@ namespace fs = std::filesystem;
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-void PlaySoundEffects(const sound_buffers& soundBuffers, const control_state& controlState, const control_state& previousControlState);
+void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& events);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -57,11 +56,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-#ifndef DISABLE_SOUND
-  soundBuffers->themeTune->buffer->SetCurrentPosition(0);
-  soundBuffers->themeTune->buffer->Play(0, 0, DSBPLAY_LOOPING);
-#endif
-
   MSG msg;
   while (ProcessMessage(&msg))
   {
@@ -73,10 +67,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     RenderFrame(*frame, *gameState, viewTransform);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
-
-#ifndef DISABLE_SOUND
-    PlaySoundEffects(*soundBuffers, *controlState, *previousControlState);
-#endif
 
     if( viewTransform.Invert() )
     {
@@ -98,9 +88,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     mouseCursor->yPos = controlState->renderTargetMouseY;
     RenderMouseCursor(*frame, *mouseCursor);
 
+    UpdateGameState(*gameState, *controlState);
+
     app->dxgi_swapChain->Present(1, 0);
 
-    UpdateGameState(*gameState, *controlState);
+    PlaySoundEffects(*soundBuffers, *gameState->events);
 
     previousControlState = std::move(controlState);
 
@@ -170,24 +162,39 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return matrixScale * matrixShift;
 }
 
-void PlaySoundEffects(const sound_buffers& soundBuffers, const control_state& controlState, const control_state& previousControlState)
+void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& events)
 {
-  if( controlState.shoot )
+  if( events.playerShot )
   {
-    soundBuffers.shootEffect->buffer->SetCurrentPosition(0);
-    soundBuffers.shootEffect->buffer->Play(0, 0, 0);
+    soundBuffers.shoot->buffer->SetCurrentPosition(0);
+    soundBuffers.shoot->buffer->Play(0, 0, 0);
   }
 
-  if( controlState.accelerate )
+  if( events.playerBoosterOn )
   {
-    if( !previousControlState.accelerate )
-    {
-      soundBuffers.thrustEffect->buffer->SetCurrentPosition(0);
-      soundBuffers.thrustEffect->buffer->Play(0, 0, DSBPLAY_LOOPING);
-    }
+    soundBuffers.thrust->buffer->SetCurrentPosition(0);
+    soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
   }
-  else
+
+  if( events.playerBoosterOff )
   {
-    soundBuffers.thrustEffect->buffer->Stop();
+    soundBuffers.thrust->buffer->Stop();
+  }
+
+  if( events.targetShot )
+  {
+    soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
+    soundBuffers.targetActivated->buffer->Play(0, 0, 0);
+  }
+
+  if( events.startTitleMusic )
+  {
+    soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
+    soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
+  }
+
+  if( events.stopTitleMusic )
+  {
+    soundBuffers.menuTheme->buffer->Stop();
   }
 }

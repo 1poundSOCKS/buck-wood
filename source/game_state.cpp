@@ -18,7 +18,15 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
 
 void UpdateGameState(game_state& gameState, const control_state& controlState)
 {
+  gameState.events = std::make_shared<game_events>();
+
   UpdateSystemTimer(*gameState.timer);
+
+  if( gameState.starting )
+  {
+    gameState.starting = false;
+    gameState.events->startTitleMusic = true;
+  }
 
   if( controlState.quitPress )
   {
@@ -29,6 +37,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
         return;
       case game_state::main:
         gameState.screen = game_state::title;
+        gameState.events->startTitleMusic = true;
         break;
     }
   }
@@ -38,6 +47,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     if( controlState.startGame ){
       gameState.screen = game_state::main;
       ResetGameState(gameState);
+      gameState.events->stopTitleMusic = true;
     }
     return;
   }
@@ -98,6 +108,11 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
     forceX += playerThrust * sin(DEGTORAD(gameState.player->angle));
     forceY -= playerThrust * cos(DEGTORAD(gameState.player->angle));
     gameState.player->thrusterOn = true;
+    gameState.events->playerBoosterOn = true;
+  }
+  else
+  {
+    gameState.events->playerBoosterOff = true;
   }
   
   float spin = 0.0f;
@@ -127,6 +142,8 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
     newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
     newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
     gameState.bullets.push_front(std::move(newBullet));
+
+    gameState.events->playerShot = true;
   }
 
   for(const auto& bullet : gameState.bullets)
@@ -154,6 +171,7 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
         bullet->outsideLevel = true;
         target->state = target::ACTIVATED;
         activatedTargetCount++;
+        gameState.events->targetShot = true;
       }
     }
 

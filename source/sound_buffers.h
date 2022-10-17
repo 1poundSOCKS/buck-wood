@@ -11,9 +11,10 @@ struct sound_buffers
 {
   sound_buffers(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path);
 
-  sound_buffer_ptr themeTune;
-  sound_buffer_ptr shootEffect;
-  sound_buffer_ptr thrustEffect;
+  sound_buffer_ptr menuTheme;
+  sound_buffer_ptr shoot;
+  sound_buffer_ptr thrust;
+  sound_buffer_ptr targetActivated;
 };
 
 using sound_buffers_ptr = std::unique_ptr<sound_buffers>;

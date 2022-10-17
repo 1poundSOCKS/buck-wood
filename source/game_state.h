@@ -5,6 +5,7 @@
 #include "game_level.h"
 #include "control_state.h"
 #include "system_timer.h"
+#include "game_events.h"
 
 struct game_state
 {
@@ -14,6 +15,8 @@ struct game_state
   enum PLAYER_STATE { player_alive, player_dead };
   enum LEVEL_STATE { level_incomplete, level_complete };
 
+  game_events_ptr events;
+  bool starting = true;
   bool running;
   float speed;
   SCREEN screen;

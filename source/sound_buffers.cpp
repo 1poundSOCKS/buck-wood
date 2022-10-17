@@ -2,9 +2,10 @@
 
 sound_buffers::sound_buffers(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path)
 {
-  themeTune = InitializeSoundBuffer(directSound, path, L"main_theme.wav");
-  shootEffect = InitializeSoundBuffer(directSound, path, L"shoot_effect.wav");
-  thrustEffect = InitializeSoundBuffer(directSound, path, L"thrust_effect.wav");
+  menuTheme = InitializeSoundBuffer(directSound, path, L"main_theme.wav");
+  shoot = InitializeSoundBuffer(directSound, path, L"shoot_effect.wav");
+  thrust = InitializeSoundBuffer(directSound, path, L"thrust_effect.wav");
+  targetActivated = InitializeSoundBuffer(directSound, path, L"target_activated.wav");
 }
 
 sound_buffer_ptr InitializeSoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path, const std::wstring& file)
