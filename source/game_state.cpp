@@ -50,6 +50,9 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     UpdatePlayer(gameState, controlState, gameUpdateInterval);
     UpdateBullets(gameState, controlState, gameUpdateInterval);
 
+    gameState.levelState = GetLevelState(gameState);
+    if( gameState.levelState == game_state::level_complete ) gameState.levelTimerStop = gameState.timer->totalTicks;
+
     std::list<game_point> transformedPoints;
     TransformPlayerShip(*gameState.player, transformedPoints);
 
@@ -70,6 +73,19 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
   }
 }
 
+game_state::LEVEL_STATE GetLevelState(const game_state& gameState)
+{
+  int activatedTargetCount = 0;
+  for( const auto& target: gameState.currentLevel->targets )
+  {
+    if( target->state == target::ACTIVATED ) activatedTargetCount++;
+  }
+
+  if( activatedTargetCount == gameState.currentLevel->targets.size() ) return game_state::level_complete;
+  
+  return game_state::level_incomplete;
+}
+
 bool PlayerIsOutOfBounds(const game_state& gameState)
 {
   return gameState.currentLevel->OutOfBounds(gameState.player->xPos, gameState.player->yPos);  
@@ -85,8 +101,8 @@ std::unique_ptr<game_state> CreateInitialGameState()
 void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
 {
   static const float forceOfGravity = 20.0f;
-  static const float playerThrust = 50.0f;
-  static const float rotationSpeed = 100.0f;
+  static const float playerThrust = 80.0f;
+  static const float rotationSpeed = 150.0f;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -154,7 +170,6 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
       if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
     }
 
-    int activatedTargetCount = 0;
     for( const auto& target: gameState.currentLevel->targets )
     {
       if( PointInside(bulletPoint, target->shape) )
@@ -163,19 +178,10 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
 
         if( target->state == target::DEACTIVATED )
         {
-          bullet->outsideLevel = true;
           target->state = target::ACTIVATED;
-          activatedTargetCount++;
           gameState.events->targetShot = true;
         }
-        else activatedTargetCount++;
       }
-    }
-
-    if( activatedTargetCount == gameState.currentLevel->targets.size() )
-    {
-      gameState.levelTimerStop = gameState.timer->totalTicks;
-      gameState.levelState = game_state::level_complete;
     }
   }
   

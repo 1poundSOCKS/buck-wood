@@ -36,5 +36,6 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
 void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void ResetGameState(game_state& gameState);
 bool PlayerIsOutOfBounds(const game_state& gameState);
+game_state::LEVEL_STATE GetLevelState(const game_state& gameState);
 
 #endif

@@ -171,10 +171,11 @@ void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
     {
       if( gameState.screen != game_state::main || 
           gameState.playerState != game_state::player_alive ||
+          gameState.levelState == game_state::level_complete ||
           !gameState.player->thrusterOn )
-          {
-            soundBuffers.thrust->buffer->Stop();
-          }
+      {
+        soundBuffers.thrust->buffer->Stop();
+      }
     }
     else
     {
