@@ -32,6 +32,7 @@ struct game_state
 
 std::unique_ptr<game_state> CreateInitialGameState();
 void UpdateGameState(game_state& gameState, const control_state& cs);
+void UpdateLevelState(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
 void ResetGameState(game_state& gameState);

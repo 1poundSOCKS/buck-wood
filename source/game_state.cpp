@@ -46,29 +46,33 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
     static const float gameSpeedMultiplier = 2.0f;
     const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
+    UpdateLevelState(gameState, controlState, gameUpdateInterval);
+  }
+}
 
-    UpdatePlayer(gameState, controlState, gameUpdateInterval);
-    UpdateBullets(gameState, controlState, gameUpdateInterval);
+void UpdateLevelState(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
+{
+  UpdatePlayer(gameState, controlState, gameUpdateInterval);
+  UpdateBullets(gameState, controlState, gameUpdateInterval);
 
-    gameState.levelState = GetLevelState(gameState);
-    if( gameState.levelState == game_state::level_complete ) gameState.levelTimerStop = gameState.timer->totalTicks;
+  gameState.levelState = GetLevelState(gameState);
+  if( gameState.levelState == game_state::level_complete ) gameState.levelTimerStop = gameState.timer->totalTicks;
 
-    std::list<game_point> transformedPoints;
-    TransformPlayerShip(*gameState.player, transformedPoints);
+  std::list<game_point> transformedPoints;
+  TransformPlayerShip(*gameState.player, transformedPoints);
 
-    if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) )
+  if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) )
+  {
+    gameState.playerState = game_state::player_dead;
+    gameState.levelTimerStop = gameState.timer->totalTicks;
+  }
+  
+  for( const auto& shape : gameState.currentLevel->objects)
+  {
+    if( PointInside(transformedPoints, *shape) )
     {
       gameState.playerState = game_state::player_dead;
       gameState.levelTimerStop = gameState.timer->totalTicks;
-    }
-    
-    for( const auto& shape : gameState.currentLevel->objects)
-    {
-      if( PointInside(transformedPoints, *shape) )
-      {
-        gameState.playerState = game_state::player_dead;
-        gameState.levelTimerStop = gameState.timer->totalTicks;
-      }
     }
   }
 }
