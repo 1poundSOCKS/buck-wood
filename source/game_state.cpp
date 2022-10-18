@@ -8,14 +8,6 @@ game_state::game_state(std::unique_ptr<game_level>& firstLevel)
   timer = std::make_unique<system_timer>();
 }
 
-bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
-{
-  float cx = bullet->xPos - bullet->startX;
-  float cy = bullet->yPos - bullet->startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > bullet->range || bullet->outsideLevel;
-}
-
 void UpdateGameState(game_state& gameState, const control_state& controlState)
 {
   gameState.events = std::make_shared<game_events>();
@@ -92,8 +84,8 @@ std::unique_ptr<game_state> CreateInitialGameState()
 
 void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
 {
-  static const float forceOfGravity = 1.0f;
-  static const float playerThrust = 3.0f;
+  static const float forceOfGravity = 20.0f;
+  static const float playerThrust = 50.0f;
   static const float rotationSpeed = 100.0f;
 
   float forceX = 0.0f;
@@ -116,9 +108,17 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
   
   gameState.player->xVelocity += forceX * gameUpdateInterval;
   gameState.player->yVelocity += forceY * gameUpdateInterval;
-  gameState.player->xPos += gameState.player->xVelocity;
-  gameState.player->yPos += gameState.player->yVelocity;
+  gameState.player->xPos += gameState.player->xVelocity * gameUpdateInterval;
+  gameState.player->yPos += gameState.player->yVelocity * gameUpdateInterval;
   gameState.player->angle += spin * gameUpdateInterval;
+}
+
+bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
+{
+  float cx = bullet->xPos - bullet->startX;
+  float cy = bullet->yPos - bullet->startY;
+  float distance = sqrt(cx * cx + cy * cy);
+  return distance > bullet->range || bullet->outsideLevel;
 }
 
 void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
@@ -157,16 +157,18 @@ void UpdateBullets(game_state& gameState, const control_state& controlState, flo
     int activatedTargetCount = 0;
     for( const auto& target: gameState.currentLevel->targets )
     {
-      if( target->state == target::ACTIVATED )
-      {
-        activatedTargetCount++;
-      }
-      else if( target->state == target::DEACTIVATED && PointInside(bulletPoint, target->shape) )
+      if( PointInside(bulletPoint, target->shape) )
       {
         bullet->outsideLevel = true;
-        target->state = target::ACTIVATED;
-        activatedTargetCount++;
-        gameState.events->targetShot = true;
+
+        if( target->state == target::DEACTIVATED )
+        {
+          bullet->outsideLevel = true;
+          target->state = target::ACTIVATED;
+          activatedTargetCount++;
+          gameState.events->targetShot = true;
+        }
+        else activatedTargetCount++;
       }
     }
 
