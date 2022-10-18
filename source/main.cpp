@@ -34,7 +34,7 @@ namespace fs = std::filesystem;
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& events);
+void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -92,7 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     app->dxgi_swapChain->Present(1, 0);
 
-    PlaySoundEffects(*soundBuffers, *gameState->events);
+    UpdateSound(*soundBuffers, *gameState);
 
     previousControlState = std::move(controlState);
 
@@ -162,44 +162,53 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return matrixScale * matrixShift;
 }
 
-void PlaySoundEffects(const sound_buffers& soundBuffers, const game_events& events)
+void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
 {
-  if( events.playerShot )
+  DWORD bufferStatus = 0;
+  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
+  {
+    if( bufferStatus & DSBSTATUS_PLAYING )
+    {
+      if( gameState.screen != game_state::main || 
+          gameState.playerState != game_state::player_alive ||
+          !gameState.player->thrusterOn )
+          {
+            soundBuffers.thrust->buffer->Stop();
+          }
+    }
+    else
+    {
+      if( gameState.player->thrusterOn )
+      {
+        soundBuffers.thrust->buffer->SetCurrentPosition(0);
+        soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
+      }
+    }
+  }
+
+  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
+  if( bufferStatus & DSBSTATUS_PLAYING )
+  {
+    if( gameState.screen != game_state::title ) soundBuffers.menuTheme->buffer->Stop();
+  }
+  else
+  {
+    if( gameState.screen == game_state::title )
+    {
+      soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
+      soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
+    }
+  }
+
+  if( gameState.events->playerShot )
   {
     soundBuffers.shoot->buffer->SetCurrentPosition(0);
     soundBuffers.shoot->buffer->Play(0, 0, 0);
   }
 
-  DWORD bufferStatus = 0;
-  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
-  {
-    if( events.playerBoosterOn && !(bufferStatus & DSBSTATUS_PLAYING) )
-    {
-      soundBuffers.thrust->buffer->SetCurrentPosition(0);
-      soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
-    }
-
-    if( events.playerBoosterOff && (bufferStatus & DSBSTATUS_PLAYING) )
-    {
-      soundBuffers.thrust->buffer->Stop();
-    }
-  }
-
-  if( events.targetShot )
+  if( gameState.events->targetShot )
   {
     soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
     soundBuffers.targetActivated->buffer->Play(0, 0, 0);
-  }
-
-  if( events.startTitleMusic )
-  {
-    soundBuffers.thrust->buffer->Stop();
-    soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
-    soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
-  }
-
-  if( events.stopTitleMusic )
-  {
-    soundBuffers.menuTheme->buffer->Stop();
   }
 }

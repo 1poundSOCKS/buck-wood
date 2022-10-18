@@ -15,7 +15,6 @@ struct game_state
   enum PLAYER_STATE { player_alive, player_dead };
   enum LEVEL_STATE { level_incomplete, level_complete };
 
-  game_events_ptr events;
   bool starting = true;
   bool running;
   float speed;
@@ -28,6 +27,7 @@ struct game_state
   std::unique_ptr<system_timer> timer;
   int64_t levelTimerStart = 0;
   int64_t levelTimerStop = 0;
+  game_events_ptr events;
 };
 
 std::unique_ptr<game_state> CreateInitialGameState();

@@ -25,7 +25,6 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
   if( gameState.starting )
   {
     gameState.starting = false;
-    gameState.events->startTitleMusic = true;
   }
 
   if( controlState.quitPress )
@@ -37,7 +36,6 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
         return;
       case game_state::main:
         gameState.screen = game_state::title;
-        gameState.events->startTitleMusic = true;
         break;
     }
   }
@@ -47,7 +45,6 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     if( controlState.startGame ){
       gameState.screen = game_state::main;
       ResetGameState(gameState);
-      gameState.events->stopTitleMusic = true;
     }
     return;
   }
@@ -102,29 +99,17 @@ void UpdatePlayer(game_state& gameState, const control_state& controlState, floa
   float forceX = 0.0f;
   float forceY = forceOfGravity;
 
-  bool thrusterOn = false;
   if( controlState.accelerate )
   {
+    gameState.player->thrusterOn = true;
     forceX += playerThrust * sin(DEGTORAD(gameState.player->angle));
     forceY -= playerThrust * cos(DEGTORAD(gameState.player->angle));
-    thrusterOn = true;
   }
   else
   {
-    thrusterOn = false;
+    gameState.player->thrusterOn = false;
   }
   
-  if( !gameState.player->thrusterOn && thrusterOn )
-  {
-    gameState.events->playerBoosterOn = true;
-  }
-  else if( gameState.player->thrusterOn && !thrusterOn )
-  {
-    gameState.events->playerBoosterOff = true;
-  }
-  
-  gameState.player->thrusterOn = thrusterOn;
-
   float spin = 0.0f;
   if( controlState.left ) spin = -rotationSpeed;
   else if( controlState.right ) spin = rotationSpeed;
