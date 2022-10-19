@@ -10,8 +10,21 @@ system_timer::system_timer()
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
 }
 
+system_timer::system_timer(int fps) : fps(fps)
+{
+  ticksPerSecond = fps;
+  initialTicks = 0;
+}
+
 void UpdateSystemTimer(system_timer& timer)
 {
+  if( timer.fps )
+  {
+    timer.intervalTicks = 1;
+    timer.totalTicks++;
+    return;
+  }
+
   LARGE_INTEGER ticks;
   QueryPerformanceCounter(&ticks);
   int64_t totalTicks = ticks.QuadPart;

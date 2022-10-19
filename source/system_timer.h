@@ -7,7 +7,9 @@
 struct system_timer
 {
   system_timer();
+  system_timer(int fps);
 
+  int fps = 0;
   int64_t ticksPerSecond = 0;
   int64_t initialTicks = 0;
   int64_t totalTicks = 0;

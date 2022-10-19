@@ -4,7 +4,8 @@
 game_state::game_state()
 : running(true), screen(title)
 {
-  timer = std::make_unique<system_timer>();
+  static const int fps = 60;
+  timer = std::make_unique<system_timer>(fps);
 }
 
 game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState)

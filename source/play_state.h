@@ -25,6 +25,8 @@ struct play_state
 
   int64_t levelTimerStart;
   int64_t levelTimerStop = 0;
+
+  int64_t lastShotTicks;
 };
 
 using play_state_ptr = std::unique_ptr<play_state>;

@@ -6,6 +6,7 @@ play_state::play_state(const system_timer& timer, const game_level_ptr& firstLev
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
   levelTimerStart = timer.totalTicks;
+  lastShotTicks = timer.totalTicks;
 }
 
 game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState, float gameUpdateInterval)
@@ -102,20 +103,29 @@ void UpdateBullets(play_state& playState, const control_state& controlState, flo
 {
   if( controlState.shoot )
   {
-    static const float bulletSpeed = 200.0f * gameUpdateInterval;
-    static const float bulletRange = 2000.0f;
+    float ticksSinceLastShot = playState.timer.totalTicks - playState.lastShotTicks;
 
-    float cursorX = controlState.gameMouseX;
-    float cursorY = controlState.gameMouseY;
+    static const float shotPerSecond = 60.0f;
+    static const float ticksPerShot = playState.timer.ticksPerSecond / shotPerSecond;
 
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(playState.player->xPos, playState.player->yPos, bulletRange);
-    float angle = CalculateAngle(playState.player->xPos, playState.player->yPos, cursorX, cursorY);
-    newBullet->angle = angle;
-    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-    playState.bullets.push_front(std::move(newBullet));
+    if( ticksSinceLastShot >= ticksPerShot )
+    {
+      static const float bulletSpeed = 200.0f * gameUpdateInterval;
+      static const float bulletRange = 2000.0f;
 
-    events.playerShot = true;
+      float cursorX = controlState.gameMouseX;
+      float cursorY = controlState.gameMouseY;
+
+      std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(playState.player->xPos, playState.player->yPos, bulletRange);
+      float angle = CalculateAngle(playState.player->xPos, playState.player->yPos, cursorX, cursorY);
+      newBullet->angle = angle;
+      newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
+      newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
+      playState.bullets.push_front(std::move(newBullet));
+
+      events.playerShot = true;
+      playState.lastShotTicks = playState.timer.totalTicks;
+    }
   }
 
   for(const auto& bullet : playState.bullets)
