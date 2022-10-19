@@ -20,7 +20,7 @@
 
 struct d2d_app
 {
-  d2d_app(HINSTANCE inst, int cmdShow);
+  d2d_app(HINSTANCE inst, int cmdShow, int fps);
   ~d2d_app();
 
   bool terminating;

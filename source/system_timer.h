@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <cstdint>
+#include <memory>
 
 struct system_timer
 {
@@ -15,6 +16,8 @@ struct system_timer
   int64_t totalTicks = 0;
   int64_t intervalTicks = 0;
 };
+
+using system_timer_ptr = std::unique_ptr<system_timer>;
 
 void UpdateSystemTimer(system_timer& timer);
 float GetTotalTimeInSeconds(const system_timer& timer);

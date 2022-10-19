@@ -10,6 +10,7 @@ struct control_state
   bool quit;
   bool quitPress;
   bool startGame;
+  bool functionKey_1 = false;
   bool left;
   bool right;
   bool accelerate;

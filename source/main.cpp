@@ -33,8 +33,6 @@ namespace fs = std::filesystem;
 
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState);
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState, const game_events& events);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -43,8 +41,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   config_file configFile(L"config.txt");
 
+  static const int fps = 60;
+
+  const system_timer_ptr timer = std::make_unique<system_timer>(fps);
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
-  const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow);
+  const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
   const std::unique_ptr<game_state> gameState = CreateInitialGameState();
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
@@ -88,7 +89,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     mouseCursor->yPos = controlState->renderTargetMouseY;
     RenderMouseCursor(*frame, *mouseCursor);
 
-    const game_events_ptr events = UpdateGameState(*gameState, *controlState);
+    const game_events_ptr events = UpdateGameState(*gameState, *controlState, *timer);
+    UpdateSystemTimer(*timer);
 
     app->dxgi_swapChain->Present(1, 0);
 
@@ -148,26 +150,4 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
 
   swprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
   diagnostics.push_back(text);
-}
-
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState)
-{
-  if( gameState.screen != game_state::main ) return D2D1::Matrix3x2F::Identity();
-
-  float levelWidth = gameState.playState->currentLevel->width;
-  float playerPosY = gameState.playState->player->yPos;
-
-  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
-
-  float scale = renderTargetSize.width / levelWidth;
-  float shiftY = renderTargetSize.height / 2 * scale;
-  
-  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(0, shiftY - playerPosY);
-  
-  D2D1_SIZE_F scaleSize;
-  scaleSize.width = scale;
-  scaleSize.height = scale;
-  D2D1::Matrix3x2F matrixScale = D2D1::Matrix3x2F::Scale(scaleSize);
-
-  return matrixScale * matrixShift;
 }

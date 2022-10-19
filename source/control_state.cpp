@@ -28,6 +28,7 @@ std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control
     if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
     if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
     if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
+    if( keyboardState[DIK_F1] & 0x80 ) cs->functionKey_1 = true;
   }
 
   POINT p;

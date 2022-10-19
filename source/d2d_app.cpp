@@ -6,7 +6,7 @@ LPWSTR lpszTitle = L"d2d app";
 ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* app);
 
-d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
+d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
    : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0), mouseX(0), mouseY(0)
 {
   RegisterMainWindowClass(inst);
@@ -20,7 +20,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow)
   swapChainDesc.BufferDesc.Width = 1920;
   swapChainDesc.BufferDesc.Height = 1080;
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = fps;
   swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
   swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
   swapChainDesc.OutputWindow = wnd;

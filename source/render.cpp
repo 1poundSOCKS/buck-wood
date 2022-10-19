@@ -1,5 +1,6 @@
 #include "render.h"
 #include <string>
+#include "level_editor.h"
 
 const float titleScreenWidth = 1000.0f;
 const float titleScreenHeight = 500.0f;
@@ -12,16 +13,19 @@ void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1
   
   switch( gameState.screen )
   {
-    case game_state::main:
-      RenderMainScreen(frame, *gameState.playState, transform);
+    case game_state::screen_play:
+      RenderPlayScreen(frame, *gameState.playState, transform);
       break;
-    case game_state::title:
+    case game_state::screen_title:
       RenderTitleScreen(frame);
+      break;
+    case game_state::screen_level_editor:
+      RenderLevelEditor(frame, gameState, transform);
       break;
   }
 }
 
-void RenderMainScreen(const d2d_frame& frame, const play_state& gameState, const D2D1::Matrix3x2F& transform)
+void RenderPlayScreen(const d2d_frame& frame, const play_state& gameState, const D2D1::Matrix3x2F& transform)
 {
   RenderLevel(*gameState.currentLevel, frame, transform);
 
@@ -63,11 +67,18 @@ void RenderTitleScreen(const d2d_frame& frame)
   titleText += L"Right mouse button - accelerate\n";
   titleText += L"Left mouse button - shoot\n";
   titleText += L"\nPress SPACE to start";
+  titleText += L"\nPress F1 for level editor";
 
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+}
+
+void RenderLevelEditor(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform)
+{
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(gameState.levelEditorState->viewX, gameState.levelEditorState->viewY);
+  RenderLevel(*gameState.levelEditorState->level, frame, translate * transform);
 }
 
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
@@ -178,4 +189,26 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
 
     renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
   }
+}
+
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState)
+{
+  if( gameState.screen != game_state::screen_play ) return D2D1::Matrix3x2F::Identity();
+
+  float levelWidth = gameState.playState->currentLevel->width;
+  float playerPosY = gameState.playState->player->yPos;
+
+  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
+
+  float scale = renderTargetSize.width / levelWidth;
+  float shiftY = renderTargetSize.height / 2 * scale;
+  
+  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(0, shiftY - playerPosY);
+  
+  D2D1_SIZE_F scaleSize;
+  scaleSize.width = scale;
+  scaleSize.height = scale;
+  D2D1::Matrix3x2F matrixScale = D2D1::Matrix3x2F::Scale(scaleSize);
+
+  return matrixScale * matrixShift;
 }
