@@ -27,13 +27,15 @@ struct play_state
   int64_t levelTimerStop = 0;
 
   int64_t lastShotTicks;
+
+  static const float gameSpeedMultiplier;
 };
 
 using play_state_ptr = std::unique_ptr<play_state>;
 
-game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState, float gameUpdateInterval);
-void UpdatePlayer(play_state& playState, const control_state& controlState, float gameUpdateInterval);
-void UpdateBullets(play_state& playState, const control_state& controlState, float gameUpdateInterval, game_events& events);
+game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState);
+void UpdatePlayer(play_state& playState, const control_state& controlState);
+void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events);
 bool PlayerIsOutOfBounds(const play_state& playState);
 play_state::LEVEL_STATE GetLevelState(const play_state& playState);
 

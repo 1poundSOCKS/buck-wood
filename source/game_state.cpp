@@ -41,10 +41,7 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
 
   if( !gameState.playState ) return std::make_shared<game_events>();
 
-  float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
-  static const float gameSpeedMultiplier = 2.0f;
-  const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
-  return UpdatePlayState(*gameState.playState, controlState, gameUpdateInterval);
+  return UpdatePlayState(*gameState.playState, controlState);
 }
 
 std::unique_ptr<game_state> CreateInitialGameState()

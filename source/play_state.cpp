@@ -1,5 +1,7 @@
 #include "play_state.h"
 
+const float play_state::gameSpeedMultiplier = 2.0f;
+
 play_state::play_state(const system_timer& timer, const game_level_ptr& firstLevel) : timer(timer), playerState(player_alive), currentLevel(std::move(firstLevel))
 {
   player = CreatePlayerShip();
@@ -9,14 +11,14 @@ play_state::play_state(const system_timer& timer, const game_level_ptr& firstLev
   lastShotTicks = timer.totalTicks;
 }
 
-game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState, float gameUpdateInterval)
+game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState)
 {
   game_events_ptr events = std::make_shared<game_events>();
 
   if( playState.playerState == play_state::player_dead || playState.levelState == play_state::level_complete ) return events;
 
-  UpdatePlayer(playState, controlState, gameUpdateInterval);
-  UpdateBullets(playState, controlState, gameUpdateInterval, *events);
+  UpdatePlayer(playState, controlState);
+  UpdateBullets(playState, controlState, *events);
 
   playState.levelState = GetLevelState(playState);
   if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = playState.timer.totalTicks;
@@ -60,11 +62,13 @@ bool PlayerIsOutOfBounds(const play_state& playState)
   return playState.currentLevel->OutOfBounds(playState.player->xPos, playState.player->yPos);  
 }
 
-void UpdatePlayer(play_state& playState, const control_state& controlState, float gameUpdateInterval)
+void UpdatePlayer(play_state& playState, const control_state& controlState)
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 80.0f;
   static const float rotationSpeed = 150.0f;
+
+  float gameUpdateInterval = GetIntervalTimeInSeconds(playState.timer) * play_state::gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -99,8 +103,10 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateBullets(play_state& playState, const control_state& controlState, float gameUpdateInterval, game_events& events)
+void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events)
 {
+  float gameUpdateInterval = GetIntervalTimeInSeconds(playState.timer) * play_state::gameSpeedMultiplier;
+
   if( controlState.shoot )
   {
     float ticksSinceLastShot = playState.timer.totalTicks - playState.lastShotTicks;
