@@ -11,7 +11,7 @@ bool game_level::OutOfBounds(float x, float y) const
   return ( x<0 || y<0 || x>width || y>height );
 }
 
-std::unique_ptr<game_level> CreateInitialGameLevel()
+game_level_ptr CreateInitialGameLevel()
 {
   game_level_file file;
 
@@ -35,7 +35,7 @@ std::unique_ptr<game_level> CreateInitialGameLevel()
 
   const int boundaryPointCount = sizeof(boundaryPoints) / sizeof(game_point);
 
-  std::unique_ptr<game_level> level = std::make_unique<game_level>
+  game_level_ptr level = std::make_shared<game_level>
     (levelWidth, levelHeight, std::make_unique<game_shape>(boundaryPoints, boundaryPointCount), playerStartX, playerStartY);
 
   const game_point object1Points[] = {

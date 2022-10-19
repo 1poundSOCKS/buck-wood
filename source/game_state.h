@@ -6,10 +6,11 @@
 #include "control_state.h"
 #include "system_timer.h"
 #include "game_events.h"
+#include "play_state.h"
 
 struct game_state
 {
-  game_state(std::unique_ptr<game_level>& firstLevel);
+  game_state();
 
   enum SCREEN { title, main };
   enum PLAYER_STATE { player_alive, player_dead };
@@ -19,24 +20,11 @@ struct game_state
   bool running;
   float speed;
   SCREEN screen;
-  PLAYER_STATE playerState;
-  std::unique_ptr<player_ship> player;
-  std::list<std::unique_ptr<bullet>> bullets;
-  std::unique_ptr<game_level> currentLevel;
-  LEVEL_STATE levelState = level_incomplete;
   std::unique_ptr<system_timer> timer;
-  int64_t levelTimerStart = 0;
-  int64_t levelTimerStop = 0;
-  game_events_ptr events;
+  play_state_ptr playState;
 };
 
 std::unique_ptr<game_state> CreateInitialGameState();
-void UpdateGameState(game_state& gameState, const control_state& cs);
-void UpdateLevelState(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
-void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
-void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval);
-void ResetGameState(game_state& gameState);
-bool PlayerIsOutOfBounds(const game_state& gameState);
-game_state::LEVEL_STATE GetLevelState(const game_state& gameState);
+game_events_ptr UpdateGameState(game_state& gameState, const control_state& cs);
 
 #endif

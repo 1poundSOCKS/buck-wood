@@ -13,7 +13,7 @@ void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1
   switch( gameState.screen )
   {
     case game_state::main:
-      RenderMainScreen(frame, gameState, transform);
+      RenderMainScreen(frame, *gameState.playState, transform);
       break;
     case game_state::title:
       RenderTitleScreen(frame);
@@ -21,7 +21,7 @@ void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1
   }
 }
 
-void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform)
+void RenderMainScreen(const d2d_frame& frame, const play_state& gameState, const D2D1::Matrix3x2F& transform)
 {
   RenderLevel(*gameState.currentLevel, frame, transform);
 
@@ -50,8 +50,8 @@ void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const
   }
 
   float levelTimerInSeconds = gameState.levelTimerStop == 0 ? 
-    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.timer->totalTicks, gameState.timer->ticksPerSecond) :
-    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.levelTimerStop, gameState.timer->ticksPerSecond);
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.timer.totalTicks, gameState.timer.ticksPerSecond) :
+    GetElapsedTimeInSeconds(gameState.levelTimerStart, gameState.levelTimerStop, gameState.timer.ticksPerSecond);
 
   RenderTimer(frame, levelTimerInSeconds);
 }

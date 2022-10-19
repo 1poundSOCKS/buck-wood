@@ -17,7 +17,9 @@ struct game_level
   std::list<std::unique_ptr<target>> targets;
 };
 
-std::unique_ptr<game_level> CreateInitialGameLevel();
+using game_level_ptr = std::shared_ptr<game_level>;
+
+game_level_ptr CreateInitialGameLevel();
 void ResetGameLevel(game_level& level);
 
 #endif

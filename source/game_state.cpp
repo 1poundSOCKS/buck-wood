@@ -1,17 +1,14 @@
 #include "game_state.h"
 #include <list>
 
-game_state::game_state(std::unique_ptr<game_level>& firstLevel)
-: running(true), screen(title), playerState(player_alive), currentLevel(std::move(firstLevel))
+game_state::game_state()
+: running(true), screen(title)
 {
-  player = CreatePlayerShip();
   timer = std::make_unique<system_timer>();
 }
 
-void UpdateGameState(game_state& gameState, const control_state& controlState)
+game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState)
 {
-  gameState.events = std::make_shared<game_events>();
-
   UpdateSystemTimer(*gameState.timer);
 
   if( gameState.starting )
@@ -25,7 +22,7 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
     {
       case game_state::title:
         gameState.running = false;
-        return;
+        return std::make_shared<game_events>();
       case game_state::main:
         gameState.screen = game_state::title;
         break;
@@ -36,173 +33,21 @@ void UpdateGameState(game_state& gameState, const control_state& controlState)
   {
     if( controlState.startGame ){
       gameState.screen = game_state::main;
-      ResetGameState(gameState);
+      gameState.playState = std::make_unique<play_state>(*gameState.timer, CreateInitialGameLevel());
     }
-    return;
+    return std::make_shared<game_events>();
   }
 
-  if( gameState.playerState == game_state::player_alive && gameState.levelState == game_state::level_incomplete )
-  {
-    float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
-    static const float gameSpeedMultiplier = 2.0f;
-    const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
-    UpdateLevelState(gameState, controlState, gameUpdateInterval);
-  }
-}
+  if( !gameState.playState ) return std::make_shared<game_events>();
 
-void UpdateLevelState(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
-{
-  UpdatePlayer(gameState, controlState, gameUpdateInterval);
-  UpdateBullets(gameState, controlState, gameUpdateInterval);
-
-  gameState.levelState = GetLevelState(gameState);
-  if( gameState.levelState == game_state::level_complete ) gameState.levelTimerStop = gameState.timer->totalTicks;
-
-  std::list<game_point> transformedPoints;
-  TransformPlayerShip(*gameState.player, transformedPoints);
-
-  if( PlayerIsOutOfBounds(gameState) || !PointsInside(transformedPoints, *gameState.currentLevel->boundary) )
-  {
-    gameState.playerState = game_state::player_dead;
-    gameState.levelTimerStop = gameState.timer->totalTicks;
-  }
-  
-  for( const auto& shape : gameState.currentLevel->objects)
-  {
-    if( PointInside(transformedPoints, *shape) )
-    {
-      gameState.playerState = game_state::player_dead;
-      gameState.levelTimerStop = gameState.timer->totalTicks;
-    }
-  }
-}
-
-game_state::LEVEL_STATE GetLevelState(const game_state& gameState)
-{
-  int activatedTargetCount = 0;
-  for( const auto& target: gameState.currentLevel->targets )
-  {
-    if( target->state == target::ACTIVATED ) activatedTargetCount++;
-  }
-
-  if( activatedTargetCount == gameState.currentLevel->targets.size() ) return game_state::level_complete;
-  
-  return game_state::level_incomplete;
-}
-
-bool PlayerIsOutOfBounds(const game_state& gameState)
-{
-  return gameState.currentLevel->OutOfBounds(gameState.player->xPos, gameState.player->yPos);  
+  float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
+  static const float gameSpeedMultiplier = 2.0f;
+  const float gameUpdateInterval = intervalTime * gameSpeedMultiplier;
+  return UpdatePlayState(*gameState.playState, controlState, gameUpdateInterval);
 }
 
 std::unique_ptr<game_state> CreateInitialGameState()
 {
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>(CreateInitialGameLevel());
-  ResetGameState(*gameState);
+  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
   return gameState;
-}
-
-void UpdatePlayer(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
-{
-  static const float forceOfGravity = 20.0f;
-  static const float playerThrust = 80.0f;
-  static const float rotationSpeed = 150.0f;
-
-  float forceX = 0.0f;
-  float forceY = forceOfGravity;
-
-  if( controlState.accelerate )
-  {
-    gameState.player->thrusterOn = true;
-    forceX += playerThrust * sin(DEGTORAD(gameState.player->angle));
-    forceY -= playerThrust * cos(DEGTORAD(gameState.player->angle));
-  }
-  else
-  {
-    gameState.player->thrusterOn = false;
-  }
-  
-  float spin = 0.0f;
-  if( controlState.left ) spin = -rotationSpeed;
-  else if( controlState.right ) spin = rotationSpeed;
-  
-  gameState.player->xVelocity += forceX * gameUpdateInterval;
-  gameState.player->yVelocity += forceY * gameUpdateInterval;
-  gameState.player->xPos += gameState.player->xVelocity * gameUpdateInterval;
-  gameState.player->yPos += gameState.player->yVelocity * gameUpdateInterval;
-  gameState.player->angle += spin * gameUpdateInterval;
-}
-
-bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
-{
-  float cx = bullet->xPos - bullet->startX;
-  float cy = bullet->yPos - bullet->startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > bullet->range || bullet->outsideLevel;
-}
-
-void UpdateBullets(game_state& gameState, const control_state& controlState, float gameUpdateInterval)
-{
-  if( controlState.shoot )
-  {
-    static const float bulletSpeed = 200.0f * gameUpdateInterval;
-    static const float bulletRange = 2000.0f;
-
-    float cursorX = controlState.gameMouseX;
-    float cursorY = controlState.gameMouseY;
-
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(gameState.player->xPos, gameState.player->yPos, bulletRange);
-    float angle = CalculateAngle(gameState.player->xPos, gameState.player->yPos, cursorX, cursorY);
-    newBullet->angle = angle;
-    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-    gameState.bullets.push_front(std::move(newBullet));
-
-    gameState.events->playerShot = true;
-  }
-
-  for(const auto& bullet : gameState.bullets)
-  {
-    bullet->xPos += bullet->xVelocity;
-    bullet->yPos += bullet->yVelocity;
-
-    const game_point bulletPoint(bullet->xPos, bullet->yPos);
-    bullet->outsideLevel = !PointInside(bulletPoint, *gameState.currentLevel->boundary);
-
-    for( const auto& shape : gameState.currentLevel->objects)
-    {
-      if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
-    }
-
-    for( const auto& target: gameState.currentLevel->targets )
-    {
-      if( PointInside(bulletPoint, target->shape) )
-      {
-        bullet->outsideLevel = true;
-
-        if( target->state == target::DEACTIVATED )
-        {
-          target->state = target::ACTIVATED;
-          gameState.events->targetShot = true;
-        }
-      }
-    }
-  }
-  
-  gameState.bullets.remove_if(BulletHasExpired);
-}
-
-void ResetGameState(game_state& gameState)
-{
-  gameState.player->xPos = gameState.currentLevel->playerStartPosX;
-  gameState.player->yPos = gameState.currentLevel->playerStartPosY;
-  gameState.player->xVelocity = 0;
-  gameState.player->yVelocity = 0;
-  gameState.player->angle = 0;
-  gameState.playerState = game_state::player_alive;
-  gameState.bullets.clear();
-  ResetGameLevel(*gameState.currentLevel);
-  gameState.levelState = game_state::level_incomplete;
-  gameState.levelTimerStart = gameState.timer->totalTicks;
-  gameState.levelTimerStop = 0;
 }

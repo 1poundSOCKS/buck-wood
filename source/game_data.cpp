@@ -50,11 +50,15 @@ wav_file_data::wav_file_data(const wchar_t* filename)
   }
 
   header = std::make_unique<wav_file_header>(fileReader);
+
   do { format = std::make_unique<wav_file_chunk>(fileReader); }
   while( memcmp(format->id, "fmt ", 4) );
+  
   do { data = std::make_unique<wav_file_chunk>(fileReader); }
   while( memcmp(data->id, "data", 4) );
+  
   memcpy(&dataFormat, format->data.get(), sizeof(dataFormat));
+  
   fileReader.close();
 }
 

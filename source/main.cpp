@@ -12,7 +12,7 @@
 #include "game_level.h"
 #include "system_timer.h"
 #include "game_data.h"
-#include "sound_buffers.h"
+#include "game_sound.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
@@ -33,8 +33,8 @@ namespace fs = std::filesystem;
 
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY);
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState);
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState);
+void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState, const game_events& events);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -63,7 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, app->brushes, app->textFormats);
 
-    D2D1::Matrix3x2F viewTransform = CreateViewTransform(frame->renderTarget, gameState->currentLevel->width, gameState->player->yPos);
+    D2D1::Matrix3x2F viewTransform = CreateViewTransform(frame->renderTarget, *gameState);
     RenderFrame(*frame, *gameState, viewTransform);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
@@ -88,11 +88,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     mouseCursor->yPos = controlState->renderTargetMouseY;
     RenderMouseCursor(*frame, *mouseCursor);
 
-    UpdateGameState(*gameState, *controlState);
+    const game_events_ptr events = UpdateGameState(*gameState, *controlState);
 
     app->dxgi_swapChain->Present(1, 0);
 
-    UpdateSound(*soundBuffers, *gameState);
+    UpdateSound(*soundBuffers, *gameState, *events);
 
     previousControlState = std::move(controlState);
 
@@ -124,6 +124,8 @@ bool ProcessMessage(MSG* msg)
 
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData)
 {
+  const play_state_ptr& playState = gameState.playState;
+
   static wchar_t text[64];
 
   float runTime = GetTotalTimeInSeconds(*gameState.timer);
@@ -135,8 +137,11 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   swprintf(text, L"fps: %i", perfData.fpsAverage);
   diagnostics.push_back(text);
 
-  swprintf(text, L"bullet count: %I64u", gameState.bullets.size());
-  diagnostics.push_back(text);
+  if( playState )
+  {
+    swprintf(text, L"bullet count: %I64u", playState->bullets.size());
+    diagnostics.push_back(text);
+  }
 
   swprintf(text, L"mouse x: %i", static_cast<int>(controlState.renderTargetMouseX));
   diagnostics.push_back(text);
@@ -145,8 +150,13 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   diagnostics.push_back(text);
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float levelWidth, float playerPosY)
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState)
 {
+  if( gameState.screen != game_state::main ) return D2D1::Matrix3x2F::Identity();
+
+  float levelWidth = gameState.playState->currentLevel->width;
+  float playerPosY = gameState.playState->player->yPos;
+
   D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
 
   float scale = renderTargetSize.width / levelWidth;
@@ -160,56 +170,4 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   D2D1::Matrix3x2F matrixScale = D2D1::Matrix3x2F::Scale(scaleSize);
 
   return matrixScale * matrixShift;
-}
-
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
-{
-  DWORD bufferStatus = 0;
-  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
-  {
-    if( bufferStatus & DSBSTATUS_PLAYING )
-    {
-      if( gameState.screen != game_state::main || 
-          gameState.playerState != game_state::player_alive ||
-          gameState.levelState == game_state::level_complete ||
-          !gameState.player->thrusterOn )
-      {
-        soundBuffers.thrust->buffer->Stop();
-      }
-    }
-    else
-    {
-      if( gameState.player->thrusterOn )
-      {
-        soundBuffers.thrust->buffer->SetCurrentPosition(0);
-        soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
-      }
-    }
-  }
-
-  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-  if( bufferStatus & DSBSTATUS_PLAYING )
-  {
-    if( gameState.screen != game_state::title ) soundBuffers.menuTheme->buffer->Stop();
-  }
-  else
-  {
-    if( gameState.screen == game_state::title )
-    {
-      soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
-      soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
-    }
-  }
-
-  if( gameState.events->playerShot )
-  {
-    soundBuffers.shoot->buffer->SetCurrentPosition(0);
-    soundBuffers.shoot->buffer->Play(0, 0, 0);
-  }
-
-  if( gameState.events->targetShot )
-  {
-    soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
-    soundBuffers.targetActivated->buffer->Play(0, 0, 0);
-  }
 }

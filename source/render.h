@@ -11,7 +11,7 @@
 #include "perf_data.h"
 
 void RenderFrame(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform);
-void RenderMainScreen(const d2d_frame& frame, const game_state& gameState, const D2D1::Matrix3x2F& transform);
+void RenderMainScreen(const d2d_frame& frame, const play_state& gameState, const D2D1::Matrix3x2F& transform);
 void RenderTitleScreen(const d2d_frame& frame);
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics);
 void RenderTimer(const d2d_frame& frame, float seconds);
