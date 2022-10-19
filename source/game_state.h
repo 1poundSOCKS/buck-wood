@@ -20,7 +20,6 @@ struct game_state
   bool starting = true;
   bool running = true;
   SCREEN screen = screen_title;
-  std::unique_ptr<system_timer> timer;
   play_state_ptr playState;
   level_editor_state_ptr levelEditorState;
   game_level_ptr gameLevel;

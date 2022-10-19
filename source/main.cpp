@@ -32,7 +32,7 @@ namespace fs = std::filesystem;
 #endif
 
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -82,7 +82,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     UpdatePerformanceData(*perfData);
 
     std::list<std::wstring> diagnostics;
-    FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData);
+    FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData, *timer);
     RenderDiagnostics(*frame, diagnostics);
 
     mouseCursor->xPos = controlState->renderTargetMouseX;
@@ -124,14 +124,14 @@ bool ProcessMessage(MSG* msg)
   return true;
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData)
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   const play_state_ptr& playState = gameState.playState;
 
   static wchar_t text[64];
 
-  float runTime = GetTotalTimeInSeconds(*gameState.timer);
-  float intervalTime = GetIntervalTimeInSeconds(*gameState.timer);
+  float runTime = GetTotalTimeInSeconds(timer);
+  float intervalTime = GetIntervalTimeInSeconds(timer);
 
   swprintf(text, L"run time: %.1f", runTime);
   diagnostics.push_back(text);

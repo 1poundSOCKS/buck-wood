@@ -3,8 +3,6 @@
 
 game_state::game_state()
 {
-  static const int fps = 60;
-  timer = std::make_unique<system_timer>(fps);
   gameLevel = CreateInitialGameLevel();
 }
 
@@ -16,7 +14,7 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
   }
 
   switch( gameState.screen )
-  {  
+  {
   case game_state::screen_play:
     
     if( controlState.quitPress )
