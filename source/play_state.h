@@ -10,7 +10,7 @@
 
 struct play_state
 {
-  play_state(const system_timer& timer, const game_level_ptr& firstLevel);
+  play_state(const system_timer& timer, const game_level_ptr& level);
 
   enum PLAYER_STATE { player_alive, player_dead };
   enum LEVEL_STATE { level_incomplete, level_complete };

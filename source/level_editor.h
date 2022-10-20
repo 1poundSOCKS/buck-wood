@@ -10,7 +10,7 @@ struct level_editor_state
 {
   level_editor_state(const game_level_ptr& level);
 
-  const game_level_ptr& level;
+  const game_level_ptr level;
   float viewX = 0, viewY = 0;
 };
 

@@ -2,7 +2,7 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-play_state::play_state(const system_timer& timer, const game_level_ptr& firstLevel) : timer(timer), playerState(player_alive), currentLevel(std::move(firstLevel))
+play_state::play_state(const system_timer& timer, const game_level_ptr& level) : timer(timer), playerState(player_alive), currentLevel(level)
 {
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;

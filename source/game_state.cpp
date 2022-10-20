@@ -42,7 +42,7 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
     if( controlState.functionKey_1 )
     {
       gameState.screen = game_state::screen_level_editor;
-      gameState.levelEditorState = std::make_unique<level_editor_state>(gameState.gameLevel);
+      gameState.levelEditorState = std::make_unique<level_editor_state>(CreateInitialGameLevel());
       return std::make_shared<game_events>();
     }
 
