@@ -18,7 +18,7 @@ game_level::game_level(const game_level_data& gameLevelData)
   game_level_object_data_ptr objectData = std::make_unique<game_level_object_data>();
   for( const auto& object: gameLevelData.objects )
   {
-    game_shape_ptr gameShape = std::make_unique<game_shape>(object->objectPoints);
+    game_shape_ptr gameShape = std::make_unique<game_shape>(*object);
     objects.push_back(std::move(gameShape));
   }
   
@@ -76,7 +76,7 @@ game_level_data_ptr CreateInitialGameLevelData()
   const int object1PointCount = sizeof(object1Points) / sizeof(game_point);
 
   game_level_object_data_ptr object1Data = std::make_unique<game_level_object_data>();
-  object1Data->objectPoints.insert(object1Data->objectPoints.end(), &object1Points[0], &object1Points[object1PointCount]);
+  object1Data->insert(object1Data->end(), &object1Points[0], &object1Points[object1PointCount]);
   gameLevelData->objects.push_back(std::move(object1Data));
 
   const game_point object2Points[] = {
@@ -90,7 +90,7 @@ game_level_data_ptr CreateInitialGameLevelData()
   const int object2PointCount = sizeof(object2Points) / sizeof(game_point);
 
   game_level_object_data_ptr object2Data = std::make_unique<game_level_object_data>();
-  object2Data->objectPoints.insert(object2Data->objectPoints.end(), &object2Points[0], &object2Points[object2PointCount]);
+  object2Data->insert(object2Data->end(), &object2Points[0], &object2Points[object2PointCount]);
   gameLevelData->objects.push_back(std::move(object2Data));
 
   const game_point targetPositions[] = {

@@ -6,11 +6,7 @@
 #include <memory>
 #include "game_objects.h"
 
-struct game_level_object_data
-{
-  std::vector<game_point> objectPoints;
-};
-
+using game_level_object_data = std::vector<game_point>;
 using game_level_object_data_ptr = std::unique_ptr<game_level_object_data>;
 
 struct game_level_data
