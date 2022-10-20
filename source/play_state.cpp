@@ -59,7 +59,7 @@ play_state::LEVEL_STATE GetLevelState(const play_state& playState)
 
 bool PlayerIsOutOfBounds(const play_state& playState)
 {
-  return playState.currentLevel->OutOfBounds(playState.player->xPos, playState.player->yPos);  
+  return OutOfGameLevelBoundary(*playState.currentLevel, playState.player->xPos, playState.player->yPos);
 }
 
 void UpdatePlayer(play_state& playState, const control_state& controlState)

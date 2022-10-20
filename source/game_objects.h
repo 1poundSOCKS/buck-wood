@@ -2,7 +2,9 @@
 #define _game_object_
 
 #include <memory>
+#include <vector>
 #include <list>
+#include <iterator>
 
 struct game_point
 {
@@ -24,10 +26,13 @@ struct game_shape
 {
   game_shape();
   game_shape(const game_point* points, int pointCount);
-
+  game_shape(const std::vector<game_point>& pointsToCopy);
+  
   std::list<game_point> points;
   std::list<game_line> lines;
 };
+
+using game_shape_ptr = std::unique_ptr<game_shape>;
 
 struct mouse_cursor
 {
@@ -70,6 +75,8 @@ struct target
   STATE state;
   game_shape shape;
 };
+
+using target_ptr = std::unique_ptr<target>;
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);

@@ -3,7 +3,6 @@
 
 game_state::game_state()
 {
-  gameLevel = CreateInitialGameLevel();
 }
 
 game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState, const system_timer& timer)
@@ -36,7 +35,7 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
     if( controlState.startGame )
     {
       gameState.screen = game_state::screen_play;
-      gameState.playState = std::make_unique<play_state>(timer, gameState.gameLevel);
+      gameState.playState = std::make_unique<play_state>(timer, CreateInitialGameLevel());
       return std::make_shared<game_events>();
     }
 

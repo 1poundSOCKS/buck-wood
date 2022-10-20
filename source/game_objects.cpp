@@ -17,6 +17,28 @@ game_shape::game_shape(const game_point* points, int pointCount)
   InitializeShape(points, pointCount, *this);
 }
 
+game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
+{
+  std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
+
+  std::list<game_point>::iterator i = points.begin();
+  while( i != points.end()  )
+  {
+    const game_point& point1 = *i;
+    i++;
+    if( i != points.end() )
+    {
+      const game_point& point2 = *i;
+      lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
+    }
+    else
+    {
+      const game_point& point2 = *points.begin();
+      lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
+    }
+  }
+}
+
 mouse_cursor::mouse_cursor() : xPos(0), yPos(0)
 {
   static const float cursorSize = 20.0f;

@@ -6,20 +6,48 @@ game_level::game_level(float width, float height, std::unique_ptr<game_shape>& b
 {
 }
 
-bool game_level::OutOfBounds(float x, float y) const
+game_level::game_level(const game_level_data& gameLevelData)
 {
-  return ( x<0 || y<0 || x>width || y>height );
+  width = gameLevelData.width;
+  height = gameLevelData.height;
+  playerStartPosX = gameLevelData.playerStartPosX;
+  playerStartPosY = gameLevelData.playerStartPosY;
+
+  boundary = std::make_unique<game_shape>(gameLevelData.boundaryPoints);
+
+  game_level_object_data_ptr objectData = std::make_unique<game_level_object_data>();
+  for( const auto& object: gameLevelData.objects )
+  {
+    game_shape_ptr gameShape = std::make_unique<game_shape>(object->objectPoints);
+    objects.push_back(std::move(gameShape));
+  }
+  
+  for( const auto& t: gameLevelData.targets )
+  {
+    target_ptr levelTarget = std::make_unique<target>(t.x, t.y, 40.0f);
+    targets.push_back(std::move(levelTarget));
+  }
+}
+
+bool OutOfGameLevelBoundary(const game_level& gameLevel, float x, float y)
+{
+  return ( x < 0 || y < 0 || x > gameLevel.width || y > gameLevel.height );
 }
 
 game_level_ptr CreateInitialGameLevel()
 {
-  game_level_file file;
+  return std::make_shared<game_level>(*CreateInitialGameLevelData());
+}
 
-  const float levelWidth = 2000.0f;
-  const float levelHeight = 2200.0f;
-  const float playerStartX = 1000.0f;
-  const float playerStartY = 200.0f;
-  
+game_level_data_ptr CreateInitialGameLevelData()
+{
+  game_level_data_ptr gameLevelData = std::make_unique<game_level_data>();
+
+  gameLevelData->width = 2000.0f;
+  gameLevelData->height = 2200.0f;
+  gameLevelData->playerStartPosX = 1000.0f;
+  gameLevelData->playerStartPosY = 200.0f;
+
   const game_point boundaryPoints[] = {
     game_point(20, 20),
     game_point(1980, 20),
@@ -35,8 +63,7 @@ game_level_ptr CreateInitialGameLevel()
 
   const int boundaryPointCount = sizeof(boundaryPoints) / sizeof(game_point);
 
-  game_level_ptr level = std::make_shared<game_level>
-    (levelWidth, levelHeight, std::make_unique<game_shape>(boundaryPoints, boundaryPointCount), playerStartX, playerStartY);
+  gameLevelData->boundaryPoints.insert(gameLevelData->boundaryPoints.end(), &boundaryPoints[0], &boundaryPoints[boundaryPointCount]);
 
   const game_point object1Points[] = {
     game_point(1600, 700),
@@ -46,7 +73,11 @@ game_level_ptr CreateInitialGameLevel()
     game_point(1700, 600)
   };
 
-  level->objects.push_back(std::move(std::make_unique<game_shape>(object1Points, static_cast<int>(sizeof(object1Points) / sizeof(game_point)))));
+  const int object1PointCount = sizeof(object1Points) / sizeof(game_point);
+
+  game_level_object_data_ptr object1Data = std::make_unique<game_level_object_data>();
+  object1Data->objectPoints.insert(object1Data->objectPoints.end(), &object1Points[0], &object1Points[object1PointCount]);
+  gameLevelData->objects.push_back(std::move(object1Data));
 
   const game_point object2Points[] = {
     game_point(300, 200),
@@ -56,19 +87,21 @@ game_level_ptr CreateInitialGameLevel()
     game_point(320, 400)
   };
 
-  level->objects.push_back(std::move(std::make_unique<game_shape>(object2Points, static_cast<int>(sizeof(object2Points) / sizeof(game_point)))));
+  const int object2PointCount = sizeof(object2Points) / sizeof(game_point);
 
-  level->targets.push_back(std::make_unique<target>(1250.0f, 1950.0f, 40.0f));
-  level->targets.push_back(std::make_unique<target>(100.0f, 300.0f, 40.0f));
-  level->targets.push_back(std::make_unique<target>(1800.0f, 900.0f, 40.0f));
+  game_level_object_data_ptr object2Data = std::make_unique<game_level_object_data>();
+  object2Data->objectPoints.insert(object2Data->objectPoints.end(), &object2Points[0], &object2Points[object2PointCount]);
+  gameLevelData->objects.push_back(std::move(object2Data));
 
-  return level;
-}
+  const game_point targetPositions[] = {
+    game_point(1250.0f, 1950.0f),
+    game_point(100.0f, 300.0f),
+    game_point(1800.0f, 900.0f)
+  };
 
-void ResetGameLevel(game_level& level)
-{
-  for( const auto& target: level.targets )
-  {
-    target->state = target::DEACTIVATED;
-  }
+  const int targetCount = sizeof(targetPositions) / sizeof(game_point);
+
+  gameLevelData->targets.insert(gameLevelData->targets.end(), &targetPositions[0], &targetPositions[targetCount]);
+
+  return gameLevelData;
 }
