@@ -8,10 +8,9 @@
 
 struct game_point
 {
-  game_point() : game_point(0.0f, 0.0f) {}
   game_point(float x, float y) : x(x), y(y) {}
 
-  float x, y;
+  float x = 0, y = 0;
 };
 
 struct game_line
