@@ -34,8 +34,8 @@ void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState,
       if( bufferStatus & DSBSTATUS_PLAYING )
       {
         if( !playState->player->thrusterOn ||
-            playState->playerState == game_state::player_dead ||
-            playState->levelState == game_state::level_complete )
+            playState->playerState == play_state::player_dead ||
+            playState->levelState == play_state::level_complete )
         {
           soundBuffers.thrust->buffer->Stop();
         }

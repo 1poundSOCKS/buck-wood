@@ -34,12 +34,44 @@ bool OutOfGameLevelBoundary(const game_level& gameLevel, float x, float y)
   return ( x < 0 || y < 0 || x > gameLevel.width || y > gameLevel.height );
 }
 
-game_level_ptr CreateInitialGameLevel()
+game_level_data_ptr CreateFirstGameLevelData()
 {
-  return std::make_shared<game_level>(*CreateInitialGameLevelData());
+  game_level_data_ptr gameLevelData = std::make_unique<game_level_data>();
+
+  gameLevelData->width = 2000.0f;
+  gameLevelData->height = 2200.0f;
+  gameLevelData->playerStartPosX = 1000.0f;
+  gameLevelData->playerStartPosY = 200.0f;
+
+  const game_point boundaryPoints[] = {
+    game_point(20, 20),
+    game_point(1980, 20),
+    game_point(1980, 980),
+    game_point(1300, 980),
+    game_point(1400, 2000),
+    game_point(1300, 2100),
+    game_point(1100, 2000),
+    game_point(1200, 900),
+    game_point(800, 700),
+    game_point(20, 980)
+  };
+
+  const int boundaryPointCount = sizeof(boundaryPoints) / sizeof(game_point);
+
+  gameLevelData->boundaryPoints.insert(gameLevelData->boundaryPoints.end(), &boundaryPoints[0], &boundaryPoints[boundaryPointCount]);
+
+  const game_point targetPositions[] = {
+    game_point(1250.0f, 1950.0f)
+  };
+
+  const int targetCount = sizeof(targetPositions) / sizeof(game_point);
+
+  gameLevelData->targets.insert(gameLevelData->targets.end(), &targetPositions[0], &targetPositions[targetCount]);
+
+  return gameLevelData;
 }
 
-game_level_data_ptr CreateInitialGameLevelData()
+game_level_data_ptr CreateSecondGameLevelData()
 {
   game_level_data_ptr gameLevelData = std::make_unique<game_level_data>();
 

@@ -36,7 +36,7 @@ using game_level_ptr = std::shared_ptr<game_level>;
 
 bool OutOfGameLevelBoundary(const game_level& gameLevel, float x, float y);
 
-game_level_ptr CreateInitialGameLevel();
-game_level_data_ptr CreateInitialGameLevelData();
+game_level_data_ptr CreateFirstGameLevelData();
+game_level_data_ptr CreateSecondGameLevelData();
 
 #endif

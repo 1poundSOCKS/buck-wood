@@ -6,24 +6,58 @@
 #include "control_state.h"
 #include "system_timer.h"
 #include "game_events.h"
-#include "play_state.h"
 #include "level_editor.h"
+
+using game_data = std::list<game_level_data_ptr>;
+using game_data_ptr = std::shared_ptr<game_data>;
+
+struct play_state
+{
+  play_state(const system_timer& timer, const game_data_ptr& gameData);
+
+  enum STATE { incomplete, complete };
+  STATE state = incomplete;
+
+  enum PLAYER_STATE { player_alive, player_dead };
+
+  enum LEVEL_STATE { level_incomplete, level_complete };
+  LEVEL_STATE levelState = level_incomplete;
+
+  const system_timer& timer;
+
+  game_data_ptr gameData;
+  game_data::iterator currentLevelDataIterator;
+  game_level_ptr currentLevel;
+
+  PLAYER_STATE playerState = player_alive;
+  std::unique_ptr<player_ship> player;
+  std::list<std::unique_ptr<bullet>> bullets;
+
+  int64_t levelTimerStart;
+  int64_t levelTimerStop = 0;
+
+  int64_t lastShotTicks;
+
+  float levelMouseX = 0, levelMouseY = 0;
+
+  static const float gameSpeedMultiplier;
+};
+
+using play_state_ptr = std::unique_ptr<play_state>;
 
 struct game_state
 {
   game_state();
 
   enum SCREEN { screen_title, screen_play, screen_level_editor };
-  enum PLAYER_STATE { player_alive, player_dead };
-  enum LEVEL_STATE { level_incomplete, level_complete };
+  SCREEN screen = screen_title;
 
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
   bool starting = true;
   bool running = true;
-  SCREEN screen = screen_title;
   play_state_ptr playState;
   level_editor_state_ptr levelEditorState;
-  game_level_ptr gameLevel;
+  game_data_ptr gameData;
 };
 
 std::unique_ptr<game_state> CreateInitialGameState();

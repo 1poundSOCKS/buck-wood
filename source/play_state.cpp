@@ -2,8 +2,11 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-play_state::play_state(const system_timer& timer, const game_level_ptr& level) : timer(timer), playerState(player_alive), currentLevel(level)
+play_state::play_state(const system_timer& timer, const game_data_ptr& gameData) : timer(timer), gameData(gameData), playerState(player_alive)
 {
+  currentLevelDataIterator = gameData->begin();
+  const game_level_data_ptr& levelData = *currentLevelDataIterator;
+  currentLevel = std::make_shared<game_level>(*levelData);
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
@@ -11,11 +14,44 @@ play_state::play_state(const system_timer& timer, const game_level_ptr& level) :
   lastShotTicks = timer.totalTicks;
 }
 
-game_events_ptr UpdatePlayState(play_state& playState, const control_state& controlState)
+game_events_ptr UpdatePlayState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
+  play_state& playState = *gameState.playState;
+
   game_events_ptr events = std::make_shared<game_events>();
 
-  if( playState.playerState == play_state::player_dead || playState.levelState == play_state::level_complete ) return events;
+  if( controlState.quitPress )
+  {
+    gameState.screen = game_state::screen_title;
+    return std::make_shared<game_events>();
+  }
+
+  if( playState.state == play_state::complete )  return events;
+
+  if( playState.playerState == play_state::player_dead ) return events;
+
+  if( playState.levelState == play_state::level_complete )
+  {
+    playState.currentLevelDataIterator++;
+    
+    if( playState.currentLevelDataIterator != playState.gameData->end() )
+    {
+      game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
+      playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
+      playState.levelState = play_state::level_incomplete;
+      playState.player = CreatePlayerShip();
+      playState.player->xPos = playState.currentLevel->playerStartPosX;
+      playState.player->yPos = playState.currentLevel->playerStartPosY;
+      playState.bullets.clear();
+      playState.levelTimerStart = timer.totalTicks;
+      playState.lastShotTicks = timer.totalTicks;
+    }
+    else
+    {
+      playState.state = play_state::complete;
+    }
+    return events;
+  }
 
   UpdatePlayer(playState, controlState);
   UpdateBullets(playState, controlState, *events);
@@ -163,4 +199,13 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
   }
   
   playState.bullets.remove_if(BulletHasExpired);
+}
+
+void SetPlayStateStopWatch(play_state& playState, float seconds)
+{
+}
+
+bool IsPlayStateStopWatchRunning(play_state& playState)
+{
+  return false;
 }
