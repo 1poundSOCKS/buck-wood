@@ -23,8 +23,6 @@ struct play_state
   enum LEVEL_STATE { level_incomplete, level_complete };
   LEVEL_STATE levelState = level_incomplete;
 
-  const system_timer& timer;
-
   game_data_ptr gameData;
   game_data::iterator currentLevelDataIterator;
   game_level_ptr currentLevel;
@@ -33,10 +31,11 @@ struct play_state
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
 
-  int64_t levelTimerStart;
+  int64_t totalTicks = 0;
+  int64_t ticksPerSecond = 0;
+  int64_t levelTimerStart = 0;
   int64_t levelTimerStop = 0;
-
-  int64_t lastShotTicks;
+  int64_t lastShotTicks = 0;
 
   float levelMouseX = 0, levelMouseY = 0;
 

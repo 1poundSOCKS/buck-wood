@@ -2,21 +2,26 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-play_state::play_state(const system_timer& timer, const game_data_ptr& gameData) : timer(timer), gameData(gameData), playerState(player_alive)
+play_state::play_state(const system_timer& timer, const game_data_ptr& gameData) : gameData(gameData), playerState(player_alive)
 {
+  totalTicks = timer.totalTicks;
+  ticksPerSecond = timer.ticksPerSecond;
+  levelTimerStart = totalTicks;
+  lastShotTicks = totalTicks;
+
   currentLevelDataIterator = gameData->begin();
   const game_level_data_ptr& levelData = *currentLevelDataIterator;
   currentLevel = std::make_shared<game_level>(*levelData);
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
-  levelTimerStart = timer.totalTicks;
-  lastShotTicks = timer.totalTicks;
 }
 
 game_events_ptr UpdatePlayState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
   play_state& playState = *gameState.playState;
+
+  playState.totalTicks = timer.totalTicks;
 
   game_events_ptr events = std::make_shared<game_events>();
 
@@ -36,6 +41,9 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     
     if( playState.currentLevelDataIterator != playState.gameData->end() )
     {
+      playState.levelTimerStart = timer.totalTicks;
+      playState.levelTimerStop = 0;
+      playState.lastShotTicks = timer.totalTicks;
       game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
       playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
       playState.levelState = play_state::level_incomplete;
@@ -43,8 +51,6 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
       playState.player->xPos = playState.currentLevel->playerStartPosX;
       playState.player->yPos = playState.currentLevel->playerStartPosY;
       playState.bullets.clear();
-      playState.levelTimerStart = timer.totalTicks;
-      playState.lastShotTicks = timer.totalTicks;
     }
     else
     {
@@ -53,11 +59,11 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     return events;
   }
 
-  UpdatePlayer(playState, controlState);
-  UpdateBullets(playState, controlState, *events);
+  UpdatePlayer(playState, controlState, timer);
+  UpdateBullets(playState, controlState, *events, timer);
 
   playState.levelState = GetLevelState(playState);
-  if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = playState.timer.totalTicks;
+  if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
 
   std::list<game_point> transformedPoints;
   TransformPlayerShip(*playState.player, transformedPoints);
@@ -65,7 +71,7 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
   if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.playerState = play_state::player_dead;
-    playState.levelTimerStop = playState.timer.totalTicks;
+    playState.levelTimerStop = timer.totalTicks;
   }
   
   for( const auto& shape : playState.currentLevel->objects)
@@ -73,7 +79,7 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     if( PointInside(transformedPoints, *shape) )
     {
       playState.playerState = play_state::player_dead;
-      playState.levelTimerStop = playState.timer.totalTicks;
+      playState.levelTimerStop = timer.totalTicks;
     }
   }
 
@@ -98,13 +104,13 @@ bool PlayerIsOutOfBounds(const play_state& playState)
   return OutOfGameLevelBoundary(*playState.currentLevel, playState.player->xPos, playState.player->yPos);
 }
 
-void UpdatePlayer(play_state& playState, const control_state& controlState)
+void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 80.0f;
   static const float rotationSpeed = 150.0f;
 
-  float gameUpdateInterval = GetIntervalTimeInSeconds(playState.timer) * play_state::gameSpeedMultiplier;
+  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * play_state::gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -139,16 +145,16 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events)
+void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events, const system_timer& timer)
 {
-  float gameUpdateInterval = GetIntervalTimeInSeconds(playState.timer) * play_state::gameSpeedMultiplier;
+  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * play_state::gameSpeedMultiplier;
 
   if( controlState.shoot )
   {
-    float ticksSinceLastShot = playState.timer.totalTicks - playState.lastShotTicks;
+    float ticksSinceLastShot = timer.totalTicks - playState.lastShotTicks;
 
     static const float shotPerSecond = 60.0f;
-    static const float ticksPerShot = playState.timer.ticksPerSecond / shotPerSecond;
+    static const float ticksPerShot = timer.ticksPerSecond / shotPerSecond;
 
     if( ticksSinceLastShot >= ticksPerShot )
     {
@@ -166,7 +172,7 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
       playState.bullets.push_front(std::move(newBullet));
 
       events.playerShot = true;
-      playState.lastShotTicks = playState.timer.totalTicks;
+      playState.lastShotTicks = timer.totalTicks;
     }
   }
 

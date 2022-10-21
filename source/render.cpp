@@ -59,8 +59,8 @@ void RenderPlayScreen(const d2d_frame& frame, game_state& gameState)
   }
 
   float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.timer.totalTicks, playState.timer.ticksPerSecond) :
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.timer.ticksPerSecond);
+    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
+    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
 
   RenderTimer(frame, levelTimerInSeconds);
 

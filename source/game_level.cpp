@@ -48,9 +48,6 @@ game_level_data_ptr CreateFirstGameLevelData()
     game_point(1980, 20),
     game_point(1980, 980),
     game_point(1300, 980),
-    game_point(1400, 2000),
-    game_point(1300, 2100),
-    game_point(1100, 2000),
     game_point(1200, 900),
     game_point(800, 700),
     game_point(20, 980)
@@ -61,7 +58,7 @@ game_level_data_ptr CreateFirstGameLevelData()
   gameLevelData->boundaryPoints.insert(gameLevelData->boundaryPoints.end(), &boundaryPoints[0], &boundaryPoints[boundaryPointCount]);
 
   const game_point targetPositions[] = {
-    game_point(1250.0f, 1950.0f)
+    game_point(1200.0f, 700.0f)
   };
 
   const int targetCount = sizeof(targetPositions) / sizeof(game_point);
