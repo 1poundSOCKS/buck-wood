@@ -14,7 +14,5 @@ void UpdatePlayer(play_state& playState, const control_state& controlState, cons
 void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events, const system_timer& timer);
 bool PlayerIsOutOfBounds(const play_state& playState);
 play_state::LEVEL_STATE GetLevelState(const play_state& playState);
-void SetPlayStateStopWatch(play_state& playState, float seconds);
-bool IsPlayStateStopWatchRunning(play_state& playState);
 
 #endif

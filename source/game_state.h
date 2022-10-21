@@ -15,8 +15,8 @@ struct play_state
 {
   play_state(const system_timer& timer, const game_data_ptr& gameData);
 
-  enum STATE { incomplete, complete };
-  STATE state = incomplete;
+  enum STATE { state_playing, state_levelend, state_complete };
+  STATE state = state_playing;
 
   enum PLAYER_STATE { player_alive, player_dead };
 
@@ -36,6 +36,7 @@ struct play_state
   int64_t levelTimerStart = 0;
   int64_t levelTimerStop = 0;
   int64_t lastShotTicks = 0;
+  int64_t levelEndTickCount = 0;
 
   float levelMouseX = 0, levelMouseY = 0;
 

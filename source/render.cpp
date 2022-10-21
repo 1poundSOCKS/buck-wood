@@ -41,7 +41,15 @@ void RenderPlayScreen(const d2d_frame& frame, game_state& gameState)
     RenderBullet(*bullet, frame, levelTransform);
   }
 
-  if( playState.state == play_state::complete )
+  if( playState.state == play_state::state_levelend )
+  {
+    std::wstring text = L"LEVEL COMPLETE";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  }
+  else if( playState.state == play_state::state_complete )
   {
     std::wstring text = L"F*CK YEAH";
     D2D_SIZE_F size = frame.renderTarget->GetSize();

@@ -12,6 +12,7 @@ play_state::play_state(const system_timer& timer, const game_data_ptr& gameData)
   currentLevelDataIterator = gameData->begin();
   const game_level_data_ptr& levelData = *currentLevelDataIterator;
   currentLevel = std::make_shared<game_level>(*levelData);
+
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
@@ -31,12 +32,32 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     return std::make_shared<game_events>();
   }
 
-  if( playState.state == play_state::complete )  return events;
+  if( playState.state == play_state::state_complete )
+  {
+    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
+    
+    if( timeInSeconds < 6 ) return events;
+
+    gameState.screen = game_state::screen_title;
+    
+    return events;
+  }
 
   if( playState.playerState == play_state::player_dead ) return events;
 
-  if( playState.levelState == play_state::level_complete )
+  if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
   {
+    playState.state = play_state::state_levelend;
+    playState.levelEndTickCount = timer.totalTicks;
+    return events;
+  }
+
+  if( playState.state == play_state::state_levelend )
+  {
+    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
+    
+    if( timeInSeconds < 3 ) return events;
+
     playState.currentLevelDataIterator++;
     
     if( playState.currentLevelDataIterator != playState.gameData->end() )
@@ -47,40 +68,47 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
       game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
       playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
       playState.levelState = play_state::level_incomplete;
+
       playState.player = CreatePlayerShip();
       playState.player->xPos = playState.currentLevel->playerStartPosX;
       playState.player->yPos = playState.currentLevel->playerStartPosY;
+
       playState.bullets.clear();
+      playState.state = play_state::state_playing;
     }
     else
     {
-      playState.state = play_state::complete;
+      playState.state = play_state::state_complete;
     }
     return events;
   }
 
-  UpdatePlayer(playState, controlState, timer);
-  UpdateBullets(playState, controlState, *events, timer);
-
-  playState.levelState = GetLevelState(playState);
-  if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
-
-  std::list<game_point> transformedPoints;
-  TransformPlayerShip(*playState.player, transformedPoints);
-
-  if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
+  if( playState.state == play_state::state_playing )
   {
-    playState.playerState = play_state::player_dead;
-    playState.levelTimerStop = timer.totalTicks;
-  }
-  
-  for( const auto& shape : playState.currentLevel->objects)
-  {
-    if( PointInside(transformedPoints, *shape) )
+    UpdatePlayer(playState, controlState, timer);
+    UpdateBullets(playState, controlState, *events, timer);
+
+    playState.levelState = GetLevelState(playState);
+    if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
+
+    std::list<game_point> transformedPoints;
+    TransformPlayerShip(*playState.player, transformedPoints);
+
+    if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
     {
       playState.playerState = play_state::player_dead;
       playState.levelTimerStop = timer.totalTicks;
     }
+    
+    for( const auto& shape : playState.currentLevel->objects)
+    {
+      if( PointInside(transformedPoints, *shape) )
+      {
+        playState.playerState = play_state::player_dead;
+        playState.levelTimerStop = timer.totalTicks;
+      }
+    }
+    return events;
   }
 
   return events;
@@ -205,13 +233,4 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
   }
   
   playState.bullets.remove_if(BulletHasExpired);
-}
-
-void SetPlayStateStopWatch(play_state& playState, float seconds)
-{
-}
-
-bool IsPlayStateStopWatchRunning(play_state& playState)
-{
-  return false;
 }
