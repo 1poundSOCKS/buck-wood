@@ -60,7 +60,8 @@ struct game_state
   game_data_ptr gameData;
 };
 
-std::unique_ptr<game_state> CreateInitialGameState();
+using game_state_ptr = std::unique_ptr<game_state>;
+
 game_events_ptr UpdateGameState(game_state& gameState, const control_state& cs, const system_timer& timer);
 
 #endif

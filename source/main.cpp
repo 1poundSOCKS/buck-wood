@@ -46,16 +46,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const system_timer_ptr timer = std::make_unique<system_timer>(fps);
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
-  const std::unique_ptr<game_state> gameState = CreateInitialGameState();
+  const game_state_ptr gameState = std::make_unique<game_state>();
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
-  std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
-
+  
   sound_buffers_ptr soundBuffers = std::make_unique<sound_buffers>(app->directSound, configFile.settings[L"data_path"]);
 
   HRESULT hr = S_OK;
 
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
+
+  std::unique_ptr<control_state> previousControlState = std::make_unique<control_state>();
 
   MSG msg;
   while (ProcessMessage(&msg))

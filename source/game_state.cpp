@@ -60,9 +60,3 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
 
   return std::make_shared<game_events>();
 }
-
-std::unique_ptr<game_state> CreateInitialGameState()
-{
-  std::unique_ptr<game_state> gameState = std::make_unique<game_state>();
-  return gameState;
-}
