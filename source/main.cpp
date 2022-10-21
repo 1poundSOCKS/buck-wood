@@ -66,6 +66,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     RenderFrame(*frame, *gameState);
 
+    mouseCursor->xPos = previousControlState->renderTargetMouseX;
+    mouseCursor->yPos = previousControlState->renderTargetMouseY;
+    RenderMouseCursor(*frame, *mouseCursor);
+
+    app->dxgi_swapChain->Present(1, 0);
+
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
 
     UpdatePerformanceData(*perfData);
@@ -74,15 +80,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     FormatDiagnostics(diagnostics, *gameState, *controlState, *perfData, *timer);
     RenderDiagnostics(*frame, diagnostics);
 
-    mouseCursor->xPos = controlState->renderTargetMouseX;
-    mouseCursor->yPos = controlState->renderTargetMouseY;
-    RenderMouseCursor(*frame, *mouseCursor);
-
     const game_events_ptr events = UpdateGameState(*gameState, *controlState, *timer);
 
     UpdateSystemTimer(*timer);
-
-    app->dxgi_swapChain->Present(1, 0);
 
     UpdateSound(*soundBuffers, *gameState, *events);
 
