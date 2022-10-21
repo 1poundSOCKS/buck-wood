@@ -193,10 +193,15 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState)
 {
-   if( gameState.screen != game_state::screen_play ) return D2D1::Matrix3x2F::Identity();
+  if( gameState.screen != game_state::screen_play ) return D2D1::Matrix3x2F::Identity();
 
-  float levelWidth = gameState.playState->currentLevel->width;
-  float playerPosY = gameState.playState->player->yPos;
+  return CreateViewTransform(renderTarget, *gameState.playState);
+}
+
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, play_state& playState)
+{
+  float levelWidth = playState.currentLevel->width;
+  float playerPosY = playState.player->yPos;
 
   D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
 
