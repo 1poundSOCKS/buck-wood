@@ -17,6 +17,7 @@ struct game_state
   enum PLAYER_STATE { player_alive, player_dead };
   enum LEVEL_STATE { level_incomplete, level_complete };
 
+  float renderTargetMouseX = 0, renderTargetMouseY = 0;
   bool starting = true;
   bool running = true;
   SCREEN screen = screen_title;

@@ -28,6 +28,8 @@ struct play_state
 
   int64_t lastShotTicks;
 
+  float levelMouseX = 0, levelMouseY = 0;
+
   static const float gameSpeedMultiplier;
 };
 

@@ -7,6 +7,9 @@ game_state::game_state()
 
 game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
+  gameState.renderTargetMouseX = controlState.renderTargetMouseX;
+  gameState.renderTargetMouseY = controlState.renderTargetMouseY;
+  
   if( gameState.starting )
   {
     gameState.starting = false;

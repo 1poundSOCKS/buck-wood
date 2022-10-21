@@ -17,7 +17,6 @@ struct control_state
   bool shoot;
   float mouseX, mouseY;
   float renderTargetMouseX, renderTargetMouseY;
-  float gameMouseX, gameMouseY;
 };
 
 std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);

@@ -64,20 +64,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
     std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app->d2d_rendertarget, app->brushes, app->textFormats);
 
-    D2D1::Matrix3x2F viewTransform = CreateViewTransform(frame->renderTarget, *gameState);
-    RenderFrame(*frame, *gameState, viewTransform);
+    RenderFrame(*frame, *gameState);
 
     std::unique_ptr<control_state> controlState = GetControlState(*app, *previousControlState);
-
-    if( viewTransform.Invert() )
-    {
-      D2D1_POINT_2F inPoint;
-      inPoint.x = controlState->renderTargetMouseX;
-      inPoint.y = controlState->renderTargetMouseY;
-      D2D1_POINT_2F outPoint = viewTransform.TransformPoint(inPoint);
-      controlState->gameMouseX = outPoint.x;
-      controlState->gameMouseY = outPoint.y;
-    }
 
     UpdatePerformanceData(*perfData);
 
@@ -90,6 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     RenderMouseCursor(*frame, *mouseCursor);
 
     const game_events_ptr events = UpdateGameState(*gameState, *controlState, *timer);
+
     UpdateSystemTimer(*timer);
 
     app->dxgi_swapChain->Present(1, 0);
