@@ -13,7 +13,7 @@ using game_data_ptr = std::shared_ptr<game_data>;
 
 struct play_state
 {
-  play_state(const system_timer& timer, const game_data_ptr& gameData);
+  play_state();
 
   enum STATE { state_playing, state_levelend, state_complete };
   STATE state = state_playing;
@@ -61,7 +61,5 @@ struct game_state
 };
 
 using game_state_ptr = std::unique_ptr<game_state>;
-
-game_events_ptr UpdateGameState(game_state& gameState, const control_state& cs, const system_timer& timer);
 
 #endif

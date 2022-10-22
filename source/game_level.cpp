@@ -36,7 +36,7 @@ bool OutOfGameLevelBoundary(const game_level& gameLevel, float x, float y)
 
 game_level_data_ptr CreateFirstGameLevelData()
 {
-  game_level_data_ptr gameLevelData = std::make_unique<game_level_data>();
+  game_level_data_ptr gameLevelData = std::make_shared<game_level_data>();
 
   gameLevelData->width = 2000.0f;
   gameLevelData->height = 2200.0f;
@@ -70,7 +70,7 @@ game_level_data_ptr CreateFirstGameLevelData()
 
 game_level_data_ptr CreateSecondGameLevelData()
 {
-  game_level_data_ptr gameLevelData = std::make_unique<game_level_data>();
+  game_level_data_ptr gameLevelData = std::make_shared<game_level_data>();
 
   gameLevelData->width = 2000.0f;
   gameLevelData->height = 2200.0f;

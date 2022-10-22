@@ -18,7 +18,7 @@ struct game_level_data
   std::vector<game_point> targets;
 };
 
-using game_level_data_ptr = std::unique_ptr<game_level_data>;
+using game_level_data_ptr = std::shared_ptr<game_level_data>;
 
 struct game_level
 {

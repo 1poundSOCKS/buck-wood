@@ -7,7 +7,7 @@
 #include <tchar.h>
 
 #include "d2d_frame.h"
-#include "game_state.h"
+#include "state_objects.h"
 #include "perf_data.h"
 
 void RenderFrame(const d2d_frame& frame, game_state& gameState);

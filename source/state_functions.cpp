@@ -1,21 +1,58 @@
-#include "play_state.h"
+#include "state_functions.h"
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-play_state::play_state(const system_timer& timer, const game_data_ptr& gameData) : gameData(gameData), playerState(player_alive)
+game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
-  totalTicks = timer.totalTicks;
-  ticksPerSecond = timer.ticksPerSecond;
-  levelTimerStart = totalTicks;
-  lastShotTicks = totalTicks;
+  gameState.renderTargetMouseX = controlState.renderTargetMouseX;
+  gameState.renderTargetMouseY = controlState.renderTargetMouseY;
 
-  currentLevelDataIterator = gameData->begin();
-  const game_level_data_ptr& levelData = *currentLevelDataIterator;
-  currentLevel = std::make_shared<game_level>(*levelData);
+  if( gameState.starting )
+  {
+    gameState.starting = false;
+  }
 
-  player = CreatePlayerShip();
-  player->xPos = currentLevel->playerStartPosX;
-  player->yPos = currentLevel->playerStartPosY;
+  switch( gameState.screen )
+  {
+  case game_state::screen_play:
+    return UpdatePlayState(gameState, controlState, timer);
+
+  case game_state::screen_title:
+    
+    if( controlState.quitPress )
+    {
+      gameState.running = false;
+      return std::make_shared<game_events>();
+    }
+
+    if( controlState.startGame )
+    {
+      gameState.screen = game_state::screen_play;
+      ResetPlayState(*gameState.playState, timer, gameState.gameData);
+      // gameState.playState = std::make_unique<play_state>(timer, gameState.gameData);
+      return std::make_shared<game_events>();
+    }
+
+    if( controlState.functionKey_1 )
+    {
+      gameState.screen = game_state::screen_level_editor;
+      // gameState.levelEditorState = std::make_unique<level_editor_state>(gameState.firstLevel);
+      return std::make_shared<game_events>();
+    }
+
+    return std::make_shared<game_events>();
+
+  case game_state::screen_level_editor:
+    if( controlState.quitPress )
+    {
+      gameState.screen = game_state::screen_title;
+      return std::make_shared<game_events>();
+    }
+
+    return UpdateLevelEditorState(*gameState.levelEditorState, controlState);
+  }
+
+  return std::make_shared<game_events>();
 }
 
 game_events_ptr UpdatePlayState(game_state& gameState, const control_state& controlState, const system_timer& timer)
@@ -233,4 +270,27 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
   }
   
   playState.bullets.remove_if(BulletHasExpired);
+}
+
+void ResetPlayState(play_state& playState, const system_timer& timer, const game_data_ptr& gameData)
+{
+  playState.state = play_state::state_playing;
+  
+  playState.totalTicks = timer.totalTicks;
+  playState.ticksPerSecond = timer.ticksPerSecond;
+  playState.levelTimerStart = timer.totalTicks;
+  playState.lastShotTicks = timer.totalTicks;
+
+  playState.gameData = gameData;
+  playState.currentLevelDataIterator = gameData->begin();
+  const game_level_data_ptr& levelData = *playState.currentLevelDataIterator;
+  playState.currentLevel = std::make_shared<game_level>(*levelData);
+  playState.levelState = play_state::level_incomplete;
+
+  playState.player = CreatePlayerShip();
+  playState.player->xPos = playState.currentLevel->playerStartPosX;
+  playState.player->yPos = playState.currentLevel->playerStartPosY;
+  playState.playerState = play_state::player_alive;
+
+  playState.bullets.clear();
 }

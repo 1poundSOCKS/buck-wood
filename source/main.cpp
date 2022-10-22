@@ -13,6 +13,7 @@
 #include "system_timer.h"
 #include "game_data.h"
 #include "game_sound.h"
+#include "state_functions.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
