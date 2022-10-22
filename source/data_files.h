@@ -1,5 +1,5 @@
-#ifndef _game_data_
-#define _game_data_
+#ifndef _data_files_
+#define _data_files_
 
 #include <memory>
 #include <iostream>
@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <codecvt>
+#include "json.h"
 
 struct config_file
 {
@@ -64,5 +65,12 @@ struct wav_file_data
 int GetWavFileDataSize(const wav_file_data& data);
 
 using wav_file_data_ptr = std::unique_ptr<wav_file_data>;
+
+struct level_data_json
+{
+  level_data_json(const wchar_t* filename);
+};
+
+using level_data_json_ptr = std::unique_ptr<level_data_json>;
 
 #endif

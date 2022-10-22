@@ -29,16 +29,16 @@ game_events_ptr UpdateGameState(game_state& gameState, const control_state& cont
     {
       gameState.screen = game_state::screen_play;
       ResetPlayState(*gameState.playState, timer, gameState.gameData);
-      // gameState.playState = std::make_unique<play_state>(timer, gameState.gameData);
       return std::make_shared<game_events>();
     }
 
+#ifdef INCLUDE_LEVEL_EDITOR
     if( controlState.functionKey_1 )
     {
       gameState.screen = game_state::screen_level_editor;
-      // gameState.levelEditorState = std::make_unique<level_editor_state>(gameState.firstLevel);
       return std::make_shared<game_events>();
     }
+#endif
 
     return std::make_shared<game_events>();
 
@@ -122,6 +122,18 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
 
   if( playState.state == play_state::state_playing )
   {
+    float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
+      GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
+      GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
+
+    playState.levelTimeRemaining = max(0, playState.currentLevel->timeLimitInSeconds - levelTimerInSeconds);
+
+    if( playState.levelTimeRemaining == 0 )
+    {
+      playState.playerState = play_state::player_dead;
+      return events;
+    }
+    
     UpdatePlayer(playState, controlState, timer);
     UpdateBullets(playState, controlState, *events, timer);
 

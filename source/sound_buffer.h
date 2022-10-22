@@ -3,7 +3,7 @@
 
 #include <winrt/base.h>
 #include <dsound.h>
-#include "game_data.h"
+#include "data_files.h"
 
 struct sound_buffer
 {

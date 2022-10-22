@@ -66,11 +66,7 @@ void RenderPlayScreen(const d2d_frame& frame, game_state& gameState)
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
 
-  float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
-
-  RenderTimer(frame, levelTimerInSeconds);
+  RenderTimer(frame, gameState.playState->levelTimeRemaining);
 
   if( levelTransform.Invert() )
   {

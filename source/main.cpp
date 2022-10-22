@@ -1,4 +1,5 @@
 #define UNICODE
+#define USE_JSON
 
 #include <iostream>
 #include <tchar.h>
@@ -11,7 +12,7 @@
 #include "control_state.h"
 #include "game_level.h"
 #include "system_timer.h"
-#include "game_data.h"
+#include "data_files.h"
 #include "game_sound.h"
 #include "state_functions.h"
 
@@ -51,6 +52,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   
   sound_buffers_ptr soundBuffers = std::make_unique<sound_buffers>(app->directSound, configFile.settings[L"data_path"]);
+
+  fs::path jsonFilename = configFile.settings[L"data_path"];
+  jsonFilename /= L"levels";
+  jsonFilename /= "test_level.json";
+  level_data_json_ptr jsonLevelData = std::make_unique<level_data_json>(jsonFilename.c_str());
 
   HRESULT hr = S_OK;
 

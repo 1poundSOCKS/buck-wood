@@ -1,4 +1,4 @@
-#include "game_data.h"
+#include "data_files.h"
 
 config_file::setting::setting(const std::wstring& text)
 {
@@ -65,4 +65,13 @@ wav_file_data::wav_file_data(const wchar_t* filename)
 int GetWavFileDataSize(const wav_file_data& wavFileData)
 {
   return wavFileData.data->size;
+}
+
+level_data_json::level_data_json(const wchar_t* filename)
+{
+  std::ifstream ifs(filename);
+  Json::Reader reader;
+  Json::Value root;
+  reader.parse(ifs, root);
+  Json::String name = root["name"].asString();
 }
