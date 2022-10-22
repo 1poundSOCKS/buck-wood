@@ -7,7 +7,10 @@
 #include <string>
 #include <map>
 #include <codecvt>
+#include <filesystem>
 #include "json.h"
+
+namespace fs = std::filesystem;
 
 struct config_file
 {
@@ -75,6 +78,10 @@ struct level_data_json
   int width, height;
   int playerStartPosX, playerStartPosY;
   int timeLimitInSeconds;
+  Json::Value boundaryPoints;
+  Json::ArrayIndex boundaryPointCount;
+  Json::Value targets;
+  Json::ArrayIndex targetCount;
 };
 
 using level_data_json_ptr = std::unique_ptr<level_data_json>;

@@ -201,3 +201,34 @@ game_level_data_ptr CreateThirdGameLevelData()
 
   return gameLevelData;
 }
+
+game_level_data_ptr LoadLevelDataFromJSON(const level_data_json& jsonData)
+{
+  game_level_data_ptr levelData = std::make_shared<game_level_data>();
+
+  levelData->width = jsonData.width;
+  levelData->height = jsonData.height;
+  levelData->playerStartPosX = jsonData.playerStartPosX;
+  levelData->playerStartPosY = jsonData.playerStartPosY;
+  levelData->timeLimitInSeconds = jsonData.timeLimitInSeconds;
+
+  for( int i = 0; i < jsonData.boundaryPointCount; i++)
+  {
+    Json::Value boundaryPoint = jsonData.boundaryPoints[i];
+    int x = boundaryPoint["x"].asInt();
+    int y = boundaryPoint["y"].asInt();
+    game_point point(x, y);
+    levelData->boundaryPoints.push_back(point);
+  }
+
+  for( int i = 0; i < jsonData.targetCount; i++)
+  {
+    Json::Value target = jsonData.targets[i];
+    int x = target["x"].asInt();
+    int y = target["y"].asInt();
+    game_point point(x, y);
+    levelData->targets.push_back(point);
+  }
+
+  return levelData;
+}

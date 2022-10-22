@@ -1,16 +1,18 @@
 {
-  "name": "demo",
-  "width": 1000,
+  "name": "demo level",
+  "width": 2000,
   "height": 2000,
-  "playerStartPosX": 500,
-  "playerStartPosY": 600,
-  "timeLimitInSeconds": 20,
+  "playerStartPosX": 1000,
+  "playerStartPosY": 300,
+  "timeLimitInSeconds": 25,
   "boundaryPoints": [
-    { "x": 10, "y": 20 },
-    { "x": 10, "y": 20 },
-    { "x": 10, "y": 20 },
-    { "x": 10, "y": 20 }
+    { "x": 100, "y": 100 },
+    { "x": 1900, "y": 100 },
+    { "x": 1900, "y": 2000 },
+    { "x": 100, "y": 2000 }
   ],
   "objects": [],
-  "targets": []
+  "targets": [
+    { "x": 1000, "y": 1000 }
+  ]
 }

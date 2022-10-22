@@ -49,7 +49,7 @@ using play_state_ptr = std::unique_ptr<play_state>;
 
 struct game_state
 {
-  game_state();
+  game_state(const std::wstring& dataPath);
 
   enum SCREEN { screen_title, screen_play, screen_level_editor };
   SCREEN screen = screen_title;

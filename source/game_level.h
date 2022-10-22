@@ -5,6 +5,7 @@
 #include <list>
 #include <memory>
 #include "game_objects.h"
+#include "data_files.h"
 
 using game_level_object_data = std::vector<game_point>;
 using game_level_object_data_ptr = std::unique_ptr<game_level_object_data>;
@@ -40,5 +41,7 @@ bool OutOfGameLevelBoundary(const game_level& gameLevel, float x, float y);
 game_level_data_ptr CreateFirstGameLevelData();
 game_level_data_ptr CreateSecondGameLevelData();
 game_level_data_ptr CreateThirdGameLevelData();
+
+game_level_data_ptr LoadLevelDataFromJSON(const level_data_json& jsonData);
 
 #endif

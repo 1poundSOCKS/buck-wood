@@ -78,6 +78,8 @@ level_data_json::level_data_json(const wchar_t* filename)
   playerStartPosX = root["playerStartPosX"].asInt();
   playerStartPosY = root["playerStartPosY"].asInt();
   timeLimitInSeconds = root["timeLimitInSeconds"].asInt();
-  Json::Value boundaryPoints = root["boundaryPoints"];
-  Json::ArrayIndex size = boundaryPoints.size();
+  boundaryPoints = root["boundaryPoints"];
+  boundaryPointCount = boundaryPoints.size();
+  targets = root["targets"];
+  targetCount = targets.size();
 }

@@ -48,15 +48,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   const system_timer_ptr timer = std::make_unique<system_timer>(fps);
   const std::unique_ptr<perf_data> perfData = std::make_unique<perf_data>();
   const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
-  const game_state_ptr gameState = std::make_unique<game_state>();
+  const game_state_ptr gameState = std::make_unique<game_state>(configFile.settings[L"data_path"]);
   const std::unique_ptr<mouse_cursor> mouseCursor = std::make_unique<mouse_cursor>();
   
   sound_buffers_ptr soundBuffers = std::make_unique<sound_buffers>(app->directSound, configFile.settings[L"data_path"]);
 
-  fs::path jsonFilename = configFile.settings[L"data_path"];
-  jsonFilename /= L"levels";
-  jsonFilename /= "test_level.json";
-  level_data_json_ptr jsonLevelData = std::make_unique<level_data_json>(jsonFilename.c_str());
+  // fs::path jsonFilename = configFile.settings[L"data_path"];
+  // jsonFilename /= L"levels";
+  // jsonFilename /= "test_level.json";
+  // level_data_json_ptr jsonLevelData = std::make_unique<level_data_json>(jsonFilename.c_str());
+  // game_level_data_ptr gameLevelData = LoadLevelDataFromJSON(*jsonLevelData);
 
   HRESULT hr = S_OK;
 
