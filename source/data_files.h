@@ -69,6 +69,12 @@ using wav_file_data_ptr = std::unique_ptr<wav_file_data>;
 struct level_data_json
 {
   level_data_json(const wchar_t* filename);
+  
+  Json::Value root;
+  Json::String name;
+  int width, height;
+  int playerStartPosX, playerStartPosY;
+  int timeLimitInSeconds;
 };
 
 using level_data_json_ptr = std::unique_ptr<level_data_json>;

@@ -1,3 +1,16 @@
 {
-  "name": "demo"
+  "name": "demo",
+  "width": 1000,
+  "height": 2000,
+  "playerStartPosX": 500,
+  "playerStartPosY": 600,
+  "timeLimitInSeconds": 20,
+  "boundaryPoints": [
+    { "x": 10, "y": 20 },
+    { "x": 10, "y": 20 },
+    { "x": 10, "y": 20 },
+    { "x": 10, "y": 20 }
+  ],
+  "objects": [],
+  "targets": []
 }

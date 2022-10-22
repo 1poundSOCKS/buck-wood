@@ -71,7 +71,13 @@ level_data_json::level_data_json(const wchar_t* filename)
 {
   std::ifstream ifs(filename);
   Json::Reader reader;
-  Json::Value root;
   reader.parse(ifs, root);
-  Json::String name = root["name"].asString();
+  name = root["name"].asString();
+  width = root["width"].asInt();
+  height = root["height"].asInt();
+  playerStartPosX = root["playerStartPosX"].asInt();
+  playerStartPosY = root["playerStartPosY"].asInt();
+  timeLimitInSeconds = root["timeLimitInSeconds"].asInt();
+  Json::Value boundaryPoints = root["boundaryPoints"];
+  Json::ArrayIndex size = boundaryPoints.size();
 }
