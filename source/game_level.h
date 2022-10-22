@@ -43,5 +43,6 @@ game_level_data_ptr CreateSecondGameLevelData();
 game_level_data_ptr CreateThirdGameLevelData();
 
 game_level_data_ptr LoadLevelDataFromJSON(const level_data_json& jsonData);
+game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonObject);
 
 #endif

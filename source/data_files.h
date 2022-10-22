@@ -80,6 +80,8 @@ struct level_data_json
   int timeLimitInSeconds;
   Json::Value boundaryPoints;
   Json::ArrayIndex boundaryPointCount;
+  Json::Value objects;
+  Json::ArrayIndex objectCount;
   Json::Value targets;
   Json::ArrayIndex targetCount;
 };

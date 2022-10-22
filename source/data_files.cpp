@@ -80,6 +80,8 @@ level_data_json::level_data_json(const wchar_t* filename)
   timeLimitInSeconds = root["timeLimitInSeconds"].asInt();
   boundaryPoints = root["boundaryPoints"];
   boundaryPointCount = boundaryPoints.size();
+  objects = root["objects"];
+  objectCount = objects.size();
   targets = root["targets"];
   targetCount = targets.size();
 }
