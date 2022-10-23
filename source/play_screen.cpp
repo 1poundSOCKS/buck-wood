@@ -118,7 +118,13 @@ void UpdateState(play_state& playState, const control_state& controlState, const
     return;
   }
 
-  if( playState.playerState == play_state::player_dead ) return;
+  if( playState.playerState == play_state::player_dead )
+  {
+    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
+    if( timeInSeconds < 3 ) return;
+    playState.returnToMenu = true;
+    return;
+  }
 
   if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
   {
@@ -169,6 +175,7 @@ void UpdateState(play_state& playState, const control_state& controlState, const
   if( playState.levelTimeRemaining == 0 )
   {
     playState.playerState = play_state::player_dead;
+    playState.levelEndTickCount = timer.totalTicks;
     return;
   }
   
@@ -184,6 +191,7 @@ void UpdateState(play_state& playState, const control_state& controlState, const
   if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.playerState = play_state::player_dead;
+    playState.levelEndTickCount = timer.totalTicks;
     playState.levelTimerStop = timer.totalTicks;
   }
   
@@ -192,6 +200,7 @@ void UpdateState(play_state& playState, const control_state& controlState, const
     if( PointInside(transformedPoints, *shape) )
     {
       playState.playerState = play_state::player_dead;
+      playState.levelEndTickCount = timer.totalTicks;
       playState.levelTimerStop = timer.totalTicks;
     }
   }
