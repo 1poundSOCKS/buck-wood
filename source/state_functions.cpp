@@ -2,98 +2,50 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-game_events_ptr UpdateGameState(game_state& gameState, const control_state& controlState, const system_timer& timer)
+screen_type UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
-  gameState.renderTargetMouseX = controlState.renderTargetMouseX;
-  gameState.renderTargetMouseY = controlState.renderTargetMouseY;
-
   if( gameState.starting )
   {
     gameState.starting = false;
+    return screen_menu;
   }
 
-  switch( gameState.screen )
-  {
-  case game_state::screen_play:
-    return UpdatePlayState(gameState, controlState, timer);
+  if( controlState.quitPress ) return screen_none;
 
-  case game_state::screen_title:
-    
-    if( controlState.quitPress )
-    {
-      gameState.running = false;
-      return std::make_shared<game_events>();
-    }
+  if( controlState.startGame ) return screen_play;
 
-    if( controlState.startGame )
-    {
-      gameState.screen = game_state::screen_play;
-      ResetPlayState(*gameState.playState, timer, gameState.gameData);
-      return std::make_shared<game_events>();
-    }
-
-#ifdef INCLUDE_LEVEL_EDITOR
-    if( controlState.functionKey_1 )
-    {
-      gameState.screen = game_state::screen_level_editor;
-      return std::make_shared<game_events>();
-    }
-#endif
-
-    return std::make_shared<game_events>();
-
-  case game_state::screen_level_editor:
-    if( controlState.quitPress )
-    {
-      gameState.screen = game_state::screen_title;
-      return std::make_shared<game_events>();
-    }
-
-    return UpdateLevelEditorState(*gameState.levelEditorState, controlState);
-  }
-
-  return std::make_shared<game_events>();
+  return screen_menu;
 }
 
-game_events_ptr UpdatePlayState(game_state& gameState, const control_state& controlState, const system_timer& timer)
+screen_type UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  play_state& playState = *gameState.playState;
-
   playState.totalTicks = timer.totalTicks;
 
   game_events_ptr events = std::make_shared<game_events>();
 
-  if( controlState.quitPress )
-  {
-    gameState.screen = game_state::screen_title;
-    return std::make_shared<game_events>();
-  }
+  if( controlState.quitPress ) return screen_menu;
 
   if( playState.state == play_state::state_complete )
   {
     float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
-    
-    if( timeInSeconds < 6 ) return events;
-
-    gameState.screen = game_state::screen_title;
-    
-    return events;
+    if( timeInSeconds < 6 ) return screen_play;
+    else return screen_menu;
   }
 
-  if( playState.playerState == play_state::player_dead ) return events;
+  if( playState.playerState == play_state::player_dead ) return screen_play;
 
   if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
   {
     playState.state = play_state::state_levelend;
     playState.levelEndTickCount = timer.totalTicks;
-    return events;
+    return screen_play;
   }
 
   if( playState.state == play_state::state_levelend )
   {
     float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
     
-    if( timeInSeconds < 3 ) return events;
+    if( timeInSeconds < 3 ) return screen_play;
 
     playState.currentLevelDataIterator++;
     
@@ -117,7 +69,7 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     {
       playState.state = play_state::state_complete;
     }
-    return events;
+    return screen_play;
   }
 
   if( playState.state == play_state::state_playing )
@@ -131,7 +83,7 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
     if( playState.levelTimeRemaining == 0 )
     {
       playState.playerState = play_state::player_dead;
-      return events;
+      return screen_play;
     }
     
     UpdatePlayer(playState, controlState, timer);
@@ -157,10 +109,10 @@ game_events_ptr UpdatePlayState(game_state& gameState, const control_state& cont
         playState.levelTimerStop = timer.totalTicks;
       }
     }
-    return events;
+    return screen_play;
   }
 
-  return events;
+  return screen_play;
 }
 
 play_state::LEVEL_STATE GetLevelState(const play_state& playState)
@@ -284,25 +236,25 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
   playState.bullets.remove_if(BulletHasExpired);
 }
 
-void ResetPlayState(play_state& playState, const system_timer& timer, const game_data_ptr& gameData)
-{
-  playState.state = play_state::state_playing;
+// void ResetPlayState(play_state& playState, const system_timer& timer, const game_data_ptr& gameData)
+// {
+//   playState.state = play_state::state_playing;
   
-  playState.totalTicks = timer.totalTicks;
-  playState.ticksPerSecond = timer.ticksPerSecond;
-  playState.levelTimerStart = timer.totalTicks;
-  playState.lastShotTicks = timer.totalTicks;
+//   playState.totalTicks = timer.totalTicks;
+//   playState.ticksPerSecond = timer.ticksPerSecond;
+//   playState.levelTimerStart = timer.totalTicks;
+//   playState.lastShotTicks = timer.totalTicks;
 
-  playState.gameData = gameData;
-  playState.currentLevelDataIterator = gameData->begin();
-  const game_level_data_ptr& levelData = *playState.currentLevelDataIterator;
-  playState.currentLevel = std::make_shared<game_level>(*levelData);
-  playState.levelState = play_state::level_incomplete;
+//   playState.gameData = gameData;
+//   playState.currentLevelDataIterator = gameData->begin();
+//   const game_level_data_ptr& levelData = *playState.currentLevelDataIterator;
+//   playState.currentLevel = std::make_shared<game_level>(*levelData);
+//   playState.levelState = play_state::level_incomplete;
 
-  playState.player = CreatePlayerShip();
-  playState.player->xPos = playState.currentLevel->playerStartPosX;
-  playState.player->yPos = playState.currentLevel->playerStartPosY;
-  playState.playerState = play_state::player_alive;
+//   playState.player = CreatePlayerShip();
+//   playState.player->xPos = playState.currentLevel->playerStartPosX;
+//   playState.player->yPos = playState.currentLevel->playerStartPosY;
+//   playState.playerState = play_state::player_alive;
 
-  playState.bullets.clear();
-}
+//   playState.bullets.clear();
+// }

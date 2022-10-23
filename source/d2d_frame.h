@@ -16,6 +16,7 @@ struct d2d_frame
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
   d2d_brushes_ptr brushes;
   dwrite_text_formats_ptr textFormats;
+  float renderTargetMouseX = 0, renderTargetMouseY = 0;
 };
 
 #endif

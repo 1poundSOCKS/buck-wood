@@ -4,49 +4,47 @@ void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState,
 {
   DWORD bufferStatus = 0;
 
-  if( gameState.screen == game_state::screen_title )
+  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
   {
-    if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
+    if( !(bufferStatus & DSBSTATUS_PLAYING) )
     {
-      if( !(bufferStatus & DSBSTATUS_PLAYING) )
-      {
-        soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
-        soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
-      }
-    }
-
-    if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
-    {
-      if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();
+      soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
+      soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
     }
   }
-  else if( gameState.screen == game_state::screen_play )
+
+  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
   {
-    const play_state_ptr& playState = gameState.playState;
+    if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();
+  }
+}
 
-    if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-    {
-      if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
-    }
+void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState, const game_events& events)
+{
+  DWORD bufferStatus = 0;
 
-    if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
+  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
+  {
+    if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
+  }
+
+  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
+  {
+    if( bufferStatus & DSBSTATUS_PLAYING )
     {
-      if( bufferStatus & DSBSTATUS_PLAYING )
+      if( !playState.player->thrusterOn ||
+          playState.playerState == play_state::player_dead ||
+          playState.levelState == play_state::level_complete )
       {
-        if( !playState->player->thrusterOn ||
-            playState->playerState == play_state::player_dead ||
-            playState->levelState == play_state::level_complete )
-        {
-          soundBuffers.thrust->buffer->Stop();
-        }
+        soundBuffers.thrust->buffer->Stop();
       }
-      else
+    }
+    else
+    {
+      if( playState.player->thrusterOn )
       {
-        if( playState->player->thrusterOn )
-        {
-          soundBuffers.thrust->buffer->SetCurrentPosition(0);
-          soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
-        }
+        soundBuffers.thrust->buffer->SetCurrentPosition(0);
+        soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
       }
     }
 
@@ -60,18 +58,6 @@ void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState,
     {
       soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
       soundBuffers.targetActivated->buffer->Play(0, 0, 0);
-    }
-  }
-  else
-  {
-    if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-    {
-      if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
-    }
-
-    if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
-    {
-      if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();
     }
   }
 }

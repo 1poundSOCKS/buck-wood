@@ -5,6 +5,7 @@
 const float titleScreenWidth = 1000.0f;
 const float titleScreenHeight = 500.0f;
 
+#ifdef TO_DELETE
 void RenderFrame(const d2d_frame& frame, game_state& gameState)
 {
   const bool renderDiagnostics = true;
@@ -24,13 +25,15 @@ void RenderFrame(const d2d_frame& frame, game_state& gameState)
       break;
   }
 }
+#endif
 
-void RenderPlayScreen(const d2d_frame& frame, game_state& gameState)
+void RenderFrame(const d2d_frame& frame, play_state& playState)
 {
-  auto& playState = *gameState.playState;
+  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
   auto& currentLevel = *playState.currentLevel;
 
-  D2D1::Matrix3x2F levelTransform = CreateLevelTransform(frame.renderTarget, playState);
+  auto levelTransform = CreateLevelTransform(frame.renderTarget, playState);
 
   RenderLevel(currentLevel, frame, levelTransform);
 
@@ -66,21 +69,23 @@ void RenderPlayScreen(const d2d_frame& frame, game_state& gameState)
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
 
-  RenderTimer(frame, gameState.playState->levelTimeRemaining);
+  RenderTimer(frame, playState.levelTimeRemaining);
 
   if( levelTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
-    inPoint.x = gameState.renderTargetMouseX;
-    inPoint.y = gameState.renderTargetMouseY;
+    inPoint.x = frame.renderTargetMouseX;
+    inPoint.y = frame.renderTargetMouseY;
     D2D1_POINT_2F outPoint = levelTransform.TransformPoint(inPoint);
     playState.levelMouseX = outPoint.x;
     playState.levelMouseY = outPoint.y;
   }
 }
 
-void RenderTitleScreen(const d2d_frame& frame)
+void RenderFrame(const d2d_frame& frame, game_state& gameState)
 {
+  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
   std::wstring titleText = L"Z - rotate ship left\n";
   titleText += L"X - rotate ship right\n";
   titleText += L"Right mouse button - accelerate\n";
@@ -92,25 +97,6 @@ void RenderTitleScreen(const d2d_frame& frame)
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
-}
-
-void RenderLevelEditor(const d2d_frame& frame, game_state& gameState)
-{
-  auto& levelEditorState = *gameState.levelEditorState;
-  auto& currentLevel = *levelEditorState.level;
-
-  D2D1::Matrix3x2F levelTransform = D2D1::Matrix3x2F::Translation(levelEditorState.viewX, levelEditorState.viewY);
-  RenderLevel(currentLevel, frame, levelTransform);
-
-  if( levelTransform.Invert() )
-  {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = gameState.renderTargetMouseX;
-    inPoint.y = gameState.renderTargetMouseY;
-    D2D1_POINT_2F outPoint = levelTransform.TransformPoint(inPoint);
-    levelEditorState.levelMouseX = outPoint.x;
-    levelEditorState.levelMouseY = outPoint.y;
-  }
 }
 
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
@@ -221,13 +207,6 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
 
     renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
   }
-}
-
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const game_state& gameState)
-{
-  if( gameState.screen != game_state::screen_play ) return D2D1::Matrix3x2F::Identity();
-
-  return CreateLevelTransform(renderTarget, *gameState.playState);
 }
 
 D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState)
