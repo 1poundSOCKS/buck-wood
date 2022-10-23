@@ -232,20 +232,15 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
 
 D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState)
 {
-  float levelWidth = playState.currentLevel->width;
+  float playerPosX = playState.player->xPos;
   float playerPosY = playState.player->yPos;
 
   D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
 
-  float scale = renderTargetSize.width / levelWidth;
-  float shiftY = renderTargetSize.height / 2 * scale;
+  float shiftX = renderTargetSize.width / 2 - playerPosX;
+  float shiftY = renderTargetSize.height / 2 - playerPosY;
   
-  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(0, shiftY - playerPosY);
+  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(shiftX, shiftY);
   
-  D2D1_SIZE_F scaleSize;
-  scaleSize.width = scale;
-  scaleSize.height = scale;
-  D2D1::Matrix3x2F matrixScale = D2D1::Matrix3x2F::Scale(scaleSize);
-
-  return matrixScale * matrixShift;
+  return matrixShift;
 }
