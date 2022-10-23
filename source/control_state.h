@@ -1,8 +1,6 @@
 #ifndef _control_state_
 #define _control_state_
 
-#include "d2d_app.h"
-
 struct control_state
 {
   control_state();
@@ -18,7 +16,5 @@ struct control_state
   float mouseX, mouseY;
   float renderTargetMouseX, renderTargetMouseY;
 };
-
-std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 
 #endif

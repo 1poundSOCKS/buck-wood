@@ -15,6 +15,10 @@
 #include <dsound.h>
 #include <memory>
 #include <winrt/base.h>
+#include "system_timer.h"
+#include "game_objects.h"
+#include "control_state.h"
+#include "perf_data.h"
 #include "d2d_brushes.h"
 #include "dwrite_text_formats.h"
 
@@ -28,6 +32,11 @@ struct d2d_app
   int cmdShow;
   HWND wnd;
   UINT windowWidth, windowHeight;
+  system_timer_ptr timer;
+  std::unique_ptr<mouse_cursor> mouseCursor;
+  std::unique_ptr<control_state> controlState;
+  std::unique_ptr<control_state> previousControlState;
+  std::unique_ptr<perf_data> perfData;
   winrt::com_ptr<ID3D11Device> d3d_device;
   winrt::com_ptr<IDXGISwapChain> dxgi_swapChain;
   winrt::com_ptr<IDXGIDevice> dxgi_device;
@@ -46,6 +55,7 @@ struct d2d_app
   bool mouseLButtonDown = false, mouseRButtonDown = false;
 };
 
+std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
 winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
 
 #endif
