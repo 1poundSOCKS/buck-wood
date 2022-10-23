@@ -15,6 +15,8 @@ struct play_state
 {
   play_state(const system_timer& timer, const game_data_ptr& gameDataPtr);
 
+  static const float gameSpeedMultiplier;
+
   enum STATE { state_playing, state_levelend, state_complete };
   STATE state = state_playing;
 
@@ -42,7 +44,7 @@ struct play_state
 
   float levelMouseX = 0, levelMouseY = 0;
 
-  static const float gameSpeedMultiplier;
+  bool playerShot = false, targetShot = false;
 };
 
 using play_state_ptr = std::unique_ptr<play_state>;

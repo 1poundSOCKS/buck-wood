@@ -1,6 +1,6 @@
 #include "game_sound.h"
 
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState, const game_events& events)
+void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
 {
   DWORD bufferStatus = 0;
 
@@ -19,7 +19,7 @@ void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState,
   }
 }
 
-void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState, const game_events& events)
+void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
 {
   DWORD bufferStatus = 0;
 
@@ -47,17 +47,17 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState,
         soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
       }
     }
+  }
 
-    if( events.playerShot )
-    {
-      soundBuffers.shoot->buffer->SetCurrentPosition(0);
-      soundBuffers.shoot->buffer->Play(0, 0, 0);
-    }
+  if( playState.playerShot )
+  {
+    soundBuffers.shoot->buffer->SetCurrentPosition(0);
+    soundBuffers.shoot->buffer->Play(0, 0, 0);
+  }
 
-    if( events.targetShot )
-    {
-      soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
-      soundBuffers.targetActivated->buffer->Play(0, 0, 0);
-    }
+  if( playState.targetShot )
+  {
+    soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
+    soundBuffers.targetActivated->buffer->Play(0, 0, 0);
   }
 }

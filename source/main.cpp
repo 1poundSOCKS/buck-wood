@@ -129,7 +129,7 @@ template<class T> screen_type RunApp(d2d_app& app, T& state, sound_buffers& soun
 
   UpdateSystemTimer(*app.timer);
 
-  // UpdateSound(soundBuffers, state, *events);
+  UpdateSound(soundBuffers, state);
 
   app.previousControlState = std::move(app.controlState);
 

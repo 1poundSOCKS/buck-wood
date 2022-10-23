@@ -21,7 +21,7 @@ screen_type UpdateState(play_state& playState, const control_state& controlState
 {
   playState.totalTicks = timer.totalTicks;
 
-  game_events_ptr events = std::make_shared<game_events>();
+  playState.playerShot = playState.targetShot = false;
 
   if( controlState.quitPress ) return screen_menu;
 
@@ -32,7 +32,10 @@ screen_type UpdateState(play_state& playState, const control_state& controlState
     else return screen_menu;
   }
 
-  if( playState.playerState == play_state::player_dead ) return screen_play;
+  if( playState.playerState == play_state::player_dead )
+  {
+    return screen_play;
+  }
 
   if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
   {
@@ -87,7 +90,7 @@ screen_type UpdateState(play_state& playState, const control_state& controlState
     }
     
     UpdatePlayer(playState, controlState, timer);
-    UpdateBullets(playState, controlState, *events, timer);
+    UpdateBullets(playState, controlState, timer);
 
     playState.levelState = GetLevelState(playState);
     if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
@@ -174,7 +177,7 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateBullets(play_state& playState, const control_state& controlState, game_events& events, const system_timer& timer)
+void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * play_state::gameSpeedMultiplier;
 
@@ -200,7 +203,7 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
       newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
       playState.bullets.push_front(std::move(newBullet));
 
-      events.playerShot = true;
+      playState.playerShot = true;
       playState.lastShotTicks = timer.totalTicks;
     }
   }
@@ -227,7 +230,7 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
         if( target->state == target::DEACTIVATED )
         {
           target->state = target::ACTIVATED;
-          events.targetShot = true;
+          playState.targetShot = true;
         }
       }
     }
@@ -235,26 +238,3 @@ void UpdateBullets(play_state& playState, const control_state& controlState, gam
   
   playState.bullets.remove_if(BulletHasExpired);
 }
-
-// void ResetPlayState(play_state& playState, const system_timer& timer, const game_data_ptr& gameData)
-// {
-//   playState.state = play_state::state_playing;
-  
-//   playState.totalTicks = timer.totalTicks;
-//   playState.ticksPerSecond = timer.ticksPerSecond;
-//   playState.levelTimerStart = timer.totalTicks;
-//   playState.lastShotTicks = timer.totalTicks;
-
-//   playState.gameData = gameData;
-//   playState.currentLevelDataIterator = gameData->begin();
-//   const game_level_data_ptr& levelData = *playState.currentLevelDataIterator;
-//   playState.currentLevel = std::make_shared<game_level>(*levelData);
-//   playState.levelState = play_state::level_incomplete;
-
-//   playState.player = CreatePlayerShip();
-//   playState.player->xPos = playState.currentLevel->playerStartPosX;
-//   playState.player->yPos = playState.currentLevel->playerStartPosY;
-//   playState.playerState = play_state::player_alive;
-
-//   playState.bullets.clear();
-// }
