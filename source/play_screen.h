@@ -1,12 +1,17 @@
-#ifndef _state_objects_
-#define _state_objects_
+#ifndef _play_screen_
+#define _play_screen_
 
-#include "game_math.h"
-#include "game_level.h"
-#include "control_state.h"
+#define UNICODE
+
+#include <memory>
+#include <list>
+
+#include "type_defs.h"
 #include "system_timer.h"
-#include "game_events.h"
-#include "level_editor.h"
+#include "game_level.h"
+#include "d2d_frame.h"
+#include "control_state.h"
+#include "sound_buffers.h"
 
 using game_data = std::list<game_level_data_ptr>;
 using game_data_ptr = std::shared_ptr<game_data>;
@@ -49,14 +54,8 @@ struct play_state
 
 using play_state_ptr = std::unique_ptr<play_state>;
 
-struct game_state
-{
-  game_state();
-
-  bool starting = true;
-  bool running = true;
-};
-
-using game_state_ptr = std::unique_ptr<game_state>;
+void RenderFrame(const d2d_frame& frame, play_state& playState);
+screen_type UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState);
 
 #endif

@@ -1,20 +1,101 @@
-#include "state_functions.h"
+#include "play_screen.h"
+#include "render.h"
+#include "game_math.h"
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
-screen_type UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
+D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState);
+void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer);
+bool PlayerIsOutOfBounds(const play_state& playState);
+play_state::LEVEL_STATE GetLevelState(const play_state& playState);
+
+play_state::play_state(const system_timer& timer, const game_data_ptr& gameDataPtr) : gameData(gameDataPtr)
 {
-  if( gameState.starting )
+  state = play_state::state_playing;
+  
+  totalTicks = timer.totalTicks;
+  ticksPerSecond = timer.ticksPerSecond;
+  levelTimerStart = timer.totalTicks;
+  lastShotTicks = timer.totalTicks;
+
+  currentLevelDataIterator = gameData->begin();
+  const game_level_data_ptr& levelData = *currentLevelDataIterator;
+  currentLevel = std::make_shared<game_level>(*levelData);
+
+  player = CreatePlayerShip();
+  player->xPos = currentLevel->playerStartPosX;
+  player->yPos = currentLevel->playerStartPosY;
+}
+
+void RenderFrame(const d2d_frame& frame, play_state& playState)
+{
+  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+  auto& currentLevel = *playState.currentLevel;
+
+  auto levelTransform = CreateLevelTransform(frame.renderTarget, playState);
+
+  RenderLevel(currentLevel, frame, levelTransform);
+
+  RenderPlayer(*playState.player, frame, levelTransform);
+
+  for( const std::unique_ptr<bullet>& bullet : playState.bullets )
   {
-    gameState.starting = false;
-    return screen_menu;
+    RenderBullet(*bullet, frame, levelTransform);
   }
 
-  if( controlState.quitPress ) return screen_none;
+  if( playState.state == play_state::state_levelend )
+  {
+    std::wstring text = L"LEVEL COMPLETE";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  }
+  else if( playState.state == play_state::state_complete )
+  {
+    std::wstring text = L"F*CK YEAH";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  }
+  else if( playState.playerState == play_state::player_dead )
+  {
+    std::wstring text = L"YOU LOSE";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  }
 
-  if( controlState.startGame ) return screen_play;
+  RenderTimer(frame, playState.levelTimeRemaining);
 
-  return screen_menu;
+  if( levelTransform.Invert() )
+  {
+    D2D1_POINT_2F inPoint;
+    inPoint.x = frame.renderTargetMouseX;
+    inPoint.y = frame.renderTargetMouseY;
+    D2D1_POINT_2F outPoint = levelTransform.TransformPoint(inPoint);
+    playState.levelMouseX = outPoint.x;
+    playState.levelMouseY = outPoint.y;
+  }
+}
+
+D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState)
+{
+  float playerPosX = playState.player->xPos;
+  float playerPosY = playState.player->yPos;
+
+  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
+
+  float shiftX = renderTargetSize.width / 2 - playerPosX;
+  float shiftY = renderTargetSize.height / 2 - playerPosY;
+  
+  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(shiftX, shiftY);
+  
+  return matrixShift;
 }
 
 screen_type UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
@@ -237,4 +318,47 @@ void UpdateBullets(play_state& playState, const control_state& controlState, con
   }
   
   playState.bullets.remove_if(BulletHasExpired);
+}
+
+void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
+{
+  DWORD bufferStatus = 0;
+
+  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
+  {
+    if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
+  }
+
+  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
+  {
+    if( bufferStatus & DSBSTATUS_PLAYING )
+    {
+      if( !playState.player->thrusterOn ||
+          playState.playerState == play_state::player_dead ||
+          playState.levelState == play_state::level_complete )
+      {
+        soundBuffers.thrust->buffer->Stop();
+      }
+    }
+    else
+    {
+      if( playState.player->thrusterOn )
+      {
+        soundBuffers.thrust->buffer->SetCurrentPosition(0);
+        soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
+      }
+    }
+  }
+
+  if( playState.playerShot )
+  {
+    soundBuffers.shoot->buffer->SetCurrentPosition(0);
+    soundBuffers.shoot->buffer->Play(0, 0, 0);
+  }
+
+  if( playState.targetShot )
+  {
+    soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
+    soundBuffers.targetActivated->buffer->Play(0, 0, 0);
+  }
 }

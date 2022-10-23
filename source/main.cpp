@@ -6,14 +6,15 @@
 #include <math.h>
 #include <filesystem>
 
+#include "type_defs.h"
 #include "math.h"
 #include "d2d_app.h"
 #include "render.h"
 #include "control_state.h"
 #include "game_level.h"
 #include "data_files.h"
-#include "game_sound.h"
-#include "state_functions.h"
+#include "main_menu_screen.h"
+#include "play_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
