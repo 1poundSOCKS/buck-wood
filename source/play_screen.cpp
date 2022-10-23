@@ -98,38 +98,40 @@ D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& r
   return matrixShift;
 }
 
-screen_type UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
+void UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
   playState.totalTicks = timer.totalTicks;
 
   playState.playerShot = playState.targetShot = false;
 
-  if( controlState.quitPress ) return screen_menu;
+  if( controlState.quitPress )
+  {
+    playState.returnToMenu = true;
+    return;
+  }
 
   if( playState.state == play_state::state_complete )
   {
     float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
-    if( timeInSeconds < 6 ) return screen_play;
-    else return screen_menu;
+    if( timeInSeconds < 5 ) return;
+    playState.returnToMenu = true;
+    return;
   }
 
-  if( playState.playerState == play_state::player_dead )
-  {
-    return screen_play;
-  }
+  if( playState.playerState == play_state::player_dead ) return;
 
   if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
   {
     playState.state = play_state::state_levelend;
     playState.levelEndTickCount = timer.totalTicks;
-    return screen_play;
+    return;
   }
 
   if( playState.state == play_state::state_levelend )
   {
     float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
     
-    if( timeInSeconds < 3 ) return screen_play;
+    if( timeInSeconds < 3 ) return;
 
     playState.currentLevelDataIterator++;
     
@@ -153,50 +155,46 @@ screen_type UpdateState(play_state& playState, const control_state& controlState
     {
       playState.state = play_state::state_complete;
     }
-    return screen_play;
+    return;
   }
 
-  if( playState.state == play_state::state_playing )
+  if( playState.state != play_state::state_playing ) return;
+
+  float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
+    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
+    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
+
+  playState.levelTimeRemaining = max(0, playState.currentLevel->timeLimitInSeconds - levelTimerInSeconds);
+
+  if( playState.levelTimeRemaining == 0 )
   {
-    float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
-      GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
-      GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
+    playState.playerState = play_state::player_dead;
+    return;
+  }
+  
+  UpdatePlayer(playState, controlState, timer);
+  UpdateBullets(playState, controlState, timer);
 
-    playState.levelTimeRemaining = max(0, playState.currentLevel->timeLimitInSeconds - levelTimerInSeconds);
+  playState.levelState = GetLevelState(playState);
+  if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
 
-    if( playState.levelTimeRemaining == 0 )
-    {
-      playState.playerState = play_state::player_dead;
-      return screen_play;
-    }
-    
-    UpdatePlayer(playState, controlState, timer);
-    UpdateBullets(playState, controlState, timer);
+  std::list<game_point> transformedPoints;
+  TransformPlayerShip(*playState.player, transformedPoints);
 
-    playState.levelState = GetLevelState(playState);
-    if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
-
-    std::list<game_point> transformedPoints;
-    TransformPlayerShip(*playState.player, transformedPoints);
-
-    if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
+  if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
+  {
+    playState.playerState = play_state::player_dead;
+    playState.levelTimerStop = timer.totalTicks;
+  }
+  
+  for( const auto& shape : playState.currentLevel->objects)
+  {
+    if( PointInside(transformedPoints, *shape) )
     {
       playState.playerState = play_state::player_dead;
       playState.levelTimerStop = timer.totalTicks;
     }
-    
-    for( const auto& shape : playState.currentLevel->objects)
-    {
-      if( PointInside(transformedPoints, *shape) )
-      {
-        playState.playerState = play_state::player_dead;
-        playState.levelTimerStop = timer.totalTicks;
-      }
-    }
-    return screen_play;
   }
-
-  return screen_play;
 }
 
 play_state::LEVEL_STATE GetLevelState(const play_state& playState)

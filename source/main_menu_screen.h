@@ -16,12 +16,14 @@ struct game_state
 
   bool starting = true;
   bool running = true;
+  bool startPlay = false;
+  bool quit = false;
 };
 
 using game_state_ptr = std::unique_ptr<game_state>;
 
 void RenderFrame(const d2d_frame& frame, game_state& gameState);
-screen_type UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer);
+void UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState);
 
 #endif

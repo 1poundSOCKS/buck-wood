@@ -33,7 +33,7 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> screen_type RunApp(d2d_app& app, T& gameState, sound_buffers& soundBuffers);
+template<class T> void RunApp(d2d_app& app, T& gameState, sound_buffers& soundBuffers);
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
@@ -67,11 +67,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-  screen_type currentScreen = screen_menu;
-  screen_type nextScreen = currentScreen;
-
   game_state_ptr gameStatePtr = std::make_unique<game_state>();
   play_state_ptr playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
+
+  screen_type currentScreen = screen_menu;
 
   MSG msg;
   while (ProcessMessage(&msg))
@@ -81,30 +80,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     switch( currentScreen )
     {
     case screen_menu:
-      nextScreen = RunApp(*app, *gameStatePtr, *soundBuffers);
+      RunApp(*app, *gameStatePtr, *soundBuffers);
+      if( gameStatePtr->startPlay )
+      {
+        playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
+        currentScreen = screen_play;
+      }
+      else if( gameStatePtr->quit )
+      {
+        ::PostQuitMessage(0);
+        app->terminating = true;
+      }
       break;
     case screen_play:
-      nextScreen = RunApp(*app, *playStatePtr, *soundBuffers);
-      break;
-    }
-
-    if( nextScreen != currentScreen )
-    {
-      switch( nextScreen )
+      RunApp(*app, *playStatePtr, *soundBuffers);
+      if( playStatePtr->returnToMenu )
       {
-      case screen_play:
-        playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
-        break;
+        gameStatePtr->startPlay = false;
+        currentScreen = screen_menu;
       }
-      
-      currentScreen = nextScreen;
+      break;
     }
 	}
 
   return (int) msg.wParam;
 }
 
-template<class T> screen_type RunApp(d2d_app& app, T& state, sound_buffers& soundBuffers)
+template<class T> void RunApp(d2d_app& app, T& state, sound_buffers& soundBuffers)
 {
   std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
@@ -126,21 +128,13 @@ template<class T> screen_type RunApp(d2d_app& app, T& state, sound_buffers& soun
   FormatDiagnostics(diagnostics, state, *app.controlState, *app.perfData, *app.timer);
   RenderDiagnostics(*frame, diagnostics);
 
-  screen_type nextScreen = UpdateState(state, *app.controlState, *app.timer);
+  UpdateState(state, *app.controlState, *app.timer);
 
   UpdateSystemTimer(*app.timer);
 
   UpdateSound(soundBuffers, state);
 
   app.previousControlState = std::move(app.controlState);
-
-  if( nextScreen == screen_none )
-  {
-    ::PostQuitMessage(0);
-    app.terminating = true;
-  }
-
-  return nextScreen;
 }
 
 bool ProcessMessage(MSG* msg)

@@ -22,6 +22,8 @@ struct play_state
 
   static const float gameSpeedMultiplier;
 
+  bool returnToMenu = false;
+  
   enum STATE { state_playing, state_levelend, state_complete };
   STATE state = state_playing;
 
@@ -55,7 +57,7 @@ struct play_state
 using play_state_ptr = std::unique_ptr<play_state>;
 
 void RenderFrame(const d2d_frame& frame, play_state& playState);
-screen_type UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState);
 
 #endif

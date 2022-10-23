@@ -21,19 +21,24 @@ void RenderFrame(const d2d_frame& frame, game_state& gameState)
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-screen_type UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
+void UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
   if( gameState.starting )
   {
     gameState.starting = false;
-    return screen_menu;
+    return;
   }
 
-  if( controlState.quitPress ) return screen_none;
+  if( controlState.quitPress )
+  {
+    gameState.quit = true;
+    return;
+  }
 
-  if( controlState.startGame ) return screen_play;
-
-  return screen_menu;
+  if( controlState.startGame )
+  {
+    gameState.startPlay = true;
+  }
 }
 
 void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
