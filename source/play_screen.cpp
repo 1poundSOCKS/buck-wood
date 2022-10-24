@@ -17,7 +17,7 @@ void SetTimer(play_state& playState, const system_timer& timer, float timerInSec
 bool TimerExpired(play_state& playState, const system_timer& timer);
 D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState);
 
-play_state::play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndexPtr) : gameLevelDataIndexPtr(gameLevelDataIndexPtr)
+play_state::play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
 {
   state = play_state::state_playing;
   
@@ -26,8 +26,8 @@ play_state::play_state(const system_timer& timer, const game_level_data_index_pt
   levelTimerStart = timer.totalTicks;
   lastShotTicks = timer.totalTicks;
 
-  currentLevelDataIterator = gameLevelDataIndexPtr->begin();
-  const game_level_data_ptr& levelData = *currentLevelDataIterator;
+  currentLevelDataIterator = gameLevelDataIndex->begin();
+  auto levelData = *currentLevelDataIterator;
   currentLevel = std::make_shared<game_level>(*levelData);
 
   player = CreatePlayerShip();
@@ -234,7 +234,7 @@ void OnLevelComplete(play_state& playState, const control_state& controlState, c
 {
   playState.currentLevelDataIterator++;
   
-  if( playState.currentLevelDataIterator == playState.gameLevelDataIndexPtr->end() )
+  if( playState.currentLevelDataIterator == playState.gameLevelDataIndex->end() )
   {
     playState.state = play_state::state_game_complete;
     SetTimer(playState, timer, 3);
@@ -396,6 +396,7 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
     if( bufferStatus & DSBSTATUS_PLAYING )
     {
       if( !playState.player->thrusterOn ||
+          playState.state == play_state::state_paused ||
           playState.state == play_state::state_player_dead ||
           playState.state == play_state::state_game_complete ||
           playState.state == play_state::state_level_complete )
