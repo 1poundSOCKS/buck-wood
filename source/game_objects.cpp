@@ -187,8 +187,7 @@ game_level_data_ptr LoadLevelDataFromJSON(const level_data_json& jsonData)
     Json::Value target = jsonData.targets[i];
     int x = target["x"].asInt();
     int y = target["y"].asInt();
-    game_point point(x, y);
-    levelData->targets.push_back(point);
+    levelData->targets.push_back(game_point(x, y));
   }
 
   return levelData;
@@ -199,7 +198,7 @@ game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonOb
   game_level_object_data_ptr objectDataPtr = std::make_unique<game_level_object_data>();
 
   objectDataPtr->x = jsonObject["x"].asFloat();
-  objectDataPtr->y = jsonObject["x"].asFloat();
+  objectDataPtr->y = jsonObject["y"].asFloat();
 
   Json::Value objectPoints = jsonObject["points"];
   Json::ArrayIndex objectPointCount = objectPoints.size();
