@@ -71,10 +71,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     if( app->terminating ) continue;
 
     RenderFrameAndUpdateState(*app, *menuScreenState, *soundBuffers);
+
     if( menuScreenState->quit )
     {
       ::PostQuitMessage(0);
       app->terminating = true;
+      continue;
     }
 
     if( menuScreenState->startPlay )
