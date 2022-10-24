@@ -8,7 +8,9 @@ D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& r
 void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer);
 bool PlayerIsOutOfBounds(const play_state& playState);
-play_state::LEVEL_STATE GetLevelState(const play_state& playState);
+bool LevelIsComplete(const play_state& playState);
+void SetTimer(play_state& playState, const system_timer& timer, float timerInSeconds);
+bool TimerExpired(play_state& playState, const system_timer& timer);
 
 play_state::play_state(const system_timer& timer, const game_data_ptr& gameDataPtr) : gameData(gameDataPtr)
 {
@@ -45,7 +47,7 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     RenderBullet(*bullet, frame, levelTransform);
   }
 
-  if( playState.state == play_state::state_levelend )
+  if( playState.state == play_state::state_level_complete )
   {
     std::wstring text = L"LEVEL COMPLETE";
     D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -53,7 +55,7 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
-  else if( playState.state == play_state::state_complete )
+  else if( playState.state == play_state::state_game_complete )
   {
     std::wstring text = L"F*CK YEAH";
     D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -61,7 +63,7 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
   }
-  else if( playState.playerState == play_state::player_dead )
+  else if( playState.state == play_state::state_player_dead )
   {
     std::wstring text = L"YOU LOSE";
     D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -101,7 +103,6 @@ D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& r
 void UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
   playState.totalTicks = timer.totalTicks;
-
   playState.playerShot = playState.targetShot = false;
 
   if( controlState.quitPress )
@@ -110,58 +111,38 @@ void UpdateState(play_state& playState, const control_state& controlState, const
     return;
   }
 
-  if( playState.state == play_state::state_complete )
+   if( !TimerExpired(playState, timer) ) return;
+
+  if( playState.state == play_state::state_game_complete || 
+      playState.state == play_state::state_player_dead )
   {
-    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
-    if( timeInSeconds < 5 ) return;
     playState.returnToMenu = true;
     return;
   }
 
-  if( playState.playerState == play_state::player_dead )
+  if( playState.state == play_state::state_level_complete )
   {
-    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
-    if( timeInSeconds < 3 ) return;
-    playState.returnToMenu = true;
-    return;
-  }
-
-  if( playState.state == play_state::state_playing && playState.levelState == play_state::level_complete )
-  {
-    playState.state = play_state::state_levelend;
-    playState.levelEndTickCount = timer.totalTicks;
-    return;
-  }
-
-  if( playState.state == play_state::state_levelend )
-  {
-    float timeInSeconds = GetElapsedTimeInSeconds(playState.levelEndTickCount, timer.totalTicks, timer.ticksPerSecond);
-    
-    if( timeInSeconds < 3 ) return;
-
     playState.currentLevelDataIterator++;
     
-    if( playState.currentLevelDataIterator != playState.gameData->end() )
+    if( playState.currentLevelDataIterator == playState.gameData->end() )
     {
-      playState.levelTimerStart = timer.totalTicks;
-      playState.levelTimerStop = 0;
-      playState.lastShotTicks = timer.totalTicks;
-      game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
-      playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
-      playState.levelState = play_state::level_incomplete;
-
-      playState.player = CreatePlayerShip();
-      playState.player->xPos = playState.currentLevel->playerStartPosX;
-      playState.player->yPos = playState.currentLevel->playerStartPosY;
-
-      playState.bullets.clear();
-      playState.state = play_state::state_playing;
+      playState.state = play_state::state_game_complete;
+      SetTimer(playState, timer, 3);
+      return;
     }
-    else
-    {
-      playState.state = play_state::state_complete;
-    }
-    return;
+
+    playState.levelTimerStart = timer.totalTicks;
+    playState.levelTimerStop = 0;
+    playState.lastShotTicks = timer.totalTicks;
+    game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
+    playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
+
+    playState.player = CreatePlayerShip();
+    playState.player->xPos = playState.currentLevel->playerStartPosX;
+    playState.player->yPos = playState.currentLevel->playerStartPosY;
+
+    playState.bullets.clear();
+    playState.state = play_state::state_playing;
   }
 
   if( playState.state != play_state::state_playing ) return;
@@ -174,39 +155,49 @@ void UpdateState(play_state& playState, const control_state& controlState, const
 
   if( playState.levelTimeRemaining == 0 )
   {
-    playState.playerState = play_state::player_dead;
-    playState.levelEndTickCount = timer.totalTicks;
+    playState.state = play_state::state_player_dead;
+    playState.pauseTickCount = timer.totalTicks;
+    playState.pauseTimeInSeconds = 3;
     return;
   }
   
   UpdatePlayer(playState, controlState, timer);
   UpdateBullets(playState, controlState, timer);
 
-  playState.levelState = GetLevelState(playState);
-  if( playState.levelState == play_state::level_complete ) playState.levelTimerStop = timer.totalTicks;
+  if( LevelIsComplete(playState) )
+  {
+    playState.levelTimerStop = timer.totalTicks;
+    playState.state = play_state::state_level_complete;
+    SetTimer(playState, timer, 3);
+    return;
+  }
 
   std::list<game_point> transformedPoints;
   TransformPlayerShip(*playState.player, transformedPoints);
 
   if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
-    playState.playerState = play_state::player_dead;
-    playState.levelEndTickCount = timer.totalTicks;
+    playState.state = play_state::state_player_dead;
     playState.levelTimerStop = timer.totalTicks;
+    playState.pauseTickCount = timer.totalTicks;
+    playState.pauseTimeInSeconds = 3;
+    return;
   }
   
   for( const auto& shape : playState.currentLevel->objects)
   {
     if( PointInside(transformedPoints, *shape) )
     {
-      playState.playerState = play_state::player_dead;
-      playState.levelEndTickCount = timer.totalTicks;
+      playState.state = play_state::state_player_dead;
       playState.levelTimerStop = timer.totalTicks;
+      playState.pauseTickCount = timer.totalTicks;
+      playState.pauseTimeInSeconds = 3;
+      return;
     }
   }
 }
 
-play_state::LEVEL_STATE GetLevelState(const play_state& playState)
+bool LevelIsComplete(const play_state& playState)
 {
   int activatedTargetCount = 0;
   for( const auto& target: playState.currentLevel->targets )
@@ -214,9 +205,19 @@ play_state::LEVEL_STATE GetLevelState(const play_state& playState)
     if( target->state == target::ACTIVATED ) activatedTargetCount++;
   }
 
-  if( activatedTargetCount == playState.currentLevel->targets.size() ) return play_state::level_complete;
-  
-  return play_state::level_incomplete;
+  return activatedTargetCount == playState.currentLevel->targets.size();
+}
+
+void SetTimer(play_state& playState, const system_timer& timer, float timerInSeconds)
+{
+  playState.pauseTickCount = timer.totalTicks;
+  playState.pauseTimeInSeconds = 3;
+}
+
+bool TimerExpired(play_state& playState, const system_timer& timer)
+{
+  float timeInSeconds = GetElapsedTimeInSeconds(playState.pauseTickCount, timer.totalTicks, timer.ticksPerSecond);
+  return timeInSeconds >= playState.pauseTimeInSeconds;
 }
 
 bool PlayerIsOutOfBounds(const play_state& playState)
@@ -341,8 +342,9 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
     if( bufferStatus & DSBSTATUS_PLAYING )
     {
       if( !playState.player->thrusterOn ||
-          playState.playerState == play_state::player_dead ||
-          playState.levelState == play_state::level_complete )
+          playState.state == play_state::state_player_dead ||
+          playState.state == play_state::state_game_complete ||
+          playState.state == play_state::state_level_complete )
       {
         soundBuffers.thrust->buffer->Stop();
       }
