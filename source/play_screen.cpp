@@ -73,7 +73,7 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     D2D1_POINT_2F inPoint;
     inPoint.x = frame.renderTargetMouseX;
     inPoint.y = frame.renderTargetMouseY;
-    D2D1_POINT_2F outPoint = levelTransform.TransformPoint(inPoint);
+    auto outPoint = levelTransform.TransformPoint(inPoint);
     playState.levelMouseX = outPoint.x;
     playState.levelMouseY = outPoint.y;
   }
