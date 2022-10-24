@@ -14,6 +14,7 @@
 #include "data_files.h"
 #include "main_menu_screen.h"
 #include "play_screen.h"
+#include "level_edit_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
@@ -32,10 +33,10 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& gameState, sound_buffers& soundBuffers);
+template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file);
@@ -67,8 +68,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-  auto gameStatePtr = std::make_unique<game_state>();
-  auto playStatePtr = std::make_unique<play_state>(*app->timer, gameLevelDataIndexPtr);
+  auto menuScreenState = std::make_unique<game_state>();
+  auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
+  auto levelEditScreenState = std::make_unique<level_edit_screen_state>();
 
   auto currentScreen = screen_menu;
 
@@ -80,23 +82,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     switch( currentScreen )
     {
     case screen_menu:
-      RenderFrameAndUpdateState(*app, *gameStatePtr, *soundBuffers);
-      if( gameStatePtr->startPlay )
+      RenderFrameAndUpdateState(*app, *menuScreenState, *soundBuffers);
+      if( menuScreenState->startPlay )
       {
-        playStatePtr = std::make_unique<play_state>(*app->timer, gameLevelDataIndexPtr);
+        playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
         currentScreen = screen_play;
       }
-      else if( gameStatePtr->quit )
+      else if( menuScreenState->startLevelEdit )
+      {
+        currentScreen = screen_level_edit;
+      }
+      else if( menuScreenState->quit )
       {
         ::PostQuitMessage(0);
         app->terminating = true;
       }
       break;
     case screen_play:
-      RenderFrameAndUpdateState(*app, *playStatePtr, *soundBuffers);
-      if( playStatePtr->returnToMenu )
+      RenderFrameAndUpdateState(*app, *playScreenState, *soundBuffers);
+      if( playScreenState->returnToMenu )
       {
-        gameStatePtr->startPlay = false;
+        currentScreen = screen_menu;
+      }
+      break;
+    case screen_level_edit:
+      RenderFrameAndUpdateState(*app, *levelEditScreenState, *soundBuffers);
+      if( levelEditScreenState->returnToMenu )
+      {
         currentScreen = screen_menu;
       }
       break;
@@ -106,13 +118,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& state, sound_buffers& soundBuffers)
+template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
 {
   auto frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
   frame->renderTargetMouseY = app.previousControlState->renderTargetMouseY;
 
-  RenderFrame(*frame, state);
+  RenderFrame(*frame, screenState);
 
   app.mouseCursor->xPos = app.previousControlState->renderTargetMouseX;
   app.mouseCursor->yPos = app.previousControlState->renderTargetMouseY;
@@ -125,14 +137,14 @@ template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& state, sound_b
   UpdatePerformanceData(*app.perfData);
 
   std::list<std::wstring> diagnostics;
-  FormatDiagnostics(diagnostics, state, *app.controlState, *app.perfData, *app.timer);
+  FormatDiagnostics(diagnostics, screenState, *app.controlState, *app.perfData, *app.timer);
   RenderDiagnostics(*frame, diagnostics);
 
-  UpdateState(state, *app.controlState, *app.timer);
+  UpdateState(screenState, *app.controlState, *app.timer);
 
   UpdateSystemTimer(*app.timer);
 
-  UpdateSound(soundBuffers, state);
+  UpdateSound(soundBuffers, screenState);
 
   app.previousControlState = std::move(app.controlState);
 }
@@ -157,7 +169,7 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& g
   FormatDiagnostics(diagnostics, controlState, perfData, timer);
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_screen_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   FormatDiagnostics(diagnostics, controlState, perfData, timer);
 

@@ -25,6 +25,8 @@ void RenderFrame(const d2d_frame& frame, game_state& gameState)
 
 void UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
 {
+  gameState.startPlay = gameState.startLevelEdit = false;
+  
   if( gameState.starting )
   {
     gameState.starting = false;
@@ -40,6 +42,13 @@ void UpdateState(game_state& gameState, const control_state& controlState, const
   if( controlState.startGame )
   {
     gameState.startPlay = true;
+    return;
+  }
+
+  if( controlState.functionKey_1 )
+  {
+    gameState.startLevelEdit = true;
+    return;
   }
 }
 

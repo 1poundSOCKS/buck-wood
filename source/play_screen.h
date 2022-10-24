@@ -13,9 +13,9 @@
 #include "sound_buffers.h"
 #include "game_objects.h"
 
-struct play_state
+struct play_screen_state
 {
-  play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex);
+  play_screen_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex);
 
   bool returnToMenu = false;
   
@@ -41,10 +41,10 @@ struct play_state
   bool playerShot = false, targetShot = false;
 };
 
-using play_state_ptr = std::unique_ptr<play_state>;
+using play_screen_state_ptr = std::unique_ptr<play_screen_state>;
 
-void RenderFrame(const d2d_frame& frame, play_state& playState);
-void UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer);
-void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState);
+void RenderFrame(const d2d_frame& frame, play_screen_state& playState);
+void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& playState);
 
 #endif

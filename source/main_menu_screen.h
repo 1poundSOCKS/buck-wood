@@ -15,8 +15,9 @@ struct game_state
 
   bool starting = true;
   bool running = true;
-  bool startPlay = false;
   bool quit = false;
+  bool startPlay = false;
+  bool startLevelEdit = false;
 };
 
 using game_state_ptr = std::unique_ptr<game_state>;

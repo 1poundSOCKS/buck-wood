@@ -4,22 +4,22 @@
 
 const float gameSpeedMultiplier = 2.0f;
 
-void RenderGamePaused(const d2d_frame& frame, play_state& playState);
-void RenderLevelComplete(const d2d_frame& frame, play_state& playState);
-void RenderGameComplete(const d2d_frame& frame, play_state& playState);
-void RenderPlayerDead(const d2d_frame& frame, play_state& playState);
-void OnPlay(play_state& playState, const control_state& controlState, const system_timer& timer);
-void OnLevelComplete(play_state& playState, const control_state& controlState, const system_timer& timer);
-void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer);
-void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer);
-bool LevelIsComplete(const play_state& playState);
-void SetTimer(play_state& playState, const system_timer& timer, float timerInSeconds);
-bool TimerExpired(play_state& playState, const system_timer& timer);
-D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState);
+void RenderGamePaused(const d2d_frame& frame, play_screen_state& playState);
+void RenderLevelComplete(const d2d_frame& frame, play_screen_state& playState);
+void RenderGameComplete(const d2d_frame& frame, play_screen_state& playState);
+void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState);
+void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
+void OnLevelComplete(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
+void UpdateBullets(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
+bool LevelIsComplete(const play_screen_state& playState);
+void SetTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
+bool TimerExpired(play_screen_state& playState, const system_timer& timer);
+D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& playState);
 
-play_state::play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
+play_screen_state::play_screen_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
 {
-  state = play_state::state_playing;
+  state = play_screen_state::state_playing;
   
   totalTicks = timer.totalTicks;
   ticksPerSecond = timer.ticksPerSecond;
@@ -35,7 +35,7 @@ play_state::play_state(const system_timer& timer, const game_level_data_index_pt
   player->yPos = currentLevel->playerStartPosY;
 }
 
-void RenderFrame(const d2d_frame& frame, play_state& playState)
+void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -52,16 +52,16 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
 
   switch( playState.state )
   {
-    case play_state::state_paused:
+    case play_screen_state::state_paused:
       RenderGamePaused(frame, playState);
       break;
-    case play_state::state_level_complete:
+    case play_screen_state::state_level_complete:
       RenderLevelComplete(frame, playState);
       break;
-    case play_state::state_game_complete:
+    case play_screen_state::state_game_complete:
       RenderGameComplete(frame, playState);
       break;
-    case play_state::state_player_dead:
+    case play_screen_state::state_player_dead:
       RenderPlayerDead(frame, playState);
       break;
   }
@@ -79,7 +79,7 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
   }
 }
 
-void RenderGamePaused(const d2d_frame& frame, play_state& playState)
+void RenderGamePaused(const d2d_frame& frame, play_screen_state& playState)
 {
   std::wstring text = L"PAUSED";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -88,7 +88,7 @@ void RenderGamePaused(const d2d_frame& frame, play_state& playState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-void RenderLevelComplete(const d2d_frame& frame, play_state& playState)
+void RenderLevelComplete(const d2d_frame& frame, play_screen_state& playState)
 {
   std::wstring text = L"LEVEL COMPLETE";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -97,7 +97,7 @@ void RenderLevelComplete(const d2d_frame& frame, play_state& playState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-void RenderGameComplete(const d2d_frame& frame, play_state& playState)
+void RenderGameComplete(const d2d_frame& frame, play_screen_state& playState)
 {
   std::wstring text = L"F*CK YEAH";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -106,7 +106,7 @@ void RenderGameComplete(const d2d_frame& frame, play_state& playState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-void RenderPlayerDead(const d2d_frame& frame, play_state& playState)
+void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
 {
   std::wstring text = L"YOU LOSE";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -115,7 +115,7 @@ void RenderPlayerDead(const d2d_frame& frame, play_state& playState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState)
+D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& playState)
 {
   float playerPosX = playState.player->xPos;
   float playerPosY = playState.player->yPos;
@@ -130,12 +130,13 @@ D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& r
   return matrixShift;
 }
 
-void UpdateState(play_state& playState, const control_state& controlState, const system_timer& timer)
+void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
+  playState.returnToMenu = false;
   playState.totalTicks = timer.totalTicks;
   playState.playerShot = playState.targetShot = false;
 
-  if( playState.state == play_state::state_paused )
+  if( playState.state == play_screen_state::state_paused )
   {
     if( controlState.quitPress )
     {
@@ -145,18 +146,18 @@ void UpdateState(play_state& playState, const control_state& controlState, const
 
     if( controlState.startGame )
     {
-      playState.state = play_state::state_playing;
+      playState.state = play_screen_state::state_playing;
       return;
     }
   }
   
   if( !TimerExpired(playState, timer) ) return;
 
-  if( playState.state == play_state::state_playing )
+  if( playState.state == play_screen_state::state_playing )
   {
     if( controlState.quitPress )
     {
-      playState.state = play_state::state_paused;
+      playState.state = play_screen_state::state_paused;
       return;
     }
 
@@ -164,21 +165,21 @@ void UpdateState(play_state& playState, const control_state& controlState, const
     return;
   }
 
-  if( playState.state == play_state::state_game_complete || 
-      playState.state == play_state::state_player_dead )
+  if( playState.state == play_screen_state::state_game_complete || 
+      playState.state == play_screen_state::state_player_dead )
   {
     playState.returnToMenu = true;
     return;
   }
 
-  if( playState.state == play_state::state_level_complete )
+  if( playState.state == play_screen_state::state_level_complete )
   {
     OnLevelComplete(playState, controlState, timer);
     return;
   }
 }
 
-void OnPlay(play_state& playState, const control_state& controlState, const system_timer& timer)
+void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
     GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
@@ -188,7 +189,7 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
 
   if( playState.levelTimeRemaining == 0 )
   {
-    playState.state = play_state::state_player_dead;
+    playState.state = play_screen_state::state_player_dead;
     playState.pauseTickCount = timer.totalTicks;
     playState.pauseTimeInSeconds = 3;
     return;
@@ -200,7 +201,7 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
   if( LevelIsComplete(playState) )
   {
     playState.levelTimerStop = timer.totalTicks;
-    playState.state = play_state::state_level_complete;
+    playState.state = play_screen_state::state_level_complete;
     SetTimer(playState, timer, 3);
     return;
   }
@@ -210,7 +211,7 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
 
   if( !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
-    playState.state = play_state::state_player_dead;
+    playState.state = play_screen_state::state_player_dead;
     playState.levelTimerStop = timer.totalTicks;
     playState.pauseTickCount = timer.totalTicks;
     playState.pauseTimeInSeconds = 3;
@@ -221,7 +222,7 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
   {
     if( PointInside(transformedPoints, *shape) )
     {
-      playState.state = play_state::state_player_dead;
+      playState.state = play_screen_state::state_player_dead;
       playState.levelTimerStop = timer.totalTicks;
       playState.pauseTickCount = timer.totalTicks;
       playState.pauseTimeInSeconds = 3;
@@ -230,13 +231,13 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
   }
 }
 
-void OnLevelComplete(play_state& playState, const control_state& controlState, const system_timer& timer)
+void OnLevelComplete(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   playState.currentLevelDataIterator++;
   
   if( playState.currentLevelDataIterator == playState.gameLevelDataIndex->end() )
   {
-    playState.state = play_state::state_game_complete;
+    playState.state = play_screen_state::state_game_complete;
     SetTimer(playState, timer, 3);
     return;
   }
@@ -252,10 +253,10 @@ void OnLevelComplete(play_state& playState, const control_state& controlState, c
   playState.player->yPos = playState.currentLevel->playerStartPosY;
 
   playState.bullets.clear();
-  playState.state = play_state::state_playing;
+  playState.state = play_screen_state::state_playing;
 }
 
-bool LevelIsComplete(const play_state& playState)
+bool LevelIsComplete(const play_screen_state& playState)
 {
   int activatedTargetCount = 0;
   for( const auto& target: playState.currentLevel->targets )
@@ -266,19 +267,19 @@ bool LevelIsComplete(const play_state& playState)
   return activatedTargetCount == playState.currentLevel->targets.size();
 }
 
-void SetTimer(play_state& playState, const system_timer& timer, float timerInSeconds)
+void SetTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds)
 {
   playState.pauseTickCount = timer.totalTicks;
   playState.pauseTimeInSeconds = 3;
 }
 
-bool TimerExpired(play_state& playState, const system_timer& timer)
+bool TimerExpired(play_screen_state& playState, const system_timer& timer)
 {
   float timeInSeconds = GetElapsedTimeInSeconds(playState.pauseTickCount, timer.totalTicks, timer.ticksPerSecond);
   return timeInSeconds >= playState.pauseTimeInSeconds;
 }
 
-void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer)
+void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 80.0f;
@@ -323,7 +324,7 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer)
+void UpdateBullets(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
@@ -382,7 +383,7 @@ void UpdateBullets(play_state& playState, const control_state& controlState, con
   playState.bullets.remove_if(BulletHasExpired);
 }
 
-void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
+void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& playState)
 {
   DWORD bufferStatus = 0;
 
@@ -396,10 +397,10 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_state& playState)
     if( bufferStatus & DSBSTATUS_PLAYING )
     {
       if( !playState.player->thrusterOn ||
-          playState.state == play_state::state_paused ||
-          playState.state == play_state::state_player_dead ||
-          playState.state == play_state::state_game_complete ||
-          playState.state == play_state::state_level_complete )
+          playState.state == play_screen_state::state_paused ||
+          playState.state == play_screen_state::state_player_dead ||
+          playState.state == play_screen_state::state_game_complete ||
+          playState.state == play_screen_state::state_level_complete )
       {
         soundBuffers.thrust->buffer->Stop();
       }
