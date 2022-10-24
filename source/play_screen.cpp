@@ -4,6 +4,7 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
+void RenderGamePaused(const d2d_frame& frame, play_state& playState);
 void RenderLevelComplete(const d2d_frame& frame, play_state& playState);
 void RenderGameComplete(const d2d_frame& frame, play_state& playState);
 void RenderPlayerDead(const d2d_frame& frame, play_state& playState);
@@ -51,6 +52,9 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
 
   switch( playState.state )
   {
+    case play_state::state_paused:
+      RenderGamePaused(frame, playState);
+      break;
     case play_state::state_level_complete:
       RenderLevelComplete(frame, playState);
       break;
@@ -73,6 +77,15 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     playState.levelMouseX = outPoint.x;
     playState.levelMouseY = outPoint.y;
   }
+}
+
+void RenderGamePaused(const d2d_frame& frame, play_state& playState)
+{
+  std::wstring text = L"PAUSED";
+  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
 void RenderLevelComplete(const d2d_frame& frame, play_state& playState)
@@ -122,16 +135,31 @@ void UpdateState(play_state& playState, const control_state& controlState, const
   playState.totalTicks = timer.totalTicks;
   playState.playerShot = playState.targetShot = false;
 
-  if( controlState.quitPress )
+  if( playState.state == play_state::state_paused )
   {
-    playState.returnToMenu = true;
-    return;
-  }
+    if( controlState.quitPress )
+    {
+      playState.returnToMenu = true;
+      return;
+    }
 
+    if( controlState.startGame )
+    {
+      playState.state = play_state::state_playing;
+      return;
+    }
+  }
+  
   if( !TimerExpired(playState, timer) ) return;
 
   if( playState.state == play_state::state_playing )
   {
+    if( controlState.quitPress )
+    {
+      playState.state = play_state::state_paused;
+      return;
+    }
+
     OnPlay(playState, controlState, timer);
     return;
   }

@@ -24,7 +24,7 @@ struct play_state
 
   bool returnToMenu = false;
   
-  enum STATE { state_playing, state_level_complete, state_game_complete, state_player_dead };
+  enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
   game_data_ptr gameData;
