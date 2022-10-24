@@ -66,22 +66,3 @@ int GetWavFileDataSize(const wav_file_data& wavFileData)
 {
   return wavFileData.data->size;
 }
-
-level_data_json::level_data_json(const wchar_t* filename)
-{
-  std::ifstream ifs(filename);
-  Json::Reader reader;
-  reader.parse(ifs, root);
-  name = root["name"].asString();
-  width = root["width"].asInt();
-  height = root["height"].asInt();
-  playerStartPosX = root["playerStartPosX"].asInt();
-  playerStartPosY = root["playerStartPosY"].asInt();
-  timeLimitInSeconds = root["timeLimitInSeconds"].asInt();
-  boundaryPoints = root["boundaryPoints"];
-  boundaryPointCount = boundaryPoints.size();
-  objects = root["objects"];
-  objectCount = objects.size();
-  targets = root["targets"];
-  targetCount = targets.size();
-}

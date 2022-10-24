@@ -8,7 +8,6 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
 void OnLevelComplete(play_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer);
-bool PlayerIsOutOfBounds(const play_state& playState);
 bool LevelIsComplete(const play_state& playState);
 void SetTimer(play_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_state& playState, const system_timer& timer);
@@ -165,7 +164,7 @@ void OnPlay(play_state& playState, const control_state& controlState, const syst
   std::list<game_point> transformedPoints;
   TransformPlayerShip(*playState.player, transformedPoints);
 
-  if( PlayerIsOutOfBounds(playState) || !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
+  if( !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.state = play_state::state_player_dead;
     playState.levelTimerStop = timer.totalTicks;
@@ -233,11 +232,6 @@ bool TimerExpired(play_state& playState, const system_timer& timer)
 {
   float timeInSeconds = GetElapsedTimeInSeconds(playState.pauseTickCount, timer.totalTicks, timer.ticksPerSecond);
   return timeInSeconds >= playState.pauseTimeInSeconds;
-}
-
-bool PlayerIsOutOfBounds(const play_state& playState)
-{
-  return OutOfGameLevelBoundary(*playState.currentLevel, playState.player->xPos, playState.player->yPos);
 }
 
 void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer)
