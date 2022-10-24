@@ -24,14 +24,8 @@ struct play_state
 
   bool returnToMenu = false;
   
-  enum STATE { state_playing, state_levelend, state_complete };
+  enum STATE { state_playing, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
-
-  enum PLAYER_STATE { player_alive, player_dead };
-  PLAYER_STATE playerState = player_alive;
-
-  enum LEVEL_STATE { level_incomplete, level_complete };
-  LEVEL_STATE levelState = level_incomplete;
 
   game_data_ptr gameData;
   game_data::iterator currentLevelDataIterator;
@@ -45,7 +39,8 @@ struct play_state
   int64_t levelTimerStart = 0;
   int64_t levelTimerStop = 0;
   int64_t lastShotTicks = 0;
-  int64_t levelEndTickCount = 0;
+  int64_t pauseTickCount = 0;
+  float pauseTimeInSeconds = 0;
 
   float levelTimeRemaining = 0;
 

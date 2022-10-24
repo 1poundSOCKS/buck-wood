@@ -33,7 +33,7 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> void RunApp(d2d_app& app, T& gameState, sound_buffers& soundBuffers);
+template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& gameState, sound_buffers& soundBuffers);
 bool ProcessMessage(MSG* msg);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
@@ -80,7 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     switch( currentScreen )
     {
     case screen_menu:
-      RunApp(*app, *gameStatePtr, *soundBuffers);
+      RenderFrameAndUpdateState(*app, *gameStatePtr, *soundBuffers);
       if( gameStatePtr->startPlay )
       {
         playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
@@ -93,7 +93,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       }
       break;
     case screen_play:
-      RunApp(*app, *playStatePtr, *soundBuffers);
+      RenderFrameAndUpdateState(*app, *playStatePtr, *soundBuffers);
       if( playStatePtr->returnToMenu )
       {
         gameStatePtr->startPlay = false;
@@ -106,7 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-template<class T> void RunApp(d2d_app& app, T& state, sound_buffers& soundBuffers)
+template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& state, sound_buffers& soundBuffers)
 {
   std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
