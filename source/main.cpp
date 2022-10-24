@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   auto menuScreenState = std::make_unique<game_state>();
   auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
-  auto levelEditScreenState = std::make_unique<level_edit_screen_state>();
+  auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
 
   auto currentScreen = screen_menu;
 

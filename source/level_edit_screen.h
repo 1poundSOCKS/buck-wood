@@ -8,10 +8,16 @@
 #include "system_timer.h"
 #include "sound_buffers.h"
 #include "perf_data.h"
+#include "game_objects.h"
 
 struct level_edit_screen_state
 {
+  level_edit_screen_state(const game_level_data_index_ptr& gameLevelDataIndex);
+
   bool returnToMenu = false;
+  game_level_data_index_ptr gameLevelDataIndex;
+  game_level_data_index::iterator currentLevelDataIterator;
+  game_level_ptr currentLevel;
 };
 
 using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;

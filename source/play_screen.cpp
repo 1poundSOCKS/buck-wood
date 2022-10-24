@@ -15,7 +15,6 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
 bool LevelIsComplete(const play_screen_state& playState);
 void SetTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_screen_state& playState, const system_timer& timer);
-D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& playState);
 
 play_screen_state::play_screen_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
 {
@@ -37,10 +36,17 @@ play_screen_state::play_screen_state(const system_timer& timer, const game_level
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
 {
+  static const float renderScale = 1.5f;
+
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   auto& currentLevel = *playState.currentLevel;
-  auto levelTransform = CreateLevelTransform(frame.renderTarget, playState);
+
+  auto renderTargetSize = frame.renderTarget->GetSize();
+
+  auto levelTransform = D2D1::Matrix3x2F::Translation(-playState.player->xPos, -playState.player->yPos) * 
+    D2D1::Matrix3x2F::Scale(renderScale, renderScale) *
+    D2D1::Matrix3x2F::Translation(renderTargetSize.width / 2, renderTargetSize.height / 2);
 
   RenderLevel(currentLevel, frame, levelTransform);
   RenderPlayer(*playState.player, frame, levelTransform);
@@ -113,21 +119,6 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
-}
-
-D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& playState)
-{
-  float playerPosX = playState.player->xPos;
-  float playerPosY = playState.player->yPos;
-
-  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
-
-  float shiftX = renderTargetSize.width / 2 - playerPosX;
-  float shiftY = renderTargetSize.height / 2 - playerPosY;
-  
-  D2D1::Matrix3x2F matrixShift = D2D1::Matrix3x2F::Translation(shiftX, shiftY);
-  
-  return matrixShift;
 }
 
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
