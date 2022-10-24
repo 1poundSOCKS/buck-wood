@@ -64,49 +64,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   if( FAILED(hr) ) return 0;
 
   auto menuScreenState = std::make_unique<main_menu_screen_state>();
-  auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
-  auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
-
-  auto currentScreen = screen_menu;
 
   MSG msg;
   while (ProcessMessage(&msg))
   {
     if( app->terminating ) continue;
 
-    switch( currentScreen )
+    RenderFrameAndUpdateState(*app, *menuScreenState, *soundBuffers);
+    if( menuScreenState->quit )
     {
-    case screen_menu:
-      RenderFrameAndUpdateState(*app, *menuScreenState, *soundBuffers);
-      if( menuScreenState->startPlay )
+      ::PostQuitMessage(0);
+      app->terminating = true;
+    }
+
+    if( menuScreenState->startPlay )
+    {
+      auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
+      while (ProcessMessage(&msg) && !playScreenState->returnToMenu )
       {
-        playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
-        currentScreen = screen_play;
+        RenderFrameAndUpdateState(*app, *playScreenState, *soundBuffers);
       }
-      else if( menuScreenState->startLevelEdit )
+    }
+
+    else if( menuScreenState->startLevelEdit )
+    {
+      auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
+      while (ProcessMessage(&msg) && !levelEditScreenState->returnToMenu )
       {
-        currentScreen = screen_level_edit;
+        RenderFrameAndUpdateState(*app, *levelEditScreenState, *soundBuffers);
       }
-      else if( menuScreenState->quit )
-      {
-        ::PostQuitMessage(0);
-        app->terminating = true;
-      }
-      break;
-    case screen_play:
-      RenderFrameAndUpdateState(*app, *playScreenState, *soundBuffers);
-      if( playScreenState->returnToMenu )
-      {
-        currentScreen = screen_menu;
-      }
-      break;
-    case screen_level_edit:
-      RenderFrameAndUpdateState(*app, *levelEditScreenState, *soundBuffers);
-      if( levelEditScreenState->returnToMenu )
-      {
-        currentScreen = screen_menu;
-      }
-      break;
     }
 	}
 
