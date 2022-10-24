@@ -11,7 +11,6 @@
 #include "d2d_app.h"
 #include "render.h"
 #include "control_state.h"
-#include "game_level.h"
 #include "data_files.h"
 #include "main_menu_screen.h"
 #include "play_screen.h"

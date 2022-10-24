@@ -9,7 +9,6 @@
 #include "d2d_frame.h"
 #include "perf_data.h"
 #include "game_objects.h"
-#include "game_level.h"
 
 void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics);
 void RenderTimer(const d2d_frame& frame, float seconds);

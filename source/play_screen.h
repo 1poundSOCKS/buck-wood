@@ -8,10 +8,10 @@
 
 #include "type_defs.h"
 #include "system_timer.h"
-#include "game_level.h"
 #include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"
+#include "game_objects.h"
 
 using game_data = std::list<game_level_data_ptr>;
 using game_data_ptr = std::shared_ptr<game_data>;
