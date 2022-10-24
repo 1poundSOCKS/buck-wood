@@ -218,3 +218,14 @@ game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::w
   reader.parse(ifs, root);
   return LoadLevelDataFromJSON(root);
 }
+
+game_level_data_index_ptr LoadAllGameLevelData(const std::wstring& dataPath)
+{
+  auto gameLevelDataIndexPtr = std::make_shared<game_level_data_index>();
+  gameLevelDataIndexPtr->reserve(4);
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  return gameLevelDataIndexPtr;
+}

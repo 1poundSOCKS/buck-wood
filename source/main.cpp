@@ -35,7 +35,7 @@ namespace fs = std::filesystem;
 
 template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void FormatDiagnostics(std::list<std::wstring>& diagnostics, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
@@ -54,12 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   
   const std::wstring dataPath = configFile.settings[L"data_path"];
 
-  auto gameLevelDataIndexPtr = std::make_shared<game_level_data_index>();
-  gameLevelDataIndexPtr->reserve(4);
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  auto gameLevelDataIndexPtr = LoadAllGameLevelData(dataPath);
 
   auto soundBuffers = std::make_unique<sound_buffers>(app->directSound, dataPath);
 
@@ -68,7 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-  auto menuScreenState = std::make_unique<game_state>();
+  auto menuScreenState = std::make_unique<main_menu_screen_state>();
   auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
   auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
 
@@ -164,7 +159,7 @@ bool ProcessMessage(MSG* msg)
   return true;
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const game_state& gameState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(std::list<std::wstring>& diagnostics, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   FormatDiagnostics(diagnostics, controlState, perfData, timer);
 }

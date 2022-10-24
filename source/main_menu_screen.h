@@ -9,9 +9,9 @@
 #include "control_state.h"
 #include "sound_buffers.h"
 
-struct game_state
+struct main_menu_screen_state
 {
-  game_state();
+  main_menu_screen_state();
 
   bool starting = true;
   bool running = true;
@@ -20,10 +20,10 @@ struct game_state
   bool startLevelEdit = false;
 };
 
-using game_state_ptr = std::unique_ptr<game_state>;
+using game_state_ptr = std::unique_ptr<main_menu_screen_state>;
 
-void RenderFrame(const d2d_frame& frame, game_state& gameState);
-void UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer);
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState);
+void RenderFrame(const d2d_frame& frame, main_menu_screen_state& gameState);
+void UpdateState(main_menu_screen_state& gameState, const control_state& controlState, const system_timer& timer);
+void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState);
 
 #endif

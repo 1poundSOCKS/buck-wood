@@ -121,5 +121,6 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
 game_level_data_ptr LoadLevelDataFromJSON(const Json::Value& jsonObject);
 game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonObject);
 game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
+game_level_data_index_ptr LoadAllGameLevelData(const std::wstring& dataPath);
 
 #endif

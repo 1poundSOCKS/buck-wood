@@ -1,18 +1,20 @@
 #include "main_menu_screen.h"
 
-game_state::game_state()
+main_menu_screen_state::main_menu_screen_state()
 {
 }
 
-void RenderFrame(const d2d_frame& frame, game_state& gameState)
+void RenderFrame(const d2d_frame& frame, main_menu_screen_state& gameState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   std::wstring titleText;
+
 #ifdef USE_KEYBOARDFORSPIN
   titleText += L"Z - rotate ship left\n";
   titleText += L"X - rotate ship right\n";
 #endif
+  
   titleText += L"Right mouse button - accelerate\n";
   titleText += L"Left mouse button - shoot\n";
   titleText += L"\nPress SPACE to start";
@@ -23,7 +25,7 @@ void RenderFrame(const d2d_frame& frame, game_state& gameState)
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-void UpdateState(game_state& gameState, const control_state& controlState, const system_timer& timer)
+void UpdateState(main_menu_screen_state& gameState, const control_state& controlState, const system_timer& timer)
 {
   gameState.startPlay = gameState.startLevelEdit = false;
   
@@ -52,7 +54,7 @@ void UpdateState(game_state& gameState, const control_state& controlState, const
   }
 }
 
-void UpdateSound(const sound_buffers& soundBuffers, const game_state& gameState)
+void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState)
 {
   DWORD bufferStatus = 0;
 
