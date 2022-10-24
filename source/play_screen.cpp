@@ -17,7 +17,7 @@ void SetTimer(play_state& playState, const system_timer& timer, float timerInSec
 bool TimerExpired(play_state& playState, const system_timer& timer);
 D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState);
 
-play_state::play_state(const system_timer& timer, const game_data_ptr& gameDataPtr) : gameData(gameDataPtr)
+play_state::play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndexPtr) : gameLevelDataIndexPtr(gameLevelDataIndexPtr)
 {
   state = play_state::state_playing;
   
@@ -26,7 +26,7 @@ play_state::play_state(const system_timer& timer, const game_data_ptr& gameDataP
   levelTimerStart = timer.totalTicks;
   lastShotTicks = timer.totalTicks;
 
-  currentLevelDataIterator = gameData->begin();
+  currentLevelDataIterator = gameLevelDataIndexPtr->begin();
   const game_level_data_ptr& levelData = *currentLevelDataIterator;
   currentLevel = std::make_shared<game_level>(*levelData);
 
@@ -234,7 +234,7 @@ void OnLevelComplete(play_state& playState, const control_state& controlState, c
 {
   playState.currentLevelDataIterator++;
   
-  if( playState.currentLevelDataIterator == playState.gameData->end() )
+  if( playState.currentLevelDataIterator == playState.gameLevelDataIndexPtr->end() )
   {
     playState.state = play_state::state_game_complete;
     SetTimer(playState, timer, 3);

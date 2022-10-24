@@ -13,20 +13,17 @@
 #include "sound_buffers.h"
 #include "game_objects.h"
 
-using game_data = std::list<game_level_data_ptr>;
-using game_data_ptr = std::shared_ptr<game_data>;
-
 struct play_state
 {
-  play_state(const system_timer& timer, const game_data_ptr& gameDataPtr);
+  play_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndexPtr);
 
   bool returnToMenu = false;
   
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
-  game_data_ptr gameData;
-  game_data::iterator currentLevelDataIterator;
+  game_level_data_index_ptr gameLevelDataIndexPtr;
+  game_level_data_index::iterator currentLevelDataIterator;
   game_level_ptr currentLevel;
 
   std::unique_ptr<player_ship> player;

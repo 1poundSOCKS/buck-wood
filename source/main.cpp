@@ -49,27 +49,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   static const int fps = 60;
 
-  const std::unique_ptr<d2d_app> app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
+  auto app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
   
   const std::wstring dataPath = configFile.settings[L"data_path"];
 
-  game_data_ptr gameDataPtr = std::make_shared<game_data>();
-  gameDataPtr->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
-  gameDataPtr->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
-  gameDataPtr->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
-  gameDataPtr->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  auto gameLevelDataIndexPtr = std::make_shared<game_level_data_index>();
+  gameLevelDataIndexPtr->reserve(4);
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
+  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
 
-  sound_buffers_ptr soundBuffers = std::make_unique<sound_buffers>(app->directSound, dataPath);
+  auto soundBuffers = std::make_unique<sound_buffers>(app->directSound, dataPath);
 
   HRESULT hr = S_OK;
 
   hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
-  game_state_ptr gameStatePtr = std::make_unique<game_state>();
-  play_state_ptr playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
+  auto gameStatePtr = std::make_unique<game_state>();
+  auto playStatePtr = std::make_unique<play_state>(*app->timer, gameLevelDataIndexPtr);
 
-  screen_type currentScreen = screen_menu;
+  auto currentScreen = screen_menu;
 
   MSG msg;
   while (ProcessMessage(&msg))
@@ -82,7 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       RenderFrameAndUpdateState(*app, *gameStatePtr, *soundBuffers);
       if( gameStatePtr->startPlay )
       {
-        playStatePtr = std::make_unique<play_state>(*app->timer, gameDataPtr);
+        playStatePtr = std::make_unique<play_state>(*app->timer, gameLevelDataIndexPtr);
         currentScreen = screen_play;
       }
       else if( gameStatePtr->quit )
@@ -107,7 +108,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
 template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& state, sound_buffers& soundBuffers)
 {
-  std::unique_ptr<d2d_frame> frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
+  auto frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
   frame->renderTargetMouseY = app.previousControlState->renderTargetMouseY;
 

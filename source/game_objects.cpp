@@ -27,7 +27,7 @@ game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
 
 game_shape::game_shape(const game_level_object_data& objectData)
 {
-   for( const auto& point: objectData.points )
+  for( const auto& point: objectData.points )
   {
     points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
   }

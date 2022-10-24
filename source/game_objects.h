@@ -112,6 +112,9 @@ struct game_level
 
 using game_level_ptr = std::shared_ptr<game_level>;
 
+using game_level_data_index = std::vector<game_level_data_ptr>;
+using game_level_data_index_ptr = std::shared_ptr<game_level_data_index>;
+
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
