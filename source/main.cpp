@@ -184,17 +184,3 @@ void FormatDiagnostics(std::list<std::wstring>& diagnostics, const control_state
   swprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
   diagnostics.push_back(text);
 }
-
-game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file)
-{
-  level_data_json_ptr jsonLevelData = std::make_unique<level_data_json>(GetFullLevelFilename(dataPath, file).c_str());
-  return LoadLevelDataFromJSON(*jsonLevelData);
-}
-
-std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file)
-{
-  fs::path fullFilename = dataPath;
-  fullFilename /= L"levels";
-  fullFilename /= file;
-  return fullFilename;
-}

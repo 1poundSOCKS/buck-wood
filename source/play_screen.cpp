@@ -2,7 +2,7 @@
 #include "render.h"
 #include "game_math.h"
 
-const float play_state::gameSpeedMultiplier = 2.0f;
+const float gameSpeedMultiplier = 2.0f;
 
 void RenderGamePaused(const d2d_frame& frame, play_state& playState);
 void RenderLevelComplete(const d2d_frame& frame, play_state& playState);
@@ -284,7 +284,7 @@ void UpdatePlayer(play_state& playState, const control_state& controlState, cons
   static const float playerThrust = 80.0f;
   static const float rotationSpeed = 150.0f;
 
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * play_state::gameSpeedMultiplier;
+  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -325,7 +325,7 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
 
 void UpdateBullets(play_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * play_state::gameSpeedMultiplier;
+  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
   if( controlState.shoot )
   {

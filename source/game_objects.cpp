@@ -1,5 +1,6 @@
 #include "game_objects.h"
 #include <fstream>
+#include "data_files.h"
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {
@@ -26,7 +27,7 @@ game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
 
 game_shape::game_shape(const game_level_object_data& objectData)
 {
-  for( const auto& point: objectData.points )
+   for( const auto& point: objectData.points )
   {
     points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
   }
@@ -101,25 +102,6 @@ game_level::game_level(const game_level_data& gameLevelData)
   }
 }
 
-level_data_json::level_data_json(const wchar_t* filename)
-{
-  std::ifstream ifs(filename);
-  Json::Reader reader;
-  reader.parse(ifs, root);
-  name = root["name"].asString();
-  width = root["width"].asInt();
-  height = root["height"].asInt();
-  playerStartPosX = root["playerStartPosX"].asInt();
-  playerStartPosY = root["playerStartPosY"].asInt();
-  timeLimitInSeconds = root["timeLimitInSeconds"].asInt();
-  boundaryPoints = root["boundaryPoints"];
-  boundaryPointCount = boundaryPoints.size();
-  objects = root["objects"];
-  objectCount = objects.size();
-  targets = root["targets"];
-  targetCount = targets.size();
-}
-
 std::unique_ptr<player_ship> CreatePlayerShip()
 {
   return std::make_unique<player_ship>();
@@ -156,35 +138,45 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
   }
 }
 
-game_level_data_ptr LoadLevelDataFromJSON(const level_data_json& jsonData)
+game_level_data_ptr LoadLevelDataFromJSON(const Json::Value& jsonObject)
 {
   game_level_data_ptr levelData = std::make_shared<game_level_data>();
 
-  levelData->playerStartPosX = jsonData.playerStartPosX;
-  levelData->playerStartPosY = jsonData.playerStartPosY;
-  levelData->timeLimitInSeconds = jsonData.timeLimitInSeconds;
+  levelData->name = jsonObject["name"].asCString();
+  levelData->playerStartPosX = jsonObject["playerStartPosX"].asInt();
+  levelData->playerStartPosY = jsonObject["playerStartPosY"].asInt();;
+  levelData->timeLimitInSeconds = jsonObject["timeLimitInSeconds"].asInt();;
 
-  for( int i = 0; i < jsonData.boundaryPointCount; i++)
+  Json::Value boundaryPoints = jsonObject["boundaryPoints"];
+  Json::ArrayIndex boundaryPointCount = boundaryPoints.size();
+
+  for( int i = 0; i < boundaryPointCount; i++)
   {
-    Json::Value boundaryPoint = jsonData.boundaryPoints[i];
+    Json::Value boundaryPoint = boundaryPoints[i];
     int x = boundaryPoint["x"].asInt();
     int y = boundaryPoint["y"].asInt();
     game_point point(x, y);
     levelData->boundaryPoints.push_back(point);
   }
 
-  levelData->objects.reserve(jsonData.objectCount);
+  Json::Value objects = jsonObject["objects"];
+  Json::ArrayIndex objectCount = objects.size();
 
-  for( int i = 0; i < jsonData.objectCount; i++)
+  levelData->objects.reserve(objectCount);
+
+  for( int i = 0; i < objectCount; i++)
   {
-    Json::Value jsonObject = jsonData.objects[i];
+    Json::Value jsonObject = objects[i];
     auto objectDataPtr = LoadLevelObjectDataFromJSON(jsonObject);
     levelData->objects.push_back(std::move(objectDataPtr));
   }
 
-  for( int i = 0; i < jsonData.targetCount; i++)
+  Json::Value targets = jsonObject["targets"];
+  Json::ArrayIndex targetCount = targets.size();
+
+  for( int i = 0; i < targetCount; i++)
   {
-    Json::Value target = jsonData.targets[i];
+    Json::Value target = targets[i];
     int x = target["x"].asInt();
     int y = target["y"].asInt();
     levelData->targets.push_back(game_point(x, y));
@@ -215,4 +207,14 @@ game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonOb
   }
 
   return objectDataPtr;
+}
+
+game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file)
+{
+  const std::wstring fullFilename = GetFullLevelFilename(dataPath, file);
+  std::ifstream ifs(fullFilename);
+  Json::Reader reader;
+  Json::Value root;
+  reader.parse(ifs, root);
+  return LoadLevelDataFromJSON(root);
 }

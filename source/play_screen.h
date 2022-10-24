@@ -20,8 +20,6 @@ struct play_state
 {
   play_state(const system_timer& timer, const game_data_ptr& gameDataPtr);
 
-  static const float gameSpeedMultiplier;
-
   bool returnToMenu = false;
   
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
