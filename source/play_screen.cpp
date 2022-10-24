@@ -4,6 +4,9 @@
 
 const float play_state::gameSpeedMultiplier = 2.0f;
 
+void RenderLevelComplete(const d2d_frame& frame, play_state& playState);
+void RenderGameComplete(const d2d_frame& frame, play_state& playState);
+void RenderPlayerDead(const d2d_frame& frame, play_state& playState);
 void OnPlay(play_state& playState, const control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdatePlayer(play_state& playState, const control_state& controlState, const system_timer& timer);
@@ -36,11 +39,9 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   auto& currentLevel = *playState.currentLevel;
-
   auto levelTransform = CreateLevelTransform(frame.renderTarget, playState);
 
   RenderLevel(currentLevel, frame, levelTransform);
-
   RenderPlayer(*playState.player, frame, levelTransform);
 
   for( const std::unique_ptr<bullet>& bullet : playState.bullets )
@@ -48,29 +49,17 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     RenderBullet(*bullet, frame, levelTransform);
   }
 
-  if( playState.state == play_state::state_level_complete )
+  switch( playState.state )
   {
-    std::wstring text = L"LEVEL COMPLETE";
-    D2D_SIZE_F size = frame.renderTarget->GetSize();
-    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
-  }
-  else if( playState.state == play_state::state_game_complete )
-  {
-    std::wstring text = L"F*CK YEAH";
-    D2D_SIZE_F size = frame.renderTarget->GetSize();
-    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
-  }
-  else if( playState.state == play_state::state_player_dead )
-  {
-    std::wstring text = L"YOU LOSE";
-    D2D_SIZE_F size = frame.renderTarget->GetSize();
-    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+    case play_state::state_level_complete:
+      RenderLevelComplete(frame, playState);
+      break;
+    case play_state::state_game_complete:
+      RenderGameComplete(frame, playState);
+      break;
+    case play_state::state_player_dead:
+      RenderPlayerDead(frame, playState);
+      break;
   }
 
   RenderTimer(frame, playState.levelTimeRemaining);
@@ -84,6 +73,33 @@ void RenderFrame(const d2d_frame& frame, play_state& playState)
     playState.levelMouseX = outPoint.x;
     playState.levelMouseY = outPoint.y;
   }
+}
+
+void RenderLevelComplete(const d2d_frame& frame, play_state& playState)
+{
+  std::wstring text = L"LEVEL COMPLETE";
+  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+}
+
+void RenderGameComplete(const d2d_frame& frame, play_state& playState)
+{
+  std::wstring text = L"F*CK YEAH";
+  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+}
+
+void RenderPlayerDead(const d2d_frame& frame, play_state& playState)
+{
+  std::wstring text = L"YOU LOSE";
+  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
 D2D1::Matrix3x2F CreateLevelTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_state& playState)
