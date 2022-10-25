@@ -116,7 +116,9 @@ template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_
 
   UpdatePerformanceData(*app.perfData);
 
-  diagnostics_data diagnosticsData;
+  static diagnostics_data diagnosticsData;
+  diagnosticsData.clear();
+  diagnosticsData.reserve(20);
   FormatDiagnostics(diagnosticsData, screenState, *app.controlState, *app.perfData, *app.timer);
   RenderDiagnostics(*frame, diagnosticsData);
 

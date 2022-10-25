@@ -4,7 +4,7 @@ main_menu_screen_state::main_menu_screen_state()
 {
 }
 
-void RenderFrame(const d2d_frame& frame, main_menu_screen_state& gameState)
+void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -25,31 +25,31 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& gameState)
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
 }
 
-void UpdateState(main_menu_screen_state& gameState, const control_state& controlState, const system_timer& timer)
+void UpdateState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
-  gameState.startPlay = gameState.startLevelEdit = false;
+  screenState.startPlay = screenState.startLevelEdit = false;
   
-  if( gameState.starting )
+  if( screenState.starting )
   {
-    gameState.starting = false;
+    screenState.starting = false;
     return;
   }
 
   if( controlState.quitPress )
   {
-    gameState.quit = true;
+    screenState.quit = true;
     return;
   }
 
   if( controlState.startGame )
   {
-    gameState.startPlay = true;
+    screenState.startPlay = true;
     return;
   }
 
   if( controlState.functionKey_1 )
   {
-    gameState.startLevelEdit = true;
+    screenState.startLevelEdit = true;
     return;
   }
 }
