@@ -9,27 +9,32 @@ system_timer::system_timer()
   QueryPerformanceCounter(&initialTicksTmp);
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
 }
-
-system_timer::system_timer(int fps) : fps(fps)
+ 
+game_timer::game_timer(const system_timer& systemTimer) : systemTimer(systemTimer)
 {
-  ticksPerSecond = fps;
-  initialTicks = 0;
+  ticksPerSecond = systemTimer.ticksPerSecond;
+  initialTicks = systemTimer.totalTicks;
+  totalTicks = systemTimer.totalTicks;
 }
 
-void UpdateSystemTimer(system_timer& timer)
+void UpdateTimer(system_timer& timer)
 {
-  if( timer.fps )
-  {
-    timer.intervalTicks = 1;
-    timer.totalTicks++;
-    return;
-  }
-
   LARGE_INTEGER ticks;
   QueryPerformanceCounter(&ticks);
   int64_t totalTicks = ticks.QuadPart;
   timer.intervalTicks = totalTicks - timer.totalTicks;
   timer.totalTicks = totalTicks;
+}
+
+void UpdateTimer(game_timer& timer)
+{
+  timer.intervalTicks = timer.systemTimer.totalTicks - timer.totalTicks;
+  timer.totalTicks = timer.systemTimer.totalTicks;
+
+  if( timer.paused )
+  {
+    timer.pausedTicks += timer.intervalTicks;
+  }
 }
 
 float GetTotalTimeInSeconds(const system_timer& timer)

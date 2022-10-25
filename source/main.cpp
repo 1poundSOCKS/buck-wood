@@ -124,7 +124,7 @@ template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_
 
   UpdateState(screenState, *app.controlState, *app.timer);
 
-  UpdateSystemTimer(*app.timer);
+  UpdateTimer(*app.timer);
 
   UpdateSound(soundBuffers, screenState);
 

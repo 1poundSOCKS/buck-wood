@@ -30,10 +30,8 @@ struct play_screen_state
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
 
-  int64_t totalTicks = 0;
-  int64_t ticksPerSecond = 0;
-  int64_t levelTimerStart = 0;
-  int64_t levelTimerStop = 0;
+  system_timer systemTimer;
+  game_timer_ptr levelTimer;
   int64_t lastShotTicks = 0;
   int64_t pauseTickCount = 0;
   float pauseTimeInSeconds = 0;

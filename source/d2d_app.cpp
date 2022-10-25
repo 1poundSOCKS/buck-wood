@@ -14,7 +14,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
 	CreateMainWindow(this);
 	if( !wnd ) throw L"error";
 
-  timer = std::make_unique<system_timer>(fps);
+  timer = std::make_unique<system_timer>();
   
   perfData = std::make_unique<perf_data>();
 

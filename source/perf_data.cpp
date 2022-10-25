@@ -8,7 +8,7 @@ perf_data::perf_data()
 
 void UpdatePerformanceData(perf_data& perfData)
 {
-  UpdateSystemTimer(*perfData.timer);
+  UpdateTimer(*perfData.timer);
 
   perfData.fps = static_cast<float>(perfData.timer->ticksPerSecond) / static_cast<float>(perfData.timer->intervalTicks);
   

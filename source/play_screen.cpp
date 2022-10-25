@@ -13,17 +13,19 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
 void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateBullets(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
 bool LevelIsComplete(const play_screen_state& playState);
-void SetTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
+void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_screen_state& playState, const system_timer& timer);
 
-play_screen_state::play_screen_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
+play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index_ptr& gameLevelDataIndex) : systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex)
 {
+  levelTimer = std::make_unique<game_timer>(systemTimer);
+
   state = play_screen_state::state_playing;
   
-  totalTicks = timer.totalTicks;
-  ticksPerSecond = timer.ticksPerSecond;
-  levelTimerStart = timer.totalTicks;
-  lastShotTicks = timer.totalTicks;
+  // totalTicks = levelTimer->totalTicks;
+  // ticksPerSecond = levelTimer->ticksPerSecond;
+  // levelTimerStart = levelTimer->totalTicks;
+  lastShotTicks = levelTimer->totalTicks;
 
   currentLevelDataIterator = gameLevelDataIndex->begin();
   auto levelData = *currentLevelDataIterator;
@@ -123,8 +125,10 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
 
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
+  UpdateTimer(*playState.levelTimer);
+
   playState.returnToMenu = false;
-  playState.totalTicks = timer.totalTicks;
+  // playState.totalTicks = timer.totalTicks;
   playState.playerShot = playState.targetShot = false;
 
   if( playState.state == play_screen_state::state_paused )
@@ -138,6 +142,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
     if( controlState.startGame )
     {
       playState.state = play_screen_state::state_playing;
+      playState.levelTimer->paused = false;
       return;
     }
   }
@@ -149,9 +154,11 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
     if( controlState.quitPress )
     {
       playState.state = play_screen_state::state_paused;
+      playState.levelTimer->paused = true;
       return;
     }
 
+    playState.levelTimer->paused = false;
     OnPlay(playState, controlState, timer);
     return;
   }
@@ -172,17 +179,14 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 
 void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  float levelTimerInSeconds = playState.levelTimerStop == 0 ? 
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.totalTicks, playState.ticksPerSecond) :
-    GetElapsedTimeInSeconds(playState.levelTimerStart, playState.levelTimerStop, playState.ticksPerSecond);
+  float levelTimerInSeconds = GetElapsedTimeInSeconds(playState.levelTimer->initialTicks, playState.levelTimer->totalTicks - playState.levelTimer->pausedTicks, playState.levelTimer->ticksPerSecond);
 
   playState.levelTimeRemaining = max(0, playState.currentLevel->timeLimitInSeconds - levelTimerInSeconds);
 
   if( playState.levelTimeRemaining == 0 )
   {
     playState.state = play_screen_state::state_player_dead;
-    playState.pauseTickCount = timer.totalTicks;
-    playState.pauseTimeInSeconds = 3;
+    SetPauseTimer(playState, timer, 3);
     return;
   }
   
@@ -191,9 +195,9 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
 
   if( LevelIsComplete(playState) )
   {
-    playState.levelTimerStop = timer.totalTicks;
+    // playState.levelTimerStop = timer.totalTicks;
     playState.state = play_screen_state::state_level_complete;
-    SetTimer(playState, timer, 3);
+    SetPauseTimer(playState, timer, 3);
     return;
   }
 
@@ -203,9 +207,8 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
   if( !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.state = play_screen_state::state_player_dead;
-    playState.levelTimerStop = timer.totalTicks;
-    playState.pauseTickCount = timer.totalTicks;
-    playState.pauseTimeInSeconds = 3;
+    // playState.levelTimerStop = timer.totalTicks;
+    SetPauseTimer(playState, timer, 3);
     return;
   }
   
@@ -214,9 +217,8 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
     if( PointInside(transformedPoints, *shape) )
     {
       playState.state = play_screen_state::state_player_dead;
-      playState.levelTimerStop = timer.totalTicks;
-      playState.pauseTickCount = timer.totalTicks;
-      playState.pauseTimeInSeconds = 3;
+      // playState.levelTimerStop = timer.totalTicks;
+      SetPauseTimer(playState, timer, 3);
       return;
     }
   }
@@ -229,12 +231,14 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
   if( playState.currentLevelDataIterator == playState.gameLevelDataIndex->end() )
   {
     playState.state = play_screen_state::state_game_complete;
-    SetTimer(playState, timer, 3);
+    SetPauseTimer(playState, timer, 3);
     return;
   }
 
-  playState.levelTimerStart = timer.totalTicks;
-  playState.levelTimerStop = 0;
+  playState.levelTimer = std::make_unique<game_timer>(playState.systemTimer);
+
+  // playState.levelTimerStart = timer.totalTicks;
+  // playState.levelTimerStop = 0;
   playState.lastShotTicks = timer.totalTicks;
   game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
   playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
@@ -258,7 +262,7 @@ bool LevelIsComplete(const play_screen_state& playState)
   return activatedTargetCount == playState.currentLevel->targets.size();
 }
 
-void SetTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds)
+void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds)
 {
   playState.pauseTickCount = timer.totalTicks;
   playState.pauseTimeInSeconds = 3;
