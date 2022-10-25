@@ -9,8 +9,9 @@
 #include "d2d_frame.h"
 #include "perf_data.h"
 #include "game_objects.h"
+#include "diagnostics.h"
 
-void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics);
+void RenderDiagnostics(const d2d_frame& frame, const diagnostics_data& diagnosticsData);
 void RenderTimer(const d2d_frame& frame, float seconds);
 void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor);
 void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& scaleTransform);

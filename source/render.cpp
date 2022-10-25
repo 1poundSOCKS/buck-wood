@@ -1,7 +1,7 @@
 #include "render.h"
 #include <string>
 
-void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& diagnostics)
+void RenderDiagnostics(const d2d_frame& frame, const diagnostics_data& diagnosticsData)
 {
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
@@ -10,7 +10,7 @@ void RenderDiagnostics(const d2d_frame& frame, const std::list<std::wstring>& di
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   std::wstring msg;
-  for( const auto& text: diagnostics )
+  for( const auto& text: diagnosticsData )
   {
     msg += text;
     msg += L"\n";

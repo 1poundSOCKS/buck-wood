@@ -12,6 +12,7 @@
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "game_objects.h"
+#include "diagnostics.h"
 
 struct play_screen_state
 {
@@ -46,5 +47,6 @@ using play_screen_state_ptr = std::unique_ptr<play_screen_state>;
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState);
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& playState);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
 #endif

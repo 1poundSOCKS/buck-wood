@@ -32,6 +32,7 @@ void UpdateSound(const sound_buffers& soundBuffers, const level_edit_screen_stat
 {
 }
 
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
+  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
 }

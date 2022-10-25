@@ -9,6 +9,7 @@
 #include "sound_buffers.h"
 #include "perf_data.h"
 #include "game_objects.h"
+#include "diagnostics.h"
 
 struct level_edit_screen_state
 {
@@ -25,6 +26,6 @@ using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;
 void RenderFrame(const d2d_frame& frame, level_edit_screen_state& state);
 void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const level_edit_screen_state& state);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
 #endif

@@ -418,3 +418,12 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& pla
     soundBuffers.targetActivated->buffer->Play(0, 0, 0);
   }
 }
+
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+{
+  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
+
+  static wchar_t text[64];
+  swprintf(text, L"bullet count: %I64u", playState.bullets.size());
+  diagnosticsData.push_back(text);
+}

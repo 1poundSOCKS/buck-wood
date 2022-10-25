@@ -33,11 +33,8 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
+template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
 bool ProcessMessage(MSG* msg);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file);
 
@@ -70,7 +67,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   {
     if( app->terminating ) continue;
 
-    RenderFrameAndUpdateState(*app, *menuScreenState, *soundBuffers);
+    RenderFrameAndUpdate(*app, *menuScreenState, *soundBuffers);
 
     if( menuScreenState->quit )
     {
@@ -84,7 +81,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
       while (ProcessMessage(&msg) && !playScreenState->returnToMenu )
       {
-        RenderFrameAndUpdateState(*app, *playScreenState, *soundBuffers);
+        RenderFrameAndUpdate(*app, *playScreenState, *soundBuffers);
       }
     }
 
@@ -93,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
       while (ProcessMessage(&msg) && !levelEditScreenState->returnToMenu )
       {
-        RenderFrameAndUpdateState(*app, *levelEditScreenState, *soundBuffers);
+        RenderFrameAndUpdate(*app, *levelEditScreenState, *soundBuffers);
       }
     }
 	}
@@ -101,7 +98,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return (int) msg.wParam;
 }
 
-template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
+template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
 {
   auto frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
@@ -119,9 +116,9 @@ template<class T> void RenderFrameAndUpdateState(d2d_app& app, T& screenState, s
 
   UpdatePerformanceData(*app.perfData);
 
-  std::list<std::wstring> diagnostics;
-  FormatDiagnostics(diagnostics, screenState, *app.controlState, *app.perfData, *app.timer);
-  RenderDiagnostics(*frame, diagnostics);
+  diagnostics_data diagnosticsData;
+  FormatDiagnostics(diagnosticsData, screenState, *app.controlState, *app.perfData, *app.timer);
+  RenderDiagnostics(*frame, diagnosticsData);
 
   UpdateState(screenState, *app.controlState, *app.timer);
 
@@ -145,38 +142,4 @@ bool ProcessMessage(MSG* msg)
 	}
 
   return true;
-}
-
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
-{
-  FormatDiagnostics(diagnostics, controlState, perfData, timer);
-}
-
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const play_screen_state& playState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
-{
-  FormatDiagnostics(diagnostics, controlState, perfData, timer);
-
-  static wchar_t text[64];
-  swprintf(text, L"bullet count: %I64u", playState.bullets.size());
-  diagnostics.push_back(text);
-}
-
-void FormatDiagnostics(std::list<std::wstring>& diagnostics, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
-{
-  static wchar_t text[64];
-
-  float runTime = GetTotalTimeInSeconds(timer);
-  float intervalTime = GetIntervalTimeInSeconds(timer);
-
-  swprintf(text, L"run time: %.1f", runTime);
-  diagnostics.push_back(text);
-
-  swprintf(text, L"fps: %i", perfData.fpsAverage);
-  diagnostics.push_back(text);
-
-  swprintf(text, L"mouse x: %i", static_cast<int>(controlState.renderTargetMouseX));
-  diagnostics.push_back(text);
-
-  swprintf(text, L"mouse y: %i", static_cast<int>(controlState.renderTargetMouseY));
-  diagnostics.push_back(text);
 }

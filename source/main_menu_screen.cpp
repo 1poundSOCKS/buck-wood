@@ -72,3 +72,8 @@ void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state
     if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();
   }
 }
+
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+{
+  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
+}
