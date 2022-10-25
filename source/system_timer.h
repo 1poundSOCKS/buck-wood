@@ -34,6 +34,7 @@ using game_timer_ptr = std::unique_ptr<game_timer>;
 
 void UpdateTimer(system_timer& timer);
 void UpdateTimer(game_timer& timer);
+void ResetTimer(game_timer& gameTimer);
 
 float GetTotalTimeInSeconds(const system_timer& timer);
 float GetIntervalTimeInSeconds(const system_timer& timer);

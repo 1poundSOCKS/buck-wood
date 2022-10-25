@@ -9,7 +9,7 @@ system_timer::system_timer()
   QueryPerformanceCounter(&initialTicksTmp);
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
 }
- 
+
 game_timer::game_timer(const system_timer& systemTimer) : systemTimer(systemTimer)
 {
   ticksPerSecond = systemTimer.ticksPerSecond;
@@ -35,6 +35,16 @@ void UpdateTimer(game_timer& timer)
   {
     timer.pausedTicks += timer.intervalTicks;
   }
+}
+
+void ResetTimer(game_timer& gameTimer)
+{
+  gameTimer.ticksPerSecond = gameTimer.systemTimer.ticksPerSecond;
+  gameTimer.initialTicks = gameTimer.systemTimer.totalTicks;
+  gameTimer.totalTicks = gameTimer.systemTimer.totalTicks;
+  gameTimer.intervalTicks = 0;
+  gameTimer.pausedTicks = 0;
+  gameTimer.paused = false;
 }
 
 float GetTotalTimeInSeconds(const system_timer& timer)

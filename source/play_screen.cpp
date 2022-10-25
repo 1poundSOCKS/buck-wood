@@ -22,9 +22,6 @@ play_screen_state::play_screen_state(const system_timer& systemTimer, const game
 
   state = play_screen_state::state_playing;
   
-  // totalTicks = levelTimer->totalTicks;
-  // ticksPerSecond = levelTimer->ticksPerSecond;
-  // levelTimerStart = levelTimer->totalTicks;
   lastShotTicks = levelTimer->totalTicks;
 
   currentLevelDataIterator = gameLevelDataIndex->begin();
@@ -127,9 +124,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 {
   UpdateTimer(*playState.levelTimer);
 
-  playState.returnToMenu = false;
-  // playState.totalTicks = timer.totalTicks;
-  playState.playerShot = playState.targetShot = false;
+  playState.returnToMenu = playState.playerShot = playState.targetShot = false;
 
   if( playState.state == play_screen_state::state_paused )
   {
@@ -195,7 +190,6 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
 
   if( LevelIsComplete(playState) )
   {
-    // playState.levelTimerStop = timer.totalTicks;
     playState.state = play_screen_state::state_level_complete;
     SetPauseTimer(playState, timer, 3);
     return;
@@ -207,7 +201,6 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
   if( !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.state = play_screen_state::state_player_dead;
-    // playState.levelTimerStop = timer.totalTicks;
     SetPauseTimer(playState, timer, 3);
     return;
   }
@@ -217,7 +210,6 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
     if( PointInside(transformedPoints, *shape) )
     {
       playState.state = play_screen_state::state_player_dead;
-      // playState.levelTimerStop = timer.totalTicks;
       SetPauseTimer(playState, timer, 3);
       return;
     }
@@ -235,10 +227,8 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
     return;
   }
 
-  playState.levelTimer = std::make_unique<game_timer>(playState.systemTimer);
+  ResetTimer(*playState.levelTimer);
 
-  // playState.levelTimerStart = timer.totalTicks;
-  // playState.levelTimerStop = 0;
   playState.lastShotTicks = timer.totalTicks;
   game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
   playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
