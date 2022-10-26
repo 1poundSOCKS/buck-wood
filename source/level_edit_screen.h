@@ -13,12 +13,12 @@
 
 struct level_edit_screen_state
 {
-  level_edit_screen_state(const game_level_data_index_ptr& gameLevelDataIndex);
+  level_edit_screen_state(const game_level_data_index& gameLevelDataIndex);
 
   bool returnToMenu = false;
-  game_level_data_index_ptr gameLevelDataIndex;
-  game_level_data_index::iterator currentLevelDataIterator;
-  game_level_ptr currentLevel;
+  const game_level_data_index& gameLevelDataIndex;
+  game_level_data_index::const_iterator currentLevelDataIterator;
+  std::unique_ptr<game_level> currentLevel;
 };
 
 using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;

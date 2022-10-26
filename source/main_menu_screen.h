@@ -21,7 +21,7 @@ struct main_menu_screen_state
   bool startLevelEdit = false;
 };
 
-using game_state_ptr = std::unique_ptr<main_menu_screen_state>;
+// using game_state_ptr = std::unique_ptr<main_menu_screen_state>;
 
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
 void UpdateState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer);

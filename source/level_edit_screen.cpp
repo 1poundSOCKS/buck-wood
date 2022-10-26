@@ -1,11 +1,11 @@
 #include "level_edit_screen.h"
 #include "render.h"
 
-level_edit_screen_state::level_edit_screen_state(const game_level_data_index_ptr& gameLevelDataIndex)
+level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
 {
-  currentLevelDataIterator = gameLevelDataIndex->begin();
-  auto levelData = *currentLevelDataIterator;
-  currentLevel = std::make_shared<game_level>(*levelData);
+  currentLevelDataIterator = gameLevelDataIndex.begin();
+  const auto& levelData = *currentLevelDataIterator;
+  currentLevel = std::make_unique<game_level>(*levelData);
 }
 
 void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)

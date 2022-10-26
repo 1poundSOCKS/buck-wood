@@ -33,10 +33,10 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
+template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
+void RunPlayScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex);
+void RunLevelEditorScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex);
 bool ProcessMessage(MSG* msg);
-game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
-std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -67,7 +67,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   {
     if( app->terminating ) continue;
 
-    RenderFrameAndUpdate(*app, *menuScreenState, *soundBuffers);
+    UpdateScreen(*app, *menuScreenState, *soundBuffers);
 
     if( menuScreenState->quit )
     {
@@ -76,29 +76,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    if( menuScreenState->startPlay )
-    {
-      auto playScreenState = std::make_unique<play_screen_state>(*app->timer, gameLevelDataIndexPtr);
-      while (ProcessMessage(&msg) && !playScreenState->returnToMenu )
-      {
-        RenderFrameAndUpdate(*app, *playScreenState, *soundBuffers);
-      }
-    }
+    if( menuScreenState->startPlay ) RunPlayScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
 
     else if( menuScreenState->startLevelEdit )
     {
-      auto levelEditScreenState = std::make_unique<level_edit_screen_state>(gameLevelDataIndexPtr);
-      while (ProcessMessage(&msg) && !levelEditScreenState->returnToMenu )
-      {
-        RenderFrameAndUpdate(*app, *levelEditScreenState, *soundBuffers);
-      }
     }
 	}
 
   return (int) msg.wParam;
 }
 
-template<class T> void RenderFrameAndUpdate(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
+void RunPlayScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex)
+{
+  MSG msg;
+  play_screen_state playScreenState(*app.timer, gameLevelDataIndex);
+  
+  while (ProcessMessage(&msg) && !playScreenState.returnToMenu )
+  {
+    UpdateScreen(app, playScreenState, soundBuffers);
+  }
+}
+
+void RunLevelEditorScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex)
+{
+  MSG msg;
+  level_edit_screen_state levelEditScreenState(gameLevelDataIndex);
+
+  while (ProcessMessage(&msg) && !levelEditScreenState.returnToMenu )
+  {
+    UpdateScreen(app, levelEditScreenState, soundBuffers);
+  }
+}
+
+template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
 {
   auto frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
   frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;

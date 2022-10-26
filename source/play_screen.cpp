@@ -16,26 +16,26 @@ bool LevelIsComplete(const play_screen_state& playState);
 void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_screen_state& playState, const system_timer& timer);
 
-play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index_ptr& gameLevelDataIndex) : systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex)
+play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index& gameLevelDataIndex) : systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex)
 {
-  levelTimer = std::make_unique<game_timer>(systemTimer);
-
   state = play_screen_state::state_playing;
   
-  lastShotTicks = levelTimer->totalTicks;
+  currentLevelDataIterator = gameLevelDataIndex.begin();
+  const auto& levelData = *currentLevelDataIterator;
+  currentLevel = std::make_unique<game_level>(*levelData);
 
-  currentLevelDataIterator = gameLevelDataIndex->begin();
-  auto levelData = *currentLevelDataIterator;
-  currentLevel = std::make_shared<game_level>(*levelData);
+  levelTimer = std::make_unique<stopwatch>(systemTimer, currentLevel->timeLimitInSeconds);
 
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
+
+  lastShotTicks = systemTimer.totalTicks;
 }
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
 {
-  static const float renderScale = 1.5f;
+  static const float renderScale = 1.3f;
 
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -122,7 +122,7 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
 
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  UpdateTimer(*playState.levelTimer);
+  UpdateStopwatch(*playState.levelTimer);
 
   playState.returnToMenu = playState.playerShot = playState.targetShot = false;
 
@@ -174,9 +174,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 
 void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  float levelTimerInSeconds = GetElapsedTimeInSeconds(playState.levelTimer->initialTicks, playState.levelTimer->totalTicks - playState.levelTimer->pausedTicks, playState.levelTimer->ticksPerSecond);
-
-  playState.levelTimeRemaining = max(0, playState.currentLevel->timeLimitInSeconds - levelTimerInSeconds);
+  playState.levelTimeRemaining = playState.levelTimer->remainingTimeInSeconds;
 
   if( playState.levelTimeRemaining == 0 )
   {
@@ -220,18 +218,18 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
 {
   playState.currentLevelDataIterator++;
   
-  if( playState.currentLevelDataIterator == playState.gameLevelDataIndex->end() )
+  if( playState.currentLevelDataIterator == playState.gameLevelDataIndex.end() )
   {
     playState.state = play_screen_state::state_game_complete;
     SetPauseTimer(playState, timer, 3);
     return;
   }
 
-  ResetTimer(*playState.levelTimer);
-
   playState.lastShotTicks = timer.totalTicks;
-  game_level_data_ptr& nextLevelData = *playState.currentLevelDataIterator;
-  playState.currentLevel = std::make_shared<game_level>(*nextLevelData);
+  const auto& nextLevelData = *playState.currentLevelDataIterator;
+  playState.currentLevel = std::make_unique<game_level>(*nextLevelData);
+
+  ResetStopwatch(*playState.levelTimer, playState.currentLevel->timeLimitInSeconds);
 
   playState.player = CreatePlayerShip();
   playState.player->xPos = playState.currentLevel->playerStartPosX;

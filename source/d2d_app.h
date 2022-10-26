@@ -32,7 +32,7 @@ struct d2d_app
   int cmdShow;
   HWND wnd;
   UINT windowWidth, windowHeight;
-  system_timer_ptr timer;
+  std::unique_ptr<system_timer> timer;
   std::unique_ptr<mouse_cursor> mouseCursor;
   std::unique_ptr<control_state> controlState;
   std::unique_ptr<control_state> previousControlState;

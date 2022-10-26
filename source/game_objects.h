@@ -97,8 +97,6 @@ struct game_level_data
   std::vector<game_point> targets;
 };
 
-using game_level_data_ptr = std::shared_ptr<game_level_data>;
-
 struct game_level
 {
   game_level(const game_level_data& gameLevelData);
@@ -110,17 +108,15 @@ struct game_level
   std::list<std::unique_ptr<target>> targets;
 };
 
-using game_level_ptr = std::shared_ptr<game_level>;
-
-using game_level_data_index = std::vector<game_level_data_ptr>;
-using game_level_data_index_ptr = std::shared_ptr<game_level_data_index>;
+using game_level_data_index = std::vector<std::unique_ptr<game_level_data>>;
+// using game_level_data_index_ptr = std::shared_ptr<game_level_data_index>;
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
-game_level_data_ptr LoadLevelDataFromJSON(const Json::Value& jsonObject);
+std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject, game_level_data& gameLevelData);
 game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonObject);
-game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
-game_level_data_index_ptr LoadAllGameLevelData(const std::wstring& dataPath);
+std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
+std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 
 #endif

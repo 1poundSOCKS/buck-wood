@@ -16,22 +16,22 @@
 
 struct play_screen_state
 {
-  play_screen_state(const system_timer& timer, const game_level_data_index_ptr& gameLevelDataIndex);
+  play_screen_state(const system_timer& timer, const game_level_data_index& gameLevelDataIndex);
 
   bool returnToMenu = false;
   
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
-  game_level_data_index_ptr gameLevelDataIndex;
-  game_level_data_index::iterator currentLevelDataIterator;
-  game_level_ptr currentLevel;
+  const game_level_data_index& gameLevelDataIndex;
+  game_level_data_index::const_iterator currentLevelDataIterator;
+  std::unique_ptr<game_level> currentLevel;
 
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
 
   system_timer systemTimer;
-  game_timer_ptr levelTimer;
+  std::unique_ptr<stopwatch> levelTimer;
   int64_t lastShotTicks = 0;
   int64_t pauseTickCount = 0;
   float pauseTimeInSeconds = 0;

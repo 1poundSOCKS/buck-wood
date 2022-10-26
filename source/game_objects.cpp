@@ -138,9 +138,9 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
   }
 }
 
-game_level_data_ptr LoadLevelDataFromJSON(const Json::Value& jsonObject)
+std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)
 {
-  game_level_data_ptr levelData = std::make_shared<game_level_data>();
+  auto levelData = std::make_unique<game_level_data>();
 
   levelData->name = jsonObject["name"].asCString();
   levelData->playerStartPosX = jsonObject["playerStartPosX"].asInt();
@@ -187,7 +187,7 @@ game_level_data_ptr LoadLevelDataFromJSON(const Json::Value& jsonObject)
 
 game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonObject)
 {
-  game_level_object_data_ptr objectDataPtr = std::make_unique<game_level_object_data>();
+  auto objectDataPtr = std::make_unique<game_level_object_data>();
 
   objectDataPtr->x = jsonObject["x"].asFloat();
   objectDataPtr->y = jsonObject["y"].asFloat();
@@ -209,7 +209,7 @@ game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonOb
   return objectDataPtr;
 }
 
-game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file)
+std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file)
 {
   const std::wstring fullFilename = GetFullLevelFilename(dataPath, file);
   std::ifstream ifs(fullFilename);
@@ -219,13 +219,13 @@ game_level_data_ptr LoadGameLevelData(const std::wstring& dataPath, const std::w
   return LoadLevelDataFromJSON(root);
 }
 
-game_level_data_index_ptr LoadAllGameLevelData(const std::wstring& dataPath)
+std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath)
 {
-  auto gameLevelDataIndexPtr = std::make_shared<game_level_data_index>();
-  gameLevelDataIndexPtr->reserve(4);
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
-  gameLevelDataIndexPtr->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
-  return gameLevelDataIndexPtr;
+  auto gameLevelDataIndex = std::make_unique<game_level_data_index>();
+  gameLevelDataIndex->reserve(4);
+  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
+  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
+  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
+  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  return gameLevelDataIndex;
 }
