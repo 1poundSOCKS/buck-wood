@@ -1,6 +1,7 @@
 #include "main_menu_screen.h"
+#include "render.h"
 
-main_menu_screen_state::main_menu_screen_state()
+main_menu_screen_state::main_menu_screen_state() : mouseCursor(std::make_unique<mouse_cursor>())
 {
 }
 
@@ -23,6 +24,8 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), frame.textFormats->menuTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+
+  RenderMouseCursor(frame, *screenState.mouseCursor);
 }
 
 void UpdateState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer)

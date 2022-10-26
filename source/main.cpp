@@ -76,11 +76,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       continue;
     }
 
-    if( menuScreenState->startPlay ) RunPlayScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
+    if( menuScreenState->startPlay )
+      RunPlayScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
 
     else if( menuScreenState->startLevelEdit )
-    {
-    }
+      RunLevelEditorScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
 	}
 
   return (int) msg.wParam;
@@ -115,10 +115,6 @@ template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers&
   frame->renderTargetMouseY = app.previousControlState->renderTargetMouseY;
 
   RenderFrame(*frame, screenState);
-
-  app.mouseCursor->xPos = app.previousControlState->renderTargetMouseX;
-  app.mouseCursor->yPos = app.previousControlState->renderTargetMouseY;
-  RenderMouseCursor(*frame, *app.mouseCursor);
 
   app.dxgi_swapChain->Present(1, 0);
 

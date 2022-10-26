@@ -33,7 +33,7 @@ void RenderTimer(const d2d_frame& frame, float seconds)
 
 void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
 {
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(mouseCursor.xPos, mouseCursor.yPos);
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(frame.renderTargetMouseX, frame.renderTargetMouseY);
   frame.renderTarget->SetTransform(translate);
   RenderLines(mouseCursor.lines, frame.renderTarget, frame.brushes->brush);
 }

@@ -21,7 +21,7 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
   controlState = std::make_unique<control_state>();
   previousControlState = std::make_unique<control_state>();
 
-  mouseCursor = std::make_unique<mouse_cursor>();
+  // mouseCursor = std::make_unique<mouse_cursor>();
 
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -330,3 +330,4 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr
   
   return primaryBuffer;
 }
+

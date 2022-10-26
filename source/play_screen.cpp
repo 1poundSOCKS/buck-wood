@@ -16,7 +16,8 @@ bool LevelIsComplete(const play_screen_state& playState);
 void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_screen_state& playState, const system_timer& timer);
 
-play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index& gameLevelDataIndex) : systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex)
+play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index& gameLevelDataIndex) 
+: systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex), mouseCursor(std::make_unique<mouse_cursor>())
 {
   state = play_screen_state::state_playing;
   
@@ -72,6 +73,8 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
   }
 
   RenderTimer(frame, playState.levelTimeRemaining);
+
+  RenderMouseCursor(frame, *playState.mouseCursor);
 
   if( levelTransform.Invert() )
   {

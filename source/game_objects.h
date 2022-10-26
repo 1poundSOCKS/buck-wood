@@ -47,7 +47,6 @@ struct mouse_cursor
 {
   mouse_cursor();
 
-  float xPos, yPos;
   std::list<game_line> lines;
 };
 
@@ -85,8 +84,6 @@ struct target
   game_shape shape;
 };
 
-using target_ptr = std::unique_ptr<target>;
-
 struct game_level_data
 {
   std::string name;
@@ -109,7 +106,6 @@ struct game_level
 };
 
 using game_level_data_index = std::vector<std::unique_ptr<game_level_data>>;
-// using game_level_data_index_ptr = std::shared_ptr<game_level_data_index>;
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);

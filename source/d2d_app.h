@@ -16,7 +16,6 @@
 #include <memory>
 #include <winrt/base.h>
 #include "system_timer.h"
-#include "game_objects.h"
 #include "control_state.h"
 #include "perf_data.h"
 #include "d2d_brushes.h"
@@ -33,7 +32,6 @@ struct d2d_app
   HWND wnd;
   UINT windowWidth, windowHeight;
   std::unique_ptr<system_timer> timer;
-  std::unique_ptr<mouse_cursor> mouseCursor;
   std::unique_ptr<control_state> controlState;
   std::unique_ptr<control_state> previousControlState;
   std::unique_ptr<perf_data> perfData;

@@ -23,6 +23,8 @@ struct play_screen_state
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
+  std::unique_ptr<mouse_cursor> mouseCursor;
+  
   const game_level_data_index& gameLevelDataIndex;
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
@@ -39,8 +41,6 @@ struct play_screen_state
   float levelMouseX = 0, levelMouseY = 0;
   bool playerShot = false, targetShot = false;
 };
-
-using play_screen_state_ptr = std::unique_ptr<play_screen_state>;
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState);
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer);

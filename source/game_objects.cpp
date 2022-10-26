@@ -33,9 +33,9 @@ game_shape::game_shape(const game_level_object_data& objectData)
   }
 
   CreateShapeLinesFromPoints(lines, points);
- }
+}
 
-mouse_cursor::mouse_cursor() : xPos(0), yPos(0)
+mouse_cursor::mouse_cursor()
 {
   static const float cursorSize = 20.0f;
   static const float cursorSizeGap = 10.0f;
@@ -97,7 +97,7 @@ game_level::game_level(const game_level_data& gameLevelData)
   
   for( const auto& t: gameLevelData.targets )
   {
-    target_ptr levelTarget = std::make_unique<target>(t.x, t.y, 40.0f);
+    auto levelTarget = std::make_unique<target>(t.x, t.y, 40.0f);
     targets.push_back(std::move(levelTarget));
   }
 }
