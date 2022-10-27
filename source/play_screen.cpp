@@ -40,7 +40,14 @@ play_screen_state::play_screen_state(const system_timer& systemTimer, const game
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
 {
-  static const float renderScale = 1.3f;
+#ifdef EXPERIMENTAL_ZOOM_CODE
+  float absVelocityX = fabsf(playState.player->xVelocity);
+  float absVelocityY = fabsf(playState.player->yVelocity);
+  float velocity = sqrt( absVelocityX * absVelocityX + absVelocityY * absVelocityY );
+  const float renderScale = 1.5f - velocity / 500;
+#else
+  const float renderScale = 1.0f;
+#endif
 
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -277,8 +284,10 @@ bool TimerExpired(play_screen_state& playState, const system_timer& timer)
 void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   static const float forceOfGravity = 20.0f;
-  static const float playerThrust = 80.0f;
+  static const float playerThrust = 100.0f;
+#ifdef USE_KEYBOARDFORSPIN
   static const float rotationSpeed = 150.0f;
+#endif
 
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
@@ -296,9 +305,11 @@ void UpdatePlayer(play_screen_state& playState, const control_state& controlStat
     playState.player->thrusterOn = false;
   }
   
+#ifdef USE_KEYBOARDFORSPIN
   float spin = 0.0f;
   if( controlState.left ) spin = -rotationSpeed;
   else if( controlState.right ) spin = rotationSpeed;
+#endif
   
   playState.player->xVelocity += forceX * gameUpdateInterval;
   playState.player->yVelocity += forceY * gameUpdateInterval;
@@ -325,13 +336,7 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
 
   if( controlState.shoot )
   {
-    // float ticksSinceLastShot = timer.totalTicks - playState.lastShotTicks;
-
-    // static const float shotPerSecond = 60.0f;
-    // static const float ticksPerShot = timer.ticksPerSecond / shotPerSecond;
     if( GetTicksRemaining(*playState.shotTimer) == 0 )
-
-    // if( ticksSinceLastShot >= ticksPerShot )
     {
       static const float bulletSpeed = 200.0f * gameUpdateInterval;
       static const float bulletRange = 2000.0f;
@@ -346,7 +351,6 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
       playState.playerShot = true;
       ResetStopwatch(*playState.shotTimer, 1, 60);
       playState.shotTimer->paused = false;
-      // playState.lastShotTicks = timer.totalTicks;
     }
   }
 
