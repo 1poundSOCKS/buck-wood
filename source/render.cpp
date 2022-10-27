@@ -6,7 +6,7 @@ void RenderDiagnostics(const d2d_frame& frame, const diagnostics_data& diagnosti
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
 
-  rect = D2D1::RectF(0, 0, size.width / 8, size.height / 6);
+  rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   std::wstring msg;

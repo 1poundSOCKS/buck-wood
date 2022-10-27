@@ -16,6 +16,9 @@ bool LevelIsComplete(const play_screen_state& playState);
 void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
 bool TimerExpired(play_screen_state& playState, const system_timer& timer);
 
+const int play_screen_state::shotTimeNumerator;
+const int play_screen_state::shotTimeDenominator;
+
 play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index& gameLevelDataIndex) 
 : systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex), mouseCursor(std::make_unique<mouse_cursor>())
 {
@@ -25,13 +28,14 @@ play_screen_state::play_screen_state(const system_timer& systemTimer, const game
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level>(*levelData);
 
-  levelTimer = std::make_unique<stopwatch>(systemTimer, currentLevel->timeLimitInSeconds);
+  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(currentLevel->timeLimitInSeconds), 1);
 
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
 
-  lastShotTicks = systemTimer.totalTicks;
+  shotTimer = std::make_unique<stopwatch>(systemTimer, 1, 60);
+  shotTimer->paused = false;
 }
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
@@ -126,6 +130,7 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   UpdateStopwatch(*playState.levelTimer);
+  UpdateStopwatch(*playState.shotTimer);
 
   playState.returnToMenu = playState.playerShot = playState.targetShot = false;
 
@@ -141,6 +146,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
     {
       playState.state = play_screen_state::state_playing;
       playState.levelTimer->paused = false;
+      playState.shotTimer->paused = false;
       return;
     }
   }
@@ -153,10 +159,12 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
     {
       playState.state = play_screen_state::state_paused;
       playState.levelTimer->paused = true;
+      playState.shotTimer->paused = true;
       return;
     }
 
     playState.levelTimer->paused = false;
+    playState.shotTimer->paused = false;
     OnPlay(playState, controlState, timer);
     return;
   }
@@ -177,9 +185,10 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 
 void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  playState.levelTimeRemaining = playState.levelTimer->remainingTimeInSeconds;
+  int64_t ticksRemaining = GetTicksRemaining(*playState.levelTimer);
+   playState.levelTimeRemaining = GetElapsedTimeInSeconds(ticksRemaining, playState.levelTimer->systemTimer.ticksPerSecond);
 
-  if( playState.levelTimeRemaining == 0 )
+  if( ticksRemaining == 0 )
   {
     playState.state = play_screen_state::state_player_dead;
     SetPauseTimer(playState, timer, 3);
@@ -316,12 +325,13 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
 
   if( controlState.shoot )
   {
-    float ticksSinceLastShot = timer.totalTicks - playState.lastShotTicks;
+    // float ticksSinceLastShot = timer.totalTicks - playState.lastShotTicks;
 
-    static const float shotPerSecond = 60.0f;
-    static const float ticksPerShot = timer.ticksPerSecond / shotPerSecond;
+    // static const float shotPerSecond = 60.0f;
+    // static const float ticksPerShot = timer.ticksPerSecond / shotPerSecond;
+    if( GetTicksRemaining(*playState.shotTimer) == 0 )
 
-    if( ticksSinceLastShot >= ticksPerShot )
+    // if( ticksSinceLastShot >= ticksPerShot )
     {
       static const float bulletSpeed = 200.0f * gameUpdateInterval;
       static const float bulletRange = 2000.0f;
@@ -334,7 +344,9 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
       playState.bullets.push_front(std::move(newBullet));
 
       playState.playerShot = true;
-      playState.lastShotTicks = timer.totalTicks;
+      ResetStopwatch(*playState.shotTimer, 1, 60);
+      playState.shotTimer->paused = false;
+      // playState.lastShotTicks = timer.totalTicks;
     }
   }
 
@@ -420,5 +432,18 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_stat
 
   static wchar_t text[64];
   swprintf(text, L"bullet count: %I64u", playState.bullets.size());
+  diagnosticsData.push_back(text);
+
+  swprintf(text, L"initial ticks: %I64u", playState.levelTimer->initialTicks);
+  diagnosticsData.push_back(text);
+
+  swprintf(text, L"end ticks: %I64u", playState.levelTimer->endTicks);
+  diagnosticsData.push_back(text);
+
+  swprintf(text, L"current ticks: %I64u", playState.levelTimer->currentTicks);
+  diagnosticsData.push_back(text);
+
+  int64_t ticksRemaining = GetTicksRemaining(*playState.levelTimer);
+  swprintf(text, L"remaining ticks: %I64u", ticksRemaining);
   diagnosticsData.push_back(text);
 }

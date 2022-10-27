@@ -21,8 +21,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
   controlState = std::make_unique<control_state>();
   previousControlState = std::make_unique<control_state>();
 
-  // mouseCursor = std::make_unique<mouse_cursor>();
-
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
   swapChainDesc.BufferCount = 2;
@@ -324,10 +322,9 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr
 	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
 	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
 	waveFormat.cbSize = 0;
- 
+
 	hr = primaryBuffer->SetFormat(&waveFormat);
   if( FAILED(hr) ) throw L"error";
   
   return primaryBuffer;
 }
-

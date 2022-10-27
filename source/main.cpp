@@ -128,9 +128,9 @@ template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers&
   FormatDiagnostics(diagnosticsData, screenState, *app.controlState, *app.perfData, *app.timer);
   RenderDiagnostics(*frame, diagnosticsData);
 
-  UpdateState(screenState, *app.controlState, *app.timer);
-
   UpdateTimer(*app.timer);
+
+  UpdateState(screenState, *app.controlState, *app.timer);
 
   UpdateSound(soundBuffers, screenState);
 

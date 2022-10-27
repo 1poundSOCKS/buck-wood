@@ -10,17 +10,10 @@ system_timer::system_timer()
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
 }
 
-game_timer::game_timer(const system_timer& systemTimer) : systemTimer(systemTimer)
+stopwatch::stopwatch(const system_timer& systemTimer, int timeNumerator, int timeDenominator) 
+: systemTimer(systemTimer), initialTicks(systemTimer.totalTicks), currentTicks(systemTimer.totalTicks), timeNumerator(timeNumerator), timeDenominator(timeDenominator)
 {
-  ticksPerSecond = systemTimer.ticksPerSecond;
-  initialTicks = systemTimer.totalTicks;
-  totalTicks = systemTimer.totalTicks;
-}
-
-stopwatch::stopwatch(const system_timer& systemTimer, float seconds) : systemTimer(systemTimer), seconds(seconds), remainingTimeInSeconds(seconds)
-{
-  initialTicks = systemTimer.totalTicks;
-  totalTicks = systemTimer.totalTicks;
+  endTicks = systemTimer.totalTicks + ( systemTimer.ticksPerSecond * timeNumerator ) / timeDenominator;
 }
 
 void UpdateTimer(system_timer& timer)
@@ -32,51 +25,26 @@ void UpdateTimer(system_timer& timer)
   timer.totalTicks = totalTicks;
 }
 
-void UpdateTimer(game_timer& timer)
-{
-  timer.intervalTicks = timer.systemTimer.totalTicks - timer.totalTicks;
-  timer.totalTicks = timer.systemTimer.totalTicks;
-
-  if( timer.paused )
-  {
-    timer.pausedTicks += timer.intervalTicks;
-  }
-}
-
-void ResetTimer(game_timer& gameTimer)
-{
-  gameTimer.ticksPerSecond = gameTimer.systemTimer.ticksPerSecond;
-  gameTimer.initialTicks = gameTimer.systemTimer.totalTicks;
-  gameTimer.totalTicks = gameTimer.systemTimer.totalTicks;
-  gameTimer.intervalTicks = 0;
-  gameTimer.pausedTicks = 0;
-  gameTimer.paused = false;
-}
-
 void UpdateStopwatch(stopwatch& stopwatch)
 {
-  stopwatch.intervalTicks = stopwatch.systemTimer.totalTicks - stopwatch.totalTicks;
-  stopwatch.totalTicks = stopwatch.systemTimer.totalTicks;
+  int64_t intervalTicks = stopwatch.systemTimer.totalTicks - stopwatch.currentTicks;
 
   if( stopwatch.paused )
   {
-    stopwatch.pausedTicks += stopwatch.intervalTicks;
+    stopwatch.pausedTicks += intervalTicks;
+    stopwatch.endTicks += intervalTicks;
   }
 
-  auto elapsedTime = GetElapsedTimeInSeconds(stopwatch.initialTicks, stopwatch.totalTicks, stopwatch.pausedTicks, stopwatch.systemTimer.ticksPerSecond);
-  auto remainingTime = stopwatch.seconds - elapsedTime;
-  stopwatch.remainingTimeInSeconds = max(0, remainingTime);
+  stopwatch.currentTicks = min(stopwatch.systemTimer.totalTicks, stopwatch.endTicks);
 }
 
-void ResetStopwatch(stopwatch& stopwatch, float seconds)
+void ResetStopwatch(stopwatch& stopwatch, int timeNumerator, int timeDenominator)
 {
   stopwatch.initialTicks = stopwatch.systemTimer.totalTicks;
-  stopwatch.totalTicks = stopwatch.systemTimer.totalTicks;
-  stopwatch.seconds = seconds;
-  stopwatch.remainingTimeInSeconds = seconds;
-  stopwatch.intervalTicks = 0;
+  stopwatch.currentTicks = stopwatch.systemTimer.totalTicks;
+  stopwatch.endTicks = stopwatch.systemTimer.totalTicks + ( stopwatch.systemTimer.ticksPerSecond * timeNumerator ) / timeDenominator;
   stopwatch.pausedTicks = 0;
-  stopwatch.paused = false;
+  stopwatch.paused = true;
 }
 
 float GetTotalTimeInSeconds(const system_timer& timer)
@@ -89,6 +57,11 @@ float GetIntervalTimeInSeconds(const system_timer& timer)
   return GetElapsedTimeInSeconds(0, timer.intervalTicks, timer.ticksPerSecond);
 }
 
+float GetElapsedTimeInSeconds(int64_t ticks, int64_t ticksPerSecond)
+{
+  return static_cast<float>(ticks) / static_cast<float>(ticksPerSecond);
+}
+
 float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t ticksPerSecond)
 {
   return static_cast<float>(endTicks - startTicks) / static_cast<float>(ticksPerSecond);
@@ -97,4 +70,9 @@ float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t tick
 float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t pausedTicks, int64_t ticksPerSecond)
 {
   return static_cast<float>(endTicks - startTicks - pausedTicks) / static_cast<float>(ticksPerSecond);
+}
+
+int64_t GetTicksRemaining(const stopwatch& stopwatch)
+{
+  return stopwatch.endTicks - stopwatch.currentTicks;
 }

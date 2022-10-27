@@ -34,12 +34,16 @@ struct play_screen_state
 
   system_timer systemTimer;
   std::unique_ptr<stopwatch> levelTimer;
+  std::unique_ptr<stopwatch> shotTimer;
   int64_t lastShotTicks = 0;
   int64_t pauseTickCount = 0;
   float pauseTimeInSeconds = 0;
   float levelTimeRemaining = 0;
   float levelMouseX = 0, levelMouseY = 0;
   bool playerShot = false, targetShot = false;
+
+  static const int shotTimeNumerator = 1;
+  static const int shotTimeDenominator = 60;
 };
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState);
