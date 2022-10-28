@@ -16,7 +16,7 @@
 #include <memory>
 #include <winrt/base.h>
 #include "timers.h"
-#include "control_state.h"
+#include "input_state.h"
 #include "perf_data.h"
 #include "d2d_brushes.h"
 #include "dwrite_text_formats.h"
@@ -32,8 +32,6 @@ struct d2d_app
   HWND wnd;
   UINT windowWidth, windowHeight;
   std::unique_ptr<system_timer> timer;
-  std::unique_ptr<control_state> controlState;
-  std::unique_ptr<control_state> previousControlState;
   std::unique_ptr<perf_data> perfData;
   winrt::com_ptr<ID3D11Device> d3d_device;
   winrt::com_ptr<IDXGISwapChain> dxgi_swapChain;
@@ -42,18 +40,19 @@ struct d2d_app
   winrt::com_ptr<ID2D1RenderTarget> d2d_rendertarget;
   winrt::com_ptr<IDirectInput8> directInput;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
-#ifdef USE_DIRECTINPUT_MOUSE
-  winrt::com_ptr<IDirectInputDevice8> mouse;
-#endif
   winrt::com_ptr<IDirectSound8> directSound;
   winrt::com_ptr<IDirectSoundBuffer> primarySoundBuffer;
   d2d_brushes_ptr brushes;
   dwrite_text_formats_ptr textFormats;
   float mouseX, mouseY;
   bool mouseLButtonDown = false, mouseRButtonDown = false;
+
+  LPARAM msgMouseX = 0, msgMouseY = 0;
+  bool msgLeftMouseButtonDown = false, msgRightMouseButtonDown = false;
+
+  input_state inputState, previousInputState;
 };
 
-std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState);
-winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
+void RefreshInputState(d2d_app& app);
 
 #endif

@@ -5,6 +5,7 @@ LPWSTR lpszTitle = L"d2d app";
 
 ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* app);
+winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
    : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0), mouseX(0), mouseY(0)
@@ -17,9 +18,6 @@ d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
   timer = std::make_unique<system_timer>();
   
   perfData = std::make_unique<perf_data>();
-
-  controlState = std::make_unique<control_state>();
-  previousControlState = std::make_unique<control_state>();
 
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -121,6 +119,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     GetClientRect(hWnd, &clientRect);
     app->mouseX = static_cast<float>(mouseX) / static_cast<float>(clientRect.right - clientRect.left);
     app->mouseY = static_cast<float>(mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+    app->msgMouseX = mouseX;
+    app->msgMouseY = mouseY;
     return 0;
   }
 
@@ -130,7 +130,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if( app == NULL ) return 0;
 
     app->mouseLButtonDown = true;
-    return 0;    
+    app->msgLeftMouseButtonDown = true;
+    return 0;
   }
 
   if( message == WM_LBUTTONUP )
@@ -139,7 +140,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if( app == NULL ) return 0;
 
     app->mouseLButtonDown = false;
-    return 0;    
+    app->msgLeftMouseButtonDown = false;
+    return 0;
   }
 
   if( message == WM_RBUTTONDOWN )
@@ -148,6 +150,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if( app == NULL ) return 0;
 
     app->mouseRButtonDown = true;
+    app->msgRightMouseButtonDown = true;
     return 0;
   }
 
@@ -157,6 +160,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     if( app == NULL ) return 0;
 
     app->mouseRButtonDown = false;
+    app->msgRightMouseButtonDown = false;
     return 0;
   }
 
@@ -239,67 +243,6 @@ void CreateMainWindow(d2d_app* app)
   UpdateWindow(app->wnd);
 }
 
-std::unique_ptr<control_state> GetControlState(const d2d_app& app, const control_state& previousControlState)
-{
-  std::unique_ptr<control_state> cs = std::make_unique<control_state>();
-
-  unsigned char keyboardState[256];
-  HRESULT hr = app.keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
-	if(FAILED(hr))
-	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app.keyboard->Acquire();
-	}
-
-  if( SUCCEEDED(hr) )
-  {
-    if( keyboardState[DIK_ESCAPE] & 0x80 )
-    {
-      cs->quit = true;
-      if( !previousControlState.quit ) cs->quitPress = true;
-    }
-    if( keyboardState[DIK_SPACE] & 0x80 ) cs->startGame = true;
-    if( keyboardState[DIK_Z] & 0x80 ) cs->left = true;
-    if( keyboardState[DIK_X] & 0x80 ) cs->right = true;
-    if( keyboardState[DIK_SPACE] & 0x80 ) cs->accelerate = true;
-    if( keyboardState[DIK_F1] & 0x80 ) cs->functionKey_1 = true;
-  }
-
-  POINT p;
-  if( GetCursorPos(&p) )
-  {
-    POINT clientPos;
-    if( ScreenToClient(app.wnd, &p) )
-    {
-      cs->mouseX = static_cast<float>(p.x) / static_cast<float>(app.windowWidth);
-      cs->mouseY = static_cast<float>(p.y) / static_cast<float>(app.windowHeight);
-      D2D1_SIZE_F renderTargetSize = app.d2d_rendertarget->GetSize();
-      cs->renderTargetMouseX = cs->mouseX * renderTargetSize.width;
-      cs->renderTargetMouseY = cs->mouseY * renderTargetSize.height;
-    }
-  }
-
-#ifdef USE_DIRECTINPUT_MOUSE
-  DIMOUSESTATE mouseState;
-  hr = app.mouse->GetDeviceState(sizeof(DIMOUSESTATE), reinterpret_cast<LPVOID>(&mouseState));
-  if( FAILED(hr) )
-  {
-    if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) app.mouse->Acquire();
-  }
-
-  if( SUCCEEDED(hr) )
-  {
-
-    if( mouseState.rgbButtons[0] & 0x80 ) cs->shoot = true;
-    if( mouseState.rgbButtons[1] & 0x80 ) cs->accelerate = true;
-  }
-#else
-  if( app.mouseLButtonDown ) cs->shoot = true;
-  if( app.mouseRButtonDown ) cs->accelerate = true;
-#endif
-
-  return cs;
-}
-
 winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound)
 {
   DSBUFFERDESC bufferDesc;
@@ -327,4 +270,14 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr
   if( FAILED(hr) ) throw L"error";
   
   return primaryBuffer;
+}
+
+void RefreshInputState(d2d_app& app)
+{
+  app.previousInputState = app.inputState;
+  RefreshKeyboardState(app.inputState, app.keyboard);
+  app.inputState.mouseX = app.msgMouseX;
+  app.inputState.mouseY = app.msgMouseY;
+  app.inputState.leftMouseButtonDown = app.msgLeftMouseButtonDown;
+  app.inputState.rightMouseButtonDown = app.msgRightMouseButtonDown;
 }

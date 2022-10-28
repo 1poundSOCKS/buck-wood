@@ -110,31 +110,32 @@ void RunLevelEditorScreen(d2d_app& app, sound_buffers& soundBuffers, const game_
 
 template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
 {
-  auto frame = std::make_unique<d2d_frame>(app.d2d_rendertarget, app.brushes, app.textFormats);
-  frame->renderTargetMouseX = app.previousControlState->renderTargetMouseX;
-  frame->renderTargetMouseY = app.previousControlState->renderTargetMouseY;
+  static control_state controlState;
+  
+  RefreshInputState(app);
+  RefreshControlState(controlState, app);
+  
+  UpdateState(screenState, controlState, *app.timer);
 
-  RenderFrame(*frame, screenState);
+  d2d_frame frame(app.d2d_rendertarget, app.brushes, app.textFormats);
+  frame.renderTargetMouseX = controlState.renderTargetMouseX;
+  frame.renderTargetMouseY = controlState.renderTargetMouseY;
+
+  RenderFrame(frame, screenState);
 
   app.dxgi_swapChain->Present(1, 0);
-
-  app.controlState = GetControlState(app, *app.previousControlState);
 
   UpdatePerformanceData(*app.perfData);
 
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
-  FormatDiagnostics(diagnosticsData, screenState, *app.controlState, *app.perfData, *app.timer);
-  RenderDiagnostics(*frame, diagnosticsData);
+  FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
+  RenderDiagnostics(frame, diagnosticsData);
 
   UpdateTimer(*app.timer);
 
-  UpdateState(screenState, *app.controlState, *app.timer);
-
   UpdateSound(soundBuffers, screenState);
-
-  app.previousControlState = std::move(app.controlState);
 }
 
 bool ProcessMessage(MSG* msg)
