@@ -1,4 +1,4 @@
-#include "system_timer.h"
+#include "timers.h"
 
 system_timer::system_timer()
 {
@@ -45,6 +45,11 @@ void ResetStopwatch(stopwatch& stopwatch, int timeNumerator, int timeDenominator
   stopwatch.endTicks = stopwatch.systemTimer.totalTicks + ( stopwatch.systemTimer.ticksPerSecond * timeNumerator ) / timeDenominator;
   stopwatch.pausedTicks = 0;
   stopwatch.paused = true;
+}
+
+void ResetStopwatch(stopwatch& stopwatch)
+{
+  ResetStopwatch(stopwatch, stopwatch.timeNumerator, stopwatch.timeDenominator);
 }
 
 float GetTotalTimeInSeconds(const system_timer& timer)

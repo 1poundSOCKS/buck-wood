@@ -15,7 +15,7 @@
 #include <dsound.h>
 #include <memory>
 #include <winrt/base.h>
-#include "system_timer.h"
+#include "timers.h"
 #include "control_state.h"
 #include "perf_data.h"
 #include "d2d_brushes.h"

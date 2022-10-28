@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <string>
 #include <memory>
-#include "system_timer.h"
+#include "timers.h"
 
 struct perf_data
 {

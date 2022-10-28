@@ -34,13 +34,13 @@ play_screen_state::play_screen_state(const system_timer& systemTimer, const game
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
 
-  shotTimer = std::make_unique<stopwatch>(systemTimer, 1, 60);
+  shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
   shotTimer->paused = false;
 }
 
 void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
 {
-#ifdef EXPERIMENTAL_ZOOM_CODE
+#ifdef EXPERIMENTAL
   float absVelocityX = fabsf(playState.player->xVelocity);
   float absVelocityY = fabsf(playState.player->yVelocity);
   float velocity = sqrt( absVelocityX * absVelocityX + absVelocityY * absVelocityY );
@@ -349,7 +349,8 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
       playState.bullets.push_front(std::move(newBullet));
 
       playState.playerShot = true;
-      ResetStopwatch(*playState.shotTimer, 1, 60);
+      // ResetStopwatch(*playState.shotTimer, 1, 60);
+      ResetStopwatch(*playState.shotTimer);
       playState.shotTimer->paused = false;
     }
   }

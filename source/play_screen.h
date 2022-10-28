@@ -7,7 +7,7 @@
 #include <list>
 
 #include "type_defs.h"
-#include "system_timer.h"
+#include "timers.h"
 #include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"

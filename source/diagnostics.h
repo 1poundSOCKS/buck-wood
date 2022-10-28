@@ -5,7 +5,7 @@
 #include <string>
 #include "control_state.h"
 #include "perf_data.h"
-#include "system_timer.h"
+#include "timers.h"
 
 using diagnostics_data = std::vector<std::wstring>;
 

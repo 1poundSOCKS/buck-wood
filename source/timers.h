@@ -32,6 +32,7 @@ struct stopwatch
 void UpdateTimer(system_timer& timer);
 void UpdateStopwatch(stopwatch& stopwatch);
 void ResetStopwatch(stopwatch& stopwatch, int timeNumerator, int timeDenominator=1);
+void ResetStopwatch(stopwatch& stopwatch);
 
 float GetTotalTimeInSeconds(const system_timer& timer);
 float GetIntervalTimeInSeconds(const system_timer& timer);

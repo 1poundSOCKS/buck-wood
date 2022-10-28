@@ -5,7 +5,7 @@
 #include <list>
 #include "d2d_frame.h"
 #include "control_state.h"
-#include "system_timer.h"
+#include "timers.h"
 #include "sound_buffers.h"
 #include "perf_data.h"
 #include "game_objects.h"
