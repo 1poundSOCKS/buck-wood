@@ -17,7 +17,7 @@ struct system_timer
 
 struct stopwatch
 {
-  stopwatch(const system_timer& systemTimer, int timeNumerator, int timeDenominator=1);
+  stopwatch(const system_timer& systemTimer, int timeNumerator=0, int timeDenominator=1);
 
   const system_timer& systemTimer;
   int timeNumerator = 0;

@@ -34,11 +34,8 @@ struct play_screen_state
 
   system_timer systemTimer;
   std::unique_ptr<stopwatch> levelTimer;
+  std::unique_ptr<stopwatch> pauseTimer;
   std::unique_ptr<stopwatch> shotTimer;
-  int64_t lastShotTicks = 0;
-  int64_t pauseTickCount = 0;
-  float pauseTimeInSeconds = 0;
-  float levelTimeRemaining = 0;
   float levelMouseX = 0, levelMouseY = 0;
   bool playerShot = false, targetShot = false;
 

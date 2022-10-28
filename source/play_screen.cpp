@@ -13,8 +13,6 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
 void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
 void UpdateBullets(play_screen_state& playState, const control_state& controlState, const system_timer& timer);
 bool LevelIsComplete(const play_screen_state& playState);
-void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds);
-bool TimerExpired(play_screen_state& playState, const system_timer& timer);
 
 const int play_screen_state::shotTimeNumerator;
 const int play_screen_state::shotTimeDenominator;
@@ -33,6 +31,8 @@ play_screen_state::play_screen_state(const system_timer& systemTimer, const game
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
+
+  pauseTimer = std::make_unique<stopwatch>(systemTimer);
 
   shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
   shotTimer->paused = false;
@@ -138,6 +138,7 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   UpdateStopwatch(*playState.levelTimer);
+  UpdateStopwatch(*playState.pauseTimer);
   UpdateStopwatch(*playState.shotTimer);
 
   playState.returnToMenu = playState.playerShot = playState.targetShot = false;
@@ -159,7 +160,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
     }
   }
   
-  if( !TimerExpired(playState, timer) ) return;
+  if( GetTicksRemaining(*playState.pauseTimer) > 0 ) return;
 
   if( playState.state == play_screen_state::state_playing )
   {
@@ -194,12 +195,12 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   int64_t ticksRemaining = GetTicksRemaining(*playState.levelTimer);
-  // playState.levelTimeRemaining = GetElapsedTimeInSeconds(ticksRemaining, playState.levelTimer->systemTimer.ticksPerSecond);
 
   if( ticksRemaining == 0 )
   {
     playState.state = play_screen_state::state_player_dead;
-    SetPauseTimer(playState, timer, 3);
+    ResetStopwatch(*playState.pauseTimer, 3);
+    playState.pauseTimer->paused = false;
     return;
   }
   
@@ -209,7 +210,8 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
   if( LevelIsComplete(playState) )
   {
     playState.state = play_screen_state::state_level_complete;
-    SetPauseTimer(playState, timer, 3);
+    ResetStopwatch(*playState.pauseTimer, 3);
+    playState.pauseTimer->paused = false;
     return;
   }
 
@@ -219,7 +221,8 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
   if( !PointsInside(transformedPoints, *playState.currentLevel->boundary) )
   {
     playState.state = play_screen_state::state_player_dead;
-    SetPauseTimer(playState, timer, 3);
+    ResetStopwatch(*playState.pauseTimer, 3);
+    playState.pauseTimer->paused = false;
     return;
   }
   
@@ -228,7 +231,8 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
     if( PointInside(transformedPoints, *shape) )
     {
       playState.state = play_screen_state::state_player_dead;
-      SetPauseTimer(playState, timer, 3);
+      ResetStopwatch(*playState.pauseTimer, 3);
+      playState.pauseTimer->paused = false;
       return;
     }
   }
@@ -241,15 +245,16 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
   if( playState.currentLevelDataIterator == playState.gameLevelDataIndex.end() )
   {
     playState.state = play_screen_state::state_game_complete;
-    SetPauseTimer(playState, timer, 3);
+    ResetStopwatch(*playState.pauseTimer, 3);
+    playState.pauseTimer->paused = false;
     return;
   }
 
-  playState.lastShotTicks = timer.totalTicks;
   const auto& nextLevelData = *playState.currentLevelDataIterator;
   playState.currentLevel = std::make_unique<game_level>(*nextLevelData);
 
   ResetStopwatch(*playState.levelTimer, playState.currentLevel->timeLimitInSeconds);
+  ResetStopwatch(*playState.shotTimer);
 
   playState.player = CreatePlayerShip();
   playState.player->xPos = playState.currentLevel->playerStartPosX;
@@ -268,18 +273,6 @@ bool LevelIsComplete(const play_screen_state& playState)
   }
 
   return activatedTargetCount == playState.currentLevel->targets.size();
-}
-
-void SetPauseTimer(play_screen_state& playState, const system_timer& timer, float timerInSeconds)
-{
-  playState.pauseTickCount = timer.totalTicks;
-  playState.pauseTimeInSeconds = 3;
-}
-
-bool TimerExpired(play_screen_state& playState, const system_timer& timer)
-{
-  float timeInSeconds = GetElapsedTimeInSeconds(playState.pauseTickCount, timer.totalTicks, timer.ticksPerSecond);
-  return timeInSeconds >= playState.pauseTimeInSeconds;
 }
 
 void UpdatePlayer(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
@@ -350,7 +343,6 @@ void UpdateBullets(play_screen_state& playState, const control_state& controlSta
       playState.bullets.push_front(std::move(newBullet));
 
       playState.playerShot = true;
-      // ResetStopwatch(*playState.shotTimer, 1, 60);
       ResetStopwatch(*playState.shotTimer);
       playState.shotTimer->paused = false;
     }
