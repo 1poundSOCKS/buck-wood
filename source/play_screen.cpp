@@ -83,7 +83,8 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& playState)
       break;
   }
 
-  RenderTimer(frame, playState.levelTimeRemaining);
+  float levelTimeRemaining = GetTimeRemainingInSeconds(*playState.levelTimer);
+  RenderTimer(frame, levelTimeRemaining);
 
   RenderMouseCursor(frame, *playState.mouseCursor);
 
@@ -193,7 +194,7 @@ void UpdateState(play_screen_state& playState, const control_state& controlState
 void OnPlay(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
   int64_t ticksRemaining = GetTicksRemaining(*playState.levelTimer);
-   playState.levelTimeRemaining = GetElapsedTimeInSeconds(ticksRemaining, playState.levelTimer->systemTimer.ticksPerSecond);
+  // playState.levelTimeRemaining = GetElapsedTimeInSeconds(ticksRemaining, playState.levelTimer->systemTimer.ticksPerSecond);
 
   if( ticksRemaining == 0 )
   {

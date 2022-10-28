@@ -40,5 +40,6 @@ float GetElapsedTimeInSeconds(int64_t ticks, int64_t ticksPerSecond);
 float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t ticksPerSecond);
 float GetElapsedTimeInSeconds(int64_t startTicks, int64_t endTicks, int64_t pausedTicks, int64_t ticksPerSecond);
 int64_t GetTicksRemaining(const stopwatch& stopwatch);
+float GetTimeRemainingInSeconds(const stopwatch& stopwatch);
 
 #endif

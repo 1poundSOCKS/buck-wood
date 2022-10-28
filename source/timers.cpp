@@ -81,3 +81,8 @@ int64_t GetTicksRemaining(const stopwatch& stopwatch)
 {
   return stopwatch.endTicks - stopwatch.currentTicks;
 }
+
+float GetTimeRemainingInSeconds(const stopwatch& stopwatch)
+{
+  return static_cast<float>( stopwatch.endTicks - stopwatch.currentTicks ) / stopwatch.systemTimer.ticksPerSecond;
+}
