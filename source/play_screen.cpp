@@ -341,24 +341,21 @@ void UpdateBullets(play_screen_state& screenState, const control_state& controlS
 {
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
-  if( controlState.shoot )
+  if( controlState.shoot && GetTicksRemaining(*screenState.shotTimer) == 0 )
   {
-    if( GetTicksRemaining(*screenState.shotTimer) == 0 )
-    {
-      static const float bulletSpeed = 200.0f * gameUpdateInterval;
-      static const float bulletRange = 2000.0f;
+    static const float bulletSpeed = 200.0f * gameUpdateInterval;
+    static const float bulletRange = 2000.0f;
 
-      std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(screenState.player->xPos, screenState.player->yPos, bulletRange);
-      float angle = CalculateAngle(screenState.player->xPos, screenState.player->yPos, screenState.levelMouseX, screenState.levelMouseY);
-      newBullet->angle = angle;
-      newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-      newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-      screenState.bullets.push_front(std::move(newBullet));
+    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(screenState.player->xPos, screenState.player->yPos, bulletRange);
+    float angle = CalculateAngle(screenState.player->xPos, screenState.player->yPos, screenState.levelMouseX, screenState.levelMouseY);
+    newBullet->angle = angle;
+    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
+    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
+    screenState.bullets.push_front(std::move(newBullet));
 
-      screenState.playerShot = true;
-      ResetStopwatch(*screenState.shotTimer);
-      screenState.shotTimer->paused = false;
-    }
+    screenState.playerShot = true;
+    ResetStopwatch(*screenState.shotTimer);
+    screenState.shotTimer->paused = false;
   }
 
   for(const auto& bullet : screenState.bullets)

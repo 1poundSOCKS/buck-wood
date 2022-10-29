@@ -21,6 +21,16 @@ void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
   RenderLevel(*screenState.currentLevel, frame, levelTransform);
 
   RenderMouseCursor(frame, screenState.mouseCursor);
+
+  if( levelTransform.Invert() )
+  {
+    D2D1_POINT_2F inPoint;
+    inPoint.x = frame.renderTargetMouseX;
+    inPoint.y = frame.renderTargetMouseY;
+    auto outPoint = levelTransform.TransformPoint(inPoint);
+    screenState.levelMouseX = outPoint.x;
+    screenState.levelMouseY = outPoint.y;
+  }
 }
 
 void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
@@ -37,4 +47,11 @@ void UpdateSound(const sound_buffers& soundBuffers, const level_edit_screen_stat
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
+
+  static wchar_t text[64];
+  swprintf(text, L"level mouse X: %.2f\n", screenState.levelMouseX);
+  diagnosticsData.push_back(text);
+
+  swprintf(text, L"level mouse Y: %.2f\n", screenState.levelMouseY);
+  diagnosticsData.push_back(text);
 }

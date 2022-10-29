@@ -124,8 +124,10 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
 
   app.dxgi_swapChain->Present(1, 0);
 
-  UpdatePerformanceData(*app.perfData);
+  UpdateSound(globalState.soundBuffers, screenState);
 
+  UpdatePerformanceData(*app.perfData);
+  
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
@@ -133,8 +135,6 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   RenderDiagnostics(frame, diagnosticsData);
 
   UpdateTimer(*app.timer);
-
-  UpdateSound(globalState.soundBuffers, screenState);
 }
 
 bool ProcessMessage(MSG* msg)
