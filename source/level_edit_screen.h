@@ -25,6 +25,7 @@ struct level_edit_screen_state
 
 using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;
 
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState);
 void RenderFrame(const d2d_frame& frame, level_edit_screen_state& state);
 void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const level_edit_screen_state& state);

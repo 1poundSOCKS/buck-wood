@@ -47,6 +47,7 @@ struct play_screen_state
   static const int shotTimeDenominator = 60;
 };
 
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState);
 void RenderFrame(const d2d_frame& frame, play_screen_state& screenState);
 void UpdateState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& screenState);

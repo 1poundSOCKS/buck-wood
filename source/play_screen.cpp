@@ -39,6 +39,13 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   state = play_screen_state::state_playing;  
 }
 
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState)
+{
+  static const float renderScale = 1.0f;
+  auto renderTargetSize = renderTarget->GetSize();
+  return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
+}
+
 void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 {
 #ifdef EXPERIMENTAL
@@ -54,8 +61,7 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 
   auto& currentLevel = *screenState.currentLevel;
 
-  auto renderTargetSize = frame.renderTarget->GetSize();
-  auto levelTransform = CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
+  auto levelTransform = frame.viewTransform;
 
   RenderLevel(currentLevel, frame, levelTransform);
   RenderPlayer(*screenState.player, frame, levelTransform);

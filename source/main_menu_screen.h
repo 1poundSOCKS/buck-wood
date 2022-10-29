@@ -24,6 +24,7 @@ struct main_menu_screen_state
   bool startLevelEdit = false;
 };
 
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const main_menu_screen_state& screenState);
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
 void UpdateState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState);

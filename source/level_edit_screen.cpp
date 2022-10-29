@@ -8,12 +8,17 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   currentLevel = std::make_unique<game_level>(*levelData);
 }
 
+D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
+{
+  auto renderTargetSize = renderTarget->GetSize();
+  return CreateGameLevelTransform(0, 0, 0.3f, renderTargetSize.width, renderTargetSize.height);
+}
+
 void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  auto renderTargetSize = frame.renderTarget->GetSize();
-  auto levelTransform = CreateGameLevelTransform(0, 0, 0.3f, renderTargetSize.width, renderTargetSize.height);
+  auto levelTransform = frame.viewTransform;
 
   RenderLevel(*screenState.currentLevel, frame, levelTransform);
 

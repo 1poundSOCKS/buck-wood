@@ -113,10 +113,12 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   
   RefreshInputState(app);
   RefreshControlState(controlState, app);
+
+  const auto viewTransform = CreateViewTransform(app.d2d_rendertarget, screenState);
   
   UpdateState(screenState, controlState, *app.timer);
 
-  d2d_frame frame(app.d2d_rendertarget, globalState.brushes, globalState.textFormats);
+  d2d_frame frame(app.d2d_rendertarget, viewTransform, globalState.brushes, globalState.textFormats);
   frame.renderTargetMouseX = controlState.renderTargetMouseX;
   frame.renderTargetMouseY = controlState.renderTargetMouseY;
 
@@ -127,7 +129,7 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   UpdateSound(globalState.soundBuffers, screenState);
 
   UpdatePerformanceData(*app.perfData);
-  
+
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
