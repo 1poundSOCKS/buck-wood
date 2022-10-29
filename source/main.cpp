@@ -27,8 +27,6 @@
 #pragma comment(lib,"gtest_main.lib")
 #pragma comment(lib, "RuntimeObject.lib")
 
-namespace fs = std::filesystem;
-
 #ifdef USE_JSON
 #pragma comment(lib,"jsoncpp.lib")
 #endif
@@ -53,7 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   global_state globalState(app, dataPath);
   
-  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(FALSE, NULL);
+  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
   return RunMainMenuScreen(app, globalState);

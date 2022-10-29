@@ -41,6 +41,8 @@ struct play_screen_state
   float levelMouseX = 0, levelMouseY = 0;
   bool playerShot = false, targetShot = false;
 
+  std::vector<float> levelTimes;
+
   static const int shotTimeNumerator = 1;
   static const int shotTimeDenominator = 60;
 };
