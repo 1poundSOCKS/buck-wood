@@ -55,10 +55,7 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
   auto& currentLevel = *screenState.currentLevel;
 
   auto renderTargetSize = frame.renderTarget->GetSize();
-
-  auto levelTransform = D2D1::Matrix3x2F::Translation(-screenState.player->xPos, -screenState.player->yPos) * 
-    D2D1::Matrix3x2F::Scale(renderScale, renderScale) *
-    D2D1::Matrix3x2F::Translation(renderTargetSize.width / 2, renderTargetSize.height / 2);
+  auto levelTransform = CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 
   RenderLevel(currentLevel, frame, levelTransform);
   RenderPlayer(*screenState.player, frame, levelTransform);

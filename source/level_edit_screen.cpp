@@ -13,10 +13,7 @@ void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   auto renderTargetSize = frame.renderTarget->GetSize();
-  float shiftX = renderTargetSize.width / 2;
-  float shiftY = renderTargetSize.height / 2;
-  
-  auto levelTransform = D2D1::Matrix3x2F::Scale(0.3f, 0.3f) * D2D1::Matrix3x2F::Translation(shiftX, shiftY);
+  auto levelTransform = CreateGameLevelTransform(0, 0, 0.3f, renderTargetSize.width, renderTargetSize.height);
 
   RenderLevel(*screenState.currentLevel, frame, levelTransform);
 
