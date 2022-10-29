@@ -6,8 +6,8 @@
 #include <memory>
 #include <tchar.h>
 
+#include "framework/framework.h"
 #include "d2d_frame.h"
-#include "perf_data.h"
 #include "game_objects.h"
 #include "diagnostics.h"
 

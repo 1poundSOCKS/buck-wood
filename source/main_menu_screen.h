@@ -3,8 +3,8 @@
 
 #define UNICODE
 
+#include "framework/framework.h"
 #include "type_defs.h"
-#include "timers.h"
 #include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"

@@ -3,17 +3,17 @@
 
 #include <memory>
 #include <list>
+#include "framework/framework.h"
 #include "d2d_frame.h"
 #include "control_state.h"
-#include "timers.h"
 #include "sound_buffers.h"
-#include "perf_data.h"
 #include "game_objects.h"
 #include "diagnostics.h"
+#include "global_state.h"
 
 struct level_edit_screen_state
 {
-  level_edit_screen_state(const game_level_data_index& gameLevelDataIndex);
+  level_edit_screen_state(const global_state& globalState);
 
   bool returnToMenu = false;
   const game_level_data_index& gameLevelDataIndex;

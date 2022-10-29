@@ -1,7 +1,7 @@
 #include "level_edit_screen.h"
 #include "render.h"
 
-level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex) : gameLevelDataIndex(gameLevelDataIndex)
+level_edit_screen_state::level_edit_screen_state(const global_state& globalState) : gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.begin();
   const auto& levelData = *currentLevelDataIterator;

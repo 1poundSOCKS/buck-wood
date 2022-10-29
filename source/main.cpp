@@ -6,15 +6,15 @@
 #include <math.h>
 #include <filesystem>
 
+#include "framework/framework.h"
 #include "type_defs.h"
 #include "math.h"
-#include "d2d_app.h"
 #include "render.h"
 #include "control_state.h"
-#include "data_files.h"
 #include "main_menu_screen.h"
 #include "play_screen.h"
 #include "level_edit_screen.h"
+#include "global_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib, "D3D11.lib")
@@ -33,9 +33,10 @@ namespace fs = std::filesystem;
 #pragma comment(lib,"jsoncpp.lib")
 #endif
 
-template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers& soundBuffers);
-void RunPlayScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex);
-void RunLevelEditorScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex);
+template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState);
+int RunMainMenuScreen(d2d_app& app, const global_state& globalState);
+void RunPlayScreen(d2d_app& app, const global_state& globalState);
+void RunLevelEditorScreen(d2d_app& app, const global_state& globalState);
 bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
@@ -44,71 +45,71 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
   config_file configFile(L"config.txt");
+  const auto& dataPath = configFile.settings[L"data_path"];
 
   static const int fps = 60;
 
-  auto app = std::make_unique<d2d_app>(hInstance, nCmdShow, fps);
+  d2d_app app(hInstance, nCmdShow, fps);
+
+  global_state globalState(app, dataPath);
   
-  const std::wstring dataPath = configFile.settings[L"data_path"];
-
-  auto gameLevelDataIndexPtr = LoadAllGameLevelData(dataPath);
-
-  auto soundBuffers = std::make_unique<sound_buffers>(app->directSound, dataPath);
-
-  HRESULT hr = S_OK;
-
-  hr = app->dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
-  auto menuScreenState = std::make_unique<main_menu_screen_state>();
+  return RunMainMenuScreen(app, globalState);
+}
+
+int RunMainMenuScreen(d2d_app& app, const global_state& globalState)
+{
+  main_menu_screen_state screenState = main_menu_screen_state();
 
   MSG msg;
   while (ProcessMessage(&msg))
   {
-    if( app->terminating ) continue;
+    if( app.terminating ) continue;
 
-    UpdateScreen(*app, *menuScreenState, *soundBuffers);
+    UpdateScreen(app, globalState, screenState);
 
-    if( menuScreenState->quit )
+    if( screenState.quit )
     {
       ::PostQuitMessage(0);
-      app->terminating = true;
+      app.terminating = true;
       continue;
     }
 
-    if( menuScreenState->startPlay )
-      RunPlayScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
+    if( screenState.startPlay )
+      RunPlayScreen(app, globalState);
 
-    else if( menuScreenState->startLevelEdit )
-      RunLevelEditorScreen(*app, *soundBuffers, *gameLevelDataIndexPtr);
+    else if( screenState.startLevelEdit )
+      RunLevelEditorScreen(app, globalState);
 	}
 
   return (int) msg.wParam;
 }
 
-void RunPlayScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex)
+void RunPlayScreen(d2d_app& app, const global_state& globalState)
 {
   MSG msg;
-  play_screen_state playScreenState(*app.timer, gameLevelDataIndex);
+  play_screen_state playScreenState(globalState, *app.timer);
   
   while (ProcessMessage(&msg) && !playScreenState.returnToMenu )
   {
-    UpdateScreen(app, playScreenState, soundBuffers);
+    UpdateScreen(app, globalState, playScreenState);
   }
 }
 
-void RunLevelEditorScreen(d2d_app& app, sound_buffers& soundBuffers, const game_level_data_index& gameLevelDataIndex)
+void RunLevelEditorScreen(d2d_app& app, const global_state& globalState)
 {
   MSG msg;
-  level_edit_screen_state levelEditScreenState(gameLevelDataIndex);
+  level_edit_screen_state levelEditScreenState(globalState);
 
   while (ProcessMessage(&msg) && !levelEditScreenState.returnToMenu )
   {
-    UpdateScreen(app, levelEditScreenState, soundBuffers);
+    UpdateScreen(app, globalState, levelEditScreenState);
   }
 }
 
-template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers& soundBuffers)
+template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState)
 {
   static control_state controlState;
   
@@ -117,7 +118,7 @@ template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers&
   
   UpdateState(screenState, controlState, *app.timer);
 
-  d2d_frame frame(app.d2d_rendertarget, app.brushes, app.textFormats);
+  d2d_frame frame(app.d2d_rendertarget, globalState.brushes, globalState.textFormats);
   frame.renderTargetMouseX = controlState.renderTargetMouseX;
   frame.renderTargetMouseY = controlState.renderTargetMouseY;
 
@@ -135,7 +136,7 @@ template<class T> void UpdateScreen(d2d_app& app, T& screenState, sound_buffers&
 
   UpdateTimer(*app.timer);
 
-  UpdateSound(soundBuffers, screenState);
+  UpdateSound(globalState.soundBuffers, screenState);
 }
 
 bool ProcessMessage(MSG* msg)

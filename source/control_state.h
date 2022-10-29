@@ -1,7 +1,7 @@
 #ifndef _control_state_
 #define _control_state_
 
-#include "d2d_app.h"
+#include "framework/framework.h"
 
 struct control_state
 {

@@ -3,9 +3,8 @@
 
 #include <vector>
 #include <string>
+#include "framework/framework.h"
 #include "control_state.h"
-#include "perf_data.h"
-#include "timers.h"
 
 using diagnostics_data = std::vector<std::wstring>;
 

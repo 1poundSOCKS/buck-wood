@@ -1,6 +1,6 @@
 #include "game_objects.h"
 #include <fstream>
-#include "data_files.h"
+#include "framework/data_files.h"
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {

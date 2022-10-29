@@ -6,17 +6,21 @@
 #include <memory>
 #include <list>
 
+#include "framework/framework.h"
 #include "type_defs.h"
-#include "timers.h"
 #include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "game_objects.h"
 #include "diagnostics.h"
+#include "global_state.h"
 
 struct play_screen_state
 {
-  play_screen_state(const system_timer& timer, const game_level_data_index& gameLevelDataIndex);
+  play_screen_state(const global_state& globalState, const system_timer& timer);
+
+  const global_state& globalState;
+  const system_timer& systemTimer;
 
   bool returnToMenu = false;
   
@@ -25,14 +29,12 @@ struct play_screen_state
 
   std::unique_ptr<mouse_cursor> mouseCursor;
   
-  const game_level_data_index& gameLevelDataIndex;
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
 
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
 
-  system_timer systemTimer;
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
   std::unique_ptr<stopwatch> shotTimer;

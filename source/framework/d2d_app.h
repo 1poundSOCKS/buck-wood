@@ -18,8 +18,6 @@
 #include "timers.h"
 #include "input_state.h"
 #include "perf_data.h"
-#include "d2d_brushes.h"
-#include "dwrite_text_formats.h"
 
 struct d2d_app
 {
@@ -46,9 +44,6 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectSound8> directSound;
   winrt::com_ptr<IDirectSoundBuffer> primarySoundBuffer;
-
-  d2d_brushes_ptr brushes;
-  dwrite_text_formats_ptr textFormats;
 
   input_state inputState, previousInputState;
 };

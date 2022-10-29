@@ -17,23 +17,23 @@ bool LevelIsComplete(const play_screen_state& playState);
 const int play_screen_state::shotTimeNumerator;
 const int play_screen_state::shotTimeDenominator;
 
-play_screen_state::play_screen_state(const system_timer& systemTimer, const game_level_data_index& gameLevelDataIndex) 
-: systemTimer(systemTimer), gameLevelDataIndex(gameLevelDataIndex), mouseCursor(std::make_unique<mouse_cursor>())
+play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
+: systemTimer(systemTimer), 
+  globalState(globalState),
+  mouseCursor(std::make_unique<mouse_cursor>())
 {
   state = play_screen_state::state_playing;
   
-  currentLevelDataIterator = gameLevelDataIndex.begin();
+  currentLevelDataIterator = globalState.gameLevelDataIndex->begin();
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level>(*levelData);
-
-  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(currentLevel->timeLimitInSeconds), 1);
 
   player = CreatePlayerShip();
   player->xPos = currentLevel->playerStartPosX;
   player->yPos = currentLevel->playerStartPosY;
 
+  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(currentLevel->timeLimitInSeconds), 1);
   pauseTimer = std::make_unique<stopwatch>(systemTimer);
-
   shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
   shotTimer->paused = false;
 }
@@ -105,7 +105,7 @@ void RenderGamePaused(const d2d_frame& frame, play_screen_state& playState)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
 void RenderLevelComplete(const d2d_frame& frame, play_screen_state& playState)
@@ -114,7 +114,7 @@ void RenderLevelComplete(const d2d_frame& frame, play_screen_state& playState)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
 void RenderGameComplete(const d2d_frame& frame, play_screen_state& playState)
@@ -123,7 +123,7 @@ void RenderGameComplete(const d2d_frame& frame, play_screen_state& playState)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
 void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
@@ -132,12 +132,12 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& playState)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats->levelEndTextFormat.get(), rect, frame.brushes->brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
 void UpdateState(play_screen_state& playState, const control_state& controlState, const system_timer& timer)
 {
-  UpdateStopwatch(*playState.levelTimer);
+   UpdateStopwatch(*playState.levelTimer);
   UpdateStopwatch(*playState.pauseTimer);
   UpdateStopwatch(*playState.shotTimer);
 
@@ -210,6 +210,7 @@ void OnPlay(play_screen_state& playState, const control_state& controlState, con
   if( LevelIsComplete(playState) )
   {
     playState.state = play_screen_state::state_level_complete;
+    playState.levelTimer->paused = true;
     ResetStopwatch(*playState.pauseTimer, 3);
     playState.pauseTimer->paused = false;
     return;
@@ -242,7 +243,7 @@ void OnLevelComplete(play_screen_state& playState, const control_state& controlS
 {
   playState.currentLevelDataIterator++;
   
-  if( playState.currentLevelDataIterator == playState.gameLevelDataIndex.end() )
+  if( playState.currentLevelDataIterator == playState.globalState.gameLevelDataIndex->end() )
   {
     playState.state = play_screen_state::state_game_complete;
     ResetStopwatch(*playState.pauseTimer, 3);

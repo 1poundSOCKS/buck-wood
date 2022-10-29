@@ -12,6 +12,4 @@ struct sound_buffer
   winrt::com_ptr<IDirectSoundBuffer8> buffer;
 };
 
-using sound_buffer_ptr = std::unique_ptr<sound_buffer>;
-
 #endif
