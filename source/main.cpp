@@ -118,23 +118,24 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   
   UpdateState(screenState, controlState, *app.timer);
 
-  d2d_frame frame(app.d2d_rendertarget, viewTransform, globalState.brushes, globalState.textFormats);
-  frame.renderTargetMouseX = controlState.renderTargetMouseX;
-  frame.renderTargetMouseY = controlState.renderTargetMouseY;
-
-  RenderFrame(frame, screenState);
-
-  app.dxgi_swapChain->Present(1, 0);
-
-  UpdateSound(globalState.soundBuffers, screenState);
-
   UpdatePerformanceData(*app.perfData);
 
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
-  RenderDiagnostics(frame, diagnosticsData);
+
+  {
+    d2d_frame frame(app.d2d_rendertarget, viewTransform, globalState.brushes, globalState.textFormats);
+    frame.renderTargetMouseX = controlState.renderTargetMouseX;
+    frame.renderTargetMouseY = controlState.renderTargetMouseY;
+    RenderFrame(frame, screenState);
+    RenderDiagnostics(frame, diagnosticsData);
+  }
+
+  app.dxgi_swapChain->Present(1, 0);
+
+  UpdateSound(globalState.soundBuffers, screenState);
 
   UpdateTimer(*app.timer);
 }
