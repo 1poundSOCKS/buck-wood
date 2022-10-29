@@ -15,7 +15,7 @@ struct main_menu_screen_state
 {
   main_menu_screen_state();
 
-  std::unique_ptr<mouse_cursor> mouseCursor;
+  mouse_cursor mouseCursor;
 
   bool starting = true;
   bool running = true;

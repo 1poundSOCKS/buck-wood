@@ -15,6 +15,7 @@ struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
 
+  mouse_cursor mouseCursor;
   bool returnToMenu = false;
   const game_level_data_index& gameLevelDataIndex;
   game_level_data_index::const_iterator currentLevelDataIterator;

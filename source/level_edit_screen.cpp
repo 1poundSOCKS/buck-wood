@@ -19,6 +19,8 @@ void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
   auto levelTransform = D2D1::Matrix3x2F::Scale(0.3f, 0.3f) * D2D1::Matrix3x2F::Translation(shiftX, shiftY);
 
   RenderLevel(*screenState.currentLevel, frame, levelTransform);
+
+  RenderMouseCursor(frame, screenState.mouseCursor);
 }
 
 void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
