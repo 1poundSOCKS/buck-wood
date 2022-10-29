@@ -8,7 +8,7 @@ void CreateMainWindow(d2d_app* app);
 winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
-   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0), mouseX(0), mouseY(0)
+   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0)
 {
   RegisterMainWindowClass(inst);
 
@@ -115,10 +115,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     LPARAM mouseX = GET_X_LPARAM(lParam);
     LPARAM mouseY = GET_Y_LPARAM(lParam);
-    RECT clientRect;
-    GetClientRect(hWnd, &clientRect);
-    app->mouseX = static_cast<float>(mouseX) / static_cast<float>(clientRect.right - clientRect.left);
-    app->mouseY = static_cast<float>(mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
     app->msgMouseX = mouseX;
     app->msgMouseY = mouseY;
     return 0;
@@ -129,7 +125,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->mouseLButtonDown = true;
     app->msgLeftMouseButtonDown = true;
     return 0;
   }
@@ -139,7 +134,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->mouseLButtonDown = false;
     app->msgLeftMouseButtonDown = false;
     return 0;
   }
@@ -149,7 +143,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->mouseRButtonDown = true;
     app->msgRightMouseButtonDown = true;
     return 0;
   }
@@ -159,7 +152,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->mouseRButtonDown = false;
     app->msgRightMouseButtonDown = false;
     return 0;
   }
@@ -223,7 +215,7 @@ ATOM RegisterMainWindowClass(HINSTANCE hInstance)
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
     wcex.hIcon          = NULL;
-    wcex.hCursor        = NULL;//LoadCursor(nullptr, IDC_ARROW);
+    wcex.hCursor        = NULL;
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = NULL;
     wcex.lpszClassName  = lpszWndClass;

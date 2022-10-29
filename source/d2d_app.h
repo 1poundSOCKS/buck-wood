@@ -31,8 +31,12 @@ struct d2d_app
   int cmdShow;
   HWND wnd;
   UINT windowWidth, windowHeight;
+  LPARAM msgMouseX = 0, msgMouseY = 0;
+  bool msgLeftMouseButtonDown = false, msgRightMouseButtonDown = false;
+
   std::unique_ptr<system_timer> timer;
   std::unique_ptr<perf_data> perfData;
+
   winrt::com_ptr<ID3D11Device> d3d_device;
   winrt::com_ptr<IDXGISwapChain> dxgi_swapChain;
   winrt::com_ptr<IDXGIDevice> dxgi_device;
@@ -42,13 +46,9 @@ struct d2d_app
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectSound8> directSound;
   winrt::com_ptr<IDirectSoundBuffer> primarySoundBuffer;
+
   d2d_brushes_ptr brushes;
   dwrite_text_formats_ptr textFormats;
-  float mouseX, mouseY;
-  bool mouseLButtonDown = false, mouseRButtonDown = false;
-
-  LPARAM msgMouseX = 0, msgMouseY = 0;
-  bool msgLeftMouseButtonDown = false, msgRightMouseButtonDown = false;
 
   input_state inputState, previousInputState;
 };
