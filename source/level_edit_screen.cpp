@@ -11,8 +11,10 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
 {
+  static const float scale = 0.8f;
+  
   auto renderTargetSize = renderTarget->GetSize();
-  return CreateGameLevelTransform(0, 0, 0.5f, renderTargetSize.width, renderTargetSize.height);
+  return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
@@ -46,6 +48,12 @@ void UpdateState(level_edit_screen_state& screenState, const control_state& cont
       screenState.closestPoint = &point;
     }
   }
+
+  if( controlState.mouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
+  else if( controlState.mouseX > 0.9f ) screenState.levelCenterX += 10.0f;
+
+  if( controlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
+  else if( controlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
   if( screenState.closestPoint && controlState.shoot )
   {
