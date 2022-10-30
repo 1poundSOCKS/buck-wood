@@ -93,4 +93,4 @@ void UpdateGlobalState(global_state& globalState, const level_edit_screen_state&
 {
    auto& firstLevelData = globalState.gameLevelDataIndex->front();
   UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
- }
+}

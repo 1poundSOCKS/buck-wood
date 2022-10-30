@@ -35,7 +35,7 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
 int RunMainMenuScreen(d2d_app& app, global_state& globalState);
 void RunPlayScreen(d2d_app& app, global_state& globalState);
 void RunLevelEditorScreen(d2d_app& app, global_state& globalState);
-bool ProcessMessage(MSG* msg);
+bool ProcessMessage();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -61,8 +61,7 @@ int RunMainMenuScreen(d2d_app& app, global_state& globalState)
 {
   main_menu_screen_state screenState = main_menu_screen_state();
 
-  MSG msg;
-  while (ProcessMessage(&msg))
+  while (ProcessMessage())
   {
     if( app.terminating ) continue;
 
@@ -82,15 +81,14 @@ int RunMainMenuScreen(d2d_app& app, global_state& globalState)
       RunLevelEditorScreen(app, globalState);
 	}
 
-  return (int) msg.wParam;
+  return 0;
 }
 
 void RunPlayScreen(d2d_app& app, global_state& globalState)
 {
-  MSG msg;
   play_screen_state playScreenState(globalState, *app.timer);
   
-  while (ProcessMessage(&msg) && !playScreenState.returnToMenu )
+  while (ProcessMessage() && !playScreenState.returnToMenu )
   {
     UpdateScreen(app, globalState, playScreenState);
   }
@@ -98,10 +96,9 @@ void RunPlayScreen(d2d_app& app, global_state& globalState)
 
 void RunLevelEditorScreen(d2d_app& app, global_state& globalState)
 {
-  MSG msg;
   level_edit_screen_state levelEditScreenState(globalState);
 
-  while (ProcessMessage(&msg) && !levelEditScreenState.returnToMenu )
+  while (ProcessMessage() && !levelEditScreenState.returnToMenu )
   {
     UpdateScreen(app, globalState, levelEditScreenState);
   }
@@ -141,16 +138,17 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   UpdatePerformanceData(*app.perfData);
 }
 
-bool ProcessMessage(MSG* msg)
+bool ProcessMessage()
 {
-	if (PeekMessage(msg, nullptr, 0, 0, PM_REMOVE))
+  MSG msg;
+	if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
   {
-    if (!TranslateAccelerator(msg->hwnd, NULL, msg))
+    if (!TranslateAccelerator(msg.hwnd, NULL, &msg))
     {
-      TranslateMessage(msg);
-      DispatchMessage(msg);
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
     }
-    return (msg->message != WM_QUIT);
+    return (msg.message != WM_QUIT);
 	}
 
   return true;
