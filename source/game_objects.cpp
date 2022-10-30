@@ -81,11 +81,11 @@ target::target(float x, float y, float size) : state(DEACTIVATED)
 }
 
 game_level::game_level(const game_level_data& gameLevelData)
+: name(gameLevelData.name),
+  playerStartPosX(gameLevelData.playerStartPosX),
+  playerStartPosY(gameLevelData.playerStartPosY),
+  timeLimitInSeconds(gameLevelData.timeLimitInSeconds)
 {
-  playerStartPosX = gameLevelData.playerStartPosX;
-  playerStartPosY = gameLevelData.playerStartPosY;
-  timeLimitInSeconds = gameLevelData.timeLimitInSeconds;
-
   boundary = std::make_unique<game_shape>(gameLevelData.boundaryPoints);
 
   std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
@@ -228,4 +228,14 @@ std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& 
   gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
   gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
   return gameLevelDataIndex;
+}
+
+void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameLevel)
+{
+  gameLevelData.name = gameLevel.name;
+  gameLevelData.playerStartPosX = gameLevel.playerStartPosX;
+  gameLevelData.playerStartPosY = gameLevel.playerStartPosY;
+  gameLevelData.boundaryPoints.clear();
+  gameLevelData.boundaryPoints.reserve(gameLevel.boundary->points.size());
+  std::copy(gameLevel.boundary->points.begin(), gameLevel.boundary->points.end(), std::back_inserter(gameLevelData.boundaryPoints));
 }

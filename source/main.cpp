@@ -32,9 +32,9 @@
 #endif
 
 template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState);
-int RunMainMenuScreen(d2d_app& app, const global_state& globalState);
-void RunPlayScreen(d2d_app& app, const global_state& globalState);
-void RunLevelEditorScreen(d2d_app& app, const global_state& globalState);
+int RunMainMenuScreen(d2d_app& app, global_state& globalState);
+void RunPlayScreen(d2d_app& app, global_state& globalState);
+void RunLevelEditorScreen(d2d_app& app, global_state& globalState);
 bool ProcessMessage(MSG* msg);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
@@ -57,7 +57,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   return RunMainMenuScreen(app, globalState);
 }
 
-int RunMainMenuScreen(d2d_app& app, const global_state& globalState)
+int RunMainMenuScreen(d2d_app& app, global_state& globalState)
 {
   main_menu_screen_state screenState = main_menu_screen_state();
 
@@ -85,7 +85,7 @@ int RunMainMenuScreen(d2d_app& app, const global_state& globalState)
   return (int) msg.wParam;
 }
 
-void RunPlayScreen(d2d_app& app, const global_state& globalState)
+void RunPlayScreen(d2d_app& app, global_state& globalState)
 {
   MSG msg;
   play_screen_state playScreenState(globalState, *app.timer);
@@ -96,7 +96,7 @@ void RunPlayScreen(d2d_app& app, const global_state& globalState)
   }
 }
 
-void RunLevelEditorScreen(d2d_app& app, const global_state& globalState)
+void RunLevelEditorScreen(d2d_app& app, global_state& globalState)
 {
   MSG msg;
   level_edit_screen_state levelEditScreenState(globalState);
@@ -105,6 +105,8 @@ void RunLevelEditorScreen(d2d_app& app, const global_state& globalState)
   {
     UpdateScreen(app, globalState, levelEditScreenState);
   }
+
+  UpdateGlobalState(globalState, levelEditScreenState);
 }
 
 template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState)
@@ -116,8 +118,8 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   RefreshInputState(app);
   RefreshControlState(controlState, app, viewTransform);
 
-  UpdateState(screenState, controlState, *app.timer);
-
+  UpdateScreenState(screenState, controlState, *app.timer);
+  
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);

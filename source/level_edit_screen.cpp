@@ -12,7 +12,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
 {
   static const float scale = 0.8f;
-  
+
   auto renderTargetSize = renderTarget->GetSize();
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
@@ -28,7 +28,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   RenderMouseCursor(frame, screenState.mouseCursor);
 }
 
-void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
   screenState.levelMouseX = controlState.worldMouseX;
   screenState.levelMouseY = controlState.worldMouseY;
@@ -88,3 +88,9 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
     diagnosticsData.push_back(text);
   }
 }
+
+void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
+{
+   auto& firstLevelData = globalState.gameLevelDataIndex->front();
+  UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
+ }

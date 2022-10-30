@@ -136,12 +136,12 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
-void UpdateState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
   screenState.levelMouseX = controlState.worldMouseX;
   screenState.levelMouseY = controlState.worldMouseY;
 
-  UpdateStopwatch(*screenState.levelTimer);
+   UpdateStopwatch(*screenState.levelTimer);
   UpdateStopwatch(*screenState.pauseTimer);
   UpdateStopwatch(*screenState.shotTimer);
 

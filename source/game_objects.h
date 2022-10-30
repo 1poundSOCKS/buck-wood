@@ -94,6 +94,7 @@ struct game_level
 {
   game_level(const game_level_data& gameLevelData);
  
+  std::string name;
   float playerStartPosX = 0, playerStartPosY = 0;
   float timeLimitInSeconds = 0;
   std::unique_ptr<game_shape> boundary;
@@ -110,5 +111,6 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
+void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameLevel);
 
 #endif

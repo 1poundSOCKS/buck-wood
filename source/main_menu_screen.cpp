@@ -33,7 +33,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   RenderMouseCursor(frame, screenState.mouseCursor);
 }
 
-void UpdateState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
   screenState.startPlay = screenState.startLevelEdit = false;
   
