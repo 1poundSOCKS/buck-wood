@@ -88,10 +88,10 @@ game_level::game_level(const game_level_data& gameLevelData)
 
   boundary = std::make_unique<game_shape>(gameLevelData.boundaryPoints);
 
-  game_level_object_data_ptr objectData = std::make_unique<game_level_object_data>();
+  std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
   for( const auto& object: gameLevelData.objects )
   {
-    game_shape_ptr gameShape = std::make_unique<game_shape>(*object);
+    std::unique_ptr<game_shape> gameShape = std::make_unique<game_shape>(*object);
     objects.push_back(std::move(gameShape));
   }
   
@@ -167,7 +167,7 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
   for( int i = 0; i < objectCount; i++)
   {
     Json::Value jsonObject = objects[i];
-    auto objectDataPtr = LoadLevelObjectDataFromJSON(jsonObject);
+    auto objectDataPtr = LoadObjectDataFromJSON(jsonObject);
     levelData->objects.push_back(std::move(objectDataPtr));
   }
 
@@ -185,7 +185,7 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
   return levelData;
 }
 
-game_level_object_data_ptr LoadLevelObjectDataFromJSON(const Json::Value& jsonObject)
+std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject)
 {
   auto objectDataPtr = std::make_unique<game_level_object_data>();
 

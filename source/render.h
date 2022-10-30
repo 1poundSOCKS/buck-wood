@@ -18,6 +18,7 @@ void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor);
 void RenderPlayer(const d2d_frame& frame, const player_ship& player);
 void RenderBullet(const d2d_frame& frame, const bullet& bullet);
 void RenderLevel(const d2d_frame& frame, const game_level& level);
+void RenderHighlightedPoint(const d2d_frame& frame, const game_point& point);
 
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);

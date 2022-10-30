@@ -75,3 +75,10 @@ void TransformPlayerShip(const player_ship& player, std::list<game_point>& trans
     transformedPoints.push_back(game_point(outPoint.x, outPoint.y));
   }
 }
+
+float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
+{
+  float cx = x2 - x1;
+  float cy = y2 - y1;
+  return sqrt( cx * cx + cy * cy );
+}

@@ -21,6 +21,8 @@ struct level_edit_screen_state
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
   float levelMouseX = 0, levelMouseY = 0;
+  game_point* closestPoint = nullptr;
+  float pointDistance;
 };
 
 using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;

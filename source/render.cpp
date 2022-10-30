@@ -90,6 +90,17 @@ void RenderLevel(const d2d_frame& frame, const game_level& level)
   }
 }
 
+void RenderHighlightedPoint(const d2d_frame& frame, const game_point& point)
+{
+  static const float pointSize = 5.0f;
+
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(point.x, point.y);
+  const D2D1::Matrix3x2F transform = translate * frame.viewTransform;
+  frame.renderTarget->SetTransform(transform);
+  D2D1_RECT_F rectangle = D2D1::RectF(- pointSize / 2, - pointSize / 2, pointSize / 2, pointSize / 2);
+  frame.renderTarget->FillRectangle(&rectangle, frame.brushes.brushActivated.get());
+}
+
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   RenderLines(shape.lines, renderTarget, brush);
