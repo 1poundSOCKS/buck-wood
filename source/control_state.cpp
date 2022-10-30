@@ -1,6 +1,6 @@
 #include "control_state.h"
 
-void RefreshControlState(control_state& controlState, const d2d_app& app)
+void RefreshControlState(control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform)
 {
   const auto& keyboardState = app.inputState.keyboardState;
   const auto& previousKeyboardState = app.previousInputState.keyboardState;
@@ -21,4 +21,15 @@ void RefreshControlState(control_state& controlState, const d2d_app& app)
   const auto renderTargetSize = app.d2d_rendertarget->GetSize();
   controlState.renderTargetMouseX = controlState.mouseX * renderTargetSize.width;
   controlState.renderTargetMouseY = controlState.mouseY * renderTargetSize.height;
+
+  auto mouseTransform = worldViewTransform;
+  if( mouseTransform.Invert() )
+  {
+    D2D1_POINT_2F inPoint;
+    inPoint.x = controlState.renderTargetMouseX;
+    inPoint.y = controlState.renderTargetMouseY;
+    auto outPoint = mouseTransform.TransformPoint(inPoint);
+    controlState.worldMouseX = outPoint.x;
+    controlState.worldMouseY = outPoint.y;
+  }
 }

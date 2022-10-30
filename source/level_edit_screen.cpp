@@ -14,28 +14,20 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return CreateGameLevelTransform(0, 0, 0.3f, renderTargetSize.width, renderTargetSize.height);
 }
 
-void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
+void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   RenderLevel(frame, *screenState.currentLevel);
 
   RenderMouseCursor(frame, screenState.mouseCursor);
-
-  auto levelTransform = frame.viewTransform;
-  if( levelTransform.Invert() )
-  {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = frame.renderTargetMouseX;
-    inPoint.y = frame.renderTargetMouseY;
-    auto outPoint = levelTransform.TransformPoint(inPoint);
-    screenState.levelMouseX = outPoint.x;
-    screenState.levelMouseY = outPoint.y;
-  }
 }
 
 void UpdateState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
+  screenState.levelMouseX = controlState.worldMouseX;
+  screenState.levelMouseY = controlState.worldMouseY;
+
   screenState.returnToMenu = false;
 
   if( controlState.quitPress ) screenState.returnToMenu = true;

@@ -111,11 +111,11 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
 {
   static control_state controlState;
   
-  RefreshInputState(app);
-  RefreshControlState(controlState, app);
-
   const auto viewTransform = CreateViewTransform(app.d2d_rendertarget, screenState);
   
+  RefreshInputState(app);
+  RefreshControlState(controlState, app, viewTransform);
+
   UpdateState(screenState, controlState, *app.timer);
 
   static diagnostics_data diagnosticsData;

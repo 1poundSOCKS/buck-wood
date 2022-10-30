@@ -4,10 +4,11 @@
 
 const float gameSpeedMultiplier = 2.0f;
 
-void RenderGamePaused(const d2d_frame& frame, play_screen_state& screenState);
-void RenderLevelComplete(const d2d_frame& frame, play_screen_state& screenState);
-void RenderGameComplete(const d2d_frame& frame, play_screen_state& screenState);
-void RenderPlayerDead(const d2d_frame& frame, play_screen_state& screenState);
+void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState);
+void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState);
+void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
+void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState);
+
 void OnPlay(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
 void UpdatePlayer(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
@@ -46,7 +47,7 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 
-void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
+void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 {
 #ifdef EXPERIMENTAL
   float absVelocityX = fabsf(screenState.player->xVelocity);
@@ -89,20 +90,9 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
   RenderTimer(frame, levelTimeRemaining);
 
   RenderMouseCursor(frame, screenState.mouseCursor);
-
-  auto levelTransform = frame.viewTransform;
-  if( levelTransform.Invert() )
-  {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = frame.renderTargetMouseX;
-    inPoint.y = frame.renderTargetMouseY;
-    auto outPoint = levelTransform.TransformPoint(inPoint);
-    screenState.levelMouseX = outPoint.x;
-    screenState.levelMouseY = outPoint.y;
-  }
 }
 
-void RenderGamePaused(const d2d_frame& frame, play_screen_state& screenState)
+void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)
 {
   std::wstring text = L"PAUSED";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -111,7 +101,7 @@ void RenderGamePaused(const d2d_frame& frame, play_screen_state& screenState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
-void RenderLevelComplete(const d2d_frame& frame, play_screen_state& screenState)
+void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState)
 {
   std::wstring text = L"LEVEL COMPLETE";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -120,7 +110,7 @@ void RenderLevelComplete(const d2d_frame& frame, play_screen_state& screenState)
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
-void RenderGameComplete(const d2d_frame& frame, play_screen_state& screenState)
+void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState)
 {
   std::wstring msg = L"";
 
@@ -137,7 +127,7 @@ void RenderGameComplete(const d2d_frame& frame, play_screen_state& screenState)
   frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
 }
 
-void RenderPlayerDead(const d2d_frame& frame, play_screen_state& screenState)
+void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState)
 {
   std::wstring text = L"YOU LOSE";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
@@ -148,6 +138,9 @@ void RenderPlayerDead(const d2d_frame& frame, play_screen_state& screenState)
 
 void UpdateState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
 {
+  screenState.levelMouseX = controlState.worldMouseX;
+  screenState.levelMouseY = controlState.worldMouseY;
+
   UpdateStopwatch(*screenState.levelTimer);
   UpdateStopwatch(*screenState.pauseTimer);
   UpdateStopwatch(*screenState.shotTimer);
