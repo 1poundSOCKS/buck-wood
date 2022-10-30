@@ -118,8 +118,6 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   
   UpdateState(screenState, controlState, *app.timer);
 
-  UpdatePerformanceData(*app.perfData);
-
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
@@ -138,6 +136,7 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   UpdateSound(globalState.soundBuffers, screenState);
 
   UpdateTimer(*app.timer);
+  UpdatePerformanceData(*app.perfData);
 }
 
 bool ProcessMessage(MSG* msg)

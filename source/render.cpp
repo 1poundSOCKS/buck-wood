@@ -38,11 +38,11 @@ void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor)
   RenderLines(mouseCursor.lines, frame.renderTarget, frame.brushes.brush);
 }
 
-void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderPlayer(const d2d_frame& frame, const player_ship& player)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
-  const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
+  const D2D1::Matrix3x2F transform = rotate * translate * frame.viewTransform;
   frame.renderTarget->SetTransform(transform);
   RenderShape(*player.outline, frame.renderTarget, frame.brushes.brush);
 
@@ -60,20 +60,20 @@ void RenderPlayer(const player_ship& player, const d2d_frame& frame, const D2D1:
   }
 }
 
-void RenderBullet(const bullet& bullet, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderBullet(const d2d_frame& frame, const bullet& bullet)
 {
   static const float bulletSize = 3.0f;
 
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  const D2D1::Matrix3x2F transform = translate * viewTransform;
+  const D2D1::Matrix3x2F transform = translate * frame.viewTransform;
   frame.renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
   frame.renderTarget->FillRectangle(&rectangle, frame.brushes.brush.get());
 }
 
-void RenderLevel(const game_level& level, const d2d_frame& frame, const D2D1::Matrix3x2F& viewTransform)
+void RenderLevel(const d2d_frame& frame, const game_level& level)
 {
-  frame.renderTarget->SetTransform(viewTransform);
+  frame.renderTarget->SetTransform(frame.viewTransform);
   RenderShape(*level.boundary, frame.renderTarget, frame.brushes.brush);
 
   for( const auto& shape: level.objects )

@@ -18,12 +18,11 @@ void RenderFrame(const d2d_frame& frame, level_edit_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  auto levelTransform = frame.viewTransform;
-
-  RenderLevel(*screenState.currentLevel, frame, levelTransform);
+  RenderLevel(frame, *screenState.currentLevel);
 
   RenderMouseCursor(frame, screenState.mouseCursor);
 
+  auto levelTransform = frame.viewTransform;
   if( levelTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;

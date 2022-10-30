@@ -61,14 +61,12 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 
   auto& currentLevel = *screenState.currentLevel;
 
-  auto levelTransform = frame.viewTransform;
-
-  RenderLevel(currentLevel, frame, levelTransform);
-  RenderPlayer(*screenState.player, frame, levelTransform);
+  RenderLevel(frame, currentLevel);
+  RenderPlayer(frame, *screenState.player);
 
   for( const std::unique_ptr<bullet>& bullet : screenState.bullets )
   {
-    RenderBullet(*bullet, frame, levelTransform);
+    RenderBullet(frame, *bullet);
   }
 
   switch( screenState.state )
@@ -92,6 +90,7 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 
   RenderMouseCursor(frame, screenState.mouseCursor);
 
+  auto levelTransform = frame.viewTransform;
   if( levelTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
