@@ -388,10 +388,10 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& scr
 {
   DWORD bufferStatus = 0;
 
-  if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-  {
-    if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
-  }
+  // if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
+  // {
+  //   if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
+  // }
 
   if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
   {

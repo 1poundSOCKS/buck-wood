@@ -8,7 +8,7 @@ void CreateMainWindow(d2d_app* app);
 winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound);
 
 d2d_app::d2d_app(HINSTANCE inst,int cmdShow, int fps)
-   : terminating(false), inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0)
+   : inst(inst), cmdShow(cmdShow), wnd(NULL), windowWidth(0), windowHeight(0)
 {
   RegisterMainWindowClass(inst);
 

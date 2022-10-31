@@ -3,5 +3,6 @@
 
 #include "d2d_app.h"
 #include "sound_buffer.h"
+#include "music_player.h"
 
 #endif
