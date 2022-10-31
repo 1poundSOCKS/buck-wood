@@ -66,15 +66,6 @@ void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state
 {
   DWORD bufferStatus = 0;
 
-  // if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-  // {
-  //   if( !(bufferStatus & DSBSTATUS_PLAYING) )
-  //   {
-  //     soundBuffers.menuTheme->buffer->SetCurrentPosition(0);
-  //     soundBuffers.menuTheme->buffer->Play(0, 0, DSBPLAY_LOOPING);
-  //   }
-  // }
-
   if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
   {
     if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();

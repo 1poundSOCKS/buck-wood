@@ -388,23 +388,12 @@ void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& scr
 {
   DWORD bufferStatus = 0;
 
-  // if( SUCCEEDED(soundBuffers.menuTheme->buffer->GetStatus(&bufferStatus)) )
-  // {
-  //   if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.menuTheme->buffer->Stop();
-  // }
-
   if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
   {
     if( bufferStatus & DSBSTATUS_PLAYING )
     {
-      if( !screenState.player->thrusterOn ||
-          screenState.state == play_screen_state::state_paused ||
-          screenState.state == play_screen_state::state_player_dead ||
-          screenState.state == play_screen_state::state_game_complete ||
-          screenState.state == play_screen_state::state_level_complete )
-      {
+      if( !screenState.player->thrusterOn || screenState.state != play_screen_state::state_playing )
         soundBuffers.thrust->buffer->Stop();
-      }
     }
     else
     {
