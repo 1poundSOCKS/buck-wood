@@ -3,7 +3,7 @@
 #include "render.h"
 #include "game_math.h"
 
-void FetchAllLevelPoints(const game_level& level, std::vector<std::reference_wrapper<game_point>>& points);
+void FetchAllLevelPoints(const game_level_edit& level, std::vector<std::reference_wrapper<game_point>>& points);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -13,7 +13,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 {
   currentLevelDataIterator = gameLevelDataIndex.begin();
   const auto& levelData = *currentLevelDataIterator;
-  currentLevel = std::make_unique<game_level>(*levelData);
+  currentLevel = std::make_unique<game_level_edit>(*levelData);
 }
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
@@ -66,19 +66,19 @@ void UpdateScreenState(level_edit_screen_state& screenState, const control_state
   {
     screenState.closestPoint->x = controlState.worldMouseX;
     screenState.closestPoint->y = controlState.worldMouseY;
-    screenState.currentLevel->boundary->lines.clear();
-    CreateShapeLinesFromPoints(screenState.currentLevel->boundary->lines, screenState.currentLevel->boundary->points);
+    // screenState.currentLevel->boundary->lines.clear();
+    // CreateShapeLinesFromPoints(screenState.currentLevel->boundary->lines, screenState.currentLevel->boundary->points);
   }
 
   std::vector<std::reference_wrapper<game_point>> points;
   FetchAllLevelPoints(*screenState.currentLevel, points);
 }
 
-void FetchAllLevelPoints(const game_level& level, std::vector<std::reference_wrapper<game_point>>& points)
+void FetchAllLevelPoints(const game_level_edit& level, std::vector<std::reference_wrapper<game_point>>& points)
 {
   std::vector<size_t> objectSizes;
   objectSizes.reserve(level.objects.size());
-  std::transform(level.objects.cbegin(), level.objects.cend(), std::back_inserter(objectSizes), [](const std::unique_ptr<game_shape>& shape) { return shape->points.size(); });
+  std::transform(level.objects.cbegin(), level.objects.cend(), std::back_inserter(objectSizes), [](const std::unique_ptr<game_shape_edit>& shape) { return shape->points.size(); });
   size_t sumOfObjectSizes = std::accumulate(objectSizes.begin(), objectSizes.end(), static_cast<size_t>(0));
 
   points.clear();
@@ -115,6 +115,6 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
-   auto& firstLevelData = globalState.gameLevelDataIndex->front();
-  UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
+  //  auto& firstLevelData = globalState.gameLevelDataIndex->front();
+  // UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
 }

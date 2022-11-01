@@ -90,6 +90,25 @@ void RenderLevel(const d2d_frame& frame, const game_level& level, const d2d_brus
   }
 }
 
+void RenderLevel(const d2d_frame& frame, const game_level_edit& level, const d2d_brushes& brushes)
+{
+  frame.renderTarget->SetTransform(frame.viewTransform);
+  RenderShape(*level.boundary, frame.renderTarget, brushes.brush);
+
+  for( const auto& shape: level.objects )
+  {
+    RenderShape(*shape, frame.renderTarget, brushes.brush);
+  }
+
+  for( const auto& target: level.targets)
+  {
+    const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == 
+      target::ACTIVATED ? brushes.brushActivated : brushes.brushDeactivated;
+    
+    RenderShape(target->shape, frame.renderTarget, targetBrush);
+  }
+}
+
 void RenderHighlightedPoint(const d2d_frame& frame, const game_point& point, const d2d_brushes& brushes)
 {
   static const float pointSize = 5.0f;
@@ -106,7 +125,28 @@ void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget
   RenderLines(shape.lines, renderTarget, brush);
 }
 
+void RenderShape(const game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+{
+  RenderLines(shape.lines, renderTarget, brush);
+}
+
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+{
+  for( const auto& line : lines )
+  {
+    D2D1_POINT_2F startPoint;
+    startPoint.x = line.start.x;
+    startPoint.y = line.start.y;
+
+    D2D1_POINT_2F endPoint;
+    endPoint.x = line.end.x;
+    endPoint.y = line.end.y;
+
+    renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
+  }
+}
+
+void RenderLines(const std::vector<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   for( const auto& line : lines )
   {

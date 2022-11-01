@@ -19,10 +19,13 @@ void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor, 
 void RenderPlayer(const d2d_frame& frame, const player_ship& player, const d2d_brushes& brushes);
 void RenderBullet(const d2d_frame& frame, const bullet& bullet, const d2d_brushes& brushes);
 void RenderLevel(const d2d_frame& frame, const game_level& level, const d2d_brushes& brushes);
+void RenderLevel(const d2d_frame& frame, const game_level_edit& level, const d2d_brushes& brushes);
 void RenderHighlightedPoint(const d2d_frame& frame, const game_point& point, const d2d_brushes& brushes);
 
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
+void RenderShape(const game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
+void RenderLines(const std::vector<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 
 D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, float renderTargetWidth, float renderTargetHeight);
 

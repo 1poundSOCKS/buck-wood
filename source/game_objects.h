@@ -22,6 +22,13 @@ struct game_line
   game_point start, end;
 };
 
+struct game_line_edit
+{
+  game_line_edit(game_point& start, game_point& end);
+
+  game_point& start, end;
+};
+
 struct game_level_object_data
 {
   float x, y;
@@ -37,6 +44,15 @@ struct game_shape
 
   std::list<game_point> points;
   std::list<game_line> lines;
+};
+
+struct game_shape_edit
+{
+  game_shape_edit(const std::vector<game_point>& pointsToCopy);
+  game_shape_edit(const game_level_object_data& objectData);
+
+  std::vector<game_point> points;
+  std::vector<game_line_edit> lines;
 };
 
 struct mouse_cursor
@@ -102,11 +118,24 @@ struct game_level
   std::list<std::unique_ptr<target>> targets;
 };
 
+struct game_level_edit
+{
+  game_level_edit(const game_level_data& gameLevelData);
+ 
+  std::string name;
+  float playerStartPosX = 0, playerStartPosY = 0;
+  float timeLimitInSeconds = 0;
+  std::unique_ptr<game_shape_edit> boundary;
+  std::list<std::unique_ptr<game_shape_edit>> objects;
+  std::list<std::unique_ptr<target>> targets;
+};
+
 using game_level_data_index = std::vector<std::unique_ptr<game_level_data>>;
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
+void CreateShapeLinesFromPoints(std::vector<game_line_edit>& lines, std::vector<game_point>& points);
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject, game_level_data& gameLevelData);
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);

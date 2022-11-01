@@ -10,6 +10,11 @@ game_line::game_line(float startX, float startY, float endX, float endY) : start
 {
 }
 
+game_line_edit::game_line_edit(game_point& start, game_point& end)
+: start(start), end(end)
+{
+}
+
 game_shape::game_shape()
 {
 }
@@ -26,6 +31,23 @@ game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
 }
 
 game_shape::game_shape(const game_level_object_data& objectData)
+{
+  for( const auto& point: objectData.points )
+  {
+    points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
+  }
+
+  CreateShapeLinesFromPoints(lines, points);
+}
+
+game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
+{
+  points.reserve(pointsToCopy.size());
+  std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
+  CreateShapeLinesFromPoints(lines, points);
+}
+
+game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
 {
   for( const auto& point: objectData.points )
   {
@@ -102,6 +124,28 @@ game_level::game_level(const game_level_data& gameLevelData)
   }
 }
 
+game_level_edit::game_level_edit(const game_level_data& gameLevelData)
+: name(gameLevelData.name),
+  playerStartPosX(gameLevelData.playerStartPosX),
+  playerStartPosY(gameLevelData.playerStartPosY),
+  timeLimitInSeconds(gameLevelData.timeLimitInSeconds)
+{
+  boundary = std::make_unique<game_shape_edit>(gameLevelData.boundaryPoints);
+
+  std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
+  for( const auto& object: gameLevelData.objects )
+  {
+    std::unique_ptr<game_shape_edit> gameShape = std::make_unique<game_shape_edit>(*object);
+    objects.push_back(std::move(gameShape));
+  }
+  
+  for( const auto& t: gameLevelData.targets )
+  {
+    auto levelTarget = std::make_unique<target>(t.x, t.y, 40.0f);
+    targets.push_back(std::move(levelTarget));
+  }
+}
+
 std::unique_ptr<player_ship> CreatePlayerShip()
 {
   return std::make_unique<player_ship>();
@@ -134,6 +178,27 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
     {
       const game_point& point2 = *points.begin();
       lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
+    }
+  }
+}
+
+void CreateShapeLinesFromPoints(std::vector<game_line_edit>& lines, std::vector<game_point>& points)
+{
+  std::vector<game_point>::iterator i = points.begin();
+  
+  while( i != points.end()  )
+  {
+    game_point& point1 = *i;
+    i++;
+    if( i != points.end() )
+    {
+      game_point& point2 = *i;
+      lines.push_back(game_line_edit(point1, point2));
+    }
+    else
+    {
+      game_point& point2 = *points.begin();
+      lines.push_back(game_line_edit(point1, point2));
     }
   }
 }
