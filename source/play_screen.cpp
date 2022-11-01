@@ -419,6 +419,6 @@ void UpdateSound(const play_screen_state& screenState, const play_screen_sounds&
 {
   if( screenState.playerShot ) sounds.shoot.Play();
   if( screenState.targetShot ) sounds.targetActivated.Play();
-  if( screenState.player->thrusterOn ) sounds.thrust.PlayOnLoop();
+  if( screenState.player->thrusterOn && screenState.state == play_screen_state::state_playing ) sounds.thrust.PlayOnLoop();
   else sounds.thrust.Stop();
 }
