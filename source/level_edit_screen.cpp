@@ -2,7 +2,11 @@
 #include "render.h"
 #include "game_math.h"
 
-level_edit_screen_state::level_edit_screen_state(const global_state& globalState) : gameLevelDataIndex(*globalState.gameLevelDataIndex)
+level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
+: globalState(globalState),
+  brushes(globalState.brushes),
+  textFormats(globalState.textFormats),
+  gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.begin();
   const auto& levelData = *currentLevelDataIterator;
@@ -21,11 +25,11 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderLevel(frame, *screenState.currentLevel);
+  RenderLevel(frame, *screenState.currentLevel, screenState.brushes);
 
-  if( screenState.closestPoint ) RenderHighlightedPoint(frame, *screenState.closestPoint);
+  if( screenState.closestPoint ) RenderHighlightedPoint(frame, *screenState.closestPoint, screenState.brushes);
 
-  RenderMouseCursor(frame, screenState.mouseCursor);
+  RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
 }
 
 void UpdateScreenState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)

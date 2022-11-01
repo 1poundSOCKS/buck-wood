@@ -1,15 +1,15 @@
-#include "music_player.h"
+#include "sound_buffer_player.h"
 
-music_player::music_player(const sound_buffer& soundBuffer) : soundBuffer(soundBuffer)
+sound_buffer_player::sound_buffer_player(const sound_buffer& soundBuffer) : soundBuffer(soundBuffer)
 {
 }
 
-music_player::~music_player()
+sound_buffer_player::~sound_buffer_player()
 {
   Stop();
 }
 
-void music_player::Start()
+void sound_buffer_player::Start()
 {
   DWORD bufferStatus = 0;
 
@@ -20,7 +20,7 @@ void music_player::Start()
   }
 }
 
-void music_player::Stop()
+void sound_buffer_player::Stop()
 {
   DWORD bufferStatus = 0;
 

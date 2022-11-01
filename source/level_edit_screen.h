@@ -4,7 +4,6 @@
 #include <memory>
 #include <list>
 #include "framework/framework.h"
-#include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "game_objects.h"
@@ -14,6 +13,10 @@
 struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
+
+  const global_state& globalState;
+  const d2d_brushes& brushes;
+  const dwrite_text_formats& textFormats;
 
   mouse_cursor mouseCursor;
   bool returnToMenu = false;

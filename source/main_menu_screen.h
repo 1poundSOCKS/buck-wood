@@ -4,7 +4,6 @@
 #define UNICODE
 
 #include "framework/framework.h"
-#include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "diagnostics.h"
@@ -13,7 +12,11 @@
 
 struct main_menu_screen_state
 {
-  main_menu_screen_state();
+  main_menu_screen_state(const global_state& globalState);
+
+  const global_state& globalState;
+  const d2d_brushes& brushes;
+  const dwrite_text_formats& textFormats;
 
   mouse_cursor mouseCursor;
 

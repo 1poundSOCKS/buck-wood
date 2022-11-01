@@ -7,7 +7,6 @@
 #include <list>
 
 #include "framework/framework.h"
-#include "d2d_frame.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "game_objects.h"
@@ -20,6 +19,9 @@ struct play_screen_state
 
   const global_state& globalState;
   const system_timer& systemTimer;
+
+  d2d_brushes brushes;
+  dwrite_text_formats textFormats;
 
   bool returnToMenu = false;
   

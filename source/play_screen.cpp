@@ -20,7 +20,9 @@ const int play_screen_state::shotTimeDenominator;
 
 play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
 : systemTimer(systemTimer), 
-  globalState(globalState)
+  globalState(globalState),
+  brushes(globalState.brushes),
+  textFormats(globalState.textFormats)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->begin();
   const auto& levelData = *currentLevelDataIterator;
@@ -62,12 +64,12 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 
   auto& currentLevel = *screenState.currentLevel;
 
-  RenderLevel(frame, currentLevel);
-  RenderPlayer(frame, *screenState.player);
+  RenderLevel(frame, currentLevel, screenState.brushes);
+  RenderPlayer(frame, *screenState.player, screenState.brushes);
 
   for( const std::unique_ptr<bullet>& bullet : screenState.bullets )
   {
-    RenderBullet(frame, *bullet);
+    RenderBullet(frame, *bullet, screenState.brushes);
   }
 
   switch( screenState.state )
@@ -87,9 +89,9 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  RenderTimer(frame, levelTimeRemaining);
+  RenderTimer(frame, levelTimeRemaining, screenState.textFormats, screenState.brushes);
 
-  RenderMouseCursor(frame, screenState.mouseCursor);
+  RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
 }
 
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)
@@ -98,7 +100,7 @@ void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenSta
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
 void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState)
@@ -107,7 +109,7 @@ void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screen
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
 void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState)
@@ -124,7 +126,7 @@ void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenS
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
 void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState)
@@ -133,7 +135,7 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), frame.textFormats.levelEndTextFormat.get(), rect, frame.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
 void UpdateScreenState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
@@ -141,7 +143,7 @@ void UpdateScreenState(play_screen_state& screenState, const control_state& cont
   screenState.levelMouseX = controlState.worldMouseX;
   screenState.levelMouseY = controlState.worldMouseY;
 
-   UpdateStopwatch(*screenState.levelTimer);
+  UpdateStopwatch(*screenState.levelTimer);
   UpdateStopwatch(*screenState.pauseTimer);
   UpdateStopwatch(*screenState.shotTimer);
 

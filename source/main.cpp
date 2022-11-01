@@ -78,10 +78,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
 screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 {
-  main_menu_screen_state screenState = main_menu_screen_state();
+  main_menu_screen_state screenState = main_menu_screen_state(globalState);
 
-  music_player musicPlayer(*globalState.soundBuffers.menuTheme);
-  musicPlayer.Start();
+  sound_buffer_player player(*globalState.soundBuffers.menuTheme);
+  player.Start();
 
   while( ProcessMessage() )
   {
@@ -150,11 +150,11 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
 
   {
-    d2d_frame frame(app.d2d_rendertarget, viewTransform, globalState.brushes, globalState.textFormats);
+    d2d_frame frame(app.d2d_rendertarget, viewTransform/*, globalState.brushes, globalState.textFormats*/);
     frame.renderTargetMouseX = controlState.renderTargetMouseX;
     frame.renderTargetMouseY = controlState.renderTargetMouseY;
     RenderFrame(frame, screenState);
-    RenderDiagnostics(frame, diagnosticsData);
+    RenderDiagnostics(frame, diagnosticsData, globalState.textFormats, globalState.brushes);
   }
 
   app.dxgi_swapChain->Present(1, 0);
