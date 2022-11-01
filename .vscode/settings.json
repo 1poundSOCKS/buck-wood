@@ -75,6 +75,7 @@
     "fstream": "cpp",
     "stack": "cpp",
     "filesystem": "cpp",
-    "codecvt": "cpp"
+    "codecvt": "cpp",
+    "numeric": "cpp"
   }
 }

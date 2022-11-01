@@ -1,6 +1,9 @@
 #include "level_edit_screen.h"
+#include <numeric>
 #include "render.h"
 #include "game_math.h"
+
+void FetchAllLevelPoints(const game_level& level, std::vector<std::reference_wrapper<game_point>>& points);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -65,6 +68,27 @@ void UpdateScreenState(level_edit_screen_state& screenState, const control_state
     screenState.closestPoint->y = controlState.worldMouseY;
     screenState.currentLevel->boundary->lines.clear();
     CreateShapeLinesFromPoints(screenState.currentLevel->boundary->lines, screenState.currentLevel->boundary->points);
+  }
+
+  std::vector<std::reference_wrapper<game_point>> points;
+  FetchAllLevelPoints(*screenState.currentLevel, points);
+}
+
+void FetchAllLevelPoints(const game_level& level, std::vector<std::reference_wrapper<game_point>>& points)
+{
+  std::vector<size_t> objectSizes;
+  objectSizes.reserve(level.objects.size());
+  std::transform(level.objects.cbegin(), level.objects.cend(), std::back_inserter(objectSizes), [](const std::unique_ptr<game_shape>& shape) { return shape->points.size(); });
+  size_t sumOfObjectSizes = std::accumulate(objectSizes.begin(), objectSizes.end(), static_cast<size_t>(0));
+
+  points.clear();
+  points.reserve(level.boundary->points.size() + sumOfObjectSizes);
+
+  std::transform(level.boundary->points.begin(), level.boundary->points.end(), std::back_inserter(points), [](game_point& point) { return std::ref(point); });
+
+  for( const auto& object : level.objects )
+  {
+    std::transform(object->points.begin(), object->points.end(), std::back_inserter(points), [](game_point& point) { return std::ref(point); } );
   }
 }
 
