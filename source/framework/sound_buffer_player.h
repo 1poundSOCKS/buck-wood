@@ -8,8 +8,9 @@ struct sound_buffer_player
   sound_buffer_player(const sound_buffer& soundBuffer);
   ~sound_buffer_player();
 
-  void Start();
-  void Stop();
+  void Play() const;
+  void PlayOnLoop() const;
+  void Stop() const;
 
   const sound_buffer& soundBuffer;
 };

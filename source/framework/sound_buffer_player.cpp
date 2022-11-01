@@ -9,7 +9,18 @@ sound_buffer_player::~sound_buffer_player()
   Stop();
 }
 
-void sound_buffer_player::Start()
+void sound_buffer_player::Play() const
+{
+  DWORD bufferStatus = 0;
+
+  if( SUCCEEDED(soundBuffer.buffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
+  {
+    soundBuffer.buffer->SetCurrentPosition(0);
+    soundBuffer.buffer->Play(0, 0, 0);
+  }
+}
+
+void sound_buffer_player::PlayOnLoop() const
 {
   DWORD bufferStatus = 0;
 
@@ -20,7 +31,7 @@ void sound_buffer_player::Start()
   }
 }
 
-void sound_buffer_player::Stop()
+void sound_buffer_player::Stop() const
 {
   DWORD bufferStatus = 0;
 

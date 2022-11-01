@@ -81,7 +81,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
   main_menu_screen_state screenState = main_menu_screen_state(globalState);
 
   sound_buffer_player player(*globalState.soundBuffers.menuTheme);
-  player.Start();
+  player.PlayOnLoop();
 
   while( ProcessMessage() )
   {
@@ -106,10 +106,12 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 screen_type RunPlayScreen(d2d_app& app, global_state& globalState)
 {
   play_screen_state screenState(globalState, *app.timer);
+  play_screen_sounds sounds(globalState);
   
   while( ProcessMessage() )
   {
     UpdateScreen(app, globalState, screenState);
+    UpdateSound(screenState, sounds);
     if( screenState.returnToMenu ) return screen_main_menu;
   }
 
@@ -150,7 +152,7 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
 
   {
-    d2d_frame frame(app.d2d_rendertarget, viewTransform/*, globalState.brushes, globalState.textFormats*/);
+    d2d_frame frame(app.d2d_rendertarget, viewTransform);
     frame.renderTargetMouseX = controlState.renderTargetMouseX;
     frame.renderTargetMouseY = controlState.renderTargetMouseY;
     RenderFrame(frame, screenState);
@@ -158,8 +160,6 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   }
 
   app.dxgi_swapChain->Present(1, 0);
-
-  UpdateSound(globalState.soundBuffers, screenState);
 
   UpdateTimer(*app.timer);
   UpdatePerformanceData(*app.perfData);

@@ -42,6 +42,13 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   state = play_screen_state::state_playing;  
 }
 
+play_screen_sounds::play_screen_sounds(const global_state& globalAssets)
+: thrust(*globalAssets.soundBuffers.thrust),
+  shoot(*globalAssets.soundBuffers.shoot),
+  targetActivated(*globalAssets.soundBuffers.targetActivated)
+{
+}
+
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState)
 {
   static const float renderScale = 1.0f;
@@ -386,40 +393,6 @@ void UpdateBullets(play_screen_state& screenState, const control_state& controlS
   screenState.bullets.remove_if(BulletHasExpired);
 }
 
-void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& screenState)
-{
-  DWORD bufferStatus = 0;
-
-  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
-  {
-    if( bufferStatus & DSBSTATUS_PLAYING )
-    {
-      if( !screenState.player->thrusterOn || screenState.state != play_screen_state::state_playing )
-        soundBuffers.thrust->buffer->Stop();
-    }
-    else
-    {
-      if( screenState.player->thrusterOn )
-      {
-        soundBuffers.thrust->buffer->SetCurrentPosition(0);
-        soundBuffers.thrust->buffer->Play(0, 0, DSBPLAY_LOOPING);
-      }
-    }
-  }
-
-  if( screenState.playerShot )
-  {
-    soundBuffers.shoot->buffer->SetCurrentPosition(0);
-    soundBuffers.shoot->buffer->Play(0, 0, 0);
-  }
-
-  if( screenState.targetShot )
-  {
-    soundBuffers.targetActivated->buffer->SetCurrentPosition(0);
-    soundBuffers.targetActivated->buffer->Play(0, 0, 0);
-  }
-}
-
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
@@ -440,4 +413,12 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_stat
   int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
   swprintf(text, L"remaining ticks: %I64u", ticksRemaining);
   diagnosticsData.push_back(text);
+}
+
+void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& sounds)
+{
+  if( screenState.playerShot ) sounds.shoot.Play();
+  if( screenState.targetShot ) sounds.targetActivated.Play();
+  if( screenState.player->thrusterOn ) sounds.thrust.PlayOnLoop();
+  else sounds.thrust.Stop();
 }

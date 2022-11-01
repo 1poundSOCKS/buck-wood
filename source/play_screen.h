@@ -48,10 +48,19 @@ struct play_screen_state
   static const int shotTimeDenominator = 60;
 };
 
+struct play_screen_sounds
+{
+  play_screen_sounds(const global_state& globalAssets);
+
+  sound_buffer_player thrust;
+  sound_buffer_player shoot;
+  sound_buffer_player targetActivated;
+};
+
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
 void UpdateScreenState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
-void UpdateSound(const sound_buffers& soundBuffers, const play_screen_state& screenState);
+void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
 #endif
