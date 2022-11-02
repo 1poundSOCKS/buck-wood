@@ -37,11 +37,8 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   RenderPlayer(frame, screenState.playerShip, screenState.brushes);
 
-  if( screenState.closestPointRef )
-  {
-    const game_point& point = screenState.closestPointRef->get();
-    RenderHighlightedPoint(frame, point, screenState.brushes);
-  }
+  if( screenState.closestPoint )
+    RenderHighlightedPoint(frame, *screenState.closestPoint, screenState.brushes);
 
   RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
 }
@@ -61,22 +58,23 @@ void UpdateScreenState(level_edit_screen_state& screenState, const control_state
   if( controlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
-  screenState.closestPointRef = nullptr;
-
   std::vector<std::reference_wrapper<game_point>> allPoints;
   FetchAllLevelPoints(*screenState.currentLevel, allPoints);
+
+  screenState.closestPoint = nullptr;
+
   if( allPoints.size() )
   {
     game_point& default = allPoints[0].get();
     game_point& closestPoint = GetClosestPoint(screenState.levelMouseX, screenState.levelMouseY, allPoints, default);
-    screenState.closestPointRef = std::make_unique<std::reference_wrapper<game_point>>(std::ref(closestPoint));
+    float closestPointDistance = GetDistanceBetweenPoints(closestPoint.x, closestPoint.y, controlState.worldMouseX, controlState.worldMouseY);
+    if( closestPointDistance < 100.0f ) screenState.closestPoint = &closestPoint;
   }
 
-  if( controlState.shoot && screenState.closestPointRef != nullptr )
+  if( controlState.shoot && screenState.closestPoint )
   {
-    game_point& point = screenState.closestPointRef->get();
-    point.x = controlState.worldMouseX;
-    point.y = controlState.worldMouseY;
+    screenState.closestPoint->x = controlState.worldMouseX;
+    screenState.closestPoint->y = controlState.worldMouseY;
   }
 }
 
@@ -127,9 +125,9 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
   swprintf(text, L"level mouse Y: %.1f", screenState.levelMouseY);
   diagnosticsData.push_back(text);
 
-  if( screenState.closestPointRef )
+  if( screenState.closestPoint )
   {
-    swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPointRef->get().x, screenState.closestPointRef->get().y);
+    swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPoint->x, screenState.closestPoint->y);
     diagnosticsData.push_back(text);
   }
 }
