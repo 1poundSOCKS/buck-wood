@@ -10,6 +10,12 @@ game_line::game_line(float startX, float startY, float endX, float endY) : start
 {
 }
 
+game_line_edit::game_line_edit(const game_line_edit& gameLineEdit)
+: start(gameLineEdit.start), end(gameLineEdit.end)
+{
+
+}
+
 game_line_edit::game_line_edit(game_point& start, game_point& end)
 : start(start), end(end)
 {
@@ -184,23 +190,31 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
 
 void CreateShapeLinesFromPoints(std::vector<game_line_edit>& lines, std::vector<game_point>& points)
 {
-  std::vector<game_point>::iterator i = points.begin();
-  
-  while( i != points.end()  )
+  for( int startIndex=0; startIndex < points.size(); startIndex++ )
   {
-    game_point& point1 = *i;
-    i++;
-    if( i != points.end() )
-    {
-      game_point& point2 = *i;
-      lines.push_back(game_line_edit(point1, point2));
-    }
-    else
-    {
-      game_point& point2 = *points.begin();
-      lines.push_back(game_line_edit(point1, point2));
-    }
+    int endIndex = ( startIndex + 1 ) % points.size(); // the last point joins to the first
+    game_point& start = points[startIndex];
+    game_point& end = points[endIndex];
+    lines.push_back(game_line_edit(start, end));
   }
+
+  bool linesValidForEdit = AreLinesValidForEdit(lines);
+}
+
+bool AreLinesValidForEdit(const std::vector<game_line_edit>& lines)
+{
+  for( int i=0; i < lines.size(); i++ )
+  {
+    int nextIndex = ( i + 1 ) % lines.size();
+
+    const game_point& endPoint = lines[i].end;
+    const game_point& startPoint = lines[nextIndex].start;
+    const game_point* endPointPtr = &endPoint;
+    const game_point* startPointPtr = &startPoint;
+    if( endPointPtr != startPointPtr ) return false;
+  }
+
+  return true;
 }
 
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)

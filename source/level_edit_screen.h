@@ -25,8 +25,10 @@ struct level_edit_screen_state
   std::unique_ptr<game_level_edit> currentLevel;
   float levelCenterX = 0, levelCenterY = 0;
   float levelMouseX = 0, levelMouseY = 0;
-  game_point* closestPoint = nullptr;
-  float pointDistance;
+  // game_point* closestPoint = nullptr;
+  // int closestPointIndex = -1;
+  // float pointDistance;
+  std::unique_ptr<std::reference_wrapper<game_point>> closestPointRef;
 };
 
 using level_edit_screen_state_ptr = std::unique_ptr<level_edit_screen_state>;

@@ -24,9 +24,11 @@ struct game_line
 
 struct game_line_edit
 {
+  game_line_edit(const game_line_edit& gameLineEdit);
   game_line_edit(game_point& start, game_point& end);
 
-  game_point& start, end;
+  game_point& start;
+  game_point& end;
 };
 
 struct game_level_object_data
@@ -141,5 +143,6 @@ std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameLevel);
+bool AreLinesValidForEdit(const std::vector<game_line_edit>& lines);
 
 #endif
