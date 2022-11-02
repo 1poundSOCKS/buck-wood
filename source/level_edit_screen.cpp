@@ -16,6 +16,9 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   currentLevelDataIterator = gameLevelDataIndex.begin();
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level_edit>(*levelData);
+
+  playerShip.xPos = currentLevel->playerStartPosX;
+  playerShip.yPos = currentLevel->playerStartPosY;
 }
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
@@ -31,6 +34,8 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   RenderLevel(frame, *screenState.currentLevel, screenState.brushes);
+
+  RenderPlayer(frame, screenState.playerShip, screenState.brushes);
 
   if( screenState.closestPointRef )
   {
