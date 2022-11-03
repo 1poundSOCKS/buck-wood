@@ -146,7 +146,7 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
   }
 }
 
-void RenderLines(const std::vector<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderLines(const std::list<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   for( const auto& line : lines )
   {

@@ -3,9 +3,8 @@
 #include "render.h"
 #include "game_math.h"
 
-int GetClosestPointIndex(float x, float y, std::vector<game_point> points);
-void FetchAllLevelPoints(const game_level_edit& level, std::vector<std::reference_wrapper<game_point>>& points);
-game_point& GetClosestPoint(float x, float y, std::vector<std::reference_wrapper<game_point>> points, game_point& default);
+std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin);
+std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -58,17 +57,13 @@ void UpdateScreenState(level_edit_screen_state& screenState, const control_state
   if( controlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
-  std::vector<std::reference_wrapper<game_point>> allPoints;
-  FetchAllLevelPoints(*screenState.currentLevel, allPoints);
-
   screenState.closestPoint = nullptr;
 
-  if( allPoints.size() )
+  const auto& closestPoint = GetClosestPointWithin(screenState, controlState.worldMouseX, controlState.worldMouseY, 100.0f);
+  if( closestPoint.second < 100.0f )
   {
-    game_point& default = allPoints[0].get();
-    game_point& closestPoint = GetClosestPoint(screenState.levelMouseX, screenState.levelMouseY, allPoints, default);
-    float closestPointDistance = GetDistanceBetweenPoints(closestPoint.x, closestPoint.y, controlState.worldMouseX, controlState.worldMouseY);
-    if( closestPointDistance < 100.0f ) screenState.closestPoint = &closestPoint;
+    auto& point = *closestPoint.first;
+    screenState.closestPoint = &point;
   }
 
   if( controlState.shoot && screenState.closestPoint )
@@ -78,40 +73,45 @@ void UpdateScreenState(level_edit_screen_state& screenState, const control_state
   }
 }
 
-game_point& GetClosestPoint(float x, float y, std::vector<std::reference_wrapper<game_point>> points, game_point& default)
+std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin)
 {
-  float closestPointDistance = 100.0f;
-  int closestPointIndex = -1;
+  const auto& level = *screenState.currentLevel;
 
-  for( int i=0; i < points.size(); i++ )
-  {
-    float distance = GetDistanceBetweenPoints(x, y, points[i].get().x, points[i].get().y);
-    if( distance < closestPointDistance )
-    {
-      closestPointDistance = distance;
-      closestPointIndex = i;
-    }
-  }
-
-  return ( closestPointIndex == - 1 ) ? default : points[closestPointIndex].get();
-}
-
-void FetchAllLevelPoints(const game_level_edit& level, std::vector<std::reference_wrapper<game_point>>& points)
-{
-  std::vector<size_t> objectSizes;
-  objectSizes.reserve(level.objects.size());
-  std::transform(level.objects.cbegin(), level.objects.cend(), std::back_inserter(objectSizes), [](const std::unique_ptr<game_shape_edit>& shape) { return shape->points.size(); });
-  size_t sumOfObjectSizes = std::accumulate(objectSizes.begin(), objectSizes.end(), static_cast<size_t>(0));
-
-  points.clear();
-  points.reserve(level.boundary->points.size() + sumOfObjectSizes);
-
-  std::transform(level.boundary->points.begin(), level.boundary->points.end(), std::back_inserter(points), [](game_point& point) { return std::ref(point); });
+  auto closestPoint = GetClosestPointWithin(
+    level.boundary->points.begin(),
+    level.boundary->points.end(),
+    x, y, distanceWithin);
 
   for( const auto& object : level.objects )
   {
-    std::transform(object->points.begin(), object->points.end(), std::back_inserter(points), [](game_point& point) { return std::ref(point); } );
+    auto closestObjectPoint = GetClosestPointWithin(
+      object->points.begin(),
+      object->points.end(),
+      x, y, distanceWithin);
+
+    if( closestObjectPoint.second < closestPoint.second ) closestPoint = closestObjectPoint;
   }
+
+  return closestPoint;
+}
+
+std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin)
+{
+  float closestPointDistance = distanceWithin;
+
+  std::list<game_point>::iterator closestPoint = last;
+
+  for( std::list<game_point>::iterator i = first; i != last; i++ )
+  {
+    float distance = GetDistanceBetweenPoints(i->x, i->y, x, y);
+    if( distance < closestPointDistance )
+    {
+      closestPointDistance = distance;
+      closestPoint = i;
+    }
+  }
+
+  return std::pair<std::list<game_point>::iterator, float>(closestPoint, closestPointDistance);
 }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)

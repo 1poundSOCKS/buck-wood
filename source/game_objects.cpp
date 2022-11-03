@@ -48,7 +48,6 @@ game_shape::game_shape(const game_level_object_data& objectData)
 
 game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
 {
-  points.reserve(pointsToCopy.size());
   std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
   CreateShapeLinesFromPoints(lines, points);
 }
@@ -188,33 +187,18 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
   }
 }
 
-void CreateShapeLinesFromPoints(std::vector<game_line_edit>& lines, std::vector<game_point>& points)
+void CreateShapeLinesFromPoints(std::list<game_line_edit>& lines, std::list<game_point>& points)
 {
-  for( int startIndex=0; startIndex < points.size(); startIndex++ )
+  for( std::list<game_point>::iterator iStart = points.begin(); iStart != points.end(); iStart++ )
   {
-    int endIndex = ( startIndex + 1 ) % points.size(); // the last point joins to the first
-    game_point& start = points[startIndex];
-    game_point& end = points[endIndex];
+    std::list<game_point>::iterator iEnd = std::next(iStart);
+    if( iEnd == points.end() ) iEnd = points.begin();
+
+    game_point& start = *iStart;
+    game_point& end = *iEnd;
+
     lines.push_back(game_line_edit(start, end));
   }
-
-  bool linesValidForEdit = AreLinesValidForEdit(lines);
-}
-
-bool AreLinesValidForEdit(const std::vector<game_line_edit>& lines)
-{
-  for( int i=0; i < lines.size(); i++ )
-  {
-    int nextIndex = ( i + 1 ) % lines.size();
-
-    const game_point& endPoint = lines[i].end;
-    const game_point& startPoint = lines[nextIndex].start;
-    const game_point* endPointPtr = &endPoint;
-    const game_point* startPointPtr = &startPoint;
-    if( endPointPtr != startPointPtr ) return false;
-  }
-
-  return true;
 }
 
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)

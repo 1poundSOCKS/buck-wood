@@ -53,8 +53,8 @@ struct game_shape_edit
   game_shape_edit(const std::vector<game_point>& pointsToCopy);
   game_shape_edit(const game_level_object_data& objectData);
 
-  std::vector<game_point> points;
-  std::vector<game_line_edit> lines;
+  std::list<game_point> points;
+  std::list<game_line_edit> lines;
 };
 
 struct mouse_cursor
@@ -135,14 +135,17 @@ struct game_level_edit
 using game_level_data_index = std::vector<std::unique_ptr<game_level_data>>;
 
 std::unique_ptr<player_ship> CreatePlayerShip();
+
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
+
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
-void CreateShapeLinesFromPoints(std::vector<game_line_edit>& lines, std::vector<game_point>& points);
+void CreateShapeLinesFromPoints(std::list<game_line_edit>& lines, std::list<game_point>& points);
+
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject, game_level_data& gameLevelData);
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
+
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameLevel);
-bool AreLinesValidForEdit(const std::vector<game_line_edit>& lines);
 
 #endif
