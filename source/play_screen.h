@@ -13,6 +13,12 @@
 #include "diagnostics.h"
 #include "global_state.h"
 
+struct play_screen_control_state
+{
+  control_state controlState;
+  bool thrust = false, shoot = false;
+};
+
 struct play_screen_state
 {
   play_screen_state(const global_state& globalState, const system_timer& timer);
@@ -58,9 +64,10 @@ struct play_screen_sounds
 };
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState);
+void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
-void UpdateScreenState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
+void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
 #endif

@@ -110,7 +110,7 @@ screen_type RunPlayScreen(d2d_app& app, global_state& globalState)
   
   while( ProcessMessage() )
   {
-    UpdateScreen<play_screen_state, control_state>(app, globalState, screenState);
+    UpdateScreen<play_screen_state, play_screen_control_state>(app, globalState, screenState);
     UpdateSound(screenState, sounds);
     if( screenState.returnToMenu ) return screen_main_menu;
   }
@@ -152,15 +152,15 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   diagnosticsData.reserve(20);
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
 
-  {
-    RECT clientRect;
-    GetClientRect(app.wnd, &clientRect);
-    float mouseX = static_cast<float>(app.inputState.mouseX) / static_cast<float>(clientRect.right - clientRect.left);
-    float mouseY = static_cast<float>(app.inputState.mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+  RECT clientRect;
+  GetClientRect(app.wnd, &clientRect);
 
+  float mouseX = static_cast<float>(app.inputState.mouseX) / static_cast<float>(clientRect.right - clientRect.left);
+  float mouseY = static_cast<float>(app.inputState.mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+
+  {
     d2d_frame frame(app.d2d_rendertarget, viewTransform, mouseX, mouseY);
-    // frame.renderTargetMouseX = controlState.renderTargetMouseX;
-    // frame.renderTargetMouseY = controlState.renderTargetMouseY;
+
     RenderFrame(frame, screenState);
     RenderDiagnostics(frame, diagnosticsData, globalState.textFormats, globalState.brushes);
   }

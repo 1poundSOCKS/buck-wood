@@ -12,7 +12,8 @@
 
 struct level_edit_control_state
 {
-  control_state controlState;
+  control_state controlState, previousControlState;
+  bool leftMouseDrag = false, rightMouseDrag = false;
 };
 
 struct level_edit_screen_state

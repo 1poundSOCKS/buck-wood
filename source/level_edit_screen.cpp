@@ -31,6 +31,10 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
 void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform)
 {
   RefreshControlState(controlState.controlState, app, worldViewTransform);
+
+  // bool leftMouseDrag = false, rightMouseDrag = false;
+
+  // controlState.previousControlState = controlState.controlState;
 }
 
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)

@@ -9,10 +9,10 @@ void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screen
 void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState);
 
-void OnPlay(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
-void OnLevelComplete(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
-void UpdatePlayer(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
-void UpdateBullets(play_screen_state& screenState, const control_state& controlState, const system_timer& timer);
+void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void UpdatePlayer(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void UpdateBullets(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 bool LevelIsComplete(const play_screen_state& screenState);
 
 const int play_screen_state::shotTimeNumerator;
@@ -54,6 +54,13 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   static const float renderScale = 1.0f;
   auto renderTargetSize = renderTarget->GetSize();
   return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
+}
+
+void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform)
+{
+  RefreshControlState(controlState.controlState, app, worldViewTransform);
+  controlState.thrust = controlState.controlState.accelerate;
+  controlState.shoot = controlState.controlState.shoot;
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
@@ -145,10 +152,12 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
-void UpdateScreenState(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
-  screenState.levelMouseX = controlState.worldMouseX;
-  screenState.levelMouseY = controlState.worldMouseY;
+  const auto& baseControlState = controlState.controlState;
+
+  screenState.levelMouseX = baseControlState.worldMouseX;
+  screenState.levelMouseY = baseControlState.worldMouseY;
 
   UpdateStopwatch(*screenState.levelTimer);
   UpdateStopwatch(*screenState.pauseTimer);
@@ -158,13 +167,13 @@ void UpdateScreenState(play_screen_state& screenState, const control_state& cont
 
   if( screenState.state == play_screen_state::state_paused )
   {
-    if( controlState.quitPress )
+    if( baseControlState.quitPress )
     {
       screenState.returnToMenu = true;
       return;
     }
 
-    if( controlState.startGame )
+    if( baseControlState.startGame )
     {
       screenState.state = play_screen_state::state_playing;
       screenState.levelTimer->paused = false;
@@ -177,7 +186,7 @@ void UpdateScreenState(play_screen_state& screenState, const control_state& cont
 
   if( screenState.state == play_screen_state::state_playing )
   {
-    if( controlState.quitPress )
+    if( baseControlState.quitPress )
     {
       screenState.state = play_screen_state::state_paused;
       screenState.levelTimer->paused = true;
@@ -205,7 +214,7 @@ void UpdateScreenState(play_screen_state& screenState, const control_state& cont
   }
 }
 
-void OnPlay(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
   int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
 
@@ -252,7 +261,7 @@ void OnPlay(play_screen_state& screenState, const control_state& controlState, c
   }
 }
 
-void OnLevelComplete(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   screenState.levelTimes.push_back(levelTimeRemaining);
@@ -292,7 +301,7 @@ bool LevelIsComplete(const play_screen_state& screenState)
   return activatedTargetCount == screenState.currentLevel->targets.size();
 }
 
-void UpdatePlayer(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdatePlayer(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 100.0f;
@@ -305,7 +314,7 @@ void UpdatePlayer(play_screen_state& screenState, const control_state& controlSt
   float forceX = 0.0f;
   float forceY = forceOfGravity;
 
-  if( controlState.accelerate )
+  if( controlState.thrust )
   {
     screenState.player->thrusterOn = true;
     forceX += playerThrust * sin(DEGTORAD(screenState.player->angle));
@@ -341,7 +350,7 @@ bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
   return distance > bullet->range || bullet->outsideLevel;
 }
 
-void UpdateBullets(play_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateBullets(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
@@ -393,11 +402,20 @@ void UpdateBullets(play_screen_state& screenState, const control_state& controlS
   screenState.bullets.remove_if(BulletHasExpired);
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
-  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
+  const auto& baseControlState = controlState.controlState;
+
+  FormatDiagnostics(diagnosticsData, baseControlState, perfData, timer);
 
   static wchar_t text[64];
+
+  swprintf(text, L"world mouse X: %.1f", screenState.levelMouseX);
+  diagnosticsData.push_back(text);
+
+  swprintf(text, L"world mouse Y: %.1f", screenState.levelMouseY);
+  diagnosticsData.push_back(text);
+
   swprintf(text, L"bullet count: %I64u", screenState.bullets.size());
   diagnosticsData.push_back(text);
 
