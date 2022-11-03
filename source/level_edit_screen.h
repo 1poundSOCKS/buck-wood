@@ -10,6 +10,11 @@
 #include "diagnostics.h"
 #include "global_state.h"
 
+struct level_edit_control_state
+{
+  control_state controlState;
+};
+
 struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
@@ -30,9 +35,10 @@ struct level_edit_screen_state
 };
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState);
+void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform);
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
-void UpdateScreenState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 #endif

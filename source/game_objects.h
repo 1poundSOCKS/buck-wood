@@ -54,7 +54,7 @@ struct game_shape_edit
   game_shape_edit(const game_level_object_data& objectData);
 
   std::list<game_point> points;
-  std::list<game_line_edit> lines;
+  // std::list<game_line_edit> lines;
 };
 
 struct mouse_cursor

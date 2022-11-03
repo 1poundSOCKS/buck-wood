@@ -49,7 +49,7 @@ game_shape::game_shape(const game_level_object_data& objectData)
 game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
 {
   std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
-  CreateShapeLinesFromPoints(lines, points);
+  // CreateShapeLinesFromPoints(lines, points);
 }
 
 game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
@@ -59,7 +59,7 @@ game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
     points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
   }
 
-  CreateShapeLinesFromPoints(lines, points);
+  // CreateShapeLinesFromPoints(lines, points);
 }
 
 mouse_cursor::mouse_cursor()

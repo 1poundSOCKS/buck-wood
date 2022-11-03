@@ -28,6 +28,11 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
+void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform)
+{
+  RefreshControlState(controlState.controlState, app, worldViewTransform);
+}
+
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
@@ -42,34 +47,40 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
 }
 
-void UpdateScreenState(level_edit_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer)
 {
-  screenState.levelMouseX = controlState.worldMouseX;
-  screenState.levelMouseY = controlState.worldMouseY;
+  const control_state& baseControlState = controlState.controlState;
+
+  screenState.levelMouseX = baseControlState.worldMouseX;
+  screenState.levelMouseY = baseControlState.worldMouseY;
 
   screenState.returnToMenu = false;
 
-  if( controlState.quitPress ) screenState.returnToMenu = true;
+  if( baseControlState.quitPress ) screenState.returnToMenu = true;
 
-  if( controlState.mouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
-  else if( controlState.mouseX > 0.9f ) screenState.levelCenterX += 10.0f;
+  if( baseControlState.mouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
+  else if( baseControlState.mouseX > 0.9f ) screenState.levelCenterX += 10.0f;
 
-  if( controlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
-  else if( controlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
+  if( baseControlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
+  else if( baseControlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
   screenState.closestPoint = nullptr;
 
-  const auto& closestPoint = GetClosestPointWithin(screenState, controlState.worldMouseX, controlState.worldMouseY, 100.0f);
+  const auto& closestPoint = GetClosestPointWithin(screenState, baseControlState.worldMouseX, baseControlState.worldMouseY, 100.0f);
+
   if( closestPoint.second < 100.0f )
   {
     auto& point = *closestPoint.first;
     screenState.closestPoint = &point;
-  }
-
-  if( controlState.shoot && screenState.closestPoint )
-  {
-    screenState.closestPoint->x = controlState.worldMouseX;
-    screenState.closestPoint->y = controlState.worldMouseY;
+    if( baseControlState.shoot )
+    {
+      screenState.closestPoint->x = baseControlState.worldMouseX;
+      screenState.closestPoint->y = baseControlState.worldMouseY;
+    }
+    else if( baseControlState.accelerate )
+    {
+      screenState.currentLevel->boundary->points.insert(closestPoint.first, game_point(baseControlState.worldMouseX, baseControlState.worldMouseY));
+    }
   }
 }
 
@@ -114,9 +125,11 @@ std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::lis
   return std::pair<std::list<game_point>::iterator, float>(closestPoint, closestPointDistance);
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
-  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
+  const control_state& baseControlState = controlState.controlState;
+
+  FormatDiagnostics(diagnosticsData, baseControlState, perfData, timer);
 
   static wchar_t text[64];
   swprintf(text, L"level mouse X: %.1f", screenState.levelMouseX);

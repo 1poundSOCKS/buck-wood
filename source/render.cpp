@@ -125,9 +125,11 @@ void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget
   RenderLines(shape.lines, renderTarget, brush);
 }
 
-void RenderShape(const game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderShape(game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
-  RenderLines(shape.lines, renderTarget, brush);
+  std::list<game_line_edit> lines;
+  CreateShapeLinesFromPoints(lines, shape.points);
+  RenderLines(lines, renderTarget, brush);
 }
 
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)

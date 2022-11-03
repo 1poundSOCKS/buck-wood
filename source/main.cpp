@@ -32,7 +32,7 @@
 
 enum screen_type { screen_none, screen_main_menu, screen_play, screen_level_editor };
 
-template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState);
+template<class T_SS, class T_CS> void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState);
 screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState);
 screen_type RunPlayScreen(d2d_app& app, global_state& globalState);
 screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState);
@@ -85,7 +85,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 
   while( ProcessMessage() )
   {
-    UpdateScreen(app, globalState, screenState);
+    UpdateScreen<main_menu_screen_state, control_state>(app, globalState, screenState);
 
     if( screenState.quit )
     {
@@ -110,7 +110,7 @@ screen_type RunPlayScreen(d2d_app& app, global_state& globalState)
   
   while( ProcessMessage() )
   {
-    UpdateScreen(app, globalState, screenState);
+    UpdateScreen<play_screen_state, control_state>(app, globalState, screenState);
     UpdateSound(screenState, sounds);
     if( screenState.returnToMenu ) return screen_main_menu;
   }
@@ -124,7 +124,7 @@ screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
 
   while( ProcessMessage() )
   {
-    UpdateScreen(app, globalState, screenState);
+    UpdateScreen<level_edit_screen_state, level_edit_control_state>(app, globalState, screenState);
     if( screenState.returnToMenu )
     {
       UpdateGlobalState(globalState, screenState);
@@ -135,9 +135,10 @@ screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
   return screen_none;
 }
 
-template<class T> void UpdateScreen(d2d_app& app, const global_state& globalState, T& screenState)
+template<class T_SS, class T_CS>
+void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState)
 {
-  static control_state controlState;
+  static T_CS controlState;
   
   const auto viewTransform = CreateViewTransform(app.d2d_rendertarget, screenState);
   
@@ -152,9 +153,14 @@ template<class T> void UpdateScreen(d2d_app& app, const global_state& globalStat
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
 
   {
-    d2d_frame frame(app.d2d_rendertarget, viewTransform);
-    frame.renderTargetMouseX = controlState.renderTargetMouseX;
-    frame.renderTargetMouseY = controlState.renderTargetMouseY;
+    RECT clientRect;
+    GetClientRect(app.wnd, &clientRect);
+    float mouseX = static_cast<float>(app.inputState.mouseX) / static_cast<float>(clientRect.right - clientRect.left);
+    float mouseY = static_cast<float>(app.inputState.mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+
+    d2d_frame frame(app.d2d_rendertarget, viewTransform, mouseX, mouseY);
+    // frame.renderTargetMouseX = controlState.renderTargetMouseX;
+    // frame.renderTargetMouseY = controlState.renderTargetMouseY;
     RenderFrame(frame, screenState);
     RenderDiagnostics(frame, diagnosticsData, globalState.textFormats, globalState.brushes);
   }
