@@ -105,7 +105,7 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  RenderTimer(frame, levelTimeRemaining, screenState.textFormats, screenState.brushes);
+  RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }

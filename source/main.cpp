@@ -152,16 +152,10 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   diagnosticsData.reserve(20);
   FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
 
-  RECT clientRect;
-  GetClientRect(app.wnd, &clientRect);
-
-  float mouseX = static_cast<float>(app.inputState.mouseX) / static_cast<float>(clientRect.right - clientRect.left);
-  float mouseY = static_cast<float>(app.inputState.mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
-
   {
-    d2d_frame frame(app.d2d_rendertarget, viewTransform, mouseX, mouseY);
+    d2d_frame frame(app.d2d_rendertarget);
     RenderFrame(frame, screenState);
-    RenderDiagnostics(frame, diagnosticsData, globalState.textFormats, globalState.brushes);
+    RenderDiagnostics(frame.renderTarget, diagnosticsData, globalState.textFormats, globalState.brushes);
   }
 
   app.dxgi_swapChain->Present(1, 0);

@@ -1,13 +1,13 @@
 #include "render.h"
 #include <string>
 
-void RenderDiagnostics(const d2d_frame& frame, const diagnostics_data& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
+void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const diagnostics_data& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
 {
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
 
   rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   std::wstring msg;
   for( const auto& text: diagnosticsData )
@@ -16,19 +16,19 @@ void RenderDiagnostics(const d2d_frame& frame, const diagnostics_data& diagnosti
     msg += L"\n";
   }
 
-  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), textFormats.writeTextFormat.get(), rect, brushes.brushDiagnostics.get());
+  renderTarget->DrawTextW(msg.c_str(),msg.length(), textFormats.writeTextFormat.get(), rect, brushes.brushDiagnostics.get());
 }
 
-void RenderTimer(const d2d_frame& frame, float seconds, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
+void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
 {
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
+  D2D_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 16, size.width - 1, size.height * 3 / 16);
 
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   static wchar_t timeText[64];
   swprintf(timeText, L"%.2f", seconds);
-  frame.renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brushes.brushTimer.get());
+  renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brushes.brushTimer.get());
 }
 
 void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const mouse_cursor& mouseCursor, float x, float y, const d2d_brushes& brushes)
