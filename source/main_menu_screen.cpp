@@ -30,14 +30,17 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(frame.viewTransform);
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 
-  RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
+  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 
-void UpdateScreenState(main_menu_screen_state& screenState, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const control_state& controlState, const system_timer& timer)
 {
+  screenState.mouseX = controlState.renderTargetMouseX;
+  screenState.mouseY = controlState.renderTargetMouseY;
+  
   screenState.startPlay = screenState.startLevelEdit = false;
   
   if( screenState.starting )

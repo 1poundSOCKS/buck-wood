@@ -28,9 +28,9 @@ D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& re
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
-void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform)
+void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app)
 {
-  RefreshControlState(controlState.controlState, app, worldViewTransform);
+  RefreshControlState(controlState.controlState, app);
 
   // bool leftMouseDrag = false, rightMouseDrag = false;
 
@@ -41,22 +41,41 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderLevel(frame, *screenState.currentLevel, screenState.brushes);
+  RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
 
-  RenderPlayer(frame, screenState.playerShip, screenState.brushes);
+  RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, screenState.brushes);
 
   if( screenState.closestPoint )
-    RenderHighlightedPoint(frame, *screenState.closestPoint, screenState.brushes);
+    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint, screenState.brushes);
 
-  RenderMouseCursor(frame, screenState.mouseCursor, screenState.brushes);
+  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 
-void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer)
+void UpdateScreenState(level_edit_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_control_state& controlState, const system_timer& timer)
 {
   const control_state& baseControlState = controlState.controlState;
 
-  screenState.levelMouseX = baseControlState.worldMouseX;
-  screenState.levelMouseY = baseControlState.worldMouseY;
+  screenState.mouseX = baseControlState.renderTargetMouseX;
+  screenState.mouseY = baseControlState.renderTargetMouseY;
+
+  screenState.viewTransform = CreateViewTransform(renderTarget, screenState);
+
+  auto mouseTransform = screenState.viewTransform;
+
+  if( mouseTransform.Invert() )
+  {
+    D2D1_POINT_2F inPoint;
+    inPoint.x = baseControlState.renderTargetMouseX;
+    inPoint.y = baseControlState.renderTargetMouseY;
+    auto outPoint = mouseTransform.TransformPoint(inPoint);
+    screenState.levelMouseX = outPoint.x;
+    screenState.levelMouseY = outPoint.y;
+  }
+  else
+  {
+    screenState.levelMouseX = 0;
+    screenState.levelMouseY = 0;
+  }
 
   screenState.returnToMenu = false;
 
@@ -70,20 +89,20 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
 
   screenState.closestPoint = nullptr;
 
-  const auto& closestPoint = GetClosestPointWithin(screenState, baseControlState.worldMouseX, baseControlState.worldMouseY, 100.0f);
+  const auto& closestPoint = GetClosestPointWithin(screenState, screenState.levelMouseX, screenState.levelMouseY, 100.0f);
 
   if( closestPoint.second < 100.0f )
   {
     auto& point = *closestPoint.first;
     screenState.closestPoint = &point;
-    if( baseControlState.shoot )
+    if( baseControlState.leftMouseButtonPressed )
     {
-      screenState.closestPoint->x = baseControlState.worldMouseX;
-      screenState.closestPoint->y = baseControlState.worldMouseY;
+      screenState.closestPoint->x = screenState.levelMouseX;
+      screenState.closestPoint->y = screenState.levelMouseY;
     }
-    else if( baseControlState.accelerate )
+    else if( baseControlState.rightMouseButtonPressed )
     {
-      screenState.currentLevel->boundary->points.insert(closestPoint.first, game_point(baseControlState.worldMouseX, baseControlState.worldMouseY));
+      screenState.currentLevel->boundary->points.insert(closestPoint.first, game_point(screenState.levelMouseX, screenState.levelMouseY));
     }
   }
 }

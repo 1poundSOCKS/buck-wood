@@ -31,20 +31,20 @@ void RenderTimer(const d2d_frame& frame, float seconds, const dwrite_text_format
   frame.renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brushes.brushTimer.get());
 }
 
-void RenderMouseCursor(const d2d_frame& frame, const mouse_cursor& mouseCursor, const d2d_brushes& brushes)
+void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const mouse_cursor& mouseCursor, float x, float y, const d2d_brushes& brushes)
 {
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(frame.renderTargetMouseX, frame.renderTargetMouseY);
-  frame.renderTarget->SetTransform(translate);
-  RenderLines(mouseCursor.lines, frame.renderTarget, brushes.brushTimer);
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(x, y);
+  renderTarget->SetTransform(translate);
+  RenderLines(mouseCursor.lines, renderTarget, brushes.brushTimer);
 }
 
-void RenderPlayer(const d2d_frame& frame, const player_ship& player, const d2d_brushes& brushes)
+void RenderPlayer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const player_ship& player, const d2d_brushes& brushes)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
-  const D2D1::Matrix3x2F transform = rotate * translate * frame.viewTransform;
-  frame.renderTarget->SetTransform(transform);
-  RenderShape(*player.outline, frame.renderTarget, brushes.brush);
+  const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
+  renderTarget->SetTransform(transform);
+  RenderShape(*player.outline, renderTarget, brushes.brush);
 
   if( player.thrusterOn )
   {
@@ -56,29 +56,29 @@ void RenderPlayer(const d2d_frame& frame, const player_ship& player, const d2d_b
     endPoint.x = player.thruster->end.x;
     endPoint.y = player.thruster->end.y;
 
-    frame.renderTarget->DrawLine(startPoint, endPoint, brushes.brushThrusters.get(), 6.0f);
+    renderTarget->DrawLine(startPoint, endPoint, brushes.brushThrusters.get(), 6.0f);
   }
 }
 
-void RenderBullet(const d2d_frame& frame, const bullet& bullet, const d2d_brushes& brushes)
+void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const d2d_brushes& brushes)
 {
   static const float bulletSize = 3.0f;
 
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  const D2D1::Matrix3x2F transform = translate * frame.viewTransform;
-  frame.renderTarget->SetTransform(transform);
+  const D2D1::Matrix3x2F transform = translate * viewTransform;
+  renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
-  frame.renderTarget->FillRectangle(&rectangle, brushes.brush.get());
+  renderTarget->FillRectangle(&rectangle, brushes.brush.get());
 }
 
-void RenderLevel(const d2d_frame& frame, const game_level& level, const d2d_brushes& brushes)
+void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_level& level, const d2d_brushes& brushes)
 {
-  frame.renderTarget->SetTransform(frame.viewTransform);
-  RenderShape(*level.boundary, frame.renderTarget, brushes.brush);
+  renderTarget->SetTransform(viewTransform);
+  RenderShape(*level.boundary, renderTarget, brushes.brush);
 
   for( const auto& shape: level.objects )
   {
-    RenderShape(*shape, frame.renderTarget, brushes.brush);
+    RenderShape(*shape, renderTarget, brushes.brush);
   }
 
   for( const auto& target: level.targets)
@@ -86,18 +86,18 @@ void RenderLevel(const d2d_frame& frame, const game_level& level, const d2d_brus
     const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == 
       target::ACTIVATED ? brushes.brushActivated : brushes.brushDeactivated;
     
-    RenderShape(target->shape, frame.renderTarget, targetBrush);
+    RenderShape(target->shape, renderTarget, targetBrush);
   }
 }
 
-void RenderLevel(const d2d_frame& frame, const game_level_edit& level, const d2d_brushes& brushes)
+void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_level_edit& level, const d2d_brushes& brushes)
 {
-  frame.renderTarget->SetTransform(frame.viewTransform);
-  RenderShape(*level.boundary, frame.renderTarget, brushes.brush);
+  renderTarget->SetTransform(viewTransform);
+  RenderShape(*level.boundary, renderTarget, brushes.brush);
 
   for( const auto& shape: level.objects )
   {
-    RenderShape(*shape, frame.renderTarget, brushes.brush);
+    RenderShape(*shape, renderTarget, brushes.brush);
   }
 
   for( const auto& target: level.targets)
@@ -105,19 +105,19 @@ void RenderLevel(const d2d_frame& frame, const game_level_edit& level, const d2d
     const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == 
       target::ACTIVATED ? brushes.brushActivated : brushes.brushDeactivated;
     
-    RenderShape(target->shape, frame.renderTarget, targetBrush);
+    RenderShape(target->shape, renderTarget, targetBrush);
   }
 }
 
-void RenderHighlightedPoint(const d2d_frame& frame, const game_point& point, const d2d_brushes& brushes)
+void RenderHighlightedPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_point& point, const d2d_brushes& brushes)
 {
   static const float pointSize = 5.0f;
 
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(point.x, point.y);
-  const D2D1::Matrix3x2F transform = translate * frame.viewTransform;
-  frame.renderTarget->SetTransform(transform);
+  const D2D1::Matrix3x2F transform = translate * viewTransform;
+  renderTarget->SetTransform(transform);
   D2D1_RECT_F rectangle = D2D1::RectF(- pointSize / 2, - pointSize / 2, pointSize / 2, pointSize / 2);
-  frame.renderTarget->FillRectangle(&rectangle, brushes.brushActivated.get());
+  renderTarget->FillRectangle(&rectangle, brushes.brushActivated.get());
 }
 
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)

@@ -143,9 +143,9 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   const auto viewTransform = CreateViewTransform(app.d2d_rendertarget, screenState);
   
   RefreshInputState(app);
-  RefreshControlState(controlState, app, viewTransform);
+  RefreshControlState(controlState, app);
 
-  UpdateScreenState(screenState, controlState, *app.timer);
+  UpdateScreenState(screenState, app.d2d_rendertarget, controlState, *app.timer);
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
@@ -160,7 +160,6 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
 
   {
     d2d_frame frame(app.d2d_rendertarget, viewTransform, mouseX, mouseY);
-
     RenderFrame(frame, screenState);
     RenderDiagnostics(frame, diagnosticsData, globalState.textFormats, globalState.brushes);
   }

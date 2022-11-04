@@ -24,21 +24,28 @@ struct level_edit_screen_state
   const d2d_brushes& brushes;
   const dwrite_text_formats& textFormats;
 
+  D2D1::Matrix3x2F viewTransform;
+
   mouse_cursor mouseCursor;
+  float mouseX = 0, mouseY = 0;
+
   bool returnToMenu = false;
+  
   const game_level_data_index& gameLevelDataIndex;
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level_edit> currentLevel;
   player_ship playerShip;
+
   float levelCenterX = 0, levelCenterY = 0;
   float levelMouseX = 0, levelMouseY = 0;
+  
   game_point* closestPoint = nullptr;
 };
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState);
-void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform);
+void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app);
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
-void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer);
+void UpdateScreenState(level_edit_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_control_state& controlState, const system_timer& timer);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 

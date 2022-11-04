@@ -35,6 +35,7 @@ struct play_screen_state
   STATE state = state_playing;
 
   mouse_cursor mouseCursor;
+  float mouseX = 0, mouseY = 0;
   
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
@@ -45,10 +46,14 @@ struct play_screen_state
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
   std::unique_ptr<stopwatch> shotTimer;
+
   float levelMouseX = 0, levelMouseY = 0;
+
   bool playerShot = false, targetShot = false;
 
   std::vector<float> levelTimes;
+
+  D2D1::Matrix3x2F viewTransform;
 
   static const int shotTimeNumerator = 1;
   static const int shotTimeDenominator = 60;
@@ -64,9 +69,9 @@ struct play_screen_sounds
 };
 
 D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState);
-void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app, const D2D1::Matrix3x2F& worldViewTransform);
+void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
-void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void UpdateScreenState(play_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_control_state& controlState, const system_timer& timer);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState, const perf_data& perfData, const system_timer& timer);
 
