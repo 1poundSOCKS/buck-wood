@@ -8,7 +8,7 @@ main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
 {
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const main_menu_screen_state& screenState)
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const main_menu_screen_state& screenState)
 {
   return D2D1::Matrix3x2F::Identity();
 }
@@ -36,7 +36,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 
-void UpdateScreenState(main_menu_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const control_state& controlState, const system_timer& timer)
 {
   screenState.mouseX = controlState.renderTargetMouseX;
   screenState.mouseY = controlState.renderTargetMouseY;

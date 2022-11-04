@@ -51,10 +51,9 @@ play_screen_sounds::play_screen_sounds(const global_state& globalAssets)
 {
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_state& screenState)
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const play_screen_state& screenState)
 {
   static const float renderScale = 1.0f;
-  auto renderTargetSize = renderTarget->GetSize();
   return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 
@@ -154,14 +153,14 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
-void UpdateScreenState(play_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const play_screen_control_state& controlState, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const play_screen_control_state& controlState, const system_timer& timer)
 {
   const auto& baseControlState = controlState.controlState;
 
   screenState.mouseX = baseControlState.renderTargetMouseX;
   screenState.mouseY = baseControlState.renderTargetMouseY;
 
-  screenState.viewTransform = CreateViewTransform(renderTarget, screenState);
+  screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
 
   auto mouseTransform = screenState.viewTransform;
 

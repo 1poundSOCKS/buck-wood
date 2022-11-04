@@ -28,9 +28,9 @@ struct main_menu_screen_state
   bool startLevelEdit = false;
 };
 
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const main_menu_screen_state& screenState);
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const main_menu_screen_state& screenState);
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
-void UpdateScreenState(main_menu_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const control_state& controlState, const system_timer& timer);
+void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const control_state& controlState, const system_timer& timer);
 void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);

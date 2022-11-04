@@ -20,11 +20,9 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   playerShip.yPos = currentLevel->playerStartPosY;
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_screen_state& screenState)
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
 {
   static const float scale = 0.8f;
-
-  auto renderTargetSize = renderTarget->GetSize();
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
@@ -51,14 +49,14 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 
-void UpdateScreenState(level_edit_screen_state& screenState, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const level_edit_control_state& controlState, const system_timer& timer)
+void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const level_edit_control_state& controlState, const system_timer& timer)
 {
   const control_state& baseControlState = controlState.controlState;
 
   screenState.mouseX = baseControlState.renderTargetMouseX;
   screenState.mouseY = baseControlState.renderTargetMouseY;
 
-  screenState.viewTransform = CreateViewTransform(renderTarget, screenState);
+  screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
 
   auto mouseTransform = screenState.viewTransform;
 

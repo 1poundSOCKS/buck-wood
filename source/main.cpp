@@ -140,12 +140,11 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
 {
   static T_CS controlState;
   
-  const auto viewTransform = CreateViewTransform(app.d2d_rendertarget, screenState);
-  
   RefreshInputState(app);
   RefreshControlState(controlState, app);
 
-  UpdateScreenState(screenState, app.d2d_rendertarget, controlState, *app.timer);
+  const auto renderTargetSize = app.d2d_rendertarget->GetSize();
+  UpdateScreenState(screenState, renderTargetSize, controlState, *app.timer);
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
