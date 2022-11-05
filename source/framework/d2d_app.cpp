@@ -112,8 +112,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     LPARAM mouseX = GET_X_LPARAM(lParam);
     LPARAM mouseY = GET_Y_LPARAM(lParam);
-    app->msgMouseX = mouseX;
-    app->msgMouseY = mouseY;
+    app->clientMouseX = mouseX;
+    app->clientMouseY = mouseY;
     return 0;
   }
 
@@ -122,7 +122,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->msgLeftMouseButtonDown = true;
+    app->leftMouseButtonDown = true;
     return 0;
   }
 
@@ -131,7 +131,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->msgLeftMouseButtonDown = false;
+    app->leftMouseButtonDown = false;
     return 0;
   }
 
@@ -140,7 +140,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->msgRightMouseButtonDown = true;
+    app->rightMouseButtonDown = true;
     return 0;
   }
 
@@ -149,7 +149,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
-    app->msgRightMouseButtonDown = false;
+    app->rightMouseButtonDown = false;
     return 0;
   }
 
@@ -259,14 +259,4 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(const winrt::com_ptr
   if( FAILED(hr) ) throw L"error";
   
   return primaryBuffer;
-}
-
-void RefreshInputState(d2d_app& app)
-{
-  app.previousInputState = app.inputState;
-  RefreshKeyboardState(app.inputState, app.keyboard);
-  app.inputState.mouseX = app.msgMouseX;
-  app.inputState.mouseY = app.msgMouseY;
-  app.inputState.leftMouseButtonDown = app.msgLeftMouseButtonDown;
-  app.inputState.rightMouseButtonDown = app.msgRightMouseButtonDown;
 }

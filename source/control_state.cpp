@@ -1,24 +1,22 @@
 #include "control_state.h"
 
-void RefreshControlState(control_state& controlState, const d2d_app& app)
+void control_state::Refresh(const input_state& inputState, const input_state& previousInputState)
 {
-  const auto& keyboardState = app.inputState.keyboardState;
-  const auto& previousKeyboardState = app.previousInputState.keyboardState;
+  const auto& keyboardState = inputState.keyboardState;
+  const auto& previousKeyboardState = previousInputState.keyboardState;
 
-  controlState.quit = keyboardState[DIK_ESCAPE] & 0x80;
-  controlState.quitPress = !(keyboardState[DIK_ESCAPE] & 0x80) && previousKeyboardState[DIK_ESCAPE] & 0x80;
-  controlState.startGame = keyboardState[DIK_SPACE] & 0x80;
-  controlState.functionKey_1 = keyboardState[DIK_F1] & 0x80;
+  escapeKeyDown = keyboardState[DIK_ESCAPE] & 0x80;
+  escapeKeyPress = !(keyboardState[DIK_ESCAPE] & 0x80) && previousKeyboardState[DIK_ESCAPE] & 0x80;
+  spacebarKeyDown = keyboardState[DIK_SPACE] & 0x80;
+  spacebarKeyPress = !(keyboardState[DIK_SPACE] & 0x80) && previousKeyboardState[DIK_SPACE] & 0x80;
+  functionKey_1 = keyboardState[DIK_F1] & 0x80;
 
-  controlState.rightMouseButtonPressed = app.inputState.rightMouseButtonDown;
-  controlState.leftMouseButtonPressed = app.inputState.leftMouseButtonDown;
+  leftMouseButtonDown = inputState.leftMouseButtonDown;
+  rightMouseButtonDown = inputState.rightMouseButtonDown;
 
-  RECT clientRect;
-  GetClientRect(app.wnd, &clientRect);
-  controlState.mouseX = static_cast<float>(app.inputState.mouseX) / static_cast<float>(clientRect.right - clientRect.left);
-  controlState.mouseY = static_cast<float>(app.inputState.mouseY) / static_cast<float>(clientRect.bottom - clientRect.top);
+  ratioMouseX = inputState.ratioMouseX;
+  ratioMouseY = inputState.ratioMouseY;
 
-  const auto renderTargetSize = app.d2d_rendertarget->GetSize();
-  controlState.renderTargetMouseX = controlState.mouseX * renderTargetSize.width;
-  controlState.renderTargetMouseY = controlState.mouseY * renderTargetSize.height;
+  renderTargetMouseX = inputState.renderTargetMouseX;
+  renderTargetMouseY = inputState.renderTargetMouseY;
 }

@@ -15,8 +15,13 @@
 
 struct play_screen_control_state
 {
-  control_state controlState;
+  bool returnToMenu = false;
+  bool restartPlay = false;
+  bool pausePlay = false;
   bool thrust = false, shoot = false;
+
+  float renderTargetMouseX = 0;
+  float renderTargetMouseY = 0;
 };
 
 struct play_screen_state
@@ -35,7 +40,7 @@ struct play_screen_state
   STATE state = state_playing;
 
   mouse_cursor mouseCursor;
-  float mouseX = 0, mouseY = 0;
+  float renderTargetMouseX = 0, renderTargetMouseY = 0;
   
   game_level_data_index::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
@@ -68,11 +73,10 @@ struct play_screen_sounds
   sound_buffer_player targetActivated;
 };
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const play_screen_state& screenState);
-void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app);
-void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
+void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const play_screen_control_state& controlState, const system_timer& timer);
+void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif

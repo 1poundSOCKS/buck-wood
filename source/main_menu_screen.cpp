@@ -8,9 +8,13 @@ main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
 {
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const main_menu_screen_state& screenState)
+void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState)
 {
-  return D2D1::Matrix3x2F::Identity();
+  screenControlState.quit = controlState.escapeKeyPress;
+  screenControlState.startPlay = controlState.spacebarKeyPress;
+  screenControlState.startLevelEditor = controlState.functionKey_1;
+  screenControlState.renderTargetMouseX = controlState.renderTargetMouseX;
+  screenControlState.renderTargetMouseY = controlState.renderTargetMouseY;
 }
 
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
@@ -33,13 +37,13 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 
-  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
+  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
 }
 
-void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const control_state& controlState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const main_menu_control_state& controlState, const system_timer& timer)
 {
-  screenState.mouseX = controlState.renderTargetMouseX;
-  screenState.mouseY = controlState.renderTargetMouseY;
+  screenState.renderTargetMouseX = controlState.renderTargetMouseX;
+  screenState.renderTargetMouseY = controlState.renderTargetMouseY;
   
   screenState.startPlay = screenState.startLevelEdit = false;
   
@@ -49,19 +53,19 @@ void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& r
     return;
   }
 
-  if( controlState.quitPress )
+  if( controlState.quit )
   {
     screenState.quit = true;
     return;
   }
 
-  if( controlState.startGame )
+  if( controlState.startPlay )
   {
     screenState.startPlay = true;
     return;
   }
 
-  if( controlState.functionKey_1 )
+  if( controlState.startLevelEditor )
   {
     screenState.startLevelEdit = true;
     return;
@@ -78,7 +82,6 @@ void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state
   }
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState)
 {
-  FormatDiagnostics(diagnosticsData, controlState, perfData, timer);
 }

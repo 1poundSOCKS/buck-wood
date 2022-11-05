@@ -5,16 +5,17 @@
 
 struct control_state
 {
-  bool quit = false;
-  bool quitPress = false;
-  bool startGame = false;
+  void Refresh(const input_state& inputState, const input_state& previousInputState);
+
+  bool escapeKeyDown = false;
+  bool escapeKeyPress = false;
+  bool spacebarKeyDown = false;
+  bool spacebarKeyPress = false;
   bool functionKey_1 = false;
-  bool rightMouseButtonPressed = false;
-  bool leftMouseButtonPressed = false;
-  float mouseX = 0, mouseY = 0;
+  bool leftMouseButtonDown = false;
+  bool rightMouseButtonDown = false;
+  float ratioMouseX = 0, ratioMouseY = 0;
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
 };
-
-void RefreshControlState(control_state& controlState, const d2d_app& app);
 
 #endif

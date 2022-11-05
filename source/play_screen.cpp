@@ -4,6 +4,7 @@
 
 const float gameSpeedMultiplier = 2.0f;
 
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const play_screen_state& screenState);
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
@@ -57,11 +58,15 @@ D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const 
   return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 
-void RefreshControlState(play_screen_control_state& controlState, const d2d_app& app)
+void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState)
 {
-  RefreshControlState(controlState.controlState, app);
-  controlState.thrust = controlState.controlState.rightMouseButtonPressed;
-  controlState.shoot = controlState.controlState.leftMouseButtonPressed;
+  controlState.pausePlay = baseControlState.escapeKeyPress;
+  controlState.returnToMenu = baseControlState.escapeKeyPress;
+  controlState.restartPlay = baseControlState.spacebarKeyPress;
+  controlState.shoot = baseControlState.leftMouseButtonDown;
+  controlState.thrust = baseControlState.rightMouseButtonDown;
+  controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
+  controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
@@ -106,7 +111,7 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
 
-  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
+  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
 }
 
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)
@@ -155,10 +160,8 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
 
 void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const play_screen_control_state& controlState, const system_timer& timer)
 {
-  const auto& baseControlState = controlState.controlState;
-
-  screenState.mouseX = baseControlState.renderTargetMouseX;
-  screenState.mouseY = baseControlState.renderTargetMouseY;
+  screenState.renderTargetMouseX = controlState.renderTargetMouseX;
+  screenState.renderTargetMouseY = controlState.renderTargetMouseY;
 
   screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
 
@@ -167,8 +170,8 @@ void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& render
   if( mouseTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
-    inPoint.x = baseControlState.renderTargetMouseX;
-    inPoint.y = baseControlState.renderTargetMouseY;
+    inPoint.x = controlState.renderTargetMouseX;
+    inPoint.y = controlState.renderTargetMouseY;
     auto outPoint = mouseTransform.TransformPoint(inPoint);
     screenState.levelMouseX = outPoint.x;
     screenState.levelMouseY = outPoint.y;
@@ -187,13 +190,13 @@ void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& render
 
   if( screenState.state == play_screen_state::state_paused )
   {
-    if( baseControlState.quitPress )
+    if( controlState.returnToMenu )
     {
       screenState.returnToMenu = true;
       return;
     }
 
-    if( baseControlState.startGame )
+    if( controlState.restartPlay )
     {
       screenState.state = play_screen_state::state_playing;
       screenState.levelTimer->paused = false;
@@ -206,7 +209,7 @@ void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& render
 
   if( screenState.state == play_screen_state::state_playing )
   {
-    if( baseControlState.quitPress )
+    if( controlState.pausePlay )
     {
       screenState.state = play_screen_state::state_paused;
       screenState.levelTimer->paused = true;
@@ -422,12 +425,8 @@ void UpdateBullets(play_screen_state& screenState, const play_screen_control_sta
   screenState.bullets.remove_if(BulletHasExpired);
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
 {
-  const auto& baseControlState = controlState.controlState;
-
-  FormatDiagnostics(diagnosticsData, baseControlState, perfData, timer);
-
   static wchar_t text[64];
 
   swprintf(text, L"world mouse X: %.1f", screenState.levelMouseX);

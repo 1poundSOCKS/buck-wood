@@ -3,6 +3,7 @@
 #include "render.h"
 #include "game_math.h"
 
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
 std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin);
 std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin);
 
@@ -20,15 +21,19 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   playerShip.yPos = currentLevel->playerStartPosY;
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
+void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
 {
-  static const float scale = 0.8f;
-  return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
-}
+  controlState.returnToMenu = baseControlState.escapeKeyPress;
 
-void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app)
-{
-  RefreshControlState(controlState.controlState, app);
+  controlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
+  controlState.rightMouseButtonDown = baseControlState.rightMouseButtonDown;
+
+  controlState.ratioMouseX = baseControlState.ratioMouseX;
+  controlState.ratioMouseY = baseControlState.ratioMouseY;
+
+  controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
+  controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
+
 
   // bool leftMouseDrag = false, rightMouseDrag = false;
 
@@ -51,10 +56,8 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
 void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const level_edit_control_state& controlState, const system_timer& timer)
 {
-  const control_state& baseControlState = controlState.controlState;
-
-  screenState.mouseX = baseControlState.renderTargetMouseX;
-  screenState.mouseY = baseControlState.renderTargetMouseY;
+  screenState.mouseX = controlState.renderTargetMouseX;
+  screenState.mouseY = controlState.renderTargetMouseY;
 
   screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
 
@@ -63,8 +66,8 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   if( mouseTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
-    inPoint.x = baseControlState.renderTargetMouseX;
-    inPoint.y = baseControlState.renderTargetMouseY;
+    inPoint.x = controlState.renderTargetMouseX;
+    inPoint.y = controlState.renderTargetMouseY;
     auto outPoint = mouseTransform.TransformPoint(inPoint);
     screenState.levelMouseX = outPoint.x;
     screenState.levelMouseY = outPoint.y;
@@ -77,13 +80,13 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
 
   screenState.returnToMenu = false;
 
-  if( baseControlState.quitPress ) screenState.returnToMenu = true;
+  if( controlState.returnToMenu ) screenState.returnToMenu = true;
 
-  if( baseControlState.mouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
-  else if( baseControlState.mouseX > 0.9f ) screenState.levelCenterX += 10.0f;
+  if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
+  else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;
 
-  if( baseControlState.mouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
-  else if( baseControlState.mouseY > 0.9f ) screenState.levelCenterY += 10.0f;
+  if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
+  else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
   screenState.closestPoint = nullptr;
 
@@ -93,16 +96,22 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   {
     auto& point = *closestPoint.first;
     screenState.closestPoint = &point;
-    if( baseControlState.leftMouseButtonPressed )
+    if( controlState.leftMouseButtonDown )
     {
       screenState.closestPoint->x = screenState.levelMouseX;
       screenState.closestPoint->y = screenState.levelMouseY;
     }
-    else if( baseControlState.rightMouseButtonPressed )
+    else if( controlState.rightMouseButtonDown )
     {
       screenState.currentLevel->boundary->points.insert(closestPoint.first, game_point(screenState.levelMouseX, screenState.levelMouseY));
     }
   }
+}
+
+D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
+{
+  static const float scale = 0.8f;
+  return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
 std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin)
@@ -146,12 +155,8 @@ std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::lis
   return std::pair<std::list<game_point>::iterator, float>(closestPoint, closestPointDistance);
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
-  const control_state& baseControlState = controlState.controlState;
-
-  FormatDiagnostics(diagnosticsData, baseControlState, perfData, timer);
-
   static wchar_t text[64];
   swprintf(text, L"level mouse X: %.1f", screenState.levelMouseX);
   diagnosticsData.push_back(text);

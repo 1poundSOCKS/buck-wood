@@ -85,7 +85,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 
   while( ProcessMessage() )
   {
-    UpdateScreen<main_menu_screen_state, control_state>(app, globalState, screenState);
+    UpdateScreen<main_menu_screen_state, main_menu_control_state>(app, globalState, screenState);
 
     if( screenState.quit )
     {
@@ -138,18 +138,29 @@ screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
 template<class T_SS, class T_CS>
 void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState)
 {
-  static T_CS controlState;
-  
-  RefreshInputState(app);
-  RefreshControlState(controlState, app);
+  RECT clientRect;
+  GetClientRect(app.wnd, &clientRect);
 
-  const auto renderTargetSize = app.d2d_rendertarget->GetSize();
-  UpdateScreenState(screenState, renderTargetSize, controlState, *app.timer);
+  D2D1_SIZE_F renderTargetSize = app.d2d_rendertarget->GetSize();
+
+  static input_state inputState, previousInputState;
+  previousInputState = inputState;
+  inputState.RefreshKeyboard(app.keyboard);
+  inputState.UpdateMouse(app.clientMouseX, app.clientMouseY, clientRect, app.leftMouseButtonDown, app.rightMouseButtonDown, renderTargetSize);
+
+  static control_state baseControlState;
+  baseControlState.Refresh(inputState, previousInputState);
+
+  static T_CS screenControlState;
+  RefreshControlState(screenControlState, baseControlState);
+
+  UpdateScreenState(screenState, renderTargetSize, screenControlState, *app.timer);
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
-  FormatDiagnostics(diagnosticsData, screenState, controlState, *app.perfData, *app.timer);
+  FormatDiagnostics(diagnosticsData, baseControlState, *app.perfData, *app.timer);
+  FormatDiagnostics(diagnosticsData, screenState, screenControlState);
 
   {
     d2d_frame frame(app.d2d_rendertarget);

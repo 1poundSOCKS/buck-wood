@@ -12,7 +12,16 @@
 
 struct level_edit_control_state
 {
-  control_state controlState, previousControlState;
+  bool returnToMenu = false;
+  bool leftMouseButtonDown = false;
+  bool rightMouseButtonDown = false;
+
+  float ratioMouseX = 0;
+  float ratioMouseY = 0;
+
+  float renderTargetMouseX = 0;
+  float renderTargetMouseY = 0;
+
   bool leftMouseDrag = false, rightMouseDrag = false;
 };
 
@@ -42,11 +51,10 @@ struct level_edit_screen_state
   game_point* closestPoint = nullptr;
 };
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
-void RefreshControlState(level_edit_control_state& controlState, const d2d_app& app);
-void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
+void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const level_edit_control_state& controlState, const system_timer& timer);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 #endif
