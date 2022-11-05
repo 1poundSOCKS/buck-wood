@@ -34,10 +34,8 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
   controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
 
-
-  // bool leftMouseDrag = false, rightMouseDrag = false;
-
-  // controlState.previousControlState = controlState.controlState;
+  controlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
+  controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
 }
 
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
@@ -88,23 +86,25 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
+  if( screenState.closestPoint && controlState.leftMouseButtonDown )
+  {
+    screenState.dragPoint = screenState.closestPoint;
+  }
+
   screenState.closestPoint = nullptr;
 
-  const auto& closestPoint = GetClosestPointWithin(screenState, screenState.levelMouseX, screenState.levelMouseY, 100.0f);
-
-  if( closestPoint.second < 100.0f )
+  if( !controlState.leftMouseButtonDown && !controlState.rightMouseButtonDown )
   {
+    const auto& closestPoint = GetClosestPointWithin(screenState, screenState.levelMouseX, screenState.levelMouseY, 100.0f);
     auto& point = *closestPoint.first;
     screenState.closestPoint = &point;
-    if( controlState.leftMouseButtonDown )
-    {
-      screenState.closestPoint->x = screenState.levelMouseX;
-      screenState.closestPoint->y = screenState.levelMouseY;
-    }
-    else if( controlState.rightMouseButtonDown )
-    {
-      screenState.currentLevel->boundary->points.insert(closestPoint.first, game_point(screenState.levelMouseX, screenState.levelMouseY));
-    }
+    screenState.dragPoint = nullptr;
+  }
+
+  if( screenState.dragPoint && controlState.leftMouseButtonDrag )
+  {
+    screenState.dragPoint->x = screenState.levelMouseX;
+    screenState.dragPoint->y = screenState.levelMouseY;
   }
 }
 

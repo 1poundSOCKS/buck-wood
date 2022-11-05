@@ -22,7 +22,8 @@ struct level_edit_control_state
   float renderTargetMouseX = 0;
   float renderTargetMouseY = 0;
 
-  bool leftMouseDrag = false, rightMouseDrag = false;
+  bool leftMouseButtonDrag = false;
+  bool rightMouseButtonDrag = false;
 };
 
 struct level_edit_screen_state
@@ -49,6 +50,7 @@ struct level_edit_screen_state
   float levelMouseX = 0, levelMouseY = 0;
   
   game_point* closestPoint = nullptr;
+  game_point* dragPoint = nullptr;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);

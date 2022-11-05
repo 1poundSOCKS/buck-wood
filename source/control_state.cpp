@@ -1,5 +1,7 @@
 #include "control_state.h"
 
+bool MouseHasMoved(const input_state& inputState, const input_state& previousInputState);
+
 void control_state::Refresh(const input_state& inputState, const input_state& previousInputState)
 {
   const auto& keyboardState = inputState.keyboardState;
@@ -19,4 +21,19 @@ void control_state::Refresh(const input_state& inputState, const input_state& pr
 
   renderTargetMouseX = inputState.renderTargetMouseX;
   renderTargetMouseY = inputState.renderTargetMouseY;
+
+  if( inputState.leftMouseButtonDown && previousInputState.leftMouseButtonDown && MouseHasMoved(inputState, previousInputState) )
+  {
+    leftMouseButtonDrag = true;
+  }
+
+  if( inputState.rightMouseButtonDown && previousInputState.rightMouseButtonDown && MouseHasMoved(inputState, previousInputState) )
+  {
+    rightMouseButtonDrag = true;
+  }
+}
+
+bool MouseHasMoved(const input_state& inputState, const input_state& previousInputState)
+{
+  return ( previousInputState.clientMouseX != inputState.clientMouseX || previousInputState.clientMouseY != inputState.clientMouseY ) ? true : false;
 }
