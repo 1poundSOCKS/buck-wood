@@ -4,8 +4,10 @@
 #include "game_math.h"
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
-std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin);
-std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin);
+std::unique_ptr<game_point_selection> GetClosestPoint(const level_edit_screen_state& screenState, float x, float y);
+std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& points, float x, float y);
+// std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin);
+// std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -19,6 +21,11 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 
   playerShip.xPos = currentLevel->playerStartPosX;
   playerShip.yPos = currentLevel->playerStartPosY;
+}
+
+game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
+: points(points), point(point), distance(distance)
+{
 }
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
@@ -47,7 +54,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, screenState.brushes);
 
   if( screenState.closestPoint )
-    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint, screenState.brushes);
+    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
@@ -88,23 +95,21 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
 
   if( screenState.closestPoint && controlState.leftMouseButtonDown )
   {
-    screenState.dragPoint = screenState.closestPoint;
+    screenState.dragPoint = std::move(screenState.closestPoint);
   }
 
   screenState.closestPoint = nullptr;
 
   if( !controlState.leftMouseButtonDown && !controlState.rightMouseButtonDown )
   {
-    const auto& closestPoint = GetClosestPointWithin(screenState, screenState.levelMouseX, screenState.levelMouseY, 100.0f);
-    auto& point = *closestPoint.first;
-    screenState.closestPoint = &point;
+    screenState.closestPoint = GetClosestPoint(screenState, screenState.levelMouseX, screenState.levelMouseY);
     screenState.dragPoint = nullptr;
   }
 
   if( screenState.dragPoint && controlState.leftMouseButtonDrag )
   {
-    screenState.dragPoint->x = screenState.levelMouseX;
-    screenState.dragPoint->y = screenState.levelMouseY;
+    screenState.dragPoint->point->x = screenState.levelMouseX;
+    screenState.dragPoint->point->y = screenState.levelMouseY;
   }
 }
 
@@ -114,46 +119,75 @@ D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const 
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
-std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin)
+std::unique_ptr<game_point_selection> GetClosestPoint(const level_edit_screen_state& screenState, float x, float y)
 {
   const auto& level = *screenState.currentLevel;
 
-  auto closestPoint = GetClosestPointWithin(
-    level.boundary->points.begin(),
-    level.boundary->points.end(),
-    x, y, distanceWithin);
+  auto closestPoint = GetClosestPoint(level.boundary->points, x, y);
 
   for( const auto& object : level.objects )
   {
-    auto closestObjectPoint = GetClosestPointWithin(
-      object->points.begin(),
-      object->points.end(),
-      x, y, distanceWithin);
-
-    if( closestObjectPoint.second < closestPoint.second ) closestPoint = closestObjectPoint;
+    auto closestObjectPoint = GetClosestPoint(object->points, x, y);
+    if( closestObjectPoint->distance < closestPoint->distance ) closestPoint = std::move(closestObjectPoint);
   }
 
   return closestPoint;
 }
 
-std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin)
+std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& points, float x, float y)
 {
-  float closestPointDistance = distanceWithin;
+  std::unique_ptr<game_point_selection> closestPoint = nullptr;
 
-  std::list<game_point>::iterator closestPoint = last;
-
-  for( std::list<game_point>::iterator i = first; i != last; i++ )
+  for( std::list<game_point>::iterator i = points.begin(); i != points.end(); i++ )
   {
     float distance = GetDistanceBetweenPoints(i->x, i->y, x, y);
-    if( distance < closestPointDistance )
-    {
-      closestPointDistance = distance;
-      closestPoint = i;
-    }
+    if( closestPoint == nullptr || distance < closestPoint->distance )
+      closestPoint = std::make_unique<game_point_selection>(points, i, distance);
   }
 
-  return std::pair<std::list<game_point>::iterator, float>(closestPoint, closestPointDistance);
+  return closestPoint;
 }
+
+// std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(const level_edit_screen_state& screenState, float x, float y, float distanceWithin)
+// {
+//   const auto& level = *screenState.currentLevel;
+
+//   auto closestPoint = GetClosestPointWithin(
+//     level.boundary->points.begin(),
+//     level.boundary->points.end(),
+//     x, y, distanceWithin);
+
+//   for( const auto& object : level.objects )
+//   {
+//     auto closestObjectPoint = GetClosestPointWithin(
+//       object->points.begin(),
+//       object->points.end(),
+//       x, y, distanceWithin);
+
+//     if( closestObjectPoint.second < closestPoint.second ) closestPoint = closestObjectPoint;
+//   }
+
+//   return closestPoint;
+// }
+
+// std::pair<std::list<game_point>::iterator, float> GetClosestPointWithin(std::list<game_point>::iterator first, std::list<game_point>::iterator last, float x, float y, float distanceWithin)
+// {
+//   float closestPointDistance = distanceWithin;
+
+//   std::list<game_point>::iterator closestPoint = last;
+
+//   for( std::list<game_point>::iterator i = first; i != last; i++ )
+//   {
+//     float distance = GetDistanceBetweenPoints(i->x, i->y, x, y);
+//     if( distance < closestPointDistance )
+//     {
+//       closestPointDistance = distance;
+//       closestPoint = i;
+//     }
+//   }
+
+//   return std::pair<std::list<game_point>::iterator, float>(closestPoint, closestPointDistance);
+// }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
@@ -166,7 +200,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
 
   if( screenState.closestPoint )
   {
-    swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPoint->x, screenState.closestPoint->y);
+    swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPoint->point->x, screenState.closestPoint->point->y);
     diagnosticsData.push_back(text);
   }
 }
