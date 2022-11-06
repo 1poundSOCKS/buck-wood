@@ -49,7 +49,6 @@ game_shape::game_shape(const game_level_object_data& objectData)
 game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
 {
   std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
-  // CreateShapeLinesFromPoints(lines, points);
 }
 
 game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
@@ -58,8 +57,6 @@ game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
   {
     points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
   }
-
-  // CreateShapeLinesFromPoints(lines, points);
 }
 
 mouse_cursor::mouse_cursor()
@@ -293,7 +290,7 @@ std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& 
   return gameLevelDataIndex;
 }
 
-void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameLevel)
+void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel)
 {
   gameLevelData.name = gameLevel.name;
   gameLevelData.playerStartPosX = gameLevel.playerStartPosX;
@@ -301,4 +298,13 @@ void UpdateGameLevelData(game_level_data& gameLevelData, const game_level& gameL
   gameLevelData.boundaryPoints.clear();
   gameLevelData.boundaryPoints.reserve(gameLevel.boundary->points.size());
   std::copy(gameLevel.boundary->points.begin(), gameLevel.boundary->points.end(), std::back_inserter(gameLevelData.boundaryPoints));
+  
+  gameLevelData.objects.clear();
+  for( const auto& object : gameLevel.objects )
+  {
+    std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
+    objectData->points.reserve(object->points.size());
+    std::copy(object->points.begin(), object->points.end(), std::back_inserter(objectData->points));
+    gameLevelData.objects.push_back(std::move(objectData));
+  }
 }
