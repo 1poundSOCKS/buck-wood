@@ -128,6 +128,7 @@ void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const 
   if( !controlState.leftMouseButtonDown && !controlState.rightMouseButtonDown )
   {
     screenState.closestPoint = GetClosestPoint(screenState, screenState.levelMouseX, screenState.levelMouseY);
+    if( screenState.closestPoint->distance > 50 ) screenState.closestPoint = nullptr;
     screenState.dragPoint = nullptr;
   }
 
@@ -172,6 +173,8 @@ void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edi
 
 void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
+  screenState.highlightedTarget = nullptr;
+  
   auto& targets = screenState.currentLevel->targets;
 
   for( auto i = targets.begin(); i != targets.end(); i++ )
@@ -184,9 +187,6 @@ void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit
     if( PointInside(game_point(screenState.levelMouseX, screenState.levelMouseY), targetShape) )
     {
       screenState.highlightedTarget = std::make_unique<target_selection>(targets, i);
-    }
-    else
-    {
     }
   }
 }
