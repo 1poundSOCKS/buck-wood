@@ -4,6 +4,9 @@
 #include "game_math.h"
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
+void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 std::unique_ptr<game_point_selection> GetClosestPoint(const level_edit_screen_state& screenState, float x, float y);
 std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& points, float x, float y);
 
@@ -23,6 +26,11 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
 : points(points), point(point), distance(distance)
+{
+}
+
+target_selection::target_selection(std::list<target_edit>& targets, std::list<target_edit>::iterator& target)
+: targets(targets), target(target)
 {
 }
 
@@ -91,6 +99,16 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
+  RunDragDropForBorderAndObjects(screenState, controlState);
+
+  if( screenState.dragPoint == nullptr )
+  {
+    RunDragDropForTargets(screenState, controlState);
+  }
+}
+
+void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+{
   if( screenState.closestPoint )
   {
     if( controlState.leftMouseButtonDown )
@@ -113,16 +131,63 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
     screenState.dragPoint = nullptr;
   }
 
-  if( screenState.dragPoint && controlState.leftMouseButtonDrag )
+  else if( screenState.dragPoint && controlState.leftMouseButtonDrag )
   {
     screenState.dragPoint->point->x = screenState.levelMouseX;
     screenState.dragPoint->point->y = screenState.levelMouseY;
   }
 
-  if( screenState.dragPoint && controlState.rightMouseButtonDrag )
+  else if( screenState.dragPoint && controlState.rightMouseButtonDrag )
   {
     screenState.dragPoint->point->x = screenState.levelMouseX;
     screenState.dragPoint->point->y = screenState.levelMouseY;
+  }
+}
+
+void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+{
+  if( screenState.highlightedTarget )
+  {
+    if( controlState.leftMouseButtonDown )
+    {
+      screenState.dragTarget = std::move(screenState.highlightedTarget);
+    }
+  }
+
+  screenState.highlightedTarget = nullptr;
+
+  if( !controlState.leftMouseButtonDown && !controlState.rightMouseButtonDown )
+  {
+    GetHighlightedTarget(screenState, controlState);
+    screenState.dragTarget = nullptr;
+  }
+
+  else if( screenState.dragTarget && controlState.leftMouseButtonDrag )
+  {
+    auto& target = *screenState.dragTarget->target;
+    target.x = screenState.levelMouseX;
+    target.y = screenState.levelMouseY;
+  }
+}
+
+void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+{
+  auto& targets = screenState.currentLevel->targets;
+
+  for( auto i = targets.begin(); i != targets.end(); i++ )
+  {
+    auto& target = *i;
+
+    game_shape targetShape;
+    InitializeTargetShape(target.x, target.y, target.size, targetShape);
+
+    if( PointInside(game_point(screenState.levelMouseX, screenState.levelMouseY), targetShape) )
+    {
+      screenState.highlightedTarget = std::make_unique<target_selection>(targets, i);
+    }
+    else
+    {
+    }
   }
 }
 
@@ -151,7 +216,7 @@ std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& poi
 {
   std::unique_ptr<game_point_selection> closestPoint = nullptr;
 
-  for( std::list<game_point>::iterator i = points.begin(); i != points.end(); i++ )
+  for( auto i = points.begin(); i != points.end(); i++ )
   {
     float distance = GetDistanceBetweenPoints(i->x, i->y, x, y);
     if( closestPoint == nullptr || distance < closestPoint->distance )

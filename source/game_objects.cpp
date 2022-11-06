@@ -90,18 +90,11 @@ bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), y
 
 target::target(float x, float y, float size) : state(DEACTIVATED)
 {
-  float halfSize = size / 2;
+  InitializeTargetShape(x, y, size, shape);
+}
 
-  const game_point points[] = {
-    game_point(x, y - halfSize ),
-    game_point(x + halfSize, y),
-    game_point(x, y + halfSize),
-    game_point(x - halfSize, y)
-  };
-
-  static const int pointCount = sizeof(points) / sizeof(game_point);
-
-  InitializeShape(points, pointCount, shape);
+target_edit::target_edit(float x, float y, float size) : x(x), y(y), size(size)
+{
 }
 
 game_level::game_level(const game_level_data& gameLevelData)
@@ -143,8 +136,8 @@ game_level_edit::game_level_edit(const game_level_data& gameLevelData)
   
   for( const auto& t: gameLevelData.targets )
   {
-    auto levelTarget = std::make_unique<target>(t.x, t.y, 40.0f);
-    targets.push_back(std::move(levelTarget));
+    target_edit levelTarget(t.x, t.y, 40.0f);
+    targets.push_back(levelTarget);
   }
 }
 
@@ -196,6 +189,22 @@ void CreateShapeLinesFromPoints(std::list<game_line_edit>& lines, std::list<game
 
     lines.push_back(game_line_edit(start, end));
   }
+}
+
+void InitializeTargetShape(float x, float y, float size, game_shape& shape)
+{
+  float halfSize = size / 2;
+
+  const game_point points[] = {
+    game_point(x, y - halfSize ),
+    game_point(x + halfSize, y),
+    game_point(x, y + halfSize),
+    game_point(x - halfSize, y)
+  };
+
+  static const int pointCount = sizeof(points) / sizeof(game_point);
+
+  InitializeShape(points, pointCount, shape);
 }
 
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)

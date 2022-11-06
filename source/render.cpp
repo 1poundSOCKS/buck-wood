@@ -102,10 +102,9 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
 
   for( const auto& target: level.targets)
   {
-    const winrt::com_ptr<ID2D1SolidColorBrush>& targetBrush = target->state == 
-      target::ACTIVATED ? brushes.brushActivated : brushes.brushDeactivated;
-    
-    RenderShape(target->shape, renderTarget, targetBrush);
+    game_shape targetShape;
+    InitializeTargetShape(target.x, target.y, target.size, targetShape);
+    RenderShape(targetShape, renderTarget, brushes.brushDeactivated);
   }
 }
 

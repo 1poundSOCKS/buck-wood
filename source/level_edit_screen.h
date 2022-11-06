@@ -35,6 +35,14 @@ struct game_point_selection
   float distance;
 };
 
+struct target_selection
+{
+  target_selection(std::list<target_edit>& targets, std::list<target_edit>::iterator& target);
+
+  std::list<target_edit>& targets;
+  std::list<target_edit>::iterator target;
+};
+
 struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
@@ -58,11 +66,10 @@ struct level_edit_screen_state
   float levelCenterX = 0, levelCenterY = 0;
   float levelMouseX = 0, levelMouseY = 0;
   
-  // game_point* closestPoint = nullptr;
-  // game_point* dragPoint = nullptr;
-
   std::unique_ptr<game_point_selection> closestPoint;
   std::unique_ptr<game_point_selection> dragPoint;
+  std::unique_ptr<target_selection> highlightedTarget;
+  std::unique_ptr<target_selection> dragTarget;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
