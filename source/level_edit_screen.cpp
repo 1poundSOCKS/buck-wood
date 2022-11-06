@@ -93,9 +93,18 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
-  if( screenState.closestPoint && controlState.leftMouseButtonDown )
+  if( screenState.closestPoint )
   {
-    screenState.dragPoint = std::move(screenState.closestPoint);
+    if( controlState.leftMouseButtonDown )
+    {
+      screenState.dragPoint = std::move(screenState.closestPoint);
+    }
+    else if( controlState.rightMouseButtonDown)
+    {
+      game_point newPoint = *screenState.closestPoint->point;
+      std::list<game_point>::iterator i = screenState.closestPoint->points.insert(screenState.closestPoint->point, newPoint);
+      screenState.dragPoint = std::make_unique<game_point_selection>(screenState.closestPoint->points, i, screenState.closestPoint->distance);
+    }
   }
 
   screenState.closestPoint = nullptr;
@@ -107,6 +116,12 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   }
 
   if( screenState.dragPoint && controlState.leftMouseButtonDrag )
+  {
+    screenState.dragPoint->point->x = screenState.levelMouseX;
+    screenState.dragPoint->point->y = screenState.levelMouseY;
+  }
+
+  if( screenState.dragPoint && controlState.rightMouseButtonDrag )
   {
     screenState.dragPoint->point->x = screenState.levelMouseX;
     screenState.dragPoint->point->y = screenState.levelMouseY;
