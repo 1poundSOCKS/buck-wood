@@ -68,8 +68,12 @@ struct level_edit_screen_state
   
   std::unique_ptr<game_point_selection> closestPoint;
   std::unique_ptr<game_point_selection> dragPoint;
+
   std::unique_ptr<target_selection> highlightedTarget;
   std::unique_ptr<target_selection> dragTarget;
+
+  bool playerHighlighted = false;
+  bool playerDrag = false;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);

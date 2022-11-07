@@ -60,6 +60,15 @@ float GetYIntercept(float x, const game_line& line)
   return m * x + b;
 }
 
+void TransformPlayerShip(const player_ship& playerShip, game_shape& shape)
+{
+  shape.points.clear();
+  TransformPlayerShip(playerShip, shape.points);
+  
+  shape.lines.clear();
+  CreateShapeLinesFromPoints(shape.lines, shape.points);
+}
+
 void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));

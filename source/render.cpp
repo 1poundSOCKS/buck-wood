@@ -40,11 +40,19 @@ void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, co
 
 void RenderPlayer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const player_ship& player, const d2d_brushes& brushes)
 {
+  RenderPlayer(renderTarget, viewTransform, player, brushes.brush, brushes.brushThrusters);
+}
+
+void RenderPlayer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
+                  const D2D1::Matrix3x2F& viewTransform, const player_ship& player, 
+                  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
+                  const winrt::com_ptr<ID2D1SolidColorBrush>& brushThrusters)
+{
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
   const D2D1::Matrix3x2F transform = rotate * translate * viewTransform;
   renderTarget->SetTransform(transform);
-  RenderShape(*player.outline, renderTarget, brushes.brush);
+  RenderShape(*player.outline, renderTarget, brush);
 
   if( player.thrusterOn )
   {
@@ -56,7 +64,7 @@ void RenderPlayer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D
     endPoint.x = player.thruster->end.x;
     endPoint.y = player.thruster->end.y;
 
-    renderTarget->DrawLine(startPoint, endPoint, brushes.brushThrusters.get(), 6.0f);
+    renderTarget->DrawLine(startPoint, endPoint, brushThrusters.get(), 6.0f);
   }
 }
 
@@ -119,10 +127,11 @@ void RenderHighlightedPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarge
   renderTarget->FillRectangle(&rectangle, brushes.brushActivated.get());
 }
 
-void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   game_shape targetShape;
   InitializeTargetShape(target.x, target.y, target.size, targetShape);
+  renderTarget->SetTransform(viewTransform);
   RenderShape(targetShape, renderTarget, brush);
 }
 

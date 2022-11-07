@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   global_state globalState(app, dataPath);
   
-  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(FALSE, NULL);
+  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
   if( FAILED(hr) ) return 0;
 
   screen_type currentScreen = screen_main_menu;
