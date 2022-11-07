@@ -127,7 +127,7 @@ screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
     UpdateScreen<level_edit_screen_state, level_edit_control_state>(app, globalState, screenState);
     if( screenState.returnToMenu )
     {
-      UpdateGlobalState(globalState, screenState);
+      if( screenState.saveChanges ) UpdateGlobalState(globalState, screenState);
       return screen_main_menu;
     }
   }

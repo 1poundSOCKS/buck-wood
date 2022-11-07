@@ -38,6 +38,10 @@ target_selection::target_selection(std::list<target_edit>& targets, std::list<ta
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
 {
   controlState.returnToMenu = baseControlState.escapeKeyPress;
+  controlState.stayInEdit = baseControlState.escapeKeyPress;
+
+  controlState.saveChanges = baseControlState.keyPress_y;
+  controlState.discardChanges = baseControlState.keyPress_n;
 
   controlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
   controlState.rightMouseButtonDown = baseControlState.rightMouseButtonDown;
@@ -55,6 +59,16 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+  if( screenState.viewState == level_edit_screen_state::view_exit )
+  {
+    static const std::wstring text = L"save changes (y/n)";
+    D2D_SIZE_F size = frame.renderTarget->GetSize();
+    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+    return;
+  }
 
   RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
 
@@ -80,6 +94,31 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
 void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const level_edit_control_state& controlState, const system_timer& timer)
 {
+  if( screenState.viewState == level_edit_screen_state::view_exit )
+  {
+    if( controlState.stayInEdit )
+    {
+      screenState.viewState = level_edit_screen_state::view_edit;
+    }
+    else if( controlState.discardChanges )
+    {
+      screenState.saveChanges = false;
+      screenState.returnToMenu = true;
+    }
+    else if( controlState.saveChanges )
+    {
+      screenState.saveChanges = true;
+      screenState.returnToMenu = true;
+    }
+    return;
+  }
+
+  if( controlState.returnToMenu )
+  {
+    screenState.viewState = level_edit_screen_state::view_exit;
+    return;
+  }
+
   screenState.mouseX = controlState.renderTargetMouseX;
   screenState.mouseY = controlState.renderTargetMouseY;
 
@@ -101,10 +140,6 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
     screenState.levelMouseX = 0;
     screenState.levelMouseY = 0;
   }
-
-  screenState.returnToMenu = false;
-
-  if( controlState.returnToMenu ) screenState.returnToMenu = true;
 
   if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
   else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;

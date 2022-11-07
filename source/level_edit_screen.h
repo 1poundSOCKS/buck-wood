@@ -12,7 +12,11 @@
 
 struct level_edit_control_state
 {
+  bool saveChanges = false;
+  bool discardChanges = false;
+
   bool returnToMenu = false;
+  bool stayInEdit = false;
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
 
@@ -46,6 +50,12 @@ struct target_selection
 struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
+
+  enum view_state { view_edit, view_exit };
+
+  view_state viewState = view_edit;
+
+  bool saveChanges = false;
 
   const global_state& globalState;
   const d2d_brushes& brushes;

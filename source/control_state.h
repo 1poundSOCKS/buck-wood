@@ -12,6 +12,9 @@ struct control_state
   bool spacebarKeyDown = false;
   bool spacebarKeyPress = false;
   bool functionKey_1 = false;
+  bool keyPress_y = false;
+  bool keyPress_n = false;
+
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
   float ratioMouseX = 0, ratioMouseY = 0;
