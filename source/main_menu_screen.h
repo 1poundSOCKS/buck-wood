@@ -42,6 +42,7 @@ struct main_menu_screen_state
   bool startPlay = false;
   bool startLevelEdit = false;
   bool saveGameLevelData = false;
+  bool checkSaveOnExit = true;
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);

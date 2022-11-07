@@ -1,10 +1,13 @@
 #include "main_menu_screen.h"
 #include "render.h"
 
+void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
+
 main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
 : globalState(globalState),
   brushes(globalState.brushes),
-  textFormats(globalState.textFormats)
+  textFormats(globalState.textFormats),
+  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)
 {
 }
 
@@ -55,26 +58,14 @@ void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& r
 {
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {
-    if( controlState.cancelExit )
-    {
-      screenState.viewState = main_menu_screen_state::view_default;
-    }
-    else if( controlState.discardChanges )
-    {
-      screenState.saveGameLevelData = false;
-      screenState.quit = true;
-    }
-    else if( controlState.saveChanges )
-    {
-      screenState.saveGameLevelData = true;
-      screenState.quit = true;
-    }
+    UpdateScreenExitState(screenState, controlState);
     return;
   }
 
   if( controlState.quit )
   {
-    screenState.viewState = main_menu_screen_state::view_exit;
+    if( screenState.checkSaveOnExit ) screenState.viewState = main_menu_screen_state::view_exit;
+    else screenState.quit = true;
     return;
   }
 
@@ -99,6 +90,24 @@ void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& r
   {
     screenState.startLevelEdit = true;
     return;
+  }
+}
+
+void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState)
+{
+  if( controlState.cancelExit )
+  {
+    screenState.viewState = main_menu_screen_state::view_default;
+  }
+  else if( controlState.discardChanges )
+  {
+    screenState.saveGameLevelData = false;
+    screenState.quit = true;
+  }
+  else if( controlState.saveChanges )
+  {
+    screenState.saveGameLevelData = true;
+    screenState.quit = true;
   }
 }
 

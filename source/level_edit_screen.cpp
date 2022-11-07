@@ -4,6 +4,8 @@
 #include "game_math.h"
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
+void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const D2D_SIZE_F& renderTargetSize);
 void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDropForPlayer(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
@@ -91,20 +93,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
 {
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    if( controlState.cancelExit )
-    {
-      screenState.viewState = level_edit_screen_state::view_default;
-    }
-    else if( controlState.discardChanges )
-    {
-      screenState.saveChanges = false;
-      screenState.returnToMenu = true;
-    }
-    else if( controlState.saveChanges )
-    {
-      screenState.saveChanges = true;
-      screenState.returnToMenu = true;
-    }
+    UpdateScreenExitState(screenState, controlState);
     return;
   }
 
@@ -114,6 +103,39 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
     return;
   }
 
+  UpdateScreenStateMouseData(screenState, controlState, renderTargetSize);
+
+  if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
+  else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;
+
+  if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
+  else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
+
+  RunDragDropForBorderAndObjects(screenState, controlState);
+  RunDragDropForTargets(screenState, controlState);
+  RunDragDropForPlayer(screenState, controlState);
+}
+
+void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+{
+  if( controlState.cancelExit )
+  {
+    screenState.viewState = level_edit_screen_state::view_default;
+  }
+  else if( controlState.discardChanges )
+  {
+    screenState.saveChanges = false;
+    screenState.returnToMenu = true;
+  }
+  else if( controlState.saveChanges )
+  {
+    screenState.saveChanges = true;
+    screenState.returnToMenu = true;
+  }
+}
+
+void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const D2D_SIZE_F& renderTargetSize)
+{
   screenState.mouseX = controlState.renderTargetMouseX;
   screenState.mouseY = controlState.renderTargetMouseY;
 
@@ -135,18 +157,6 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
     screenState.levelMouseX = 0;
     screenState.levelMouseY = 0;
   }
-
-  if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
-  else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;
-
-  if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
-  else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
-
-  RunDragDropForBorderAndObjects(screenState, controlState);
-
-  RunDragDropForTargets(screenState, controlState);
-
-  RunDragDropForPlayer(screenState, controlState);
 }
 
 void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
@@ -306,4 +316,5 @@ void UpdateGlobalState(global_state& globalState, const level_edit_screen_state&
 {
   auto& firstLevelData = globalState.gameLevelDataIndex->front();
   UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
+  globalState.gameLevelDataIndexUpdated = true;
 }

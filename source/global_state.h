@@ -17,6 +17,7 @@ struct global_state
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
 
   bool saveGameLevelData = false;
+  bool gameLevelDataIndexUpdated = false;
 };
 
 #endif
