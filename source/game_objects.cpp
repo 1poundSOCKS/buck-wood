@@ -309,11 +309,21 @@ void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& 
   std::copy(gameLevel.boundary->points.begin(), gameLevel.boundary->points.end(), std::back_inserter(gameLevelData.boundaryPoints));
   
   gameLevelData.objects.clear();
+  
   for( const auto& object : gameLevel.objects )
   {
     std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
     objectData->points.reserve(object->points.size());
     std::copy(object->points.begin(), object->points.end(), std::back_inserter(objectData->points));
     gameLevelData.objects.push_back(std::move(objectData));
+  }
+  
+  gameLevelData.targets.clear();
+  gameLevelData.targets.reserve(gameLevel.targets.size());
+
+  for( const auto& target : gameLevel.targets )
+  {
+    game_point targetData(target.x, target.y);
+    gameLevelData.targets.push_back(targetData);
   }
 }
