@@ -62,6 +62,15 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   if( screenState.closestPoint )
     RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
 
+  if( screenState.dragPoint )
+    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.dragPoint->point, screenState.brushes);
+
+  if( screenState.highlightedTarget )
+    RenderTarget(frame.renderTarget, *screenState.highlightedTarget->target, screenState.brushes.brushActivated);
+
+  if( screenState.dragTarget )
+    RenderTarget(frame.renderTarget, *screenState.dragTarget->target, screenState.brushes.brushActivated);
+
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 

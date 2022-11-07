@@ -22,6 +22,7 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
 void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_level_edit& level, const d2d_brushes& brushes);
 void RenderHighlightedPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_point& point, const d2d_brushes& brushes);
 
+void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderShape(game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);

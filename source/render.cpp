@@ -119,6 +119,13 @@ void RenderHighlightedPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarge
   renderTarget->FillRectangle(&rectangle, brushes.brushActivated.get());
 }
 
+void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+{
+  game_shape targetShape;
+  InitializeTargetShape(target.x, target.y, target.size, targetShape);
+  RenderShape(targetShape, renderTarget, brush);
+}
+
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   RenderLines(shape.lines, renderTarget, brush);
