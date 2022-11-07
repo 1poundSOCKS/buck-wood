@@ -153,6 +153,7 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
+void SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel);
 

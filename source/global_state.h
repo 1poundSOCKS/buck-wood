@@ -15,6 +15,8 @@ struct global_state
   dwrite_text_formats textFormats;
   sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
+
+  bool saveGameLevelData = false;
 };
 
 #endif

@@ -89,6 +89,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 
     if( screenState.quit )
     {
+      if( globalState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
       ::PostQuitMessage(0);
       return screen_none;
     }

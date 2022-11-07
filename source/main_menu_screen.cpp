@@ -13,6 +13,11 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
   screenControlState.quit = controlState.escapeKeyPress;
   screenControlState.startPlay = controlState.spacebarKeyPress;
   screenControlState.startLevelEditor = controlState.functionKey_1;
+
+  screenControlState.cancelExit = controlState.escapeKeyPress;
+  screenControlState.saveChanges = controlState.keyPress_y;
+  screenControlState.discardChanges = controlState.keyPress_n;
+
   screenControlState.renderTargetMouseX = controlState.renderTargetMouseX;
   screenControlState.renderTargetMouseY = controlState.renderTargetMouseY;
 }
@@ -20,6 +25,12 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+  if( screenState.viewState == main_menu_screen_state::view_exit )
+  {
+    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.brushes.brushLevelEndText, L"save changes (y/n)");
+    return;
+  }
 
   std::wstring titleText;
 
@@ -42,6 +53,31 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 
 void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const main_menu_control_state& controlState, const system_timer& timer)
 {
+  if( screenState.viewState == main_menu_screen_state::view_exit )
+  {
+    if( controlState.cancelExit )
+    {
+      screenState.viewState = main_menu_screen_state::view_default;
+    }
+    else if( controlState.discardChanges )
+    {
+      screenState.saveGameLevelData = false;
+      screenState.quit = true;
+    }
+    else if( controlState.saveChanges )
+    {
+      screenState.saveGameLevelData = true;
+      screenState.quit = true;
+    }
+    return;
+  }
+
+  if( controlState.quit )
+  {
+    screenState.viewState = main_menu_screen_state::view_exit;
+    return;
+  }
+
   screenState.renderTargetMouseX = controlState.renderTargetMouseX;
   screenState.renderTargetMouseY = controlState.renderTargetMouseY;
   
@@ -50,12 +86,6 @@ void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& r
   if( screenState.starting )
   {
     screenState.starting = false;
-    return;
-  }
-
-  if( controlState.quit )
-  {
-    screenState.quit = true;
     return;
   }
 

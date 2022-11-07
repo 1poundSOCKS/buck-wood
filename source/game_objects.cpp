@@ -299,6 +299,10 @@ std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& 
   return gameLevelDataIndex;
 }
 
+void SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
+{
+}
+
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel)
 {
   gameLevelData.name = gameLevel.name;

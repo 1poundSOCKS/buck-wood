@@ -16,7 +16,7 @@ struct level_edit_control_state
   bool discardChanges = false;
 
   bool returnToMenu = false;
-  bool stayInEdit = false;
+  bool cancelExit = false;
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
 
@@ -51,9 +51,8 @@ struct level_edit_screen_state
 {
   level_edit_screen_state(const global_state& globalState);
 
-  enum view_state { view_edit, view_exit };
-
-  view_state viewState = view_edit;
+  enum view_state { view_default, view_exit };
+  view_state viewState = view_default;
 
   bool saveChanges = false;
 

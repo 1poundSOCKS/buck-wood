@@ -15,6 +15,9 @@ struct main_menu_control_state
   bool quit = false;
   bool startPlay = false;
   bool startLevelEditor = false;
+  bool cancelExit = false;
+  bool saveChanges = false;
+  bool discardChanges = false;
   float renderTargetMouseX = 0;
   float renderTargetMouseY = 0;
 };
@@ -22,6 +25,9 @@ struct main_menu_control_state
 struct main_menu_screen_state
 {
   main_menu_screen_state(const global_state& globalState);
+
+  enum view_state { view_default, view_exit };
+  view_state viewState = view_default;
 
   const global_state& globalState;
   const d2d_brushes& brushes;
@@ -35,6 +41,7 @@ struct main_menu_screen_state
   bool quit = false;
   bool startPlay = false;
   bool startLevelEdit = false;
+  bool saveGameLevelData = false;
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);

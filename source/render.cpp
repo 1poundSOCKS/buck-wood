@@ -31,6 +31,17 @@ void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float se
   renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brushes.brushTimer.get());
 }
 
+void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
+                            const winrt::com_ptr<IDWriteTextFormat>& textFormat, 
+                            const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
+                            const std::wstring& text)
+{
+  D2D_SIZE_F size = renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  renderTarget->DrawTextW(text.c_str(),text.length(), textFormat.get(), rect, brush.get());
+}
+
 void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const mouse_cursor& mouseCursor, float x, float y, const d2d_brushes& brushes)
 {
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(x, y);

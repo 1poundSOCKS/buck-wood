@@ -37,8 +37,7 @@ target_selection::target_selection(std::list<target_edit>& targets, std::list<ta
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
 {
-  controlState.returnToMenu = baseControlState.escapeKeyPress;
-  controlState.stayInEdit = baseControlState.escapeKeyPress;
+  controlState.returnToMenu = controlState.cancelExit = baseControlState.escapeKeyPress;
 
   controlState.saveChanges = baseControlState.keyPress_y;
   controlState.discardChanges = baseControlState.keyPress_n;
@@ -62,11 +61,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    static const std::wstring text = L"save changes (y/n)";
-    D2D_SIZE_F size = frame.renderTarget->GetSize();
-    D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-    frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.brushes.brushLevelEndText, L"save changes (y/n)");
     return;
   }
 
@@ -96,9 +91,9 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
 {
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    if( controlState.stayInEdit )
+    if( controlState.cancelExit )
     {
-      screenState.viewState = level_edit_screen_state::view_edit;
+      screenState.viewState = level_edit_screen_state::view_default;
     }
     else if( controlState.discardChanges )
     {
