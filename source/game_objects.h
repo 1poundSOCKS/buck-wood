@@ -33,7 +33,6 @@ struct game_line_edit
 
 struct game_level_object_data
 {
-  float x, y;
   std::vector<game_point> points;
 };
 

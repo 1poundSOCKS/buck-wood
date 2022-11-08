@@ -42,11 +42,7 @@ game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
 
 game_shape::game_shape(const game_level_object_data& objectData)
 {
-  for( const auto& point: objectData.points )
-  {
-    points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
-  }
-
+  std::copy(objectData.points.cbegin(), objectData.points.end(), std::back_inserter(points));
   CreateShapeLinesFromPoints(lines, points);
 }
 
@@ -57,10 +53,7 @@ game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
 
 game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
 {
-  for( const auto& point: objectData.points )
-  {
-    points.push_back(game_point(objectData.x + point.x, objectData.y + point.y));
-  }
+  std::copy(objectData.points.cbegin(), objectData.points.end(), std::back_inserter(points));
 }
 
 mouse_cursor::mouse_cursor()
@@ -262,8 +255,8 @@ std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value
 {
   auto objectDataPtr = std::make_unique<game_level_object_data>();
 
-  objectDataPtr->x = jsonObject["x"].asFloat();
-  objectDataPtr->y = jsonObject["y"].asFloat();
+  // objectDataPtr->x = jsonObject["x"].asFloat();
+  // objectDataPtr->y = jsonObject["y"].asFloat();
 
   Json::Value objectPoints = jsonObject["points"];
   Json::ArrayIndex objectPointCount = objectPoints.size();
@@ -308,8 +301,8 @@ Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPt
 
   Json::Value root;
   
-  root["x"] = object.x;
-  root["y"] = object.x;
+  // root["x"] = object.x;
+  // root["y"] = object.x;
   root["points"] = FormatAsJson(object.points);
   
   return root;
@@ -389,7 +382,7 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
   );
 
   // TODO: get reduce working
-
+  //
   // bool allSaved = std::reduce(saveLevelDataReturn.cbegin(), saveLevelDataReturn.end(), true,
   //   [](bool left, bool right)
   //   {
