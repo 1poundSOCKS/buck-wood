@@ -38,5 +38,4 @@
 # DLL required to run
 !jsoncpp.dll
 
-// my project
-/data/levels/save/*
+# my project
