@@ -3,6 +3,9 @@
 #include <numeric>
 #include "framework/data_files.h"
 
+Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPtr);
+template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
+
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {
 }
@@ -291,6 +294,44 @@ std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath,
   return gameLevelData;
 }
 
+Json::Value FormatAsJson(const game_point& point)
+{
+    Json::Value root;
+    root["x"] = point.x;
+    root["y"] = point.y;
+    return root;
+}
+
+Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPtr)
+{
+  const auto& object = *objectPtr;
+
+  Json::Value root;
+  
+  root["x"] = object.x;
+  root["y"] = object.x;
+  root["points"] = FormatAsJson(object.points);
+  
+  return root;
+}
+
+template<class T>
+Json::Value FormatAsJson(const std::vector<T>& items)
+{
+  Json::Value root = Json::arrayValue;
+
+  std::vector<Json::Value> itemsJson;
+  std::transform(items.cbegin(), items.end(), std::back_inserter(itemsJson), [](const T& item)
+    {
+      return FormatAsJson(item);
+    }
+  );
+
+  for( const auto& item : itemsJson ) { root.append(item); }
+
+  return root;
+}
+
 bool SaveGameLevelData(const game_level_data& gameLevelData)
 {
   Json::Value root;
@@ -299,6 +340,9 @@ bool SaveGameLevelData(const game_level_data& gameLevelData)
   root["playerStartPosX"] = gameLevelData.playerStartPosX;
   root["playerStartPosY"] = gameLevelData.playerStartPosY;
   root["timeLimitInSeconds"] = gameLevelData.timeLimitInSeconds;
+  root["boundaryPoints"] = FormatAsJson(gameLevelData.boundaryPoints);
+  root["objects"] = FormatAsJson(gameLevelData.objects);
+  root["targets"] = FormatAsJson(gameLevelData.targets);
 
   std::string jsonData = SaveJsonDataToString(root);
 
