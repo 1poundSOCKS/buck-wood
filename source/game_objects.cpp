@@ -1,5 +1,6 @@
 #include "game_objects.h"
 #include <fstream>
+#include <numeric>
 #include "framework/data_files.h"
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
@@ -285,22 +286,70 @@ std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath,
   Json::Reader reader;
   Json::Value root;
   reader.parse(ifs, root);
-  return LoadLevelDataFromJSON(root);
+  auto gameLevelData = LoadLevelDataFromJSON(root);
+  gameLevelData->filename = fullFilename;
+  return gameLevelData;
+}
+
+bool SaveGameLevelData(const game_level_data& gameLevelData)
+{
+  Json::Value root;
+
+  root["name"] = gameLevelData.name;
+  root["playerStartPosX"] = gameLevelData.playerStartPosX;
+  root["playerStartPosY"] = gameLevelData.playerStartPosY;
+  root["timeLimitInSeconds"] = gameLevelData.timeLimitInSeconds;
+
+  std::string jsonData = SaveJsonDataToString(root);
+
+  fs::path saveFilename = gameLevelData.filename;
+  fs::path updatedSaveFilename = saveFilename.parent_path();
+  updatedSaveFilename /= "save";
+  updatedSaveFilename /= saveFilename.filename();
+
+  std::ofstream ofs(updatedSaveFilename);
+  ofs.write(jsonData.c_str(), jsonData.length());
+  std::ofstream::iostate state = ofs.rdstate();
+  bool saved = ofs.good();
+  ofs.close();
+  return saved;
+}
+
+std::string SaveJsonDataToString(Json::Value& root)
+{
+  Json::StyledWriter styledWriter;
+  return styledWriter.write(root);
 }
 
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath)
 {
   auto gameLevelDataIndex = std::make_unique<game_level_data_index>();
-  gameLevelDataIndex->reserve(4);
-  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_001.json"));
-  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_002.json"));
-  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_003.json"));
-  gameLevelDataIndex->push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  gameLevelDataIndex->gameLevelData.reserve(4);
+  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_001.json"));
+  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_002.json"));
+  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_003.json"));
+  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_004.json"));
   return gameLevelDataIndex;
 }
 
-void SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
+bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
 {
+  std::vector<bool> saveLevelDataReturn;
+  std::transform(gameLevelDataIndex.gameLevelData.cbegin(), gameLevelDataIndex.gameLevelData.end(), std::back_inserter(saveLevelDataReturn),
+    [](const std::unique_ptr<game_level_data>& gameLevelData)
+    {
+      return SaveGameLevelData(*gameLevelData);
+    }
+  );
+
+  // bool allSaved = std::reduce(saveLevelDataReturn.cbegin(), saveLevelDataReturn.end(), true,
+  //   [](bool left, bool right)
+  //   {
+  //     return true;
+  //   }
+  // );
+
+  return true;
 }
 
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel)

@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   global_state globalState(app, dataPath);
   
-  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
   screen_type currentScreen = screen_main_menu;
@@ -89,6 +89,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 
     if( screenState.quit )
     {
+      UpdateGlobalState(globalState, screenState);
       if( globalState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
       ::PostQuitMessage(0);
       return screen_none;

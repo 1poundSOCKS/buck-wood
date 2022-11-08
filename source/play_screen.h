@@ -42,7 +42,7 @@ struct play_screen_state
   mouse_cursor mouseCursor;
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
   
-  game_level_data_index::const_iterator currentLevelDataIterator;
+  std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level> currentLevel;
 
   std::unique_ptr<player_ship> player;

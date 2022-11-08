@@ -11,6 +11,7 @@ struct global_state
 {
   global_state(const d2d_app& app, const std::wstring& dataPath);
 
+  std::wstring dataPath;
   d2d_brushes brushes;
   dwrite_text_formats textFormats;
   sound_buffers soundBuffers;

@@ -25,7 +25,7 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   brushes(globalState.brushes),
   textFormats(globalState.textFormats)
 {
-  currentLevelDataIterator = globalState.gameLevelDataIndex->begin();
+  currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level>(*levelData);
 
@@ -38,7 +38,7 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
   shotTimer->paused = false;
 
-  levelTimes.reserve(globalState.gameLevelDataIndex->size());
+  levelTimes.reserve(globalState.gameLevelDataIndex->gameLevelData.size());
 
   viewTransform = D2D1::Matrix3x2F::Identity();
 
@@ -291,7 +291,7 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 
   screenState.currentLevelDataIterator++;
   
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->end() )
+  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() )
   {
     screenState.state = play_screen_state::state_game_complete;
     ResetStopwatch(*screenState.pauseTimer, 3);

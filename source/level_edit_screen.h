@@ -68,7 +68,7 @@ struct level_edit_screen_state
   bool returnToMenu = false;
   
   const game_level_data_index& gameLevelDataIndex;
-  game_level_data_index::const_iterator currentLevelDataIterator;
+  std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level_edit> currentLevel;
   player_ship playerShip;
 

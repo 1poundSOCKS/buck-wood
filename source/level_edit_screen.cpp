@@ -19,7 +19,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   textFormats(globalState.textFormats),
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
-  currentLevelDataIterator = gameLevelDataIndex.begin();
+  currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level_edit>(*levelData);
 
@@ -314,7 +314,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
-  auto& firstLevelData = globalState.gameLevelDataIndex->front();
+  auto& firstLevelData = globalState.gameLevelDataIndex->gameLevelData.front();
   UpdateGameLevelData(*firstLevelData, *screenState.currentLevel);
   globalState.gameLevelDataIndexUpdated = true;
 }

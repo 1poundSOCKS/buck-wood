@@ -106,6 +106,7 @@ struct target_edit
 
 struct game_level_data
 {
+  std::wstring filename;
   std::string name;
   float playerStartPosX = 0, playerStartPosY = 0;
   int timeLimitInSeconds = 0;
@@ -117,7 +118,7 @@ struct game_level_data
 struct game_level
 {
   game_level(const game_level_data& gameLevelData);
- 
+
   std::string name;
   float playerStartPosX = 0, playerStartPosY = 0;
   float timeLimitInSeconds = 0;
@@ -129,7 +130,7 @@ struct game_level
 struct game_level_edit
 {
   game_level_edit(const game_level_data& gameLevelData);
- 
+
   std::string name;
   float playerStartPosX = 0, playerStartPosY = 0;
   float timeLimitInSeconds = 0;
@@ -138,7 +139,10 @@ struct game_level_edit
   std::list<target_edit> targets;
 };
 
-using game_level_data_index = std::vector<std::unique_ptr<game_level_data>>;
+struct game_level_data_index
+{
+  std::vector<std::unique_ptr<game_level_data>> gameLevelData;
+};
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 
@@ -151,10 +155,14 @@ void InitializeTargetShape(float x, float y, float size, game_shape& shape);
 
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject, game_level_data& gameLevelData);
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
-std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
-std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
-void SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 
+std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
+bool SaveGameLevelData(const game_level_data& gameLevelData);
+
+std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
+bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel);
+
+std::string SaveJsonDataToString(Json::Value& root);
 
 #endif
