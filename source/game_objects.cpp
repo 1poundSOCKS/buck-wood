@@ -347,11 +347,13 @@ bool SaveGameLevelData(const game_level_data& gameLevelData)
   std::string jsonData = SaveJsonDataToString(root);
 
   fs::path saveFilename = gameLevelData.filename;
-  fs::path updatedSaveFilename = saveFilename.parent_path();
-  updatedSaveFilename /= "save";
-  updatedSaveFilename /= saveFilename.filename();
+  fs::path backupFilename = saveFilename.parent_path();
+  backupFilename /= "bak";
+  backupFilename /= saveFilename.filename();
 
-  std::ofstream ofs(updatedSaveFilename);
+  // TODO: add backup
+
+  std::ofstream ofs(gameLevelData.filename);
   ofs.write(jsonData.c_str(), jsonData.length());
   std::ofstream::iostate state = ofs.rdstate();
   bool saved = ofs.good();
@@ -385,6 +387,8 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
       return SaveGameLevelData(*gameLevelData);
     }
   );
+
+  // TODO: get reduce working
 
   // bool allSaved = std::reduce(saveLevelDataReturn.cbegin(), saveLevelDataReturn.end(), true,
   //   [](bool left, bool right)
