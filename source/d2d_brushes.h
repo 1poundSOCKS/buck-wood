@@ -15,6 +15,8 @@ struct d2d_brushes
   winrt::com_ptr<ID2D1SolidColorBrush> brushDeactivated;
   winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> brushLevelEndText;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushDragDropPoint;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushClosestDragDropPoint;
 };
 
 using d2d_brushes_ptr = std::shared_ptr<d2d_brushes>;

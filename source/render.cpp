@@ -1,6 +1,20 @@
 #include "render.h"
 #include <string>
 
+render_point::render_point(float x, float y, float size)
+{
+  float halfSize = size / 2;
+  rect.left = x - halfSize;
+  rect.right = x + halfSize;
+  rect.top = y - halfSize;
+  rect.bottom = y + halfSize;
+}
+
+render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end)
+: start(start), end(end)
+{
+}
+
 void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const diagnostics_data& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
 {
   D2D_SIZE_F size = renderTarget->GetSize();
@@ -127,15 +141,14 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
   }
 }
 
-void RenderHighlightedPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_point& point, const d2d_brushes& brushes)
+void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
-  static const float pointSize = 5.0f;
+  renderTarget->FillRectangle(&point.rect, brush.get());
+}
 
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(point.x, point.y);
-  const D2D1::Matrix3x2F transform = translate * viewTransform;
-  renderTarget->SetTransform(transform);
-  D2D1_RECT_F rectangle = D2D1::RectF(- pointSize / 2, - pointSize / 2, pointSize / 2, pointSize / 2);
-  renderTarget->FillRectangle(&rectangle, brushes.brushActivated.get());
+void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_line& line, float renderWidth, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+{
+  renderTarget->DrawLine(line.start, line.end, brush.get(), renderWidth);
 }
 
 void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)

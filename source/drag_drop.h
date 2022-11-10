@@ -3,6 +3,8 @@
 
 #include <list>
 #include <memory>
+#include <d2d1.h>
+#include "render.h"
 
 struct drag_drop_point
 {
@@ -10,6 +12,13 @@ struct drag_drop_point
 
   float x;
   float y;
+};
+
+struct drag_drop_line
+{
+  drag_drop_line(const drag_drop_point& start, const drag_drop_point& end);
+  
+  drag_drop_point start, end;
 };
 
 struct drag_drop_shape
@@ -36,5 +45,9 @@ struct drag_drop_control_state
 
 void SelectClosestPoint(drag_drop_shape& shape, float x, float y);
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
+void CreateDragDropRenderLines(std::list<render_line>& lines, const std::list<drag_drop_point>& points);
+void CreateDragDropRenderPoints(std::list<render_point>& renderPoints, const std::list<drag_drop_point>& points);
+void RenderDragDrop(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const drag_drop_state& dragDropState, const d2d_brushes& brushes);
+void RenderDragDropShape(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const drag_drop_shape& shape, const d2d_brushes& brushes);
 
 #endif

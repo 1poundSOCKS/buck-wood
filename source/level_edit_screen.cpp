@@ -72,12 +72,14 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
     return;
   }
 
-  RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
+  frame.renderTarget->SetTransform(screenState.viewTransform);
 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& playerBrush = 
-    screenState.playerHighlighted || screenState.playerDrag ? screenState.brushes.brushActivated : screenState.brushes.brush;
+  // RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
 
-  RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, playerBrush, screenState.brushes.brushThrusters);
+  // const winrt::com_ptr<ID2D1SolidColorBrush>& playerBrush = 
+  //   screenState.playerHighlighted || screenState.playerDrag ? screenState.brushes.brushActivated : screenState.brushes.brush;
+
+  // RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, playerBrush, screenState.brushes.brushThrusters);
 
   // if( screenState.closestPoint )
   //   RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
@@ -91,10 +93,15 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   // if( screenState.dragTarget )
   //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
 
-  for( const auto& dragDropPoint : screenState.dragDropState.shape.points )
-  {
-    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, game_point(dragDropPoint.x, dragDropPoint.y), screenState.brushes);
-  }
+  // frame.renderTarget->SetTransform(screenState.viewTransform);
+  RenderDragDrop(frame.renderTarget, screenState.dragDropState, screenState.brushes);
+
+  // for( const auto& dragDropPoint : screenState.dragDropState.shape.points )
+  // {
+  //   RenderDragDropPoints(frame.renderTarget, screenState.viewTransform, dragDropPoint, screenState.brushes);
+  // }
+
+  // RenderClosestDragDropPoint(frame.renderTarget, screenState.viewTransform, screenState.dragDropState, screenState.brushes);
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }

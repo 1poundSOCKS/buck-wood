@@ -24,4 +24,10 @@ d2d_brushes::d2d_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
 
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 1.0f, 1.0f, 1.0f)), brushLevelEndText.put());
   if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 0.0f, 1.0f, 0.0f)), brushDragDropPoint.put());
+  if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 1.0f, 0.0f, 0.0f)), brushClosestDragDropPoint.put());
+  if( FAILED(hr) ) throw(L"error");
 }
