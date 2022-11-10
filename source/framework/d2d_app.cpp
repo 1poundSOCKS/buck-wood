@@ -110,10 +110,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     d2d_app *app = reinterpret_cast<d2d_app *>(static_cast<LONG_PTR>(::GetWindowLongPtrW(hWnd,GWLP_USERDATA)));
     if( app == NULL ) return 0;
 
+    GetClientRect(hWnd, &app->clientMouseData.rect);
+    if( app->d2d_rendertarget ) app->renderTargetMouseData.size = app->d2d_rendertarget->GetSize();
+
     LPARAM mouseX = GET_X_LPARAM(lParam);
     LPARAM mouseY = GET_Y_LPARAM(lParam);
-    app->clientMouseX = mouseX;
-    app->clientMouseY = mouseY;
+    app->clientMouseData.x = mouseX;
+    app->clientMouseData.y = mouseY;
+
+    app->renderTargetMouseData.x = 
+      static_cast<float>(app->clientMouseData.x) / 
+      static_cast<float>(app->clientMouseData.rect.right - app->clientMouseData.rect.left) * 
+      app->renderTargetMouseData.size.width;
+
+    app->renderTargetMouseData.y = 
+      static_cast<float>(app->clientMouseData.y) / 
+      static_cast<float>(app->clientMouseData.rect.bottom - app->clientMouseData.rect.top) * 
+      app->renderTargetMouseData.size.height;
+
     return 0;
   }
 
@@ -166,6 +180,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     app->windowWidth = LOWORD(lParam);
     app->windowHeight = HIWORD(lParam);
+
+    GetClientRect(hWnd, &app->clientMouseData.rect);
+
+    if( app->d2d_rendertarget ) app->renderTargetMouseData.size = app->d2d_rendertarget->GetSize();
 
     return 0;
   }

@@ -17,8 +17,7 @@ struct control_state
 
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
-  float ratioMouseX = 0, ratioMouseY = 0;
-  float renderTargetMouseX = 0, renderTargetMouseY = 0;
+  render_target_mouse_data renderTargetMouseData;
   bool leftMouseButtonDrag = false;
   bool rightMouseButtonDrag = false;
 };

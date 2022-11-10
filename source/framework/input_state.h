@@ -10,20 +10,28 @@
 #include <dinput.h>
 #include <winrt/base.h>
 
+struct client_mouse_data
+{
+  RECT rect;
+  float x = 0, y = 0;
+};
+
+struct render_target_mouse_data
+{
+  D2D_SIZE_F size;
+  float x = 0, y = 0;
+};
+
 struct input_state
 {
   input_state();
 
   void RefreshKeyboard(const winrt::com_ptr<IDirectInputDevice8>& keyboard);
-  void UpdateMouse(LPARAM clientMouseX, LPARAM clientMouseY, const RECT& clientRect, bool leftMouseButtonDown, bool rightMouseButtonDown, const D2D1_SIZE_F& renderTargetSize);
 
   unsigned char keyboardState[256];
   bool leftMouseButtonDown = false, rightMouseButtonDown = false;
-  RECT clientRect;
-  LPARAM clientMouseX = 0, clientMouseY = 0;
-  float ratioMouseX = 0, ratioMouseY = 0;
-  D2D1_SIZE_F renderTargetSize;
-  float renderTargetMouseX = 0, renderTargetMouseY = 0;
+  client_mouse_data clientMouseData;
+  render_target_mouse_data renderTargetMouseData;
 };
 
 #endif

@@ -19,11 +19,7 @@ void control_state::Refresh(const input_state& inputState, const input_state& pr
   leftMouseButtonDown = inputState.leftMouseButtonDown;
   rightMouseButtonDown = inputState.rightMouseButtonDown;
 
-  ratioMouseX = inputState.ratioMouseX;
-  ratioMouseY = inputState.ratioMouseY;
-
-  renderTargetMouseX = inputState.renderTargetMouseX;
-  renderTargetMouseY = inputState.renderTargetMouseY;
+  renderTargetMouseData = inputState.renderTargetMouseData;
 
   if( inputState.leftMouseButtonDown && previousInputState.leftMouseButtonDown && MouseHasMoved(inputState, previousInputState) )
   {
@@ -38,5 +34,5 @@ void control_state::Refresh(const input_state& inputState, const input_state& pr
 
 bool MouseHasMoved(const input_state& inputState, const input_state& previousInputState)
 {
-  return ( previousInputState.clientMouseX != inputState.clientMouseX || previousInputState.clientMouseY != inputState.clientMouseY ) ? true : false;
+  return ( previousInputState.clientMouseData.x != inputState.clientMouseData.x || previousInputState.clientMouseData.y != inputState.clientMouseData.y ) ? true : false;
 }

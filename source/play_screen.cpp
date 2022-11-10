@@ -65,8 +65,8 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
   controlState.restartPlay = baseControlState.spacebarKeyPress;
   controlState.shoot = baseControlState.leftMouseButtonDown;
   controlState.thrust = baseControlState.rightMouseButtonDown;
-  controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
-  controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
+  controlState.renderTargetMouseX = baseControlState.renderTargetMouseData.x;
+  controlState.renderTargetMouseY = baseControlState.renderTargetMouseData.y;
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)

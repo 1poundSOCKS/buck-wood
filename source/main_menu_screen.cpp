@@ -21,8 +21,8 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
   screenControlState.saveChanges = controlState.keyPress_y;
   screenControlState.discardChanges = controlState.keyPress_n;
 
-  screenControlState.renderTargetMouseX = controlState.renderTargetMouseX;
-  screenControlState.renderTargetMouseY = controlState.renderTargetMouseY;
+  screenControlState.renderTargetMouseX = controlState.renderTargetMouseData.x;
+  screenControlState.renderTargetMouseY = controlState.renderTargetMouseData.y;
 }
 
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)

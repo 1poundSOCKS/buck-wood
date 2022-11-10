@@ -28,7 +28,9 @@ struct d2d_app
   int cmdShow;
   HWND wnd;
   UINT windowWidth, windowHeight;
-  LPARAM clientMouseX = 0, clientMouseY = 0;
+
+  client_mouse_data clientMouseData;
+  render_target_mouse_data renderTargetMouseData;
   bool leftMouseButtonDown = false, rightMouseButtonDown = false;
 
   std::unique_ptr<system_timer> timer;

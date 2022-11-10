@@ -5,7 +5,8 @@
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const D2D_SIZE_F& renderTargetSize);
+void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDropForPlayer(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
@@ -25,6 +26,11 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 
   playerShip.xPos = currentLevel->playerStartPosX;
   playerShip.yPos = currentLevel->playerStartPosY;
+
+  std::transform(currentLevel->boundary->points.begin(), currentLevel->boundary->points.end(), std::back_inserter(dragDropShape.points), [](game_point& point)
+  {
+    return drag_drop_point(point.x, point.y);
+  });
 }
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
@@ -47,11 +53,13 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
   controlState.rightMouseButtonDown = baseControlState.rightMouseButtonDown;
 
-  controlState.ratioMouseX = baseControlState.ratioMouseX;
-  controlState.ratioMouseY = baseControlState.ratioMouseY;
+  controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
 
-  controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
-  controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
+  controlState.ratioMouseX = controlState.renderTargetMouseData.x / controlState.renderTargetMouseData.size.width;
+  controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
+
+  // controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
+  // controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
 
   controlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
@@ -74,17 +82,22 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, playerBrush, screenState.brushes.brushThrusters);
 
-  if( screenState.closestPoint )
-    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
+  // if( screenState.closestPoint )
+  //   RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
 
-  if( screenState.dragPoint )
-    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.dragPoint->point, screenState.brushes);
+  // if( screenState.dragPoint )
+  //   RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.dragPoint->point, screenState.brushes);
 
-  if( screenState.highlightedTarget )
-    RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.highlightedTarget->target, screenState.brushes.brushActivated);
+  // if( screenState.highlightedTarget )
+  //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.highlightedTarget->target, screenState.brushes.brushActivated);
 
-  if( screenState.dragTarget )
-    RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
+  // if( screenState.dragTarget )
+  //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
+
+  for( const auto& dragDropPoint : screenState.dragDropShape.points )
+  {
+    RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, game_point(dragDropPoint.x, dragDropPoint.y), screenState.brushes);
+  }
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
@@ -103,7 +116,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
     return;
   }
 
-  UpdateScreenStateMouseData(screenState, controlState, renderTargetSize);
+  UpdateScreenStateMouseData(screenState, controlState);
 
   if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
   else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;
@@ -111,9 +124,10 @@ void UpdateScreenState(level_edit_screen_state& screenState, const D2D1_SIZE_F& 
   if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
-  RunDragDropForBorderAndObjects(screenState, controlState);
-  RunDragDropForTargets(screenState, controlState);
-  RunDragDropForPlayer(screenState, controlState);
+  // RunDragDropForBorderAndObjects(screenState, controlState);
+  // RunDragDropForTargets(screenState, controlState);
+  // RunDragDropForPlayer(screenState, controlState);
+  RunDragDrop(screenState, controlState);
 }
 
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
@@ -134,20 +148,20 @@ void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edi
   }
 }
 
-void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const D2D_SIZE_F& renderTargetSize)
+void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
-  screenState.mouseX = controlState.renderTargetMouseX;
-  screenState.mouseY = controlState.renderTargetMouseY;
+  screenState.mouseX = controlState.renderTargetMouseData.x;
+  screenState.mouseY = controlState.renderTargetMouseData.y;
 
-  screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
+  screenState.viewTransform = CreateViewTransform(controlState.renderTargetMouseData.size, screenState);
 
   auto mouseTransform = screenState.viewTransform;
 
   if( mouseTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
-    inPoint.x = controlState.renderTargetMouseX;
-    inPoint.y = controlState.renderTargetMouseY;
+    inPoint.x = controlState.renderTargetMouseData.x;
+    inPoint.y = controlState.renderTargetMouseData.y;
     auto outPoint = mouseTransform.TransformPoint(inPoint);
     screenState.levelMouseX = outPoint.x;
     screenState.levelMouseY = outPoint.y;
@@ -157,6 +171,10 @@ void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const leve
     screenState.levelMouseX = 0;
     screenState.levelMouseY = 0;
   }
+}
+
+void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+{
 }
 
 void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState)

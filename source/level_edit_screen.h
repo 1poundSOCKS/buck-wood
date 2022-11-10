@@ -9,6 +9,7 @@
 #include "game_objects.h"
 #include "diagnostics.h"
 #include "global_state.h"
+#include "drag_drop.h"
 
 struct level_edit_control_state
 {
@@ -20,11 +21,13 @@ struct level_edit_control_state
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
 
+  render_target_mouse_data renderTargetMouseData;
+  
   float ratioMouseX = 0;
   float ratioMouseY = 0;
 
-  float renderTargetMouseX = 0;
-  float renderTargetMouseY = 0;
+  // float renderTargetMouseX = 0;
+  // float renderTargetMouseY = 0;
 
   bool leftMouseButtonDrag = false;
   bool rightMouseButtonDrag = false;
@@ -83,6 +86,8 @@ struct level_edit_screen_state
 
   bool playerHighlighted = false;
   bool playerDrag = false;
+
+  drag_drop_shape dragDropShape;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
