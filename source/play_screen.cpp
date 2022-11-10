@@ -65,8 +65,9 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
   controlState.restartPlay = baseControlState.spacebarKeyPress;
   controlState.shoot = baseControlState.leftMouseButtonDown;
   controlState.thrust = baseControlState.rightMouseButtonDown;
-  controlState.renderTargetMouseX = baseControlState.renderTargetMouseData.x;
-  controlState.renderTargetMouseY = baseControlState.renderTargetMouseData.y;
+  // controlState.renderTargetMouseX = baseControlState.renderTargetMouseData.x;
+  // controlState.renderTargetMouseY = baseControlState.renderTargetMouseData.y;
+  controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
@@ -84,12 +85,15 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 
   auto& currentLevel = *screenState.currentLevel;
 
-  RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
-  RenderPlayer(frame.renderTarget, screenState.viewTransform, *screenState.player, screenState.brushes);
+  D2D1_SIZE_F renderTargetSize = frame.renderTarget->GetSize();
+  D2D1::Matrix3x2F viewTransform = CreateViewTransform(renderTargetSize, screenState);
+
+  RenderLevel(frame.renderTarget, viewTransform, *screenState.currentLevel, screenState.brushes);
+  RenderPlayer(frame.renderTarget, viewTransform, *screenState.player, screenState.brushes);
 
   for( const std::unique_ptr<bullet>& bullet : screenState.bullets )
   {
-    RenderBullet(frame.renderTarget, screenState.viewTransform, *bullet, screenState.brushes);
+    RenderBullet(frame.renderTarget, viewTransform, *bullet, screenState.brushes);
   }
 
   switch( screenState.state )
@@ -158,20 +162,18 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
   frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
-void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const play_screen_control_state& controlState, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
-  screenState.renderTargetMouseX = controlState.renderTargetMouseX;
-  screenState.renderTargetMouseY = controlState.renderTargetMouseY;
+  screenState.renderTargetMouseX = controlState.renderTargetMouseData.x;
+  screenState.renderTargetMouseY = controlState.renderTargetMouseData.y;
 
-  screenState.viewTransform = CreateViewTransform(renderTargetSize, screenState);
-
-  auto mouseTransform = screenState.viewTransform;
+  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(controlState.renderTargetMouseData.size, screenState);
 
   if( mouseTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
-    inPoint.x = controlState.renderTargetMouseX;
-    inPoint.y = controlState.renderTargetMouseY;
+    inPoint.x = screenState.renderTargetMouseX;
+    inPoint.y = screenState.renderTargetMouseY;
     auto outPoint = mouseTransform.TransformPoint(inPoint);
     screenState.levelMouseX = outPoint.x;
     screenState.levelMouseY = outPoint.y;

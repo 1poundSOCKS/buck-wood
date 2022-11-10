@@ -19,9 +19,7 @@ struct play_screen_control_state
   bool restartPlay = false;
   bool pausePlay = false;
   bool thrust = false, shoot = false;
-
-  float renderTargetMouseX = 0;
-  float renderTargetMouseY = 0;
+  render_target_mouse_data renderTargetMouseData;
 };
 
 struct play_screen_state
@@ -74,7 +72,7 @@ struct play_screen_sounds
 };
 
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
-void UpdateScreenState(play_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const play_screen_control_state& controlState, const system_timer& timer);
+void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);

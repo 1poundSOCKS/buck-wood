@@ -54,7 +54,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
 }
 
-void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const main_menu_control_state& controlState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer)
 {
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {

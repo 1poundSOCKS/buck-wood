@@ -140,11 +140,6 @@ screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
 template<class T_SS, class T_CS>
 void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState)
 {
-  // RECT clientRect;
-  // GetClientRect(app.wnd, &clientRect);
-
-  // D2D1_SIZE_F renderTargetSize = app.d2d_rendertarget->GetSize();
-
   static input_state inputState, previousInputState;
   previousInputState = inputState;
   inputState.RefreshKeyboard(app.keyboard);
@@ -152,7 +147,6 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   inputState.renderTargetMouseData = app.renderTargetMouseData;
   inputState.leftMouseButtonDown = app.leftMouseButtonDown;
   inputState.rightMouseButtonDown = app.rightMouseButtonDown;
-  // inputState.UpdateMouse(app.clientMouseX, app.clientMouseY, clientRect, app.leftMouseButtonDown, app.rightMouseButtonDown, renderTargetSize);
 
   static control_state baseControlState;
   baseControlState.Refresh(inputState, previousInputState);
@@ -160,8 +154,7 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   static T_CS screenControlState;
   RefreshControlState(screenControlState, baseControlState);
 
-  D2D1_SIZE_F renderTargetSize = app.d2d_rendertarget->GetSize();
-  UpdateScreenState(screenState, renderTargetSize, screenControlState, *app.timer);
+  UpdateScreenState(screenState, screenControlState, *app.timer);
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();

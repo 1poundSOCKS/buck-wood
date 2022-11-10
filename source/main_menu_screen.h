@@ -46,7 +46,7 @@ struct main_menu_screen_state
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);
-void UpdateScreenState(main_menu_screen_state& screenState, const D2D1_SIZE_F& renderTargetSize, const main_menu_control_state& controlState, const system_timer& timer);
+void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
 void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
