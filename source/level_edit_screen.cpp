@@ -27,7 +27,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   playerShip.xPos = currentLevel->playerStartPosX;
   playerShip.yPos = currentLevel->playerStartPosY;
 
-  std::transform(currentLevel->boundary->points.begin(), currentLevel->boundary->points.end(), std::back_inserter(dragDropShape.points), [](game_point& point)
+  std::transform(currentLevel->boundary->points.begin(), currentLevel->boundary->points.end(), std::back_inserter(dragDropState.shape.points), [](game_point& point)
   {
     return drag_drop_point(point.x, point.y);
   });
@@ -57,9 +57,6 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
 
   controlState.ratioMouseX = controlState.renderTargetMouseData.x / controlState.renderTargetMouseData.size.width;
   controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
-
-  // controlState.renderTargetMouseX = baseControlState.renderTargetMouseX;
-  // controlState.renderTargetMouseY = baseControlState.renderTargetMouseY;
 
   controlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
@@ -94,7 +91,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   // if( screenState.dragTarget )
   //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
 
-  for( const auto& dragDropPoint : screenState.dragDropShape.points )
+  for( const auto& dragDropPoint : screenState.dragDropState.shape.points )
   {
     RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, game_point(dragDropPoint.x, dragDropPoint.y), screenState.brushes);
   }
@@ -175,6 +172,13 @@ void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const leve
 
 void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
+  drag_drop_control_state dragDropControlState;
+  dragDropControlState.leftMouseButtonDown = controlState.leftMouseButtonDown;
+  dragDropControlState.leftMouseButtonDrag = controlState.leftMouseButtonDrag;
+  dragDropControlState.worldMouseX = screenState.levelMouseX;
+  dragDropControlState.worldMouseY = screenState.levelMouseY;
+
+  ProcessDragDrop(screenState.dragDropState, dragDropControlState);
 }
 
 void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState)

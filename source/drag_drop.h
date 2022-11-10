@@ -22,6 +22,8 @@ struct drag_drop_shape
 struct drag_drop_state
 {
   drag_drop_shape shape;
+  drag_drop_shape::iterator highlightedPoint = shape.points.end();
+  drag_drop_shape::iterator grabbedPoint = shape.points.end();
 };
 
 struct drag_drop_control_state
@@ -33,6 +35,6 @@ struct drag_drop_control_state
 };
 
 void SelectClosestPoint(drag_drop_shape& shape, float x, float y);
-void ProcessDragDrop(drag_drop_shape& shape, drag_drop_control_state& controlState);
+void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
 
 #endif

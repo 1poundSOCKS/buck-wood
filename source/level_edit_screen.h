@@ -84,7 +84,7 @@ struct level_edit_screen_state
   bool playerHighlighted = false;
   bool playerDrag = false;
 
-  drag_drop_shape dragDropShape;
+  drag_drop_state dragDropState;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);

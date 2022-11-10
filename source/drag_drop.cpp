@@ -25,6 +25,25 @@ void SelectClosestPoint(drag_drop_shape& shape, float x, float y)
   }
 }
 
-void ProcessDragDrop(drag_drop_shape& shape, drag_drop_control_state& controlState)
-{  
+void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState)
+{
+  if( !controlState.leftMouseButtonDown )
+  {
+    dragDropState.grabbedPoint = dragDropState.shape.points.end();
+    SelectClosestPoint(dragDropState.shape, controlState.worldMouseX, controlState.worldMouseY);
+    dragDropState.highlightedPoint = dragDropState.shape.closestPoint;
+  }
+
+  bool drag = false;
+  if( dragDropState.highlightedPoint != dragDropState.shape.points.end() && controlState.leftMouseButtonDown )
+  {
+    dragDropState.grabbedPoint = dragDropState.highlightedPoint;
+    dragDropState.highlightedPoint = dragDropState.shape.points.end();
+  }
+
+  if( dragDropState.grabbedPoint != dragDropState.shape.points.end() && controlState.leftMouseButtonDrag )
+  {
+    dragDropState.grabbedPoint->x = controlState.worldMouseX;
+    dragDropState.grabbedPoint->y = controlState.worldMouseY;
+  }
 }
