@@ -203,6 +203,22 @@ void RenderLines(const std::list<game_line_edit>& lines, const winrt::com_ptr<ID
   }
 }
 
+void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
+{
+  for( std::vector<render_line>::const_iterator line = begin; line != end; line++ )
+  {
+    renderTarget->DrawLine(line->start, line->end, brush.get(), 2.0f);
+  }
+}
+
+void RenderPoints(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end)
+{
+  for( std::vector<render_point>::const_iterator point = begin; point != end; ++point )
+  {
+    renderTarget->FillRectangle(&point->rect, brush.get());
+  }
+}
+
 D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, float renderTargetWidth, float renderTargetHeight)
 {
   return D2D1::Matrix3x2F::Translation(-centerPosX, -centerPosY) * 

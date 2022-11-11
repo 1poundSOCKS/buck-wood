@@ -34,78 +34,77 @@ void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_sta
 {
   if( !controlState.leftMouseButtonDown )
   {
-    dragDropState.grabbedPoint = dragDropState.shape.points.end();
-    SelectClosestPoint(dragDropState.shape, controlState.worldMouseX, controlState.worldMouseY);
-    dragDropState.highlightedPoint = dragDropState.shape.closestPoint;
+    dragDropState.grabbedPoint = dragDropState.boundary.points.end();
+    SelectClosestPoint(dragDropState.boundary, controlState.worldMouseX, controlState.worldMouseY);
+    dragDropState.highlightedPoint = dragDropState.boundary.closestPoint;
   }
 
   bool drag = false;
-  if( dragDropState.highlightedPoint != dragDropState.shape.points.end() && controlState.leftMouseButtonDown )
+  if( dragDropState.highlightedPoint != dragDropState.boundary.points.end() && controlState.leftMouseButtonDown )
   {
     dragDropState.grabbedPoint = dragDropState.highlightedPoint;
-    dragDropState.highlightedPoint = dragDropState.shape.points.end();
+    dragDropState.highlightedPoint = dragDropState.boundary.points.end();
   }
 
-  if( dragDropState.grabbedPoint != dragDropState.shape.points.end() && controlState.leftMouseButtonDrag )
+  if( dragDropState.grabbedPoint != dragDropState.boundary.points.end() && controlState.leftMouseButtonDrag )
   {
     dragDropState.grabbedPoint->x = controlState.worldMouseX;
     dragDropState.grabbedPoint->y = controlState.worldMouseY;
   }
 }
 
-void CreateDragDropRenderLines(std::list<render_line>& lines, const std::list<drag_drop_point>& points)
+void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator)
 {
-  for( std::list<drag_drop_point>::const_iterator iStart = points.cbegin(); iStart != points.cend(); iStart++ )
+  for( std::list<drag_drop_point>::const_iterator point = begin; point != end; ++point )
   {
-    std::list<drag_drop_point>::const_iterator iEnd = std::next(iStart);
-    if( iEnd == points.cend() ) iEnd = points.cbegin();
-
-    D2D1_POINT_2F startPoint;
-    startPoint.x = iStart->x;
-    startPoint.y = iStart->y;
-
-    D2D1_POINT_2F endPoint;
-    endPoint.x = iEnd->x;
-    endPoint.y = iEnd->y;
-
-    lines.push_back(render_line(startPoint, endPoint));
+    std::list<drag_drop_point>::const_iterator nextPointIt = std::next(point);
+    const drag_drop_point& nextPoint = nextPointIt == end ? *begin : *nextPointIt;
+    insertIterator = drag_drop_line(*point, nextPoint);
   }
 }
 
-void CreateDragDropRenderPoints(std::list<render_point>& renderPoints, const std::list<drag_drop_point>& points)
+drag_drop_point GetMiddlePoint(const drag_drop_line& line)
 {
-  std::transform(points.cbegin(), points.cend(), std::back_inserter(renderPoints), [](const drag_drop_point& point)
+  float cx = line.end.x - line.start.x;
+  float cy = line.end.y - line.start.y;
+  return drag_drop_point(line.start.x + cx / 2, line.start.y + cy / 2);
+}
+
+void TransformDragDropLinesIntoMiddlePoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
+{
+  std::transform(begin, end, insertIterator, [](const drag_drop_line& line)
   {
-    return render_point(point.x, point.y, 10);
+    return GetMiddlePoint(line);
   });
 }
 
-void RenderDragDrop(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const drag_drop_state& dragDropState, const d2d_brushes& brushes)
+void TransformDragDropLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator)
 {
-  RenderDragDropShape(renderTarget, dragDropState.shape, brushes);
+  std::transform(begin, end, insertIterator, [](const drag_drop_line& line)
+  {
+    D2D1_POINT_2F startPoint;
+    startPoint.x = line.start.x;
+    startPoint.y = line.start.y;
+
+    D2D1_POINT_2F endPoint;
+    endPoint.x = line.end.x;
+    endPoint.y = line.end.y;
+
+    return render_line(startPoint, endPoint);
+  });
 }
 
-void RenderDragDropShape(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const drag_drop_shape& shape, const d2d_brushes& brushes)
+void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator)
 {
-  std::list<render_line> lines;
-  CreateDragDropRenderLines(lines, shape.points);
+  std::list<drag_drop_line> dragDropLines;
+  TransformDragDropPoints(begin, end, std::back_inserter(dragDropLines));
+  TransformDragDropLines(dragDropLines.cbegin(), dragDropLines.cend(), insertIterator);
+}
 
-  for( const auto& line : lines )
+void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator)
+{
+  std::transform(begin, end, insertIterator, [](const drag_drop_point& dragDropPoint)
   {
-    RenderLine(renderTarget, line, 5, brushes.brush);
-  }
-
-  std::list<render_point> renderPoints;
-  CreateDragDropRenderPoints(renderPoints, shape.points);
-  
-  for( const auto& renderPoint : renderPoints )
-  {
-    RenderPoint(renderTarget, renderPoint, brushes.brushDeactivated);
-  }
-
-  render_point renderPoint(shape.closestPoint->x, shape.closestPoint->y, 10);
-  if( shape.closestPoint != shape.points.end() )
-  {
-    RenderPoint(renderTarget, renderPoint, brushes.brushActivated);
-  }
+    return render_point(dragDropPoint.x, dragDropPoint.y, 10);
+  });
 }

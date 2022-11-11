@@ -6,6 +6,11 @@
 Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPtr);
 template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
 
+game_point_and_next_point::game_point_and_next_point(const game_point& point, const game_point& nextPoint)
+: point(point), nextPoint(nextPoint)
+{
+}
+
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {
 }
@@ -135,6 +140,16 @@ game_level_edit::game_level_edit(const game_level_data& gameLevelData)
   {
     target_edit levelTarget(t.x, t.y, 40.0f);
     targets.push_back(levelTarget);
+  }
+}
+
+void TransformPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<game_point_and_next_point>> insertIterator)
+{
+  for( std::list<game_point>::const_iterator point = begin; point != end; ++point )
+  {
+    std::list<game_point>::const_iterator nextPointIt = std::next(point);
+    const game_point& nextPoint = nextPointIt == end ? *begin : *nextPointIt;
+    insertIterator = game_point_and_next_point(*point, nextPoint);
   }
 }
 

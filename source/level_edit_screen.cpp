@@ -27,10 +27,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   playerShip.xPos = currentLevel->playerStartPosX;
   playerShip.yPos = currentLevel->playerStartPosY;
 
-  std::transform(currentLevel->boundary->points.begin(), currentLevel->boundary->points.end(), std::back_inserter(dragDropState.shape.points), [](game_point& point)
-  {
-    return drag_drop_point(point.x, point.y);
-  });
+  DragDropTransform(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.boundary.points));
 }
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
@@ -94,7 +91,26 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
 
   // frame.renderTarget->SetTransform(screenState.viewTransform);
-  RenderDragDrop(frame.renderTarget, screenState.dragDropState, screenState.brushes);
+  // RenderDragDrop(frame.renderTarget, screenState.dragDropState, screenState.brushes);
+  const std::list<drag_drop_point>& boundaryPoints = screenState.dragDropState.boundary.points;
+
+  std::vector<render_line> renderLines;
+  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(renderLines));
+  RenderLines(frame.renderTarget, screenState.brushes.brush, renderLines.cbegin(), renderLines.cend());
+
+  std::vector<render_point> renderPoints;
+  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(renderPoints));
+  RenderPoints(frame.renderTarget, screenState.brushes.brush, renderPoints.cbegin(), renderPoints.cend());
+
+  std::list<drag_drop_line> dragDropLines;
+  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(dragDropLines));
+
+  std::list<drag_drop_point> middlePoints;
+  TransformDragDropLinesIntoMiddlePoints(dragDropLines.begin(), dragDropLines.end(), std::back_inserter(middlePoints));
+
+  std::vector<render_point> renderMiddlePoints;
+  TransformDragDropPoints(middlePoints.cbegin(), middlePoints.cend(), std::back_inserter(renderMiddlePoints));
+  RenderPoints(frame.renderTarget, screenState.brushes.brush, renderMiddlePoints.cbegin(), renderMiddlePoints.cend());
 
   // for( const auto& dragDropPoint : screenState.dragDropState.shape.points )
   // {
