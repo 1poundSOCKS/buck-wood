@@ -27,7 +27,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   playerShip.xPos = currentLevel->playerStartPosX;
   playerShip.yPos = currentLevel->playerStartPosY;
 
-  DragDropTransform(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.boundary.points));
+  CreateDragDropPoints(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.boundary.points));
 }
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
@@ -72,7 +72,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   frame.renderTarget->SetTransform(screenState.viewTransform);
 
   const std::list<drag_drop_line>& dragDropLines = screenState.dragDropState.dragDropLines;
-  const std::list<drag_drop_point>& dragDropPoints = screenState.dragDropState.dragDropShape.points;
+  const std::list<drag_drop_point>& dragDropPoints = screenState.dragDropState.dragDropPoints;
 
   std::vector<render_line> renderLines;
   CreateRenderLines(dragDropLines.cbegin(), dragDropLines.cend(), std::back_inserter(renderLines));
@@ -161,8 +161,8 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   drag_drop_control_state dragDropControlState;
   dragDropControlState.leftMouseButtonDown = controlState.leftMouseButtonDown;
   dragDropControlState.leftMouseButtonDrag = controlState.leftMouseButtonDrag;
-  dragDropControlState.worldMouseX = screenState.levelMouseX;
-  dragDropControlState.worldMouseY = screenState.levelMouseY;
+  dragDropControlState.mouseX = screenState.levelMouseX;
+  dragDropControlState.mouseY = screenState.levelMouseY;
 
   ProcessDragDrop(screenState.dragDropState, dragDropControlState);
 }
@@ -317,6 +317,15 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
   {
     swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPoint->point->x, screenState.closestPoint->point->y);
     diagnosticsData.push_back(text);
+  }
+
+  for( const auto& point : screenState.dragDropState.dragDropPoints )
+  {
+    if( point.highlighted )
+    {
+      swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
+      diagnosticsData.push_back(text);
+    }    
   }
 }
 
