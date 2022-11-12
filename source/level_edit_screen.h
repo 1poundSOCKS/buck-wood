@@ -15,9 +15,9 @@ struct level_edit_control_state
 {
   bool saveChanges = false;
   bool discardChanges = false;
-
   bool returnToMenu = false;
   bool cancelExit = false;
+  bool deleteItem = false;
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
 
@@ -55,6 +55,7 @@ struct level_edit_screen_state
   view_state viewState = view_default;
 
   bool saveChanges = false;
+  bool returnToMenu = false;
 
   const global_state& globalState;
   const d2d_brushes& brushes;
@@ -64,25 +65,13 @@ struct level_edit_screen_state
 
   mouse_cursor mouseCursor;
   float mouseX = 0, mouseY = 0;
-
-  bool returnToMenu = false;
+  float levelCenterX = 0, levelCenterY = 0;
+  float levelMouseX = 0, levelMouseY = 0;
+  
   
   const game_level_data_index& gameLevelDataIndex;
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
   std::unique_ptr<game_level_edit> currentLevel;
-  player_ship playerShip;
-
-  float levelCenterX = 0, levelCenterY = 0;
-  float levelMouseX = 0, levelMouseY = 0;
-  
-  std::unique_ptr<game_point_selection> closestPoint;
-  std::unique_ptr<game_point_selection> dragPoint;
-
-  std::unique_ptr<target_selection> highlightedTarget;
-  std::unique_ptr<target_selection> dragTarget;
-
-  bool playerHighlighted = false;
-  bool playerDrag = false;
 
   drag_drop_state dragDropState;
 };

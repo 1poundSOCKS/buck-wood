@@ -17,6 +17,7 @@ struct drag_drop_point
   float y;
   type pointType;
   bool highlighted = false;
+  bool deleted = false;
   float distance = 0;
 };
 
@@ -30,17 +31,30 @@ struct drag_drop_line
 struct drag_drop_shape
 {
   std::list<drag_drop_point> points;
-  using iterator = std::list<drag_drop_point>::iterator;
-  iterator closestPoint = points.end();
+  std::list<drag_drop_line> lines;
+  std::list<drag_drop_point> dragDropPoints;
+};
+
+struct drag_drop_object_point
+{
+  drag_drop_object_point(float x, float y);
+
+  float x, y;
+};
+
+struct drag_drop_object
+{
+  drag_drop_object();
+  drag_drop_object(float x, float y);
+
+  float x, y;
+  std::list<drag_drop_object_point> points;
 };
 
 struct drag_drop_state
 {
-  drag_drop_shape boundary;
-  std::list<drag_drop_point> dragDropPoints;
-  std::list<drag_drop_line> dragDropLines;
-  // drag_drop_shape::iterator highlightedPoint = boundary.points.end();
-  // drag_drop_shape::iterator grabbedPoint = boundary.points.end();
+  std::vector<drag_drop_shape> shapes;
+  std::vector<drag_drop_object> objects;
 };
 
 struct drag_drop_control_state
@@ -49,14 +63,12 @@ struct drag_drop_control_state
   bool leftMouseButtonDrag = false;
   float mouseX = 0;
   float mouseY = 0;
+  bool deleteItem = false;
 };
 
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
-
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
-void CreateDragDropLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator);
-void CreateDragDropPoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
-void CreateRenderLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
-void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
+void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& state);
+void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state);
 
 #endif

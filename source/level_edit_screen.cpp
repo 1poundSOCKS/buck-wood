@@ -7,12 +7,6 @@ D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const 
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-void RunDragDropForPlayer(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
-std::unique_ptr<game_point_selection> GetClosestPoint(const level_edit_screen_state& screenState, float x, float y);
-std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& points, float x, float y);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -24,10 +18,23 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   const auto& levelData = *currentLevelDataIterator;
   currentLevel = std::make_unique<game_level_edit>(*levelData);
 
-  playerShip.xPos = currentLevel->playerStartPosX;
-  playerShip.yPos = currentLevel->playerStartPosY;
+  dragDropState.shapes.resize(1 + currentLevel->objects.size());
+  int shapeIndex = 0;
+  CreateDragDropPoints(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.shapes[shapeIndex++].points));
+  for( const auto& object : currentLevel->objects )
+  {
+    CreateDragDropPoints(object->points.cbegin(), object->points.cend(), std::back_inserter(dragDropState.shapes[shapeIndex++].points));
+  }
 
-  CreateDragDropPoints(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.boundary.points));
+  dragDropState.objects.resize(1 + currentLevel->targets.size());
+  int objectIndex = 0;
+  dragDropState.objects[objectIndex].x = currentLevel->playerStartPosX;
+  dragDropState.objects[objectIndex++].y = currentLevel->playerStartPosY;
+  for( const auto& target: currentLevel->targets )
+  {
+    dragDropState.objects[objectIndex].x = target.x;
+    dragDropState.objects[objectIndex++].y = target.y;
+  }
 }
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
@@ -43,20 +50,16 @@ target_selection::target_selection(std::list<target_edit>& targets, std::list<ta
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
 {
   controlState.returnToMenu = controlState.cancelExit = baseControlState.escapeKeyPress;
-
   controlState.saveChanges = baseControlState.keyPress_y;
   controlState.discardChanges = baseControlState.keyPress_n;
-
   controlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
   controlState.rightMouseButtonDown = baseControlState.rightMouseButtonDown;
-
   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
-
   controlState.ratioMouseX = controlState.renderTargetMouseData.x / controlState.renderTargetMouseData.size.width;
   controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
-
   controlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
+  controlState.deleteItem = baseControlState.deleteKeyPress;
 }
 
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
@@ -71,15 +74,12 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   frame.renderTarget->SetTransform(screenState.viewTransform);
 
-  const std::list<drag_drop_line>& dragDropLines = screenState.dragDropState.dragDropLines;
-  const std::list<drag_drop_point>& dragDropPoints = screenState.dragDropState.dragDropPoints;
-
   std::vector<render_line> renderLines;
-  CreateRenderLines(dragDropLines.cbegin(), dragDropLines.cend(), std::back_inserter(renderLines));
-  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 5, renderLines.begin(), renderLines.end());
+  CreateRenderLines(renderLines, screenState.dragDropState);
+  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
 
   std::vector<render_point> renderPoints;
-  CreateRenderPoints(dragDropPoints.cbegin(), dragDropPoints.cend(), std::back_inserter(renderPoints));
+  CreateRenderPoints(renderPoints, screenState.dragDropState);
   RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
@@ -107,9 +107,6 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
   if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
   else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
 
-  // RunDragDropForBorderAndObjects(screenState, controlState);
-  // RunDragDropForTargets(screenState, controlState);
-  // RunDragDropForPlayer(screenState, controlState);
   RunDragDrop(screenState, controlState);
 }
 
@@ -163,145 +160,15 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   dragDropControlState.leftMouseButtonDrag = controlState.leftMouseButtonDrag;
   dragDropControlState.mouseX = screenState.levelMouseX;
   dragDropControlState.mouseY = screenState.levelMouseY;
+  dragDropControlState.deleteItem = controlState.deleteItem;
 
   ProcessDragDrop(screenState.dragDropState, dragDropControlState);
-}
-
-void RunDragDropForBorderAndObjects(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
-{
-  if( screenState.closestPoint )
-  {
-    if( controlState.leftMouseButtonDown )
-    {
-      screenState.dragPoint = std::move(screenState.closestPoint);
-    }
-    else if( controlState.rightMouseButtonDown)
-    {
-      game_point newPoint = *screenState.closestPoint->point;
-      std::list<game_point>::iterator i = screenState.closestPoint->points.insert(screenState.closestPoint->point, newPoint);
-      screenState.dragPoint = std::make_unique<game_point_selection>(screenState.closestPoint->points, i, screenState.closestPoint->distance);
-    }
-  }
-
-  screenState.closestPoint = nullptr;
-
-  if( !controlState.leftMouseButtonDown && !controlState.rightMouseButtonDown )
-  {
-    screenState.closestPoint = GetClosestPoint(screenState, screenState.levelMouseX, screenState.levelMouseY);
-    if( screenState.closestPoint->distance > 50 ) screenState.closestPoint = nullptr;
-    screenState.dragPoint = nullptr;
-  }
-
-  else if( screenState.dragPoint && controlState.leftMouseButtonDrag )
-  {
-    screenState.dragPoint->point->x = screenState.levelMouseX;
-    screenState.dragPoint->point->y = screenState.levelMouseY;
-  }
-
-  else if( screenState.dragPoint && controlState.rightMouseButtonDrag )
-  {
-    screenState.dragPoint->point->x = screenState.levelMouseX;
-    screenState.dragPoint->point->y = screenState.levelMouseY;
-  }
-}
-
-void RunDragDropForTargets(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
-{
-  if( !controlState.leftMouseButtonDown )
-  {
-    GetHighlightedTarget(screenState, controlState);
-    screenState.dragTarget = nullptr;
-  }
-
-  if( screenState.highlightedTarget && controlState.leftMouseButtonDown )
-  {
-    screenState.dragTarget = std::move(screenState.highlightedTarget);
-  }
-
-  if( screenState.dragTarget && controlState.leftMouseButtonDrag )
-  {
-    auto& target = *screenState.dragTarget->target;
-    target.x = screenState.levelMouseX;
-    target.y = screenState.levelMouseY;
-  }
-}
-
-void RunDragDropForPlayer(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
-{
-  if( !controlState.leftMouseButtonDown )
-  {
-    game_shape playerShape;
-    TransformPlayerShip(screenState.playerShip, playerShape);
-    screenState.playerHighlighted = PointInside(game_point(screenState.levelMouseX, screenState.levelMouseY), playerShape);
-    screenState.playerDrag = false;
-  }
-
-  if( screenState.playerHighlighted && controlState.leftMouseButtonDown )
-  {
-    screenState.playerDrag = true;
-    screenState.playerHighlighted = false;
-  }
-
-  if( screenState.playerDrag && controlState.leftMouseButtonDrag )
-  {
-    screenState.playerShip.xPos = screenState.currentLevel->playerStartPosX = screenState.levelMouseX;
-    screenState.playerShip.yPos = screenState.currentLevel->playerStartPosY = screenState.levelMouseY;
-  }
-}
-
-void GetHighlightedTarget(level_edit_screen_state& screenState, const level_edit_control_state& controlState)
-{
-  screenState.highlightedTarget = nullptr;
-
-  auto& targets = screenState.currentLevel->targets;
-
-  for( auto i = targets.begin(); i != targets.end(); i++ )
-  {
-    auto& target = *i;
-
-    game_shape targetShape;
-    InitializeTargetShape(target.x, target.y, target.size, targetShape);
-
-    if( PointInside(game_point(screenState.levelMouseX, screenState.levelMouseY), targetShape) )
-    {
-      screenState.highlightedTarget = std::make_unique<target_selection>(targets, i);
-    }
-  }
 }
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
 {
   static const float scale = 0.8f;
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
-}
-
-std::unique_ptr<game_point_selection> GetClosestPoint(const level_edit_screen_state& screenState, float x, float y)
-{
-  const auto& level = *screenState.currentLevel;
-
-  auto closestPoint = GetClosestPoint(level.boundary->points, x, y);
-
-  for( const auto& object : level.objects )
-  {
-    auto closestObjectPoint = GetClosestPoint(object->points, x, y);
-    if( closestObjectPoint->distance < closestPoint->distance ) closestPoint = std::move(closestObjectPoint);
-  }
-
-  return closestPoint;
-}
-
-std::unique_ptr<game_point_selection> GetClosestPoint(std::list<game_point>& points, float x, float y)
-{
-  std::unique_ptr<game_point_selection> closestPoint = nullptr;
-
-  for( auto i = points.begin(); i != points.end(); i++ )
-  {
-    float distance = GetDistanceBetweenPoints(i->x, i->y, x, y);
-    if( closestPoint == nullptr || distance < closestPoint->distance )
-      closestPoint = std::make_unique<game_point_selection>(points, i, distance);
-  }
-
-  return closestPoint;
 }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState)
@@ -313,19 +180,16 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
   swprintf(text, L"level mouse Y: %.1f", screenState.levelMouseY);
   diagnosticsData.push_back(text);
 
-  if( screenState.closestPoint )
+  for( const auto& shape : screenState.dragDropState.shapes )
   {
-    swprintf(text, L"nearest point: %.1f, %.1f", screenState.closestPoint->point->x, screenState.closestPoint->point->y);
-    diagnosticsData.push_back(text);
-  }
-
-  for( const auto& point : screenState.dragDropState.dragDropPoints )
-  {
-    if( point.highlighted )
+    for( const auto& point : shape.dragDropPoints )
     {
-      swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
-      diagnosticsData.push_back(text);
-    }    
+      if( point.highlighted )
+      {
+        swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
+        diagnosticsData.push_back(text);
+      }
+    }
   }
 }
 

@@ -11,6 +11,7 @@ struct control_state
   bool escapeKeyPress = false;
   bool spacebarKeyDown = false;
   bool spacebarKeyPress = false;
+  bool deleteKeyPress = false;
   bool functionKey_1 = false;
   bool keyPress_y = false;
   bool keyPress_n = false;
