@@ -3,15 +3,20 @@
 
 #include <list>
 #include <memory>
+#include <limits>
 #include <d2d1.h>
 #include "render.h"
 
 struct drag_drop_point
 {
-  drag_drop_point(float x, float y);
+  enum type { type_real, type_virtual };
+
+  drag_drop_point(float x, float y, type pointType);
 
   float x;
   float y;
+  type pointType;
+  bool highlighted = false;
 };
 
 struct drag_drop_line
@@ -31,8 +36,10 @@ struct drag_drop_shape
 struct drag_drop_state
 {
   drag_drop_shape boundary;
-  drag_drop_shape::iterator highlightedPoint = boundary.points.end();
-  drag_drop_shape::iterator grabbedPoint = boundary.points.end();
+  drag_drop_shape dragDropShape;
+  std::list<drag_drop_line> dragDropLines;
+  // drag_drop_shape::iterator highlightedPoint = boundary.points.end();
+  // drag_drop_shape::iterator grabbedPoint = boundary.points.end();
 };
 
 struct drag_drop_control_state
@@ -47,17 +54,18 @@ template<class T> void DragDropTransform(std::list<game_point>::const_iterator b
 {
   std::transform(begin, end, insertIterator, [](const game_point& point)
   {
-    return drag_drop_point(point.x, point.y);
+    return drag_drop_point(point.x, point.y, drag_drop_point::type::type_real);
   });
 }
 
 void SelectClosestPoint(drag_drop_shape& shape, float x, float y);
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
 
-void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator);
+void CreateDragDropLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator);
 void TransformDragDropLinesIntoMiddlePoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
-void TransformDragDropLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
-void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
-void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
+void CreateDragDropPoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
+void CreateRenderLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
+// void TransformDragDropPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
+void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
 
 #endif

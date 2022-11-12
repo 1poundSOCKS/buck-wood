@@ -151,7 +151,7 @@ struct game_level_data_index
   std::vector<std::unique_ptr<game_level_data>> gameLevelData;
 };
 
-void TransformPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<game_point_and_next_point>> insertIterator);
+// void TransformPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<game_point_and_next_point>> insertIterator);
 
 std::unique_ptr<player_ship> CreatePlayerShip();
 

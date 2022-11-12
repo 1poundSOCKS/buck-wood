@@ -71,53 +71,16 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   frame.renderTarget->SetTransform(screenState.viewTransform);
 
-  // RenderLevel(frame.renderTarget, screenState.viewTransform, *screenState.currentLevel, screenState.brushes);
-
-  // const winrt::com_ptr<ID2D1SolidColorBrush>& playerBrush = 
-  //   screenState.playerHighlighted || screenState.playerDrag ? screenState.brushes.brushActivated : screenState.brushes.brush;
-
-  // RenderPlayer(frame.renderTarget, screenState.viewTransform, screenState.playerShip, playerBrush, screenState.brushes.brushThrusters);
-
-  // if( screenState.closestPoint )
-  //   RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.closestPoint->point, screenState.brushes);
-
-  // if( screenState.dragPoint )
-  //   RenderHighlightedPoint(frame.renderTarget, screenState.viewTransform, *screenState.dragPoint->point, screenState.brushes);
-
-  // if( screenState.highlightedTarget )
-  //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.highlightedTarget->target, screenState.brushes.brushActivated);
-
-  // if( screenState.dragTarget )
-  //   RenderTarget(frame.renderTarget, screenState.viewTransform, *screenState.dragTarget->target, screenState.brushes.brushActivated);
-
-  // frame.renderTarget->SetTransform(screenState.viewTransform);
-  // RenderDragDrop(frame.renderTarget, screenState.dragDropState, screenState.brushes);
-  const std::list<drag_drop_point>& boundaryPoints = screenState.dragDropState.boundary.points;
+  const std::list<drag_drop_line>& dragDropLines = screenState.dragDropState.dragDropLines;
+  const std::list<drag_drop_point>& dragDropPoints = screenState.dragDropState.dragDropShape.points;
 
   std::vector<render_line> renderLines;
-  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(renderLines));
-  RenderLines(frame.renderTarget, screenState.brushes.brush, renderLines.cbegin(), renderLines.cend());
+  CreateRenderLines(dragDropLines.cbegin(), dragDropLines.cend(), std::back_inserter(renderLines));
+  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 5, renderLines.begin(), renderLines.end());
 
   std::vector<render_point> renderPoints;
-  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(renderPoints));
-  RenderPoints(frame.renderTarget, screenState.brushes.brush, renderPoints.cbegin(), renderPoints.cend());
-
-  std::list<drag_drop_line> dragDropLines;
-  TransformDragDropPoints(boundaryPoints.cbegin(), boundaryPoints.cend(), std::back_inserter(dragDropLines));
-
-  std::list<drag_drop_point> middlePoints;
-  TransformDragDropLinesIntoMiddlePoints(dragDropLines.begin(), dragDropLines.end(), std::back_inserter(middlePoints));
-
-  std::vector<render_point> renderMiddlePoints;
-  TransformDragDropPoints(middlePoints.cbegin(), middlePoints.cend(), std::back_inserter(renderMiddlePoints));
-  RenderPoints(frame.renderTarget, screenState.brushes.brush, renderMiddlePoints.cbegin(), renderMiddlePoints.cend());
-
-  // for( const auto& dragDropPoint : screenState.dragDropState.shape.points )
-  // {
-  //   RenderDragDropPoints(frame.renderTarget, screenState.viewTransform, dragDropPoint, screenState.brushes);
-  // }
-
-  // RenderClosestDragDropPoint(frame.renderTarget, screenState.viewTransform, screenState.dragDropState, screenState.brushes);
+  CreateRenderPoints(dragDropPoints.cbegin(), dragDropPoints.cend(), std::back_inserter(renderPoints));
+  RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
 
   RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }

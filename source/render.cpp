@@ -1,7 +1,22 @@
 #include "render.h"
 #include <string>
 
-render_point::render_point(float x, float y, float size)
+render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
+{
+  HRESULT hr = S_OK;
+  
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brushWhite.put());
+  if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 1.0f, 0.0f, 1.0f)), brushGreen.put());
+  if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f)), brushRed.put());
+  if( FAILED(hr) ) throw(L"error");
+}
+
+render_point::render_point(float x, float y, float size, color brushColor)
+: brushColor(brushColor)
 {
   float halfSize = size / 2;
   rect.left = x - halfSize;
@@ -13,6 +28,11 @@ render_point::render_point(float x, float y, float size)
 render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end)
 : start(start), end(end)
 {
+}
+
+void CreateRenderBrushes(render_brushes& brushes)
+{
+
 }
 
 void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const diagnostics_data& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
@@ -141,9 +161,17 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
   }
 }
 
-void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const render_brushes& brushes)
 {
-  renderTarget->FillRectangle(&point.rect, brush.get());
+  renderTarget->FillRectangle(&point.rect, GetBrush(brushes, point.brushColor).get());
+}
+
+void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
+{
+  for( auto line = begin; line != end; ++line )
+  {
+    RenderLine(renderTarget, *line, renderWidth, brushes.brushWhite);
+  }
 }
 
 void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_line& line, float renderWidth, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
@@ -211,11 +239,11 @@ void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const wi
   }
 }
 
-void RenderPoints(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end)
+void RenderPoints(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end)
 {
   for( std::vector<render_point>::const_iterator point = begin; point != end; ++point )
   {
-    renderTarget->FillRectangle(&point->rect, brush.get());
+    renderTarget->FillRectangle(&point->rect, GetBrush(brushes, point->brushColor).get());
   }
 }
 
@@ -224,4 +252,19 @@ D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, fl
   return D2D1::Matrix3x2F::Translation(-centerPosX, -centerPosY) * 
     D2D1::Matrix3x2F::Scale(scale, scale) *
     D2D1::Matrix3x2F::Translation(renderTargetWidth / 2, renderTargetHeight / 2);
+}
+
+const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_point::color brushColor)
+{
+  switch( brushColor )
+  {
+    case render_point::color_white:
+      return brushes.brushWhite;
+    case render_point::color_green:
+      return brushes.brushGreen;
+    case render_point::color_red:
+      return brushes.brushRed;
+    default:
+      return brushes.brushWhite;
+  }
 }

@@ -6,6 +6,7 @@
 #include "dwrite_text_formats.h"
 #include "sound_buffers.h"
 #include "game_objects.h"
+#include "render.h"
 
 struct global_state
 {
@@ -13,6 +14,7 @@ struct global_state
 
   std::wstring dataPath;
   d2d_brushes brushes;
+  render_brushes renderBrushes;
   dwrite_text_formats textFormats;
   sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
