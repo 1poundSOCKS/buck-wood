@@ -143,16 +143,6 @@ game_level_edit::game_level_edit(const game_level_data& gameLevelData)
   }
 }
 
-// void TransformPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<game_point_and_next_point>> insertIterator)
-// {
-//   for( std::list<game_point>::const_iterator point = begin; point != end; ++point )
-//   {
-//     std::list<game_point>::const_iterator nextPointIt = std::next(point);
-//     const game_point& nextPoint = nextPointIt == end ? *begin : *nextPointIt;
-//     insertIterator = game_point_and_next_point(*point, nextPoint);
-//   }
-// }
-
 std::unique_ptr<player_ship> CreatePlayerShip()
 {
   return std::make_unique<player_ship>();

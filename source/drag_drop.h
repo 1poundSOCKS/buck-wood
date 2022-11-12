@@ -51,7 +51,6 @@ struct drag_drop_control_state
   float mouseY = 0;
 };
 
-// void SelectClosestPoint(drag_drop_shape& shape, float x, float y);
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
 
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
