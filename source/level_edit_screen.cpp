@@ -7,7 +7,9 @@ D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const 
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
+void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
 : globalState(globalState),
@@ -190,22 +192,20 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
-  const std::list<drag_drop_point>& dragDropPoints = screenState.dragDropState.shapes[0].points;
-  std::list<drag_drop_point> realPoints;
-  std::copy_if(dragDropPoints.cbegin(), dragDropPoints.cend(), std::back_inserter(realPoints), [](const auto& point)
-  {
-    return point.pointType == drag_drop_point::type::type_real;
-  });
-
-  auto& firstLevelData = globalState.gameLevelDataIndex->gameLevelData.front();
-  std::vector<game_point>& gamePoints = firstLevelData->boundaryPoints;
-  gamePoints.clear();
-  std::transform(realPoints.cbegin(), realPoints.cend(), std::back_inserter(gamePoints), [](const auto& dragDropPoint)
-  {
-    return game_point(dragDropPoint.x, dragDropPoint.y);
-  });
+  auto& levelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
+  *levelDataIterator = std::move(CreateGameLevelData(screenState.dragDropState));
 
   globalState.gameLevelDataIndexUpdated = true;
+}
+
+std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState)
+{
+  auto gameLevelData = std::make_unique<game_level_data>();
+
+  const auto& dragDropShape = *dragDropState.shapes.begin();
+  CreateGamePoints(dragDropShape.points.cbegin(), dragDropShape.points.cend(), std::back_inserter(gameLevelData->boundaryPoints));
+
+  return gameLevelData;
 }
 
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
@@ -213,5 +213,19 @@ void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::ve
   std::transform(begin, end, insertIterator, [](const game_point& point)
   {
     return drag_drop_point(point.x, point.y, drag_drop_point::type::type_real);
+  });
+}
+
+void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter)
+{
+  std::list<drag_drop_point> realPoints;
+  std::copy_if(begin, end, std::back_inserter(realPoints), [](const auto& point)
+  {
+    return point.pointType == drag_drop_point::type::type_real;
+  });
+
+  std::transform(realPoints.cbegin(), realPoints.cend(), gamePointInserter, [](const auto& dragDropPoint)
+  {
+    return game_point(dragDropPoint.x, dragDropPoint.y);
   });
 }
