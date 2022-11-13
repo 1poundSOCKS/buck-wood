@@ -68,7 +68,6 @@ struct drag_drop_control_state
 
 void InitializeDragDrop(drag_drop_state& state);
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
-void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& state);
 void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state& state);

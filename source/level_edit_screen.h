@@ -70,7 +70,6 @@ struct level_edit_screen_state
   
   const game_level_data_index& gameLevelDataIndex;
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
-  std::unique_ptr<game_level_edit> currentLevel;
 
   drag_drop_state dragDropState;
 };

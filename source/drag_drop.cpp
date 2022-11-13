@@ -191,14 +191,6 @@ void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, 
   }
 }
 
-void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
-{
-  std::transform(begin, end, insertIterator, [](const game_point& point)
-  {
-    return drag_drop_point(point.x, point.y, drag_drop_point::type::type_real);
-  });
-}
-
 void CreateDragDropLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator)
 {
   for( std::list<drag_drop_point>::const_iterator point = begin; point != end; ++point )
