@@ -22,11 +22,25 @@ void control_state::Refresh(const input_state& inputState, const input_state& pr
 
   renderTargetMouseData = inputState.renderTargetMouseData;
 
+  leftMouseButtonReleased = false;
+  if( !inputState.leftMouseButtonDown && previousInputState.leftMouseButtonDown )
+  {
+    leftMouseButtonReleased = true;
+  }
+
+  rightMouseButtonReleased = false;
+  if( !inputState.rightMouseButtonDown && previousInputState.rightMouseButtonDown )
+  {
+    rightMouseButtonReleased = true;
+  }
+
+  leftMouseButtonDrag = false;
   if( inputState.leftMouseButtonDown && previousInputState.leftMouseButtonDown && MouseHasMoved(inputState, previousInputState) )
   {
     leftMouseButtonDrag = true;
   }
 
+  leftMouseButtonDrag = false;
   if( inputState.rightMouseButtonDown && previousInputState.rightMouseButtonDown && MouseHasMoved(inputState, previousInputState) )
   {
     rightMouseButtonDrag = true;

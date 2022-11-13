@@ -21,6 +21,7 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   dragDropState.shapes.resize(1 + currentLevel->objects.size());
   int shapeIndex = 0;
   CreateDragDropPoints(currentLevel->boundary->points.cbegin(), currentLevel->boundary->points.cend(), std::back_inserter(dragDropState.shapes[shapeIndex++].points));
+  
   for( const auto& object : currentLevel->objects )
   {
     CreateDragDropPoints(object->points.cbegin(), object->points.cend(), std::back_inserter(dragDropState.shapes[shapeIndex++].points));
@@ -35,6 +36,8 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
     dragDropState.objects[objectIndex].x = target.x;
     dragDropState.objects[objectIndex++].y = target.y;
   }
+
+  // InitializeDragDrop(dragDropState);
 }
 
 game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
@@ -57,6 +60,9 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
   controlState.ratioMouseX = controlState.renderTargetMouseData.x / controlState.renderTargetMouseData.size.width;
   controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
+  controlState.leftMouseButtonReleased = baseControlState.leftMouseButtonReleased;
+  controlState.rightMouseButtonReleased = baseControlState.rightMouseButtonReleased;
+  controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
   controlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.rightMouseButtonDrag = baseControlState.rightMouseButtonDrag;
   controlState.deleteItem = baseControlState.deleteKeyPress;
@@ -158,6 +164,7 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   drag_drop_control_state dragDropControlState;
   dragDropControlState.leftMouseButtonDown = controlState.leftMouseButtonDown;
   dragDropControlState.leftMouseButtonDrag = controlState.leftMouseButtonDrag;
+  dragDropControlState.leftMouseButtonReleased = controlState.leftMouseButtonReleased;
   dragDropControlState.mouseX = screenState.levelMouseX;
   dragDropControlState.mouseY = screenState.levelMouseY;
   dragDropControlState.deleteItem = controlState.deleteItem;
@@ -180,17 +187,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
   swprintf(text, L"level mouse Y: %.1f", screenState.levelMouseY);
   diagnosticsData.push_back(text);
 
-  for( const auto& shape : screenState.dragDropState.shapes )
-  {
-    for( const auto& point : shape.dragDropPoints )
-    {
-      if( point.highlighted )
-      {
-        swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
-        diagnosticsData.push_back(text);
-      }
-    }
-  }
+  FormatDiagnostics(diagnosticsData, screenState.dragDropState);
 }
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)

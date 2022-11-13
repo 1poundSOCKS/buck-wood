@@ -17,7 +17,9 @@ struct control_state
   bool keyPress_n = false;
 
   bool leftMouseButtonDown = false;
+  bool leftMouseButtonReleased = false;
   bool rightMouseButtonDown = false;
+  bool rightMouseButtonReleased = false;
   render_target_mouse_data renderTargetMouseData;
   bool leftMouseButtonDrag = false;
   bool rightMouseButtonDrag = false;

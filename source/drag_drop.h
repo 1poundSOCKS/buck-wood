@@ -31,8 +31,6 @@ struct drag_drop_line
 struct drag_drop_shape
 {
   std::list<drag_drop_point> points;
-  std::list<drag_drop_line> lines;
-  std::list<drag_drop_point> dragDropPoints;
 };
 
 struct drag_drop_object_point
@@ -53,6 +51,7 @@ struct drag_drop_object
 
 struct drag_drop_state
 {
+  bool initialized = false;
   std::vector<drag_drop_shape> shapes;
   std::vector<drag_drop_object> objects;
 };
@@ -61,14 +60,17 @@ struct drag_drop_control_state
 {
   bool leftMouseButtonDown = false;
   bool leftMouseButtonDrag = false;
+  bool leftMouseButtonReleased = false;
   float mouseX = 0;
   float mouseY = 0;
   bool deleteItem = false;
 };
 
+void InitializeDragDrop(drag_drop_state& state);
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& state);
 void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state);
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state& state);
 
 #endif

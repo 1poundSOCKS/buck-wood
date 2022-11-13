@@ -20,14 +20,13 @@ struct level_edit_control_state
   bool deleteItem = false;
   bool leftMouseButtonDown = false;
   bool rightMouseButtonDown = false;
-
-  render_target_mouse_data renderTargetMouseData;
-  
-  float ratioMouseX = 0;
-  float ratioMouseY = 0;
-
+  bool leftMouseButtonReleased = false;
+  bool rightMouseButtonReleased = false;
   bool leftMouseButtonDrag = false;
   bool rightMouseButtonDrag = false;
+  render_target_mouse_data renderTargetMouseData;
+  float ratioMouseX = 0;
+  float ratioMouseY = 0;
 };
 
 struct game_point_selection
