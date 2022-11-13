@@ -72,7 +72,6 @@ void InitializeDragDropShape(drag_drop_shape& shape)
     shape.points.push_back(*point);
     shape.points.push_back(middlePoint);
   }
-  // shape.points = points;
 }
 
 void ProcessDragDrop(drag_drop_state& state, const drag_drop_control_state& controlState)
