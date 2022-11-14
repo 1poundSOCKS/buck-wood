@@ -17,16 +17,10 @@ struct level_edit_control_state
   bool discardChanges = false;
   bool returnToMenu = false;
   bool cancelExit = false;
-  bool deleteItem = false;
-  bool leftMouseButtonDown = false;
-  bool rightMouseButtonDown = false;
-  bool leftMouseButtonReleased = false;
-  bool rightMouseButtonReleased = false;
-  bool leftMouseButtonDrag = false;
-  bool rightMouseButtonDrag = false;
   render_target_mouse_data renderTargetMouseData;
   float ratioMouseX = 0;
   float ratioMouseY = 0;
+  drag_drop_control_state dragDropControlState;
 };
 
 struct game_point_selection
@@ -71,7 +65,8 @@ struct level_edit_screen_state
   const game_level_data_index& gameLevelDataIndex;
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
 
-  drag_drop_state dragDropState;
+  int levelTimeLimit = 0;
+  std::unique_ptr<drag_drop_state> dragDropState;
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
