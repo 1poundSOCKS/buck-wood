@@ -46,7 +46,9 @@ struct drag_drop_object
   drag_drop_object(float x, float y);
 
   float x, y;
-  std::list<drag_drop_object_point> points;
+  bool highlighted = false;
+
+  // std::list<drag_drop_object_point> points;
 };
 
 struct drag_drop_state

@@ -4,6 +4,7 @@
 
 void InitializeDragDropShape(drag_drop_shape& shape);
 void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& controlState);
+void ProcessDragDrop(drag_drop_object& object, const drag_drop_control_state& controlState);
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity);
 void DragHighlightedPoints(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y);
 void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end);
@@ -83,12 +84,18 @@ void ProcessDragDrop(drag_drop_state& state, const drag_drop_control_state& cont
     ProcessDragDrop(shape, controlState);
   }
 
+  for( auto& object : state.objects )
+  {
+    object.highlighted = false;
+    ProcessDragDrop(object, controlState);
+  }
+
   if( controlState.leftMouseButtonReleased ) state.initialized = false;
 }
 
 void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& controlState)
 {
-  std::list<drag_drop_point>& points = shape.points;
+  auto& points = shape.points;
 
   if( !controlState.leftMouseButtonDown )
   {
@@ -104,6 +111,20 @@ void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& cont
   if( controlState.deleteItem )
   {
     MarkHighlightedPointsAsDeleted(points.begin(), points.end());
+  }
+}
+
+void ProcessDragDrop(drag_drop_object& object, const drag_drop_control_state& controlState)
+{
+  static const float proximity = 50;
+  
+  auto distance = GetDistanceBetweenPoints(controlState.mouseX, controlState.mouseY, object.x, object.y);
+  if( distance < proximity ) object.highlighted = true;
+
+  if( controlState.leftMouseButtonDown && object.highlighted )
+  {
+    object.x = controlState.mouseX;
+    object.y = controlState.mouseY;
   }
 }
 
@@ -249,7 +270,7 @@ void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::l
 
 void CreateRenderPoint(const drag_drop_object& object, std::back_insert_iterator<std::vector<render_point>> insertIterator)
 {
-  insertIterator = render_point(object.x, object.y, 50, render_point::color::color_white);
+  insertIterator = render_point(object.x, object.y, 20, object.highlighted ? render_point::color::color_red : render_point::color::color_white);
 }
 
 render_point::color GetBrushColor(const drag_drop_point& point)
