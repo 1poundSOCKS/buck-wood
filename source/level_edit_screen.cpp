@@ -216,9 +216,22 @@ std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& drag
   CreateGamePoints(dragDropShape->points.cbegin(), dragDropShape->points.cend(), std::back_inserter(gameLevelData->boundaryPoints));
 
   gameLevelData->objects.reserve(dragDropState.objects.size() - 1);
+  
   for( dragDropShape++; dragDropShape != dragDropState.shapes.cend(); dragDropShape++ )
   {
     gameLevelData->objects.push_back(CreateGameLevelObjectData(*dragDropShape));
+  }
+
+  auto dragDropObject = dragDropState.objects.cbegin();
+  gameLevelData->playerStartPosX = dragDropObject->x;
+  gameLevelData->playerStartPosY = dragDropObject->y;
+
+  gameLevelData->targets.reserve(dragDropState.objects.size() - 1);
+
+  for( dragDropObject++; dragDropObject != dragDropState.objects.cend(); ++dragDropObject )
+  {
+    const game_point target(dragDropObject->x, dragDropObject->y);
+    gameLevelData->targets.push_back(target);
   }
 
   return gameLevelData;
