@@ -77,6 +77,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
 
   if( controlState.returnToMenu )
   {
+    SaveCurrentLevel(screenState);
     screenState.viewState = level_edit_screen_state::view_exit;
     return;
   }
@@ -186,12 +187,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_scree
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
-  auto& levelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
-  auto gameLevelData = CreateGameLevelData(*screenState.dragDropState);
-  gameLevelData->timeLimitInSeconds = screenState.levelTimeLimit;
-
-  *levelDataIterator = std::move(gameLevelData);
-
+  globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
   globalState.gameLevelDataIndexUpdated = true;
 }
 
