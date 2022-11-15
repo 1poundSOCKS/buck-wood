@@ -47,8 +47,7 @@ struct level_edit_screen_state
   float levelCenterX = 0, levelCenterY = 0;
   float levelMouseX = 0, levelMouseY = 0;
   
-  
-  const game_level_data_index gameLevelDataIndex;
+  game_level_data_index gameLevelDataIndex;
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
 
   int levelTimeLimit = 0;

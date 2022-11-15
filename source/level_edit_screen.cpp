@@ -3,6 +3,7 @@
 #include "render.h"
 #include "game_math.h"
 
+void LoadCurrentLevel(level_edit_screen_state& screenState);
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
@@ -21,9 +22,18 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
-  const auto& levelData = *currentLevelDataIterator;
-  levelTimeLimit = levelData->timeLimitInSeconds;
-  dragDropState = CreateDragDropState(*levelData);
+  LoadCurrentLevel(*this);
+}
+
+void LoadCurrentLevel(level_edit_screen_state& screenState)
+{
+  const auto& levelData = *screenState.currentLevelDataIterator;
+
+  if( levelData )
+  {
+    screenState.levelTimeLimit = levelData->timeLimitInSeconds;
+    screenState.dragDropState = CreateDragDropState(*levelData);
+  }
 }
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
@@ -82,6 +92,26 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
   }
 
   UpdateScreenStateMouseData(screenState, controlState);
+
+  if( controlState.nextLevel )
+  {
+    auto nextLevelData = std::next(screenState.currentLevelDataIterator);
+    
+    if( nextLevelData != screenState.gameLevelDataIndex.gameLevelData.end() )
+    {
+      screenState.currentLevelDataIterator = nextLevelData;
+      LoadCurrentLevel(screenState);
+    }
+  }
+
+  if( controlState.previousLevel )
+  {
+    if( screenState.currentLevelDataIterator != screenState.gameLevelDataIndex.gameLevelData.begin() )
+    {
+      screenState.currentLevelDataIterator--;
+      LoadCurrentLevel(screenState);
+    }
+  }
 
   if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
   else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;

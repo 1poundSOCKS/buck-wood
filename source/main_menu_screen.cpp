@@ -15,7 +15,7 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
 {
   screenControlState.quit = controlState.escapeKeyPress;
   screenControlState.startPlay = controlState.spacebarKeyPress;
-  screenControlState.startLevelEditor = controlState.functionKey_1;
+  screenControlState.startLevelEditor = controlState.f1Press;
 
   screenControlState.cancelExit = controlState.escapeKeyPress;
   screenControlState.saveChanges = controlState.keyPress_y;
