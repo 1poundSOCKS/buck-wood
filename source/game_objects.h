@@ -94,7 +94,6 @@ struct game_level_data
   float playerStartPosX = 0, playerStartPosY = 0;
   int timeLimitInSeconds = 0;
   std::vector<game_point> boundaryPoints;
-  // std::vector<std::unique_ptr<game_level_object_data>> objects;
   std::vector<game_level_object_data> objects;
   std::vector<game_point> targets;
 };
