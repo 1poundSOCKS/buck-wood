@@ -9,9 +9,9 @@
 
 struct drag_drop_point
 {
-  enum type { type_real, type_virtual };
+  enum type { type_undefined, type_real, type_virtual };
 
-  drag_drop_point(float x, float y, type pointType);
+  drag_drop_point(float x=0, float y=0, type pointType=type_undefined);
 
   float x;
   float y;
@@ -21,15 +21,13 @@ struct drag_drop_point
   float distance = 0;
 };
 
-struct drag_drop_line
-{
-  drag_drop_line(const drag_drop_point& start, const drag_drop_point& end);
-  
-  drag_drop_point start, end;
-};
-
 struct drag_drop_shape
 {
+  drag_drop_shape(int type, float x=0, float y=0);
+
+  int type;
+  bool fixedShape = false;
+  drag_drop_point position;
   std::list<drag_drop_point> points;
 };
 
@@ -40,22 +38,10 @@ struct drag_drop_object_point
   float x, y;
 };
 
-struct drag_drop_object
-{
-  drag_drop_object();
-  drag_drop_object(float x, float y);
-
-  float x, y;
-  bool highlighted = false;
-
-  // std::list<drag_drop_object_point> points;
-};
-
 struct drag_drop_state
 {
   bool initialized = false;
   std::vector<drag_drop_shape> shapes;
-  std::vector<drag_drop_object> objects;
 };
 
 struct drag_drop_control_state

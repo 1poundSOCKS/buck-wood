@@ -11,6 +11,7 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
 std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
+void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
 level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
@@ -186,23 +187,35 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
 {
   auto dragDropState = std::make_unique<drag_drop_state>();
   
-  dragDropState->shapes.resize(1 + gameLevelData.objects.size());
-  int shapeIndex = 0;
-  CreateDragDropPoints(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), std::back_inserter(dragDropState->shapes[shapeIndex++].points));
+  drag_drop_shape boundaryShape(level_edit_screen_state::drag_drop_shape_type::type_boundary);
+  CreateDragDropPoints(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), std::back_inserter(boundaryShape.points));
+  dragDropState->shapes.push_back(boundaryShape);
   
   for( const auto& object : gameLevelData.objects )
   {
-    CreateDragDropPoints(object->points.cbegin(), object->points.cend(), std::back_inserter(dragDropState->shapes[shapeIndex++].points));
+    drag_drop_shape objectShape(level_edit_screen_state::drag_drop_shape_type::type_object);
+    CreateDragDropPoints(object->points.cbegin(), object->points.cend(), std::back_inserter(objectShape.points));
+    dragDropState->shapes.push_back(objectShape);
   }
 
-  dragDropState->objects.resize(1 + gameLevelData.targets.size());
-  int objectIndex = 0;
-  dragDropState->objects[objectIndex].x = gameLevelData.playerStartPosX;
-  dragDropState->objects[objectIndex++].y = gameLevelData.playerStartPosY;
-  for( const auto& target: gameLevelData.targets )
+  player_ship player;
+  drag_drop_shape playerShape(level_edit_screen_state::drag_drop_shape_type::type_player);
+  playerShape.fixedShape = true;
+  playerShape.position.x = gameLevelData.playerStartPosX;
+  playerShape.position.y = gameLevelData.playerStartPosY;
+  CreateDragDropPoints(player.outline->points.cbegin(), player.outline->points.cend(), std::back_inserter(playerShape.points));
+  dragDropState->shapes.push_back(playerShape);
+
+  for( const auto& targetPos : gameLevelData.targets )
   {
-    dragDropState->objects[objectIndex].x = target.x;
-    dragDropState->objects[objectIndex++].y = target.y;
+    game_shape targetShapeData;
+    InitializeTargetShape(0, 0, 40, targetShapeData);
+    drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
+    targetShape.fixedShape = true;
+    targetShape.position.x = targetPos.x;
+    targetShape.position.y = targetPos.y;
+    CreateDragDropPoints(targetShapeData.points.cbegin(), targetShapeData.points.cend(), std::back_inserter(targetShape.points));
+    dragDropState->shapes.push_back(targetShape);
   }
 
   return dragDropState;
@@ -212,32 +225,38 @@ std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& drag
 {
   auto gameLevelData = std::make_unique<game_level_data>();
 
-  auto dragDropShape = dragDropState.shapes.cbegin();
-  CreateGamePoints(dragDropShape->points.cbegin(), dragDropShape->points.cend(), std::back_inserter(gameLevelData->boundaryPoints));
-
-  gameLevelData->objects.reserve(dragDropState.objects.size() - 1);
-  
-  for( dragDropShape++; dragDropShape != dragDropState.shapes.cend(); dragDropShape++ )
+  for( const auto& shape : dragDropState.shapes )
   {
-    gameLevelData->objects.push_back(CreateGameLevelObjectData(*dragDropShape));
-  }
-
-  auto dragDropObject = dragDropState.objects.cbegin();
-  gameLevelData->playerStartPosX = dragDropObject->x;
-  gameLevelData->playerStartPosY = dragDropObject->y;
-
-  gameLevelData->targets.reserve(dragDropState.objects.size() - 1);
-
-  for( dragDropObject++; dragDropObject != dragDropState.objects.cend(); ++dragDropObject )
-  {
-    const game_point target(dragDropObject->x, dragDropObject->y);
-    gameLevelData->targets.push_back(target);
+    switch( shape.type )
+    {
+      case level_edit_screen_state::drag_drop_shape_type::type_boundary:
+        CreateGamePoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(gameLevelData->boundaryPoints));
+        break;
+      case level_edit_screen_state::drag_drop_shape_type::type_object:
+        gameLevelData->objects.push_back(CreateGameLevelObjectData(shape));
+        break;
+      case level_edit_screen_state::drag_drop_shape_type::type_player:
+        gameLevelData->playerStartPosX = shape.position.x;
+        gameLevelData->playerStartPosY = shape.position.y;
+        break;
+      case level_edit_screen_state::drag_drop_shape_type::type_target:
+        gameLevelData->targets.push_back(game_point(shape.position.x, shape.position.y));
+        break;
+    }
   }
 
   return gameLevelData;
 }
 
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
+{
+  std::transform(begin, end, insertIterator, [](const game_point& point)
+  {
+    return drag_drop_point(point.x, point.y, drag_drop_point::type::type_real);
+  });
+}
+
+void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
 {
   std::transform(begin, end, insertIterator, [](const game_point& point)
   {

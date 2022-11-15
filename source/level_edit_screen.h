@@ -42,6 +42,8 @@ struct target_selection
 
 struct level_edit_screen_state
 {
+  enum drag_drop_shape_type { type_boundary, type_object, type_player, type_target };
+  
   level_edit_screen_state(const global_state& globalState);
 
   enum view_state { view_default, view_exit };

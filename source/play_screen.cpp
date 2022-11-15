@@ -65,22 +65,11 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
   controlState.restartPlay = baseControlState.spacebarKeyPress;
   controlState.shoot = baseControlState.leftMouseButtonDown;
   controlState.thrust = baseControlState.rightMouseButtonDown;
-  // controlState.renderTargetMouseX = baseControlState.renderTargetMouseData.x;
-  // controlState.renderTargetMouseY = baseControlState.renderTargetMouseData.y;
   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 {
-#ifdef EXPERIMENTAL
-  float absVelocityX = fabsf(screenState.player->xVelocity);
-  float absVelocityY = fabsf(screenState.player->yVelocity);
-  float velocity = sqrt( absVelocityX * absVelocityX + absVelocityY * absVelocityY );
-  const float renderScale = 1.5f - velocity / 500;
-#else
-  const float renderScale = 1.0f;
-#endif
-
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   auto& currentLevel = *screenState.currentLevel;

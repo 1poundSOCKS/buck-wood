@@ -4,16 +4,12 @@
 
 void InitializeDragDropShape(drag_drop_shape& shape);
 void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& controlState);
-void ProcessDragDrop(drag_drop_object& object, const drag_drop_control_state& controlState);
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity);
 void DragHighlightedPoints(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y);
 void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end);
-void CreateDragDropLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator);
-void CreateDragDropPoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
-void CreateRenderLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator);
+void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x=0, float y=0);
 void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
-void CreateRenderPoint(const drag_drop_object& object, std::back_insert_iterator<std::vector<render_point>> insertIterator);
+render_point CreateRenderPoint(const drag_drop_point& point);
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
 render_point::color GetBrushColor(const drag_drop_point& point);
 
@@ -22,23 +18,8 @@ drag_drop_point::drag_drop_point(float x, float y, type pointType)
 {
 }
 
-drag_drop_line::drag_drop_line(const drag_drop_point& start, const drag_drop_point& end)
-: start(start), end(end)
-{
-}
-
-drag_drop_object_point::drag_drop_object_point(float x, float y)
-: x(x), y(y)
-{
-}
-
-drag_drop_object::drag_drop_object()
-: x(0), y(0)
-{
-}
-
-drag_drop_object::drag_drop_object(float x, float y)
-: x(x), y(y)
+drag_drop_shape::drag_drop_shape(int type, float x, float y)
+: type(type), position(x, y)
 {
 }
 
@@ -84,47 +65,46 @@ void ProcessDragDrop(drag_drop_state& state, const drag_drop_control_state& cont
     ProcessDragDrop(shape, controlState);
   }
 
-  for( auto& object : state.objects )
-  {
-    object.highlighted = false;
-    ProcessDragDrop(object, controlState);
-  }
-
   if( controlState.leftMouseButtonReleased ) state.initialized = false;
 }
 
 void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& controlState)
 {
+  static const float proximity = 50;
+  
   auto& points = shape.points;
 
-  if( !controlState.leftMouseButtonDown )
-  {
-    static const float proximity = 50;
-    HighlightClosestPoint(points.begin(), points.end(), controlState.mouseX, controlState.mouseY, proximity);
-  }
-  
   if( controlState.leftMouseButtonDown )
   {
-    DragHighlightedPoints(points.begin(), points.end(), controlState.mouseX, controlState.mouseY);
+    if( shape.fixedShape )
+    {
+      if( shape.position.highlighted )
+      {
+        shape.position.x = controlState.mouseX;
+        shape.position.y = controlState.mouseY;
+      }
+    }
+    else
+    {
+      DragHighlightedPoints(points.begin(), points.end(), controlState.mouseX, controlState.mouseY);
+    }
   }
-
+  else
+  {
+    if( shape.fixedShape )
+    {
+      float distance = GetDistanceBetweenPoints(shape.position.x, shape.position.y, controlState.mouseX, controlState.mouseY);
+      shape.position.highlighted = distance < proximity;
+    }
+    else
+    {
+      HighlightClosestPoint(points.begin(), points.end(), controlState.mouseX, controlState.mouseY, proximity);
+    }
+  }
+  
   if( controlState.deleteItem )
   {
     MarkHighlightedPointsAsDeleted(points.begin(), points.end());
-  }
-}
-
-void ProcessDragDrop(drag_drop_object& object, const drag_drop_control_state& controlState)
-{
-  static const float proximity = 50;
-  
-  auto distance = GetDistanceBetweenPoints(controlState.mouseX, controlState.mouseY, object.x, object.y);
-  if( distance < proximity ) object.highlighted = true;
-
-  if( controlState.leftMouseButtonDown && object.highlighted )
-  {
-    object.x = controlState.mouseX;
-    object.y = controlState.mouseY;
   }
 }
 
@@ -132,43 +112,30 @@ void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& s
 {
   for( const auto shape : state.shapes )
   {
-    CreateRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines));
+    CreateRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines), shape.position.x, shape.position.y);
   }
 }
 
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator)
+void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x, float y)
 {
-  std::transform(std::next(begin), end, begin, insertIterator, [](const auto& point1, const auto& point2)
+  std::transform(std::next(begin), end, begin, insertIterator, [x,y](const auto& point1, const auto& point2)
   {
     D2D1_POINT_2F start, end;
-    start.x = point2.x;
-    start.y = point2.y;
-    end.x = point1.x;
-    end.y = point1.y;
+    start.x = point2.x + x;
+    start.y = point2.y + y;
+    end.x = point1.x + x;
+    end.y = point1.y + y;
     return render_line(start, end);
   });
 
   std::list<drag_drop_point>::const_iterator last = std::prev(end);
 
   D2D1_POINT_2F startPoint, endPoint;
-  startPoint.x = last->x;
-  startPoint.y = last->y;
-  endPoint.x = begin->x;
-  endPoint.y = begin->y;
+  startPoint.x = last->x + x;
+  startPoint.y = last->y + y;
+  endPoint.x = begin->x + x;
+  endPoint.y = begin->y + y;
   insertIterator = render_line(startPoint, endPoint);
-}
-
-void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state)
-{
-  for( const auto shape : state.shapes )
-  {
-    CreateRenderPoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(points));
-  }
-
-  for( const auto object : state.objects )
-  {
-    CreateRenderPoint(object, std::back_inserter(points));
-  }
 }
 
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity)
@@ -211,23 +178,6 @@ void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, 
   }
 }
 
-void CreateDragDropLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_line>> insertIterator)
-{
-  for( std::list<drag_drop_point>::const_iterator point = begin; point != end; ++point )
-  {
-    std::list<drag_drop_point>::const_iterator nextPointIt = std::next(point);
-    const drag_drop_point& nextPoint = nextPointIt == end ? *begin : *nextPointIt;
-    insertIterator = drag_drop_line(*point, nextPoint);
-  }
-}
-
-drag_drop_point GetMiddlePoint(const drag_drop_line& line)
-{
-  float cx = line.end.x - line.start.x;
-  float cy = line.end.y - line.start.y;
-  return drag_drop_point(line.start.x + cx / 2, line.start.y + cy / 2, drag_drop_point::type::type_virtual);
-}
-
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end)
 {
   float cx = end.x - start.x;
@@ -235,42 +185,26 @@ drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_poi
   return drag_drop_point(start.x + cx / 2, start.y + cy / 2, drag_drop_point::type::type_virtual);
 }
 
-void CreateDragDropPoints(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator)
+void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state)
 {
-  for( std::list<drag_drop_line>::const_iterator line = begin; line != end; ++line )
+  for( const auto shape : state.shapes )
   {
-    insertIterator = line->start;
-    insertIterator = GetMiddlePoint(*line);
+    if( shape.fixedShape ) points.push_back(CreateRenderPoint(shape.position));
+    else CreateRenderPoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(points));
   }
-}
-
-void CreateRenderLines(std::list<drag_drop_line>::const_iterator begin, std::list<drag_drop_line>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator)
-{
-  std::transform(begin, end, insertIterator, [](const drag_drop_line& line)
-  {
-    D2D1_POINT_2F startPoint;
-    startPoint.x = line.start.x;
-    startPoint.y = line.start.y;
-
-    D2D1_POINT_2F endPoint;
-    endPoint.x = line.end.x;
-    endPoint.y = line.end.y;
-
-    return render_line(startPoint, endPoint);
-  });
 }
 
 void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator)
 {
   std::transform(begin, end, insertIterator, [](const drag_drop_point& dragDropPoint)
   {
-    return render_point(dragDropPoint.x, dragDropPoint.y, 10, GetBrushColor(dragDropPoint));
+    return CreateRenderPoint(dragDropPoint);
   });
 }
 
-void CreateRenderPoint(const drag_drop_object& object, std::back_insert_iterator<std::vector<render_point>> insertIterator)
+render_point CreateRenderPoint(const drag_drop_point& point)
 {
-  insertIterator = render_point(object.x, object.y, 20, object.highlighted ? render_point::color::color_red : render_point::color::color_white);
+  return render_point(point.x, point.y, 10, GetBrushColor(point));
 }
 
 render_point::color GetBrushColor(const drag_drop_point& point)
@@ -279,6 +213,7 @@ render_point::color GetBrushColor(const drag_drop_point& point)
 
   switch( point.pointType )
   {
+    case drag_drop_point::type::type_undefined:
     case drag_drop_point::type::type_real:
       return render_point::color_green;
     default:
@@ -292,6 +227,12 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state&
 
   for( const auto& shape : state.shapes )
   {
+    if( shape.fixedShape && shape.position.highlighted )
+    {
+      swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", shape.position.x, shape.position.y, shape.position.distance);
+      diagnosticsData.push_back(text);
+    }
+
     for( const auto& point : shape.points )
     {
       if( point.highlighted )
