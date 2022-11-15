@@ -3,11 +3,12 @@
 #include "render.h"
 #include "game_math.h"
 
-void LoadCurrentLevel(level_edit_screen_state& screenState);
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void LoadCurrentLevel(level_edit_screen_state& screenState);
+void SaveCurrentLevel(level_edit_screen_state& screenState);
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData);
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
 std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
@@ -23,17 +24,6 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
   LoadCurrentLevel(*this);
-}
-
-void LoadCurrentLevel(level_edit_screen_state& screenState)
-{
-  const auto& levelData = *screenState.currentLevelDataIterator;
-
-  if( levelData )
-  {
-    screenState.levelTimeLimit = levelData->timeLimitInSeconds;
-    screenState.dragDropState = CreateDragDropState(*levelData);
-  }
 }
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
@@ -99,6 +89,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
     
     if( nextLevelData != screenState.gameLevelDataIndex.gameLevelData.end() )
     {
+      SaveCurrentLevel(screenState);
       screenState.currentLevelDataIterator = nextLevelData;
       LoadCurrentLevel(screenState);
     }
@@ -108,6 +99,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
   {
     if( screenState.currentLevelDataIterator != screenState.gameLevelDataIndex.gameLevelData.begin() )
     {
+      SaveCurrentLevel(screenState);
       screenState.currentLevelDataIterator--;
       LoadCurrentLevel(screenState);
     }
@@ -201,6 +193,24 @@ void UpdateGlobalState(global_state& globalState, const level_edit_screen_state&
   *levelDataIterator = std::move(gameLevelData);
 
   globalState.gameLevelDataIndexUpdated = true;
+}
+
+void LoadCurrentLevel(level_edit_screen_state& screenState)
+{
+  const auto& levelData = *screenState.currentLevelDataIterator;
+
+  if( levelData )
+  {
+    screenState.levelTimeLimit = levelData->timeLimitInSeconds;
+    screenState.dragDropState = CreateDragDropState(*levelData);
+  }
+}
+
+void SaveCurrentLevel(level_edit_screen_state& screenState)
+{
+  auto gameLevelData = CreateGameLevelData(*screenState.dragDropState);
+  gameLevelData->timeLimitInSeconds = screenState.levelTimeLimit;
+  *screenState.currentLevelDataIterator = std::move(gameLevelData);
 }
 
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData)

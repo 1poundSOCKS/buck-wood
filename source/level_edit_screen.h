@@ -48,7 +48,7 @@ struct level_edit_screen_state
   float levelMouseX = 0, levelMouseY = 0;
   
   game_level_data_index gameLevelDataIndex;
-  std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
+  std::vector<std::unique_ptr<game_level_data>>::iterator currentLevelDataIterator;
 
   int levelTimeLimit = 0;
   std::unique_ptr<drag_drop_state> dragDropState;
