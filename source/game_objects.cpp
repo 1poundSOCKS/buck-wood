@@ -3,7 +3,7 @@
 #include <numeric>
 #include "framework/data_files.h"
 
-Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPtr);
+Json::Value FormatAsJson(const game_level_object_data& object);
 template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
 
 game_point_and_next_point::game_point_and_next_point(const game_point& point, const game_point& nextPoint)
@@ -16,17 +16,6 @@ game_line::game_line(const game_point& start, const game_point& end) : start(sta
 }
 
 game_line::game_line(float startX, float startY, float endX, float endY) : start(startX, startY), end(endX, endY)
-{
-}
-
-game_line_edit::game_line_edit(const game_line_edit& gameLineEdit)
-: start(gameLineEdit.start), end(gameLineEdit.end)
-{
-
-}
-
-game_line_edit::game_line_edit(game_point& start, game_point& end)
-: start(start), end(end)
 {
 }
 
@@ -49,16 +38,6 @@ game_shape::game_shape(const game_level_object_data& objectData)
 {
   std::copy(objectData.points.cbegin(), objectData.points.end(), std::back_inserter(points));
   CreateShapeLinesFromPoints(lines, points);
-}
-
-game_shape_edit::game_shape_edit(const std::vector<game_point>& pointsToCopy)
-{
-  std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
-}
-
-game_shape_edit::game_shape_edit(const game_level_object_data& objectData)
-{
-  std::copy(objectData.points.cbegin(), objectData.points.end(), std::back_inserter(points));
 }
 
 mouse_cursor::mouse_cursor()
@@ -95,10 +74,6 @@ target::target(float x, float y, float size) : state(DEACTIVATED)
   InitializeTargetShape(x, y, size, shape);
 }
 
-target_edit::target_edit(float x, float y, float size) : x(x), y(y), size(size)
-{
-}
-
 game_level::game_level(const game_level_data& gameLevelData)
 : name(gameLevelData.name),
   playerStartPosX(gameLevelData.playerStartPosX),
@@ -110,7 +85,7 @@ game_level::game_level(const game_level_data& gameLevelData)
   std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
   for( const auto& object: gameLevelData.objects )
   {
-    std::unique_ptr<game_shape> gameShape = std::make_unique<game_shape>(*object);
+    std::unique_ptr<game_shape> gameShape = std::make_unique<game_shape>(object);
     objects.push_back(std::move(gameShape));
   }
   
@@ -121,26 +96,16 @@ game_level::game_level(const game_level_data& gameLevelData)
   }
 }
 
-game_level_edit::game_level_edit(const game_level_data& gameLevelData)
-: name(gameLevelData.name),
-  playerStartPosX(gameLevelData.playerStartPosX),
-  playerStartPosY(gameLevelData.playerStartPosY),
-  timeLimitInSeconds(gameLevelData.timeLimitInSeconds)
+game_level_data_index::game_level_data_index()
 {
-  boundary = std::make_unique<game_shape_edit>(gameLevelData.boundaryPoints);
+}
 
-  std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
-  for( const auto& object: gameLevelData.objects )
+game_level_data_index::game_level_data_index(const game_level_data_index& index)
+{
+  std::transform(index.gameLevelData.cbegin(), index.gameLevelData.cend(), std::back_inserter(gameLevelData), [](const auto& data)
   {
-    std::unique_ptr<game_shape_edit> gameShape = std::make_unique<game_shape_edit>(*object);
-    objects.push_back(std::move(gameShape));
-  }
-  
-  for( const auto& t: gameLevelData.targets )
-  {
-    target_edit levelTarget(t.x, t.y, 40.0f);
-    targets.push_back(levelTarget);
-  }
+    return std::make_unique<game_level_data>(*data);
+  });
 }
 
 std::unique_ptr<player_ship> CreatePlayerShip()
@@ -176,20 +141,6 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
       const game_point& point2 = *points.begin();
       lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
     }
-  }
-}
-
-void CreateShapeLinesFromPoints(std::list<game_line_edit>& lines, std::list<game_point>& points)
-{
-  for( std::list<game_point>::iterator iStart = points.begin(); iStart != points.end(); iStart++ )
-  {
-    std::list<game_point>::iterator iEnd = std::next(iStart);
-    if( iEnd == points.end() ) iEnd = points.begin();
-
-    game_point& start = *iStart;
-    game_point& end = *iEnd;
-
-    lines.push_back(game_line_edit(start, end));
   }
 }
 
@@ -239,7 +190,7 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
   {
     Json::Value jsonObject = objects[i];
     auto objectDataPtr = LoadObjectDataFromJSON(jsonObject);
-    levelData->objects.push_back(std::move(objectDataPtr));
+    levelData->objects.push_back(*objectDataPtr);
   }
 
   Json::Value targets = jsonObject["targets"];
@@ -300,9 +251,9 @@ Json::Value FormatAsJson(const game_point& point)
     return root;
 }
 
-Json::Value FormatAsJson(const std::unique_ptr<game_level_object_data>& objectPtr)
+Json::Value FormatAsJson(const game_level_object_data& object)
 {
-  const auto& object = *objectPtr;
+  // const auto& object = *objectPtr;
 
   Json::Value root;
   
@@ -396,33 +347,4 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
   // );
 
   return true;
-}
-
-void UpdateGameLevelData(game_level_data& gameLevelData, const game_level_edit& gameLevel)
-{
-  gameLevelData.name = gameLevel.name;
-  gameLevelData.playerStartPosX = gameLevel.playerStartPosX;
-  gameLevelData.playerStartPosY = gameLevel.playerStartPosY;
-  gameLevelData.boundaryPoints.clear();
-  gameLevelData.boundaryPoints.reserve(gameLevel.boundary->points.size());
-  std::copy(gameLevel.boundary->points.begin(), gameLevel.boundary->points.end(), std::back_inserter(gameLevelData.boundaryPoints));
-  
-  gameLevelData.objects.clear();
-  
-  for( const auto& object : gameLevel.objects )
-  {
-    std::unique_ptr<game_level_object_data> objectData = std::make_unique<game_level_object_data>();
-    objectData->points.reserve(object->points.size());
-    std::copy(object->points.begin(), object->points.end(), std::back_inserter(objectData->points));
-    gameLevelData.objects.push_back(std::move(objectData));
-  }
-  
-  gameLevelData.targets.clear();
-  gameLevelData.targets.reserve(gameLevel.targets.size());
-
-  for( const auto& target : gameLevel.targets )
-  {
-    game_point targetData(target.x, target.y);
-    gameLevelData.targets.push_back(targetData);
-  }
 }

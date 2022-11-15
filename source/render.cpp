@@ -143,23 +143,23 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
   }
 }
 
-void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_level_edit& level, const d2d_brushes& brushes)
-{
-  renderTarget->SetTransform(viewTransform);
-  RenderShape(*level.boundary, renderTarget, brushes.brush);
+// void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const game_level_edit& level, const d2d_brushes& brushes)
+// {
+//   renderTarget->SetTransform(viewTransform);
+//   RenderShape(*level.boundary, renderTarget, brushes.brush);
 
-  for( const auto& shape: level.objects )
-  {
-    RenderShape(*shape, renderTarget, brushes.brush);
-  }
+//   for( const auto& shape: level.objects )
+//   {
+//     RenderShape(*shape, renderTarget, brushes.brush);
+//   }
 
-  for( const auto& target: level.targets)
-  {
-    game_shape targetShape;
-    InitializeTargetShape(target.x, target.y, target.size, targetShape);
-    RenderShape(targetShape, renderTarget, brushes.brushDeactivated);
-  }
-}
+//   for( const auto& target: level.targets)
+//   {
+//     game_shape targetShape;
+//     InitializeTargetShape(target.x, target.y, target.size, targetShape);
+//     RenderShape(targetShape, renderTarget, brushes.brushDeactivated);
+//   }
+// }
 
 void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const render_brushes& brushes)
 {
@@ -179,25 +179,25 @@ void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const ren
   renderTarget->DrawLine(line.start, line.end, brush.get(), renderWidth);
 }
 
-void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
-{
-  game_shape targetShape;
-  InitializeTargetShape(target.x, target.y, target.size, targetShape);
-  renderTarget->SetTransform(viewTransform);
-  RenderShape(targetShape, renderTarget, brush);
-}
+// void RenderTarget(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const target_edit& target, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+// {
+//   game_shape targetShape;
+//   InitializeTargetShape(target.x, target.y, target.size, targetShape);
+//   renderTarget->SetTransform(viewTransform);
+//   RenderShape(targetShape, renderTarget, brush);
+// }
 
 void RenderShape(const game_shape& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   RenderLines(shape.lines, renderTarget, brush);
 }
 
-void RenderShape(game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
-{
-  std::list<game_line_edit> lines;
-  CreateShapeLinesFromPoints(lines, shape.points);
-  RenderLines(lines, renderTarget, brush);
-}
+// void RenderShape(game_shape_edit& shape, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+// {
+//   std::list<game_line_edit> lines;
+//   CreateShapeLinesFromPoints(lines, shape.points);
+//   RenderLines(lines, renderTarget, brush);
+// }
 
 void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
@@ -215,21 +215,21 @@ void RenderLines(const std::list<game_line>& lines, const winrt::com_ptr<ID2D1Re
   }
 }
 
-void RenderLines(const std::list<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
-{
-  for( const auto& line : lines )
-  {
-    D2D1_POINT_2F startPoint;
-    startPoint.x = line.start.x;
-    startPoint.y = line.start.y;
+// void RenderLines(const std::list<game_line_edit>& lines, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
+// {
+//   for( const auto& line : lines )
+//   {
+//     D2D1_POINT_2F startPoint;
+//     startPoint.x = line.start.x;
+//     startPoint.y = line.start.y;
 
-    D2D1_POINT_2F endPoint;
-    endPoint.x = line.end.x;
-    endPoint.y = line.end.y;
+//     D2D1_POINT_2F endPoint;
+//     endPoint.x = line.end.x;
+//     endPoint.y = line.end.y;
 
-    renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
-  }
-}
+//     renderTarget->DrawLine(startPoint, endPoint, brush.get(), 2.0f);
+//   }
+// }
 
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
 {

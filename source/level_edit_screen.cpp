@@ -22,20 +22,8 @@ level_edit_screen_state::level_edit_screen_state(const global_state& globalState
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
   const auto& levelData = *currentLevelDataIterator;
-
   levelTimeLimit = levelData->timeLimitInSeconds;
-
   dragDropState = CreateDragDropState(*levelData);
-}
-
-game_point_selection::game_point_selection(std::list<game_point>& points, std::list<game_point>::iterator& point, float distance)
-: points(points), point(point), distance(distance)
-{
-}
-
-target_selection::target_selection(std::list<target_edit>& targets, std::list<target_edit>::iterator& target)
-: targets(targets), target(target)
-{
 }
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState)
@@ -46,6 +34,8 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
   controlState.ratioMouseX = controlState.renderTargetMouseData.x / controlState.renderTargetMouseData.size.width;
   controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
+  controlState.nextLevel = baseControlState.f1Press;
+  controlState.previousLevel = baseControlState.f2Press;
   controlState.dragDropControlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
   controlState.dragDropControlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.dragDropControlState.leftMouseButtonReleased = baseControlState.leftMouseButtonReleased;
@@ -194,7 +184,7 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
   for( const auto& object : gameLevelData.objects )
   {
     drag_drop_shape objectShape(level_edit_screen_state::drag_drop_shape_type::type_object);
-    CreateDragDropPoints(object->points.cbegin(), object->points.cend(), std::back_inserter(objectShape.points));
+    CreateDragDropPoints(object.points.cbegin(), object.points.cend(), std::back_inserter(objectShape.points));
     dragDropState->shapes.push_back(objectShape);
   }
 
@@ -233,7 +223,7 @@ std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& drag
         CreateGamePoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(gameLevelData->boundaryPoints));
         break;
       case level_edit_screen_state::drag_drop_shape_type::type_object:
-        gameLevelData->objects.push_back(CreateGameLevelObjectData(shape));
+        gameLevelData->objects.push_back(*CreateGameLevelObjectData(shape));
         break;
       case level_edit_screen_state::drag_drop_shape_type::type_player:
         gameLevelData->playerStartPosX = shape.position.x;
