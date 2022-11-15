@@ -6,10 +6,10 @@
 Json::Value FormatAsJson(const game_level_object_data& object);
 template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
 
-game_point_and_next_point::game_point_and_next_point(const game_point& point, const game_point& nextPoint)
-: point(point), nextPoint(nextPoint)
-{
-}
+// game_point_and_next_point::game_point_and_next_point(const game_point& point, const game_point& nextPoint)
+// : point(point), nextPoint(nextPoint)
+// {
+// }
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {

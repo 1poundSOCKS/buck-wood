@@ -14,14 +14,6 @@ struct game_point
   float x = 0, y = 0;
 };
 
-struct game_point_and_next_point
-{
-  game_point_and_next_point(const game_point& point, const game_point& nextPoint);
-
-  const game_point& point;
-  const game_point& nextPoint;
-};
-
 struct game_line
 {
   game_line(const game_point& start, const game_point& end);
