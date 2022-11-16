@@ -66,11 +66,3 @@ int GetWavFileDataSize(const wav_file_data& wavFileData)
 {
   return wavFileData.data->size;
 }
-
-std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file)
-{
-  fs::path fullFilename = dataPath;
-  fullFilename /= L"levels";
-  fullFilename /= file;
-  return fullFilename;
-}

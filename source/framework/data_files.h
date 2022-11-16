@@ -68,6 +68,4 @@ int GetWavFileDataSize(const wav_file_data& data);
 
 using wav_file_data_ptr = std::unique_ptr<wav_file_data>;
 
-std::wstring GetFullLevelFilename(const std::wstring& dataPath, const std::wstring& file);
-
 #endif
