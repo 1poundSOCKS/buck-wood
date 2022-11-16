@@ -50,6 +50,8 @@ struct level_edit_screen_state
   game_level_data_index gameLevelDataIndex;
   std::vector<std::unique_ptr<game_level_data>>::iterator currentLevelDataIterator;
 
+  std::string levelName;
+  std::wstring levelFilename;
   int levelTimeLimit = 0;
   std::unique_ptr<drag_drop_state> dragDropState;
 };

@@ -197,6 +197,8 @@ void LoadCurrentLevel(level_edit_screen_state& screenState)
 
   if( levelData )
   {
+    screenState.levelName = levelData->name;
+    screenState.levelFilename = levelData->filename;
     screenState.levelTimeLimit = levelData->timeLimitInSeconds;
     screenState.dragDropState = CreateDragDropState(*levelData);
   }
@@ -205,6 +207,8 @@ void LoadCurrentLevel(level_edit_screen_state& screenState)
 void SaveCurrentLevel(level_edit_screen_state& screenState)
 {
   auto gameLevelData = CreateGameLevelData(*screenState.dragDropState);
+  gameLevelData->name = screenState.levelName;
+  gameLevelData->filename = screenState.levelFilename;
   gameLevelData->timeLimitInSeconds = screenState.levelTimeLimit;
   *screenState.currentLevelDataIterator = std::move(gameLevelData);
 }

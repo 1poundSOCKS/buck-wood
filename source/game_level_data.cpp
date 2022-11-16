@@ -231,16 +231,14 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
     }
   );
 
-  // TODO: get reduce working
-  //
-  // bool allSaved = std::reduce(saveLevelDataReturn.cbegin(), saveLevelDataReturn.end(), true,
-  //   [](bool left, bool right)
-  //   {
-  //     return true;
-  //   }
-  // );
+  bool allSaved = std::reduce(saveLevelDataReturn.cbegin(), saveLevelDataReturn.cend(), true,
+    [](auto left, auto right)
+    {
+      return left && right;
+    }
+  );
 
-  return true;
+  return allSaved;
 }
 
 std::wstring game_level_data_filenames::GetNext()
