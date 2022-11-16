@@ -6,6 +6,7 @@
 #include <limits>
 #include <d2d1.h>
 #include "render.h"
+#include "diagnostics.h"
 
 struct drag_drop_point
 {

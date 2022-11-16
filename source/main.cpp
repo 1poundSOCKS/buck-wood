@@ -159,7 +159,7 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(20);
-  FormatDiagnostics(diagnosticsData, baseControlState, *app.perfData, *app.timer);
+  FormatDiagnostics(diagnosticsData, globalState, baseControlState, *app.perfData, *app.timer);
   FormatDiagnostics(diagnosticsData, screenState, screenControlState);
 
   {

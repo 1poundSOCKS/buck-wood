@@ -1,8 +1,11 @@
 #include "diagnostics.h"
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
+void FormatDiagnostics(diagnostics_data& diagnosticsData, const global_state& globalState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
 {
   static wchar_t text[64];
+
+  swprintf(text, L"levels loaded: %I64u", globalState.gameLevelDataIndex->gameLevelData.size());
+  diagnosticsData.push_back(text);
 
   float runTime = GetTotalTimeInSeconds(timer);
   float intervalTime = GetIntervalTimeInSeconds(timer);

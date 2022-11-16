@@ -1,15 +1,11 @@
 #include "game_objects.h"
 #include <fstream>
 #include <numeric>
+#include <format>
 #include "framework/data_files.h"
 
 Json::Value FormatAsJson(const game_level_object_data& object);
 template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
-
-// game_point_and_next_point::game_point_and_next_point(const game_point& point, const game_point& nextPoint)
-// : point(point), nextPoint(nextPoint)
-// {
-// }
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
 {
@@ -106,6 +102,43 @@ game_level_data_index::game_level_data_index(const game_level_data_index& index)
   {
     return std::make_unique<game_level_data>(*data);
   });
+}
+
+// game_level_data_file_reader::game_level_data_file_reader(const std::wstring& path, const std::wstring& filename)
+// : path(path), filename(filename)
+// {
+//   fullFilename = GetFullLevelFilename(path, filename);
+//   inputStream.open(fullFilename);
+// }
+
+// game_level_data_file_readers::game_level_data_file_readers(const std::wstring& dataPath)
+// {
+//   game_level_data_filenames filenames;
+
+
+// }
+
+game_level_data_file_info::game_level_data_file_info(const std::wstring& path, const std::wstring& name)
+: path(path), name(name)
+{
+  fs::path tmpName = path;
+  tmpName /= name;
+  fullName = tmpName;
+}
+
+game_level_data_files::game_level_data_files(const std::wstring path)
+{
+  game_level_data_filenames filenames;
+
+  bool fileExists = true;
+
+  while( fileExists )
+  {
+    std::wstring name = filenames.GetNext();
+    game_level_data_file_info info(path, name);
+    fileExists = fs::exists(info.fullName);
+    if( fileExists ) fileInfo.push_back(info);
+  }
 }
 
 std::unique_ptr<player_ship> CreatePlayerShip()
@@ -243,6 +276,17 @@ std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath,
   return gameLevelData;
 }
 
+std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& filename)
+{
+  std::ifstream ifs(filename);
+  Json::Reader reader;
+  Json::Value root;
+  reader.parse(ifs, root);
+  auto gameLevelData = LoadLevelDataFromJSON(root);
+  gameLevelData->filename = filename;
+  return gameLevelData;
+}
+
 Json::Value FormatAsJson(const game_point& point)
 {
     Json::Value root;
@@ -319,11 +363,16 @@ std::string SaveJsonDataToString(Json::Value& root)
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath)
 {
   auto gameLevelDataIndex = std::make_unique<game_level_data_index>();
-  gameLevelDataIndex->gameLevelData.reserve(4);
-  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_001.json"));
-  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_002.json"));
-  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_003.json"));
-  gameLevelDataIndex->gameLevelData.push_back(LoadGameLevelData(dataPath, L"level_004.json"));
+  fs::path path = dataPath;
+  path /= L"levels";
+
+  game_level_data_files files(path);
+
+  std::transform(files.fileInfo.cbegin(), files.fileInfo.cend(), std::back_inserter(gameLevelDataIndex->gameLevelData), [](const auto& info)
+  {
+    return LoadGameLevelData(info.fullName);
+  });
+
   return gameLevelDataIndex;
 }
 
@@ -347,4 +396,9 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex)
   // );
 
   return true;
+}
+
+std::wstring game_level_data_filenames::GetNext()
+{
+  return std::format(L"level_{:03}.json", ++filenameIndex);
 }

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "game_math.h"
+#include "game_objects.h"
 
 TEST(angle,0)
 {
@@ -129,6 +130,17 @@ TEST(PointInside,Test1)
   game_point point(500.0f,500.0f);
 
   EXPECT_EQ(PointInside(point,shape),true);
+}
+
+TEST(GameLevelFilename,Test1)
+{
+  game_level_data_filenames gameLevelFilenames;
+  std::wstring filename = gameLevelFilenames.GetNext();
+  EXPECT_STREQ(filename.c_str(),L"level_001.json");
+  filename = gameLevelFilenames.GetNext();
+  EXPECT_STREQ(filename.c_str(),L"level_002.json");
+  filename = gameLevelFilenames.GetNext();
+  EXPECT_STREQ(filename.c_str(),L"level_003.json");
 }
 
 int main(int argc, char* argv[])

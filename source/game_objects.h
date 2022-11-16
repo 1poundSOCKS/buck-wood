@@ -110,6 +110,46 @@ struct game_level_data_index
   std::vector<std::unique_ptr<game_level_data>> gameLevelData;
 };
 
+struct game_level_data_filenames
+{
+  std::wstring GetNext();
+
+  int filenameIndex = 0;
+};
+
+struct game_level_data_file_info
+{
+  game_level_data_file_info(const std::wstring& path, const std::wstring& name);
+
+  std::wstring name;
+  std::wstring path;
+  std::wstring fullName;
+};
+
+struct game_level_data_files
+{
+  game_level_data_files(const std::wstring path);
+
+  std::vector<game_level_data_file_info> fileInfo;
+};
+
+// struct game_level_data_file_reader
+// {
+//   game_level_data_file_reader(const std::wstring& path, const std::wstring& filename);
+
+//   std::wstring path;
+//   std::wstring filename;
+//   std::wstring fullFilename;
+//   std::ifstream inputStream;
+// };
+
+// struct game_level_data_file_readers
+// {
+//   game_level_data_file_readers(const std::wstring& dataPath);
+
+//   std::vector<game_level_data_file_reader> readers;
+// };
+
 std::unique_ptr<player_ship> CreatePlayerShip();
 
 void InitializeShape(const game_point* points, int pointCount, game_shape& boundary);
@@ -122,11 +162,14 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
+std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& filename);
 bool SaveGameLevelData(const game_level_data& gameLevelData);
 
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 
 std::string SaveJsonDataToString(Json::Value& root);
+
+std::wstring GetNextFilename(game_level_data_filenames& filenames);
 
 #endif

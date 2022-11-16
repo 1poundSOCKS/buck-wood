@@ -1,7 +1,7 @@
 #include "d2d_app.h"
 
-LPWSTR lpszWndClass = L"d2d app";
-LPWSTR lpszTitle = L"d2d app";
+LPCWSTR lpszWndClass = L"d2d app";
+LPCWSTR lpszTitle = L"d2d app";
 
 ATOM RegisterMainWindowClass(HINSTANCE hInstance);
 void CreateMainWindow(d2d_app* app);
