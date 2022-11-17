@@ -15,7 +15,7 @@ render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTa
   if( FAILED(hr) ) throw(L"error");
 }
 
-render_point::render_point(float x, float y, float size, color brushColor)
+render_point::render_point(float x, float y, float size, render_brushes::color brushColor)
 : brushColor(brushColor)
 {
   float halfSize = size / 2;
@@ -25,8 +25,8 @@ render_point::render_point(float x, float y, float size, color brushColor)
   rect.bottom = y + halfSize;
 }
 
-render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end)
-: start(start), end(end)
+render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, render_brushes::color brushColor)
+: start(start), end(end), brushColor(brushColor)
 {
 }
 
@@ -143,6 +143,28 @@ void RenderLevel(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2
   }
 }
 
+void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes)
+{
+  static const float cursorSize = 20.0f;
+  static const float cursorSizeGap = 10.0f;
+
+  std::vector<D2D1_POINT_2F> mouseCursor;
+  mouseCursor.reserve(8);
+  mouseCursor.push_back(D2D1_POINT_2F(0,-cursorSize));
+  mouseCursor.push_back(D2D1_POINT_2F(0,-cursorSizeGap));
+  mouseCursor.push_back(D2D1_POINT_2F(0,cursorSize));
+  mouseCursor.push_back(D2D1_POINT_2F(0,cursorSizeGap));
+  mouseCursor.push_back(D2D1_POINT_2F(-cursorSize,0));
+  mouseCursor.push_back(D2D1_POINT_2F(-cursorSizeGap,0));
+  mouseCursor.push_back(D2D1_POINT_2F(cursorSize,0));
+  mouseCursor.push_back(D2D1_POINT_2F(cursorSizeGap,0));
+
+  std::vector<render_line> renderLines;
+  renderLines.reserve(4);
+  CreateDisconnectedRenderLines<D2D1_POINT_2F>(mouseCursor.cbegin(), mouseCursor.cend(), std::back_inserter(renderLines), x, y);
+  RenderLines(renderTarget, brushes, 5, renderLines.cbegin(), renderLines.cend());
+}
+
 void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const render_brushes& brushes)
 {
   renderTarget->FillRectangle(&point.rect, GetBrush(brushes, point.brushColor).get());
@@ -205,15 +227,15 @@ D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, fl
     D2D1::Matrix3x2F::Translation(renderTargetWidth / 2, renderTargetHeight / 2);
 }
 
-const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_point::color brushColor)
+const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_brushes::color brushColor)
 {
   switch( brushColor )
   {
-    case render_point::color_white:
+    case render_brushes::color::color_white:
       return brushes.brushWhite;
-    case render_point::color_green:
+    case render_brushes::color::color_green:
       return brushes.brushGreen;
-    case render_point::color_red:
+    case render_brushes::color::color_red:
       return brushes.brushRed;
     default:
       return brushes.brushWhite;

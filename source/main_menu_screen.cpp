@@ -51,7 +51,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 
-  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
+  // RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
 }
 
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer)

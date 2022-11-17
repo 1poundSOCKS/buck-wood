@@ -11,7 +11,7 @@ void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::li
 void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
 render_point CreateRenderPoint(const drag_drop_point& point);
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
-render_point::color GetBrushColor(const drag_drop_point& point);
+render_brushes::color GetBrushColor(const drag_drop_point& point);
 
 drag_drop_point::drag_drop_point(float x, float y, type pointType)
 : x(x), y(y), pointType(pointType)
@@ -207,17 +207,17 @@ render_point CreateRenderPoint(const drag_drop_point& point)
   return render_point(point.x, point.y, 10, GetBrushColor(point));
 }
 
-render_point::color GetBrushColor(const drag_drop_point& point)
+render_brushes::color GetBrushColor(const drag_drop_point& point)
 {
-  if( point.highlighted ) return render_point::color_red;
+  if( point.highlighted ) return render_brushes::color::color_red;
 
   switch( point.pointType )
   {
     case drag_drop_point::type::type_undefined:
     case drag_drop_point::type::type_real:
-      return render_point::color_green;
+      return render_brushes::color::color_green;
     default:
-      return render_point::color_white;
+      return render_brushes::color::color_white;
   }
 }
 
