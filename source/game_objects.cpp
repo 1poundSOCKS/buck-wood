@@ -140,3 +140,12 @@ void InitializeTargetShape(float x, float y, float size, game_shape& shape)
 
   InitializeShape(points, pointCount, shape);
 }
+
+void CreateTargetPoints(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter)
+{
+  float halfSize = size / 2;
+  inserter = game_point(x, y - halfSize);
+  inserter = game_point(x + halfSize, y);
+  inserter = game_point(x, y + halfSize);
+  inserter = game_point(x - halfSize, y);
+}

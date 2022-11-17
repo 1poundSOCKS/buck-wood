@@ -93,4 +93,8 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
   }
 };
 
+// TODO: move to game_level_data.h
+//
+void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator);
+
 #endif

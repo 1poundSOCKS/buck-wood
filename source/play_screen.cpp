@@ -23,7 +23,8 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
 : systemTimer(systemTimer), 
   globalState(globalState),
   brushes(globalState.brushes),
-  textFormats(globalState.textFormats)
+  textFormats(globalState.textFormats),
+  renderBrushes(globalState.renderBrushes)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
   const auto& levelData = *currentLevelDataIterator;
@@ -77,7 +78,22 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   D2D1_SIZE_F renderTargetSize = frame.renderTarget->GetSize();
   D2D1::Matrix3x2F viewTransform = CreateViewTransform(renderTargetSize, screenState);
 
-  RenderLevel(frame.renderTarget, viewTransform, *screenState.currentLevel, screenState.brushes);
+  frame.renderTarget->SetTransform(viewTransform);
+
+  // RenderLevel(frame.renderTarget, viewTransform, *screenState.currentLevel, screenState.brushes);
+  const auto& levelData = **screenState.currentLevelDataIterator;
+  std::vector<render_line> renderLines;
+  CreateRenderLines(levelData, std::back_inserter(renderLines));
+
+  for( const auto& targetPos : levelData.targets )
+  {
+    std::vector<game_point> points;
+    CreateTargetPoints(targetPos.x, targetPos.y, 40, std::back_inserter(points));
+    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), std::back_inserter(renderLines), 0, 0);
+  }
+
+  RenderLines(frame.renderTarget, screenState.renderBrushes, 2, renderLines.cbegin(), renderLines.cend());
+
   RenderPlayer(frame.renderTarget, viewTransform, *screenState.player, screenState.brushes);
 
   for( const std::unique_ptr<bullet>& bullet : screenState.bullets )
@@ -103,8 +119,6 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
-
-  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.renderTargetMouseX, screenState.renderTargetMouseY, screenState.brushes);
 }
 
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)

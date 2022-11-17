@@ -31,6 +31,7 @@ struct play_screen_state
 
   d2d_brushes brushes;
   dwrite_text_formats textFormats;
+  render_brushes renderBrushes;
 
   bool returnToMenu = false;
   

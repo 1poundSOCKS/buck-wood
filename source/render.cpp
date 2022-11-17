@@ -241,3 +241,16 @@ const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brush
       return brushes.brushWhite;
   }
 }
+
+// TODO: move to game_level_data.cpp
+//
+
+void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator)
+{
+  CreateConnectedRenderLines<game_point>(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, 0, 0);
+
+  for( const auto& object : gameLevelData.objects )
+  {
+    CreateConnectedRenderLines<game_point>(object.points.cbegin(), object.points.cend(), insertIterator, 0, 0);
+  }
+}

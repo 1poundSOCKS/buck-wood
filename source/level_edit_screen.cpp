@@ -63,8 +63,6 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   std::vector<render_point> renderPoints;
   CreateRenderPoints(renderPoints, *screenState.dragDropState);
   RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
-
-  RenderMouseCursor(frame.renderTarget, screenState.mouseCursor, screenState.mouseX, screenState.mouseY, screenState.brushes);
 }
 
 void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer)
