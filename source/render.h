@@ -25,7 +25,7 @@ struct render_brushes
 
 struct render_point
 {
-  render_point(float x, float y, float size, render_brushes::color brushColor);
+  render_point(float x, float y, float size, render_brushes::color brushColor = render_brushes::color::color_white);
   
   D2D1_RECT_F rect;
   render_brushes::color brushColor;
@@ -61,24 +61,32 @@ D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, fl
 const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_brushes::color brushColor);
 
 template <typename T>
-void CreateConnectedRenderLines(typename std::vector<T>::const_iterator begin, typename std::vector<T>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x, float y)
+void CreateConnectedRenderLines(typename std::vector<T>::const_iterator begin, 
+                                typename std::vector<T>::const_iterator end, 
+                                std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+                                render_brushes::color brushColor=render_brushes::color::color_white, 
+                                float x=0, float y=0)
 {
-  std::transform(std::next(begin), end, begin, insertIterator, [x,y](const auto& point2, const auto& point1)
+  std::transform(std::next(begin), end, begin, insertIterator, [brushColor, x, y](const auto& point2, const auto& point1)
   {
     D2D1_POINT_2F start(point1.x + x, point1.y + y);
     D2D1_POINT_2F end(point2.x + x, point2.y + y);
-    return render_line(start, end);
+    return render_line(start, end, brushColor);
   });
 
   typename std::vector<T>::const_iterator last = std::prev(end);
 
   D2D1_POINT_2F startPoint(last->x + x, last->y + y);
   D2D1_POINT_2F endPoint(begin->x + x, begin->y + y);
-  insertIterator = render_line(startPoint, endPoint);
+  insertIterator = render_line(startPoint, endPoint, brushColor);
 };
 
 template <typename T>
-void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin, typename std::vector<T>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x, float y)
+void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin, 
+                                   typename std::vector<T>::const_iterator end, 
+                                   std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+                                   render_brushes::color brushColor=render_brushes::color::color_white, 
+                                   float x=0, float y=0)
 {
   for( typename std::vector<T>::const_iterator i = begin; i != end; std::advance(i, 2) )
   {
@@ -88,7 +96,7 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
     {
       D2D1_POINT_2F start(i->x + x, i->y + y);
       D2D1_POINT_2F end(next->x + x, next->y + y);
-      insertIterator = render_line(start, end);
+      insertIterator = render_line(start, end, brushColor);
     }
   }
 };

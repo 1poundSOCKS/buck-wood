@@ -161,7 +161,7 @@ void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, fl
 
   std::vector<render_line> renderLines;
   renderLines.reserve(4);
-  CreateDisconnectedRenderLines<D2D1_POINT_2F>(mouseCursor.cbegin(), mouseCursor.cend(), std::back_inserter(renderLines), x, y);
+  CreateDisconnectedRenderLines<D2D1_POINT_2F>(mouseCursor.cbegin(), mouseCursor.cend(), std::back_inserter(renderLines), render_brushes::color::color_white, x, y);
   RenderLines(renderTarget, brushes, 5, renderLines.cbegin(), renderLines.cend());
 }
 
@@ -174,7 +174,7 @@ void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const re
 {
   for( auto line = begin; line != end; ++line )
   {
-    RenderLine(renderTarget, *line, renderWidth, brushes.brushWhite);
+    RenderLine(renderTarget, *line, renderWidth, GetBrush(brushes, line->brushColor));
   }
 }
 
@@ -247,10 +247,10 @@ const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brush
 
 void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator)
 {
-  CreateConnectedRenderLines<game_point>(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, 0, 0);
+  CreateConnectedRenderLines<game_point>(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator);
 
   for( const auto& object : gameLevelData.objects )
   {
-    CreateConnectedRenderLines<game_point>(object.points.cbegin(), object.points.cend(), insertIterator, 0, 0);
+    CreateConnectedRenderLines<game_point>(object.points.cbegin(), object.points.cend(), insertIterator);
   }
 }

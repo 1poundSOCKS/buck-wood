@@ -88,7 +88,7 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   {
     std::vector<game_point> points;
     CreateTargetPoints(targetPos.x, targetPos.y, 40, std::back_inserter(points));
-    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), std::back_inserter(renderLines), 0, 0);
+    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), std::back_inserter(renderLines), render_brushes::color::color_green);
   }
 
   RenderLines(frame.renderTarget, screenState.renderBrushes, 2, renderLines.cbegin(), renderLines.cend());
