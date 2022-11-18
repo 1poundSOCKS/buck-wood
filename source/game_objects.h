@@ -16,30 +16,6 @@ struct game_line
   game_point start, end;
 };
 
-struct player_ship
-{
-  player_ship();
-
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  bool thrusterOn = false;
-};
-
-struct bullet
-{
-  bullet(float x, float y, float range);
-
-  float startX, startY;
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  float range;
-  bool outsideLevel;
-};
-
-void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
-
 void CreatePointsForPlayer(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> inserter);
 void CreatePointsForPlayerThruster(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> transformedPoints);
 void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter);

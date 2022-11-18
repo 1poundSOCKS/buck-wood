@@ -44,6 +44,16 @@ game_level_data_files::game_level_data_files(const std::wstring path)
   }
 }
 
+void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator)
+{
+  CreateConnectedRenderLines<game_point>(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator);
+
+  for( const auto& object : gameLevelData.objects )
+  {
+    CreateConnectedRenderLines<game_point>(object.points.cbegin(), object.points.cend(), insertIterator);
+  }
+}
+
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)
 {
   auto levelData = std::make_unique<game_level_data>();

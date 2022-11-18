@@ -76,17 +76,6 @@ void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarge
   renderTarget->DrawTextW(text.c_str(),text.length(), textFormat.get(), rect, brush.get());
 }
 
-void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const d2d_brushes& brushes)
-{
-  static const float bulletSize = 3.0f;
-
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  const D2D1::Matrix3x2F transform = translate * viewTransform;
-  renderTarget->SetTransform(transform);
-  D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
-  renderTarget->FillRectangle(&rectangle, brushes.brush.get());
-}
-
 void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes)
 {
   static const float cursorSize = 20.0f;
@@ -162,18 +151,5 @@ const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brush
       return brushes.brushRed;
     default:
       return brushes.brushWhite;
-  }
-}
-
-// TODO: move to game_level_data.cpp
-//
-
-void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator)
-{
-  CreateConnectedRenderLines<game_point>(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator);
-
-  for( const auto& object : gameLevelData.objects )
-  {
-    CreateConnectedRenderLines<game_point>(object.points.cbegin(), object.points.cend(), insertIterator);
   }
 }

@@ -22,6 +22,28 @@ struct play_screen_control_state
   render_target_mouse_data renderTargetMouseData;
 };
 
+struct player_ship
+{
+  player_ship();
+
+  float xPos, yPos;
+  float xVelocity, yVelocity;
+  float angle;
+  bool thrusterOn = false;
+};
+
+struct bullet
+{
+  bullet(float x, float y, float range);
+
+  float startX, startY;
+  float xPos, yPos;
+  float xVelocity, yVelocity;
+  float angle;
+  float range;
+  bool outsideLevel;
+};
+
 struct target_state
 {
   target_state(const game_point& position);
@@ -83,6 +105,7 @@ struct play_screen_sounds
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
+void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const d2d_brushes& brushes);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 

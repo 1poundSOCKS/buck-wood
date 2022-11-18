@@ -7,10 +7,8 @@
 #include <tchar.h>
 
 #include "framework/framework.h"
-#include "game_objects.h"
 #include "dwrite_text_formats.h"
 #include "d2d_brushes.h"
-
 
 struct render_brushes
 {
@@ -42,7 +40,6 @@ struct render_line
 void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const std::vector<std::wstring>& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes);
 void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const d2d_brushes& brushes);
 void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const std::wstring& text);
-void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const d2d_brushes& brushes);
 
 void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes);
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
@@ -94,9 +91,5 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
     }
   }
 };
-
-// TODO: move to game_level_data.h
-//
-void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator);
 
 #endif

@@ -19,6 +19,14 @@ bool LevelIsComplete(const play_screen_state& screenState);
 const int play_screen_state::shotTimeNumerator;
 const int play_screen_state::shotTimeDenominator;
 
+player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
+{
+}
+
+bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
+{
+}
+
 target_state::target_state(const game_point& position) : position(position)
 {
   CreatePointsForTarget(position.x, position.y, 40, std::back_inserter(points));
@@ -134,6 +142,17 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
+}
+
+void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const d2d_brushes& brushes)
+{
+  static const float bulletSize = 3.0f;
+
+  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
+  const D2D1::Matrix3x2F transform = translate * viewTransform;
+  renderTarget->SetTransform(transform);
+  D2D1_RECT_F rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
+  renderTarget->FillRectangle(&rectangle, brushes.brush.get());
 }
 
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)

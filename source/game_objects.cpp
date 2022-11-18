@@ -13,35 +13,6 @@ game_line::game_line(float startX, float startY, float endX, float endY) : start
 {
 }
 
-player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
-{
-}
-
-bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
-{
-}
-
-void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points)
-{
-  std::list<game_point>::const_iterator i = points.begin();
-  
-  while( i != points.end()  )
-  {
-    const game_point& point1 = *i;
-    i++;
-    if( i != points.end() )
-    {
-      const game_point& point2 = *i;
-      lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
-    }
-    else
-    {
-      const game_point& point2 = *points.begin();
-      lines.push_back(game_line(point1.x, point1.y, point2.x, point2.y));
-    }
-  }
-}
-
 void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter)
 {
   float halfSize = size / 2;
