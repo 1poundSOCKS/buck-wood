@@ -9,32 +9,76 @@ int CalculateAngle(float x1, float y1, float x2, float y2)
   return degrees + 90.5;
 }
 
-bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
+// bool PointsInside(const std::list<game_point>& points, const game_shape& shape)
+// {
+//   int matchingPointCount = 0;
+//   for( const auto& point: points )
+//   {
+//     if( PointInside(point, shape) ) matchingPointCount++;
+//   }
+
+//   return matchingPointCount == points.size();
+// }
+
+// bool PointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const game_shape& shape)
+// {
+//   int matchingPointCount = 0;
+//   for( auto point = begin; point != end; ++point )
+//   {
+//     if( PointInside(*point, shape) ) return true;
+//   }
+
+//   return false;
+// }
+
+// bool PointInside(const std::list<game_point>& points, const game_shape& shape)
+// {
+//   int matchingPointCount = 0;
+//   for( const auto& point: points )
+//   {
+//     if( PointInside(point, shape) ) return true;
+//   }
+
+//   return false;
+// }
+
+// bool PointInside(const game_point& point, const game_shape& shape)
+// {
+//   int matchingLines = 0;
+//   for( const auto& line: shape.lines )
+//   {
+//     if( AddLineToInterceptCount(line, point) ) matchingLines++;
+//   }
+  
+//   return ( matchingLines % 2 > 0 );
+// }
+
+bool PointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area)
 {
   int matchingPointCount = 0;
-  for( const auto& point: points )
+  for( auto point = begin; point != end; ++point )
   {
-    if( PointInside(point, shape) ) matchingPointCount++;
-  }
-
-  return matchingPointCount == points.size();
-}
-
-bool PointInside(const std::list<game_point>& points, const game_shape& shape)
-{
-  int matchingPointCount = 0;
-  for( const auto& point: points )
-  {
-    if( PointInside(point, shape) ) return true;
+    if( PointInside(*point, area) ) return true;
   }
 
   return false;
 }
 
-bool PointInside(const game_point& point, const game_shape& shape)
+bool PointInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area)
+{
+  int matchingPointCount = 0;
+  for( auto point = begin; point != end; ++point )
+  {
+    if( PointInside(*point, area) ) return true;
+  }
+
+  return false;
+}
+
+bool PointInside(const game_point& point, const std::vector<game_line>& area)
 {
   int matchingLines = 0;
-  for( const auto& line: shape.lines )
+  for( const auto& line: area )
   {
     if( AddLineToInterceptCount(line, point) ) matchingLines++;
   }
@@ -61,30 +105,30 @@ float GetYIntercept(float x, const game_line& line)
   return m * x + b;
 }
 
-void TransformPlayerShip(const player_ship& playerShip, game_shape& shape)
-{
-  shape.points.clear();
-  TransformPlayerShip(playerShip, shape.points);
+// void TransformPlayerShip(const player_ship& playerShip, game_shape& shape)
+// {
+//   shape.points.clear();
+//   TransformPlayerShip(playerShip, shape.points);
   
-  shape.lines.clear();
-  CreateShapeLinesFromPoints(shape.lines, shape.points);
-}
+//   shape.lines.clear();
+//   CreateShapeLinesFromPoints(shape.lines, shape.points);
+// }
 
-void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints)
-{
-  const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
-  const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
-  const D2D1::Matrix3x2F matrix = rotate * translate;
+// void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints)
+// {
+//   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(player.angle,D2D1::Point2F(0,0));
+//   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(player.xPos, player.yPos);
+//   const D2D1::Matrix3x2F matrix = rotate * translate;
 
-  for( auto point: player.outline->points )
-  {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = point.x;
-    inPoint.y = point.y;
-    D2D1_POINT_2F outPoint = matrix.TransformPoint(inPoint);
-    transformedPoints.push_back(game_point(outPoint.x, outPoint.y));
-  }
-}
+//   for( auto point: player.outline->points )
+//   {
+//     D2D1_POINT_2F inPoint;
+//     inPoint.x = point.x;
+//     inPoint.y = point.y;
+//     D2D1_POINT_2F outPoint = matrix.TransformPoint(inPoint);
+//     transformedPoints.push_back(game_point(outPoint.x, outPoint.y));
+//   }
+// }
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
 {

@@ -19,6 +19,11 @@ bool LevelIsComplete(const play_screen_state& screenState);
 const int play_screen_state::shotTimeNumerator;
 const int play_screen_state::shotTimeDenominator;
 
+target_state::target_state(const game_point& position) : position(position)
+{
+  CreatePointsForTarget(position.x, position.y, 40, std::back_inserter(points));
+}
+
 play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
 : systemTimer(systemTimer), 
   globalState(globalState),
@@ -27,17 +32,21 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   renderBrushes(globalState.renderBrushes)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
-  const auto& levelData = *currentLevelDataIterator;
-  currentLevel = std::make_unique<game_level>(*levelData);
+  const auto& levelData = **currentLevelDataIterator;
 
-  player = CreatePlayerShip();
-  player->xPos = currentLevel->playerStartPosX;
-  player->yPos = currentLevel->playerStartPosY;
+  player = std::make_unique<player_ship>();
+  player->xPos = levelData.playerStartPosX;
+  player->yPos = levelData.playerStartPosY;
 
-  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(currentLevel->timeLimitInSeconds), 1);
+  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(levelData.timeLimitInSeconds), 1);
   pauseTimer = std::make_unique<stopwatch>(systemTimer);
   shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
   shotTimer->paused = false;
+
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
+  {
+    return target_state(target);
+  });
 
   levelTimes.reserve(globalState.gameLevelDataIndex->gameLevelData.size());
 
@@ -72,8 +81,6 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-  auto& currentLevel = *screenState.currentLevel;
 
   D2D1_SIZE_F renderTargetSize = frame.renderTarget->GetSize();
   D2D1::Matrix3x2F viewTransform = CreateViewTransform(renderTargetSize, screenState);
@@ -274,10 +281,14 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
     return;
   }
 
-  std::list<game_point> transformedPoints;
-  TransformPlayerShip(*screenState.player, transformedPoints);
+  std::vector<game_point> player;
+  CreatePointsForPlayer(screenState.player->xPos, screenState.player->yPos, screenState.player->angle, std::back_inserter(player));
 
-  if( !PointsInside(transformedPoints, *screenState.currentLevel->boundary) )
+  const auto& currentLevelData = **screenState.currentLevelDataIterator;
+
+  std::vector<game_line> lines;
+  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
+  if( !PointInside(player.cbegin(), player.cend(), lines) )
   {
     screenState.state = play_screen_state::state_player_dead;
     ResetStopwatch(*screenState.pauseTimer, 3);
@@ -285,9 +296,11 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
     return;
   }
   
-  for( const auto& shape : screenState.currentLevel->objects)
+  for( const auto& object : currentLevelData.objects)
   {
-    if( PointInside(transformedPoints, *shape) )
+    std::vector<game_line> lines;
+    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+    if( PointsInside(player.cbegin(), player.cend(), lines) )
     {
       screenState.state = play_screen_state::state_player_dead;
       ResetStopwatch(*screenState.pauseTimer, 3);
@@ -314,15 +327,14 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 
   screenState.currentLevelDataIterator = nextLevel;
   
-  const auto& nextLevelData = *screenState.currentLevelDataIterator;
-  screenState.currentLevel = std::make_unique<game_level>(*nextLevelData);
+  const auto& levelData = **screenState.currentLevelDataIterator;
 
-  ResetStopwatch(*screenState.levelTimer, screenState.currentLevel->timeLimitInSeconds);
+  ResetStopwatch(*screenState.levelTimer, levelData.timeLimitInSeconds);
   ResetStopwatch(*screenState.shotTimer);
 
-  screenState.player = CreatePlayerShip();
-  screenState.player->xPos = screenState.currentLevel->playerStartPosX;
-  screenState.player->yPos = screenState.currentLevel->playerStartPosY;
+  screenState.player = std::make_unique<player_ship>();
+  screenState.player->xPos = levelData.playerStartPosX;
+  screenState.player->yPos = levelData.playerStartPosY;
 
   screenState.bullets.clear();
   screenState.state = play_screen_state::state_playing;
@@ -331,12 +343,12 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 bool LevelIsComplete(const play_screen_state& screenState)
 {
   int activatedTargetCount = 0;
-  for( const auto& target: screenState.currentLevel->targets )
+  for( const auto& target: screenState.targets )
   {
-    if( target->state == target::ACTIVATED ) activatedTargetCount++;
+    if( target.activated ) activatedTargetCount++;
   }
 
-  return activatedTargetCount == screenState.currentLevel->targets.size();
+  return activatedTargetCount == screenState.targets.size();
 }
 
 void UpdatePlayer(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
@@ -396,28 +408,37 @@ void UpdateBullets(play_screen_state& screenState, const play_screen_control_sta
     screenState.shotTimer->paused = false;
   }
 
+  const auto& levelData = **screenState.currentLevelDataIterator;
+
   for(const auto& bullet : screenState.bullets)
   {
     bullet->xPos += bullet->xVelocity;
     bullet->yPos += bullet->yVelocity;
 
     const game_point bulletPoint(bullet->xPos, bullet->yPos);
-    bullet->outsideLevel = !PointInside(bulletPoint, *screenState.currentLevel->boundary);
+    std::vector<game_line> lines;
+    CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(lines));
+    bullet->outsideLevel = !PointInside(bulletPoint, lines);
 
-    for( const auto& shape : screenState.currentLevel->objects)
+    for( const auto& object : levelData.objects)
     {
-      if( PointInside(bulletPoint, *shape) ) bullet->outsideLevel = true;
+      std::vector<game_line> lines;
+      CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+      if( PointInside(bulletPoint, lines) ) bullet->outsideLevel = true;
     }
 
-    for( const auto& target: screenState.currentLevel->targets )
+    for( auto& target: screenState.targets )
     {
-      if( PointInside(bulletPoint, target->shape) )
+      std::vector<game_line> lines;
+      CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(lines));
+
+      if( PointInside(bulletPoint, lines) )
       {
         bullet->outsideLevel = true;
 
-        if( target->state == target::DEACTIVATED )
+        if( !target.activated )
         {
-          target->state = target::ACTIVATED;
+          target.activated = true;
           screenState.targetShot = true;
         }
       }

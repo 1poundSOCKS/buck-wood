@@ -42,7 +42,6 @@ struct level_edit_screen_state
 
   D2D1::Matrix3x2F viewTransform;
 
-  mouse_cursor mouseCursor;
   float mouseX = 0, mouseY = 0;
   float levelCenterX = 0, levelCenterY = 0;
   float levelMouseX = 0, levelMouseY = 0;

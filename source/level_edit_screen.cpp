@@ -226,23 +226,25 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
     dragDropState->shapes.push_back(objectShape);
   }
 
-  player_ship player;
+  // player_ship player;
   drag_drop_shape playerShape(level_edit_screen_state::drag_drop_shape_type::type_player);
   playerShape.fixedShape = true;
   playerShape.position.x = gameLevelData.playerStartPosX;
   playerShape.position.y = gameLevelData.playerStartPosY;
-  CreateDragDropPoints(player.outline->points.cbegin(), player.outline->points.cend(), std::back_inserter(playerShape.points));
+  std::vector<game_point> points;
+  CreatePointsForPlayer(0, 0, 0, std::back_inserter(points));
+  CreateDragDropPoints(points.cbegin(), points.cend(), std::back_inserter(playerShape.points));
   dragDropState->shapes.push_back(playerShape);
 
   for( const auto& targetPos : gameLevelData.targets )
   {
-    game_shape targetShapeData;
-    InitializeTargetShape(0, 0, 40, targetShapeData);
+    std::vector<game_point> targetPoints;
+    CreatePointsForTarget(0, 0, 40, std::back_inserter(targetPoints));
     drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
     targetShape.fixedShape = true;
     targetShape.position.x = targetPos.x;
     targetShape.position.y = targetPos.y;
-    CreateDragDropPoints(targetShapeData.points.cbegin(), targetShapeData.points.cend(), std::back_inserter(targetShape.points));
+    CreateDragDropPoints(targetPoints.cbegin(), targetPoints.cend(), std::back_inserter(targetShape.points));
     dragDropState->shapes.push_back(targetShape);
   }
 

@@ -22,6 +22,15 @@ struct play_screen_control_state
   render_target_mouse_data renderTargetMouseData;
 };
 
+struct target_state
+{
+  target_state(const game_point& position);
+
+  const game_point& position;
+  std::vector<game_point> points;
+  bool activated = false;
+};
+
 struct play_screen_state
 {
   play_screen_state(const global_state& globalState, const system_timer& timer);
@@ -38,14 +47,13 @@ struct play_screen_state
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
-  mouse_cursor mouseCursor;
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
   
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
-  std::unique_ptr<game_level> currentLevel;
 
   std::unique_ptr<player_ship> player;
   std::list<std::unique_ptr<bullet>> bullets;
+  std::vector<target_state> targets;
 
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;

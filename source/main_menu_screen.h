@@ -33,7 +33,6 @@ struct main_menu_screen_state
   const d2d_brushes& brushes;
   const dwrite_text_formats& textFormats;
 
-  mouse_cursor mouseCursor;
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
 
   bool starting = true;

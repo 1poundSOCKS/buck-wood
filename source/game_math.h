@@ -9,13 +9,19 @@
 #define RADTODEG(R)((180.0 * R) / PI)
 
 int CalculateAngle(float x1, float y1, float x2, float y2);
-bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
-bool PointInside(const std::list<game_point>& points, const game_shape& shape);
-bool PointInside(const game_point& point, const game_shape& shape);
+// bool PointsInside(const std::list<game_point>& points, const game_shape& shape);
+// bool PointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const game_shape& shape);
+
+bool PointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area);
+bool PointInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area);
+bool PointInside(const game_point& point, const std::vector<game_line>& area);
+
+// bool PointInside(const std::list<game_point>& points, const game_shape& shape);
+// bool PointInside(const game_point& point, const game_shape& shape);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
-void TransformPlayerShip(const player_ship& player, game_shape& shape);
-void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
+// void TransformPlayerShip(const player_ship& player, game_shape& shape);
+// void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
 void TransformPoints(std::vector<game_point>::iterator begin, std::vector<game_point>::iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y);
