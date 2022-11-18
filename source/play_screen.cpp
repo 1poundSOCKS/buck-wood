@@ -80,7 +80,6 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 
   frame.renderTarget->SetTransform(viewTransform);
 
-  // RenderLevel(frame.renderTarget, viewTransform, *screenState.currentLevel, screenState.brushes);
   const auto& levelData = **screenState.currentLevelDataIterator;
   std::vector<render_line> renderLines;
   CreateRenderLines(levelData, std::back_inserter(renderLines));
@@ -294,9 +293,9 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   screenState.levelTimes.push_back(levelTimeRemaining);
 
-  screenState.currentLevelDataIterator++;
-  
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() )
+  const auto nextLevel = std::next(screenState.currentLevelDataIterator);
+
+  if( nextLevel == screenState.globalState.gameLevelDataIndex->gameLevelData.end() )
   {
     screenState.state = play_screen_state::state_game_complete;
     ResetStopwatch(*screenState.pauseTimer, 3);
@@ -304,6 +303,8 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
     return;
   }
 
+  screenState.currentLevelDataIterator = nextLevel;
+  
   const auto& nextLevelData = *screenState.currentLevelDataIterator;
   screenState.currentLevel = std::make_unique<game_level>(*nextLevelData);
 

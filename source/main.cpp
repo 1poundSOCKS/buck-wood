@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   global_state globalState(app, dataPath);
   
-  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  HRESULT hr = app.dxgi_swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
   screen_type currentScreen = screen_main_menu;
@@ -161,6 +161,8 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   diagnosticsData.reserve(20);
   FormatDiagnostics(diagnosticsData, globalState, baseControlState, *app.perfData, *app.timer);
   FormatDiagnostics(diagnosticsData, screenState, screenControlState);
+
+  if( baseControlState.f12Press ) app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
 
   {
     d2d_frame frame(app.d2d_rendertarget);

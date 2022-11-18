@@ -15,6 +15,7 @@ struct control_state
   bool functionKey_1 = false;
   bool f1Press = false;
   bool f2Press = false;
+  bool f12Press = false;
   bool keyPress_y = false;
   bool keyPress_n = false;
 
