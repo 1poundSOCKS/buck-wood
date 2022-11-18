@@ -13,27 +13,6 @@ game_line::game_line(float startX, float startY, float endX, float endY) : start
 {
 }
 
-// game_shape::game_shape()
-// {
-// }
-
-// game_shape::game_shape(const game_point* points, int pointCount)
-// {
-//   InitializeShape(points, pointCount, *this);
-// }
-
-// game_shape::game_shape(const std::vector<game_point>& pointsToCopy)
-// {
-//   std::copy( pointsToCopy.begin(), pointsToCopy.end(), std::back_inserter(points) );
-//   CreateShapeLinesFromPoints(lines, points);
-// }
-
-// game_shape::game_shape(const game_level_object_data& objectData)
-// {
-//   std::copy(objectData.points.cbegin(), objectData.points.end(), std::back_inserter(points));
-//   CreateShapeLinesFromPoints(lines, points);
-// }
-
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
 }
@@ -41,16 +20,6 @@ player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle
 bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
 {
 }
-
-// void InitializeShape(const game_point* points, int pointCount, game_shape& shape)
-// {
-//   for( int i = 0; i < pointCount; i++)
-//   {
-//     shape.points.push_back(points[i]);
-//     int endPointIndex = (i + 1) % pointCount;
-//     shape.lines.push_back(game_line(points[i].x, points[i].y, points[endPointIndex].x, points[endPointIndex].y));
-//   }
-// }
 
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points)
 {
@@ -72,22 +41,6 @@ void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<gam
     }
   }
 }
-
-// void InitializeTargetShape(float x, float y, float size, game_shape& shape)
-// {
-//   float halfSize = size / 2;
-
-//   const game_point points[] = {
-//     game_point(x, y - halfSize ),
-//     game_point(x + halfSize, y),
-//     game_point(x, y + halfSize),
-//     game_point(x - halfSize, y)
-//   };
-
-//   static const int pointCount = sizeof(points) / sizeof(game_point);
-
-//   InitializeShape(points, pointCount, shape);
-// }
 
 void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter)
 {
