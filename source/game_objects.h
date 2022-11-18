@@ -87,6 +87,8 @@ void InitializeShape(std::list<game_point> points, game_shape& shape);
 void CreateShapeLinesFromPoints(std::list<game_line>& lines, const std::list<game_point>& points);
 void InitializeTargetShape(float x, float y, float size, game_shape& shape);
 
-void CreateTargetPoints(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter);
+void CreatePointsForPlayer(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> inserter);
+void CreatePointsForPlayerThruster(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> transformedPoints);
+void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter);
 
 #endif

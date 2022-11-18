@@ -87,13 +87,22 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   for( const auto& targetPos : levelData.targets )
   {
     std::vector<game_point> points;
-    CreateTargetPoints(targetPos.x, targetPos.y, 40, std::back_inserter(points));
+    CreatePointsForTarget(targetPos.x, targetPos.y, 40, std::back_inserter(points));
     CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), std::back_inserter(renderLines), render_brushes::color::color_green);
   }
 
-  RenderLines(frame.renderTarget, screenState.renderBrushes, 2, renderLines.cbegin(), renderLines.cend());
+  std::vector<game_point> transformedPoints;
+  CreatePointsForPlayer(screenState.player->xPos, screenState.player->yPos, screenState.player->angle, std::back_insert_iterator(transformedPoints));
+  CreateConnectedRenderLines<game_point>(transformedPoints.cbegin(), transformedPoints.cend(), std::back_inserter(renderLines), render_brushes::color::color_white);
 
-  RenderPlayer(frame.renderTarget, viewTransform, *screenState.player, screenState.brushes);
+  if( screenState.player->thrusterOn )
+  {
+    std::vector<game_point> transformedPoints;
+    CreatePointsForPlayerThruster(screenState.player->xPos, screenState.player->yPos, screenState.player->angle, std::back_insert_iterator(transformedPoints));
+    CreateDisconnectedRenderLines<game_point>(transformedPoints.cbegin(), transformedPoints.cend(), std::back_inserter(renderLines), render_brushes::color::color_red);
+  }
+
+  RenderLines(frame.renderTarget, screenState.renderBrushes, 2, renderLines.cbegin(), renderLines.cend());
 
   for( const std::unique_ptr<bullet>& bullet : screenState.bullets )
   {
@@ -334,9 +343,6 @@ void UpdatePlayer(play_screen_state& screenState, const play_screen_control_stat
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 100.0f;
-#ifdef USE_KEYBOARDFORSPIN
-  static const float rotationSpeed = 150.0f;
-#endif
 
   float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
 
@@ -354,21 +360,11 @@ void UpdatePlayer(play_screen_state& screenState, const play_screen_control_stat
     screenState.player->thrusterOn = false;
   }
   
-#ifdef USE_KEYBOARDFORSPIN
-  float spin = 0.0f;
-  if( controlState.left ) spin = -rotationSpeed;
-  else if( controlState.right ) spin = rotationSpeed;
-#endif
-  
   screenState.player->xVelocity += forceX * gameUpdateInterval;
   screenState.player->yVelocity += forceY * gameUpdateInterval;
   screenState.player->xPos += screenState.player->xVelocity * gameUpdateInterval;
   screenState.player->yPos += screenState.player->yVelocity * gameUpdateInterval;
-#ifdef USE_KEYBOARDFORSPIN
-  screenState.player->angle += spin * gameUpdateInterval;
-#else
   screenState.player->angle = CalculateAngle(screenState.player->xPos, screenState.player->yPos, screenState.levelMouseX, screenState.levelMouseY);
-#endif
 }
 
 bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)

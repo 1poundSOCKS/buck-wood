@@ -18,4 +18,6 @@ void TransformPlayerShip(const player_ship& player, game_shape& shape);
 void TransformPlayerShip(const player_ship& player, std::list<game_point>& transformedPoints);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
+void TransformPoints(std::vector<game_point>::iterator begin, std::vector<game_point>::iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y);
+
 #endif
