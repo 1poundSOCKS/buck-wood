@@ -1,3 +1,6 @@
+#ifndef _game_level_data_
+#define _game_level_data_
+
 #include "json.h"
 #include "render.h"
 
@@ -64,3 +67,5 @@ bool SaveGameLevelData(const game_level_data& gameLevelData);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 std::string SaveJsonDataToString(Json::Value& root);
+
+#endif

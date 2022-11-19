@@ -12,6 +12,7 @@
 #include "game_objects.h"
 #include "diagnostics.h"
 #include "global_state.h"
+#include "level_state.h"
 
 struct play_screen_control_state
 {
@@ -20,37 +21,6 @@ struct play_screen_control_state
   bool pausePlay = false;
   bool thrust = false, shoot = false;
   render_target_mouse_data renderTargetMouseData;
-};
-
-struct player_ship
-{
-  player_ship();
-
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  bool thrusterOn = false;
-};
-
-struct bullet
-{
-  bullet(float x, float y, float range);
-
-  float startX, startY;
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  float range;
-  bool outsideLevel;
-};
-
-struct target_state
-{
-  target_state(const game_point& position);
-
-  const game_point& position;
-  std::vector<game_point> points;
-  bool activated = false;
 };
 
 struct play_screen_state
@@ -73,9 +43,9 @@ struct play_screen_state
   
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
 
-  std::unique_ptr<player_ship> player;
-  std::list<std::unique_ptr<bullet>> bullets;
-  std::vector<target_state> targets;
+  // std::unique_ptr<player_ship> player;
+  // std::list<std::unique_ptr<bullet>> bullets;
+  // std::vector<target_state> targets;
 
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
@@ -91,6 +61,8 @@ struct play_screen_state
 
   static const int shotTimeNumerator = 1;
   static const int shotTimeDenominator = 60;
+
+  std::unique_ptr<level_state> levelState;
 };
 
 struct play_screen_sounds
