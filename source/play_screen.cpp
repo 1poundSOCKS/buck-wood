@@ -238,32 +238,11 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
     return;
   }
 
-  std::vector<game_point> player;
-  CreatePointsForPlayer(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_inserter(player));
-
-  const auto& currentLevelData = levelState.levelData;
-
-  std::vector<game_line> lines;
-  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
-  if( !PointInside(player.cbegin(), player.cend(), lines) )
+  if( levelState.player.state == player_ship::player_state::state_dead )
   {
     screenState.state = play_screen_state::state_player_dead;
     ResetStopwatch(*screenState.pauseTimer, 3);
     screenState.pauseTimer->paused = false;
-    return;
-  }
-  
-  for( const auto& object : currentLevelData.objects)
-  {
-    std::vector<game_line> lines;
-    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-    if( PointsInside(player.cbegin(), player.cend(), lines) )
-    {
-      screenState.state = play_screen_state::state_player_dead;
-      ResetStopwatch(*screenState.pauseTimer, 3);
-      screenState.pauseTimer->paused = false;
-      return;
-    }
   }
 }
 

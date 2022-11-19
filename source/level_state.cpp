@@ -7,7 +7,7 @@ const int shotTimeDenominator = 60;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
-bool BulletHasExpired(const std::unique_ptr<bullet>& bullet);
+// bool BulletHasExpired(const std::unique_ptr<bullet>& bullet);
 
 level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
 : levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
@@ -85,6 +85,30 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
+
+  std::vector<game_point> player;
+  CreatePointsForPlayer(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_inserter(player));
+
+  const auto& currentLevelData = levelState.levelData;
+
+  std::vector<game_line> lines;
+  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
+  if( !PointInside(player.cbegin(), player.cend(), lines) )
+  {
+    levelState.player.state = player_ship::player_state::state_dead;
+    return;
+  }
+  
+  for( const auto& object : currentLevelData.objects)
+  {
+    std::vector<game_line> lines;
+    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+    if( PointsInside(player.cbegin(), player.cend(), lines) )
+    {
+      levelState.player.state = player_ship::player_state::state_dead;
+      return;
+    }
+  }
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
@@ -145,15 +169,13 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     }
   }
 
-  levelState.bullets.remove_if(BulletHasExpired);
-}
-
-bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
-{
-  float cx = bullet->xPos - bullet->startX;
-  float cy = bullet->yPos - bullet->startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > bullet->range || bullet->outsideLevel;
+  levelState.bullets.remove_if([](const auto& bullet)
+  {
+    float cx = bullet->xPos - bullet->startX;
+    float cy = bullet->yPos - bullet->startY;
+    float distance = sqrt(cx * cx + cy * cy);
+    return distance > bullet->range || bullet->outsideLevel;
+  });
 }
 
 void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines)

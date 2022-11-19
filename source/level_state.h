@@ -8,6 +8,9 @@ struct player_ship
 {
   player_ship();
 
+  enum player_state { state_alive, state_dead };
+
+  player_state state = state_alive;
   float xPos, yPos;
   float xVelocity, yVelocity;
   float angle;
