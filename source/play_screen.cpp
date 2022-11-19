@@ -4,7 +4,6 @@
 
 const float gameSpeedMultiplier = 2.0f;
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const play_screen_state& screenState);
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
@@ -12,12 +11,6 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
 
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void UpdatePlayer(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void UpdateBullets(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-// bool LevelIsComplete(const play_screen_state& screenState);
-
-const int play_screen_state::shotTimeNumerator;
-const int play_screen_state::shotTimeDenominator;
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -41,21 +34,10 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
   const auto& levelData = **currentLevelDataIterator;
-  levelState = std::make_unique<level_state>(**currentLevelDataIterator);
-
-  // player = std::make_unique<player_ship>();
-  // player->xPos = levelData.playerStartPosX;
-  // player->yPos = levelData.playerStartPosY;
+  levelState = std::make_unique<level_state>(**currentLevelDataIterator, systemTimer);
 
   levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(levelData.timeLimitInSeconds), 1);
   pauseTimer = std::make_unique<stopwatch>(systemTimer);
-  shotTimer = std::make_unique<stopwatch>(systemTimer, shotTimeNumerator, shotTimeDenominator);
-  shotTimer->paused = false;
-
-  // std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
-  // {
-  //   return target_state(target);
-  // });
 
   levelTimes.reserve(globalState.gameLevelDataIndex->gameLevelData.size());
 
@@ -71,21 +53,12 @@ play_screen_sounds::play_screen_sounds(const global_state& globalAssets)
 {
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const play_screen_state& screenState)
-{
-  static const float renderScale = 1.0f;
-  // return CreateGameLevelTransform(screenState.player->xPos, screenState.player->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
-  return CreateGameLevelTransform(screenState.levelState->player.xPos, screenState.levelState->player.yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
-}
-
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState)
 {
   controlState.pausePlay = baseControlState.escapeKeyPress;
   controlState.returnToMenu = baseControlState.escapeKeyPress;
   controlState.restartPlay = baseControlState.spacebarKeyPress;
-  controlState.shoot = baseControlState.leftMouseButtonDown;
-  controlState.thrust = baseControlState.rightMouseButtonDown;
-  controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
+  RefreshControlState(controlState.levelControlState, baseControlState);
 }
 
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
@@ -93,7 +66,7 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   D2D1_SIZE_F renderTargetSize = frame.renderTarget->GetSize();
-  D2D1::Matrix3x2F viewTransform = CreateViewTransform(renderTargetSize, screenState);
+  D2D1::Matrix3x2F viewTransform = CreateViewTransform(*screenState.levelState, renderTargetSize);
   frame.renderTarget->SetTransform(viewTransform);
 
   std::vector<render_line> renderLines;
@@ -182,31 +155,13 @@ void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenSta
 
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
-  screenState.renderTargetMouseX = controlState.renderTargetMouseData.x;
-  screenState.renderTargetMouseY = controlState.renderTargetMouseData.y;
-
-  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(controlState.renderTargetMouseData.size, screenState);
-
-  if( mouseTransform.Invert() )
-  {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = screenState.renderTargetMouseX;
-    inPoint.y = screenState.renderTargetMouseY;
-    auto outPoint = mouseTransform.TransformPoint(inPoint);
-    screenState.levelMouseX = outPoint.x;
-    screenState.levelMouseY = outPoint.y;
-  }
-  else
-  {
-    screenState.levelMouseX = 0;
-    screenState.levelMouseY = 0;
-  }
+  auto& levelState = *screenState.levelState;
 
   UpdateStopwatch(*screenState.levelTimer);
   UpdateStopwatch(*screenState.pauseTimer);
-  UpdateStopwatch(*screenState.shotTimer);
+  UpdateStopwatch(levelState.shotTimer);
 
-  screenState.returnToMenu = screenState.playerShot = screenState.targetShot = false;
+  screenState.returnToMenu = levelState.playerShot = levelState.targetShot = false;
 
   if( screenState.state == play_screen_state::state_paused )
   {
@@ -220,7 +175,7 @@ void UpdateScreenState(play_screen_state& screenState, const play_screen_control
     {
       screenState.state = play_screen_state::state_playing;
       screenState.levelTimer->paused = false;
-      screenState.shotTimer->paused = false;
+      levelState.shotTimer.paused = false;
       return;
     }
   }
@@ -233,12 +188,12 @@ void UpdateScreenState(play_screen_state& screenState, const play_screen_control
     {
       screenState.state = play_screen_state::state_paused;
       screenState.levelTimer->paused = true;
-      screenState.shotTimer->paused = true;
+      levelState.shotTimer.paused = true;
       return;
     }
 
     screenState.levelTimer->paused = false;
-    screenState.shotTimer->paused = false;
+    levelState.shotTimer.paused = false;
     OnPlay(screenState, controlState, timer);
     return;
   }
@@ -269,8 +224,10 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
     return;
   }
   
-  UpdatePlayer(screenState, controlState, timer);
-  UpdateBullets(screenState, controlState, timer);
+  auto& levelState = *screenState.levelState;
+  const auto& levelControlState = controlState.levelControlState;
+
+  UpdateState(levelState, levelControlState, timer);
 
   if( LevelIsComplete(*screenState.levelState) )
   {
@@ -280,8 +237,6 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
     screenState.pauseTimer->paused = false;
     return;
   }
-
-  const level_state& levelState = *screenState.levelState;
 
   std::vector<game_point> player;
   CreatePointsForPlayer(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_inserter(player));
@@ -331,129 +286,11 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   
   const auto& levelData = **screenState.currentLevelDataIterator;
 
-  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator);
+  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, timer);
 
   ResetStopwatch(*screenState.levelTimer, levelData.timeLimitInSeconds);
-  ResetStopwatch(*screenState.shotTimer);
 
-  // screenState.player = std::make_unique<player_ship>();
-  screenState.levelState->player.xPos = levelData.playerStartPosX;
-  screenState.levelState->player.yPos = levelData.playerStartPosY;
-
-  screenState.levelState->bullets.clear();
   screenState.state = play_screen_state::state_playing;
-}
-
-// bool LevelIsComplete(const play_screen_state& screenState)
-// {
-//   int activatedTargetCount = 0;
-//   for( const auto& target: screenState.targets )
-//   {
-//     if( target.activated ) activatedTargetCount++;
-//   }
-
-//   return activatedTargetCount == screenState.targets.size();
-// }
-
-void UpdatePlayer(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
-{
-  static const float forceOfGravity = 20.0f;
-  static const float playerThrust = 100.0f;
-
-  auto& levelState = *screenState.levelState;
-
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
-
-  float forceX = 0.0f;
-  float forceY = forceOfGravity;
-
-  if( controlState.thrust )
-  {
-    levelState.player.thrusterOn = true;
-    forceX += playerThrust * sin(DEGTORAD(levelState.player.angle));
-    forceY -= playerThrust * cos(DEGTORAD(levelState.player.angle));
-  }
-  else
-  {
-    levelState.player.thrusterOn = false;
-  }
-  
-  levelState.player.xVelocity += forceX * gameUpdateInterval;
-  levelState.player.yVelocity += forceY * gameUpdateInterval;
-  levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
-  levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
-  levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, screenState.levelMouseX, screenState.levelMouseY);
-}
-
-bool BulletHasExpired(const std::unique_ptr<bullet>& bullet)
-{
-  float cx = bullet->xPos - bullet->startX;
-  float cy = bullet->yPos - bullet->startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > bullet->range || bullet->outsideLevel;
-}
-
-void UpdateBullets(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
-{
-  auto& levelState = *screenState.levelState;
-
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
-
-  if( controlState.shoot && GetTicksRemaining(*screenState.shotTimer) == 0 )
-  {
-    static const float bulletSpeed = 200.0f * gameUpdateInterval;
-    static const float bulletRange = 2000.0f;
-
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(levelState.player.xPos, levelState.player.yPos, bulletRange);
-    float angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, screenState.levelMouseX, screenState.levelMouseY);
-    newBullet->angle = angle;
-    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-    levelState.bullets.push_front(std::move(newBullet));
-
-    screenState.playerShot = true;
-    ResetStopwatch(*screenState.shotTimer);
-    screenState.shotTimer->paused = false;
-  }
-
-  const auto& levelData = levelState.levelData;
-
-  for(const auto& bullet : levelState.bullets)
-  {
-    bullet->xPos += bullet->xVelocity;
-    bullet->yPos += bullet->yVelocity;
-
-    const game_point bulletPoint(bullet->xPos, bullet->yPos);
-    std::vector<game_line> lines;
-    CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(lines));
-    bullet->outsideLevel = !PointInside(bulletPoint, lines);
-
-    for( const auto& object : levelData.objects)
-    {
-      std::vector<game_line> lines;
-      CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-      if( PointInside(bulletPoint, lines) ) bullet->outsideLevel = true;
-    }
-
-    for( auto& target: levelState.targets )
-    {
-      std::vector<game_line> lines;
-      CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(lines));
-
-      if( PointInside(bulletPoint, lines) )
-      {
-        bullet->outsideLevel = true;
-
-        if( !target.activated )
-        {
-          target.activated = true;
-          screenState.targetShot = true;
-        }
-      }
-    }
-  }
-  
-  levelState.bullets.remove_if(BulletHasExpired);
 }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
@@ -462,10 +299,10 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_stat
 
   static wchar_t text[64];
 
-  swprintf(text, L"world mouse X: %.1f", screenState.levelMouseX);
+  swprintf(text, L"world mouse X: %.1f", levelState.mouseX);
   diagnosticsData.push_back(text);
 
-  swprintf(text, L"world mouse Y: %.1f", screenState.levelMouseY);
+  swprintf(text, L"world mouse Y: %.1f", levelState.mouseY);
   diagnosticsData.push_back(text);
 
   swprintf(text, L"bullet count: %I64u", levelState.bullets.size());
@@ -489,8 +326,8 @@ void UpdateSound(const play_screen_state& screenState, const play_screen_sounds&
 {
   auto& levelState = *screenState.levelState;
 
-  if( screenState.playerShot ) sounds.shoot.Play();
-  if( screenState.targetShot ) sounds.targetActivated.Play();
+  if( levelState.playerShot ) sounds.shoot.Play();
+  if( levelState.targetShot ) sounds.targetActivated.Play();
   if( levelState.player.thrusterOn && screenState.state == play_screen_state::state_playing ) sounds.thrust.PlayOnLoop();
   else sounds.thrust.Stop();
 }

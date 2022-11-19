@@ -19,8 +19,7 @@ struct play_screen_control_state
   bool returnToMenu = false;
   bool restartPlay = false;
   bool pausePlay = false;
-  bool thrust = false, shoot = false;
-  render_target_mouse_data renderTargetMouseData;
+  level_control_state levelControlState;
 };
 
 struct play_screen_state
@@ -39,21 +38,10 @@ struct play_screen_state
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
 
-  float renderTargetMouseX = 0, renderTargetMouseY = 0;
-  
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
-
-  // std::unique_ptr<player_ship> player;
-  // std::list<std::unique_ptr<bullet>> bullets;
-  // std::vector<target_state> targets;
 
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
-  std::unique_ptr<stopwatch> shotTimer;
-
-  float levelMouseX = 0, levelMouseY = 0;
-
-  bool playerShot = false, targetShot = false;
 
   std::vector<float> levelTimes;
 
