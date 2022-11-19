@@ -2,8 +2,6 @@
 #include "render.h"
 #include "game_math.h"
 
-const float gameSpeedMultiplier = 2.0f;
-
 void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState);
 void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
