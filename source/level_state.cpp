@@ -7,7 +7,6 @@ const int shotTimeDenominator = 60;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
-// bool BulletHasExpired(const std::unique_ptr<bullet>& bullet);
 
 level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
 : levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
