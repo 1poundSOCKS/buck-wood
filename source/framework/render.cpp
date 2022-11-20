@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "render.h"
-// #include <string>
 
 render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
 {

@@ -1,12 +1,6 @@
 #ifndef _render_
 #define _render_
 
-#define UNICODE
-
-// #include <memory>
-// #include <tchar.h>
-
-// #include "framework/framework.h"
 #include "framework.h"
 #include "dwrite_text_formats.h"
 #include "d2d_brushes.h"

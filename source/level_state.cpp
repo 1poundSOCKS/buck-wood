@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "level_state.h"
-#include "game_math.h"
+#include "game_objects.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;

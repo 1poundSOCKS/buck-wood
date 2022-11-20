@@ -1,14 +1,8 @@
 #ifndef _game_level_data_
 #define _game_level_data_
 
+#include "game_math.h"
 #include "render.h"
-
-struct game_point
-{
-  game_point(float x, float y) : x(x), y(y) {}
-
-  float x = 0, y = 0;
-};
 
 struct game_level_object_data
 {
