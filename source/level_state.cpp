@@ -93,7 +93,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 
   std::vector<game_line> lines;
   CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
-  if( !PointInside(player.cbegin(), player.cend(), lines) )
+  if( !AllPointsInside(player.cbegin(), player.cend(), lines) )
   {
     levelState.player.state = player_ship::player_state::state_dead;
     return;
@@ -103,7 +103,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   {
     std::vector<game_line> lines;
     CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-    if( PointsInside(player.cbegin(), player.cend(), lines) )
+    if( AnyPointInside(player.cbegin(), player.cend(), lines) )
     {
       levelState.player.state = player_ship::player_state::state_dead;
       return;

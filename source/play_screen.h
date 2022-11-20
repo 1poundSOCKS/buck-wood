@@ -1,12 +1,6 @@
 #ifndef _play_screen_
 #define _play_screen_
 
-#define UNICODE
-
-// #include <memory>
-// #include <list>
-
-// #include "framework/framework.h"
 #include "framework.h"
 #include "control_state.h"
 #include "sound_buffers.h"
