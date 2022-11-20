@@ -187,7 +187,7 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
     render_brushes::color brushColor = target.activated ? render_brushes::color::color_red : render_brushes::color::color_green;
     std::vector<game_point> points;
     CreatePointsForTarget(target.position.x, target.position.y, 40, std::back_inserter(points));
-    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, render_brushes::color::color_green);
+    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, brushColor);
   }
 
   std::vector<game_point> transformedPoints;
