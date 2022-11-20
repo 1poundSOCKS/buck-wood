@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "perf_data.h"
 
 perf_data::perf_data()

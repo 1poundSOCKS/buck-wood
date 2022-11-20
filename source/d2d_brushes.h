@@ -1,8 +1,8 @@
 #ifndef _d2d_brushes_
 #define _d2d_brushes_
 
-#include <winrt/base.h>
-#include <d2d1.h>
+// #include <winrt/base.h>
+// #include <d2d1.h>
 
 struct d2d_brushes
 {

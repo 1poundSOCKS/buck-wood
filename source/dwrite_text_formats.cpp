@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "dwrite_text_formats.h"
 
 dwrite_text_formats::dwrite_text_formats()

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "input_state.h"
 
 input_state::input_state()

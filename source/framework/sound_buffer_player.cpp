@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "sound_buffer_player.h"
 
 sound_buffer_player::sound_buffer_player(const sound_buffer& soundBuffer) : soundBuffer(soundBuffer)

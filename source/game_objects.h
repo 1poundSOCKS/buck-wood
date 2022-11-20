@@ -1,11 +1,11 @@
 #ifndef _game_object_
 #define _game_object_
 
-#include <memory>
-#include <vector>
-#include <list>
-#include <iterator>
-#include <algorithm>
+// #include <memory>
+// #include <vector>
+// #include <list>
+// #include <iterator>
+// #include <algorithm>
 #include "game_level_data.h"
 
 struct game_line

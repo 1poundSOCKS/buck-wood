@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "control_state.h"
 
 bool MouseHasMoved(const input_state& inputState, const input_state& previousInputState);

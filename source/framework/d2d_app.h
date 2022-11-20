@@ -1,20 +1,20 @@
 #ifndef _d2d_app_
 #define _d2d_app_
 
-#define WIN32_LEAN_AND_MEAN
-#define UNICODE
-#define DIRECTINPUT_VERSION 0x0800
+// #define WIN32_LEAN_AND_MEAN
+// #define UNICODE
+// #define DIRECTINPUT_VERSION 0x0800
 
-#include <windows.h>
-#include <windowsx.h>
-#include <d2d1.h>
-#include <dxgi.h>
-#include <d3d11.h>
-#include <dinput.h>
-#include <mmsystem.h>
-#include <dsound.h>
-#include <memory>
-#include <winrt/base.h>
+// #include <windows.h>
+// #include <windowsx.h>
+// #include <d2d1.h>
+// #include <dxgi.h>
+// #include <d3d11.h>
+// #include <dinput.h>
+// #include <mmsystem.h>
+// #include <dsound.h>
+// #include <memory>
+// #include <winrt/base.h>
 #include "timers.h"
 #include "input_state.h"
 #include "perf_data.h"

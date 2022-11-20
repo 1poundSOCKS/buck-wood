@@ -1,9 +1,9 @@
 #ifndef _diagnostics_
 #define _diagnostics_
 
-#include <vector>
-#include <string>
-#include "framework/framework.h"
+// #include <vector>
+// #include <string>
+#include "framework.h"
 #include "control_state.h"
 #include "global_state.h"
 

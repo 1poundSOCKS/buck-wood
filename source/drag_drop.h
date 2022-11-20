@@ -1,10 +1,10 @@
 #ifndef _drag_drop_
 #define _drag_drop_
 
-#include <list>
-#include <memory>
-#include <limits>
-#include <d2d1.h>
+// #include <list>
+// #include <memory>
+// #include <limits>
+// #include <d2d1.h>
 #include "render.h"
 #include "diagnostics.h"
 

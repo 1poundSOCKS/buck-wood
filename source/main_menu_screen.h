@@ -3,7 +3,7 @@
 
 #define UNICODE
 
-#include "framework/framework.h"
+#include "framework.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "diagnostics.h"

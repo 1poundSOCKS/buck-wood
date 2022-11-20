@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "sound_buffer.h"
 
 sound_buffer::sound_buffer(const winrt::com_ptr<IDirectSound8>& directSound, const wav_file_data& data)

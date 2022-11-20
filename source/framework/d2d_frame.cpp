@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "d2d_frame.h"
 
 d2d_frame::d2d_frame(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)

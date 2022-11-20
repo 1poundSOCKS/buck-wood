@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "d2d_app.h"
 
 LPCWSTR lpszWndClass = L"d2d app";

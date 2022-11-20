@@ -1,7 +1,7 @@
 #ifndef _global_state_
 #define _global_state_
 
-#include "framework/framework.h"
+#include "framework.h"
 #include "d2d_brushes.h"
 #include "dwrite_text_formats.h"
 #include "sound_buffers.h"

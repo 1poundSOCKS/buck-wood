@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "d2d_brushes.h"
 
 d2d_brushes::d2d_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)

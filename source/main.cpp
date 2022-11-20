@@ -1,12 +1,6 @@
-#define UNICODE
-#define USE_JSON
+#include "pch.h"
 
-#include <iostream>
-#include <tchar.h>
-#include <math.h>
-#include <filesystem>
-
-#include "framework/framework.h"
+#include "framework.h"
 #include "math.h"
 #include "render.h"
 #include "control_state.h"
@@ -16,19 +10,16 @@
 #include "global_state.h"
 
 #pragma comment(lib,"user32.lib")
-#pragma comment(lib, "D3D11.lib")
+#pragma comment(lib,"D3D11.lib")
 #pragma comment(lib,"d2d1")
-#pragma comment(lib, "Dwrite")
-#pragma comment(lib, "Dinput8.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "dsound.lib")
+#pragma comment(lib,"Dwrite")
+#pragma comment(lib,"Dinput8.lib")
+#pragma comment(lib,"dxguid.lib")
+#pragma comment(lib,"dsound.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
-#pragma comment(lib, "RuntimeObject.lib")
-
-#ifdef USE_JSON
+#pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
-#endif
 
 enum screen_type { screen_none, screen_main_menu, screen_play, screen_level_editor };
 

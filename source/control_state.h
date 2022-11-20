@@ -1,7 +1,7 @@
 #ifndef _control_state_
 #define _control_state_
 
-#include "framework/framework.h"
+#include "framework.h"
 
 struct control_state
 {

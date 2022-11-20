@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "sound_buffers.h"
 
 sound_buffers::sound_buffers(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path)

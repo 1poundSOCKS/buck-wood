@@ -1,9 +1,9 @@
 #ifndef _dwrite_text_formats_
 #define _dwrite_text_formats_
 
-#include <memory>
-#include <winrt/base.h>
-#include <dwrite.h>
+// #include <memory>
+// #include <winrt/base.h>
+// #include <dwrite.h>
 
 struct dwrite_text_formats
 {

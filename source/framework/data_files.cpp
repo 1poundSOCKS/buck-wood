@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "data_files.h"
 
 config_file::setting::setting(const std::wstring& text)

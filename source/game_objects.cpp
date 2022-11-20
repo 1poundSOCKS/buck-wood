@@ -1,8 +1,9 @@
+#include "pch.h"
 #include "game_objects.h"
-#include <fstream>
-#include <numeric>
-#include <format>
-#include "framework/data_files.h"
+// #include <fstream>
+// #include <numeric>
+// #include <format>
+#include "framework.h"
 #include "game_math.h"
 
 game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)

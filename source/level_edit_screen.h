@@ -1,9 +1,9 @@
 #ifndef _level_edit_screen_
 #define _level_edit_screen_
 
-#include <memory>
-#include <list>
-#include "framework/framework.h"
+// #include <memory>
+// #include <list>
+#include "framework.h"
 #include "control_state.h"
 #include "sound_buffers.h"
 #include "game_objects.h"

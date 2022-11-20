@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "diagnostics.h"
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const global_state& globalState, const control_state& controlState, const perf_data& perfData, const system_timer& timer)
