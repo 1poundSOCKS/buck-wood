@@ -8,6 +8,7 @@ const int shotTimeDenominator = 60;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 
 level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
 : levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
@@ -44,7 +45,9 @@ bool LevelIsComplete(const level_state& levelState)
 
 void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
 {
-  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
+  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
+
+  D2D1::Matrix3x2F mouseTransform = levelState.viewTransform;
 
   if( mouseTransform.Invert() )
   {
@@ -180,13 +183,39 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
   });
 }
 
+void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes)
+{
+  auto renderTargetSize = frame.renderTarget->GetSize();
+  frame.renderTarget->SetTransform(levelState.viewTransform);
+
+  std::vector<render_line> renderLines;
+  CreateRenderLines(levelState, std::back_inserter(renderLines));
+  RenderLines(frame.renderTarget, brushes, 2, renderLines.cbegin(), renderLines.cend());
+
+  for( const auto& bullet : levelState.bullets )
+  {
+    RenderBullet(frame.renderTarget, levelState.viewTransform, *bullet, brushes);
+  }
+}
+
+void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes)
+{
+  static const float bulletSize = 3.0f;
+
+  auto translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
+  auto transform = translate * viewTransform;
+  renderTarget->SetTransform(transform);
+  auto rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
+  renderTarget->FillRectangle(&rectangle, brushes.brushRed.get());
+}
+
 void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines)
 {
   CreateRenderLines(levelState.levelData, renderLines);
 
   for( const auto& target : levelState.targets )
   {
-    render_brushes::color brushColor = target.activated ? render_brushes::color::color_red : render_brushes::color::color_green;
+    auto brushColor = target.activated ? render_brushes::color::color_red : render_brushes::color::color_green;
     std::vector<game_point> points;
     CreatePointsForTarget(target.position.x, target.position.y, 40, std::back_inserter(points));
     CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, brushColor);
