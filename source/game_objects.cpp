@@ -19,14 +19,11 @@ void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterat
   inserter = game_point(x - halfSize, y);
 }
 
-void CreatePointsForPlayer(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> transformedPoints)
+void CreatePointsForPlayer(std::back_insert_iterator<std::vector<game_point>> points)
 {
-  std::vector<game_point> points;
-  points.reserve(3);
-  points.push_back(game_point(0, -10));
-  points.push_back(game_point(7, 10));
-  points.push_back(game_point(-7, 10));
-  TransformPoints(points.begin(), points.end(), transformedPoints, angle, x, y);
+  points = game_point(0, -10);
+  points = game_point(7, 10);
+  points = game_point(-7, 10);
 }
 
 void CreatePointsForPlayerThruster(float x, float y, float angle, std::back_insert_iterator<std::vector<game_point>> transformedPoints)

@@ -14,6 +14,7 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
 {
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
+  CreatePointsForPlayer(std::back_inserter(player.points));
 
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
   {
@@ -86,14 +87,15 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
 
-  std::vector<game_point> player;
-  CreatePointsForPlayer(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_inserter(player));
+  levelState.player.transformedPoints.clear();
+  TransformPoints(levelState.player.points.begin(), levelState.player.points.end(), std::back_inserter(levelState.player.transformedPoints), levelState.player.angle, levelState.player.xPos, levelState.player.yPos);
 
   const auto& currentLevelData = levelState.levelData;
 
   std::vector<game_line> lines;
   CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
-  if( !AllPointsInside(player.cbegin(), player.cend(), lines) )
+
+  if( !AllPointsInside(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), lines) )
   {
     levelState.player.state = player_ship::player_state::state_dead;
     return;
@@ -103,7 +105,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   {
     std::vector<game_line> lines;
     CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-    if( AnyPointInside(player.cbegin(), player.cend(), lines) )
+    if( AnyPointInside(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), lines) )
     {
       levelState.player.state = player_ship::player_state::state_dead;
       return;
@@ -190,9 +192,7 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
     CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, brushColor);
   }
 
-  std::vector<game_point> transformedPoints;
-  CreatePointsForPlayer(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_insert_iterator(transformedPoints));
-  CreateConnectedRenderLines<game_point>(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, render_brushes::color::color_white);
+  CreateConnectedRenderLines<game_point>(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), renderLines, render_brushes::color::color_white);
 
   if( levelState.player.thrusterOn )
   {
