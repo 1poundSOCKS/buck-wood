@@ -1,7 +1,6 @@
 #ifndef _game_level_data_
 #define _game_level_data_
 
-// #include "json.h"
 #include "render.h"
 
 struct game_point

@@ -1,16 +1,6 @@
 #ifndef _data_files_
 #define _data_files_
 
-// #include <memory>
-// #include <iostream>
-// #include <fstream>
-// #include <string>
-// #include <map>
-// #include <codecvt>
-// #include <filesystem>
-
-// namespace fs = std::filesystem;
-
 struct config_file
 {
   struct setting

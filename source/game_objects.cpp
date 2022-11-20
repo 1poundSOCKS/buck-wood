@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "game_objects.h"
-// #include <fstream>
-// #include <numeric>
-// #include <format>
 #include "framework.h"
 #include "game_math.h"
 

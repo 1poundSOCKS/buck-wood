@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "drag_drop.h"
-// #include <numeric>
 #include "game_math.h"
 
 void InitializeDragDropShape(drag_drop_shape& shape);

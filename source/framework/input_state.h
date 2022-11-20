@@ -1,15 +1,6 @@
 #ifndef _input_state_
 #define _input_state_
 
-// #define WIN32_LEAN_AND_MEAN
-// #define UNICODE
-// #define DIRECTINPUT_VERSION 0x0800
-
-// #include <windows.h>
-// #include <d2d1.h>
-// #include <dinput.h>
-// #include <winrt/base.h>
-
 struct client_mouse_data
 {
   RECT rect;

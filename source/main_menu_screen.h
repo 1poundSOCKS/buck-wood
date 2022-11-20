@@ -1,8 +1,6 @@
 #ifndef _main_menu_screen_
 #define _main_menu_screen_
 
-#define UNICODE
-
 #include "framework.h"
 #include "control_state.h"
 #include "sound_buffers.h"

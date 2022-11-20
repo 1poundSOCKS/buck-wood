@@ -1,8 +1,6 @@
 #ifndef _sound_buffer_
 #define _sound_buffer_
 
-// #include <winrt/base.h>
-// #include <dsound.h>
 #include "data_files.h"
 
 struct sound_buffer

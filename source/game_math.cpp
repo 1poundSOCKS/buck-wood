@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "game_math.h"
-// #include <d2d1.h>
-// #include <algorithm>
 
 int CalculateAngle(float x1, float y1, float x2, float y2)
 {

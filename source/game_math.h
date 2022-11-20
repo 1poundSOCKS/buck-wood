@@ -1,7 +1,6 @@
 #ifndef _game_math_
 #define _game_math_
 
-// #include <math.h>
 #include "game_objects.h"
 
 #define PI 3.14159265

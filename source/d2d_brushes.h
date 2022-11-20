@@ -1,9 +1,6 @@
 #ifndef _d2d_brushes_
 #define _d2d_brushes_
 
-// #include <winrt/base.h>
-// #include <d2d1.h>
-
 struct d2d_brushes
 {
   d2d_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget);
