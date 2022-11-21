@@ -11,7 +11,7 @@ struct player_ship
   enum player_state { state_alive, state_dead };
 
   player_state state = state_alive;
-  
+
   float xPos, yPos;
   float xVelocity, yVelocity;
   float angle;
@@ -62,6 +62,12 @@ struct level_state
   stopwatch shotTimer;
   bool playerShot = false, targetShot = false;
   D2D1::Matrix3x2F viewTransform;
+
+  using shape = std::vector<game_line>;
+
+  shape boundaryLines;
+  std::vector<shape> objectShapes;
+  std::vector<shape> targetShapes;
 };
 
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);

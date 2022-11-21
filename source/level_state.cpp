@@ -38,6 +38,24 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
     return target_state(target);
   });
 
+  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(boundaryLines));
+
+  objectShapes.resize(levelData.objects.size());
+  int objectIndex = 0;
+
+  for( const auto& object : levelData.objects)
+  {
+    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(objectShapes[objectIndex++]));
+  }
+
+  targetShapes.resize(targets.size());
+  int targetIndex = 0;
+
+  for( auto& target: targets )
+  {
+    CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(targetShapes[targetIndex++]));
+  }
+
   shotTimer.paused = false;
 }
 
@@ -161,31 +179,24 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     bullet->yPos += bullet->yVelocity;
 
     const game_point bulletPoint(bullet->xPos, bullet->yPos);
-    std::vector<game_line> lines;
-    CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(lines));
-    bullet->outsideLevel = !PointInside(bulletPoint, lines);
+    bullet->outsideLevel = !PointInside(bulletPoint, levelState.boundaryLines);
 
-    for( const auto& object : levelData.objects)
+    for( const auto& objectShape : levelState.objectShapes )
     {
-      std::vector<game_line> lines;
-      CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-      if( PointInside(bulletPoint, lines) ) bullet->outsideLevel = true;
+      if( PointInside(bulletPoint, objectShape) ) bullet->outsideLevel = true;
     }
 
-    for( auto& target: levelState.targets )
+    for( auto& targetShape: levelState.targetShapes )
     {
-      std::vector<game_line> lines;
-      CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(lines));
-
-      if( PointInside(bulletPoint, lines) )
+      if( PointInside(bulletPoint, targetShape) )
       {
         bullet->outsideLevel = true;
 
-        if( !target.activated )
-        {
-          target.activated = true;
-          levelState.targetShot = true;
-        }
+        // if( !target.activated )
+        // {
+        //   target.activated = true;
+        //   levelState.targetShot = true;
+        // }
       }
     }
   }
