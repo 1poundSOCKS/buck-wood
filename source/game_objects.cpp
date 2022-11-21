@@ -10,13 +10,18 @@ game_line::game_line(float startX, float startY, float endX, float endY) : start
 {
 }
 
-void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter)
+// void CreatePointsForTarget(float x, float y, float size, std::back_insert_iterator<std::vector<game_point>> inserter)
+void CreatePointsForTarget(float size, std::back_insert_iterator<std::vector<game_point>> inserter)
 {
   float halfSize = size / 2;
-  inserter = game_point(x, y - halfSize);
-  inserter = game_point(x + halfSize, y);
-  inserter = game_point(x, y + halfSize);
-  inserter = game_point(x - halfSize, y);
+  // inserter = game_point(x, y - halfSize);
+  // inserter = game_point(x + halfSize, y);
+  // inserter = game_point(x, y + halfSize);
+  // inserter = game_point(x - halfSize, y);
+  inserter = game_point(0, - halfSize);
+  inserter = game_point(halfSize, 0);
+  inserter = game_point(0, halfSize);
+  inserter = game_point(- halfSize, 0);
 }
 
 void CreatePointsForPlayer(std::back_insert_iterator<std::vector<game_point>> points)

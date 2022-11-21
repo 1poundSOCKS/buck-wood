@@ -8,19 +8,6 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view);
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
-player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
-{
-}
-
-bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
-{
-}
-
-target_state::target_state(const game_point& position) : position(position)
-{
-  CreatePointsForTarget(position.x, position.y, 40, std::back_inserter(points));
-}
-
 play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
 : systemTimer(systemTimer), 
   globalState(globalState),

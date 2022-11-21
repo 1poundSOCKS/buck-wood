@@ -10,6 +10,21 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 
+player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
+{
+}
+
+bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
+{
+}
+
+target_state::target_state(const game_point& position) : position(position)
+{
+  std::vector<game_point> pointsTmp;
+  CreatePointsForTarget(defaultTargetSize, std::back_inserter(pointsTmp));
+  TransformPoints(pointsTmp.cbegin(), pointsTmp.cend(), std::back_inserter(points), 0, position.x, position.y);
+}
+
 level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
 : levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
 {
@@ -218,8 +233,10 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
   {
     auto brushColor = target.activated ? render_brushes::color::color_red : render_brushes::color::color_green;
     std::vector<game_point> points;
-    CreatePointsForTarget(target.position.x, target.position.y, 40, std::back_inserter(points));
-    CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, brushColor);
+    CreatePointsForTarget(defaultTargetSize, std::back_inserter(points));
+    std::vector<game_point> transformedPoints;
+    TransformPoints(points.cbegin(), points.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
+    CreateConnectedRenderLines<game_point>(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, brushColor);
   }
 
   const auto& player = levelState.player;

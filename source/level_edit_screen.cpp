@@ -238,7 +238,7 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
   for( const auto& targetPos : gameLevelData.targets )
   {
     std::vector<game_point> targetPoints;
-    CreatePointsForTarget(0, 0, 40, std::back_inserter(targetPoints));
+    CreatePointsForTarget(defaultTargetSize, std::back_inserter(targetPoints));
     drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
     targetShape.fixedShape = true;
     targetShape.position.x = targetPos.x;
