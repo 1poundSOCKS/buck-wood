@@ -16,6 +16,7 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
   CreatePointsForPlayer(std::back_inserter(player.points));
+  CreatePointsForPlayerThruster(std::back_insert_iterator(player.thrusterPoints));
 
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
   {
@@ -91,7 +92,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
 
   levelState.player.transformedPoints.clear();
-  TransformPoints(levelState.player.points.begin(), levelState.player.points.end(), std::back_inserter(levelState.player.transformedPoints), levelState.player.angle, levelState.player.xPos, levelState.player.yPos);
+  TransformPoints(levelState.player.points.cbegin(), levelState.player.points.cend(), std::back_inserter(levelState.player.transformedPoints), levelState.player.angle, levelState.player.xPos, levelState.player.yPos);
 
   const auto& currentLevelData = levelState.levelData;
 
@@ -221,13 +222,15 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
     CreateConnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, brushColor);
   }
 
-  CreateConnectedRenderLines<game_point>(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), renderLines, render_brushes::color::color_white);
+  const auto& player = levelState.player;
+  CreateConnectedRenderLines<game_point>(player.transformedPoints.cbegin(), player.transformedPoints.cend(), renderLines, render_brushes::color::color_white);
 
   if( levelState.player.thrusterOn )
   {
-    std::vector<game_point> transformedPoints;
-    CreatePointsForPlayerThruster(levelState.player.xPos, levelState.player.yPos, levelState.player.angle, std::back_insert_iterator(transformedPoints));
-    CreateDisconnectedRenderLines<game_point>(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, render_brushes::color::color_red);
+    std::vector<game_point> points;
+    points.reserve(player.thrusterPoints.size());
+    TransformPoints(player.thrusterPoints.cbegin(), player.thrusterPoints.cend(), std::back_inserter(points), player.angle, player.xPos, player.yPos);
+    CreateDisconnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, render_brushes::color::color_red);
   }
 }
 

@@ -65,7 +65,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   return sqrt( cx * cx + cy * cy );
 }
 
-void TransformPoints(std::vector<game_point>::iterator begin, std::vector<game_point>::iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y)
+void TransformPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y)
 {
   const D2D1::Matrix3x2F rotate = D2D1::Matrix3x2F::Rotation(angle,D2D1::Point2F(0,0));
   const D2D1::Matrix3x2F translate = D2D1::Matrix3x2F::Translation(x, y);
