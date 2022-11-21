@@ -35,7 +35,6 @@ struct level_edit_screen_state
   bool returnToMenu = false;
 
   const global_state& globalState;
-  // const d2d_brushes& brushes;
   const render_brushes& renderBrushes;
   const dwrite_text_formats& textFormats;
 

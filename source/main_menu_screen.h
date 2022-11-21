@@ -28,7 +28,6 @@ struct main_menu_screen_state
   view_state viewState = view_default;
 
   const global_state& globalState;
-  // const d2d_brushes& brushes;
   const render_brushes renderBrushes;
   const dwrite_text_formats& textFormats;
 
