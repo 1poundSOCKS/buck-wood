@@ -44,27 +44,6 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.dragDropControlState.mouseY = 0;
 }
 
-void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
-{
-  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-  if( screenState.viewState == level_edit_screen_state::view_exit )
-  {
-    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
-    return;
-  }
-
-  frame.renderTarget->SetTransform(screenState.viewTransform);
-
-  std::vector<render_line> renderLines;
-  CreateRenderLines(renderLines, *screenState.dragDropState);
-  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
-
-  std::vector<render_point> renderPoints;
-  CreateRenderPoints(renderPoints, *screenState.dragDropState);
-  RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
-}
-
 void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer)
 {
   if( screenState.viewState == level_edit_screen_state::view_exit )
@@ -165,20 +144,41 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   ProcessDragDrop(*screenState.dragDropState, dragDropControlState);
 }
 
+void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
+{
+  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+  if( screenState.viewState == level_edit_screen_state::view_exit )
+  {
+    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
+    return;
+  }
+
+  frame.renderTarget->SetTransform(screenState.viewTransform);
+
+  std::vector<render_line> renderLines;
+  CreateRenderLines(renderLines, *screenState.dragDropState);
+  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
+
+  std::vector<render_point> renderPoints;
+  CreateRenderPoints(renderPoints, *screenState.dragDropState);
+  RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
+}
+
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
 {
   static const float scale = 0.8f;
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState)
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState)
 {
   static wchar_t text[64];
   swprintf(text, L"level mouse X: %.1f", screenState.levelMouseX);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"level mouse Y: %.1f", screenState.levelMouseY);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   FormatDiagnostics(diagnosticsData, *screenState.dragDropState);
 }

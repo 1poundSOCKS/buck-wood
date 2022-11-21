@@ -221,7 +221,7 @@ render_brushes::color GetBrushColor(const drag_drop_point& point)
   }
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state& state)
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const drag_drop_state& state)
 {
   static wchar_t text[64];
 
@@ -230,7 +230,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state&
     if( shape.fixedShape && shape.position.highlighted )
     {
       swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", shape.position.x, shape.position.y, shape.position.distance);
-      diagnosticsData.push_back(text);
+      diagnosticsData = text;
     }
 
     for( const auto& point : shape.points )
@@ -238,7 +238,7 @@ void FormatDiagnostics(diagnostics_data& diagnosticsData, const drag_drop_state&
       if( point.highlighted )
       {
         swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
-        diagnosticsData.push_back(text);
+        diagnosticsData = text;
       }
     }
   }

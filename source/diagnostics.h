@@ -7,6 +7,8 @@
 
 using diagnostics_data = std::vector<std::wstring>;
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const global_state& globalState, const control_state& controlState, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const perf_data& perfData, const system_timer& timer);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const global_state& globalState);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const control_state& controlState);
 
 #endif

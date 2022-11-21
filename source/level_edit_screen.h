@@ -56,7 +56,7 @@ struct level_edit_screen_state
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 #endif

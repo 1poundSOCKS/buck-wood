@@ -211,33 +211,33 @@ void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState,
   frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
 {
   auto& levelState = *screenState.levelState;
 
   static wchar_t text[64];
 
   swprintf(text, L"world mouse X: %.1f", levelState.mouseX);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"world mouse Y: %.1f", levelState.mouseY);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"bullet count: %I64u", levelState.bullets.size());
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"initial ticks: %I64u", screenState.levelTimer->initialTicks);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"end ticks: %I64u", screenState.levelTimer->endTicks);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   swprintf(text, L"current ticks: %I64u", screenState.levelTimer->currentTicks);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 
   int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
   swprintf(text, L"remaining ticks: %I64u", ticksRemaining);
-  diagnosticsData.push_back(text);
+  diagnosticsData = text;
 }
 
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& sounds)

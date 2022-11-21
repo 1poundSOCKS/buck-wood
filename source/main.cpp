@@ -72,7 +72,7 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
   main_menu_screen_state screenState = main_menu_screen_state(globalState);
 
   sound_buffer_player player(*globalState.soundBuffers.menuTheme);
-  player.PlayOnLoop();
+  // player.PlayOnLoop();
 
   while( ProcessMessage() )
   {
@@ -149,9 +149,11 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
-  diagnosticsData.reserve(20);
-  FormatDiagnostics(diagnosticsData, globalState, baseControlState, *app.perfData, *app.timer);
-  FormatDiagnostics(diagnosticsData, screenState, screenControlState);
+  diagnosticsData.reserve(50);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), *app.perfData, *app.timer);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), globalState);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), baseControlState);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), screenState, screenControlState);
 
   if( baseControlState.f12Press ) app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
 

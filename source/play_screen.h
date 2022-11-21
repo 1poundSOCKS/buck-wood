@@ -28,7 +28,6 @@ struct play_screen_state
   STATE state = state_playing;
   bool returnToMenu = false;
 
-  // d2d_brushes brushes;
   dwrite_text_formats textFormats;
   render_brushes renderBrushes;
 
@@ -52,6 +51,6 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
 void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif

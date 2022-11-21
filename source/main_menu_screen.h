@@ -46,7 +46,7 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
 void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState);
-void FormatDiagnostics(diagnostics_data& diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
 
 #endif
