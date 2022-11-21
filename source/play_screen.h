@@ -24,28 +24,19 @@ struct play_screen_state
   const global_state& globalState;
   const system_timer& systemTimer;
 
+  enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
+  STATE state = state_playing;
+  bool returnToMenu = false;
+
   d2d_brushes brushes;
   dwrite_text_formats textFormats;
   render_brushes renderBrushes;
 
-  bool returnToMenu = false;
-  
-  enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
-  STATE state = state_playing;
-
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
-
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
-
-  std::vector<float> levelTimes;
-
-  D2D1::Matrix3x2F viewTransform;
-
-  static const int shotTimeNumerator = 1;
-  static const int shotTimeDenominator = 60;
-
   std::unique_ptr<level_state> levelState;
+  std::vector<float> levelTimes;
 };
 
 struct play_screen_sounds

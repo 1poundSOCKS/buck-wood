@@ -5,6 +5,7 @@
 #include <iostream>
 #include <tchar.h>
 #include <string>
+#include <string_view>
 #include <math.h>
 #include <cstdint>
 #include <filesystem>

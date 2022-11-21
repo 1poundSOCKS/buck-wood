@@ -3,13 +3,10 @@
 #include "render.h"
 #include "game_math.h"
 
-void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState);
-void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState);
-void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState);
-void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState);
-
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view);
+std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -39,8 +36,6 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   pauseTimer = std::make_unique<stopwatch>(systemTimer);
 
   levelTimes.reserve(globalState.gameLevelDataIndex->gameLevelData.size());
-
-  viewTransform = D2D1::Matrix3x2F::Identity();
 
   state = play_screen_state::state_playing;
 }
@@ -190,16 +185,16 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   switch( screenState.state )
   {
     case play_screen_state::state_paused:
-      RenderGamePaused(frame, screenState);
+      RenderMessage(frame, screenState, L"PAUSED");
       break;
     case play_screen_state::state_level_complete:
-      RenderLevelComplete(frame, screenState);
+      RenderMessage(frame, screenState, L"LEVEL COMPLETE");
       break;
     case play_screen_state::state_game_complete:
-      RenderGameComplete(frame, screenState);
+      RenderMessage(frame, screenState, GetGameCompleteMsg(screenState.levelTimes));
       break;
     case play_screen_state::state_player_dead:
-      RenderPlayerDead(frame, screenState);
+      RenderMessage(frame, screenState, L"YOU'RE DEAD");
       break;
   }
 
@@ -207,48 +202,26 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
 }
 
-void RenderGamePaused(const d2d_frame& frame, const play_screen_state& screenState)
-{
-  std::wstring text = L"PAUSED";
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
-}
-
-void RenderLevelComplete(const d2d_frame& frame, const play_screen_state& screenState)
-{
-  std::wstring text = L"LEVEL COMPLETE";
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
-}
-
-void RenderGameComplete(const d2d_frame& frame, const play_screen_state& screenState)
+std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
 {
   std::wstring msg = L"";
 
-  for( auto levelTime: screenState.levelTimes )
+  for( auto levelTime: levelTimes )
   {
     static wchar_t text[64];
     swprintf(text, L"%.2f\n", levelTime);
     msg += text;
   }
 
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(msg.c_str(),msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+  return msg;
 }
 
-void RenderPlayerDead(const d2d_frame& frame, const play_screen_state& screenState)
+void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view msg)
 {
-  std::wstring text = L"YOU LOSE";
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(text.c_str(),text.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
 }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
