@@ -6,7 +6,7 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
 
 main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
 : globalState(globalState),
-  brushes(globalState.brushes),
+  renderBrushes(globalState.renderBrushes),
   textFormats(globalState.textFormats),
   checkSaveOnExit(globalState.gameLevelDataIndexUpdated)
 {
@@ -32,17 +32,11 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {
-    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.brushes.brushLevelEndText, L"save changes (y/n)");
+    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
     return;
   }
 
   std::wstring titleText;
-
-#ifdef USE_KEYBOARDFORSPIN
-  titleText += L"Z - rotate ship left\n";
-  titleText += L"X - rotate ship right\n";
-#endif
-  
   titleText += L"Right mouse button - accelerate\n";
   titleText += L"Left mouse button - shoot\n";
   titleText += L"\nPress SPACE to start";
@@ -50,7 +44,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer)

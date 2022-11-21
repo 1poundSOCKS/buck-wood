@@ -11,7 +11,7 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
 : systemTimer(systemTimer), 
   globalState(globalState),
-  brushes(globalState.brushes),
+  // brushes(globalState.brushes),
   textFormats(globalState.textFormats),
   renderBrushes(globalState.renderBrushes)
 {
@@ -186,7 +186,7 @@ void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.brushes);
+  RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.renderBrushes.brushYellow);
 }
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
@@ -208,7 +208,7 @@ void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState,
   D2D_SIZE_F size = frame.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.brushes.brushLevelEndText.get());
+  frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
 void FormatDiagnostics(diagnostics_data& diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)

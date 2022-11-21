@@ -8,10 +8,19 @@ render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTa
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brushWhite.put());
   if( FAILED(hr) ) throw(L"error");
 
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)), brushGrey.put());
+  if( FAILED(hr) ) throw(L"error");
+
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 1.0f, 0.0f, 1.0f)), brushGreen.put());
   if( FAILED(hr) ) throw(L"error");
 
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f)), brushRed.put());
+  if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 0.0f, 1.0f)), brushYellow.put());
+  if( FAILED(hr) ) throw(L"error");
+
+  hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(0.0f, 1.0f, 1.0f, 1.0f)), brushCyan.put());
   if( FAILED(hr) ) throw(L"error");
 }
 
@@ -35,7 +44,10 @@ void CreateRenderBrushes(render_brushes& brushes)
 
 }
 
-void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const std::vector<std::wstring>& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
+void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
+                       const std::vector<std::wstring>& diagnosticsData, 
+                       const dwrite_text_formats& textFormats, 
+                       const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   D2D_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
@@ -50,10 +62,10 @@ void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, co
     msg += L"\n";
   }
 
-  renderTarget->DrawTextW(msg.c_str(),msg.length(), textFormats.writeTextFormat.get(), rect, brushes.brushDiagnostics.get());
+  renderTarget->DrawTextW(msg.c_str(),msg.length(), textFormats.writeTextFormat.get(), rect, brush.get());
 }
 
-void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const d2d_brushes& brushes)
+void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
 {
   D2D_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 16, size.width - 1, size.height * 3 / 16);
@@ -62,7 +74,7 @@ void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float se
 
   static wchar_t timeText[64];
   swprintf(timeText, L"%.2f", seconds);
-  renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brushes.brushTimer.get());
+  renderTarget->DrawTextW(timeText,wcslen(timeText), textFormats.levelTimerTextFormat.get(), rect, brush.get());
 }
 
 void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 

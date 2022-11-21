@@ -28,7 +28,7 @@ struct play_screen_state
   STATE state = state_playing;
   bool returnToMenu = false;
 
-  d2d_brushes brushes;
+  // d2d_brushes brushes;
   dwrite_text_formats textFormats;
   render_brushes renderBrushes;
 

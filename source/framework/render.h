@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "dwrite_text_formats.h"
-#include "d2d_brushes.h"
 
 struct render_brushes
 {
@@ -12,8 +11,11 @@ struct render_brushes
   render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget);
 
   winrt::com_ptr<ID2D1SolidColorBrush> brushWhite;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushGrey;
   winrt::com_ptr<ID2D1SolidColorBrush> brushGreen;
   winrt::com_ptr<ID2D1SolidColorBrush> brushRed;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushYellow;
+  winrt::com_ptr<ID2D1SolidColorBrush> brushCyan;
 };
 
 struct render_point
@@ -32,8 +34,8 @@ struct render_line
   render_brushes::color brushColor;
 };
 
-void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const std::vector<std::wstring>& diagnosticsData, const dwrite_text_formats& textFormats, const d2d_brushes& brushes);
-void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const d2d_brushes& brushes);
+void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const std::vector<std::wstring>& diagnosticsData, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
+void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const std::wstring& text);
 
 void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes);
