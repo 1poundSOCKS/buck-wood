@@ -13,6 +13,8 @@ struct perf_data
   int fpsFrameIndex = 0;
   int fpsAverage = 0;
   std::unique_ptr<system_timer> timer;
+  int64_t updateScreenStateTicks = 0;
+  int64_t renderFrameTicks = 0;
 };
 
 void UpdatePerformanceData(perf_data& perfData);

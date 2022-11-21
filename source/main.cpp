@@ -145,7 +145,10 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   static T_CS screenControlState;
   RefreshControlState(screenControlState, baseControlState);
 
+  auto start = QueryPerformanceCounter();
   UpdateScreenState(screenState, screenControlState, *app.timer);
+  auto end = QueryPerformanceCounter();
+  app.perfData->updateScreenStateTicks = end - start;
   
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
@@ -159,7 +162,10 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
 
   {
     d2d_frame frame(app.d2d_rendertarget);
+    auto start = QueryPerformanceCounter();
     RenderFrame(frame, screenState);
+    auto end = QueryPerformanceCounter();
+    app.perfData->renderFrameTicks = end - start;
     RenderDiagnostics(frame.renderTarget, diagnosticsData, globalState.textFormats, globalState.renderBrushes.brushGrey);
     frame.renderTarget->SetTransform(D2D1::IdentityMatrix());
     RenderMouseCursor(frame.renderTarget, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y, globalState.renderBrushes);

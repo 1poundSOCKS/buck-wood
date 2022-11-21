@@ -25,6 +25,7 @@ struct stopwatch
   bool paused = true;
 };
 
+int64_t QueryPerformanceCounter();
 void UpdateTimer(system_timer& timer);
 void UpdateStopwatch(stopwatch& stopwatch);
 void ResetStopwatch(stopwatch& stopwatch, int timeNumerator, int timeDenominator=1);

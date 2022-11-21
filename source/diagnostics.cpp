@@ -13,6 +13,12 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
   swprintf(text, L"fps: %i", perfData.fpsAverage);
   diagnosticsData = text;
+
+  swprintf(text, L"update screen state: %I64u", perfData.updateScreenStateTicks);
+  diagnosticsData = text;
+
+  swprintf(text, L"render frame: %I64u", perfData.renderFrameTicks);
+  diagnosticsData = text;
 }
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const global_state& globalState)

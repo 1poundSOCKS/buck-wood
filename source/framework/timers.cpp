@@ -11,6 +11,13 @@ system_timer::system_timer()
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
 }
 
+int64_t QueryPerformanceCounter()
+{
+  LARGE_INTEGER count;
+  QueryPerformanceCounter(&count);
+  return count.QuadPart;
+}
+
 stopwatch::stopwatch(const system_timer& systemTimer, int timeNumerator, int timeDenominator) 
 : systemTimer(systemTimer), initialTicks(systemTimer.totalTicks), currentTicks(systemTimer.totalTicks), timeNumerator(timeNumerator), timeDenominator(timeDenominator)
 {
