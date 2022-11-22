@@ -24,14 +24,14 @@ struct player_ship
 
 struct bullet
 {
-  bullet(float x, float y, float range);
+  bullet();
 
-  float startX, startY;
-  float xPos, yPos;
-  float xVelocity, yVelocity;
-  float angle;
-  float range;
-  bool outsideLevel;
+  bool free = true;
+  float startX = 0, startY = 0;
+  float xPos = 0, yPos = 0;
+  float xVelocity = 0, yVelocity = 0;
+  float angle = 0;
+  float range = 0;
 };
 
 struct object_state
@@ -65,7 +65,6 @@ struct level_state
   const game_level_data& levelData;
   const system_timer& systemTimer;
   player_ship player;
-  std::list<std::unique_ptr<bullet>> bullets;
   float mouseX = 0, mouseY = 0;
   stopwatch shotTimer;
   bool playerShot = false, targetShot = false;
@@ -74,8 +73,8 @@ struct level_state
   std::vector<game_line> boundaryLines;
   std::vector<object_state> objects;
   std::vector<target_state> targets;
-  // std::vector<shape> objectShapes;
-  // std::vector<shape> targetShapes;
+  // std::list<std::unique_ptr<bullet>> bullets;
+  std::vector<bullet> bullets;
 };
 
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);

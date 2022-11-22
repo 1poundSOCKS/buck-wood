@@ -8,13 +8,14 @@ const int shotTimeDenominator = 60;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+bullet& GetBullet(std::vector<bullet>& bullets);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
 }
 
-bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), yPos(y), range(range), xVelocity(0), yVelocity(0), angle(0), outsideLevel(false)
+bullet::bullet() : range(1000)
 {
 }
 
@@ -36,6 +37,8 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   player.yPos = levelData.playerStartPosY;
   CreatePointsForPlayer(std::back_inserter(player.points));
   CreatePointsForPlayerThruster(std::back_insert_iterator(player.thrusterPoints));
+
+  bullets.resize(100);
 
   // border
   CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(boundaryLines));
@@ -167,58 +170,77 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     static const float bulletSpeed = 200.0f * gameUpdateInterval;
     static const float bulletRange = 2000.0f;
 
-    std::unique_ptr<bullet> newBullet = std::make_unique<bullet>(levelState.player.xPos, levelState.player.yPos, bulletRange);
-    float angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
-    newBullet->angle = angle;
-    newBullet->yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-    newBullet->xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-    levelState.bullets.push_front(std::move(newBullet));
+    auto& bullet = GetBullet(levelState.bullets);
+    bullet.startX = bullet.xPos = levelState.player.xPos;
+    bullet.startY = bullet.yPos = levelState.player.yPos;
+    bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
+    bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
+    bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
 
     levelState.playerShot = true;
     ResetStopwatch(levelState.shotTimer);
     levelState.shotTimer.paused = false;
   }
 
-  const auto& levelData = levelState.levelData;
-
-  for(const auto& bullet : levelState.bullets)
+  for( auto& bullet : levelState.bullets )
   {
-    bullet->xPos += bullet->xVelocity;
-    bullet->yPos += bullet->yVelocity;
+    if( bullet.free ) continue;
 
-    const game_point bulletPoint(bullet->xPos, bullet->yPos);
-    bullet->outsideLevel = !PointInside(bulletPoint, levelState.boundaryLines);
+    bullet.xPos += bullet.xVelocity;
+    bullet.yPos += bullet.yVelocity;
+
+    const game_point bulletPoint(bullet.xPos, bullet.yPos);
+    bullet.free = !PointInside(bulletPoint, levelState.boundaryLines);
+
+    if( bullet.free ) continue;
 
     for( const auto& object : levelState.objects )
     {
-      if( PointInside(bulletPoint, object.shape) ) bullet->outsideLevel = true;
+      if( PointInside(bulletPoint, object.shape) )
+      {
+        bullet.free = true;
+        break;
+      }
     }
+
+    if( bullet.free ) continue;
 
     for( auto& target: levelState.targets )
     {
       if( PointInside(bulletPoint, target.shape) )
       {
-        bullet->outsideLevel = true;
-
         if( !target.activated )
         {
           target.activated = true;
           levelState.targetShot = true;
         }
+
+        bullet.free = true;
+        break;
       }
+    }
+
+    if( bullet.free ) continue;
+
+    float cx = bullet.xPos - bullet.startX;
+    float cy = bullet.yPos - bullet.startY;
+    float distance = sqrt(cx * cx + cy * cy);
+    if( distance > bullet.range ) bullet.free = true;
+  }
+}
+
+bullet& GetBullet(std::vector<bullet>& bullets)
+{
+  for( auto& bullet : bullets )
+  {
+    if( bullet.free )
+    {
+      bullet.free = false;
+      return bullet;
     }
   }
 
-  levelState.bullets.remove_if([](const auto& bullet)
-  {
-    if( bullet->outsideLevel ) return true;
-
-    float cx = bullet->xPos - bullet->startX;
-    float cy = bullet->yPos - bullet->startY;
-    float distance = sqrt(cx * cx + cy * cy);
-    
-    return distance > bullet->range;
-  });
+  return bullets.front();
 }
 
 void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes)
@@ -232,7 +254,8 @@ void RenderFrame(const d2d_frame& frame, const level_state& levelState, const re
 
   for( const auto& bullet : levelState.bullets )
   {
-    RenderBullet(frame.renderTarget, levelState.viewTransform, *bullet, brushes);
+    if( bullet.free ) continue;
+    RenderBullet(frame.renderTarget, levelState.viewTransform, bullet, brushes);
   }
 }
 
