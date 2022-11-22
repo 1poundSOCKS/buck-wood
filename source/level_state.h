@@ -41,6 +41,7 @@ struct target_state
   const game_point& position;
   std::vector<game_point> points;
   bool activated = false;
+  std::vector<game_line> shape;
 };
 
 struct level_control_state

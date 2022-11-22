@@ -35,3 +35,5 @@
 #include "json.h"
 
 namespace fs = std::filesystem;
+
+#define ENABLE_MUSIC

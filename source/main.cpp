@@ -72,7 +72,10 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
   main_menu_screen_state screenState = main_menu_screen_state(globalState);
 
   sound_buffer_player player(*globalState.soundBuffers.menuTheme);
-  // player.PlayOnLoop();
+
+#ifdef ENABLE_MUSIC
+  player.PlayOnLoop();
+#endif
 
   while( ProcessMessage() )
   {
