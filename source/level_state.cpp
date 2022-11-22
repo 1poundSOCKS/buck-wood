@@ -18,6 +18,10 @@ bullet::bullet(float x, float y, float range) : startX(x), startY(y), xPos(x), y
 {
 }
 
+object_state::object_state(const game_level_object_data& data) : data(data)
+{
+}
+
 target_state::target_state(const game_point& position) : position(position)
 {
   std::vector<game_point> pointsTmp;
@@ -37,12 +41,15 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(boundaryLines));
 
   // objects
-  objectShapes.resize(levelData.objects.size());
-  int objectIndex = 0;
-
-  for( const auto& object : levelData.objects)
+  objects.reserve(levelData.objects.size());
+  std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objects), [](const auto& data)
   {
-    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(objectShapes[objectIndex++]));
+    return object_state(data);
+  });
+
+  for( auto& object : objects)
+  {
+    CreateConnectedLines<game_point>(object.data.points.cbegin(), object.data.points.cend(), std::back_inserter(object.shape));
   }
 
   // targets
@@ -182,9 +189,9 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     const game_point bulletPoint(bullet->xPos, bullet->yPos);
     bullet->outsideLevel = !PointInside(bulletPoint, levelState.boundaryLines);
 
-    for( const auto& objectShape : levelState.objectShapes )
+    for( const auto& object : levelState.objects )
     {
-      if( PointInside(bulletPoint, objectShape) ) bullet->outsideLevel = true;
+      if( PointInside(bulletPoint, object.shape) ) bullet->outsideLevel = true;
     }
 
     for( auto& target: levelState.targets )
@@ -204,10 +211,13 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
   levelState.bullets.remove_if([](const auto& bullet)
   {
+    if( bullet->outsideLevel ) return true;
+
     float cx = bullet->xPos - bullet->startX;
     float cy = bullet->yPos - bullet->startY;
     float distance = sqrt(cx * cx + cy * cy);
-    return distance > bullet->range || bullet->outsideLevel;
+    
+    return distance > bullet->range;
   });
 }
 

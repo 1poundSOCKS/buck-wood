@@ -34,6 +34,14 @@ struct bullet
   bool outsideLevel;
 };
 
+struct object_state
+{
+  object_state(const game_level_object_data& data);
+
+  const game_level_object_data& data;
+  std::vector<game_line> shape;
+};
+
 struct target_state
 {
   target_state(const game_point& position);
@@ -58,17 +66,16 @@ struct level_state
   const system_timer& systemTimer;
   player_ship player;
   std::list<std::unique_ptr<bullet>> bullets;
-  std::vector<target_state> targets;
   float mouseX = 0, mouseY = 0;
   stopwatch shotTimer;
   bool playerShot = false, targetShot = false;
   D2D1::Matrix3x2F viewTransform;
 
-  using shape = std::vector<game_line>;
-
-  shape boundaryLines;
-  std::vector<shape> objectShapes;
-  std::vector<shape> targetShapes;
+  std::vector<game_line> boundaryLines;
+  std::vector<object_state> objects;
+  std::vector<target_state> targets;
+  // std::vector<shape> objectShapes;
+  // std::vector<shape> targetShapes;
 };
 
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
