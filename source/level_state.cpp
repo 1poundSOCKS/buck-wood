@@ -57,14 +57,6 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
     CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
 
-  // targetShapes.resize(targets.size());
-  // int targetIndex = 0;
-
-  // for( auto& target: targets )
-  // {
-  //   CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(targetShapes[targetIndex++]));
-  // }
-
   shotTimer.paused = false;
 }
 

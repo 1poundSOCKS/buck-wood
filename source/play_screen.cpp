@@ -11,7 +11,6 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
 : systemTimer(systemTimer), 
   globalState(globalState),
-  // brushes(globalState.brushes),
   textFormats(globalState.textFormats),
   renderBrushes(globalState.renderBrushes)
 {
