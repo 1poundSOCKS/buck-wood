@@ -73,7 +73,6 @@ struct level_state
   std::vector<game_line> boundaryLines;
   std::vector<object_state> objects;
   std::vector<target_state> targets;
-  // std::list<std::unique_ptr<bullet>> bullets;
   std::vector<bullet> bullets;
 };
 
