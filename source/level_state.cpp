@@ -67,6 +67,8 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
     CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
 
+  CreateRenderLines(levelData, std::back_inserter(staticRenderLines));
+
   shotTimer.paused = false;
 }
 
@@ -243,14 +245,16 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   return bullets.front();
 }
 
-void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes)
+void RenderFrame(const d2d_frame& frame, level_state& levelState, const render_brushes& brushes)
 {
   auto renderTargetSize = frame.renderTarget->GetSize();
   frame.renderTarget->SetTransform(levelState.viewTransform);
 
-  std::vector<render_line> renderLines;
-  CreateRenderLines(levelState, std::back_inserter(renderLines));
-  RenderLines(frame.renderTarget, brushes, 2, renderLines.cbegin(), renderLines.cend());
+  RenderLines(frame.renderTarget, brushes, 2, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
+
+  levelState.renderLines.clear();
+  CreateRenderLines(levelState, std::back_inserter(levelState.renderLines));
+  RenderLines(frame.renderTarget, brushes, 2, levelState.renderLines.cbegin(), levelState.renderLines.cend());
 
   for( const auto& bullet : levelState.bullets )
   {
@@ -272,8 +276,6 @@ void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D
 
 void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines)
 {
-  CreateRenderLines(levelState.levelData, renderLines);
-
   for( const auto& target : levelState.targets )
   {
     auto brushColor = target.activated ? render_brushes::color::color_red : render_brushes::color::color_green;

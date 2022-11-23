@@ -30,6 +30,8 @@ screen_type RunPlayScreen(d2d_app& app, global_state& globalState);
 screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState);
 bool ProcessMessage();
 
+extern const int fps = 60;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
@@ -37,8 +39,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   config_file configFile(L"config.txt");
   const auto& dataPath = configFile.settings[L"data_path"];
-
-  static const int fps = 60;
 
   d2d_app app(hInstance, nCmdShow, fps);
 
@@ -158,7 +158,7 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   app.dxgi_swapChain->Present(1, 0);
 
   PlaySoundEffects(screenState);
-  
+
   UpdateTimer(*app.timer);
   UpdatePerformanceData(*app.perfData);
 }

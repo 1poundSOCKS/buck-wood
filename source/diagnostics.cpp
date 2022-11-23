@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "diagnostics.h"
 
+extern const int fps;
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const perf_data& perfData, const system_timer& timer)
 {
   static wchar_t text[64];
@@ -9,6 +11,9 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   float intervalTime = GetIntervalTimeInSeconds(timer);
 
   swprintf(text, L"run time: %.1f", runTime);
+  diagnosticsData = text;
+
+  swprintf(text, L"frame ticks: %I64u", timer.ticksPerSecond / fps);
   diagnosticsData = text;
 
   swprintf(text, L"fps: %i", perfData.fpsAverage);
