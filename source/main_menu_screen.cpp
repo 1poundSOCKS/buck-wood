@@ -2,14 +2,20 @@
 #include "main_menu_screen.h"
 #include "render.h"
 
+#define ENABLE_MUSIC
+
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
 main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.textFormats),
-  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)
+  checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
+  musicPlayer(*globalState.soundBuffers.menuTheme)
 {
+#ifdef ENABLE_MUSIC
+  musicPlayer.PlayOnLoop();
+#endif
 }
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState)
@@ -104,16 +110,17 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
   }
 }
 
-void UpdateSound(const sound_buffers& soundBuffers, const main_menu_screen_state& gameState)
+void PlaySoundEffects(const main_menu_screen_state& screenState)
 {
+  const auto& sounds = screenState.globalState.soundBuffers;
+
   DWORD bufferStatus = 0;
 
-  if( SUCCEEDED(soundBuffers.thrust->buffer->GetStatus(&bufferStatus)) )
+  if( SUCCEEDED(sounds.thrust->buffer->GetStatus(&bufferStatus)) )
   {
-    if( bufferStatus & DSBSTATUS_PLAYING ) soundBuffers.thrust->buffer->Stop();
+    if( bufferStatus & DSBSTATUS_PLAYING ) sounds.thrust->buffer->Stop();
   }
 }
-
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState)
 {

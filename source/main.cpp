@@ -23,6 +23,7 @@
 
 enum screen_type { screen_none, screen_main_menu, screen_play, screen_level_editor };
 
+template<class T_SS, class T_CS> screen_type RunScreen(d2d_app& app, global_state& globalState);
 template<class T_SS, class T_CS> void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState);
 screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState);
 screen_type RunPlayScreen(d2d_app& app, global_state& globalState);
@@ -56,10 +57,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       currentScreen = RunMainMenuScreen(app, globalState);
       break;
     case screen_play:
-      currentScreen = RunPlayScreen(app, globalState);
+      currentScreen = RunScreen<play_screen_state, play_screen_control_state>(app, globalState);
       break;
     case screen_level_editor:
-      currentScreen = RunLevelEditorScreen(app, globalState);
+      currentScreen = RunScreen<level_edit_screen_state, level_edit_control_state>(app, globalState);
       break;
     }
   }
@@ -70,12 +71,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
 {
   main_menu_screen_state screenState = main_menu_screen_state(globalState);
-
-  sound_buffer_player player(*globalState.soundBuffers.menuTheme);
-
-#ifdef ENABLE_MUSIC
-  player.PlayOnLoop();
-#endif
 
   while( ProcessMessage() )
   {
@@ -99,31 +94,17 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
   return screen_none;
 }
 
-screen_type RunPlayScreen(d2d_app& app, global_state& globalState)
+template<class T_SS, class T_CS>
+screen_type RunScreen(d2d_app& app, global_state& globalState)
 {
-  play_screen_state screenState(globalState, *app.timer);
-  play_screen_sounds sounds(globalState);
-  
-  while( ProcessMessage() )
-  {
-    UpdateScreen<play_screen_state, play_screen_control_state>(app, globalState, screenState);
-    UpdateSound(screenState, sounds);
-    if( screenState.returnToMenu ) return screen_main_menu;
-  }
-
-  return screen_none;
-}
-
-screen_type RunLevelEditorScreen(d2d_app& app, global_state& globalState)
-{
-  level_edit_screen_state screenState(globalState);
+  T_SS screenState(app, globalState);
 
   while( ProcessMessage() )
   {
-    UpdateScreen<level_edit_screen_state, level_edit_control_state>(app, globalState, screenState);
+    UpdateScreen<T_SS, T_CS>(app, globalState, screenState);
     if( screenState.returnToMenu )
     {
-      if( screenState.saveChanges ) UpdateGlobalState(globalState, screenState);
+      UpdateGlobalState(globalState, screenState);
       return screen_main_menu;
     }
   }
@@ -176,6 +157,8 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
 
   app.dxgi_swapChain->Present(1, 0);
 
+  PlaySoundEffects(screenState);
+  
   UpdateTimer(*app.timer);
   UpdatePerformanceData(*app.perfData);
 }

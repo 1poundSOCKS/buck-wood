@@ -8,11 +8,19 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view);
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
-play_screen_state::play_screen_state(const global_state& globalState, const system_timer& systemTimer) 
-: systemTimer(systemTimer), 
+play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
+: thrust(*soundBuffers.thrust),
+  shoot(*soundBuffers.shoot),
+  targetActivated(*soundBuffers.targetActivated)
+{
+}
+
+play_screen_state::play_screen_state(const d2d_app& app, const global_state& globalState) 
+: systemTimer(*app.timer), 
   globalState(globalState),
   textFormats(globalState.textFormats),
-  renderBrushes(globalState.renderBrushes)
+  renderBrushes(globalState.renderBrushes),
+  sounds(globalState.soundBuffers)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
   const auto& levelData = **currentLevelDataIterator;
@@ -24,13 +32,6 @@ play_screen_state::play_screen_state(const global_state& globalState, const syst
   levelTimes.reserve(globalState.gameLevelDataIndex->gameLevelData.size());
 
   state = play_screen_state::state_playing;
-}
-
-play_screen_sounds::play_screen_sounds(const global_state& globalAssets)
-: thrust(*globalAssets.soundBuffers.thrust),
-  shoot(*globalAssets.soundBuffers.shoot),
-  targetActivated(*globalAssets.soundBuffers.targetActivated)
-{
 }
 
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState)
@@ -210,6 +211,10 @@ void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState,
   frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
+void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
+{
+}
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
 {
   auto& levelState = *screenState.levelState;
@@ -239,9 +244,10 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   diagnosticsData = text;
 }
 
-void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& sounds)
+void PlaySoundEffects(const play_screen_state& screenState)
 {
   auto& levelState = *screenState.levelState;
+  const auto& sounds = screenState.sounds;
 
   if( levelState.playerShot ) sounds.shoot.Play();
   if( levelState.targetShot ) sounds.targetActivated.Play();

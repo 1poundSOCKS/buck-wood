@@ -17,9 +17,18 @@ struct play_screen_control_state
   level_control_state levelControlState;
 };
 
+struct play_screen_sounds
+{
+  play_screen_sounds(const sound_buffers& soundBuffers);
+
+  sound_buffer_player thrust;
+  sound_buffer_player shoot;
+  sound_buffer_player targetActivated;
+};
+
 struct play_screen_state
 {
-  play_screen_state(const global_state& globalState, const system_timer& timer);
+  play_screen_state(const d2d_app& app, const global_state& globalState);
 
   const global_state& globalState;
   const system_timer& systemTimer;
@@ -31,6 +40,8 @@ struct play_screen_state
   dwrite_text_formats textFormats;
   render_brushes renderBrushes;
 
+  play_screen_sounds sounds;
+
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
@@ -38,19 +49,11 @@ struct play_screen_state
   std::vector<float> levelTimes;
 };
 
-struct play_screen_sounds
-{
-  play_screen_sounds(const global_state& globalAssets);
-
-  sound_buffer_player thrust;
-  sound_buffer_player shoot;
-  sound_buffer_player targetActivated;
-};
-
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
-void UpdateSound(const play_screen_state& screenState, const play_screen_sounds& soundBuffers);
+void PlaySoundEffects(const play_screen_state& screenState);
+void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif

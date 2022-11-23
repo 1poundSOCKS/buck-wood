@@ -16,7 +16,7 @@ void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::ve
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
-level_edit_screen_state::level_edit_screen_state(const global_state& globalState)
+level_edit_screen_state::level_edit_screen_state(const d2d_app& app, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.textFormats),
@@ -165,6 +165,10 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
   RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
 }
 
+void PlaySoundEffects(const level_edit_screen_state& screenState)
+{
+}
+
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState)
 {
   static const float scale = 0.8f;
@@ -185,6 +189,8 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
+  if( !screenState.saveChanges ) return;
+
   globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
   globalState.gameLevelDataIndexUpdated = true;
 }
