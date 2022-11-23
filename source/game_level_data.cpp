@@ -52,6 +52,14 @@ void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_it
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject)
 {
   auto levelData = std::make_unique<game_level_data>();
+  if( !jsonObject )
+  {
+    levelData->boundaryPoints.push_back(game_point(-100, 0));
+    levelData->boundaryPoints.push_back(game_point(100, 0));
+    levelData->boundaryPoints.push_back(game_point(100, 100));
+    levelData->boundaryPoints.push_back(game_point(-100, 100));
+    return levelData;
+  }
 
   levelData->name = jsonObject["name"].asCString();
   levelData->playerStartPosX = jsonObject["playerStartPosX"].asInt();

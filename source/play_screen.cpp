@@ -23,11 +23,6 @@ play_screen_state::play_screen_state(const d2d_app& app, const global_state& glo
   sounds(globalState.soundBuffers)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
-  if( currentLevelDataIterator == globalState.gameLevelDataIndex->gameLevelData.end() )
-  {
-    returnToMenu = true;
-    return;
-  }
 
   const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, systemTimer);
@@ -50,8 +45,6 @@ void RefreshControlState(play_screen_control_state& controlState, const control_
 
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
 {
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() ) return;
-
   auto& levelState = *screenState.levelState;
 
   UpdateStopwatch(*screenState.levelTimer);
@@ -173,8 +166,6 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() ) return;
-
   RenderFrame(frame, *screenState.levelState, screenState.renderBrushes);
 
   switch( screenState.state )
@@ -225,8 +216,6 @@ void UpdateGlobalState(global_state& globalState, const play_screen_state& scree
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
 {
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() ) return;
-
   auto& levelState = *screenState.levelState;
 
   static wchar_t text[64];
@@ -256,8 +245,6 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
 void PlaySoundEffects(const play_screen_state& screenState)
 {
-  if( screenState.currentLevelDataIterator == screenState.globalState.gameLevelDataIndex->gameLevelData.end() ) return;
-
   auto& levelState = *screenState.levelState;
   const auto& sounds = screenState.sounds;
 
