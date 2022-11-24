@@ -128,5 +128,5 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState)
 {
-  globalState.saveGameLevelData = screenState.saveGameLevelData;
+  if( screenState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
 }

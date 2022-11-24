@@ -63,6 +63,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       currentScreen = RunScreen<level_edit_screen_state, level_edit_control_state>(app, globalState);
       break;
     }
+
+    if( currentScreen == screen_type::screen_none ) ::PostQuitMessage(0);
   }
 
   return 0;
@@ -79,8 +81,6 @@ screen_type RunMainMenuScreen(d2d_app& app, global_state& globalState)
     if( screenState.quit )
     {
       UpdateGlobalState(globalState, screenState);
-      if( globalState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
-      ::PostQuitMessage(0);
       return screen_none;
     }
 
