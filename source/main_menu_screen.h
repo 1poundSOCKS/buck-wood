@@ -7,6 +7,7 @@
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "global_state.h"
+#include "screens.h"
 
 struct main_menu_control_state
 {
@@ -22,7 +23,7 @@ struct main_menu_control_state
 
 struct main_menu_screen_state
 {
-  main_menu_screen_state(const global_state& globalState);
+  main_menu_screen_state(const d2d_app& app, const global_state& globalState);
 
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;

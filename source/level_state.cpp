@@ -33,11 +33,11 @@ target_state::target_state(const game_point& position) : position(position)
 level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
 : levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
 {
+  // player
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
   CreatePointsForPlayer(std::back_inserter(player.points));
   CreatePointsForPlayerThruster(std::back_insert_iterator(player.thrusterPoints));
-
   TransformPoints(player.points.cbegin(), player.points.cend(), std::back_inserter(player.transformedPoints), player.angle, player.xPos, player.yPos);
 
   bullets.resize(100);

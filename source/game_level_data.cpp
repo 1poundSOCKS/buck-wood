@@ -54,10 +54,11 @@ std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonOb
   auto levelData = std::make_unique<game_level_data>();
   if( !jsonObject )
   {
-    levelData->boundaryPoints.push_back(game_point(-100, 0));
+    levelData->timeLimitInSeconds = 30;
     levelData->boundaryPoints.push_back(game_point(100, 0));
-    levelData->boundaryPoints.push_back(game_point(100, 100));
-    levelData->boundaryPoints.push_back(game_point(-100, 100));
+    levelData->boundaryPoints.push_back(game_point(100, 400));
+    levelData->boundaryPoints.push_back(game_point(-100, 400));
+    levelData->boundaryPoints.push_back(game_point(-100, 0));
     return levelData;
   }
 

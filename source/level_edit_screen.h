@@ -8,6 +8,7 @@
 #include "diagnostics.h"
 #include "global_state.h"
 #include "drag_drop.h"
+#include "screens.h"
 
 struct level_edit_control_state
 {

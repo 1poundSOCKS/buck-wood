@@ -7,6 +7,8 @@
 #include "game_objects.h"
 #include "render.h"
 
+enum screen_id { screen_none, screen_main_menu, screen_play, screen_level_editor };
+
 struct global_state
 {
   global_state(const d2d_app& app, const std::wstring& dataPath);
@@ -16,6 +18,8 @@ struct global_state
   dwrite_text_formats textFormats;
   sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
+
+  screen_id currentScreenId = screen_main_menu;
 
   bool saveGameLevelData = false;
   bool gameLevelDataIndexUpdated = false;

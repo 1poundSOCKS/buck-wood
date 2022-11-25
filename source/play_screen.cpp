@@ -210,6 +210,11 @@ void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState,
   frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
+screen_status GetScreenStatus(const play_screen_state& screenState)
+{
+  return screen_active;
+}
+
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
 {
 }

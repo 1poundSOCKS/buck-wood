@@ -8,6 +8,7 @@
 #include "diagnostics.h"
 #include "global_state.h"
 #include "level_state.h"
+#include "screens.h"
 
 struct play_screen_control_state
 {

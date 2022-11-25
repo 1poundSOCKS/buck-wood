@@ -22,6 +22,7 @@ struct drag_drop_shape
 {
   drag_drop_shape(int type, float x=0, float y=0);
 
+  bool closed = true;
   int type;
   bool fixedShape = false;
   drag_drop_point position;

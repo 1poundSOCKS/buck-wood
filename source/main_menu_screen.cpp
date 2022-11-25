@@ -6,7 +6,7 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
-main_menu_screen_state::main_menu_screen_state(const global_state& globalState)
+main_menu_screen_state::main_menu_screen_state(const d2d_app& app, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.textFormats),
@@ -124,6 +124,11 @@ void PlaySoundEffects(const main_menu_screen_state& screenState)
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState)
 {
+}
+
+screen_status GetScreenStatus(const main_menu_screen_state& screenState)
+{
+  return screen_active;
 }
 
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState)

@@ -187,6 +187,11 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   FormatDiagnostics(diagnosticsData, *screenState.dragDropState);
 }
 
+screen_status GetScreenStatus(const level_edit_screen_state& screenState)
+{
+  return screen_active;
+}
+
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
 {
   if( !screenState.saveChanges ) return;
@@ -222,6 +227,7 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
   auto dragDropState = std::make_unique<drag_drop_state>();
   
   drag_drop_shape boundaryShape(level_edit_screen_state::drag_drop_shape_type::type_boundary);
+  boundaryShape.closed = false;
   CreateDragDropPoints(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), std::back_inserter(boundaryShape.points));
   dragDropState->shapes.push_back(boundaryShape);
   

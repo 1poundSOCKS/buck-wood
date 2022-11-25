@@ -7,7 +7,7 @@ void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& cont
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity);
 void DragHighlightedPoints(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y);
 void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end);
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x=0, float y=0);
+void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, bool closed, float x=0, float y=0);
 void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
 render_point CreateRenderPoint(const drag_drop_point& point);
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
@@ -112,11 +112,11 @@ void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& s
 {
   for( const auto shape : state.shapes )
   {
-    CreateRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines), shape.position.x, shape.position.y);
+    CreateRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines), shape.closed, shape.position.x, shape.position.y);
   }
 }
 
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, float x, float y)
+void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, bool closed, float x, float y)
 {
   std::transform(std::next(begin), end, begin, insertIterator, [x,y](const auto& point1, const auto& point2)
   {
@@ -128,14 +128,17 @@ void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::li
     return render_line(start, end);
   });
 
-  std::list<drag_drop_point>::const_iterator last = std::prev(end);
+  if( closed )
+  {
+    std::list<drag_drop_point>::const_iterator last = std::prev(end);
 
-  D2D1_POINT_2F startPoint, endPoint;
-  startPoint.x = last->x + x;
-  startPoint.y = last->y + y;
-  endPoint.x = begin->x + x;
-  endPoint.y = begin->y + y;
-  insertIterator = render_line(startPoint, endPoint);
+    D2D1_POINT_2F startPoint, endPoint;
+    startPoint.x = last->x + x;
+    startPoint.y = last->y + y;
+    endPoint.x = begin->x + x;
+    endPoint.y = begin->y + y;
+    insertIterator = render_line(startPoint, endPoint);
+  }
 }
 
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity)
