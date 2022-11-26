@@ -47,13 +47,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     switch( globalState.currentScreenId )
     {
     case screen_main_menu:
-      RunScreen<main_menu_screen_state, main_menu_control_state>(app, globalState);
+      RunScreen<global_state, main_menu_screen_state, main_menu_control_state>(app, globalState);
       break;
     case screen_play:
-      RunScreen<play_screen_state, play_screen_control_state>(app, globalState);
+      RunScreen<global_state, play_screen_state, play_screen_control_state>(app, globalState);
       break;
     case screen_level_editor:
-      RunScreen<level_edit_screen_state, level_edit_control_state>(app, globalState);
+      RunScreen<global_state, level_edit_screen_state, level_edit_control_state>(app, globalState);
       break;
     }
 

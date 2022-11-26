@@ -49,10 +49,17 @@ void InitializeDragDropShape(drag_drop_shape& shape)
   for( auto point = points.begin(); point != points.end(); ++point )
   {
     auto nextPoint = std::next(point);
-    if( nextPoint == points.end() ) nextPoint = points.begin();
-    drag_drop_point middlePoint = GetMiddlePoint(*point, *nextPoint);
+
+    if( nextPoint == points.end() )
+    nextPoint = points.begin();
+
     shape.points.push_back(*point);
-    shape.points.push_back(middlePoint);
+
+    if( shape.closed || nextPoint != points.begin() )
+    {
+      drag_drop_point middlePoint = GetMiddlePoint(*point, *nextPoint);
+      shape.points.push_back(middlePoint);
+    }
   }
 }
 

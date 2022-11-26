@@ -12,8 +12,8 @@ template<typename screen_state_type> screen_status GetScreenStatus(const screen_
 
 bool ProcessMessage();
 
-template<typename screen_state_type, typename control_state_type>
-void RunScreen(d2d_app& app, global_state& globalState)
+template<typename global_state_type, typename screen_state_type, typename control_state_type>
+void RunScreen(d2d_app& app, global_state_type& globalState)
 {
   screen_state_type screenState(app, globalState);
 
@@ -21,15 +21,15 @@ void RunScreen(d2d_app& app, global_state& globalState)
 
   while( ProcessMessage() && screenStatus == screen_active )
   {
-    UpdateScreen<screen_state_type, control_state_type>(app, globalState, screenState);
+    UpdateScreen<global_state_type, screen_state_type, control_state_type>(app, globalState, screenState);
     screenStatus = GetScreenStatus(screenState);
 	}
 
   UpdateGlobalState(globalState, screenState);
 }
 
-template<typename screen_state_type, typename control_state_type>
-void UpdateScreen(d2d_app& app, const global_state& globalState, screen_state_type& screenState)
+template<typename global_state_type, typename screen_state_type, typename control_state_type>
+void UpdateScreen(d2d_app& app, const global_state_type& globalState, screen_state_type& screenState)
 {
   static input_state inputState, previousInputState;
   previousInputState = inputState;
