@@ -212,11 +212,13 @@ void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState,
 
 screen_status GetScreenStatus(const play_screen_state& screenState)
 {
-  return screen_active;
+  if( screenState.returnToMenu ) return screen_closed;
+  else return screen_active;
 }
 
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
 {
+  globalState.currentScreenId = screen_main_menu;
 }
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
