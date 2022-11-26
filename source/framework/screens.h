@@ -8,28 +8,28 @@
 
 enum screen_status { screen_active, screen_closed };
 
-template<typename T> screen_status GetScreenStatus(const T& screenState);
+template<typename screen_state_type> screen_status GetScreenStatus(const screen_state_type& screenState);
 
 bool ProcessMessage();
 
-template<typename T_SS, typename T_CS>
+template<typename screen_state_type, typename control_state_type>
 void RunScreen(d2d_app& app, global_state& globalState)
 {
-  T_SS screenState(app, globalState);
+  screen_state_type screenState(app, globalState);
 
   screen_status screenStatus = screen_active;
 
   while( ProcessMessage() && screenStatus == screen_active )
   {
-    UpdateScreen<T_SS, T_CS>(app, globalState, screenState);
-    screenStatus = GetScreenStatus<T_SS>(screenState);
+    UpdateScreen<screen_state_type, control_state_type>(app, globalState, screenState);
+    screenStatus = GetScreenStatus(screenState);
 	}
 
   UpdateGlobalState(globalState, screenState);
 }
 
-template<typename T_SS, typename T_CS>
-void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenState)
+template<typename screen_state_type, typename control_state_type>
+void UpdateScreen(d2d_app& app, const global_state& globalState, screen_state_type& screenState)
 {
   static input_state inputState, previousInputState;
   previousInputState = inputState;
@@ -42,7 +42,7 @@ void UpdateScreen(d2d_app& app, const global_state& globalState, T_SS& screenSta
   static control_state baseControlState;
   baseControlState.Refresh(inputState, previousInputState);
 
-  static T_CS screenControlState;
+  static control_state_type screenControlState;
   RefreshControlState(screenControlState, baseControlState);
 
   auto start = QueryPerformanceCounter();

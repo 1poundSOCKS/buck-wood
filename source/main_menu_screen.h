@@ -50,6 +50,7 @@ void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_cont
 void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState);
 void PlaySoundEffects(const main_menu_screen_state& screenState);
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
+screen_status GetScreenStatus(const main_menu_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
 
 #endif
