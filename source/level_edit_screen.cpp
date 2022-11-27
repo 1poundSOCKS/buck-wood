@@ -158,11 +158,11 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   std::vector<render_line> renderLines;
   CreateRenderLines(renderLines, *screenState.dragDropState);
-  RenderLines(frame.renderTarget, screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
+  RenderLines(screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
 
   std::vector<render_point> renderPoints;
   CreateRenderPoints(renderPoints, *screenState.dragDropState);
-  RenderPoints(frame.renderTarget, screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
+  RenderPoints(screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
 }
 
 void PlaySoundEffects(const level_edit_screen_state& screenState)

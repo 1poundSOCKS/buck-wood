@@ -252,11 +252,11 @@ void RenderFrame(const d2d_frame& frame, level_state& levelState, const render_b
   auto renderTargetSize = frame.renderTarget->GetSize();
   frame.renderTarget->SetTransform(levelState.viewTransform);
 
-  RenderLines(frame.renderTarget, brushes, 2, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
+  RenderLines(brushes, 2, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
 
   levelState.renderLines.clear();
   CreateRenderLines(levelState, std::back_inserter(levelState.renderLines));
-  RenderLines(frame.renderTarget, brushes, 2, levelState.renderLines.cbegin(), levelState.renderLines.cend());
+  RenderLines(brushes, 2, levelState.renderLines.cbegin(), levelState.renderLines.cend());
 
   for( const auto& bullet : levelState.bullets )
   {

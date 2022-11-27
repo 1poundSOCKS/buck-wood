@@ -4,18 +4,35 @@
 #include "framework.h"
 #include "dwrite_text_formats.h"
 
+struct render_target
+{
+  render_target(HWND windowHandle, UINT fps);
+
+  winrt::com_ptr<ID3D11Device> d3dDevice;
+  winrt::com_ptr<IDXGISwapChain> dxgiSwapChain;
+  winrt::com_ptr<IDXGISurface> dxgiSurface;
+  winrt::com_ptr<IDXGIDevice> dxgiDevice;
+  winrt::com_ptr<ID2D1Factory> d2dFactory;
+  winrt::com_ptr<ID2D1RenderTarget> d2dRenderTarget;
+};
+
 struct render_brushes
 {
   enum color { color_white, color_green, color_red };
 
   render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget);
 
+  winrt::com_ptr<ID2D1RenderTarget> renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brushWhite;
   winrt::com_ptr<ID2D1SolidColorBrush> brushGrey;
   winrt::com_ptr<ID2D1SolidColorBrush> brushGreen;
   winrt::com_ptr<ID2D1SolidColorBrush> brushRed;
   winrt::com_ptr<ID2D1SolidColorBrush> brushYellow;
   winrt::com_ptr<ID2D1SolidColorBrush> brushCyan;
+};
+
+struct render_text_formats
+{
 };
 
 struct render_point
@@ -38,12 +55,10 @@ void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, co
 void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
 void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const std::wstring& text);
 
-void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes);
-void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
-void RenderPoints(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);
-void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const render_brushes& brushes);
-void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
-void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_line& line, float renderWidth, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
+void RenderMouseCursor(const render_brushes& brushes, float x, float y);
+void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);
+void RenderPoint(const render_brushes& brushes, const render_point& point);
+void RenderLines(const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 
 D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, float renderTargetWidth, float renderTargetHeight);
 const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_brushes::color brushColor);

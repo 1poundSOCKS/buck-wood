@@ -68,7 +68,7 @@ void UpdateScreen(d2d_app& app, const global_state_type& globalState, screen_sta
     app.perfData->renderFrameTicks = end - start;
     RenderDiagnostics(frame.renderTarget, diagnosticsData, globalState.textFormats, globalState.renderBrushes.brushGrey);
     frame.renderTarget->SetTransform(D2D1::IdentityMatrix());
-    RenderMouseCursor(frame.renderTarget, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y, globalState.renderBrushes);
+    RenderMouseCursor(globalState.renderBrushes, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
   }
 
   app.dxgi_swapChain->Present(1, 0);

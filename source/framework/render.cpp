@@ -1,7 +1,14 @@
 #include "pch.h"
 #include "render.h"
 
-render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget)
+void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
+void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const render_line& line, float renderWidth);
+
+render_target::render_target(HWND windowHandle, UINT fps)
+{
+}
+
+render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget) : renderTarget(renderTarget)
 {
   HRESULT hr = S_OK;
   
@@ -88,7 +95,7 @@ void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarge
   renderTarget->DrawTextW(text.c_str(),text.length(), textFormat.get(), rect, brush.get());
 }
 
-void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float x, float y, const render_brushes& brushes)
+void RenderMouseCursor(const render_brushes& brushes, float x, float y)
 {
   static const float cursorSize = 20.0f;
   static const float cursorSizeGap = 10.0f;
@@ -107,25 +114,20 @@ void RenderMouseCursor(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, fl
   std::vector<render_line> renderLines;
   renderLines.reserve(4);
   CreateDisconnectedRenderLines<D2D1_POINT_2F>(mouseCursor.cbegin(), mouseCursor.cend(), std::back_inserter(renderLines), render_brushes::color::color_white, x, y);
-  RenderLines(renderTarget, brushes, 5, renderLines.cbegin(), renderLines.cend());
+  RenderLines(brushes, 5, renderLines.cbegin(), renderLines.cend());
 }
 
-void RenderPoint(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point, const render_brushes& brushes)
+void RenderPoint(const render_brushes& brushes, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point)
 {
-  renderTarget->FillRectangle(&point.rect, GetBrush(brushes, point.brushColor).get());
+  brushes.renderTarget->FillRectangle(&point.rect, GetBrush(brushes, point.brushColor).get());
 }
 
-void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
+void RenderLines(const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
 {
   for( auto line = begin; line != end; ++line )
   {
-    RenderLine(renderTarget, *line, renderWidth, GetBrush(brushes, line->brushColor));
+    RenderLine(brushes.renderTarget, GetBrush(brushes, line->brushColor), *line, renderWidth);
   }
-}
-
-void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_line& line, float renderWidth, const winrt::com_ptr<ID2D1SolidColorBrush>& brush)
-{
-  renderTarget->DrawLine(line.start, line.end, brush.get(), renderWidth);
 }
 
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
@@ -136,11 +138,16 @@ void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const wi
   }
 }
 
-void RenderPoints(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end)
+void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const render_line& line, float renderWidth)
+{
+  renderTarget->DrawLine(line.start, line.end, brush.get(), renderWidth);
+}
+
+void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end)
 {
   for( std::vector<render_point>::const_iterator point = begin; point != end; ++point )
   {
-    renderTarget->FillRectangle(&point->rect, GetBrush(brushes, point->brushColor).get());
+    brushes.renderTarget->FillRectangle(&point->rect, GetBrush(brushes, point->brushColor).get());
   }
 }
 

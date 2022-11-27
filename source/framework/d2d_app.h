@@ -27,6 +27,7 @@ struct d2d_app
   winrt::com_ptr<IDXGIDevice> dxgi_device;
   winrt::com_ptr<ID2D1Factory> d2d_factory;
   winrt::com_ptr<ID2D1RenderTarget> d2d_rendertarget;
+
   winrt::com_ptr<IDirectInput8> directInput;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   winrt::com_ptr<IDirectSound8> directSound;
