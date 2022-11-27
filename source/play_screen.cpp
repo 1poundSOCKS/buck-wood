@@ -18,7 +18,7 @@ play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
 play_screen_state::play_screen_state(const d2d_app& app, const global_state& globalState) 
 : systemTimer(*app.timer), 
   globalState(globalState),
-  textFormats(globalState.textFormats),
+  textFormats(globalState.renderTextFormats),
   renderBrushes(globalState.renderBrushes),
   sounds(globalState.soundBuffers)
 {
@@ -185,7 +185,8 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.renderBrushes.brushYellow);
+  // RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.renderBrushes.brushYellow);
+  RenderTimer(screenState.renderBrushes, screenState.textFormats, levelTimeRemaining);
 }
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)

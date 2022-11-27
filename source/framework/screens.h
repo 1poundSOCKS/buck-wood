@@ -66,7 +66,7 @@ void UpdateScreen(d2d_app& app, const global_state_type& globalState, screen_sta
     RenderFrame(frame, screenState);
     auto end = QueryPerformanceCounter();
     app.perfData->renderFrameTicks = end - start;
-    RenderDiagnostics(frame.renderTarget, diagnosticsData, globalState.textFormats, globalState.renderBrushes.brushGrey);
+    RenderDiagnostics(globalState.renderBrushes, globalState.renderTextFormats, diagnosticsData);
     frame.renderTarget->SetTransform(D2D1::IdentityMatrix());
     RenderMouseCursor(globalState.renderBrushes, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
   }

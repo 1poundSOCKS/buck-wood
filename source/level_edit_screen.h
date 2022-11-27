@@ -37,7 +37,7 @@ struct level_edit_screen_state
 
   const global_state& globalState;
   const render_brushes& renderBrushes;
-  const dwrite_text_formats& textFormats;
+  const render_text_formats& textFormats;
 
   D2D1::Matrix3x2F viewTransform;
 

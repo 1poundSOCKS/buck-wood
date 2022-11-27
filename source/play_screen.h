@@ -38,8 +38,8 @@ struct play_screen_state
   STATE state = state_playing;
   bool returnToMenu = false;
 
-  dwrite_text_formats textFormats;
   render_brushes renderBrushes;
+  render_text_formats textFormats;
 
   play_screen_sounds sounds;
 

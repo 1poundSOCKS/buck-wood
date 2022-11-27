@@ -33,6 +33,12 @@ struct render_brushes
 
 struct render_text_formats
 {
+  render_text_formats();
+
+  winrt::com_ptr<IDWriteTextFormat> writeTextFormat;
+  winrt::com_ptr<IDWriteTextFormat> menuTextFormat;
+  winrt::com_ptr<IDWriteTextFormat> levelTimerTextFormat;
+  winrt::com_ptr<IDWriteTextFormat> levelEndTextFormat;
 };
 
 struct render_point
@@ -51,9 +57,9 @@ struct render_line
   render_brushes::color brushColor;
 };
 
-void RenderDiagnostics(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const std::vector<std::wstring>& diagnosticsData, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
-void RenderTimer(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, float seconds, const dwrite_text_formats& textFormats, const winrt::com_ptr<ID2D1SolidColorBrush>& brush);
-void RenderMainScreenPrompt(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const std::wstring& text);
+void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData);
+void RenderTimer(const render_brushes& brushes, const render_text_formats& textFormats, float seconds);
+void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
 
 void RenderMouseCursor(const render_brushes& brushes, float x, float y);
 void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);

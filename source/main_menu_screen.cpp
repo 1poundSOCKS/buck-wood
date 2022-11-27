@@ -9,7 +9,7 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
 main_menu_screen_state::main_menu_screen_state(const d2d_app& app, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
-  textFormats(globalState.textFormats),
+  textFormats(globalState.renderTextFormats),
   checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
   musicPlayer(*globalState.soundBuffers.menuTheme)
 {
@@ -38,7 +38,8 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {
-    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
+    // RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
+    RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
     return;
   }
 

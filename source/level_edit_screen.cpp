@@ -19,7 +19,7 @@ void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::lis
 level_edit_screen_state::level_edit_screen_state(const d2d_app& app, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
-  textFormats(globalState.textFormats),
+  textFormats(globalState.renderTextFormats),
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
@@ -150,7 +150,8 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
+    // RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
+    RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
     return;
   }
 
