@@ -109,6 +109,9 @@ void UpdateState(level_state& levelState, const level_control_state& controlStat
 
   UpdatePlayer(levelState, controlState, timer);
   UpdateBullets(levelState, controlState, timer);
+
+  levelState.renderData.renderLines.clear();
+  CreateRenderLines(levelState, std::back_inserter(levelState.renderData.renderLines));
 }
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
@@ -248,15 +251,13 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   return bullets.front();
 }
 
-void RenderFrame(const d2d_frame& frame, level_state& levelState, const render_brushes& brushes)
+void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes)
 {
   auto renderTargetSize = frame.renderTarget->GetSize();
   frame.renderTarget->SetTransform(levelState.viewTransform);
 
   RenderLines(brushes, 2, levelState.renderData.staticRenderLines.cbegin(), levelState.renderData.staticRenderLines.cend());
 
-  levelState.renderData.renderLines.clear();
-  CreateRenderLines(levelState, std::back_inserter(levelState.renderData.renderLines));
   RenderLines(brushes, 2, levelState.renderData.renderLines.cbegin(), levelState.renderData.renderLines.cend());
 
   for( const auto& bullet : levelState.bullets )

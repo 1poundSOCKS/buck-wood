@@ -91,7 +91,7 @@ struct level_state
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
 void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 bool LevelIsComplete(const level_state& levelState);
-void RenderFrame(const d2d_frame& frame, level_state& levelState, const render_brushes& brushes);
+void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes);
 void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes);
 void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines);
 

@@ -161,7 +161,7 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   screenState.state = play_screen_state::state_playing;
 }
 
-void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
+void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 

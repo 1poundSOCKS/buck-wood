@@ -52,7 +52,7 @@ struct play_screen_state
 
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void RenderFrame(const d2d_frame& frame, play_screen_state& screenState);
+void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
 void PlaySoundEffects(const play_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
 screen_status GetScreenStatus(const play_screen_state& screenState);

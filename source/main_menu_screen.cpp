@@ -32,7 +32,7 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
   screenControlState.renderTargetMouseY = controlState.renderTargetMouseData.y;
 }
 
-void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
+void RenderFrame(const d2d_frame& frame, const main_menu_screen_state& screenState)
 {
   frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
