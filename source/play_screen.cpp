@@ -167,6 +167,8 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
 
   RenderFrame(frame, *screenState.levelState, screenState.renderBrushes);
 
+  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
   switch( screenState.state )
   {
     case play_screen_state::state_paused:

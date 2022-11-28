@@ -16,7 +16,10 @@ struct player_ship
   float xVelocity, yVelocity;
   float angle;
   bool thrusterOn = false;
+};
 
+struct player_ship_render_data
+{
   std::vector<game_point> points;
   std::vector<game_point> transformedPoints;
   std::vector<game_point> thrusterPoints;
@@ -58,6 +61,13 @@ struct level_control_state
   render_target_mouse_data renderTargetMouseData;
 };
 
+struct level_render_data
+{
+  player_ship_render_data playerShip;
+  std::vector<render_line> staticRenderLines;
+  std::vector<render_line> renderLines;
+};
+
 struct level_state
 {
   level_state(const game_level_data& levelData, const system_timer& systemTimer);
@@ -75,8 +85,7 @@ struct level_state
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
 
-  std::vector<render_line> staticRenderLines;
-  std::vector<render_line> renderLines;
+  level_render_data renderData;
 };
 
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
