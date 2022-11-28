@@ -38,7 +38,6 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
 
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {
-    // RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
     RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
     return;
   }
@@ -48,10 +47,7 @@ void RenderFrame(const d2d_frame& frame, main_menu_screen_state& screenState)
   titleText += L"Left mouse button - shoot\n";
   titleText += L"\nPress SPACE to start";
 
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(titleText.c_str(),titleText.length(), screenState.textFormats.menuTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
+  RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, titleText);
 }
 
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer)

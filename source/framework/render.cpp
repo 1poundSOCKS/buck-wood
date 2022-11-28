@@ -2,8 +2,8 @@
 #include "render.h"
 
 void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment,
-  D2D1_RECT_F rect, const std::wstring_view& text);
+                const winrt::com_ptr<ID2D1SolidColorBrush>& brush, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment,
+                D2D1_RECT_F rect, const std::wstring_view& text);
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const render_line& line, float renderWidth);
 
@@ -75,9 +75,6 @@ void RenderDiagnostics(const render_brushes& brushes, const render_text_formats&
   D2D_SIZE_F size = brushes.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
 
-  rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
   std::wstring msg;
   for( const auto& text: diagnosticsData )
   {
@@ -93,12 +90,10 @@ void RenderTimer(const render_brushes& brushes, const render_text_formats& textF
   D2D_SIZE_F size = brushes.renderTarget->GetSize();
   D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 16, size.width - 1, size.height * 3 / 16);
 
-  brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
   static wchar_t timeText[64];
   swprintf(timeText, L"%.2f", seconds);
 
-  RenderText(brushes.renderTarget, textFormats.writeTextFormat, brushes.brushYellow, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING, rect, timeText);
+  RenderText(brushes.renderTarget, textFormats.levelTimerTextFormat, brushes.brushYellow, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING, rect, timeText);
 }
 
 void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text)
@@ -107,6 +102,14 @@ void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_for
   D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
   brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderText(brushes.renderTarget, textFormats.menuTextFormat, brushes.brushCyan, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, rect, text);
+}
+
+void RenderPlayStatus(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text)
+{
+  D2D_SIZE_F size = brushes.renderTarget->GetSize();
+  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
+  brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  RenderText(brushes.renderTarget, textFormats.levelEndTextFormat, brushes.brushCyan, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, rect, text);
 }
 
 void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget,

@@ -60,6 +60,7 @@ struct render_line
 void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData);
 void RenderTimer(const render_brushes& brushes, const render_text_formats& textFormats, float seconds);
 void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
+void RenderPlayStatus(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
 
 void RenderMouseCursor(const render_brushes& brushes, float x, float y);
 void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);

@@ -5,7 +5,6 @@
 
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view);
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
@@ -171,21 +170,20 @@ void RenderFrame(const d2d_frame& frame, play_screen_state& screenState)
   switch( screenState.state )
   {
     case play_screen_state::state_paused:
-      RenderMessage(frame, screenState, L"PAUSED");
+      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"PAUSED");
       break;
     case play_screen_state::state_level_complete:
-      RenderMessage(frame, screenState, L"LEVEL COMPLETE");
+      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"LEVEL COMPLETE");
       break;
     case play_screen_state::state_game_complete:
-      RenderMessage(frame, screenState, GetGameCompleteMsg(screenState.levelTimes));
+      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, GetGameCompleteMsg(screenState.levelTimes));
       break;
     case play_screen_state::state_player_dead:
-      RenderMessage(frame, screenState, L"YOU'RE DEAD");
+      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"DEAD");
       break;
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  // RenderTimer(frame.renderTarget, levelTimeRemaining, screenState.textFormats, screenState.renderBrushes.brushYellow);
   RenderTimer(screenState.renderBrushes, screenState.textFormats, levelTimeRemaining);
 }
 
@@ -201,14 +199,6 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
   }
 
   return msg;
-}
-
-void RenderMessage(const d2d_frame& frame, const play_screen_state& screenState, std::wstring_view msg)
-{
-  D2D_SIZE_F size = frame.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  frame.renderTarget->DrawTextW(msg.data(), msg.length(), screenState.textFormats.levelEndTextFormat.get(), rect, screenState.renderBrushes.brushCyan.get());
 }
 
 screen_status GetScreenStatus(const play_screen_state& screenState)
