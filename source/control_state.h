@@ -18,6 +18,8 @@ struct control_state
   bool f12Press = false;
   bool keyPress_y = false;
   bool keyPress_n = false;
+  bool keyPress_t = false;
+  bool keyPress_o = false;
 
   bool leftMouseButtonDown = false;
   bool leftMouseButtonReleased = false;

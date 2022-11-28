@@ -20,6 +20,7 @@ struct level_edit_control_state
   float ratioMouseX = 0;
   float ratioMouseY = 0;
   bool nextLevel = false, previousLevel = false;
+  bool addTarget = false, addObject = false;
   drag_drop_control_state dragDropControlState;
 };
 

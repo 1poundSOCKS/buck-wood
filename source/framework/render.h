@@ -2,7 +2,6 @@
 #define _render_
 
 #include "framework.h"
-#include "dwrite_text_formats.h"
 
 struct render_target
 {

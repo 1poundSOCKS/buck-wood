@@ -10,6 +10,7 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
 void LoadCurrentLevel(level_edit_screen_state& screenState);
 void SaveCurrentLevel(level_edit_screen_state& screenState);
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData);
+void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion);
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
 std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
@@ -36,6 +37,8 @@ void RefreshControlState(level_edit_control_state& controlState, const control_s
   controlState.ratioMouseY = controlState.renderTargetMouseData.y / controlState.renderTargetMouseData.size.height;
   controlState.nextLevel = baseControlState.f1Press;
   controlState.previousLevel = baseControlState.f2Press;
+  controlState.addTarget = baseControlState.keyPress_t;
+  controlState.addObject = baseControlState.keyPress_o;
   controlState.dragDropControlState.leftMouseButtonDown = baseControlState.leftMouseButtonDown;
   controlState.dragDropControlState.leftMouseButtonDrag = baseControlState.leftMouseButtonDrag;
   controlState.dragDropControlState.leftMouseButtonReleased = baseControlState.leftMouseButtonReleased;
@@ -83,11 +86,21 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
     }
   }
 
-  if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= 10.0f;
-  else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += 10.0f;
+  float intervalTime = GetIntervalTimeInSeconds(timer);
+  float scrollDistance = 200.0 * intervalTime;
 
-  if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= 10.0f;
-  else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += 10.0f;
+  if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
+  else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
+
+  if( controlState.ratioMouseY < 0.1f ) screenState.levelCenterY -= scrollDistance;
+  else if( controlState.ratioMouseY > 0.9f ) screenState.levelCenterY += scrollDistance;
+
+  auto& dragDropState = *screenState.dragDropState;
+  
+  if( controlState.addTarget )
+  {
+    AddDragDropShapeForTarget(dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
+  }
 
   RunDragDrop(screenState, controlState);
 }
@@ -150,7 +163,6 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    // RenderMainScreenPrompt(frame.renderTarget, screenState.textFormats.menuTextFormat, screenState.renderBrushes.brushCyan, L"save changes (y/n)");
     RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
     return;
   }
@@ -254,17 +266,22 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
 
   for( const auto& targetPos : gameLevelData.targets )
   {
-    std::vector<game_point> targetPoints;
-    CreatePointsForTarget(defaultTargetSize, std::back_inserter(targetPoints));
-    drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
-    targetShape.fixedShape = true;
-    targetShape.position.x = targetPos.x;
-    targetShape.position.y = targetPos.y;
-    CreateDragDropPoints(targetPoints.cbegin(), targetPoints.cend(), std::back_inserter(targetShape.points));
-    dragDropState->shapes.push_back(targetShape);
+    AddDragDropShapeForTarget(*dragDropState, {targetPos.x, targetPos.y});
   }
 
   return dragDropState;
+}
+
+void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion)
+{
+  std::vector<game_point> targetPoints;
+  CreatePointsForTarget(defaultTargetSize, std::back_inserter(targetPoints));
+  drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
+  targetShape.fixedShape = true;
+  targetShape.position.x = targetPostion.x;
+  targetShape.position.y = targetPostion.y;
+  CreateDragDropPoints(targetPoints.cbegin(), targetPoints.cend(), std::back_inserter(targetShape.points));
+  dragDropState.shapes.push_back(targetShape);
 }
 
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState)
