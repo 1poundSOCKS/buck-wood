@@ -10,7 +10,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 bullet& GetBullet(std::vector<bullet>& bullets);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
-void UpdatePlayerShipRenderData(player_ship_render_data& renderData, const player_ship& playerShip);
+void UpdatePlayerShipPointData(player_ship_point_data& renderData, const player_ship& playerShip);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -37,7 +37,7 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   // player
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
-  UpdatePlayerShipRenderData(renderData.playerShip, player);
+  UpdatePlayerShipPointData(playerShipPointData, player);
 
   bullets.resize(100);
 
@@ -140,7 +140,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 
   // levelState.player.transformedPoints.clear();
   // TransformPoints(levelState.player.points.cbegin(), levelState.player.points.cend(), std::back_inserter(levelState.player.transformedPoints), levelState.player.angle, levelState.player.xPos, levelState.player.yPos);
-  UpdatePlayerShipRenderData(levelState.renderData.playerShip, levelState.player);
+  UpdatePlayerShipPointData(levelState.playerShipPointData, levelState.player);
 
   const auto& currentLevelData = levelState.levelData;
 
@@ -148,7 +148,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
 
   // if( !AllPointsInside(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), lines) )
-  if( !AllPointsInside(levelState.renderData.playerShip.transformedPoints.cbegin(), levelState.renderData.playerShip.transformedPoints.cend(), lines) )
+  if( !AllPointsInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
   {
     levelState.player.state = player_ship::player_state::state_dead;
     return;
@@ -158,7 +158,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   {
     std::vector<game_line> lines;
     CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-    if( AnyPointInside(levelState.renderData.playerShip.transformedPoints.cbegin(), levelState.renderData.playerShip.transformedPoints.cend(), lines) )
+    if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
     {
       levelState.player.state = player_ship::player_state::state_dead;
       return;
@@ -290,13 +290,13 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
   }
 
   const auto& player = levelState.player;
-  CreateConnectedRenderLines<game_point>(levelState.renderData.playerShip.transformedPoints.cbegin(), levelState.renderData.playerShip.transformedPoints.cend(), renderLines, render_brushes::color::color_white);
+  CreateConnectedRenderLines<game_point>(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), renderLines, render_brushes::color::color_white);
 
   if( levelState.player.thrusterOn )
   {
     std::vector<game_point> points;
-    points.reserve(levelState.renderData.playerShip.thrusterPoints.size());
-    TransformPoints(levelState.renderData.playerShip.thrusterPoints.cbegin(), levelState.renderData.playerShip.thrusterPoints.cend(), std::back_inserter(points), player.angle, player.xPos, player.yPos);
+    points.reserve(levelState.playerShipPointData.thrusterPoints.size());
+    TransformPoints(levelState.playerShipPointData.thrusterPoints.cbegin(), levelState.playerShipPointData.thrusterPoints.cend(), std::back_inserter(points), player.angle, player.xPos, player.yPos);
     CreateDisconnectedRenderLines<game_point>(points.cbegin(), points.cend(), renderLines, render_brushes::color::color_red);
   }
 }
@@ -307,7 +307,7 @@ D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_S
   return CreateGameLevelTransform(levelState.player.xPos, levelState.player.yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 
-void UpdatePlayerShipRenderData(player_ship_render_data& renderData, const player_ship& playerShip)
+void UpdatePlayerShipPointData(player_ship_point_data& renderData, const player_ship& playerShip)
 {
   renderData.points.clear();
   renderData.thrusterPoints.clear();

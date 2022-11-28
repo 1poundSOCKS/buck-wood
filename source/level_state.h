@@ -18,7 +18,7 @@ struct player_ship
   bool thrusterOn = false;
 };
 
-struct player_ship_render_data
+struct player_ship_point_data
 {
   std::vector<game_point> points;
   std::vector<game_point> transformedPoints;
@@ -63,7 +63,6 @@ struct level_control_state
 
 struct level_render_data
 {
-  player_ship_render_data playerShip;
   std::vector<render_line> staticRenderLines;
   std::vector<render_line> renderLines;
 };
@@ -85,6 +84,7 @@ struct level_state
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
 
+  player_ship_point_data playerShipPointData;
   level_render_data renderData;
 };
 
