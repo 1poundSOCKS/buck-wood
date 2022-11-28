@@ -11,6 +11,8 @@ void LoadCurrentLevel(level_edit_screen_state& screenState);
 void SaveCurrentLevel(level_edit_screen_state& screenState);
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData);
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion);
+std::array<game_point, 3> GetDefaultObjectShape();
+void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point& targetPosition);
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
 std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
@@ -100,6 +102,11 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
   if( controlState.addTarget )
   {
     AddDragDropShapeForTarget(dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
+  }
+
+  if( controlState.addObject )
+  {
+    AddDragDropShapeForObject(dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
   }
 
   RunDragDrop(screenState, controlState);
@@ -272,6 +279,19 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
   return dragDropState;
 }
 
+void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point& targetPosition)
+{
+    drag_drop_shape dragDropObjectShape(level_edit_screen_state::drag_drop_shape_type::type_object);
+    std::vector<game_point> objectShape;
+    const auto defaultObjectShape = GetDefaultObjectShape();
+    std::transform(defaultObjectShape.cbegin(), defaultObjectShape.cend(), std::back_inserter(objectShape), [targetPosition](const auto& point)
+    {
+      return game_point(targetPosition.x + point.x, targetPosition.y + point.y);
+    });
+    CreateDragDropPoints(objectShape.cbegin(), objectShape.cend(), std::back_inserter(dragDropObjectShape.points));
+    dragDropState.shapes.push_back(dragDropObjectShape);
+}
+
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion)
 {
   std::vector<game_point> targetPoints;
@@ -282,6 +302,12 @@ void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point&
   targetShape.position.y = targetPostion.y;
   CreateDragDropPoints(targetPoints.cbegin(), targetPoints.cend(), std::back_inserter(targetShape.points));
   dragDropState.shapes.push_back(targetShape);
+}
+
+std::array<game_point, 3> GetDefaultObjectShape()
+{
+  static const float objectSize = 100.0;
+  return std::array<game_point, 3>({game_point(0, -objectSize), game_point(objectSize, objectSize), game_point(-objectSize, objectSize)});
 }
 
 std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState)
