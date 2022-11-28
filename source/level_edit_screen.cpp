@@ -89,7 +89,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_co
   }
 
   float intervalTime = GetIntervalTimeInSeconds(timer);
-  float scrollDistance = 200.0 * intervalTime;
+  float scrollDistance = 500.0 * intervalTime;
 
   if( controlState.ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
   else if( controlState.ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
