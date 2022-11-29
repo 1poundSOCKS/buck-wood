@@ -25,4 +25,6 @@ struct input_state
   render_target_mouse_data renderTargetMouseData;
 };
 
+winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
+
 #endif

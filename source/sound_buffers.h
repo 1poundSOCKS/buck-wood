@@ -3,20 +3,16 @@
 
 #include "framework.h"
 
-namespace fs = std::filesystem;
-
 struct sound_buffers
 {
   sound_buffers(IDirectSound8* directSound, const std::wstring& path);
 
-  std::unique_ptr<sound_buffer> menuTheme;
-  std::unique_ptr<sound_buffer> shoot;
-  std::unique_ptr<sound_buffer> thrust;
-  std::unique_ptr<sound_buffer> targetActivated;
+  winrt::com_ptr<IDirectSoundBuffer8> menuTheme;
+  winrt::com_ptr<IDirectSoundBuffer8> shoot;
+  winrt::com_ptr<IDirectSoundBuffer8> thrust;
+  winrt::com_ptr<IDirectSoundBuffer8> targetActivated;
 };
 
-using sound_buffers_ptr = std::unique_ptr<sound_buffers>;
-
-std::unique_ptr<sound_buffer> LoadSoundBuffer(IDirectSound8* directSound, const std::wstring& path, const std::wstring& file);
+winrt::com_ptr<IDirectSoundBuffer8> LoadSoundBuffer(IDirectSound8* directSound, const std::wstring& path, const std::wstring& file);
 
 #endif

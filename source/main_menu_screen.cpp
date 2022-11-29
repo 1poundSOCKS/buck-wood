@@ -11,7 +11,7 @@ main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const 
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.renderTextFormats),
   checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
-  musicPlayer(*globalState.soundBuffers.menuTheme)
+  musicPlayer(globalState.soundBuffers.menuTheme)
 {
 #ifdef ENABLE_MUSIC
   musicPlayer.PlayOnLoop();
@@ -113,9 +113,9 @@ void PlaySoundEffects(const main_menu_screen_state& screenState)
 
   DWORD bufferStatus = 0;
 
-  if( SUCCEEDED(sounds.thrust->buffer->GetStatus(&bufferStatus)) )
+  if( SUCCEEDED(sounds.thrust->GetStatus(&bufferStatus)) )
   {
-    if( bufferStatus & DSBSTATUS_PLAYING ) sounds.thrust->buffer->Stop();
+    if( bufferStatus & DSBSTATUS_PLAYING ) sounds.thrust->Stop();
   }
 }
 

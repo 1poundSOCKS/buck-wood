@@ -8,9 +8,9 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
-: thrust(*soundBuffers.thrust),
-  shoot(*soundBuffers.shoot),
-  targetActivated(*soundBuffers.targetActivated)
+: thrust(soundBuffers.thrust),
+  shoot(soundBuffers.shoot),
+  targetActivated(soundBuffers.targetActivated)
 {
 }
 

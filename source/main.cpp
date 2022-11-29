@@ -10,6 +10,7 @@
 #include "global_state.h"
 #include "screens.h"
 #include "main_window.h"
+#include "direct_sound.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -24,69 +25,6 @@
 #pragma comment(lib,"jsoncpp.lib")
 
 extern const int fps = 60;
-
-winrt::com_ptr<IDirectSound8> CreateDirectSound(HWND window)
-{
-  winrt::com_ptr<IDirectSound8> directSound;
-
-  HRESULT hr = DirectSoundCreate8(NULL, directSound.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
-
-  hr = directSound->SetCooperativeLevel(window, DSSCL_PRIORITY);
-  if( FAILED(hr) ) throw L"error";
-
-  return directSound;
-}
-
-winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(IDirectSound8* directSound)
-{
-  DSBUFFERDESC bufferDesc;
-  bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
-	bufferDesc.dwBufferBytes = 0;
-	bufferDesc.dwReserved = 0;
-	bufferDesc.lpwfxFormat = NULL;
-	bufferDesc.guid3DAlgorithm = GUID_NULL;
-
-  winrt::com_ptr<IDirectSoundBuffer> primaryBuffer;
-  HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
-
-  WAVEFORMATEX waveFormat;
-	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-	waveFormat.nSamplesPerSec = 44100;
-	waveFormat.wBitsPerSample = 16;
-	waveFormat.nChannels = 2;
-	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
-	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
-	waveFormat.cbSize = 0;
-
-	hr = primaryBuffer->SetFormat(&waveFormat);
-  if( FAILED(hr) ) throw L"error";
-  
-  return primaryBuffer;
-}
-
-winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window)
-{
-  winrt::com_ptr<IDirectInput8> directInput;
-  HRESULT hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
-  if( FAILED(hr) ) throw L"error";
-
-  winrt::com_ptr<IDirectInputDevice8> keyboard;
-  hr = directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
-
-  hr = keyboard->SetDataFormat(&c_dfDIKeyboard);
-  if( FAILED(hr) ) throw L"error";
-
-  hr = keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-  if( FAILED(hr) ) throw L"error";
-
-  keyboard->Acquire();
-
-  return keyboard;
-}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {

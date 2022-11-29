@@ -5,14 +5,14 @@
 
 struct sound_buffer_player
 {
-  sound_buffer_player(const sound_buffer& soundBuffer);
+  sound_buffer_player(const winrt::com_ptr<IDirectSoundBuffer8>& soundBuffer);
   ~sound_buffer_player();
 
   void Play() const;
   void PlayOnLoop() const;
   void Stop() const;
 
-  const sound_buffer& soundBuffer;
+  winrt::com_ptr<IDirectSoundBuffer8> soundBuffer;
 };
 
 #endif

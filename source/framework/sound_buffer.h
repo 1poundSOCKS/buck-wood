@@ -3,11 +3,6 @@
 
 #include "data_files.h"
 
-struct sound_buffer
-{
-  sound_buffer(IDirectSound8* directSound, const wav_file_data& data);
-
-  winrt::com_ptr<IDirectSoundBuffer8> buffer;
-};
+winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound, const wav_file_data& data);
 
 #endif
