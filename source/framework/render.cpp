@@ -10,6 +10,7 @@ void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const win
 render_brushes::render_brushes(ID2D1RenderTarget* renderTarget)
 {
   this->renderTarget.attach(renderTarget);
+  this->renderTarget->AddRef();
 
   HRESULT hr = S_OK;
   
