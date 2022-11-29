@@ -3,23 +3,11 @@
 
 #include "framework.h"
 
-struct render_target
-{
-  render_target(HWND windowHandle, UINT fps);
-
-  winrt::com_ptr<ID3D11Device> d3dDevice;
-  winrt::com_ptr<IDXGISwapChain> dxgiSwapChain;
-  winrt::com_ptr<IDXGISurface> dxgiSurface;
-  winrt::com_ptr<IDXGIDevice> dxgiDevice;
-  winrt::com_ptr<ID2D1Factory> d2dFactory;
-  winrt::com_ptr<ID2D1RenderTarget> d2dRenderTarget;
-};
-
 struct render_brushes
 {
   enum color { color_white, color_green, color_red };
 
-  render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget);
+  render_brushes(ID2D1RenderTarget* renderTarget);
 
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brushWhite;

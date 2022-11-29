@@ -28,7 +28,7 @@ struct level_edit_screen_state
 {
   enum drag_drop_shape_type { type_boundary, type_object, type_player, type_target };
 
-  level_edit_screen_state(const d2d_app& app, const global_state& globalState);
+  level_edit_screen_state(const system_timer& timer, const global_state& globalState);
 
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;
@@ -57,7 +57,7 @@ struct level_edit_screen_state
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer);
-void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& state);
+void RenderFrame(ID2D1RenderTarget* renderTarget, const level_edit_screen_state& state);
 void PlaySoundEffects(const level_edit_screen_state& screenState);
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 screen_status GetScreenStatus(const level_edit_screen_state& screenState);

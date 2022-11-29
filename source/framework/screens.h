@@ -1,10 +1,10 @@
 #ifndef _screens_
 #define _screens_
 
-#include "d2d_app.h"
 #include "global_state.h"
 #include "control_state.h"
 #include "diagnostics.h"
+#include "main_window.h"
 
 enum screen_status { screen_active, screen_closed };
 
@@ -13,15 +13,22 @@ template<typename screen_state_type> screen_status GetScreenStatus(const screen_
 bool ProcessMessage();
 
 template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void RunScreen(d2d_app& app, global_state_type& globalState)
+void RunScreen(ID2D1RenderTarget* renderTarget,
+               IDXGISwapChain* swapChain,
+               IDirectInputDevice8* keyboard, 
+               const window_data& windowData, 
+               system_timer& systemTimer, 
+               perf_data& perfData, global_state_type& globalState)
 {
-  screen_state_type screenState(app, globalState);
+  screen_state_type screenState(systemTimer, globalState);
 
   screen_status screenStatus = screen_active;
 
   while( ProcessMessage() && screenStatus == screen_active )
   {
-    UpdateScreen<global_state_type, screen_state_type, control_state_type>(app, globalState, screenState);
+    UpdateScreen<global_state_type, screen_state_type, control_state_type>
+      (renderTarget, swapChain, keyboard, windowData, systemTimer, perfData, globalState, screenState);
+
     screenStatus = GetScreenStatus(screenState);
 	}
 
@@ -29,15 +36,26 @@ void RunScreen(d2d_app& app, global_state_type& globalState)
 }
 
 template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void UpdateScreen(d2d_app& app, const global_state_type& globalState, screen_state_type& screenState)
+void UpdateScreen(ID2D1RenderTarget* renderTarget,
+                  IDXGISwapChain* swapChain,
+                  IDirectInputDevice8* keyboard, 
+                  const window_data& windowData, 
+                  system_timer& systemTimer, 
+                  perf_data& perfData, 
+                  const global_state_type& globalState, 
+                  screen_state_type& screenState)
 {
   static input_state inputState, previousInputState;
   previousInputState = inputState;
-  inputState.RefreshKeyboard(app.keyboard);
-  inputState.clientMouseData = app.clientMouseData;
-  inputState.renderTargetMouseData = app.renderTargetMouseData;
-  inputState.leftMouseButtonDown = app.leftMouseButtonDown;
-  inputState.rightMouseButtonDown = app.rightMouseButtonDown;
+  inputState.RefreshKeyboard(keyboard);
+  inputState.clientMouseData.rect = windowData.mouse.rect;
+  inputState.clientMouseData.x = windowData.mouse.x;
+  inputState.clientMouseData.y = windowData.mouse.y;
+  inputState.renderTargetMouseData.size = renderTarget->GetSize();
+  inputState.renderTargetMouseData.x = windowData.mouse.x;
+  inputState.renderTargetMouseData.y = windowData.mouse.y;
+  inputState.leftMouseButtonDown = windowData.mouse.leftButtonDown;
+  inputState.rightMouseButtonDown = windowData.mouse.rightButtonDown;
 
   static control_state baseControlState;
   baseControlState.Refresh(inputState, previousInputState);
@@ -46,37 +64,37 @@ void UpdateScreen(d2d_app& app, const global_state_type& globalState, screen_sta
   RefreshControlState(screenControlState, baseControlState);
 
   auto start = QueryPerformanceCounter();
-  UpdateScreenState(screenState, screenControlState, *app.timer);
+  UpdateScreenState(screenState, screenControlState, systemTimer);
   auto end = QueryPerformanceCounter();
-  app.perfData->updateScreenStateTicks = end - start;
+  perfData.updateScreenStateTicks = end - start;
 
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(50);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), *app.perfData, *app.timer);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), perfData, systemTimer);
   FormatDiagnostics(std::back_inserter(diagnosticsData), globalState);
   FormatDiagnostics(std::back_inserter(diagnosticsData), baseControlState);
   FormatDiagnostics(std::back_inserter(diagnosticsData), screenState, screenControlState);
 
-  if( baseControlState.f12Press ) app.dxgi_swapChain->SetFullscreenState(TRUE, NULL);
+  if( baseControlState.f12Press ) swapChain->SetFullscreenState(TRUE, NULL);
 
   {
-    d2d_frame frame(app.d2d_rendertarget);
+    d2d_frame frame(renderTarget);
     auto start = QueryPerformanceCounter();
-    RenderFrame(frame, screenState);
+    RenderFrame(renderTarget, screenState);
     auto end = QueryPerformanceCounter();
-    app.perfData->renderFrameTicks = end - start;
-    frame.renderTarget->SetTransform(D2D1::IdentityMatrix());
+    perfData.renderFrameTicks = end - start;
+    renderTarget->SetTransform(D2D1::IdentityMatrix());
     RenderDiagnostics(globalState.renderBrushes, globalState.renderTextFormats, diagnosticsData);
     RenderMouseCursor(globalState.renderBrushes, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
   }
 
-  app.dxgi_swapChain->Present(1, 0);
+  swapChain->Present(1, 0);
 
   PlaySoundEffects(screenState);
 
-  UpdateTimer(*app.timer);
-  UpdatePerformanceData(*app.perfData);
+  UpdateTimer(systemTimer);
+  UpdatePerformanceData(perfData);
 }
 
 #endif

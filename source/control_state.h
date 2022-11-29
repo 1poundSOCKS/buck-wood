@@ -2,6 +2,7 @@
 #define _control_state_
 
 #include "framework.h"
+#include "input_state.h"
 
 struct control_state
 {

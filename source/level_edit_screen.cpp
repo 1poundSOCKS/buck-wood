@@ -19,7 +19,7 @@ void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::ve
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
-level_edit_screen_state::level_edit_screen_state(const d2d_app& app, const global_state& globalState)
+level_edit_screen_state::level_edit_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.renderTextFormats),
@@ -164,9 +164,9 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   ProcessDragDrop(*screenState.dragDropState, dragDropControlState);
 }
 
-void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenState)
+void RenderFrame(ID2D1RenderTarget* renderTarget, const level_edit_screen_state& screenState)
 {
-  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
@@ -174,7 +174,7 @@ void RenderFrame(const d2d_frame& frame, const level_edit_screen_state& screenSt
     return;
   }
 
-  frame.renderTarget->SetTransform(screenState.viewTransform);
+  renderTarget->SetTransform(screenState.viewTransform);
 
   std::vector<render_line> renderLines;
   CreateRenderLines(renderLines, *screenState.dragDropState);

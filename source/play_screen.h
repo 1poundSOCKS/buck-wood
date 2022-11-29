@@ -29,7 +29,7 @@ struct play_screen_sounds
 
 struct play_screen_state
 {
-  play_screen_state(const d2d_app& app, const global_state& globalState);
+  play_screen_state(const system_timer& timer, const global_state& globalState);
 
   const global_state& globalState;
   const system_timer& systemTimer;
@@ -52,7 +52,7 @@ struct play_screen_state
 
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState);
+void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState);
 void PlaySoundEffects(const play_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
 screen_status GetScreenStatus(const play_screen_state& screenState);

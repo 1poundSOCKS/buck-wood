@@ -7,12 +7,10 @@ void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const win
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const render_line& line, float renderWidth);
 
-render_target::render_target(HWND windowHandle, UINT fps)
+render_brushes::render_brushes(ID2D1RenderTarget* renderTarget)
 {
-}
+  this->renderTarget.attach(renderTarget);
 
-render_brushes::render_brushes(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget) : renderTarget(renderTarget)
-{
   HRESULT hr = S_OK;
   
   hr = renderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f)), brushWhite.put());

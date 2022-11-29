@@ -6,7 +6,7 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
-main_menu_screen_state::main_menu_screen_state(const d2d_app& app, const global_state& globalState)
+main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
   textFormats(globalState.renderTextFormats),
@@ -32,9 +32,9 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
   screenControlState.renderTargetMouseY = controlState.renderTargetMouseData.y;
 }
 
-void RenderFrame(const d2d_frame& frame, const main_menu_screen_state& screenState)
+void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState)
 {
-  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {

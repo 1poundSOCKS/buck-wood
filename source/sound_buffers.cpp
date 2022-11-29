@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "sound_buffers.h"
 
-sound_buffers::sound_buffers(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path)
+sound_buffers::sound_buffers(IDirectSound8* directSound, const std::wstring& path)
 {
   menuTheme = LoadSoundBuffer(directSound, path, L"main_theme.wav");
   shoot = LoadSoundBuffer(directSound, path, L"shoot_effect.wav");
@@ -9,7 +9,7 @@ sound_buffers::sound_buffers(const winrt::com_ptr<IDirectSound8>& directSound, c
   targetActivated = LoadSoundBuffer(directSound, path, L"target_activated.wav");
 }
 
-std::unique_ptr<sound_buffer> LoadSoundBuffer(const winrt::com_ptr<IDirectSound8>& directSound, const std::wstring& path, const std::wstring& file)
+std::unique_ptr<sound_buffer> LoadSoundBuffer(IDirectSound8* directSound, const std::wstring& path, const std::wstring& file)
 {
   fs::path filename = path;
   filename /= L"sound";

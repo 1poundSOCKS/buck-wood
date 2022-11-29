@@ -23,7 +23,7 @@ struct main_menu_control_state
 
 struct main_menu_screen_state
 {
-  main_menu_screen_state(const d2d_app& app, const global_state& globalState);
+  main_menu_screen_state(const system_timer& timer, const global_state& globalState);
 
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;
@@ -47,7 +47,7 @@ struct main_menu_screen_state
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
-void RenderFrame(const d2d_frame& frame, const main_menu_screen_state& screenState);
+void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState);
 void PlaySoundEffects(const main_menu_screen_state& screenState);
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 screen_status GetScreenStatus(const main_menu_screen_state& screenState);

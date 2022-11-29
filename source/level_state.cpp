@@ -11,6 +11,8 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 bullet& GetBullet(std::vector<bullet>& bullets);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 void UpdatePlayerShipPointData(player_ship_point_data& renderData, const player_ship& playerShip);
+void RenderBullet(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes);
+void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -251,10 +253,10 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   return bullets.front();
 }
 
-void RenderFrame(const d2d_frame& frame, const level_state& levelState, const render_brushes& brushes)
+void RenderFrame(ID2D1RenderTarget* renderTarget, const level_state& levelState, const render_brushes& brushes)
 {
-  auto renderTargetSize = frame.renderTarget->GetSize();
-  frame.renderTarget->SetTransform(levelState.viewTransform);
+  auto renderTargetSize = renderTarget->GetSize();
+  renderTarget->SetTransform(levelState.viewTransform);
 
   RenderLines(brushes, 2, levelState.renderData.staticRenderLines.cbegin(), levelState.renderData.staticRenderLines.cend());
 
@@ -263,11 +265,11 @@ void RenderFrame(const d2d_frame& frame, const level_state& levelState, const re
   for( const auto& bullet : levelState.bullets )
   {
     if( bullet.free ) continue;
-    RenderBullet(frame.renderTarget, levelState.viewTransform, bullet, brushes);
+    RenderBullet(renderTarget, levelState.viewTransform, bullet, brushes);
   }
 }
 
-void RenderBullet(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes)
+void RenderBullet(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes)
 {
   static const float bulletSize = 3.0f;
 

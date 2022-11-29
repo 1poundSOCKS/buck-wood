@@ -17,7 +17,7 @@ struct input_state
 {
   input_state();
 
-  void RefreshKeyboard(const winrt::com_ptr<IDirectInputDevice8>& keyboard);
+  void RefreshKeyboard(IDirectInputDevice8* keyboard);
 
   unsigned char keyboardState[256];
   bool leftMouseButtonDown = false, rightMouseButtonDown = false;

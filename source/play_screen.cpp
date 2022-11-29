@@ -14,8 +14,8 @@ play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
 {
 }
 
-play_screen_state::play_screen_state(const d2d_app& app, const global_state& globalState) 
-: systemTimer(*app.timer), 
+play_screen_state::play_screen_state(const system_timer& timer, const global_state& globalState) 
+: systemTimer(timer), 
   globalState(globalState),
   textFormats(globalState.renderTextFormats),
   renderBrushes(globalState.renderBrushes),
@@ -161,13 +161,13 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   screenState.state = play_screen_state::state_playing;
 }
 
-void RenderFrame(const d2d_frame& frame, const play_screen_state& screenState)
+void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
 {
-  frame.renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderFrame(frame, *screenState.levelState, screenState.renderBrushes);
+  RenderFrame(renderTarget, *screenState.levelState, screenState.renderBrushes);
 
-  frame.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
   switch( screenState.state )
   {
