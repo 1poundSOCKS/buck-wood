@@ -8,13 +8,42 @@
 
 enum screen_status { screen_active, screen_closed };
 
-template<typename screen_state_type> screen_status GetScreenStatus(const screen_state_type& screenState);
+using screen_render_brushes = std::vector<winrt::com_ptr<ID2D1SolidColorBrush>>;
 
+enum screen_render_brush_color { white=0, grey, green, red, yellow, cyan };
+
+struct screen_render_brush_selector
+{
+  screen_render_brushes& brushes;
+  ID2D1SolidColorBrush* operator[](screen_render_brush_color brushColor)
+  {
+    return brushes[brushColor].get();
+  }
+};
+
+using screen_render_text_formats = std::vector<winrt::com_ptr<IDWriteTextFormat>>;
+
+enum screen_render_text_format { diagnostics=0 };
+
+struct screen_render_text_format_selector
+{
+  screen_render_text_formats& textFormats;
+  IDWriteTextFormat* operator[](screen_render_text_format textFormat)
+  {
+    return textFormats[textFormat].get();
+  }
+};
+
+template<typename screen_state_type> screen_status GetScreenStatus(const screen_state_type& screenState);
+void CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, screen_render_brushes& brushes);
+void CreateScreenRenderTextFormats(screen_render_text_formats& textFormats);
+void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, float x, float y);
+void RenderDiagnostics(ID2D1RenderTarget* renderTarget, screen_render_brush_selector brushSelector, screen_render_text_format_selector textFormatSelector, const std::vector<std::wstring>& diagnosticsData);
 bool ProcessMessage();
 
 template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void RunScreen(ID2D1RenderTarget* renderTarget,
-               IDXGISwapChain* swapChain,
+void RunScreen(IDXGISwapChain* swapChain,
+               ID2D1RenderTarget* renderTarget,
                IDirectInputDevice8* keyboard, 
                const window_data& windowData, 
                system_timer& systemTimer, 
@@ -22,12 +51,20 @@ void RunScreen(ID2D1RenderTarget* renderTarget,
 {
   screen_state_type screenState(systemTimer, globalState);
 
+  screen_render_brushes renderBrushes;
+  CreateScreenRenderBrushes(renderTarget, renderBrushes);
+  screen_render_brush_selector renderBrushSelector { renderBrushes };
+
+  screen_render_text_formats textFormats;
+  CreateScreenRenderTextFormats(textFormats);
+  screen_render_text_format_selector textFormatSelector { textFormats};
+
   screen_status screenStatus = screen_active;
 
   while( ProcessMessage() && screenStatus == screen_active )
   {
     UpdateScreen<global_state_type, screen_state_type, control_state_type>
-      (renderTarget, swapChain, keyboard, windowData, systemTimer, perfData, globalState, screenState);
+      (swapChain, renderTarget, renderBrushSelector, textFormatSelector, keyboard, windowData, systemTimer, perfData, globalState, screenState);
 
     screenStatus = GetScreenStatus(screenState);
 	}
@@ -36,8 +73,10 @@ void RunScreen(ID2D1RenderTarget* renderTarget,
 }
 
 template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void UpdateScreen(ID2D1RenderTarget* renderTarget,
-                  IDXGISwapChain* swapChain,
+void UpdateScreen(IDXGISwapChain* swapChain,
+                  ID2D1RenderTarget* renderTarget,
+                  screen_render_brush_selector renderBrushSelector,
+                  screen_render_text_format_selector textFormatSelector,
                   IDirectInputDevice8* keyboard, 
                   const window_data& windowData, 
                   system_timer& systemTimer, 
@@ -85,8 +124,8 @@ void UpdateScreen(ID2D1RenderTarget* renderTarget,
     auto end = QueryPerformanceCounter();
     perfData.renderFrameTicks = end - start;
     renderTarget->SetTransform(D2D1::IdentityMatrix());
-    RenderDiagnostics(globalState.renderBrushes, globalState.renderTextFormats, diagnosticsData);
-    RenderMouseCursor(globalState.renderBrushes, baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
+    RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
+    RenderMouseCursor(renderTarget, renderBrushSelector[white], baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
   }
 
   swapChain->Present(1, 0);

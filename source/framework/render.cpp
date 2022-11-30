@@ -69,6 +69,11 @@ render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, r
 {
 }
 
+render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width)
+: brush(brush)
+{
+}
+
 void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData)
 {
   D2D_SIZE_F size = brushes.renderTarget->GetSize();
@@ -130,26 +135,11 @@ void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget,
   renderTarget->DrawTextW(text.data(),text.length(), textFormat.get(), rect, brush.get());
 }
 
-void RenderMouseCursor(const render_brushes& brushes, float x, float y)
+void RenderText(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text)
 {
-  static const float cursorSize = 20.0f;
-  static const float cursorSizeGap = 10.0f;
-
-  std::vector<D2D1_POINT_2F> mouseCursor;
-  mouseCursor.reserve(8);
-  mouseCursor.push_back(D2D1_POINT_2F(0,-cursorSize));
-  mouseCursor.push_back(D2D1_POINT_2F(0,-cursorSizeGap));
-  mouseCursor.push_back(D2D1_POINT_2F(0,cursorSize));
-  mouseCursor.push_back(D2D1_POINT_2F(0,cursorSizeGap));
-  mouseCursor.push_back(D2D1_POINT_2F(-cursorSize,0));
-  mouseCursor.push_back(D2D1_POINT_2F(-cursorSizeGap,0));
-  mouseCursor.push_back(D2D1_POINT_2F(cursorSize,0));
-  mouseCursor.push_back(D2D1_POINT_2F(cursorSizeGap,0));
-
-  std::vector<render_line> renderLines;
-  renderLines.reserve(4);
-  CreateDisconnectedRenderLines<D2D1_POINT_2F>(mouseCursor.cbegin(), mouseCursor.cend(), std::back_inserter(renderLines), render_brushes::color::color_white, x, y);
-  RenderLines(brushes, 5, renderLines.cbegin(), renderLines.cend());
+  D2D1_SIZE_F size = renderTarget->GetSize();
+  D2D1_RECT_F rect { 0, 0, size.width - 1, size.height - 1 };
+  renderTarget->DrawText(text.data(), text.length(), textFormat, rect, brush);
 }
 
 void RenderPoint(const render_brushes& brushes, const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const render_point& point)
@@ -170,6 +160,14 @@ void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const wi
   for( std::vector<render_line>::const_iterator line = begin; line != end; line++ )
   {
     renderTarget->DrawLine(line->start, line->end, brush.get(), 2.0f);
+  }
+}
+
+void RenderLines(ID2D1RenderTarget* renderTarget, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end)
+{
+  for( std::vector<render_line>::const_iterator line = begin; line != end; line++ )
+  {
+    renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
   }
 }
 

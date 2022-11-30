@@ -36,3 +36,10 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   swprintf(text, L"mouse: %.1f, %.1f", controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y);
   diagnosticsData = text;
 }
+
+std::wstring GetDiagnosticsString(diagnostics_data::const_iterator begin, diagnostics_data::const_iterator end)
+{
+  std::wstring text;
+  for( auto i = begin; i != end; i++ ) { text += *i + L'\n'; }
+  return text;
+}

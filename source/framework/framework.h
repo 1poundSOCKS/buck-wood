@@ -2,7 +2,7 @@
 #define _framework_
 
 #include "d2d_frame.h"
-#include "direct_sound.h"
+#include "sound.h"
 #include "sound_buffer.h"
 #include "sound_buffer_player.h"
 #include "data_files.h"

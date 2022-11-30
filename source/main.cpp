@@ -10,7 +10,6 @@
 #include "global_state.h"
 #include "screens.h"
 #include "main_window.h"
-#include "direct_sound.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -57,15 +56,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     {
     case screen_main_menu:
       RunScreen<global_state, main_menu_screen_state, main_menu_control_state>
-      (renderTarget.get(), swapChain.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
       break;
     case screen_play:
       RunScreen<global_state, play_screen_state, play_screen_control_state>
-      (renderTarget.get(), swapChain.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
       break;
     case screen_level_editor:
       RunScreen<global_state, level_edit_screen_state, level_edit_control_state>
-      (renderTarget.get(), swapChain.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
       break;
     }
 

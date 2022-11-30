@@ -39,9 +39,12 @@ struct render_point
 struct render_line
 {
   render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, render_brushes::color brushColor = render_brushes::color::color_white);
+  render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width = 1);
   
   D2D1_POINT_2F start, end;
   render_brushes::color brushColor;
+  ID2D1SolidColorBrush* brush = nullptr;
+  float width = 1;
 };
 
 void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData);
@@ -49,10 +52,12 @@ void RenderTimer(const render_brushes& brushes, const render_text_formats& textF
 void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
 void RenderPlayStatus(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
 
-void RenderMouseCursor(const render_brushes& brushes, float x, float y);
+void RenderText(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text);
+
 void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);
 void RenderPoint(const render_brushes& brushes, const render_point& point);
 void RenderLines(const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
+void RenderLines(ID2D1RenderTarget* renderTarget, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 
 D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, float renderTargetWidth, float renderTargetHeight);
 const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_brushes::color brushColor);
@@ -94,6 +99,26 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
       D2D1_POINT_2F start(i->x + x, i->y + y);
       D2D1_POINT_2F end(next->x + x, next->y + y);
       insertIterator = render_line(start, end, brushColor);
+    }
+  }
+};
+
+template <typename T>
+void CreateDisconnectedRenderLines(typename T::const_iterator begin, 
+                                   typename T::const_iterator end, 
+                                   std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+                                   ID2D1SolidColorBrush* brush, 
+                                   float width, float x=0, float y=0)
+{
+  for( auto i = begin; i != end; std::advance(i, 2) )
+  {
+    auto next = std::next(i);
+
+    if( next != end )
+    {
+      D2D1_POINT_2F start(i->x + x, i->y + y);
+      D2D1_POINT_2F end(next->x + x, next->y + y);
+      insertIterator = render_line(start, end, brush, width);
     }
   }
 };
