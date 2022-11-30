@@ -40,7 +40,7 @@ void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* br
   std::vector<render_line> renderLines;
   renderLines.reserve(4);
   
-  CreateDisconnectedRenderLines<std::vector<D2D1_POINT_2F>>(
+  CreateDisconnectedRenderLines<D2D1_POINT_2F>(
     mouseCursor.cbegin(), 
     mouseCursor.cend(), 
     std::back_inserter(renderLines), 

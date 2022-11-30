@@ -104,8 +104,8 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
 };
 
 template <typename T>
-void CreateDisconnectedRenderLines(typename T::const_iterator begin, 
-                                   typename T::const_iterator end, 
+void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin, 
+                                   typename std::vector<T>::const_iterator end, 
                                    std::back_insert_iterator<std::vector<render_line>> insertIterator, 
                                    ID2D1SolidColorBrush* brush, 
                                    float width, float x=0, float y=0)
@@ -118,7 +118,8 @@ void CreateDisconnectedRenderLines(typename T::const_iterator begin,
     {
       D2D1_POINT_2F start(i->x + x, i->y + y);
       D2D1_POINT_2F end(next->x + x, next->y + y);
-      insertIterator = render_line(start, end, brush, width);
+      auto renderLine = render_line(start, end, brush, width); 
+      insertIterator = renderLine;
     }
   }
 };
