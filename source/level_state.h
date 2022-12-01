@@ -63,12 +63,6 @@ struct level_control_state
   render_target_mouse_data renderTargetMouseData;
 };
 
-struct level_render_data
-{
-  std::vector<render_line> staticRenderLines;
-  std::vector<render_line> renderLines;
-};
-
 struct level_state
 {
   level_state(const game_level_data& levelData, const system_timer& systemTimer);
@@ -87,12 +81,14 @@ struct level_state
   std::vector<bullet> bullets;
 
   player_ship_point_data playerShipPointData;
-  level_render_data renderData;
 };
 
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
+
 void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+
 bool LevelIsComplete(const level_state& levelState);
+
 void RenderFrame(ID2D1RenderTarget* renderTarget, screen_render_brush_selector renderBrushSelector, const level_state& levelState);
 
 #endif
