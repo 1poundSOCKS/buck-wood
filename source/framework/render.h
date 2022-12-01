@@ -18,16 +18,6 @@ struct render_brushes
   winrt::com_ptr<ID2D1SolidColorBrush> brushCyan;
 };
 
-struct render_text_formats
-{
-  render_text_formats();
-
-  winrt::com_ptr<IDWriteTextFormat> writeTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> menuTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> levelTimerTextFormat;
-  winrt::com_ptr<IDWriteTextFormat> levelEndTextFormat;
-};
-
 struct render_point
 {
   render_point(float x, float y, float size, render_brushes::color brushColor = render_brushes::color::color_white);
@@ -47,12 +37,13 @@ struct render_line
   float width = 1;
 };
 
-void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData);
-void RenderTimer(const render_brushes& brushes, const render_text_formats& textFormats, float seconds);
-void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
-void RenderPlayStatus(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text);
-
-void RenderText(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text);
+void RenderText(
+  ID2D1RenderTarget* renderTarget, 
+  ID2D1SolidColorBrush* brush, 
+  IDWriteTextFormat* textFormat, 
+  std::wstring_view text, 
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
+  DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
 
 void RenderPoints(const render_brushes& brushes, std::vector<render_point>::const_iterator begin, std::vector<render_point>::const_iterator end);
 void RenderPoint(const render_brushes& brushes, const render_point& point);

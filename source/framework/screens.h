@@ -91,7 +91,7 @@ void UpdateScreen(IDXGISwapChain* swapChain,
   {
     d2d_frame frame(renderTarget);
     auto start = QueryPerformanceCounter();
-    RenderFrame(renderTarget, screenState);
+    RenderFrame(renderTarget, renderBrushSelector, textFormatSelector, screenState);
     auto end = QueryPerformanceCounter();
     perfData.renderFrameTicks = end - start;
     renderTarget->SetTransform(D2D1::IdentityMatrix());

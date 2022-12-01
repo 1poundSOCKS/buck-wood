@@ -38,7 +38,6 @@ struct level_edit_screen_state
 
   const global_state& globalState;
   const render_brushes& renderBrushes;
-  const render_text_formats& textFormats;
 
   D2D1::Matrix3x2F viewTransform;
 
@@ -56,11 +55,21 @@ struct level_edit_screen_state
 };
 
 void RefreshControlState(level_edit_control_state& controlState, const control_state& baseControlState);
+
 void UpdateScreenState(level_edit_screen_state& screenState, const level_edit_control_state& controlState, const system_timer& timer);
-void RenderFrame(ID2D1RenderTarget* renderTarget, const level_edit_screen_state& state);
+
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const level_edit_screen_state& state);
+
 void PlaySoundEffects(const level_edit_screen_state& screenState);
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
+
 screen_status GetScreenStatus(const level_edit_screen_state& screenState);
+
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 #endif

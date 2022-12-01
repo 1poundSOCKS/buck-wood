@@ -30,7 +30,6 @@ struct main_menu_screen_state
 
   const global_state& globalState;
   const render_brushes renderBrushes;
-  const render_text_formats& textFormats;
 
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
 
@@ -46,11 +45,21 @@ struct main_menu_screen_state
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);
+
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
-void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState);
+
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const main_menu_screen_state& screenState);
+
 void PlaySoundEffects(const main_menu_screen_state& screenState);
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
+
 screen_status GetScreenStatus(const main_menu_screen_state& screenState);
+
 void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
 
 #endif

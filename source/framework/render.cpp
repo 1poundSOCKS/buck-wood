@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "render.h"
 
-void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<IDWriteTextFormat>& textFormat, 
-                const winrt::com_ptr<ID2D1SolidColorBrush>& brush, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment,
-                D2D1_RECT_F rect, const std::wstring_view& text);
 void RenderLines(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 void RenderLine(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, const winrt::com_ptr<ID2D1SolidColorBrush>& brush, const render_line& line, float renderWidth);
 
@@ -43,27 +40,6 @@ render_point::render_point(float x, float y, float size, render_brushes::color b
   rect.bottom = y + halfSize;
 }
 
-render_text_formats::render_text_formats()
-{
-  HRESULT hr = S_OK;
-  winrt::com_ptr<IDWriteFactory> writeFactory;
-
-  hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(writeFactory),reinterpret_cast<IUnknown**>(writeFactory.put()));
-  if( FAILED(hr) ) throw L"error";
-
-  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,20,L"", writeTextFormat.put());
-  if( FAILED(hr) ) throw L"error";
-
-  hr = writeFactory->CreateTextFormat(L"Verdana",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,40,L"", menuTextFormat.put());
-  if( FAILED(hr) ) throw L"error";
-
-  hr = writeFactory->CreateTextFormat(L"Aldhabi",NULL,DWRITE_FONT_WEIGHT_BOLD,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,60,L"", levelTimerTextFormat.put());
-  if( FAILED(hr) ) throw L"error";
-
-  hr = writeFactory->CreateTextFormat(L"Aldhabi",NULL,DWRITE_FONT_WEIGHT_BOLD,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,100,L"", levelEndTextFormat.put());
-  if( FAILED(hr) ) throw L"error";
-}
-
 render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, render_brushes::color brushColor)
 : start(start), end(end), brushColor(brushColor)
 {
@@ -74,69 +50,20 @@ render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, I
 {
 }
 
-void RenderDiagnostics(const render_brushes& brushes, const render_text_formats& textFormats, const std::vector<std::wstring>& diagnosticsData)
+void RenderText(
+  ID2D1RenderTarget* renderTarget, 
+  ID2D1SolidColorBrush* brush, 
+  IDWriteTextFormat* textFormat, 
+  std::wstring_view text,
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, 
+  DWRITE_TEXT_ALIGNMENT textAlignment)
 {
-  D2D_SIZE_F size = brushes.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-
-  std::wstring msg;
-  for( const auto& text: diagnosticsData )
-  {
-    msg += text;
-    msg += L"\n";
-  }
-
-  RenderText(brushes.renderTarget, textFormats.writeTextFormat, brushes.brushGrey, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_LEADING, rect, msg);
-}
-
-void RenderTimer(const render_brushes& brushes, const render_text_formats& textFormats, float seconds)
-{
-  D2D_SIZE_F size = brushes.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(size.width * 7 / 8, size.height / 16, size.width - 1, size.height * 3 / 16);
-
-  static wchar_t timeText[64];
-  swprintf(timeText, L"%.2f", seconds);
-
-  RenderText(brushes.renderTarget, textFormats.levelTimerTextFormat, brushes.brushYellow, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING, rect, timeText);
-}
-
-void RenderMainScreenPrompt(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text)
-{
-  D2D_SIZE_F size = brushes.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  RenderText(brushes.renderTarget, textFormats.menuTextFormat, brushes.brushCyan, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, rect, text);
-}
-
-void RenderPlayStatus(const render_brushes& brushes, const render_text_formats& textFormats, const std::wstring_view& text)
-{
-  D2D_SIZE_F size = brushes.renderTarget->GetSize();
-  D2D1_RECT_F rect = D2D1::RectF(0, 0, size.width - 1, size.height - 1);
-  brushes.renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  RenderText(brushes.renderTarget, textFormats.levelEndTextFormat, brushes.brushCyan, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, rect, text);
-}
-
-void RenderText(const winrt::com_ptr<ID2D1RenderTarget>& renderTarget,
-                const winrt::com_ptr<IDWriteTextFormat>& textFormat,
-                const winrt::com_ptr<ID2D1SolidColorBrush>& brush,
-                DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
-                DWRITE_TEXT_ALIGNMENT textAlignment,
-                D2D1_RECT_F rect,
-                const std::wstring_view& text)
-{
-  HRESULT hr;
-
-  hr = textFormat->SetParagraphAlignment(paragraphAlignment);
+  HRESULT hr = textFormat->SetParagraphAlignment(paragraphAlignment);
   if( FAILED(hr) ) throw L"error";
 
   hr = textFormat->SetTextAlignment(textAlignment);
   if( FAILED(hr) ) throw L"error";
 
-  renderTarget->DrawTextW(text.data(),text.length(), textFormat.get(), rect, brush.get());
-}
-
-void RenderText(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text)
-{
   D2D1_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect { 0, 0, size.width - 1, size.height - 1 };
   renderTarget->DrawText(text.data(), text.length(), textFormat, rect, brush);

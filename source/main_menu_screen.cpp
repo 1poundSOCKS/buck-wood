@@ -9,7 +9,6 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
 main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
-  textFormats(globalState.renderTextFormats),
   checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
   musicPlayer(globalState.soundBuffers.menuTheme)
 {
@@ -32,13 +31,17 @@ void RefreshControlState(main_menu_control_state& screenControlState, const cont
   screenControlState.renderTargetMouseY = controlState.renderTargetMouseData.y;
 }
 
-void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState)
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const main_menu_screen_state& screenState)
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {
-    RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
+    RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     return;
   }
 
@@ -47,7 +50,7 @@ void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& 
   titleText += L"Left mouse button - shoot\n";
   titleText += L"\nPress SPACE to start";
 
-  RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, titleText);
+  RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 }
 
 void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer)

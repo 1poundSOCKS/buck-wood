@@ -22,7 +22,6 @@ void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::lis
 level_edit_screen_state::level_edit_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
   renderBrushes(globalState.renderBrushes),
-  textFormats(globalState.renderTextFormats),
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
@@ -164,13 +163,17 @@ void RunDragDrop(level_edit_screen_state& screenState, const level_edit_control_
   ProcessDragDrop(*screenState.dragDropState, dragDropControlState);
 }
 
-void RenderFrame(ID2D1RenderTarget* renderTarget, const level_edit_screen_state& screenState)
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const level_edit_screen_state& screenState)
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    RenderMainScreenPrompt(screenState.renderBrushes, screenState.textFormats, L"save changes (y/n)");
+    RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     return;
   }
 

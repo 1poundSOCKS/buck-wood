@@ -15,7 +15,7 @@ struct global_state
 
   std::wstring dataPath;
   render_brushes renderBrushes;
-  render_text_formats renderTextFormats;
+  // render_text_formats renderTextFormats;
   sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
 

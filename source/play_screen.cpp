@@ -17,7 +17,6 @@ play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
 play_screen_state::play_screen_state(const system_timer& timer, const global_state& globalState) 
 : systemTimer(timer), 
   globalState(globalState),
-  textFormats(globalState.renderTextFormats),
   renderBrushes(globalState.renderBrushes),
   sounds(globalState.soundBuffers)
 {
@@ -161,7 +160,11 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   screenState.state = play_screen_state::state_playing;
 }
 
-void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const play_screen_state& screenState)
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -172,21 +175,23 @@ void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& scree
   switch( screenState.state )
   {
     case play_screen_state::state_paused:
-      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"PAUSED");
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"PAUSED", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_level_complete:
-      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"LEVEL COMPLETE");
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"LEVEL COMPLETE", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_game_complete:
-      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, GetGameCompleteMsg(screenState.levelTimes));
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], GetGameCompleteMsg(screenState.levelTimes), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_player_dead:
-      RenderPlayStatus(screenState.renderBrushes, screenState.textFormats, L"DEAD");
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"DEAD", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  RenderTimer(screenState.renderBrushes, screenState.textFormats, levelTimeRemaining);
+  static wchar_t timerText[64];
+  swprintf(timerText, L"%.2f", levelTimeRemaining);
+  RenderText(renderTarget, renderBrushSelector[yellow], textFormatSelector[diagnostics], timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
 }
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)

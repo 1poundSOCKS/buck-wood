@@ -39,7 +39,6 @@ struct play_screen_state
   bool returnToMenu = false;
 
   render_brushes renderBrushes;
-  render_text_formats textFormats;
 
   play_screen_sounds sounds;
 
@@ -51,11 +50,21 @@ struct play_screen_state
 };
 
 void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
+
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState);
+
+void RenderFrame(
+  ID2D1RenderTarget* renderTarget, 
+  screen_render_brush_selector renderBrushSelector, 
+  screen_render_text_format_selector textFormatSelector,
+  const play_screen_state& screenState);
+
 void PlaySoundEffects(const play_screen_state& screenState);
+
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
+
 screen_status GetScreenStatus(const play_screen_state& screenState);
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif
