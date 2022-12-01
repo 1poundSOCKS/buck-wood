@@ -12,7 +12,6 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 bullet& GetBullet(std::vector<bullet>& bullets);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
-void RenderBullet(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes);
 void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
 void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
@@ -276,17 +275,6 @@ void RenderFrame(
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
-}
-
-void RenderBullet(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes)
-{
-  static const float bulletSize = 3.0f;
-
-  auto translate = D2D1::Matrix3x2F::Translation(bullet.xPos, bullet.yPos);
-  auto transform = translate * viewTransform;
-  renderTarget->SetTransform(transform);
-  auto rectangle = D2D1::RectF(- bulletSize / 2, - bulletSize / 2, bulletSize / 2, bulletSize / 2);
-  renderTarget->FillRectangle(&rectangle, brushes.brushRed.get());
 }
 
 void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes)

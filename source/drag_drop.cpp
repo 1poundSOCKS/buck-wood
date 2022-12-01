@@ -9,7 +9,6 @@ void DragHighlightedPoints(std::list<drag_drop_point>::iterator begin, std::list
 void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end);
 void CreateDragDropRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator, screen_render_brush_selector renderBrushSelector);
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
-render_brushes::color GetBrushColor(const drag_drop_point& point);
 ID2D1SolidColorBrush *GetDragDropPointBrush(const drag_drop_point& point, screen_render_brush_selector renderBrushSelector);
 
 drag_drop_point::drag_drop_point(float x, float y, type pointType)
