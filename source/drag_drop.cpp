@@ -188,7 +188,7 @@ void CreateDragDropRenderPoints(
 {
   std::transform(begin, end, insertIterator, [renderBrushSelector](const drag_drop_point& dragDropPoint)
   {
-    return render_point(dragDropPoint.x, dragDropPoint.y, GetDragDropPointBrush(dragDropPoint, renderBrushSelector), 4);
+    return render_point(dragDropPoint.x, dragDropPoint.y, GetDragDropPointBrush(dragDropPoint, renderBrushSelector), 8);
   });
 }
 

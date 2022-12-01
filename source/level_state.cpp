@@ -12,8 +12,8 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 bullet& GetBullet(std::vector<bullet>& bullets);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
-void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
-void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
+void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
+void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -260,34 +260,34 @@ void RenderFrame(
   renderTarget->SetTransform(levelState.viewTransform);
 
   std::vector<render_line> staticRenderLines;
-  CreateRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
+  CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
   RenderLines(renderTarget, staticRenderLines.cbegin(), staticRenderLines.cend());
 
   std::vector<render_line> renderLines;
-  CreateRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
+  CreateDynamicLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 
   std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )
   {
     if( bullet.free ) continue;
-    renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 4));
+    renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 8));
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
 }
 
-void CreateRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes)
+void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes)
 {
-  CreateConnectedRenderLines(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, brushes[grey], 4);
+  CreateConnectedRenderLines(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, brushes[grey], 6);
 
   for( const auto& object : gameLevelData.objects )
   {
-    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[grey], 4);
+    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[grey], 6);
   }
 }
 
-void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes)
+void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes)
 {
   for( const auto& target : levelState.targets )
   {
@@ -296,7 +296,7 @@ void CreateRenderLines(const level_state& levelState, std::back_insert_iterator<
     CreatePointsForTarget(defaultTargetSize, std::back_inserter(points));
     std::vector<game_point> transformedPoints;
     TransformPoints(points.cbegin(), points.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
-    CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 3);
+    CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 4);
   }
 
   const auto& player = levelState.player;

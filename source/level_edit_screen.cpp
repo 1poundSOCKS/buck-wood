@@ -22,7 +22,6 @@ void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::lis
 
 level_edit_screen_state::level_edit_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
-  // renderBrushes(globalState.renderBrushes),
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
