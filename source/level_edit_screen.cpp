@@ -22,7 +22,7 @@ void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::lis
 
 level_edit_screen_state::level_edit_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
-  renderBrushes(globalState.renderBrushes),
+  // renderBrushes(globalState.renderBrushes),
   gameLevelDataIndex(*globalState.gameLevelDataIndex)
 {
   currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
@@ -181,12 +181,12 @@ void RenderFrame(
   renderTarget->SetTransform(screenState.viewTransform);
 
   std::vector<render_line> renderLines;
-  CreateRenderLines(renderLines, *screenState.dragDropState);
-  RenderLines(screenState.globalState.renderBrushes, 2, renderLines.begin(), renderLines.end());
+  CreateDragDropRenderLines(renderLines, *screenState.dragDropState, renderBrushSelector);
+  RenderLines(renderTarget, renderLines.begin(), renderLines.end());
 
   std::vector<render_point> renderPoints;
-  CreateRenderPoints(renderPoints, *screenState.dragDropState);
-  RenderPoints(screenState.globalState.renderBrushes, renderPoints.cbegin(), renderPoints.cend());
+  CreateDragDropRenderPoints(renderPoints, *screenState.dragDropState, renderBrushSelector);
+  RenderPoints(renderTarget, renderPoints.begin(), renderPoints.end());
 }
 
 void PlaySoundEffects(const level_edit_screen_state& screenState)

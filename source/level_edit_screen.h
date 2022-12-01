@@ -37,7 +37,6 @@ struct level_edit_screen_state
   bool returnToMenu = false;
 
   const global_state& globalState;
-  const render_brushes& renderBrushes;
 
   D2D1::Matrix3x2F viewTransform;
 

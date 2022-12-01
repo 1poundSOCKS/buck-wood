@@ -3,6 +3,7 @@
 
 #include "render.h"
 #include "diagnostics.h"
+#include "screen_render.h"
 
 struct drag_drop_point
 {
@@ -53,9 +54,13 @@ struct drag_drop_control_state
 };
 
 void InitializeDragDrop(drag_drop_state& state);
+
 void ProcessDragDrop(drag_drop_state& dragDropState, const drag_drop_control_state& controlState);
-void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& state);
-void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state);
+
+void CreateDragDropRenderLines(std::vector<render_line>& lines, const drag_drop_state& state, screen_render_brush_selector renderBrushSelector);
+
+void CreateDragDropRenderPoints(std::vector<render_point>& points, const drag_drop_state& state, screen_render_brush_selector renderBrushSelector);
+
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const drag_drop_state& state);
 
 #endif

@@ -7,11 +7,10 @@ void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& cont
 void HighlightClosestPoint(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y, float proximity);
 void DragHighlightedPoints(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end, float x, float y);
 void MarkHighlightedPointsAsDeleted(std::list<drag_drop_point>::iterator begin, std::list<drag_drop_point>::iterator end);
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, bool closed, float x=0, float y=0);
-void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator);
-render_point CreateRenderPoint(const drag_drop_point& point);
+void CreateDragDropRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator, screen_render_brush_selector renderBrushSelector);
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
 render_brushes::color GetBrushColor(const drag_drop_point& point);
+ID2D1SolidColorBrush *GetDragDropPointBrush(const drag_drop_point& point, screen_render_brush_selector renderBrushSelector);
 
 drag_drop_point::drag_drop_point(float x, float y, type pointType)
 : x(x), y(y), pointType(pointType)
@@ -115,36 +114,11 @@ void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& cont
   }
 }
 
-void CreateRenderLines(std::vector<render_line>& lines, const drag_drop_state& state)
+void CreateDragDropRenderLines(std::vector<render_line>& lines, const drag_drop_state& state, screen_render_brush_selector renderBrushSelector)
 {
   for( const auto shape : state.shapes )
   {
-    CreateRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines), shape.closed, shape.position.x, shape.position.y);
-  }
-}
-
-void CreateRenderLines(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_line>> insertIterator, bool closed, float x, float y)
-{
-  std::transform(std::next(begin), end, begin, insertIterator, [x,y](const auto& point1, const auto& point2)
-  {
-    D2D1_POINT_2F start, end;
-    start.x = point2.x + x;
-    start.y = point2.y + y;
-    end.x = point1.x + x;
-    end.y = point1.y + y;
-    return render_line(start, end);
-  });
-
-  if( closed )
-  {
-    std::list<drag_drop_point>::const_iterator last = std::prev(end);
-
-    D2D1_POINT_2F startPoint, endPoint;
-    startPoint.x = last->x + x;
-    startPoint.y = last->y + y;
-    endPoint.x = begin->x + x;
-    endPoint.y = begin->y + y;
-    insertIterator = render_line(startPoint, endPoint);
+    CreateConnectedRenderLines(shape.points.cbegin(), shape.points.cend(), std::back_inserter(lines), renderBrushSelector[white], 2, shape.position.x, shape.position.y);
   }
 }
 
@@ -195,39 +169,43 @@ drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_poi
   return drag_drop_point(start.x + cx / 2, start.y + cy / 2, drag_drop_point::type::type_virtual);
 }
 
-void CreateRenderPoints(std::vector<render_point>& points, const drag_drop_state& state)
+void CreateDragDropRenderPoints(
+  std::vector<render_point>& points, 
+  const drag_drop_state& state, 
+  screen_render_brush_selector renderBrushSelector)
 {
   for( const auto shape : state.shapes )
   {
-    if( shape.fixedShape ) points.push_back(CreateRenderPoint(shape.position));
-    else CreateRenderPoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(points));
+    if( shape.fixedShape ) points.push_back(render_point(shape.position.x, shape.position.y, GetDragDropPointBrush(shape.position, renderBrushSelector), 4));
+    else CreateDragDropRenderPoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(points), renderBrushSelector);
   }
 }
 
-void CreateRenderPoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<render_point>> insertIterator)
+void CreateDragDropRenderPoints(
+  std::list<drag_drop_point>::const_iterator begin, 
+  std::list<drag_drop_point>::const_iterator end, 
+  std::back_insert_iterator<std::vector<render_point>> insertIterator, 
+  screen_render_brush_selector renderBrushSelector)
 {
-  std::transform(begin, end, insertIterator, [](const drag_drop_point& dragDropPoint)
+  std::transform(begin, end, insertIterator, [renderBrushSelector](const drag_drop_point& dragDropPoint)
   {
-    return CreateRenderPoint(dragDropPoint);
+    return render_point(dragDropPoint.x, dragDropPoint.y, GetDragDropPointBrush(dragDropPoint, renderBrushSelector), 4);
   });
 }
 
-render_point CreateRenderPoint(const drag_drop_point& point)
+ID2D1SolidColorBrush* GetDragDropPointBrush(const drag_drop_point& point, screen_render_brush_selector renderBrushSelector)
 {
-  return render_point(point.x, point.y, 10, GetBrushColor(point));
-}
-
-render_brushes::color GetBrushColor(const drag_drop_point& point)
-{
-  if( point.highlighted ) return render_brushes::color::color_red;
-
-  switch( point.pointType )
+  if( point.highlighted ) return renderBrushSelector[red];
+  else
   {
-    case drag_drop_point::type::type_undefined:
-    case drag_drop_point::type::type_real:
-      return render_brushes::color::color_green;
-    default:
-      return render_brushes::color::color_white;
+    switch( point.pointType )
+    {
+      case drag_drop_point::type::type_undefined:
+      case drag_drop_point::type::type_real:
+        return renderBrushSelector[green];
+      default:
+        return renderBrushSelector[white];
+    }
   }
 }
 

@@ -8,7 +8,6 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
 
 main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
-  renderBrushes(globalState.renderBrushes),
   checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
   musicPlayer(globalState.soundBuffers.menuTheme)
 {

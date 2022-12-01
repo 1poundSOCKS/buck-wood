@@ -14,8 +14,6 @@ struct global_state
   global_state(const std::wstring& dataPath, ID2D1RenderTarget* renderTarget, IDirectSound8* directSound);
 
   std::wstring dataPath;
-  render_brushes renderBrushes;
-  // render_text_formats renderTextFormats;
   sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
 

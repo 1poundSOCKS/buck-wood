@@ -29,7 +29,6 @@ struct main_menu_screen_state
   view_state viewState = view_default;
 
   const global_state& globalState;
-  const render_brushes renderBrushes;
 
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
 

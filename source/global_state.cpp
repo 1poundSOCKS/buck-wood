@@ -3,7 +3,6 @@
 
 global_state::global_state(const std::wstring& dataPath, ID2D1RenderTarget* renderTarget, IDirectSound8* directSound)
 : dataPath(dataPath), 
-  renderBrushes(renderTarget),
   soundBuffers(directSound, dataPath)
 {
   gameLevelDataIndex = LoadAllGameLevelData(dataPath);
