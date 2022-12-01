@@ -17,7 +17,6 @@ play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
 play_screen_state::play_screen_state(const system_timer& timer, const global_state& globalState) 
 : systemTimer(timer), 
   globalState(globalState),
-  renderBrushes(globalState.renderBrushes),
   sounds(globalState.soundBuffers)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
@@ -168,7 +167,7 @@ void RenderFrame(
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderFrame(renderTarget, renderBrushSelector, *screenState.levelState, screenState.renderBrushes);
+  RenderFrame(renderTarget, renderBrushSelector, *screenState.levelState);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

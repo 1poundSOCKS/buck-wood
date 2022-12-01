@@ -93,6 +93,6 @@ struct level_state
 void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
 void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 bool LevelIsComplete(const level_state& levelState);
-void RenderFrame(ID2D1RenderTarget* renderTarget, screen_render_brush_selector renderBrushSelector, const level_state& levelState, const render_brushes& brushes);
+void RenderFrame(ID2D1RenderTarget* renderTarget, screen_render_brush_selector renderBrushSelector, const level_state& levelState);
 
 #endif

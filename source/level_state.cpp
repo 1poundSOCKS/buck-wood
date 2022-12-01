@@ -255,8 +255,7 @@ bullet& GetBullet(std::vector<bullet>& bullets)
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 
   screen_render_brush_selector renderBrushSelector, 
-  const level_state& levelState, 
-  const render_brushes& brushes)
+  const level_state& levelState)
 {
   auto renderTargetSize = renderTarget->GetSize();
   renderTarget->SetTransform(levelState.viewTransform);
@@ -274,7 +273,6 @@ void RenderFrame(
   {
     if( bullet.free ) continue;
     renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 4));
-    // RenderBullet(renderTarget, levelState.viewTransform, bullet, brushes);
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());

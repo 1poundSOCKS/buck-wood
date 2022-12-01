@@ -38,8 +38,6 @@ struct play_screen_state
   STATE state = state_playing;
   bool returnToMenu = false;
 
-  render_brushes renderBrushes;
-
   play_screen_sounds sounds;
 
   std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
