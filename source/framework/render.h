@@ -103,25 +103,34 @@ void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin
   }
 };
 
-template <typename T>
-void CreateDisconnectedRenderLines(typename std::vector<T>::const_iterator begin, 
-                                   typename std::vector<T>::const_iterator end, 
-                                   std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+template <typename input_iterator_type, typename insert_iterator_type>
+void CreateDisconnectedRenderLines(typename input_iterator_type begin, 
+                                   typename input_iterator_type end, 
+                                   insert_iterator_type insertIterator, 
                                    ID2D1SolidColorBrush* brush, 
                                    float width, float x=0, float y=0)
 {
   for( auto i = begin; i != end; std::advance(i, 2) )
   {
     auto next = std::next(i);
-
-    if( next != end )
-    {
-      D2D1_POINT_2F start(i->x + x, i->y + y);
-      D2D1_POINT_2F end(next->x + x, next->y + y);
-      auto renderLine = render_line(start, end, brush, width); 
-      insertIterator = renderLine;
-    }
+    if( next != end ) insertIterator = render_line({i->x + x, i->y + y}, {next->x + x, next->y + y}, brush, width);
   }
+};
+
+template <typename input_iterator_type, typename insert_iterator_type>
+void CreateConnectedRenderLines(typename input_iterator_type begin, 
+                                typename input_iterator_type end, 
+                                typename insert_iterator_type insertIterator, 
+                                ID2D1SolidColorBrush* brush, 
+                                float width, float x=0, float y=0)
+{
+  std::transform(std::next(begin), end, begin, insertIterator, [brush, width, x, y](const auto& point2, const auto& point1)
+  {
+    return render_line({point1.x + x, point1.y + y}, {point2.x + x, point2.y + y}, brush, width);
+  });
+
+  auto last = std::prev(end);
+  insertIterator = render_line({last->x + x, last->y + y}, {begin->x + x, begin->y + y}, brush, width);
 };
 
 #endif
