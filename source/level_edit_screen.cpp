@@ -2,6 +2,7 @@
 #include "level_edit_screen.h"
 #include "render.h"
 #include "game_math.h"
+#include "level_render.h"
 
 D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const level_edit_screen_state& screenState);
 void UpdateScreenExitState(level_edit_screen_state& screenState, const level_edit_control_state& controlState);

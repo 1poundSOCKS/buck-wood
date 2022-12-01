@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "level_state.h"
 #include "game_objects.h"
+#include "level_render.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
@@ -268,11 +269,15 @@ void RenderFrame(
   CreateRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 
+  std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )
   {
     if( bullet.free ) continue;
-    RenderBullet(renderTarget, levelState.viewTransform, bullet, brushes);
+    renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 4));
+    // RenderBullet(renderTarget, levelState.viewTransform, bullet, brushes);
   }
+
+  RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
 }
 
 void RenderBullet(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform, const bullet& bullet, const render_brushes& brushes)

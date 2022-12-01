@@ -21,9 +21,11 @@ struct render_brushes
 struct render_point
 {
   render_point(float x, float y, float size, render_brushes::color brushColor = render_brushes::color::color_white);
+  render_point(float x, float y, ID2D1SolidColorBrush* brush, float size);
   
   D2D1_RECT_F rect;
   render_brushes::color brushColor;
+  ID2D1SolidColorBrush* brush = nullptr;
 };
 
 struct render_line
@@ -50,7 +52,15 @@ void RenderPoint(const render_brushes& brushes, const render_point& point);
 void RenderLines(const render_brushes& brushes, float renderWidth, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 void RenderLines(ID2D1RenderTarget* renderTarget, std::vector<render_line>::const_iterator begin, std::vector<render_line>::const_iterator end);
 
-D2D1::Matrix3x2F CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, float renderTargetWidth, float renderTargetHeight);
+template <typename input_iterator_type>
+void RenderPoints(ID2D1RenderTarget* renderTarget, const typename input_iterator_type begin, const typename input_iterator_type end)
+{
+  for( auto point = begin; point != end; ++point )
+  {
+    renderTarget->FillRectangle(point->rect, point->brush);
+  }
+}
+
 const winrt::com_ptr<ID2D1SolidColorBrush>& GetBrush(const render_brushes& brushes, render_brushes::color brushColor);
 
 template <typename T>
