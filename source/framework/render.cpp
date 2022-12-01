@@ -1,20 +1,8 @@
 #include "pch.h"
 #include "render.h"
 
-void RenderLines(
-  const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
-  std::vector<render_line>::const_iterator begin, 
-  std::vector<render_line>::const_iterator end);
-
-void RenderLine(
-  const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
-  const render_line& line, 
-  float renderWidth);
-
 render_point::render_point(float x, float y, ID2D1SolidColorBrush* brush, float size)
-: rect({x - size, y - size, x + size, y + size}), brush(brush)
+: rect({x - size / 2, y - size / 2, x + size / 2, y + size /2}), brush(brush)
 {
 }
 
@@ -40,36 +28,4 @@ void RenderText(
   D2D1_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect { 0, 0, size.width - 1, size.height - 1 };
   renderTarget->DrawText(text.data(), text.length(), textFormat, rect, brush);
-}
-
-void RenderLines(
-  const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
-  std::vector<render_line>::const_iterator begin, 
-  std::vector<render_line>::const_iterator end)
-{
-  for( std::vector<render_line>::const_iterator line = begin; line != end; line++ )
-  {
-    renderTarget->DrawLine(line->start, line->end, brush.get(), 2.0f);
-  }
-}
-
-void RenderLines(
-  ID2D1RenderTarget* renderTarget, 
-  std::vector<render_line>::const_iterator begin, 
-  std::vector<render_line>::const_iterator end)
-{
-  for( std::vector<render_line>::const_iterator line = begin; line != end; line++ )
-  {
-    renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
-  }
-}
-
-void RenderLine(
-  const winrt::com_ptr<ID2D1RenderTarget>& renderTarget, 
-  const winrt::com_ptr<ID2D1SolidColorBrush>& brush, 
-  const render_line& line, 
-  float renderWidth)
-{
-  renderTarget->DrawLine(line.start, line.end, brush.get(), renderWidth);
 }

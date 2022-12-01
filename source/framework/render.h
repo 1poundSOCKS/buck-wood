@@ -28,10 +28,17 @@ void RenderText(
   DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
   DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
 
+template <typename input_iterator_type>
 void RenderLines(
   ID2D1RenderTarget* renderTarget, 
-  std::vector<render_line>::const_iterator begin, 
-  std::vector<render_line>::const_iterator end);
+  input_iterator_type begin, 
+  input_iterator_type end)
+{
+  for( auto line = begin; line != end; line++ )
+  {
+    renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
+  }
+}
 
 template <typename input_iterator_type>
 void RenderPoints(
