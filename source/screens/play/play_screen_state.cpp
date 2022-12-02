@@ -142,15 +142,9 @@ void OnLevelComplete(play_screen_state& screenState, const play_screen_control_s
   screenState.state = play_screen_state::state_playing;
 }
 
-screen_status GetScreenStatus(const play_screen_state& screenState)
+bool ContinueRunning(const play_screen_state& screenState)
 {
-  if( screenState.returnToMenu ) return screen_closed;
-  else return screen_active;
-}
-
-void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
-{
-  globalState.currentScreenId = screen_main_menu;
+  return screenState.returnToMenu ? false : true;
 }
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)

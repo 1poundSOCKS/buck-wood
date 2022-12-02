@@ -10,7 +10,7 @@
 #include "play/play_screen_sound.h"
 #include "level_edit/level_edit_screen.h"
 #include "global_state.h"
-#include "screens.h"
+#include "screen_runner.h"
 #include "main_window.h"
 
 #pragma comment(lib,"user32.lib")
@@ -24,6 +24,10 @@
 #pragma comment(lib,"gtest_main.lib")
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
+
+void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
+void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
+void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 extern const int fps = 60;
 
@@ -78,4 +82,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   }
 
   return 0;
+}
+
+void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState)
+{
+  if( screenState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
+  
+  if( screenState.startPlay ) globalState.currentScreenId = screen_play;
+  else if( screenState.startLevelEdit ) globalState.currentScreenId = screen_level_editor;
+  else if( screenState.quit ) globalState.currentScreenId = screen_none;
+}
+
+void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
+{
+  globalState.currentScreenId = screen_main_menu;
+}
+
+void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
+{
+  if( screenState.saveChanges )
+  {
+    globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
+    globalState.gameLevelDataIndexUpdated = true;
+  }
+
+  globalState.currentScreenId = screen_main_menu;
 }

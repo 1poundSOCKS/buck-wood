@@ -120,17 +120,7 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 {
 }
 
-screen_status GetScreenStatus(const main_menu_screen_state& screenState)
+bool ContinueRunning(const main_menu_screen_state& screenState)
 {
-  if( screenState.quit || screenState.startPlay || screenState.startLevelEdit ) return screen_closed;
-  else return screen_active;
-}
-
-void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState)
-{
-  if( screenState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
-  
-  if( screenState.startPlay ) globalState.currentScreenId = screen_play;
-  else if( screenState.startLevelEdit ) globalState.currentScreenId = screen_level_editor;
-  else if( screenState.quit ) globalState.currentScreenId = screen_none;
+  return screenState.quit || screenState.startPlay || screenState.startLevelEdit ? false : true;
 }

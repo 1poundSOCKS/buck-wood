@@ -7,7 +7,7 @@
 #include "diagnostics.h"
 #include "global_state.h"
 #include "drag_drop.h"
-#include "screens.h"
+#include "screen_render.h"
 #include "sound_buffer_selector.h"
 
 struct level_edit_control_state
@@ -67,8 +67,6 @@ void PlaySoundEffects(const level_edit_screen_state& screenState, global_sound_b
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 
-screen_status GetScreenStatus(const level_edit_screen_state& screenState);
-
-void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
+bool ContinueRunning(const level_edit_screen_state& screenState);
 
 #endif

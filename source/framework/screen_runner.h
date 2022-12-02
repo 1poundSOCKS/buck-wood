@@ -1,5 +1,5 @@
-#ifndef _screens_
-#define _screens_
+#ifndef _screen_runner_
+#define _screen_runner_
 
 #include "screen_render.h"
 #include "global_state.h"
@@ -33,9 +33,9 @@ void RunScreen(
   CreateScreenRenderTextFormats(textFormats);
   screen_render_text_format_selector textFormatSelector { textFormats};
 
-  screen_status screenStatus = screen_active;
+  bool continueRunning = true;
 
-  while( ProcessMessage() && screenStatus == screen_active )
+  while( ProcessMessage() && ContinueRunning(screenState) )
   {
     UpdateScreen<global_state_type, screen_state_type, control_state_type, sound_buffer_selector_type>
       (
@@ -51,8 +51,6 @@ void RunScreen(
         screenState,
         soundBufferSelector
       );
-
-    screenStatus = GetScreenStatus(screenState);
 	}
 
   UpdateGlobalState(globalState, screenState);

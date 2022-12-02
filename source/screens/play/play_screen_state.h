@@ -8,7 +8,7 @@
 #include "global_state.h"
 #include "play_screen_control_state.h"
 #include "level_state.h"
-#include "screens.h"
+#include "screen_render.h"
 
 struct play_screen_state
 {
@@ -30,9 +30,7 @@ struct play_screen_state
 
 void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 
-void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
-
-screen_status GetScreenStatus(const play_screen_state& screenState);
+bool ContinueRunning(const play_screen_state& screenState);
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 

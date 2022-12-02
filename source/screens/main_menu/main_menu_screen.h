@@ -6,8 +6,8 @@
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "global_state.h"
-#include "screens.h"
 #include "sound_buffer_selector.h"
+#include "screen_render.h"
 
 struct main_menu_control_state
 {
@@ -55,8 +55,6 @@ void PlaySoundEffects(const main_menu_screen_state& screenState, global_sound_bu
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
-screen_status GetScreenStatus(const main_menu_screen_state& screenState);
-
-void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
+bool ContinueRunning(const main_menu_screen_state& screenState);
 
 #endif

@@ -210,21 +210,9 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   FormatDiagnostics(diagnosticsData, *screenState.dragDropState);
 }
 
-screen_status GetScreenStatus(const level_edit_screen_state& screenState)
+bool ContinueRunning(const level_edit_screen_state& screenState)
 {
-  if( screenState.returnToMenu ) return screen_closed;
-  else return screen_active;
-}
-
-void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
-{
-  if( screenState.saveChanges )
-  {
-    globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
-    globalState.gameLevelDataIndexUpdated = true;
-  }
-
-  globalState.currentScreenId = screen_main_menu;
+  return screenState.returnToMenu ? false : true;
 }
 
 void LoadCurrentLevel(level_edit_screen_state& screenState)
