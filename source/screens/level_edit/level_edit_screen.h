@@ -3,12 +3,13 @@
 
 #include "framework.h"
 #include "control_state.h"
-#include "sound_buffers.h"
+// #include "sound_buffers.h"
 #include "game_objects.h"
 #include "diagnostics.h"
 #include "global_state.h"
 #include "drag_drop.h"
 #include "screens.h"
+#include "sound_buffer_selector.h"
 
 struct level_edit_control_state
 {
@@ -63,7 +64,7 @@ void RenderFrame(
   screen_render_text_format_selector textFormatSelector,
   const level_edit_screen_state& state);
 
-void PlaySoundEffects(const level_edit_screen_state& screenState);
+void PlaySoundEffects(const level_edit_screen_state& screenState, global_sound_buffer_selector_type soundBuffers);
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const level_edit_screen_state& screenState, const level_edit_control_state& controlState);
 

@@ -3,11 +3,12 @@
 
 #include "framework.h"
 #include "control_state.h"
-#include "sound_buffers.h"
+// #include "sound_buffers.h"
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "global_state.h"
 #include "screens.h"
+#include "sound_buffer_selector.h"
 
 struct main_menu_control_state
 {
@@ -40,7 +41,7 @@ struct main_menu_screen_state
   bool saveGameLevelData = false;
   bool checkSaveOnExit = true;
 
-  sound_buffer_player musicPlayer;
+  // sound_buffer_player musicPlayer;
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);
@@ -53,7 +54,7 @@ void RenderFrame(
   screen_render_text_format_selector textFormatSelector,
   const main_menu_screen_state& screenState);
 
-void PlaySoundEffects(const main_menu_screen_state& screenState);
+void PlaySoundEffects(const main_menu_screen_state& screenState, global_sound_buffer_selector_type soundBuffers);
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 

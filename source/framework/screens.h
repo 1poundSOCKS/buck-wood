@@ -12,13 +12,16 @@ enum screen_status { screen_active, screen_closed };
 template<typename screen_state_type> screen_status GetScreenStatus(const screen_state_type& screenState);
 bool ProcessMessage();
 
-template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void RunScreen(IDXGISwapChain* swapChain,
-               ID2D1RenderTarget* renderTarget,
-               IDirectInputDevice8* keyboard, 
-               const window_data& windowData, 
-               system_timer& systemTimer, 
-               perf_data& perfData, global_state_type& globalState)
+template<typename global_state_type, typename screen_state_type, typename control_state_type, typename sound_buffer_selector_type>
+void RunScreen(
+  IDXGISwapChain* swapChain,
+  ID2D1RenderTarget* renderTarget,
+  IDirectInputDevice8* keyboard, 
+  const window_data& windowData, 
+  system_timer& systemTimer, 
+  perf_data& perfData, 
+  global_state_type& globalState,
+  sound_buffer_selector_type soundBufferSelector)
 {
   screen_state_type screenState(systemTimer, globalState);
 
@@ -34,8 +37,20 @@ void RunScreen(IDXGISwapChain* swapChain,
 
   while( ProcessMessage() && screenStatus == screen_active )
   {
-    UpdateScreen<global_state_type, screen_state_type, control_state_type>
-      (swapChain, renderTarget, renderBrushSelector, textFormatSelector, keyboard, windowData, systemTimer, perfData, globalState, screenState);
+    UpdateScreen<global_state_type, screen_state_type, control_state_type, sound_buffer_selector_type>
+      (
+        swapChain, 
+        renderTarget, 
+        renderBrushSelector, 
+        textFormatSelector, 
+        keyboard, 
+        windowData, 
+        systemTimer, 
+        perfData, 
+        globalState, 
+        screenState,
+        soundBufferSelector
+      );
 
     screenStatus = GetScreenStatus(screenState);
 	}
@@ -43,17 +58,19 @@ void RunScreen(IDXGISwapChain* swapChain,
   UpdateGlobalState(globalState, screenState);
 }
 
-template<typename global_state_type, typename screen_state_type, typename control_state_type>
-void UpdateScreen(IDXGISwapChain* swapChain,
-                  ID2D1RenderTarget* renderTarget,
-                  screen_render_brush_selector renderBrushSelector,
-                  screen_render_text_format_selector textFormatSelector,
-                  IDirectInputDevice8* keyboard, 
-                  const window_data& windowData, 
-                  system_timer& systemTimer, 
-                  perf_data& perfData, 
-                  const global_state_type& globalState, 
-                  screen_state_type& screenState)
+template<typename global_state_type, typename screen_state_type, typename control_state_type, typename sound_buffer_selector_type>
+void UpdateScreen(
+  IDXGISwapChain* swapChain,
+  ID2D1RenderTarget* renderTarget,
+  screen_render_brush_selector renderBrushSelector,
+  screen_render_text_format_selector textFormatSelector,
+  IDirectInputDevice8* keyboard, 
+  const window_data& windowData, 
+  system_timer& systemTimer, 
+  perf_data& perfData, 
+  const global_state_type& globalState, 
+  screen_state_type& screenState,
+  sound_buffer_selector_type soundBufferSelector)
 {
   static input_state inputState, previousInputState;
   previousInputState = inputState;
@@ -101,7 +118,7 @@ void UpdateScreen(IDXGISwapChain* swapChain,
 
   swapChain->Present(1, 0);
 
-  PlaySoundEffects(screenState);
+  PlaySoundEffects(screenState, soundBufferSelector);
 
   UpdateTimer(systemTimer);
   UpdatePerformanceData(perfData);

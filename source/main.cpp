@@ -4,9 +4,11 @@
 #include "math.h"
 #include "render.h"
 #include "control_state.h"
-#include "main_menu_screen.h"
-#include "play_screen.h"
-#include "level_edit_screen.h"
+#include "main_menu/main_menu_screen.h"
+#include "play/play_screen_state.h"
+#include "play/play_screen_render.h"
+#include "play/play_screen_sound.h"
+#include "level_edit/level_edit_screen.h"
 #include "global_state.h"
 #include "screens.h"
 #include "main_window.h"
@@ -42,7 +44,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
 
-  global_state globalState(dataPath, renderTarget.get(), directSound.get());
+  sound_buffers soundBuffers;
+  LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
+  global_sound_buffer_selector_type soundBufferSelector(soundBuffers);
+
+  global_state globalState(dataPath/*, renderTarget.get(), directSound.get()*/);
   
   HRESULT hr = swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
@@ -55,16 +61,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     switch( globalState.currentScreenId )
     {
     case screen_main_menu:
-      RunScreen<global_state, main_menu_screen_state, main_menu_control_state>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      RunScreen<global_state, main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
       break;
     case screen_play:
       RunScreen<global_state, play_screen_state, play_screen_control_state>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
       break;
     case screen_level_editor:
       RunScreen<global_state, level_edit_screen_state, level_edit_control_state>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState);
+      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
       break;
     }
 

@@ -2,18 +2,18 @@
 #include "main_menu_screen.h"
 #include "render.h"
 
-#define ENABLE_MUSIC
+// #define ENABLE_MUSIC
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
 main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
-  checkSaveOnExit(globalState.gameLevelDataIndexUpdated),
-  musicPlayer(globalState.soundBuffers.menuTheme)
+  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)/*,
+  musicPlayer(globalState.soundBuffers.menuTheme)*/
 {
-#ifdef ENABLE_MUSIC
-  musicPlayer.PlayOnLoop();
-#endif
+// #ifdef ENABLE_MUSIC
+//   musicPlayer.PlayOnLoop();
+// #endif
 }
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState)
@@ -109,15 +109,16 @@ void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_
   }
 }
 
-void PlaySoundEffects(const main_menu_screen_state& screenState)
+void PlaySoundEffects(const main_menu_screen_state& screenState, global_sound_buffer_selector_type soundBuffers)
 {
-  const auto& sounds = screenState.globalState.soundBuffers;
+  IDirectSoundBuffer8* musicBuffer = soundBuffers[menu_theme];
 
   DWORD bufferStatus = 0;
 
-  if( SUCCEEDED(sounds.thrust->GetStatus(&bufferStatus)) )
+  if( SUCCEEDED(musicBuffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
   {
-    if( bufferStatus & DSBSTATUS_PLAYING ) sounds.thrust->Stop();
+    musicBuffer->SetCurrentPosition(0);
+    musicBuffer->Play(0, 0, 0);
   }
 }
 
