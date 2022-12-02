@@ -6,17 +6,9 @@
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 
-// play_screen_sounds::play_screen_sounds(const sound_buffers& soundBuffers)
-// : thrust(soundBuffers.thrust),
-//   shoot(soundBuffers.shoot),
-//   targetActivated(soundBuffers.targetActivated)
-// {
-// }
-
 play_screen_state::play_screen_state(const system_timer& timer, const global_state& globalState) 
 : systemTimer(timer), 
-  globalState(globalState)/*,
-  sounds(globalState.soundBuffers)*/
+  globalState(globalState)
 {
   currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
 

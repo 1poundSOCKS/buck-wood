@@ -11,7 +11,7 @@ void RenderFrame(
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderFrame(renderTarget, renderBrushSelector, *screenState.levelState);
+  RenderLevel(renderTarget, renderBrushSelector, *screenState.levelState);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

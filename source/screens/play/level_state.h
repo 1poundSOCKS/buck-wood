@@ -89,6 +89,6 @@ void UpdateState(level_state& levelState, const level_control_state& controlStat
 
 bool LevelIsComplete(const level_state& levelState);
 
-void RenderFrame(ID2D1RenderTarget* renderTarget, screen_render_brush_selector renderBrushSelector, const level_state& levelState);
+void RenderLevel(ID2D1RenderTarget* renderTarget, screen_render_brush_selector renderBrushSelector, const level_state& levelState);
 
 #endif

@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "control_state.h"
-// #include "sound_buffers.h"
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "global_state.h"
@@ -40,8 +39,6 @@ struct main_menu_screen_state
   bool startLevelEdit = false;
   bool saveGameLevelData = false;
   bool checkSaveOnExit = true;
-
-  // sound_buffer_player musicPlayer;
 };
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);

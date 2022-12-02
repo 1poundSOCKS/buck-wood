@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
   global_sound_buffer_selector_type soundBufferSelector(soundBuffers);
 
-  global_state globalState(dataPath/*, renderTarget.get(), directSound.get()*/);
+  global_state globalState(dataPath);
   
   HRESULT hr = swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;

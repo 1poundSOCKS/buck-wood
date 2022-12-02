@@ -251,7 +251,7 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   return bullets.front();
 }
 
-void RenderFrame(
+void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   screen_render_brush_selector renderBrushSelector, 
   const level_state& levelState)

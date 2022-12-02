@@ -2,18 +2,12 @@
 #include "main_menu_screen.h"
 #include "render.h"
 
-// #define ENABLE_MUSIC
-
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
 main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
 : globalState(globalState),
-  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)/*,
-  musicPlayer(globalState.soundBuffers.menuTheme)*/
+  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)
 {
-// #ifdef ENABLE_MUSIC
-//   musicPlayer.PlayOnLoop();
-// #endif
 }
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState)
