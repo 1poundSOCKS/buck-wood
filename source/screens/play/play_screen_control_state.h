@@ -26,6 +26,9 @@ struct play_screen_control_state_reader
     controlState.levelControlState.renderTargetMouseData.y = windowData.mouse.y;
     controlState.levelControlState.renderTargetMouseData.size.width = windowData.width;
     controlState.levelControlState.renderTargetMouseData.size.height = windowData.height;
+
+    controlState.levelControlState.thrust = windowData.mouse.rightButtonDown;
+    controlState.levelControlState.shoot = windowData.mouse.leftButtonDown;
   }
 };
 

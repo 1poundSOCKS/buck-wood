@@ -40,11 +40,16 @@ struct screen_runner
     while( ProcessMessage() && ContinueRunning(screenState) )
     {
       keyboard_state previousKeyboardState = keyboardState;
+
       keyboard_state_reader keyboardStateReader { keyboard };
       keyboardStateReader.Read(keyboardState);
 
       control_state_reader_type controlStateReader { windowData, previousWindowData, keyboardState, previousKeyboardState };
+      
+      if( keyboardState.data[DIK_F12] & 0x80 && !(previousKeyboardState.data[DIK_F12] & 0x80) ) swapChain->SetFullscreenState(TRUE, NULL);
+
       UpdateScreen<screen_state_type, control_state_reader_type>(screenState, controlStateReader);
+
       previousWindowData = windowData;
     }
   }
