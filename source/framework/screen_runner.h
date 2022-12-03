@@ -6,120 +6,103 @@
 #include "control_state.h"
 #include "diagnostics.h"
 #include "main_window.h"
+#include "control_state_reader.h"
 
-enum screen_status { screen_active, screen_closed };
-
-template<typename screen_state_type> screen_status GetScreenStatus(const screen_state_type& screenState);
 bool ProcessMessage();
 
-template<typename global_state_type, typename screen_state_type, typename control_state_type, typename sound_buffer_selector_type>
-void RunScreen(
-  IDXGISwapChain* swapChain,
-  ID2D1RenderTarget* renderTarget,
-  IDirectInputDevice8* keyboard, 
-  const window_data& windowData, 
-  system_timer& systemTimer, 
-  perf_data& perfData, 
-  global_state_type& globalState,
-  sound_buffer_selector_type soundBufferSelector)
+template<
+  // typename screen_state_type, 
+  // typename control_state_type, 
+  typename screen_render_brush_selector_type,
+  typename screen_render_text_format_selector_type,
+  typename sound_buffer_selector_type
+>
+struct screen_runner
 {
-  screen_state_type screenState(systemTimer, globalState);
+  IDXGISwapChain* swapChain;
+  ID2D1RenderTarget* renderTarget;
+  IDirectInputDevice8* keyboard;
+  const window_data& windowData;
+  system_timer& systemTimer;
+  perf_data& perfData;
+  screen_render_brush_selector_type renderBrushSelector;
+  screen_render_text_format_selector_type textFormatSelector;
+  sound_buffer_selector_type soundBufferSelector;
 
-  screen_render_brushes renderBrushes;
-  CreateScreenRenderBrushes(renderTarget, renderBrushes);
-  screen_render_brush_selector renderBrushSelector { renderBrushes };
-
-  screen_render_text_formats textFormats;
-  CreateScreenRenderTextFormats(textFormats);
-  screen_render_text_format_selector textFormatSelector { textFormats};
-
-  bool continueRunning = true;
-
-  while( ProcessMessage() && ContinueRunning(screenState) )
+  template <typename screen_state_type, typename control_state_reader_type>
+  void Start(screen_state_type& screenState)
   {
-    UpdateScreen<global_state_type, screen_state_type, control_state_type, sound_buffer_selector_type>
-      (
-        swapChain, 
-        renderTarget, 
-        renderBrushSelector, 
-        textFormatSelector, 
-        keyboard, 
-        windowData, 
-        systemTimer, 
-        perfData, 
-        globalState, 
-        screenState,
-        soundBufferSelector
-      );
-	}
+    bool continueRunning = true;
 
-  UpdateGlobalState(globalState, screenState);
-}
+    keyboard_state keyboardState;
+    window_data previousWindowData = windowData;
+    
+    while( ProcessMessage() && ContinueRunning(screenState) )
+    {
+      keyboard_state previousKeyboardState = keyboardState;
+      keyboard_state_reader keyboardStateReader { keyboard };
+      keyboardStateReader.Read(keyboardState);
 
-template<typename global_state_type, typename screen_state_type, typename control_state_type, typename sound_buffer_selector_type>
-void UpdateScreen(
-  IDXGISwapChain* swapChain,
-  ID2D1RenderTarget* renderTarget,
-  screen_render_brush_selector renderBrushSelector,
-  screen_render_text_format_selector textFormatSelector,
-  IDirectInputDevice8* keyboard, 
-  const window_data& windowData, 
-  system_timer& systemTimer, 
-  perf_data& perfData, 
-  const global_state_type& globalState, 
-  screen_state_type& screenState,
-  sound_buffer_selector_type soundBufferSelector)
-{
-  static input_state inputState, previousInputState;
-  previousInputState = inputState;
-  inputState.RefreshKeyboard(keyboard);
-  inputState.clientMouseData.rect = windowData.mouse.rect;
-  inputState.clientMouseData.x = windowData.mouse.x;
-  inputState.clientMouseData.y = windowData.mouse.y;
-  inputState.renderTargetMouseData.size = renderTarget->GetSize();
-  inputState.renderTargetMouseData.x = windowData.mouse.x;
-  inputState.renderTargetMouseData.y = windowData.mouse.y;
-  inputState.leftMouseButtonDown = windowData.mouse.leftButtonDown;
-  inputState.rightMouseButtonDown = windowData.mouse.rightButtonDown;
-
-  static control_state baseControlState;
-  baseControlState.Refresh(inputState, previousInputState);
-
-  static control_state_type screenControlState;
-  RefreshControlState(screenControlState, baseControlState);
-
-  auto start = QueryPerformanceCounter();
-  UpdateScreenState(screenState, screenControlState, systemTimer);
-  auto end = QueryPerformanceCounter();
-  perfData.updateScreenStateTicks = end - start;
-
-  static diagnostics_data diagnosticsData;
-  diagnosticsData.clear();
-  diagnosticsData.reserve(50);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), perfData, systemTimer);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), globalState);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), baseControlState);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), screenState, screenControlState);
-
-  if( baseControlState.f12Press ) swapChain->SetFullscreenState(TRUE, NULL);
-
-  {
-    d2d_frame frame(renderTarget);
-    auto start = QueryPerformanceCounter();
-    RenderFrame(renderTarget, renderBrushSelector, textFormatSelector, screenState);
-    auto end = QueryPerformanceCounter();
-    perfData.renderFrameTicks = end - start;
-    renderTarget->SetTransform(D2D1::IdentityMatrix());
-    RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
-    RenderMouseCursor(renderTarget, renderBrushSelector[white], baseControlState.renderTargetMouseData.x, baseControlState.renderTargetMouseData.y);
+      control_state_reader_type controlStateReader { windowData, previousWindowData, keyboardState, previousKeyboardState };
+      UpdateScreen<screen_state_type, control_state_reader_type>(screenState, controlStateReader);
+      previousWindowData = windowData;
+    }
   }
 
-  swapChain->Present(1, 0);
+  template <typename screen_state_type, typename control_state_reader_type>
+  void UpdateScreen(screen_state_type& screenState, const control_state_reader_type& controlStateReader)
+  {
+    // static input_state inputState, previousInputState;
+    // previousInputState = inputState;
+    // inputState.RefreshKeyboard(keyboard);
+    // inputState.clientMouseData.rect = windowData.mouse.rect;
+    // inputState.clientMouseData.x = windowData.mouse.x;
+    // inputState.clientMouseData.y = windowData.mouse.y;
+    // inputState.renderTargetMouseData.size = renderTarget->GetSize();
+    // inputState.renderTargetMouseData.x = windowData.mouse.x;
+    // inputState.renderTargetMouseData.y = windowData.mouse.y;
+    // inputState.leftMouseButtonDown = windowData.mouse.leftButtonDown;
+    // inputState.rightMouseButtonDown = windowData.mouse.rightButtonDown;
 
-  PlaySoundEffects(screenState, soundBufferSelector);
+    // static control_state baseControlState;
+    // baseControlState.Refresh(inputState, previousInputState);
 
-  UpdateTimer(systemTimer);
-  UpdatePerformanceData(perfData);
-}
+    // static control_state_type screenControlState;
+    // RefreshControlState(screenControlState, baseControlState);
+
+    auto start = QueryPerformanceCounter();
+    // UpdateScreenState(screenState, screenControlState, systemTimer);
+    UpdateScreenState(screenState, controlStateReader, systemTimer);
+    auto end = QueryPerformanceCounter();
+    perfData.updateScreenStateTicks = end - start;
+
+    static diagnostics_data diagnosticsData;
+    diagnosticsData.clear();
+    diagnosticsData.reserve(50);
+    FormatDiagnostics(std::back_inserter(diagnosticsData), perfData, systemTimer);
+    // FormatDiagnostics(std::back_inserter(diagnosticsData), baseControlState);
+    // FormatDiagnostics(std::back_inserter(diagnosticsData), screenState, screenControlState);
+    // FormatDiagnostics(std::back_inserter(diagnosticsData), screenState, controlState);
+
+    // if( baseControlState.f12Press ) swapChain->SetFullscreenState(TRUE, NULL);
+
+    {
+      d2d_frame frame(renderTarget);
+      auto start = QueryPerformanceCounter();
+      RenderFrame(renderTarget, renderBrushSelector, textFormatSelector, screenState);
+      auto end = QueryPerformanceCounter();
+      perfData.renderFrameTicks = end - start;
+      renderTarget->SetTransform(D2D1::IdentityMatrix());
+      RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
+    }
+
+    swapChain->Present(1, 0);
+
+    PlaySoundEffects(screenState, soundBufferSelector);
+
+    UpdateTimer(systemTimer);
+    UpdatePerformanceData(perfData);
+  }
+};
 
 #endif

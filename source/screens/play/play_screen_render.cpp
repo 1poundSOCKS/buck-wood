@@ -35,6 +35,8 @@ void RenderFrame(
   static wchar_t timerText[64];
   swprintf(timerText, L"%.2f", levelTimeRemaining);
   RenderText(renderTarget, renderBrushSelector[yellow], textFormatSelector[diagnostics], timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
+  
+  RenderMouseCursor(renderTarget, renderBrushSelector[white], screenState.renderTargetMouseData.x, screenState.renderTargetMouseData.y);
 }
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)

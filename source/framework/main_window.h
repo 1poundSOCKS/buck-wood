@@ -5,7 +5,6 @@
 
 struct window_mouse_data
 {
-  RECT rect = {0, 0, 0, 0};
   int x = 0;
   int y = 0;
   bool leftButtonDown = false;

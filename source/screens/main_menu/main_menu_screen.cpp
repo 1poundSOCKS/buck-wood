@@ -4,9 +4,8 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const main_menu_control_state& controlState);
 
-main_menu_screen_state::main_menu_screen_state(const system_timer& timer, const global_state& globalState)
-: globalState(globalState),
-  checkSaveOnExit(globalState.gameLevelDataIndexUpdated)
+main_menu_screen_state::main_menu_screen_state()
+: checkSaveOnExit(false)
 {
 }
 

@@ -5,30 +5,32 @@
 #include "control_state.h"
 #include "game_objects.h"
 #include "diagnostics.h"
-#include "global_state.h"
 #include "play_screen_control_state.h"
 #include "level_state.h"
 #include "screen_render.h"
 
 struct play_screen_state
 {
-  play_screen_state(const system_timer& timer, const global_state& globalState);
+  play_screen_state(const system_timer& timer, game_level_data_index::const_iterator currentLevelDataIterator, game_level_data_index::const_iterator endLevelDataIterator);
 
-  const global_state& globalState;
   const system_timer& systemTimer;
 
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
   bool returnToMenu = false;
 
-  std::vector<std::unique_ptr<game_level_data>>::const_iterator currentLevelDataIterator;
+  game_level_data_index::const_iterator currentLevelDataIterator;
+  game_level_data_index::const_iterator endLevelDataIterator;
+
+  render_target_mouse_data renderTargetMouseData;
+
   std::unique_ptr<stopwatch> levelTimer;
   std::unique_ptr<stopwatch> pauseTimer;
   std::unique_ptr<level_state> levelState;
   std::vector<float> levelTimes;
 };
 
-void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state_reader& controlStateReader, const system_timer& timer);
 
 bool ContinueRunning(const play_screen_state& screenState);
 

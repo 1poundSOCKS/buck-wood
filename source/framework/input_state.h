@@ -13,13 +13,27 @@ struct render_target_mouse_data
   float x = 0, y = 0;
 };
 
+struct keyboard_state
+{
+  keyboard_state()
+  {
+    ::ZeroMemory(data, sizeof(data));
+  }
+
+  unsigned char data[256];
+};
+
+struct keyboard_state_reader
+{
+  IDirectInputDevice8* keyboard;
+  void Read(keyboard_state& state);
+};
+
 struct input_state
 {
-  input_state();
-
   void RefreshKeyboard(IDirectInputDevice8* keyboard);
 
-  unsigned char keyboardState[256];
+  keyboard_state keyboardState;
   bool leftMouseButtonDown = false, rightMouseButtonDown = false;
   client_mouse_data clientMouseData;
   render_target_mouse_data renderTargetMouseData;

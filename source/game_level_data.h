@@ -26,6 +26,9 @@ struct game_level_data_index
   game_level_data_index(const game_level_data_index& index);
 
   std::vector<std::unique_ptr<game_level_data>> gameLevelData;
+
+  using const_iterator = std::vector<std::unique_ptr<game_level_data>>::const_iterator;
+  using iterator = std::vector<std::unique_ptr<game_level_data>>::iterator;
 };
 
 struct game_level_data_filenames

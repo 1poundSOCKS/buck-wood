@@ -5,7 +5,6 @@
 #include "control_state.h"
 #include "diagnostics.h"
 #include "game_objects.h"
-#include "global_state.h"
 #include "sound_buffer_selector.h"
 #include "screen_render.h"
 
@@ -23,12 +22,10 @@ struct main_menu_control_state
 
 struct main_menu_screen_state
 {
-  main_menu_screen_state(const system_timer& timer, const global_state& globalState);
+  main_menu_screen_state();
 
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;
-
-  const global_state& globalState;
 
   float renderTargetMouseX = 0, renderTargetMouseY = 0;
 

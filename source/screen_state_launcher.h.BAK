@@ -1,0 +1,34 @@
+#ifndef _screen_state_launcher_
+#define _screen_state_launcher_
+
+template<typename screen_state_factory_type, typename control_state_type, typename sound_buffer_selector_type>
+class screen_state_launch_data
+{
+  IDXGISwapChain* swapChain;
+  ID2D1RenderTarget* renderTarget;
+  IDirectInputDevice8* keyboard;
+  const window_data& windowData;
+  system_timer& systemTimer;
+  perf_data& perfData;
+  sound_buffer_selector_type soundBufferSelector;
+  screen_state_factory_type screenStateFactory;
+};
+
+template<typename screen_state_factory_type, typename control_state_type, typename sound_buffer_selector_type>
+void LaunchScreen(
+  const screen_state_launch_data<typename screen_state_factory_type, typename control_state_type, typename sound_buffer_selector_type>& launchData)
+{
+  auto screenState = screenStateFactory.CreateScreenState();
+
+  RunScreen(
+    launchData.swapChain, 
+    launchData.renderTarget, 
+    launchData.keyboard, 
+    launchData.windowData, 
+    launchData.systemTimer, 
+    launchData.perfData, 
+    launchData.soundBufferSelector,
+    *screenState);
+}
+
+#endif

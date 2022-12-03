@@ -12,6 +12,7 @@
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
+#include "control_state_reader.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -31,6 +32,13 @@ void UpdateGlobalState(global_state& globalState, const level_edit_screen_state&
 
 extern const int fps = 60;
 
+using screen_runner_type = screen_runner
+<
+  screen_render_brush_selector, 
+  screen_render_text_format_selector,
+  global_sound_buffer_selector_type
+>;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
@@ -47,6 +55,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto directSound = CreateDirectSound(window);
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
+  keyboard_state_reader keyboardStateReader { keyboard.get() };
+
+  screen_render_brushes renderBrushes;
+  CreateScreenRenderBrushes(renderTarget.get(), renderBrushes);
+  screen_render_brush_selector renderBrushSelector { renderBrushes };
+
+  screen_render_text_formats textFormats;
+  CreateScreenRenderTextFormats(textFormats);
+  screen_render_text_format_selector textFormatSelector { textFormats};
 
   sound_buffers soundBuffers;
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
@@ -57,28 +74,72 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   HRESULT hr = swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
-  system_timer timer;
+  system_timer systemTimer;
   perf_data perfData;
 
-  while( ProcessMessage() )
-  {
-    switch( globalState.currentScreenId )
-    {
-    case screen_main_menu:
-      RunScreen<global_state, main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-      break;
-    case screen_play:
-      RunScreen<global_state, play_screen_state, play_screen_control_state>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-      break;
-    case screen_level_editor:
-      RunScreen<global_state, level_edit_screen_state, level_edit_control_state>
-      (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-      break;
-    }
+  // while( ProcessMessage() )
+  // {
+    // switch( globalState.currentScreenId )
+    // {
+    // case screen_main_menu:
+    //   RunScreen<global_state, main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>
+    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
+    //   break;
+    // case screen_play:
+    //   RunScreen<global_state, play_screen_state, play_screen_control_state>
+    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
+    //   break;
+    // case screen_level_editor:
+    //   RunScreen<global_state, level_edit_screen_state, level_edit_control_state>
+    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
+    //   break;
+    // }
 
-    if( globalState.currentScreenId == screen_id::screen_none ) ::PostQuitMessage(0);
+    // if( globalState.currentScreenId == screen_id::screen_none ) ::PostQuitMessage(0);
+    // RunScreen<main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>(
+    //   swapChain.get(), 
+    //   renderTarget.get(), 
+    //   keyboard.get(), 
+    //   windowData, 
+    //   systemTimer, 
+    //   perfData, 
+    //   soundBufferSelector, 
+    //   *screenState);
+
+  screen_runner_type screenRunner
+  {
+    swapChain.get(),
+    renderTarget.get(), 
+    keyboard.get(), 
+    windowData, 
+    systemTimer, 
+    perfData, 
+    renderBrushSelector,
+    textFormatSelector,
+    soundBufferSelector
+  };
+
+  // {
+  //   auto mainMenuScreenState = std::make_unique<main_menu_screen_state>();
+  //   screenRunner.Start<main_menu_screen_state, main_menu_control_state>(*mainMenuScreenState);
+  // }
+
+  // {
+  //   auto levelEditScreenState = std::make_unique<level_edit_screen_state>(*globalState.gameLevelDataIndex);
+  //   screenRunner.Start<level_edit_screen_state, level_edit_control_state>(*levelEditScreenState);
+  //   UpdateGlobalState(globalState, *levelEditScreenState);
+  // }
+
+  {
+    // control_state_reader<play_screen_control_state> controlStateReader { renderTarget.get(), windowData, keyboard.get() };
+    // play_screen_control_state_reader controlStateReader { windowData, keyboardStateReader };
+
+    auto playScreenState = std::make_unique<play_screen_state>(
+      systemTimer, 
+      globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
+      globalState.gameLevelDataIndex->gameLevelData.cend());
+
+    screenRunner.Start<play_screen_state, play_screen_control_state_reader>(*playScreenState);
   }
 
   return 0;

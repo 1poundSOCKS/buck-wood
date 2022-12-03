@@ -20,11 +20,10 @@ void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::ve
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
-level_edit_screen_state::level_edit_screen_state(const system_timer& timer, const global_state& globalState)
-: globalState(globalState),
-  gameLevelDataIndex(*globalState.gameLevelDataIndex)
+level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex)
+: gameLevelDataIndex(gameLevelDataIndex)
 {
-  currentLevelDataIterator = gameLevelDataIndex.gameLevelData.begin();
+  currentLevelDataIterator = this->gameLevelDataIndex.gameLevelData.begin();
   LoadCurrentLevel(*this);
 }
 
