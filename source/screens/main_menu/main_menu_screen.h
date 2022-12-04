@@ -6,7 +6,7 @@
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "sound_buffer_selector.h"
-#include "screen_render.h"
+#include "screen_render_data.h"
 
 struct main_menu_control_state
 {

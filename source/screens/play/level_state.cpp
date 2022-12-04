@@ -96,9 +96,11 @@ bool LevelIsComplete(const level_state& levelState)
 
 void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
 {
-  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
+  // levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
 
-  D2D1::Matrix3x2F mouseTransform = levelState.viewTransform;
+  // D2D1::Matrix3x2F mouseTransform = levelState.viewTransform;
+
+  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
 
   if( mouseTransform.Invert() )
   {
@@ -112,9 +114,6 @@ void UpdateState(level_state& levelState, const level_control_state& controlStat
 
   UpdatePlayer(levelState, controlState, timer);
   UpdateBullets(levelState, controlState, timer);
-
-  // levelState.renderData.renderLines.clear();
-  // CreateRenderLines(levelState, std::back_inserter(levelState.renderData.renderLines));
 }
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
@@ -257,7 +256,7 @@ void RenderLevel(
   const level_state& levelState)
 {
   auto renderTargetSize = renderTarget->GetSize();
-  renderTarget->SetTransform(levelState.viewTransform);
+  renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize));
 
   std::vector<render_line> staticRenderLines;
   CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);

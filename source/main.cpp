@@ -13,6 +13,7 @@
 #include "screen_runner.h"
 #include "main_window.h"
 #include "control_state_reader.h"
+#include "screen_render_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")

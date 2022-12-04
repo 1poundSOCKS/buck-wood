@@ -9,6 +9,7 @@
 #include "drag_drop.h"
 #include "screen_render.h"
 #include "sound_buffer_selector.h"
+#include "screen_render_data.h"
 
 struct level_edit_control_state
 {

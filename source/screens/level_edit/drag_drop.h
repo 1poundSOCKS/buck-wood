@@ -3,7 +3,7 @@
 
 #include "render.h"
 #include "diagnostics.h"
-#include "screen_render.h"
+#include "screen_render_data.h"
 
 struct drag_drop_point
 {

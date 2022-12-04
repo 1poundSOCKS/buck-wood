@@ -3,6 +3,7 @@
 
 #include "render.h"
 #include "play_screen_state.h"
+#include "screen_render_data.h"
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 

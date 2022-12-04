@@ -59,7 +59,7 @@ struct screen_runner
     diagnosticsData.clear();
     diagnosticsData.reserve(50);
     FormatDiagnostics(std::back_inserter(diagnosticsData), perfData, systemTimer);
-    
+
     if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
     {
       swapChain->SetFullscreenState(TRUE, NULL);
@@ -72,7 +72,7 @@ struct screen_runner
       auto end = QueryPerformanceCounter();
       perfData.renderFrameTicks = end - start;
       renderTarget->SetTransform(D2D1::IdentityMatrix());
-      RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
+      // RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
     }
 
     swapChain->Present(1, 0);

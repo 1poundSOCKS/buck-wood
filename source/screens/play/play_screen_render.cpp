@@ -52,4 +52,3 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
 
   return msg;
 }
-

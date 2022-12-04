@@ -4,7 +4,7 @@
 #include "game_level_data.h"
 #include "control_state.h"
 #include "timers.h"
-#include "screen_render.h"
+#include "screen_render_data.h"
 
 struct player_ship
 {
@@ -73,7 +73,6 @@ struct level_state
   float mouseX = 0, mouseY = 0;
   stopwatch shotTimer;
   bool playerShot = false, targetShot = false;
-  D2D1::Matrix3x2F viewTransform;
 
   std::vector<game_line> boundaryLines;
   std::vector<object_state> objects;
