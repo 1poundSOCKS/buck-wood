@@ -134,12 +134,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     // control_state_reader<play_screen_control_state> controlStateReader { renderTarget.get(), windowData, keyboard.get() };
     // play_screen_control_state_reader controlStateReader { windowData, keyboardStateReader };
 
-    auto playScreenState = std::make_unique<play_screen_state>(
+    play_screen_state playScreenState(
       systemTimer, 
       globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
-      globalState.gameLevelDataIndex->gameLevelData.cend());
+      globalState.gameLevelDataIndex->gameLevelData.cend()
+    );
 
-    screenRunner.Start<play_screen_state, play_screen_control_state_reader>(*playScreenState);
+    screenRunner.Start<play_screen_state>(playScreenState);
+
+    UpdateGlobalState(globalState, playScreenState);
   }
 
   return 0;

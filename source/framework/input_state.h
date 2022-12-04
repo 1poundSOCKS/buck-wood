@@ -1,6 +1,8 @@
 #ifndef _input_state_
 #define _input_state_
 
+#include "main_window.h"
+
 struct client_mouse_data
 {
   RECT rect;
@@ -37,6 +39,14 @@ struct input_state
   bool leftMouseButtonDown = false, rightMouseButtonDown = false;
   client_mouse_data clientMouseData;
   render_target_mouse_data renderTargetMouseData;
+};
+
+struct screen_input_state
+{
+  window_data windowData;
+  window_data previousWindowData;
+  keyboard_state keyboardState;
+  keyboard_state previousKeyboardState;
 };
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);

@@ -13,26 +13,6 @@ struct play_screen_control_state
   level_control_state levelControlState;
 };
 
-struct play_screen_control_state_reader
-{
-  const window_data& windowData;
-  const window_data& previousWindowData;
-  const keyboard_state& keyboardState;
-  const keyboard_state& previousKeyboardState;
-
-  void Read(play_screen_control_state& controlState) const
-  {
-    controlState.levelControlState.renderTargetMouseData.x = windowData.mouse.x;
-    controlState.levelControlState.renderTargetMouseData.y = windowData.mouse.y;
-    controlState.levelControlState.renderTargetMouseData.size.width = windowData.width;
-    controlState.levelControlState.renderTargetMouseData.size.height = windowData.height;
-
-    controlState.levelControlState.thrust = windowData.mouse.rightButtonDown;
-    controlState.levelControlState.shoot = windowData.mouse.leftButtonDown;
-  }
-};
-
-void RefreshControlState(play_screen_control_state& controlState, const control_state& baseControlState);
-void ReadControlState(ID2D1RenderTarget* renderTarget, window_data& windowData, keyboard_state& keyboard, play_screen_control_state& controlState);
+void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState);
 
 #endif

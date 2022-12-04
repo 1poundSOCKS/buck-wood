@@ -6,14 +6,11 @@
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 
-// play_screen_state::play_screen_state(const system_timer& timer, const global_state& globalState) 
 play_screen_state::play_screen_state(const system_timer& timer, game_level_data_index::const_iterator currentLevelDataIterator, game_level_data_index::const_iterator endLevelDataIterator) 
 : systemTimer(timer), 
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator)
 {
-  // currentLevelDataIterator = globalState.gameLevelDataIndex->gameLevelData.begin();
-
   const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, systemTimer);
 
@@ -23,10 +20,10 @@ play_screen_state::play_screen_state(const system_timer& timer, game_level_data_
   state = play_screen_state::state_playing;
 }
 
-void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state_reader& controlStateReader, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
 {
   play_screen_control_state controlState;
-  controlStateReader.Read(controlState);
+  ReadControlState(inputState, controlState);
   
   screenState.renderTargetMouseData = controlState.levelControlState.renderTargetMouseData;
 

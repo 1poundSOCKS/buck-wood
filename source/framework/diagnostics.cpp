@@ -26,16 +26,16 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   diagnosticsData = text;
 }
 
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const control_state& controlState)
-{
-  static wchar_t text[64];
+// void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const control_state& controlState)
+// {
+//   static wchar_t text[64];
 
-  swprintf(text, L"render target size: %.1f, %.1f", controlState.renderTargetMouseData.size.width, controlState.renderTargetMouseData.size.height);
-  diagnosticsData = text;
+//   swprintf(text, L"render target size: %.1f, %.1f", controlState.renderTargetMouseData.size.width, controlState.renderTargetMouseData.size.height);
+//   diagnosticsData = text;
 
-  swprintf(text, L"mouse: %.1f, %.1f", controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y);
-  diagnosticsData = text;
-}
+//   swprintf(text, L"mouse: %.1f, %.1f", controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y);
+//   diagnosticsData = text;
+// }
 
 std::wstring GetDiagnosticsString(diagnostics_data::const_iterator begin, diagnostics_data::const_iterator end)
 {

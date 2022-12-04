@@ -40,7 +40,7 @@ struct main_menu_screen_state
 
 void RefreshControlState(main_menu_control_state& screenControlState, const control_state& controlState);
 
-void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
+// void UpdateScreenState(main_menu_screen_state& screenState, const main_menu_control_state& controlState, const system_timer& timer);
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 

@@ -30,7 +30,7 @@ struct play_screen_state
   std::vector<float> levelTimes;
 };
 
-void UpdateScreenState(play_screen_state& screenState, const play_screen_control_state_reader& controlStateReader, const system_timer& timer);
+void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
 
 bool ContinueRunning(const play_screen_state& screenState);
 
