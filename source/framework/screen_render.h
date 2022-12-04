@@ -1,6 +1,8 @@
 #ifndef _screen_render_
 #define _screen_render_
 
+winrt::com_ptr<IDWriteFactory> CreateDWriteFactory();
+
 winrt::com_ptr<ID2D1SolidColorBrush> CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color);
 
 winrt::com_ptr<IDWriteTextFormat> CreateScreenRenderTextFormat(
@@ -12,11 +14,5 @@ winrt::com_ptr<IDWriteTextFormat> CreateScreenRenderTextFormat(
   float fontSize);
 
 void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, float x, float y);
-
-// void RenderDiagnostics(
-//   ID2D1RenderTarget* renderTarget, 
-//   ID2D1SolidColorBrush* brush, 
-//   IDWriteTextFormat* textFormat,
-//   const std::vector<std::wstring>& diagnosticsData);
 
 #endif

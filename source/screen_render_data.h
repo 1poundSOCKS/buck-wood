@@ -28,6 +28,6 @@ struct screen_render_text_format_selector
 };
 
 void CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, screen_render_brushes& brushes);
-void CreateScreenRenderTextFormats(screen_render_text_formats& textFormats);
+void CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, screen_render_text_formats& textFormats);
 
 #endif

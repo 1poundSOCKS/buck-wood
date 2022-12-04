@@ -53,6 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto window = CreateMainWindow(hInstance, nCmdShow, windowData);
   auto swapChain = CreateSwapChain(window, 60, 1);
   auto renderTarget = CreateRenderTarget(swapChain.get());
+  auto dwriteFactory = CreateDWriteFactory();
   auto directSound = CreateDirectSound(window);
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
@@ -63,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   screen_render_brush_selector renderBrushSelector { renderBrushes };
 
   screen_render_text_formats textFormats;
-  CreateScreenRenderTextFormats(textFormats);
+  CreateScreenRenderTextFormats(dwriteFactory.get(), textFormats);
   screen_render_text_format_selector textFormatSelector { textFormats};
 
   sound_buffers soundBuffers;
@@ -111,6 +112,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   {
     swapChain.get(),
     renderTarget.get(), 
+    dwriteFactory.get(),
     keyboard.get(), 
     windowData, 
     systemTimer, 

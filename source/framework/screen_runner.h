@@ -18,6 +18,7 @@ struct screen_runner
 {
   IDXGISwapChain* swapChain;
   ID2D1RenderTarget* renderTarget;
+  IDWriteFactory* dwriteFactory;
   IDirectInputDevice8* keyboard;
   const window_data& windowData;
   system_timer& systemTimer;
@@ -25,10 +26,23 @@ struct screen_runner
   screen_render_brush_selector_type renderBrushSelector;
   screen_render_text_format_selector_type textFormatSelector;
   sound_buffer_selector_type soundBufferSelector;
+  
+  winrt::com_ptr<ID2D1SolidColorBrush> greyBrush;
+  winrt::com_ptr<IDWriteTextFormat> diagnosticsTextFormat;
 
   template <typename screen_state_type>
   void Start(screen_state_type& screenState)
   {
+    greyBrush = CreateScreenRenderBrush(renderTarget, D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f));
+    
+    diagnosticsTextFormat = CreateScreenRenderTextFormat(
+      dwriteFactory, 
+      L"Verdana", 
+      DWRITE_FONT_WEIGHT_LIGHT, 
+      DWRITE_FONT_STYLE_NORMAL,
+      DWRITE_FONT_STRETCH_NORMAL,
+      20);
+
     bool continueRunning = true;
 
     screen_input_state inputState;
@@ -72,7 +86,7 @@ struct screen_runner
       auto end = QueryPerformanceCounter();
       perfData.renderFrameTicks = end - start;
       renderTarget->SetTransform(D2D1::IdentityMatrix());
-      // RenderText(renderTarget, renderBrushSelector[grey], textFormatSelector[diagnostics], GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
+      RenderText(renderTarget, greyBrush.get(), diagnosticsTextFormat.get(), GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
     }
 
     swapChain->Present(1, 0);

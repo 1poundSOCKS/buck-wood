@@ -42,6 +42,14 @@ void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* br
 //   }
 // }
 
+winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
+{
+  winrt::com_ptr<IDWriteFactory> dwriteFactory;
+  HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(dwriteFactory),reinterpret_cast<IUnknown**>(dwriteFactory.put()));
+  if( FAILED(hr) ) throw L"error";
+  return dwriteFactory;
+}
+
 winrt::com_ptr<ID2D1SolidColorBrush> CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color)
 {
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
