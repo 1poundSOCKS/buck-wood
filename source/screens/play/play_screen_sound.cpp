@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "play_screen_sound.h"
 
-void PlaySoundEffects(const play_screen_state& screenState, global_sound_buffer_selector_type soundBuffers)
+void PlaySoundEffects(const play_screen_state& screenState, global_sound_buffer_selector soundBuffers)
 {
   // auto& levelState = *screenState.levelState;
   // const auto& sounds = screenState.sounds;

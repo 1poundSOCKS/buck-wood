@@ -82,9 +82,7 @@ struct level_state
   player_ship_point_data playerShipPointData;
 };
 
-void RefreshControlState(level_control_state& controlState, const control_state& baseControlState);
-
-void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 
 bool LevelIsComplete(const level_state& levelState);
 

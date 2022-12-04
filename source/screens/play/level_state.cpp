@@ -76,12 +76,12 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   shotTimer.paused = false;
 }
 
-void RefreshControlState(level_control_state& controlState, const control_state& baseControlState)
-{
-  controlState.shoot = baseControlState.leftMouseButtonDown;
-  controlState.thrust = baseControlState.rightMouseButtonDown;
-  controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
-}
+// void RefreshControlState(level_control_state& controlState, const control_state& baseControlState)
+// {
+//   controlState.shoot = baseControlState.leftMouseButtonDown;
+//   controlState.thrust = baseControlState.rightMouseButtonDown;
+//   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
+// }
 
 bool LevelIsComplete(const level_state& levelState)
 {
@@ -94,7 +94,7 @@ bool LevelIsComplete(const level_state& levelState)
   return activatedTargetCount == levelState.targets.size();
 }
 
-void UpdateState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
+void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
 {
   // levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
 

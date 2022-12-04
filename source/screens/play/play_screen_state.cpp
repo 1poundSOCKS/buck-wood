@@ -99,7 +99,7 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
   auto& levelState = *screenState.levelState;
   const auto& levelControlState = controlState.levelControlState;
 
-  UpdateState(levelState, levelControlState, timer);
+  UpdateLevelState(levelState, levelControlState, timer);
 
   if( LevelIsComplete(*screenState.levelState) )
   {

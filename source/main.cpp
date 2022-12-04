@@ -5,10 +5,11 @@
 #include "render.h"
 // #include "control_state.h"
 // #include "main_menu/main_menu_screen.h"
-#include "play/play_screen_state.h"
-#include "play/play_screen_render.h"
-#include "play/play_screen_sound.h"
+// #include "play/play_screen_state.h"
+// #include "play/play_screen_render.h"
+// #include "play/play_screen_sound.h"
 // #include "level_edit/level_edit_screen.h"
+#include "play_screen.h"
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
@@ -37,7 +38,7 @@ using screen_runner_type = screen_runner
 <
   screen_render_brush_selector, 
   screen_render_text_format_selector,
-  global_sound_buffer_selector_type
+  global_sound_buffer_selector
 >;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
@@ -69,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   sound_buffers soundBuffers;
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
-  global_sound_buffer_selector_type soundBufferSelector(soundBuffers);
+  global_sound_buffer_selector soundBufferSelector(soundBuffers);
 
   global_state globalState(dataPath);
   

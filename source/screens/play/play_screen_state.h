@@ -1,5 +1,5 @@
-#ifndef _play_screen_
-#define _play_screen_
+#ifndef _play_screen_state_
+#define _play_screen_state_
 
 #include "framework.h"
 #include "control_state.h"
@@ -30,10 +30,10 @@ struct play_screen_state
   std::vector<float> levelTimes;
 };
 
-void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
+// void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
 
-bool ContinueRunning(const play_screen_state& screenState);
+// bool ContinueRunning(const play_screen_state& screenState);
 
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
+// void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif
