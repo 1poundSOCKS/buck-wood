@@ -1,14 +1,14 @@
 #include "pch.h"
 #include "input_state.h"
 
-void keyboard_state_reader::Read(keyboard_state& state)
-{
-  HRESULT hr = keyboard->GetDeviceState(sizeof(state.data), state.data);
-	if(FAILED(hr))
-	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
-	}
-}
+// void keyboard_state_reader::Read(keyboard_state& state)
+// {
+//   HRESULT hr = keyboard->GetDeviceState(sizeof(state.data), state.data);
+// 	if(FAILED(hr))
+// 	{
+// 		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
+// 	}
+// }
 
 void input_state::RefreshKeyboard(IDirectInputDevice8* keyboard)
 {
@@ -38,4 +38,13 @@ winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND wind
   keyboard->Acquire();
 
   return keyboard;
+}
+
+void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state)
+{
+  HRESULT hr = keyboard->GetDeviceState(sizeof(state.data), state.data);
+	if(FAILED(hr))
+	{
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
+	}
 }

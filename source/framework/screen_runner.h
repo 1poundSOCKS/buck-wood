@@ -5,7 +5,8 @@
 #include "global_state.h"
 #include "diagnostics.h"
 #include "main_window.h"
-#include "control_state_reader.h"
+#include "input_state.h"
+// #include "control_state_reader.h"
 
 bool ProcessMessage();
 
@@ -51,8 +52,9 @@ struct screen_runner
     {
       inputState.windowData = windowData;
 
-      keyboard_state_reader keyboardStateReader { keyboard };
-      keyboardStateReader.Read(inputState.keyboardState);
+      // keyboard_state_reader keyboardStateReader { keyboard };
+      // keyboardStateReader.Read(inputState.keyboardState);
+      ReadKeyboardState(keyboard, inputState.keyboardState);
 
       UpdateScreen<screen_state_type>(screenState, inputState);
 

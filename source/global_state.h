@@ -2,7 +2,6 @@
 #define _global_state_
 
 #include "framework.h"
-// #include "sound_buffers.h"
 #include "game_objects.h"
 #include "render.h"
 #include "diagnostics.h"

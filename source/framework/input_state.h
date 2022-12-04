@@ -25,11 +25,11 @@ struct keyboard_state
   unsigned char data[256];
 };
 
-struct keyboard_state_reader
-{
-  IDirectInputDevice8* keyboard;
-  void Read(keyboard_state& state);
-};
+// struct keyboard_state_reader
+// {
+//   IDirectInputDevice8* keyboard;
+//   void Read(keyboard_state& state);
+// };
 
 struct input_state
 {
@@ -50,5 +50,6 @@ struct screen_input_state
 };
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
+void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state);
 
 #endif

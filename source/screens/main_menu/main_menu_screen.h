@@ -2,7 +2,7 @@
 #define _main_menu_screen_
 
 #include "framework.h"
-#include "control_state.h"
+// #include "control_state.h"
 #include "diagnostics.h"
 #include "game_objects.h"
 #include "sound_buffer_selector.h"
