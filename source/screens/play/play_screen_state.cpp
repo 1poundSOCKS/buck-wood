@@ -2,6 +2,8 @@
 #include "play_screen_state.h"
 #include "render.h"
 #include "game_math.h"
+#include "play_screen_control_state.h"
+#include "diagnostics.h"
 
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);

@@ -2,12 +2,11 @@
 #define _play_screen_state_
 
 #include "framework.h"
-#include "control_state.h"
+// #include "control_state.h"
 #include "game_objects.h"
-#include "diagnostics.h"
-#include "play_screen_control_state.h"
+// #include "diagnostics.h"
 #include "level_state.h"
-#include "screen_render.h"
+// #include "screen_render.h"
 
 struct play_screen_state
 {
@@ -29,11 +28,5 @@ struct play_screen_state
   std::unique_ptr<level_state> levelState;
   std::vector<float> levelTimes;
 };
-
-// void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
-
-// bool ContinueRunning(const play_screen_state& screenState);
-
-// void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
 
 #endif

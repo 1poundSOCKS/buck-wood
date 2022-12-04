@@ -1,5 +1,8 @@
 #include "pch.h"
-#include "play_screen_render.h"
+#include "render.h"
+#include "screen_render.h"
+#include "play_screen_state.h"
+#include "screen_render_data.h"
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
