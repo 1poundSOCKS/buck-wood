@@ -3,14 +3,12 @@
 
 #include "play/play_screen_state.h"
 #include "sound_buffer_selector.h"
-#include "render.h"
+#include "screen_render_data.h"
 
 void UpdateScreenState(
   play_screen_state& screenState, 
   const screen_input_state& inputState, 
   const system_timer& timer);
-
-bool ContinueRunning(const play_screen_state& screenState);
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 
@@ -22,6 +20,6 @@ void PlaySoundEffects(
   const play_screen_state& screenState, 
   global_sound_buffer_selector soundBuffers);
 
-// void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState);
+bool ContinueRunning(const play_screen_state& screenState);
 
 #endif

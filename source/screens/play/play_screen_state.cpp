@@ -2,9 +2,17 @@
 #include "play_screen_state.h"
 #include "render.h"
 #include "game_math.h"
-#include "play_screen_control_state.h"
 #include "diagnostics.h"
 
+struct play_screen_control_state
+{
+  bool returnToMenu = false;
+  bool restartPlay = false;
+  bool pausePlay = false;
+  level_control_state levelControlState;
+};
+
+void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState);
 void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
 
@@ -178,4 +186,19 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
   swprintf(text, L"remaining ticks: %I64u", ticksRemaining);
   diagnosticsData = text;
+}
+
+void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState)
+{
+  controlState.pausePlay = false;
+  controlState.returnToMenu = false;
+  controlState.restartPlay = false;
+
+  controlState.levelControlState.renderTargetMouseData.x = inputState.windowData.mouse.x;
+  controlState.levelControlState.renderTargetMouseData.y = inputState.windowData.mouse.y;
+  controlState.levelControlState.renderTargetMouseData.size.width = inputState.windowData.width;
+  controlState.levelControlState.renderTargetMouseData.size.height = inputState.windowData.height;
+
+  controlState.levelControlState.thrust = inputState.windowData.mouse.rightButtonDown;
+  controlState.levelControlState.shoot = inputState.windowData.mouse.leftButtonDown;
 }

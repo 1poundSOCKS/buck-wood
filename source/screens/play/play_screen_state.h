@@ -2,11 +2,9 @@
 #define _play_screen_state_
 
 #include "framework.h"
-// #include "control_state.h"
 #include "game_objects.h"
 // #include "diagnostics.h"
 #include "level_state.h"
-// #include "screen_render.h"
 
 struct play_screen_state
 {
