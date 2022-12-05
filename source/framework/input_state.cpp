@@ -1,15 +1,6 @@
 #include "pch.h"
 #include "input_state.h"
 
-// void keyboard_state_reader::Read(keyboard_state& state)
-// {
-//   HRESULT hr = keyboard->GetDeviceState(sizeof(state.data), state.data);
-// 	if(FAILED(hr))
-// 	{
-// 		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
-// 	}
-// }
-
 void input_state::RefreshKeyboard(IDirectInputDevice8* keyboard)
 {
   HRESULT hr = keyboard->GetDeviceState(sizeof(keyboardState), keyboardState.data);
@@ -47,4 +38,39 @@ void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state)
 	{
 		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
 	}
+}
+
+bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode)
+{
+  return screenInputState.keyboardState.data[keyCode] & 0x80 && !(screenInputState.previousKeyboardState.data[keyCode] & 0x80);
+}
+
+float GetRatioMouseX(const screen_input_state& screenInputState)
+{
+  return screenInputState.renderTargetMouseData.x * 100.0 / screenInputState.renderTargetMouseData.size.width;
+}
+
+float GetRatioMouseY(const screen_input_state& screenInputState)
+{
+  return screenInputState.renderTargetMouseData.y * 100.0 / screenInputState.renderTargetMouseData.size.height;
+}
+
+bool MouseMoved(const screen_input_state& screenInputState)
+{
+  return
+    screenInputState.windowData.mouse.x != screenInputState.previousWindowData.mouse.x ||
+    screenInputState.windowData.mouse.y != screenInputState.previousWindowData.mouse.y;
+}
+
+bool LeftMouseButtonDrag(const screen_input_state& screenInputState)
+{
+  return
+    !screenInputState.windowData.mouse.leftButtonDown &&
+    screenInputState.previousWindowData.mouse.leftButtonDown && 
+    MouseMoved(screenInputState);
+}
+
+bool LeftMouseButtonReleased(const screen_input_state& screenInputState)
+{
+  return screenInputState.previousWindowData.mouse.leftButtonDown && !screenInputState.windowData.mouse.leftButtonDown;
 }

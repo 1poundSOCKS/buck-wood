@@ -1,5 +1,5 @@
-#ifndef _sound_buffers_
-#define _sound_buffers_
+#ifndef _sound_buffer_selector_
+#define _sound_buffer_selector_
 
 #include "framework.h"
 

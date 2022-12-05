@@ -8,8 +8,9 @@
 // #include "play/play_screen_state.h"
 // #include "play/play_screen_render.h"
 // #include "play/play_screen_sound.h"
-// #include "level_edit/level_edit_screen.h"
+#include "level_edit_screen.h"
 #include "play_screen.h"
+#include "main_menu_screen.h"
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
@@ -28,9 +29,8 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
 
-// void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
-// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
+void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 extern const int fps = 60;
 
@@ -80,35 +80,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   system_timer systemTimer;
   perf_data perfData;
 
-  // while( ProcessMessage() )
-  // {
-    // switch( globalState.currentScreenId )
-    // {
-    // case screen_main_menu:
-    //   RunScreen<global_state, main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>
-    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-    //   break;
-    // case screen_play:
-    //   RunScreen<global_state, play_screen_state, play_screen_control_state>
-    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-    //   break;
-    // case screen_level_editor:
-    //   RunScreen<global_state, level_edit_screen_state, level_edit_control_state>
-    //   (swapChain.get(), renderTarget.get(), keyboard.get(), windowData, timer, perfData, globalState, soundBufferSelector);
-    //   break;
-    // }
-
-    // if( globalState.currentScreenId == screen_id::screen_none ) ::PostQuitMessage(0);
-    // RunScreen<main_menu_screen_state, main_menu_control_state, global_sound_buffer_selector_type>(
-    //   swapChain.get(), 
-    //   renderTarget.get(), 
-    //   keyboard.get(), 
-    //   windowData, 
-    //   systemTimer, 
-    //   perfData, 
-    //   soundBufferSelector, 
-    //   *screenState);
-
   screen_runner_type screenRunner
   {
     swapChain.get(),
@@ -123,56 +94,45 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     soundBufferSelector
   };
 
-  // {
-  //   auto mainMenuScreenState = std::make_unique<main_menu_screen_state>();
-  //   screenRunner.Start<main_menu_screen_state, main_menu_control_state>(*mainMenuScreenState);
-  // }
+  main_menu_screen_state mainMenuScreenState;
 
-  // {
-  //   auto levelEditScreenState = std::make_unique<level_edit_screen_state>(*globalState.gameLevelDataIndex);
-  //   screenRunner.Start<level_edit_screen_state, level_edit_control_state>(*levelEditScreenState);
-  //   UpdateGlobalState(globalState, *levelEditScreenState);
-  // }
-
+  while( !mainMenuScreenState.quit )
   {
-    // control_state_reader<play_screen_control_state> controlStateReader { renderTarget.get(), windowData, keyboard.get() };
-    // play_screen_control_state_reader controlStateReader { windowData, keyboardStateReader };
+    screenRunner.Start(mainMenuScreenState);
 
-    play_screen_state playScreenState(
-      systemTimer, 
-      globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
-      globalState.gameLevelDataIndex->gameLevelData.cend()
-    );
+    if( mainMenuScreenState.startPlay )
+    {
+      play_screen_state playScreenState(
+        systemTimer, 
+        globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
+        globalState.gameLevelDataIndex->gameLevelData.cend()
+      );
+      sound_buffer_player menuTheme(soundBufferSelector[menu_theme]);
+      menuTheme.PlayOnLoop();
+      screenRunner.Start(playScreenState);
+      UpdateGlobalState(globalState, playScreenState);
+    }
+    else if( mainMenuScreenState.startLevelEdit )
+    {
+      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex);
+      screenRunner.Start(levelEditScreenState);
+      if( levelEditScreenState.saveChanges ) UpdateGlobalState(globalState, levelEditScreenState);
+    }
 
-    screenRunner.Start(playScreenState);
-
-    UpdateGlobalState(globalState, playScreenState);
+    mainMenuScreenState.startPlay = mainMenuScreenState.startLevelEdit = false;
   }
 
   return 0;
 }
-
-// void UpdateGlobalState(global_state& globalState, const main_menu_screen_state& screenState)
-// {
-//   if( screenState.saveGameLevelData ) SaveAllGameLevelData(*globalState.gameLevelDataIndex);
-  
-//   if( screenState.startPlay ) globalState.currentScreenId = screen_play;
-//   else if( screenState.startLevelEdit ) globalState.currentScreenId = screen_level_editor;
-//   else if( screenState.quit ) globalState.currentScreenId = screen_none;
-// }
 
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState)
 {
   globalState.currentScreenId = screen_main_menu;
 }
 
-// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
-// {
-//   if( screenState.saveChanges )
-//   {
-//     globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
-//     globalState.gameLevelDataIndexUpdated = true;
-//   }
-
-//   globalState.currentScreenId = screen_main_menu;
-// }
+void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
+{
+  globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
+  globalState.gameLevelDataIndexUpdated = true;
+  globalState.currentScreenId = screen_main_menu;
+}

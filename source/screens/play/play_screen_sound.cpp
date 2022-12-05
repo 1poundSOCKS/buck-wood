@@ -4,11 +4,10 @@
 
 void PlaySoundEffects(const play_screen_state& screenState, global_sound_buffer_selector soundBuffers)
 {
-  // auto& levelState = *screenState.levelState;
-  // const auto& sounds = screenState.sounds;
+  auto& levelState = *screenState.levelState;
 
-  // if( levelState.playerShot ) sounds.shoot.Play();
-  // if( levelState.targetShot ) sounds.targetActivated.Play();
+  if( levelState.playerShot ) PlaySoundEffect(soundBuffers[shoot]);
+  if( levelState.targetShot ) PlaySoundEffect(soundBuffers[target_activated]);
   // if( levelState.player.thrusterOn && screenState.state == play_screen_state::state_playing ) sounds.thrust.PlayOnLoop();
   // else sounds.thrust.Stop();
 }

@@ -26,6 +26,15 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   diagnosticsData = text;
 }
 
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const screen_input_state& inputState)
+{
+  static wchar_t text[64];
+  swprintf(text, L"mouse: %i,%i", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
+  diagnosticsData = text;
+  swprintf(text, L"client rect: %i,%i", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
+  diagnosticsData = text;
+}
+
 std::wstring GetDiagnosticsString(diagnostics_data::const_iterator begin, diagnostics_data::const_iterator end)
 {
   std::wstring text;

@@ -13,7 +13,6 @@ struct global_state
   global_state(const std::wstring& dataPath/*, ID2D1RenderTarget* renderTarget, IDirectSound8* directSound*/);
 
   std::wstring dataPath;
-  // sound_buffers soundBuffers;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;
 
   screen_id currentScreenId = screen_main_menu;

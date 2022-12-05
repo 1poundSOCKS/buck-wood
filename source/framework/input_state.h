@@ -9,12 +9,6 @@ struct client_mouse_data
   float x = 0, y = 0;
 };
 
-struct render_target_mouse_data
-{
-  D2D_SIZE_F size;
-  float x = 0, y = 0;
-};
-
 struct keyboard_state
 {
   keyboard_state()
@@ -24,12 +18,6 @@ struct keyboard_state
 
   unsigned char data[256];
 };
-
-// struct keyboard_state_reader
-// {
-//   IDirectInputDevice8* keyboard;
-//   void Read(keyboard_state& state);
-// };
 
 struct input_state
 {
@@ -47,9 +35,16 @@ struct screen_input_state
   window_data previousWindowData;
   keyboard_state keyboardState;
   keyboard_state previousKeyboardState;
+  render_target_mouse_data renderTargetMouseData;
+  render_target_mouse_data previousRenderTargetMouseData;
 };
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
 void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state);
+bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode);
+float GetRatioMouseX(const screen_input_state& screenInputState);
+float GetRatioMouseY(const screen_input_state& screenInputState);
+bool LeftMouseButtonDrag(const screen_input_state& screenInputState);
+bool LeftMouseButtonReleased(const screen_input_state& screenInputState);
 
 #endif

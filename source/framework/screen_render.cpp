@@ -30,18 +30,6 @@ void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* br
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-// void RenderDiagnostics(
-//   ID2D1RenderTarget* renderTarget, 
-//   ID2D1SolidColorBrush* brush, 
-//   IDWriteTextFormat* textFormat,
-//   const std::vector<std::wstring>& diagnosticsData)
-// {
-//   for( const auto& text : diagnosticsData )
-//   {
-//     RenderText(renderTarget, brush, textFormat, text);
-//   }
-// }
-
 winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
 {
   winrt::com_ptr<IDWriteFactory> dwriteFactory;

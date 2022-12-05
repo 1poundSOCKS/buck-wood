@@ -6,7 +6,6 @@
 #include "diagnostics.h"
 #include "main_window.h"
 #include "input_state.h"
-// #include "control_state_reader.h"
 
 bool ProcessMessage();
 
@@ -51,15 +50,15 @@ struct screen_runner
     while( ProcessMessage() && ContinueRunning(screenState) )
     {
       inputState.windowData = windowData;
+      inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, renderTarget);
 
-      // keyboard_state_reader keyboardStateReader { keyboard };
-      // keyboardStateReader.Read(inputState.keyboardState);
       ReadKeyboardState(keyboard, inputState.keyboardState);
 
       UpdateScreen<screen_state_type>(screenState, inputState);
 
       inputState.previousWindowData = inputState.windowData;
       inputState.previousKeyboardState = inputState.keyboardState;
+      inputState.previousRenderTargetMouseData = inputState.renderTargetMouseData;
     }
   }
 
@@ -75,6 +74,7 @@ struct screen_runner
     diagnosticsData.clear();
     diagnosticsData.reserve(50);
     FormatDiagnostics(std::back_inserter(diagnosticsData), perfData, systemTimer);
+    FormatDiagnostics(std::back_inserter(diagnosticsData), inputState);
 
     if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
     {
