@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "level_edit_screen_state.h"
-#include "sound_buffer_selector.h"
+#include "screen_sound_data.h"
 
-void PlaySoundEffects(const level_edit_screen_state& screenState, global_sound_buffer_selector soundBuffers)
+void PlaySoundEffects(const level_edit_screen_state& screenState, const bespoke_sound_data& soundData)
 {
+  const auto soundBuffers = global_sound_buffer_selector { soundData.soundBuffers };
 }

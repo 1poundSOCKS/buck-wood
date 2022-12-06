@@ -90,6 +90,49 @@ void Start(
 
 template
 <
+  typename render_data_type,
+  typename sound_data_type,
+  typename screen_state_type
+>
+void Start(
+  screen_runner_data data,
+  render_data_type renderData,
+  sound_data_type soundData,
+  screen_state_type& screenState)
+{
+  screen_diagnostics_render_data diagnosticsRenderData
+  {
+    CreateScreenRenderBrush(data.renderTarget, D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),
+    CreateScreenRenderTextFormat(
+        data.dwriteFactory, 
+        L"Verdana", 
+        DWRITE_FONT_WEIGHT_LIGHT, 
+        DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL,
+        20)
+  };
+
+  bool continueRunning = true;
+
+  screen_input_state inputState;
+  
+  while( ProcessMessage() && ContinueRunning(screenState) )
+  {
+    inputState.windowData = data.windowData;
+    inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, data.renderTarget);
+
+    ReadKeyboardState(data.keyboard, inputState.keyboardState);
+
+    UpdateScreen(data, renderData, soundData, screenState, inputState, diagnosticsRenderData);
+
+    inputState.previousWindowData = inputState.windowData;
+    inputState.previousKeyboardState = inputState.keyboardState;
+    inputState.previousRenderTargetMouseData = inputState.renderTargetMouseData;
+  }
+}
+
+template
+<
   typename screen_render_brush_selector_type,
   typename screen_render_text_format_selector_type,
   typename sound_buffer_selector_type,
@@ -143,6 +186,60 @@ void UpdateScreen(
   data.swapChain->Present(1, 0);
 
   PlaySoundEffects(screenState, bespokeData.soundBufferSelector);
+
+  UpdateTimer(data.systemTimer);
+  UpdatePerformanceData(data.perfData);
+}
+
+template
+<
+  typename render_data_type,
+  typename sound_data_type,
+  typename screen_state_type
+>
+void UpdateScreen(
+  screen_runner_data& data,
+  render_data_type& renderData,
+  sound_data_type& soundData, 
+  screen_state_type& screenState,
+  const screen_input_state& inputState,
+  screen_diagnostics_render_data& diagnosticsRenderData)
+{
+  auto start = QueryPerformanceCounter();
+  UpdateScreenState(screenState, inputState, data.systemTimer);
+  auto end = QueryPerformanceCounter();
+  data.perfData.updateScreenStateTicks = end - start;
+
+  static diagnostics_data diagnosticsData;
+  diagnosticsData.clear();
+  diagnosticsData.reserve(50);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), data.perfData, data.systemTimer);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), inputState);
+
+  if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
+  {
+    data.swapChain->SetFullscreenState(TRUE, NULL);
+  }
+
+  {
+    d2d_frame frame(data.renderTarget);
+    auto start = QueryPerformanceCounter();
+    RenderFrame(data.renderTarget, renderData, screenState);
+    auto end = QueryPerformanceCounter();
+    data.perfData.renderFrameTicks = end - start;
+    data.renderTarget->SetTransform(D2D1::IdentityMatrix());
+    
+    RenderText(
+      data.renderTarget, 
+      diagnosticsRenderData.brush.get(), 
+      diagnosticsRenderData.textFormat.get(), 
+      GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend())
+    );
+  }
+
+  data.swapChain->Present(1, 0);
+
+  PlaySoundEffects(screenState, soundData);
 
   UpdateTimer(data.systemTimer);
   UpdatePerformanceData(data.perfData);

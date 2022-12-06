@@ -15,6 +15,7 @@ struct sound_buffer_player
   IDirectSoundBuffer8* soundBuffer;
 };
 
-void PlaySoundEffect(IDirectSoundBuffer8* soundBuffer, bool loop=false);
+void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop=false);
+void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer);
 
 #endif

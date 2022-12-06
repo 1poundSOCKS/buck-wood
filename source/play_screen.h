@@ -2,8 +2,8 @@
 #define _play_screen_
 
 #include "screens/play/play_screen_state.h"
-#include "sound_buffer_selector.h"
 #include "screen_render_data.h"
+#include "screen_sound_data.h"
 
 void UpdateScreenState
 (
@@ -15,15 +15,14 @@ void UpdateScreenState
 void RenderFrame
 (
   ID2D1RenderTarget* renderTarget, 
-  screen_render_brush_selector renderBrushSelector, 
-  screen_render_text_format_selector textFormatSelector,
+  const bespoke_render_data& renderData, 
   const play_screen_state& screenState
 );
 
 void PlaySoundEffects
 (
   const play_screen_state& screenState, 
-  global_sound_buffer_selector soundBuffers
+  const bespoke_sound_data& soundData
 );
 
 bool ContinueRunning(const play_screen_state& screenState);

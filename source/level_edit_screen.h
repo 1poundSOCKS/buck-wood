@@ -2,9 +2,9 @@
 #define _level_edit_screen_
 
 #include "screens/level_edit/level_edit_screen_state.h"
-#include "sound_buffer_selector.h"
-#include "screen_render_data.h"
 #include "timers.h"
+#include "screen_render_data.h"
+#include "screen_sound_data.h"
 
 void UpdateScreenState
 (
@@ -16,15 +16,14 @@ void UpdateScreenState
 void RenderFrame
 (
   ID2D1RenderTarget* renderTarget, 
-  screen_render_brush_selector renderBrushSelector, 
-  screen_render_text_format_selector textFormatSelector,
+  const bespoke_render_data& renderData,
   const level_edit_screen_state& screenState
 );
 
 void PlaySoundEffects
 (
   const level_edit_screen_state& screenState, 
-  global_sound_buffer_selector soundBuffers
+  const bespoke_sound_data& soundData
 );
 
 bool ContinueRunning(const level_edit_screen_state& screenState);

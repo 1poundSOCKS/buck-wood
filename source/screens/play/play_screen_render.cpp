@@ -8,10 +8,12 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 
-  screen_render_brush_selector renderBrushSelector, 
-  screen_render_text_format_selector textFormatSelector,
+  const bespoke_render_data& renderData,
   const play_screen_state& screenState)
 {
+  const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
+  const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
+
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   RenderLevel(renderTarget, renderBrushSelector, *screenState.levelState);

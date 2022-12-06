@@ -37,11 +37,16 @@ void sound_buffer_player::Stop() const
   DWORD bufferStatus = 0;
 
   if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
-    soundBuffer->Stop();
+    StopSoundBufferPlay(soundBuffer);
 }
 
-void PlaySoundEffect(IDirectSoundBuffer8* soundBuffer, bool loop)
+void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop)
 {
   soundBuffer->SetCurrentPosition(0);
   soundBuffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+}
+
+void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer)
+{
+  soundBuffer->Stop();
 }

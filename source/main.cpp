@@ -3,19 +3,14 @@
 #include "framework.h"
 #include "math.h"
 #include "render.h"
-// #include "control_state.h"
-// #include "main_menu/main_menu_screen.h"
-// #include "play/play_screen_state.h"
-// #include "play/play_screen_render.h"
-// #include "play/play_screen_sound.h"
 #include "level_edit_screen.h"
 #include "play_screen.h"
 #include "main_menu_screen.h"
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
-// #include "control_state_reader.h"
 #include "screen_render_data.h"
+#include "screen_sound_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -90,11 +85,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     soundBufferSelector
   };
 
+  bespoke_render_data bespokeRenderData { renderBrushes, textFormats };
+
+  bespoke_sound_data bespokeSoundData { soundBuffers };
+
   main_menu_screen_state mainMenuScreenState;
 
   while( !mainMenuScreenState.quit )
   {
-    Start(screenRunnerData, screenRunnerBespokeData, mainMenuScreenState);
+    Start(screenRunnerData, bespokeRenderData, bespokeSoundData, mainMenuScreenState);
 
     if( mainMenuScreenState.startPlay )
     {
@@ -107,7 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       sound_buffer_player menuTheme(soundBufferSelector[menu_theme]);
       menuTheme.PlayOnLoop();
       
-      Start(screenRunnerData, screenRunnerBespokeData, playScreenState);
+      Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);
     }
@@ -115,7 +114,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     {
       level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex);
       
-      Start(screenRunnerData, screenRunnerBespokeData, levelEditScreenState);
+      Start(screenRunnerData, bespokeRenderData, bespokeSoundData, levelEditScreenState);
       
       if( levelEditScreenState.saveChanges ) UpdateGlobalState(globalState, levelEditScreenState);
     }
