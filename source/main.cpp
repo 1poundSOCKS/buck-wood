@@ -58,7 +58,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto directSound = CreateDirectSound(window);
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
-  // keyboard_state_reader keyboardStateReader { keyboard.get() };
 
   screen_render_brushes renderBrushes;
   CreateScreenRenderBrushes(renderTarget.get(), renderBrushes);

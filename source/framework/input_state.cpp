@@ -47,12 +47,12 @@ bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode)
 
 float GetRatioMouseX(const screen_input_state& screenInputState)
 {
-  return screenInputState.renderTargetMouseData.x * 100.0 / screenInputState.renderTargetMouseData.size.width;
+  return screenInputState.renderTargetMouseData.x / screenInputState.renderTargetMouseData.size.width;
 }
 
 float GetRatioMouseY(const screen_input_state& screenInputState)
 {
-  return screenInputState.renderTargetMouseData.y * 100.0 / screenInputState.renderTargetMouseData.size.height;
+  return screenInputState.renderTargetMouseData.y / screenInputState.renderTargetMouseData.size.height;
 }
 
 bool MouseMoved(const screen_input_state& screenInputState)

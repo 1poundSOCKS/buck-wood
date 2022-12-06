@@ -72,11 +72,11 @@ void UpdateScreenState(level_edit_screen_state& screenState, const screen_input_
   float ratioMouseX = GetRatioMouseX(screenInputState);
   float ratioMouseY = GetRatioMouseY(screenInputState);
 
-  // if( ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
-  // else if( ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
+  if( ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
+  else if( ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
 
-  // if( ratioMouseY < 0.1f ) screenState.levelCenterY -= scrollDistance;
-  // else if( ratioMouseY > 0.9f ) screenState.levelCenterY += scrollDistance;
+  if( ratioMouseY < 0.1f ) screenState.levelCenterY -= scrollDistance;
+  else if( ratioMouseY > 0.9f ) screenState.levelCenterY += scrollDistance;
 
   auto& dragDropState = *screenState.dragDropState;
   
