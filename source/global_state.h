@@ -10,7 +10,7 @@ enum screen_id { screen_none, screen_main_menu, screen_play, screen_level_editor
 
 struct global_state
 {
-  global_state(const std::wstring& dataPath/*, ID2D1RenderTarget* renderTarget, IDirectSound8* directSound*/);
+  global_state(const std::wstring& dataPath);
 
   std::wstring dataPath;
   std::unique_ptr<game_level_data_index> gameLevelDataIndex;

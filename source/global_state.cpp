@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "global_state.h"
 
-global_state::global_state(const std::wstring& dataPath/*, ID2D1RenderTarget* renderTarget, IDirectSound8* directSound*/)
-: dataPath(dataPath)/*, 
-  soundBuffers(directSound, dataPath)*/
+global_state::global_state(const std::wstring& dataPath)
+: dataPath(dataPath)
 {
   gameLevelDataIndex = LoadAllGameLevelData(dataPath);
 }
