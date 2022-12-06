@@ -16,7 +16,7 @@ void RenderFrame(
 
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
-    RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[srtf_prompt], L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     return;
   }
 

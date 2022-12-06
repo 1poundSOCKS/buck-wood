@@ -23,23 +23,23 @@ void RenderFrame(
   switch( screenState.state )
   {
     case play_screen_state::state_paused:
-      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"PAUSED", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[srtf_play_screen_state], L"PAUSED", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_level_complete:
-      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"LEVEL COMPLETE", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[srtf_play_screen_state], L"LEVEL COMPLETE", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_game_complete:
-      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], GetGameCompleteMsg(screenState.levelTimes), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[srtf_play_screen_state], GetGameCompleteMsg(screenState.levelTimes), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
     case play_screen_state::state_player_dead:
-      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[diagnostics], L"DEAD", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+      RenderText(renderTarget, renderBrushSelector[cyan], textFormatSelector[srtf_play_screen_state], L"DEAD", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
   }
 
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   static wchar_t timerText[64];
   swprintf(timerText, L"%.2f", levelTimeRemaining);
-  RenderText(renderTarget, renderBrushSelector[yellow], textFormatSelector[diagnostics], timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
+  RenderText(renderTarget, renderBrushSelector[yellow], textFormatSelector[srtf_play_screen_timer], timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
   
   RenderMouseCursor(renderTarget, renderBrushSelector[white], screenState.renderTargetMouseData.x, screenState.renderTargetMouseData.y);
 }

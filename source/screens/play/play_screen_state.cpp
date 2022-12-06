@@ -190,9 +190,9 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
 void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState)
 {
-  controlState.pausePlay = false;
-  controlState.returnToMenu = false;
-  controlState.restartPlay = false;
+  controlState.pausePlay = KeyPressed(inputState, DIK_ESCAPE);
+  controlState.returnToMenu = KeyPressed(inputState, DIK_Q);
+  controlState.restartPlay = KeyPressed(inputState, DIK_ESCAPE);
 
   controlState.levelControlState.renderTargetMouseData = inputState.renderTargetMouseData;
   controlState.levelControlState.thrust = inputState.windowData.mouse.rightButtonDown;

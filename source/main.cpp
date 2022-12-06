@@ -103,9 +103,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         globalState.gameLevelDataIndex->gameLevelData.cend()
       );
       
-      sound_buffer_player menuTheme(soundBufferSelector[menu_theme]);
-      menuTheme.PlayOnLoop();
-      
       Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);

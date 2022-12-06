@@ -16,7 +16,7 @@ struct screen_render_brush_selector
 
 using screen_render_text_formats = std::vector<winrt::com_ptr<IDWriteTextFormat>>;
 
-enum screen_render_text_format { diagnostics=0 };
+enum screen_render_text_format { srtf_prompt = 0, srtf_main_menu, srtf_play_screen_state, srtf_play_screen_timer };
 
 struct screen_render_text_format_selector
 {
