@@ -34,13 +34,6 @@ void UpdateGlobalState(global_state& globalState, const level_edit_screen_state&
 
 extern const int fps = 60;
 
-using screen_runner_type = screen_runner
-<
-  screen_render_brush_selector, 
-  screen_render_text_format_selector,
-  global_sound_buffer_selector
->;
-
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
@@ -79,7 +72,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   system_timer systemTimer;
   perf_data perfData;
 
-  screen_runner_type screenRunner
+  screen_runner_data screenRunnerData
   {
     swapChain.get(),
     renderTarget.get(), 
@@ -88,6 +81,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     windowData, 
     systemTimer, 
     perfData, 
+  };
+
+  screen_runner_bespoke_data screenRunnerBespokeData
+  {
     renderBrushSelector,
     textFormatSelector,
     soundBufferSelector
@@ -97,7 +94,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   while( !mainMenuScreenState.quit )
   {
-    screenRunner.Start(mainMenuScreenState);
+    Start(screenRunnerData, screenRunnerBespokeData, mainMenuScreenState);
 
     if( mainMenuScreenState.startPlay )
     {
@@ -106,15 +103,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
         globalState.gameLevelDataIndex->gameLevelData.cend()
       );
+      
       sound_buffer_player menuTheme(soundBufferSelector[menu_theme]);
       menuTheme.PlayOnLoop();
-      screenRunner.Start(playScreenState);
+      
+      Start(screenRunnerData, screenRunnerBespokeData, playScreenState);
+      
       UpdateGlobalState(globalState, playScreenState);
     }
     else if( mainMenuScreenState.startLevelEdit )
     {
       level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex);
-      screenRunner.Start(levelEditScreenState);
+      
+      Start(screenRunnerData, screenRunnerBespokeData, levelEditScreenState);
+      
       if( levelEditScreenState.saveChanges ) UpdateGlobalState(globalState, levelEditScreenState);
     }
 
