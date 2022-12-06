@@ -19,16 +19,6 @@ struct keyboard_state
   unsigned char data[256];
 };
 
-struct input_state
-{
-  void RefreshKeyboard(IDirectInputDevice8* keyboard);
-
-  keyboard_state keyboardState;
-  bool leftMouseButtonDown = false, rightMouseButtonDown = false;
-  client_mouse_data clientMouseData;
-  render_target_mouse_data renderTargetMouseData;
-};
-
 struct screen_input_state
 {
   window_data windowData;

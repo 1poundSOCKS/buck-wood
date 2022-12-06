@@ -4,7 +4,7 @@
 #include "framework.h"
 #include "perf_data.h"
 #include "timers.h"
-#include "input_state.h"
+#include "screen_input_state.h"
 
 using diagnostics_data = std::vector<std::wstring>;
 

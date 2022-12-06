@@ -3,7 +3,6 @@
 
 #include "framework.h"
 #include "game_objects.h"
-// #include "diagnostics.h"
 #include "level_state.h"
 
 struct play_screen_state

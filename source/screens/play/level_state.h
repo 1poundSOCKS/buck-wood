@@ -2,7 +2,7 @@
 #define _level_state_
 
 #include "game_level_data.h"
-#include "control_state.h"
+#include "screen_input_state.h"
 #include "timers.h"
 #include "screen_render_data.h"
 

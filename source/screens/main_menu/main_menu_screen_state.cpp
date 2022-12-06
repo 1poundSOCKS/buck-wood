@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "main_menu_screen_state.h"
-#include "input_state.h"
+#include "screen_input_state.h"
 #include "timers.h"
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const screen_input_state& screenInputState);

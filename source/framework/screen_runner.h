@@ -5,7 +5,7 @@
 #include "global_state.h"
 #include "diagnostics.h"
 #include "main_window.h"
-#include "input_state.h"
+#include "screen_input_state.h"
 
 bool ProcessMessage();
 

@@ -4,7 +4,6 @@
 #include "screens/main_menu/main_menu_screen_state.h"
 #include "sound_buffer_selector.h"
 #include "screen_render_data.h"
-#include "input_state.h"
 #include "timers.h"
 
 void UpdateScreenState

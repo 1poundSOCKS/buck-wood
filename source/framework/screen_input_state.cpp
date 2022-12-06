@@ -1,14 +1,5 @@
 #include "pch.h"
-#include "input_state.h"
-
-void input_state::RefreshKeyboard(IDirectInputDevice8* keyboard)
-{
-  HRESULT hr = keyboard->GetDeviceState(sizeof(keyboardState), keyboardState.data);
-	if(FAILED(hr))
-	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
-	}
-}
+#include "screen_input_state.h"
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window)
 {

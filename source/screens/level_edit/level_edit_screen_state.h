@@ -2,7 +2,7 @@
 #define _level_edit_screen_state_
 
 #include "game_level_data.h"
-#include "input_state.h"
+#include "screen_input_state.h"
 #include "drag_drop.h"
 
 struct level_edit_screen_state

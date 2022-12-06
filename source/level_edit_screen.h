@@ -4,7 +4,6 @@
 #include "screens/level_edit/level_edit_screen_state.h"
 #include "sound_buffer_selector.h"
 #include "screen_render_data.h"
-#include "input_state.h"
 #include "timers.h"
 
 void UpdateScreenState
