@@ -69,20 +69,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   screen_runner_data screenRunnerData
   {
-    swapChain.get(),
-    renderTarget.get(), 
-    dwriteFactory.get(),
-    keyboard.get(), 
+    swapChain,
+    renderTarget, 
+    dwriteFactory,
+    keyboard, 
     windowData, 
     systemTimer, 
     perfData, 
-  };
-
-  screen_runner_bespoke_data screenRunnerBespokeData
-  {
-    renderBrushSelector,
-    textFormatSelector,
-    soundBufferSelector
   };
 
   bespoke_render_data bespokeRenderData { renderBrushes, textFormats };

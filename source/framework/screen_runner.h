@@ -11,10 +11,10 @@ bool ProcessMessage();
 
 struct screen_runner_data
 {
-  IDXGISwapChain* swapChain;
-  ID2D1RenderTarget* renderTarget;
-  IDWriteFactory* dwriteFactory;
-  IDirectInputDevice8* keyboard;
+  winrt::com_ptr<IDXGISwapChain> swapChain;
+  winrt::com_ptr<ID2D1RenderTarget> renderTarget;
+  winrt::com_ptr<IDWriteFactory> dwriteFactory;
+  winrt::com_ptr<IDirectInputDevice8> keyboard;
   const window_data& windowData;
   system_timer& systemTimer;
   perf_data& perfData;
@@ -53,9 +53,9 @@ void Start(
 {
   screen_diagnostics_render_data diagnosticsRenderData
   {
-    CreateScreenRenderBrush(data.renderTarget, D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),
+    CreateScreenRenderBrush(data.renderTarget.get(), D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),
     CreateScreenRenderTextFormat(
-        data.dwriteFactory, 
+        data.dwriteFactory.get(), 
         L"Verdana", 
         DWRITE_FONT_WEIGHT_LIGHT, 
         DWRITE_FONT_STYLE_NORMAL,
@@ -70,9 +70,9 @@ void Start(
   while( ProcessMessage() && ContinueRunning(screenState) )
   {
     inputState.windowData = data.windowData;
-    inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, data.renderTarget);
+    inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, data.renderTarget.get());
 
-    ReadKeyboardState(data.keyboard, inputState.keyboardState);
+    ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
     UpdateScreen(data, renderData, soundData, screenState, inputState, diagnosticsRenderData);
 
@@ -113,15 +113,15 @@ void UpdateScreen(
   }
 
   {
-    d2d_frame frame(data.renderTarget);
+    d2d_frame frame(data.renderTarget.get());
     auto start = QueryPerformanceCounter();
-    RenderFrame(data.renderTarget, renderData, screenState);
+    RenderFrame(data.renderTarget.get(), renderData, screenState);
     auto end = QueryPerformanceCounter();
     data.perfData.renderFrameTicks = end - start;
     data.renderTarget->SetTransform(D2D1::IdentityMatrix());
     
     RenderText(
-      data.renderTarget, 
+      data.renderTarget.get(), 
       diagnosticsRenderData.brush.get(), 
       diagnosticsRenderData.textFormat.get(), 
       GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend())
