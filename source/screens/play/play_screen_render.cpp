@@ -3,6 +3,7 @@
 #include "screen_render.h"
 #include "play_screen_state.h"
 #include "screen_render_data.h"
+#include "level_render.h"
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
@@ -16,7 +17,7 @@ void RenderFrame(
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderLevel(renderTarget, renderBrushSelector, *screenState.levelState);
+  RenderLevel(renderTarget, renderData, *screenState.levelState);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

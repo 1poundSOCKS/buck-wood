@@ -2,6 +2,7 @@
 #include "level_state.h"
 #include "game_objects.h"
 #include "level_render.h"
+#include "screen_view.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
@@ -10,10 +11,7 @@ const int shotTimeDenominator = 60;
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 bullet& GetBullet(std::vector<bullet>& bullets);
-D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
-void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
-void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -71,17 +69,8 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
     CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
 
-  // CreateRenderLines(levelData, std::back_inserter(renderData.staticRenderLines));
-
   shotTimer.paused = false;
 }
-
-// void RefreshControlState(level_control_state& controlState, const control_state& baseControlState)
-// {
-//   controlState.shoot = baseControlState.leftMouseButtonDown;
-//   controlState.thrust = baseControlState.rightMouseButtonDown;
-//   controlState.renderTargetMouseData = baseControlState.renderTargetMouseData;
-// }
 
 bool LevelIsComplete(const level_state& levelState)
 {
@@ -96,10 +85,6 @@ bool LevelIsComplete(const level_state& levelState)
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
 {
-  // levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
-
-  // D2D1::Matrix3x2F mouseTransform = levelState.viewTransform;
-
   D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
 
   if( mouseTransform.Invert() )
@@ -248,79 +233,6 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   }
 
   return bullets.front();
-}
-
-void RenderLevel(
-  ID2D1RenderTarget* renderTarget, 
-  screen_render_brush_selector renderBrushSelector, 
-  const level_state& levelState)
-{
-  auto renderTargetSize = renderTarget->GetSize();
-  renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize));
-
-  std::vector<render_line> staticRenderLines;
-  CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
-  RenderLines(renderTarget, staticRenderLines.cbegin(), staticRenderLines.cend());
-
-  std::vector<render_line> renderLines;
-  CreateDynamicLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
-  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
-
-  std::vector<render_point> renderBullets;
-  for( const auto& bullet : levelState.bullets )
-  {
-    if( bullet.free ) continue;
-    renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 8));
-  }
-
-  RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
-}
-
-void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes)
-{
-  CreateConnectedRenderLines(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, brushes[grey], 6);
-
-  for( const auto& object : gameLevelData.objects )
-  {
-    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[grey], 6);
-  }
-}
-
-void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes)
-{
-  for( const auto& target : levelState.targets )
-  {
-    auto renderBrush = target.activated ? brushes[red] : brushes[green];
-    std::vector<game_point> points;
-    CreatePointsForTarget(defaultTargetSize, std::back_inserter(points));
-    std::vector<game_point> transformedPoints;
-    TransformPoints(points.cbegin(), points.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
-    CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 4);
-  }
-
-  const auto& player = levelState.player;
-  CreateConnectedRenderLines(
-    levelState.playerShipPointData.transformedPoints.cbegin(), 
-    levelState.playerShipPointData.transformedPoints.cend(), 
-    renderLines, 
-    brushes[white], 
-    2);
-
-  if( levelState.player.thrusterOn )
-  {
-    std::vector<game_point> points;
-    points.reserve(levelState.playerShipPointData.thrusterPoints.size());
-    
-    TransformPoints(
-      levelState.playerShipPointData.thrusterPoints.cbegin(), 
-      levelState.playerShipPointData.thrusterPoints.cend(), 
-      std::back_inserter(points), 
-      player.angle, 
-      player.xPos, 
-      player.yPos);
-
-    CreateDisconnectedRenderLines(points.cbegin(), points.cend(), renderLines, brushes[red], 5);
-  }
 }
 
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize)

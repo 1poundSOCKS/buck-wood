@@ -106,11 +106,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       
       Start(screenRunnerData, bespokeRenderData, bespokeSoundData, levelEditScreenState);
       
-      if( levelEditScreenState.saveChanges ) UpdateGlobalState(globalState, levelEditScreenState);
+      if( levelEditScreenState.saveChanges )
+      {
+        UpdateGlobalState(globalState, levelEditScreenState);
+        mainMenuScreenState.checkSaveOnExit = true;
+      }
     }
+    else
+      mainMenuScreenState.quit = true;
 
     mainMenuScreenState.startPlay = mainMenuScreenState.startLevelEdit = false;
   }
+
+  if( mainMenuScreenState.saveGameLevelData )
+    SaveAllGameLevelData(*globalState.gameLevelDataIndex);
 
   return 0;
 }
