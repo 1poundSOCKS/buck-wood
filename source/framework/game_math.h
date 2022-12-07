@@ -33,7 +33,7 @@ template <typename T>
 void CreateConnectedLines(typename std::vector<T>::const_iterator begin, 
                           typename std::vector<T>::const_iterator end, 
                           std::back_insert_iterator<std::vector<game_line>> insertIterator,
-                          float x=0, float y=0)
+                          float x=0, float y=0, bool loop=true)
 {
   std::transform(std::next(begin), end, begin, insertIterator, [x, y](const auto& point2, const auto& point1)
   {
@@ -42,11 +42,13 @@ void CreateConnectedLines(typename std::vector<T>::const_iterator begin,
     return game_line(start, end);
   });
 
-  typename std::vector<T>::const_iterator last = std::prev(end);
-
-  game_point startPoint(last->x + x, last->y + y);
-  game_point endPoint(begin->x + x, begin->y + y);
-  insertIterator = game_line(startPoint, endPoint);
+  if( loop )
+  {
+    auto last = std::prev(end);
+    game_point startPoint(last->x + x, last->y + y);
+    game_point endPoint(begin->x + x, begin->y + y);
+    insertIterator = game_line(startPoint, endPoint);
+  }
 };
 
 #endif

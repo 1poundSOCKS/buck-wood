@@ -86,6 +86,6 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 
 bool LevelIsComplete(const level_state& levelState);
 
-D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize);
+D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0);
 
 #endif

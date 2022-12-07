@@ -85,7 +85,7 @@ bool LevelIsComplete(const level_state& levelState)
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
 {
-  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size);
+  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.0);
 
   if( mouseTransform.Invert() )
   {
@@ -133,7 +133,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   const auto& currentLevelData = levelState.levelData;
 
   std::vector<game_line> lines;
-  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines));
+  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines), 0, 0, true);
 
   if( !AllPointsInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
   {
@@ -235,9 +235,8 @@ bullet& GetBullet(std::vector<bullet>& bullets)
   return bullets.front();
 }
 
-D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize)
+D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale)
 {
-  static const float renderScale = 1.0f;
   return CreateGameLevelTransform(levelState.player.xPos, levelState.player.yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 

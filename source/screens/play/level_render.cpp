@@ -8,13 +8,14 @@ void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_inse
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const bespoke_render_data& renderData,
-  const level_state& levelState)
+  const level_state& levelState,
+  float renderScale)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
   auto renderTargetSize = renderTarget->GetSize();
-  renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize));
+  renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize, renderScale));
 
   static std::vector<render_line> staticRenderLines;
   if( staticRenderLines.size() == 0 )
