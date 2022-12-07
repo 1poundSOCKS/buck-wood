@@ -17,5 +17,6 @@ struct sound_buffer_player
 
 void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop=false);
 void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer);
+void ResetSoundBuffer(IDirectSoundBuffer8* soundBuffer);
 
 #endif

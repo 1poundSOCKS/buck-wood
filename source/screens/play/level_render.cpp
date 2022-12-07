@@ -16,8 +16,10 @@ void RenderLevel(
   auto renderTargetSize = renderTarget->GetSize();
   renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize));
 
-  std::vector<render_line> staticRenderLines;
-  CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
+  static std::vector<render_line> staticRenderLines;
+  if( staticRenderLines.size() == 0 )
+    CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
+
   RenderLines(renderTarget, staticRenderLines.cbegin(), staticRenderLines.cend());
 
   std::vector<render_line> renderLines;
@@ -36,11 +38,31 @@ void RenderLevel(
 
 void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes)
 {
-  CreateConnectedRenderLines(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, brushes[grey], 6);
+  CreateConnectedRenderLines(gameLevelData.boundaryPoints.cbegin(), gameLevelData.boundaryPoints.cend(), insertIterator, brushes[brown], 6, 0, 0, false);
+
+  const game_point& firstBoundaryPoint = gameLevelData.boundaryPoints.front();
+  
+  insertIterator = render_line
+  {
+    D2D1_POINT_2F { firstBoundaryPoint.x, firstBoundaryPoint.y }, 
+    D2D1_POINT_2F { firstBoundaryPoint.x + 1000, firstBoundaryPoint.y }, 
+    brushes[brown],
+    6
+  };
+
+  const game_point& lastBoundaryPoint = gameLevelData.boundaryPoints.back();
+
+  insertIterator = render_line
+  {
+    D2D1_POINT_2F { lastBoundaryPoint.x, lastBoundaryPoint.y }, 
+    D2D1_POINT_2F { lastBoundaryPoint.x - 1000, lastBoundaryPoint.y }, 
+    brushes[brown],
+    6
+  };
 
   for( const auto& object : gameLevelData.objects )
   {
-    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[grey], 6);
+    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[brown], 6);
   }
 }
 

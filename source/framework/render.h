@@ -77,15 +77,19 @@ void CreateConnectedRenderLines(
   ID2D1SolidColorBrush* brush, 
   float width, 
   float x=0, 
-  float y=0)
+  float y=0,
+  bool loop=true)
 {
   std::transform(std::next(begin), end, begin, insertIterator, [brush, width, x, y](const auto& point2, const auto& point1)
   {
     return render_line({point1.x + x, point1.y + y}, {point2.x + x, point2.y + y}, brush, width);
   });
 
-  auto last = std::prev(end);
-  insertIterator = render_line({last->x + x, last->y + y}, {begin->x + x, begin->y + y}, brush, width);
+  if( loop )
+  {
+    auto last = std::prev(end);
+    insertIterator = render_line({last->x + x, last->y + y}, {begin->x + x, begin->y + y}, brush, width);
+  }
 };
 
 #endif

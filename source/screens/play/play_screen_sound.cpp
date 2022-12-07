@@ -16,7 +16,8 @@ void PlaySoundEffects(const play_screen_state& screenState, const bespoke_sound_
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
 
-    if( levelState.playerShot ) PlaySoundBuffer(soundBuffers[shoot]);
+    if( levelState.playerShot )
+      PlaySoundBuffer(soundBuffers[shoot]);
 
     if( levelState.targetShot ) PlaySoundBuffer(soundBuffers[target_activated]);
   }
