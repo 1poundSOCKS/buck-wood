@@ -59,7 +59,8 @@ struct target_state
 
 struct level_control_state
 {
-  bool thrust = false, shoot = false;
+  bool thrust = false;
+  bool shoot = false;
   render_target_mouse_data renderTargetMouseData;
 };
 

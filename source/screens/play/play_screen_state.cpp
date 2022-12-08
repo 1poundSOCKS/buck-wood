@@ -6,15 +6,12 @@
 
 struct play_screen_control_state
 {
-  bool returnToMenu = false;
-  bool restartPlay = false;
-  bool pausePlay = false;
   level_control_state levelControlState;
 };
 
-void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState);
-void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
-void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer);
+level_control_state GetLevelControlState(const screen_input_state& inputState);
+void OnPlay(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
+void OnLevelComplete(play_screen_state& screenState, const system_timer& timer);
 
 play_screen_state::play_screen_state(const system_timer& timer, game_level_data_index::const_iterator currentLevelDataIterator, game_level_data_index::const_iterator endLevelDataIterator) 
 : systemTimer(timer), 
@@ -32,10 +29,7 @@ play_screen_state::play_screen_state(const system_timer& timer, game_level_data_
 
 void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
 {
-  play_screen_control_state controlState;
-  ReadControlState(inputState, controlState);
-  
-  screenState.renderTargetMouseData = controlState.levelControlState.renderTargetMouseData;
+  screenState.renderTargetMouseData = inputState.renderTargetMouseData;
 
   auto& levelState = *screenState.levelState;
 
@@ -47,13 +41,13 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   if( screenState.state == play_screen_state::state_paused )
   {
-    if( controlState.returnToMenu )
+    if( KeyPressed(inputState, DIK_Q) )
     {
       screenState.returnToMenu = true;
       return;
     }
 
-    if( controlState.restartPlay )
+    if( KeyPressed(inputState, DIK_ESCAPE) )
     {
       screenState.state = play_screen_state::state_playing;
       screenState.levelTimer->paused = false;
@@ -73,13 +67,13 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   if( screenState.state == play_screen_state::state_level_complete )
   {
-    OnLevelComplete(screenState, controlState, timer);
+    OnLevelComplete(screenState, timer);
     return;
   }
 
   if( screenState.state == play_screen_state::state_playing )
   {
-    if( controlState.pausePlay )
+    if( KeyPressed(inputState, DIK_ESCAPE) )
     {
       screenState.state = play_screen_state::state_paused;
       screenState.levelTimer->paused = true;
@@ -89,12 +83,12 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
     screenState.levelTimer->paused = false;
     levelState.shotTimer.paused = false;
-    OnPlay(screenState, controlState, timer);
+    OnPlay(screenState, inputState, timer);
     return;
   }
 }
 
-void OnPlay(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
+void OnPlay(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
 {
   int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
 
@@ -107,11 +101,10 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
   }
   
   auto& levelState = *screenState.levelState;
-  const auto& levelControlState = controlState.levelControlState;
 
-  UpdateLevelState(levelState, levelControlState, timer);
+  UpdateLevelState(levelState, GetLevelControlState(inputState), timer);
 
-  if( LevelIsComplete(*screenState.levelState) )
+  if( LevelIsComplete(levelState) )
   {
     screenState.state = play_screen_state::state_level_complete;
     screenState.levelTimer->paused = true;
@@ -128,7 +121,7 @@ void OnPlay(play_screen_state& screenState, const play_screen_control_state& con
   }
 }
 
-void OnLevelComplete(play_screen_state& screenState, const play_screen_control_state& controlState, const system_timer& timer)
+void OnLevelComplete(play_screen_state& screenState, const system_timer& timer)
 {
   float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   screenState.levelTimes.push_back(levelTimeRemaining);
@@ -188,13 +181,7 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
   diagnosticsData = text;
 }
 
-void ReadControlState(const screen_input_state& inputState, play_screen_control_state& controlState)
+level_control_state GetLevelControlState(const screen_input_state& inputState)
 {
-  controlState.pausePlay = KeyPressed(inputState, DIK_ESCAPE);
-  controlState.returnToMenu = KeyPressed(inputState, DIK_Q);
-  controlState.restartPlay = KeyPressed(inputState, DIK_ESCAPE);
-
-  controlState.levelControlState.renderTargetMouseData = inputState.renderTargetMouseData;
-  controlState.levelControlState.thrust = inputState.windowData.mouse.rightButtonDown;
-  controlState.levelControlState.shoot = inputState.windowData.mouse.leftButtonDown;
+  return { inputState.windowData.mouse.rightButtonDown, inputState.windowData.mouse.leftButtonDown, inputState.renderTargetMouseData };
 }

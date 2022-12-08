@@ -17,7 +17,7 @@ void RenderFrame(
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  float renderScale = screenState.state == play_screen_state::STATE::state_playing ? 2.0 : 3.0;
+  float renderScale = screenState.state == play_screen_state::STATE::state_playing ? 1.5 : 1.5;
 
   RenderLevel(renderTarget, renderData, *screenState.levelState, renderScale);
 

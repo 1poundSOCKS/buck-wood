@@ -3,7 +3,7 @@
 #include "screen_render.h"
 
 auto screen_render_brush_white = D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f);
-auto screen_render_brush_grey = D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f);
+auto screen_render_brush_grey = D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f);
 auto screen_render_brush_green = D2D1::ColorF(0.0f, 1.0f, 0.0f, 1.0f);
 auto screen_render_brush_red = D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f);
 auto screen_render_brush_yellow = D2D1::ColorF(1.0f, 1.0f, 0.0f, 1.0f);
