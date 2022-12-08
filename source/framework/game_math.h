@@ -25,6 +25,7 @@ bool AllPointsInside(const std::vector<game_point>::const_iterator& begin, const
 bool AnyPointInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area);
 bool PointInside(const game_point& point, const std::vector<game_line>& area);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
+int GetLineInterceptCount(const game_point& point, const std::vector<game_line>& lines);
 float GetYIntercept(float x, const game_line& line);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 void TransformPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y);

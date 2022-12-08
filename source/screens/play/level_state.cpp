@@ -9,8 +9,11 @@ const int shotTimeNumerator = 1;
 const int shotTimeDenominator = 60;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_point>& ground);
+
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
 bullet& GetBullet(std::vector<bullet>& bullets);
+
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
@@ -132,15 +135,12 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 
   const auto& currentLevelData = levelState.levelData;
 
-  std::vector<game_line> lines;
-  CreateConnectedLines<game_point>(currentLevelData.boundaryPoints.cbegin(), currentLevelData.boundaryPoints.cend(), std::back_inserter(lines), 0, 0, true);
-
-  if( !AllPointsInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
+  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, currentLevelData.boundaryPoints) )
   {
     levelState.player.state = player_ship::player_state::state_dead;
     return;
   }
-  
+
   for( const auto& object : currentLevelData.objects)
   {
     std::vector<game_line> lines;
@@ -151,6 +151,50 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
       return;
     }
   }
+}
+
+bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_point>& ground)
+{
+  std::vector<game_line> lines;
+  CreateConnectedLines<game_point>(ground.cbegin(), ground.cend(), std::back_inserter(lines), 0, 0, false);
+
+  auto firstPoint = lines.front().start;
+  auto lastPoint = lines.back().end;
+
+  std::vector<int> interceptCounts;
+  std::transform(
+    player.cbegin(), 
+    player.cend(), 
+    std::back_inserter(interceptCounts),
+    [lines,firstPoint,lastPoint](auto& point)
+    {
+      int count = GetLineInterceptCount(point, lines);
+      if( point.x >= firstPoint.x && point.y > firstPoint.y ) count++;
+      if( point.x <= lastPoint.x && point.y > lastPoint.y ) count++;
+      return count;
+    }
+  );
+
+  std::vector<bool> pointBelowBoundaryFlags;
+  std::transform(
+    interceptCounts.cbegin(),
+    interceptCounts.cend(),
+    std::back_inserter(pointBelowBoundaryFlags),
+    [](auto& interceptCount)
+    {
+      return interceptCount % 2 == 1;
+    }
+  );
+
+  return std::reduce(
+    pointBelowBoundaryFlags.cbegin(),
+    pointBelowBoundaryFlags.cend(),
+    false,
+    [](auto flag, auto below)
+    {
+      return flag || below;
+    }
+  );
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer)

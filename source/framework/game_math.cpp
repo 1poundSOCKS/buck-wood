@@ -28,15 +28,18 @@ bool AnyPointInside(const std::vector<game_point>::const_iterator& begin, const 
   return false;
 }
 
-bool PointInside(const game_point& point, const std::vector<game_line>& area)
+bool PointInside(const game_point& point, const std::vector<game_line>& lines)
 {
-  int matchingLines = 0;
-  for( const auto& line: area )
-  {
-    if( AddLineToInterceptCount(line, point) ) matchingLines++;
-  }
-  
+  auto matchingLines = GetLineInterceptCount(point, lines);  
   return ( matchingLines % 2 > 0 );
+}
+
+int GetLineInterceptCount(const game_point& point, const std::vector<game_line>& lines)
+{
+  return std::accumulate(lines.cbegin(), lines.cend(), 0, [point](auto count, auto& line)
+  {
+    return AddLineToInterceptCount(line, point) ? count + 1 : count;
+  });
 }
 
 bool AddLineToInterceptCount(const game_line& line, const game_point& point)
