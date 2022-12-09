@@ -1,6 +1,20 @@
 #include "pch.h"
 #include "timers.h"
 
+int64_t QueryPerformanceFrequency()
+{
+  LARGE_INTEGER frequency;
+  QueryPerformanceFrequency(&frequency);
+  return frequency.QuadPart;
+}
+
+int64_t QueryPerformanceCounter()
+{
+  LARGE_INTEGER count;
+  QueryPerformanceCounter(&count);
+  return count.QuadPart;
+}
+
 system_timer::system_timer()
 {
   LARGE_INTEGER perfFrequencyTmp;
@@ -9,13 +23,6 @@ system_timer::system_timer()
   ticksPerSecond = perfFrequencyTmp.QuadPart;
   QueryPerformanceCounter(&initialTicksTmp);
   initialTicks = totalTicks = initialTicksTmp.QuadPart;
-}
-
-int64_t QueryPerformanceCounter()
-{
-  LARGE_INTEGER count;
-  QueryPerformanceCounter(&count);
-  return count.QuadPart;
 }
 
 stopwatch::stopwatch(const system_timer& systemTimer, int timeNumerator, int timeDenominator) 
@@ -93,4 +100,14 @@ int64_t GetTicksRemaining(const stopwatch& stopwatch)
 float GetTimeRemainingInSeconds(const stopwatch& stopwatch)
 {
   return static_cast<float>( stopwatch.endTicks - stopwatch.currentTicks ) / stopwatch.systemTimer.ticksPerSecond;
+}
+
+int64_t performance_counter::QueryFrequency()
+{
+  return QueryPerformanceFrequency();
+}
+
+int64_t performance_counter::QueryValue()
+{
+  return QueryPerformanceCounter();
 }

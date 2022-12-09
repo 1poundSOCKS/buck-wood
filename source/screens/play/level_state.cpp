@@ -6,15 +6,18 @@
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
-const int shotTimeDenominator = 60;
+const int shotTimeDenominator = 30;
 
-void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_point>& ground);
 
-void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+void UpdateBullets(level_state& levelState, const level_control_state& controlState);
 bullet& GetBullet(std::vector<bullet>& bullets);
+bool PlayerCanShoot(const level_state& levelState);
 
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
+
+float GetUpdateInterval(const level_state& levelState);
 
 player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
 {
@@ -35,8 +38,8 @@ target_state::target_state(const game_point& position) : position(position)
   TransformPoints(pointsTmp.cbegin(), pointsTmp.cend(), std::back_inserter(points), 0, position.x, position.y);
 }
 
-level_state::level_state(const game_level_data& levelData, const system_timer& systemTimer)
-: levelData(levelData), systemTimer(systemTimer), shotTimer(systemTimer, shotTimeNumerator, shotTimeDenominator)
+level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
+: levelData(levelData), counterFrequency(counterFrequency), shotTimerInterval(counterFrequency * shotTimeNumerator / shotTimeDenominator)
 {
   // player
   player.xPos = levelData.playerStartPosX;
@@ -71,8 +74,6 @@ level_state::level_state(const game_level_data& levelData, const system_timer& s
   {
     CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
-
-  shotTimer.paused = false;
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -86,8 +87,11 @@ bool LevelIsComplete(const level_state& levelState)
   return activatedTargetCount == levelState.targets.size();
 }
 
-void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
+void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t timerCount)
 {
+  levelState.previousTimerCount = levelState.currentTimerCount;
+  levelState.currentTimerCount = timerCount;
+
   D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.0);
 
   if( mouseTransform.Invert() )
@@ -100,16 +104,17 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
     levelState.mouseY = outPoint.y;
   }
 
-  UpdatePlayer(levelState, controlState, timer);
-  UpdateBullets(levelState, controlState, timer);
+  UpdatePlayer(levelState, controlState);
+  UpdateBullets(levelState, controlState);
 }
 
-void UpdatePlayer(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
+void UpdatePlayer(level_state& levelState, const level_control_state& controlState)
 {
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 100.0f;
 
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
+  // float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
+  float gameUpdateInterval = GetUpdateInterval(levelState);
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -197,11 +202,12 @@ bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vec
   );
 }
 
-void UpdateBullets(level_state& levelState, const level_control_state& controlState, const system_timer& timer)
+void UpdateBullets(level_state& levelState, const level_control_state& controlState)
 {
-  float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
+  // float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
+  float gameUpdateInterval = GetUpdateInterval(levelState);
 
-  if( controlState.shoot && GetTicksRemaining(levelState.shotTimer) == 0 )
+  if( controlState.shoot && PlayerCanShoot(levelState) )
   {
     static const float bulletSpeed = 200.0f * gameUpdateInterval;
     static const float bulletRange = 2000.0f;
@@ -212,10 +218,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
     bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
     bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
-
     levelState.playerShot = true;
-    ResetStopwatch(levelState.shotTimer);
-    levelState.shotTimer.paused = false;
   }
 
   for( auto& bullet : levelState.bullets )
@@ -292,4 +295,15 @@ void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, cons
   CreatePointsForPlayer(std::back_inserter(playerShipPointData.points));
   CreatePointsForPlayerThruster(std::back_insert_iterator(playerShipPointData.thrusterPoints));
   TransformPoints(playerShipPointData.points.cbegin(), playerShipPointData.points.cend(), std::back_inserter(playerShipPointData.transformedPoints), playerShip.angle, playerShip.xPos, playerShip.yPos);
+}
+
+float GetUpdateInterval(const level_state& levelState)
+{
+  int64_t intervalCount = levelState.currentTimerCount - levelState.previousTimerCount;
+  return static_cast<float>(intervalCount) / static_cast<float>(levelState.counterFrequency) * gameSpeedMultiplier;
+}
+
+bool PlayerCanShoot(const level_state& levelState)
+{
+  return ( (levelState.shotCount + 1) * levelState.shotTimerInterval ) < levelState.currentTimerCount;
 }

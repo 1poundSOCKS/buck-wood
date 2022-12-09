@@ -66,14 +66,22 @@ struct level_control_state
 
 struct level_state
 {
-  level_state(const game_level_data& levelData, const system_timer& systemTimer);
+  level_state(const game_level_data& levelData, int64_t counterFrequency);
 
   const game_level_data& levelData;
-  const system_timer& systemTimer;
+  const int64_t counterFrequency;
+  const int64_t shotTimerInterval;
+
+  int64_t currentTimerCount = 0;
+  int64_t previousTimerCount = 0;
+  int64_t shotCount = 0;
+
   player_ship player;
-  float mouseX = 0, mouseY = 0;
-  stopwatch shotTimer;
-  bool playerShot = false, targetShot = false;
+
+  float mouseX = 0;
+  float mouseY = 0;
+  bool playerShot = false;
+  bool targetShot = false;
 
   std::vector<game_line> boundaryLines;
   std::vector<object_state> objects;
@@ -83,7 +91,7 @@ struct level_state
   player_ship_point_data playerShipPointData;
 };
 
-void UpdateLevelState(level_state& levelState, const level_control_state& controlState, const system_timer& timer);
+void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
 
 bool LevelIsComplete(const level_state& levelState);
 

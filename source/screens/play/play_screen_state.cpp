@@ -4,147 +4,129 @@
 #include "game_math.h"
 #include "diagnostics.h"
 
-struct play_screen_control_state
-{
-  level_control_state levelControlState;
-};
-
 level_control_state GetLevelControlState(const screen_input_state& inputState);
-void OnPlay(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer);
-void OnLevelComplete(play_screen_state& screenState, const system_timer& timer);
+void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState);
+void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState);
+void OnPlay(play_screen_state& screenState, const screen_input_state& inputState);
+void OnLevelComplete(play_screen_state& screenState);
+bool ScreenTransitionTimeExpired(play_screen_state& screenState);
 
-play_screen_state::play_screen_state(const system_timer& timer, game_level_data_index::const_iterator currentLevelDataIterator, game_level_data_index::const_iterator endLevelDataIterator) 
+play_screen_state::play_screen_state(
+  const system_timer& timer, 
+  game_level_data_index::const_iterator currentLevelDataIterator, 
+  game_level_data_index::const_iterator endLevelDataIterator) 
 : systemTimer(timer), 
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator)
 {
+  this->timer.frequency = performance_counter::QueryFrequency();
+  this->timer.initialValue = performance_counter::QueryValue();
+  
   const auto& levelData = **currentLevelDataIterator;
-  levelState = std::make_unique<level_state>(**currentLevelDataIterator, systemTimer);
-
-  levelTimer = std::make_unique<stopwatch>(systemTimer, static_cast<int>(levelData.timeLimitInSeconds), 1);
-  pauseTimer = std::make_unique<stopwatch>(systemTimer);
+  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
+  levelTimeLimit = levelData.timeLimitInSeconds * this->timer.frequency;
+  levelStartCount = this->timer.initialValue;
 
   state = play_screen_state::state_playing;
 }
 
 void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
 {
+  screenState.timer.currentValue = performance_counter::QueryValue();
+
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
 
-  auto& levelState = *screenState.levelState;
-
-  UpdateStopwatch(*screenState.levelTimer);
-  UpdateStopwatch(*screenState.pauseTimer);
-  UpdateStopwatch(levelState.shotTimer);
-
-  screenState.returnToMenu = levelState.playerShot = levelState.targetShot = false;
+  screenState.returnToMenu = screenState.levelState->playerShot = screenState.levelState->targetShot = false;
 
   if( screenState.state == play_screen_state::state_paused )
+    OnGamePaused(screenState, inputState);
+  else if( ScreenTransitionTimeExpired(screenState) )
+    OnGameRunning(screenState, inputState);
+}
+
+void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState)
+{
+  if( KeyPressed(inputState, DIK_Q) )
   {
-    if( KeyPressed(inputState, DIK_Q) )
-    {
-      screenState.returnToMenu = true;
-      return;
-    }
-
-    if( KeyPressed(inputState, DIK_ESCAPE) )
-    {
-      screenState.state = play_screen_state::state_playing;
-      screenState.levelTimer->paused = false;
-      levelState.shotTimer.paused = false;
-      return;
-    }
+    screenState.returnToMenu = true;
   }
-  
-  if( GetTicksRemaining(*screenState.pauseTimer) > 0 ) return;
+  else if( KeyPressed(inputState, DIK_ESCAPE) )
+  {
+    screenState.state = play_screen_state::state_playing;
+    screenState.pauseTotalCount += ( screenState.timer.currentValue - screenState.pauseStartCount );
+  }
+}
 
+void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState)
+{
   if( screenState.state == play_screen_state::state_game_complete || 
       screenState.state == play_screen_state::state_player_dead )
   {
     screenState.returnToMenu = true;
-    return;
   }
-
-  if( screenState.state == play_screen_state::state_level_complete )
+  else if( screenState.state == play_screen_state::state_level_complete )
   {
-    OnLevelComplete(screenState, timer);
-    return;
+    OnLevelComplete(screenState);
   }
-
-  if( screenState.state == play_screen_state::state_playing )
+  else if( screenState.state == play_screen_state::state_playing )
   {
     if( KeyPressed(inputState, DIK_ESCAPE) )
     {
       screenState.state = play_screen_state::state_paused;
-      screenState.levelTimer->paused = true;
-      levelState.shotTimer.paused = true;
-      return;
+      screenState.pauseStartCount = screenState.timer.currentValue;
     }
-
-    screenState.levelTimer->paused = false;
-    levelState.shotTimer.paused = false;
-    OnPlay(screenState, inputState, timer);
-    return;
+    else
+      OnPlay(screenState, inputState);
   }
 }
 
-void OnPlay(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
+bool ScreenTransitionTimeExpired(play_screen_state& screenState)
 {
-  int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
+  return true;
+}
 
-  if( ticksRemaining == 0 )
+void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
+{
+  int64_t playTimeRemaining = GetPlayTimeRemaining(screenState);
+
+  if( playTimeRemaining == 0 )
   {
     screenState.state = play_screen_state::state_player_dead;
-    ResetStopwatch(*screenState.pauseTimer, 3);
-    screenState.pauseTimer->paused = false;
     return;
   }
   
   auto& levelState = *screenState.levelState;
 
-  UpdateLevelState(levelState, GetLevelControlState(inputState), timer);
+  UpdateLevelState(
+    levelState, GetLevelControlState(inputState), 
+    screenState.timer.currentValue - screenState.levelStartCount - screenState.pauseTotalCount);
 
   if( LevelIsComplete(levelState) )
-  {
     screenState.state = play_screen_state::state_level_complete;
-    screenState.levelTimer->paused = true;
-    ResetStopwatch(*screenState.pauseTimer, 3);
-    screenState.pauseTimer->paused = false;
-    return;
-  }
-
-  if( levelState.player.state == player_ship::player_state::state_dead )
-  {
+  else if( levelState.player.state == player_ship::player_state::state_dead )
     screenState.state = play_screen_state::state_player_dead;
-    ResetStopwatch(*screenState.pauseTimer, 3);
-    screenState.pauseTimer->paused = false;
-  }
 }
 
-void OnLevelComplete(play_screen_state& screenState, const system_timer& timer)
+void OnLevelComplete(play_screen_state& screenState)
 {
-  float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
+  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(screenState);
   screenState.levelTimes.push_back(levelTimeRemaining);
 
-  const auto nextLevel = std::next(screenState.currentLevelDataIterator);
+  auto nextLevel = std::next(screenState.currentLevelDataIterator);
 
   if( nextLevel == screenState.endLevelDataIterator )
   {
     screenState.state = play_screen_state::state_game_complete;
-    ResetStopwatch(*screenState.pauseTimer, 3);
-    screenState.pauseTimer->paused = false;
-    return;
   }
-
-  screenState.currentLevelDataIterator = nextLevel;
-  
-  const auto& levelData = **screenState.currentLevelDataIterator;
-
-  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, timer);
-
-  ResetStopwatch(*screenState.levelTimer, levelData.timeLimitInSeconds);
-
-  screenState.state = play_screen_state::state_playing;
+  else
+  {
+    screenState.currentLevelDataIterator = nextLevel;
+    const auto& levelData = **screenState.currentLevelDataIterator;
+    screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
+    screenState.levelStartCount = screenState.timer.currentValue;
+    screenState.timer.initialValue = screenState.timer.initialValue;
+    screenState.state = play_screen_state::state_playing;
+  }
 }
 
 bool ContinueRunning(const play_screen_state& screenState)
@@ -152,7 +134,7 @@ bool ContinueRunning(const play_screen_state& screenState)
   return screenState.returnToMenu ? false : true;
 }
 
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState, const play_screen_control_state& controlState)
+void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState)
 {
   auto& levelState = *screenState.levelState;
 
@@ -163,25 +145,26 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
   swprintf(text, L"world mouse Y: %.1f", levelState.mouseY);
   diagnosticsData = text;
-
-  swprintf(text, L"bullet count: %I64u", levelState.bullets.size());
-  diagnosticsData = text;
-
-  swprintf(text, L"initial ticks: %I64u", screenState.levelTimer->initialTicks);
-  diagnosticsData = text;
-
-  swprintf(text, L"end ticks: %I64u", screenState.levelTimer->endTicks);
-  diagnosticsData = text;
-
-  swprintf(text, L"current ticks: %I64u", screenState.levelTimer->currentTicks);
-  diagnosticsData = text;
-
-  int64_t ticksRemaining = GetTicksRemaining(*screenState.levelTimer);
-  swprintf(text, L"remaining ticks: %I64u", ticksRemaining);
-  diagnosticsData = text;
 }
 
 level_control_state GetLevelControlState(const screen_input_state& inputState)
 {
   return { inputState.windowData.mouse.rightButtonDown, inputState.windowData.mouse.leftButtonDown, inputState.renderTargetMouseData };
+}
+
+int64_t GetPlayTimeRemaining(const play_screen_state& screenState)
+{
+  int64_t playTime = 
+    screenState.state == play_screen_state::state_paused ? 
+    screenState.pauseStartCount - screenState.timer.initialValue - screenState.pauseTotalCount :
+    screenState.timer.currentValue - screenState.timer.initialValue - screenState.pauseTotalCount;
+
+  int64_t playTimeRemaining = screenState.levelTimeLimit - playTime;
+
+  return max(0, playTimeRemaining);
+}
+
+float GetPlayTimeRemainingInSeconds(const play_screen_state& screenState)
+{
+  return static_cast<float>(GetPlayTimeRemaining(screenState)) / static_cast<float>(screenState.timer.frequency);
 }

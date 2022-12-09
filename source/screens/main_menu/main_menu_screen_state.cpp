@@ -35,7 +35,7 @@ void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_s
 
   if( KeyPressed(screenInputState, DIK_SPACE) )
   {
-    screenState.startPlay = true;
+       screenState.startPlay = true;
     return;
   }
 

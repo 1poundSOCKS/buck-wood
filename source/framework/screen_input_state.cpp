@@ -33,7 +33,7 @@ void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state)
 
 bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode)
 {
-  return screenInputState.keyboardState.data[keyCode] & 0x80 && !(screenInputState.previousKeyboardState.data[keyCode] & 0x80);
+  return (screenInputState.keyboardState.data[keyCode] & 0x80) && !(screenInputState.previousKeyboardState.data[keyCode] & 0x80);
 }
 
 float GetRatioMouseX(const screen_input_state& screenInputState)
