@@ -8,14 +8,15 @@ void OnGamePaused(play_screen_state& screenState, const screen_input_state& inpu
 void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState);
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState);
 void OnLevelComplete(play_screen_state& screenState);
-bool ScreenTransitionTimeExpired(play_screen_state& screenState);
+void ReflectLevelStateChanges(play_screen_state& screenState);
+bool ScreenTransitionTimeHasExpired(play_screen_state& screenState);
+void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds);
 level_control_state GetLevelControlState(const screen_input_state& inputState);
 
 play_screen_state::play_screen_state(
-  const system_timer& timer, 
   game_level_data_index::const_iterator currentLevelDataIterator, 
   game_level_data_index::const_iterator endLevelDataIterator) 
-: systemTimer(timer), 
+:
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator)
 {
@@ -39,7 +40,7 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   if( screenState.state == play_screen_state::state_paused )
     OnGamePaused(screenState, inputState);
-  else if( ScreenTransitionTimeExpired(screenState) )
+  else if( ScreenTransitionTimeHasExpired(screenState) )
     OnGameRunning(screenState, inputState);
 }
 
@@ -62,6 +63,7 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
       screenState.state == play_screen_state::state_player_dead )
   {
     screenState.returnToMenu = true;
+    SetScreenTransitionDelay(screenState, 3);
   }
   else if( screenState.state == play_screen_state::state_level_complete )
   {
@@ -79,31 +81,29 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
   }
 }
 
-bool ScreenTransitionTimeExpired(play_screen_state& screenState)
+bool ScreenTransitionTimeHasExpired(play_screen_state& screenState)
 {
-  return true;
+  return screenState.timer.currentValue > screenState.transitionEndCount;
+}
+
+void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds)
+{
+  screenState.transitionEndCount = screenState.timer.currentValue + (timeInSeconds * screenState.timer.frequency);
 }
 
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  int64_t playTimeRemaining = GetPlayTimeRemaining(*screenState.levelState);
-
-  if( playTimeRemaining == 0 )
+  if( GetPlayTimeRemaining(*screenState.levelState) > 0 )
   {
-    screenState.state = play_screen_state::state_player_dead;
-    return;
+    UpdateLevelState(
+      *screenState.levelState, 
+      GetLevelControlState(inputState), 
+      screenState.timer.currentValue - screenState.levelStartCount - screenState.pauseTotalCount);
+
+    ReflectLevelStateChanges(screenState);
   }
-  
-  auto& levelState = *screenState.levelState;
-
-  UpdateLevelState(
-    levelState, GetLevelControlState(inputState), 
-    screenState.timer.currentValue - screenState.levelStartCount - screenState.pauseTotalCount);
-
-  if( LevelIsComplete(levelState) )
-    screenState.state = play_screen_state::state_level_complete;
-  else if( levelState.player.state == player_ship::player_state::state_dead )
-    screenState.state = play_screen_state::state_player_dead;
+  else
+    screenState.state = play_screen_state::state_player_dead;  
 }
 
 void OnLevelComplete(play_screen_state& screenState)
@@ -128,6 +128,14 @@ void OnLevelComplete(play_screen_state& screenState)
   }
 }
 
+void ReflectLevelStateChanges(play_screen_state& screenState)
+{
+  if( LevelIsComplete(*screenState.levelState) )
+    screenState.state = play_screen_state::state_level_complete;
+  else if( screenState.levelState->player.state == player_ship::player_state::state_dead )
+    screenState.state = play_screen_state::state_player_dead;
+}
+
 bool ContinueRunning(const play_screen_state& screenState)
 {
   return screenState.returnToMenu ? false : true;
@@ -135,21 +143,12 @@ bool ContinueRunning(const play_screen_state& screenState)
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState)
 {
-  auto& levelState = *screenState.levelState;
-
-  static wchar_t text[64];
-
-  swprintf(text, L"world mouse X: %.1f", levelState.mouseX);
-  diagnosticsData = text;
-
-  swprintf(text, L"world mouse Y: %.1f", levelState.mouseY);
-  diagnosticsData = text;
+  diagnosticsData = std::format(L"world mouse: {:.2f}, {:.2f}", screenState.levelState->mouseX, screenState.levelState->mouseY);
 }
 
 level_control_state GetLevelControlState(const screen_input_state& inputState)
 {
-  return
-  {
+  return {
     inputState.windowData.mouse.rightButtonDown, 
     inputState.windowData.mouse.leftButtonDown, 
     inputState.renderTargetMouseData

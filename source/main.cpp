@@ -98,7 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     if( mainMenuScreenState.startPlay )
     {
       play_screen_state playScreenState(
-        systemTimer, 
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
         globalState.gameLevelDataIndex->gameLevelData.cend()
       );

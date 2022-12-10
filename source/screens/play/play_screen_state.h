@@ -7,14 +7,16 @@
 
 struct play_screen_state
 {
-  play_screen_state(const system_timer& timer, game_level_data_index::const_iterator currentLevelDataIterator, game_level_data_index::const_iterator endLevelDataIterator);
+  play_screen_state(
+    game_level_data_index::const_iterator currentLevelDataIterator, 
+    game_level_data_index::const_iterator endLevelDataIterator
+  );
 
   performance_counter::data timer = { 0, 0, 0 };
   int64_t pauseStartCount = 0;
   int64_t pauseTotalCount = 0;
   int64_t levelStartCount = 0;
-
-  const system_timer& systemTimer;
+  int64_t transitionEndCount = 0;
 
   enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
   STATE state = state_playing;
