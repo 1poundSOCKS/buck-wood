@@ -40,7 +40,7 @@ void RenderFrame(
   }
 
   // float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
-  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(screenState);
+  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(*screenState.levelState);
   static wchar_t timerText[64];
   swprintf(timerText, L"%.2f", levelTimeRemaining);
   RenderText(renderTarget, renderBrushSelector[yellow], textFormatSelector[srtf_play_screen_timer], timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);

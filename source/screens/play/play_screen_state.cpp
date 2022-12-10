@@ -4,12 +4,12 @@
 #include "game_math.h"
 #include "diagnostics.h"
 
-level_control_state GetLevelControlState(const screen_input_state& inputState);
 void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState);
 void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState);
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState);
 void OnLevelComplete(play_screen_state& screenState);
 bool ScreenTransitionTimeExpired(play_screen_state& screenState);
+level_control_state GetLevelControlState(const screen_input_state& inputState);
 
 play_screen_state::play_screen_state(
   const system_timer& timer, 
@@ -24,7 +24,6 @@ play_screen_state::play_screen_state(
   
   const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
-  levelTimeLimit = levelData.timeLimitInSeconds * this->timer.frequency;
   levelStartCount = this->timer.initialValue;
 
   state = play_screen_state::state_playing;
@@ -87,7 +86,7 @@ bool ScreenTransitionTimeExpired(play_screen_state& screenState)
 
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  int64_t playTimeRemaining = GetPlayTimeRemaining(screenState);
+  int64_t playTimeRemaining = GetPlayTimeRemaining(*screenState.levelState);
 
   if( playTimeRemaining == 0 )
   {
@@ -109,7 +108,7 @@ void OnPlay(play_screen_state& screenState, const screen_input_state& inputState
 
 void OnLevelComplete(play_screen_state& screenState)
 {
-  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(screenState);
+  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(*screenState.levelState);
   screenState.levelTimes.push_back(levelTimeRemaining);
 
   auto nextLevel = std::next(screenState.currentLevelDataIterator);
@@ -149,22 +148,10 @@ void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsDa
 
 level_control_state GetLevelControlState(const screen_input_state& inputState)
 {
-  return { inputState.windowData.mouse.rightButtonDown, inputState.windowData.mouse.leftButtonDown, inputState.renderTargetMouseData };
-}
-
-int64_t GetPlayTimeRemaining(const play_screen_state& screenState)
-{
-  int64_t playTime = 
-    screenState.state == play_screen_state::state_paused ? 
-    screenState.pauseStartCount - screenState.timer.initialValue - screenState.pauseTotalCount :
-    screenState.timer.currentValue - screenState.timer.initialValue - screenState.pauseTotalCount;
-
-  int64_t playTimeRemaining = screenState.levelTimeLimit - playTime;
-
-  return max(0, playTimeRemaining);
-}
-
-float GetPlayTimeRemainingInSeconds(const play_screen_state& screenState)
-{
-  return static_cast<float>(GetPlayTimeRemaining(screenState)) / static_cast<float>(screenState.timer.frequency);
+  return
+  {
+    inputState.windowData.mouse.rightButtonDown, 
+    inputState.windowData.mouse.leftButtonDown, 
+    inputState.renderTargetMouseData
+  };
 }

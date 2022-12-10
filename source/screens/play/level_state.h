@@ -71,6 +71,7 @@ struct level_state
   const game_level_data& levelData;
   const int64_t counterFrequency;
   const int64_t shotTimerInterval;
+  int64_t levelTimeLimit;
 
   int64_t currentTimerCount = 0;
   int64_t previousTimerCount = 0;
@@ -96,5 +97,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 bool LevelIsComplete(const level_state& levelState);
 
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0);
+
+int64_t GetPlayTimeRemaining(const level_state& screenState);
+float GetPlayTimeRemainingInSeconds(const level_state& screenState);
 
 #endif

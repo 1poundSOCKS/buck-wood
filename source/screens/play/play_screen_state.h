@@ -12,7 +12,6 @@ struct play_screen_state
   performance_counter::data timer = { 0, 0, 0 };
   int64_t pauseStartCount = 0;
   int64_t pauseTotalCount = 0;
-  int64_t levelTimeLimit = 0;
   int64_t levelStartCount = 0;
 
   const system_timer& systemTimer;
@@ -29,8 +28,5 @@ struct play_screen_state
   std::unique_ptr<level_state> levelState;
   std::vector<float> levelTimes;
 };
-
-int64_t GetPlayTimeRemaining(const play_screen_state& screenState);
-float GetPlayTimeRemainingInSeconds(const play_screen_state& screenState);
 
 #endif

@@ -41,6 +41,8 @@ target_state::target_state(const game_point& position) : position(position)
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
 : levelData(levelData), counterFrequency(counterFrequency), shotTimerInterval(counterFrequency * shotTimeNumerator / shotTimeDenominator)
 {
+  levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
+
   // player
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
@@ -306,4 +308,15 @@ float GetUpdateInterval(const level_state& levelState)
 bool PlayerCanShoot(const level_state& levelState)
 {
   return ( (levelState.shotCount + 1) * levelState.shotTimerInterval ) < levelState.currentTimerCount;
+}
+
+int64_t GetPlayTimeRemaining(const level_state& screenState)
+{
+  int64_t playTimeRemaining = screenState.levelTimeLimit - screenState.currentTimerCount;
+  return max(0, playTimeRemaining);
+}
+
+float GetPlayTimeRemainingInSeconds(const level_state& screenState)
+{
+  return static_cast<float>(GetPlayTimeRemaining(screenState)) / static_cast<float>(screenState.counterFrequency);
 }
