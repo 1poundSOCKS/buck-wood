@@ -39,22 +39,20 @@ target_state::target_state(const game_point& position) : position(position)
 }
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
-: levelData(levelData), counterFrequency(counterFrequency), shotTimerInterval(counterFrequency * shotTimeNumerator / shotTimeDenominator)
+: levelData(levelData), counterFrequency(counterFrequency)
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
+  
+  shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
 
-  // player
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
   UpdatePlayerShipPointData(playerShipPointData, player);
 
   bullets.resize(100);
 
-  // border
   CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(boundaryLines));
 
-  // objects
-  objects.reserve(levelData.objects.size());
   std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objects), [](const auto& data)
   {
     return object_state(data);
@@ -65,8 +63,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
     CreateConnectedLines<game_point>(object.data.points.cbegin(), object.data.points.cend(), std::back_inserter(object.shape));
   }
 
-  // targets
-  targets.reserve(levelData.targets.size());
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
   {
     return target_state(target);
@@ -115,7 +111,6 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   static const float forceOfGravity = 20.0f;
   static const float playerThrust = 100.0f;
 
-  // float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
   float gameUpdateInterval = GetUpdateInterval(levelState);
 
   float forceX = 0.0f;
@@ -145,17 +140,17 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, currentLevelData.boundaryPoints) )
   {
     levelState.player.state = player_ship::player_state::state_dead;
-    return;
   }
-
-  for( const auto& object : currentLevelData.objects)
+  else
   {
-    std::vector<game_line> lines;
-    CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-    if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
+    for( const auto& object : currentLevelData.objects)
     {
-      levelState.player.state = player_ship::player_state::state_dead;
-      return;
+      std::vector<game_line> lines;
+      CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+      if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
+      {
+        levelState.player.state = player_ship::player_state::state_dead;
+      }
     }
   }
 }
@@ -206,7 +201,6 @@ bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vec
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)
 {
-  // float gameUpdateInterval = GetIntervalTimeInSeconds(timer) * gameSpeedMultiplier;
   float gameUpdateInterval = GetUpdateInterval(levelState);
 
   if( controlState.shoot && PlayerCanShoot(levelState) )
@@ -220,6 +214,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
     bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
     bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
+    levelState.lastShotTimerValue = levelState.currentTimerCount;
     levelState.playerShot = true;
   }
 
@@ -307,7 +302,7 @@ float GetUpdateInterval(const level_state& levelState)
 
 bool PlayerCanShoot(const level_state& levelState)
 {
-  return ( (levelState.shotCount + 1) * levelState.shotTimerInterval ) < levelState.currentTimerCount;
+  return levelState.currentTimerCount - levelState.lastShotTimerValue > levelState.shotTimerInterval;
 }
 
 int64_t GetPlayTimeRemaining(const level_state& screenState)
