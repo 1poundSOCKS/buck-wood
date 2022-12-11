@@ -8,7 +8,6 @@ void OnGamePaused(play_screen_state& screenState, const screen_input_state& inpu
 void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState);
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState);
 void OnLevelComplete(play_screen_state& screenState);
-void ReflectLevelStateChanges(play_screen_state& screenState);
 bool ScreenTransitionTimeHasExpired(play_screen_state& screenState);
 void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds);
 level_control_state GetLevelControlState(const screen_input_state& inputState);
@@ -63,7 +62,6 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
       screenState.state == play_screen_state::state_player_dead )
   {
     screenState.returnToMenu = true;
-    SetScreenTransitionDelay(screenState, 3);
   }
   else if( screenState.state == play_screen_state::state_level_complete )
   {
@@ -100,10 +98,22 @@ void OnPlay(play_screen_state& screenState, const screen_input_state& inputState
       GetLevelControlState(inputState), 
       screenState.timer.currentValue - screenState.levelStartCount - screenState.pauseTotalCount);
 
-    ReflectLevelStateChanges(screenState);
+    if( LevelIsComplete(*screenState.levelState) )
+    {
+      screenState.state = play_screen_state::state_level_complete;
+      SetScreenTransitionDelay(screenState, 3);
+    }
+    else if( screenState.levelState->player.state == player_ship::player_state::state_dead )
+    {
+      screenState.state = play_screen_state::state_player_dead;
+      SetScreenTransitionDelay(screenState, 3);
+    }
   }
   else
-    screenState.state = play_screen_state::state_player_dead;  
+  {
+    screenState.state = play_screen_state::state_player_dead;
+    SetScreenTransitionDelay(screenState, 3);
+  }
 }
 
 void OnLevelComplete(play_screen_state& screenState)
@@ -126,14 +136,6 @@ void OnLevelComplete(play_screen_state& screenState)
     screenState.timer.initialValue = screenState.timer.initialValue;
     screenState.state = play_screen_state::state_playing;
   }
-}
-
-void ReflectLevelStateChanges(play_screen_state& screenState)
-{
-  if( LevelIsComplete(*screenState.levelState) )
-    screenState.state = play_screen_state::state_level_complete;
-  else if( screenState.levelState->player.state == player_ship::player_state::state_dead )
-    screenState.state = play_screen_state::state_player_dead;
 }
 
 bool ContinueRunning(const play_screen_state& screenState)
