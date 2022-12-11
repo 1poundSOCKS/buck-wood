@@ -5,7 +5,7 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const screen_input_state& screenInputState);
 
-void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& screenInputState, const system_timer& timer)
+void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& screenInputState)
 {
   screenState.mousePointerX = screenInputState.windowData.mouse.x;
   screenState.mousePointerY = screenInputState.windowData.mouse.y;

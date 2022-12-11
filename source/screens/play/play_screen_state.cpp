@@ -20,8 +20,8 @@ play_screen_state::play_screen_state(
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator)
 {
-  this->timer.frequency = performance_counter::QueryFrequency();
-  this->timer.initialValue = performance_counter::QueryValue();
+  timer.frequency = performance_counter::QueryFrequency();
+  timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   
   const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
@@ -30,7 +30,7 @@ play_screen_state::play_screen_state(
   state = play_screen_state::state_playing;
 }
 
-void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState, const system_timer& timer)
+void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState)
 {
   screenState.timer.currentValue = performance_counter::QueryValue();
 

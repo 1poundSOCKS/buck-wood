@@ -97,7 +97,7 @@ void UpdateScreen(
   screen_diagnostics_render_data& diagnosticsRenderData)
 {
   auto start = QueryPerformanceCounter();
-  UpdateScreenState(screenState, inputState, data.systemTimer);
+  UpdateScreenState(screenState, inputState);
   auto end = QueryPerformanceCounter();
   data.perfData.updateScreenStateTicks = end - start;
 

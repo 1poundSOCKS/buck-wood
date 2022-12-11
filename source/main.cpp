@@ -59,7 +59,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
   global_sound_buffer_selector soundBufferSelector(soundBuffers);
 
-  // ensure no sound glitch after rebuild
+  // ensure no sound glitch on first play
   {
     global_sound_buffer_selector dummySelector { soundBuffers };
     sound_buffer_player dummyPlayer(dummySelector[menu_theme]);

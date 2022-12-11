@@ -10,12 +10,15 @@ void UpdateScreenStateMouseData(level_edit_screen_state& screenState, const scre
 void RunDragDrop(level_edit_screen_state& screenState, const screen_input_state& screenInputState);
 void LoadCurrentLevel(level_edit_screen_state& screenState);
 void SaveCurrentLevel(level_edit_screen_state& screenState);
+float GetScreenUpdateIntervalInSeconds(const level_edit_screen_state& screenState);
+void ScrollView(level_edit_screen_state& screenState, const screen_input_state& screenInputState);
+std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
+std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
+
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData);
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion);
 std::array<game_point, 3> GetDefaultObjectShape();
 void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point& targetPosition);
-std::unique_ptr<game_level_data> CreateGameLevelData(const drag_drop_state& dragDropState);
-std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_drop_shape& dragDropShape);
 void CreateDragDropPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateDragDropPoints(std::list<game_point>::const_iterator begin, std::list<game_point>::const_iterator end, std::back_insert_iterator<std::list<drag_drop_point>> insertIterator);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
@@ -23,28 +26,29 @@ void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::lis
 level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex)
 : gameLevelDataIndex(gameLevelDataIndex)
 {
+  timer.frequency = performance_counter::QueryFrequency();
+  timer.initialValue = timer.currentValue = performance_counter::QueryValue();
+
   currentLevelDataIterator = this->gameLevelDataIndex.gameLevelData.begin();
   LoadCurrentLevel(*this);
 }
 
-void UpdateScreenState(level_edit_screen_state& screenState, const screen_input_state& screenInputState, const system_timer& timer)
+void UpdateScreenState(level_edit_screen_state& screenState, const screen_input_state& screenInputState)
 {
+  screenState.previousTimerValue = screenState.timer.currentValue;
+  screenState.timer.currentValue = performance_counter::QueryValue();
+  UpdateScreenStateMouseData(screenState, screenInputState);
+
   if( screenState.viewState == level_edit_screen_state::view_exit )
   {
     UpdateScreenExitState(screenState, screenInputState);
-    return;
   }
-
-  if( KeyPressed(screenInputState, DIK_ESCAPE) )
+  else if( KeyPressed(screenInputState, DIK_ESCAPE) )
   {
     SaveCurrentLevel(screenState);
     screenState.viewState = level_edit_screen_state::view_exit;
-    return;
   }
-
-  UpdateScreenStateMouseData(screenState, screenInputState);
-
-  if( KeyPressed(screenInputState, DIK_PGUP) )
+  else if( KeyPressed(screenInputState, DIK_PGUP) )
   {
     auto nextLevelData = std::next(screenState.currentLevelDataIterator);
     
@@ -55,8 +59,7 @@ void UpdateScreenState(level_edit_screen_state& screenState, const screen_input_
       LoadCurrentLevel(screenState);
     }
   }
-
-  if( KeyPressed(screenInputState, DIK_PGDN) )
+  else if( KeyPressed(screenInputState, DIK_PGDN) )
   {
     if( screenState.currentLevelDataIterator != screenState.gameLevelDataIndex.gameLevelData.begin() )
     {
@@ -65,32 +68,19 @@ void UpdateScreenState(level_edit_screen_state& screenState, const screen_input_
       LoadCurrentLevel(screenState);
     }
   }
-
-  float intervalTime = GetIntervalTimeInSeconds(timer);
-  float scrollDistance = 500.0 * intervalTime;
-
-  float ratioMouseX = GetRatioMouseX(screenInputState);
-  float ratioMouseY = GetRatioMouseY(screenInputState);
-
-  if( ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
-  else if( ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
-
-  if( ratioMouseY < 0.1f ) screenState.levelCenterY -= scrollDistance;
-  else if( ratioMouseY > 0.9f ) screenState.levelCenterY += scrollDistance;
-
-  auto& dragDropState = *screenState.dragDropState;
-  
-  if( KeyPressed(screenInputState, DIK_T) )
+  else if( KeyPressed(screenInputState, DIK_T) )
   {
-    AddDragDropShapeForTarget(dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
+    AddDragDropShapeForTarget(*screenState.dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
   }
-
-  if( KeyPressed(screenInputState, DIK_O) )
+  else if( KeyPressed(screenInputState, DIK_O) )
   {
-    AddDragDropShapeForObject(dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
+    AddDragDropShapeForObject(*screenState.dragDropState, {screenState.levelMouseX, screenState.levelMouseY});
   }
-
-  RunDragDrop(screenState, screenInputState);
+  else
+  {
+    ScrollView(screenState, screenInputState);
+    RunDragDrop(screenState, screenInputState);
+  }
 }
 
 bool ContinueRunning(const level_edit_screen_state& screenState)
@@ -317,4 +307,26 @@ D2D1::Matrix3x2F CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, const 
 {
   static const float scale = 0.8f;
   return CreateGameLevelTransform(screenState.levelCenterX, screenState.levelCenterY, scale, renderTargetSize.width, renderTargetSize.height);
+}
+
+float GetScreenUpdateIntervalInSeconds(const level_edit_screen_state& screenState)
+{
+  return
+    static_cast<float>(screenState.timer.currentValue - screenState.previousTimerValue) / 
+    static_cast<float>(screenState.timer.frequency);
+}
+
+void ScrollView(level_edit_screen_state& screenState, const screen_input_state& screenInputState)
+{
+  float intervalTime = GetScreenUpdateIntervalInSeconds(screenState);
+  float scrollDistance = 500.0 * intervalTime;
+
+  float ratioMouseX = GetRatioMouseX(screenInputState);
+  float ratioMouseY = GetRatioMouseY(screenInputState);
+
+  if( ratioMouseX < 0.1f ) screenState.levelCenterX -= scrollDistance;
+  else if( ratioMouseX > 0.9f ) screenState.levelCenterX += scrollDistance;
+
+  if( ratioMouseY < 0.1f ) screenState.levelCenterY -= scrollDistance;
+  else if( ratioMouseY > 0.9f ) screenState.levelCenterY += scrollDistance;
 }

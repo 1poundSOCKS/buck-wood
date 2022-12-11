@@ -11,6 +11,9 @@ struct level_edit_screen_state
 
   level_edit_screen_state(const game_level_data_index& gameLevelDataIndex);
 
+  performance_counter::data timer = { 0, 0, 0 };
+  int64_t previousTimerValue = 0;
+
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;
 

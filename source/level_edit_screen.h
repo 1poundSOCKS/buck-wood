@@ -9,8 +9,7 @@
 void UpdateScreenState
 (
   level_edit_screen_state& screenState, 
-  const screen_input_state& inputState, 
-  const system_timer& timer
+  const screen_input_state& inputState
 );
 
 void RenderFrame
