@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "game_objects.h"
 #include "level_state.h"
+#include "timers.h"
 
 struct play_screen_state
 {

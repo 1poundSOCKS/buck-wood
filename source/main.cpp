@@ -24,10 +24,10 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
 
+const int fps = 60;
+
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
-
-extern const int fps = 60;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
@@ -40,7 +40,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   RegisterMainWindowClass(hInstance);
   window_data windowData;
   auto window = CreateMainWindow(hInstance, nCmdShow, windowData);
-  auto swapChain = CreateSwapChain(window, 60, 1);
+  auto swapChain = CreateSwapChain(window, fps, 1);
   auto renderTarget = CreateRenderTarget(swapChain.get());
   auto dwriteFactory = CreateDWriteFactory();
   auto directSound = CreateDirectSound(window);
@@ -83,6 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     windowData, 
     systemTimer, 
     perfData, 
+    fps
   };
 
   bespoke_render_data bespokeRenderData { renderBrushes, textFormats };

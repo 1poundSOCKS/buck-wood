@@ -18,6 +18,7 @@ struct screen_runner_data
   const window_data& windowData;
   system_timer& systemTimer;
   perf_data& perfData;
+  int fps;
 };
 
 template
@@ -104,7 +105,7 @@ void UpdateScreen(
   static diagnostics_data diagnosticsData;
   diagnosticsData.clear();
   diagnosticsData.reserve(50);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), data.perfData, data.systemTimer);
+  FormatDiagnostics(std::back_inserter(diagnosticsData), data.perfData, data.systemTimer, data.fps);
   FormatDiagnostics(std::back_inserter(diagnosticsData), inputState);
 
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )

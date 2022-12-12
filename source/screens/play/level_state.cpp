@@ -3,40 +3,19 @@
 #include "game_objects.h"
 #include "level_render.h"
 #include "screen_view.h"
+#include "level_object_collisions.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
 const int shotTimeDenominator = 30;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
-bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_point>& ground);
-
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
 bullet& GetBullet(std::vector<bullet>& bullets);
 bool PlayerCanShoot(const level_state& levelState);
-
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
-
 float GetUpdateInterval(const level_state& levelState);
-
-player_ship::player_ship() : xPos(0), yPos(0), xVelocity(0), yVelocity(0), angle(0)
-{
-}
-
-bullet::bullet() : range(1000)
-{
-}
-
-object_state::object_state(const game_level_object_data& data) : data(data)
-{
-}
-
-target_state::target_state(const game_point& position) : position(position)
-{
-  std::vector<game_point> pointsTmp;
-  CreatePointsForTarget(defaultTargetSize, std::back_inserter(pointsTmp));
-  TransformPoints(pointsTmp.cbegin(), pointsTmp.cend(), std::back_inserter(points), 0, position.x, position.y);
-}
+bool BulletHasExpired(const bullet& bullet);
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
 : levelData(levelData), counterFrequency(counterFrequency)
@@ -51,7 +30,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   bullets.resize(100);
 
-  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(boundaryLines));
+  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(theGround), 0, 0, false);
 
   std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objects), [](const auto& data)
   {
@@ -137,9 +116,9 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 
   const auto& currentLevelData = levelState.levelData;
 
-  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, currentLevelData.boundaryPoints) )
+  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, levelState.theGround.cbegin(), levelState.theGround.cend()) )
   {
-    levelState.player.state = player_ship::player_state::state_dead;
+    levelState.player.state = player_ship::dead;
   }
   else
   {
@@ -149,54 +128,10 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
       CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
       if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
       {
-        levelState.player.state = player_ship::player_state::state_dead;
+        levelState.player.state = player_ship::dead;
       }
     }
   }
-}
-
-bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_point>& ground)
-{
-  std::vector<game_line> lines;
-  CreateConnectedLines<game_point>(ground.cbegin(), ground.cend(), std::back_inserter(lines), 0, 0, false);
-
-  auto firstPoint = lines.front().start;
-  auto lastPoint = lines.back().end;
-
-  std::vector<int> interceptCounts;
-  std::transform(
-    player.cbegin(), 
-    player.cend(), 
-    std::back_inserter(interceptCounts),
-    [lines,firstPoint,lastPoint](auto& point)
-    {
-      int count = GetLineInterceptCount(point, lines);
-      if( point.x >= firstPoint.x && point.y > firstPoint.y ) count++;
-      if( point.x <= lastPoint.x && point.y > lastPoint.y ) count++;
-      return count;
-    }
-  );
-
-  std::vector<bool> pointBelowBoundaryFlags;
-  std::transform(
-    interceptCounts.cbegin(),
-    interceptCounts.cend(),
-    std::back_inserter(pointBelowBoundaryFlags),
-    [](auto& interceptCount)
-    {
-      return interceptCount % 2 == 1;
-    }
-  );
-
-  return std::reduce(
-    pointBelowBoundaryFlags.cbegin(),
-    pointBelowBoundaryFlags.cend(),
-    false,
-    [](auto flag, auto below)
-    {
-      return flag || below;
-    }
-  );
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)
@@ -205,7 +140,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
   if( controlState.shoot && PlayerCanShoot(levelState) )
   {
-    static const float bulletSpeed = 200.0f * gameUpdateInterval;
+    static const float bulletSpeed = 200.0f;
     static const float bulletRange = 2000.0f;
 
     auto& bullet = GetBullet(levelState.bullets);
@@ -220,49 +155,50 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
   for( auto& bullet : levelState.bullets )
   {
-    if( bullet.free ) continue;
-
-    bullet.xPos += bullet.xVelocity;
-    bullet.yPos += bullet.yVelocity;
-
-    const game_point bulletPoint(bullet.xPos, bullet.yPos);
-    bullet.free = !PointInside(bulletPoint, levelState.boundaryLines);
-
-    if( bullet.free ) continue;
-
-    for( const auto& object : levelState.objects )
-    {
-      if( PointInside(bulletPoint, object.shape) )
-      {
-        bullet.free = true;
-        break;
-      }
-    }
-
-    if( bullet.free ) continue;
-
-    for( auto& target: levelState.targets )
-    {
-      if( PointInside(bulletPoint, target.shape) )
-      {
-        if( !target.activated )
-        {
-          target.activated = true;
-          levelState.targetShot = true;
-        }
-
-        bullet.free = true;
-        break;
-      }
-    }
-
-    if( bullet.free ) continue;
-
-    float cx = bullet.xPos - bullet.startX;
-    float cy = bullet.yPos - bullet.startY;
-    float distance = sqrt(cx * cx + cy * cy);
-    if( distance > bullet.range ) bullet.free = true;
+    bullet.xPos += ( bullet.xVelocity * gameUpdateInterval );
+    bullet.yPos += ( bullet.yVelocity * gameUpdateInterval );
   }
+
+  std::vector<bullet_target_collision> bulletTargetCollisions;
+
+  GetBulletTargetCollisions(
+    levelState.bullets.begin(), 
+    levelState.bullets.end(), 
+    levelState.targets.begin(),
+    levelState.targets.end(),
+    std::back_inserter(bulletTargetCollisions)
+  );
+
+  int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
+  if( targetActivatedCount > 0 )
+    levelState.targetShot = true;
+
+  for( auto& bullet : levelState.bullets )
+  {
+    if( BulletHasExpired(bullet) || BulletHasHitTheGround(bullet, levelState.theGround.cbegin(), levelState.theGround.cend()) )
+      bullet.free = true;
+  }
+}
+
+bool BulletHitObject(const level_state& levelState, const bullet& bullet)
+{
+  const game_point bulletPoint(bullet.xPos, bullet.yPos);
+
+  for( const auto& object : levelState.objects )
+  {
+    if( PointInside(bulletPoint, object.shape) ) return true;
+  }
+
+  return false;
+}
+
+
+bool BulletHasExpired(const bullet& bullet)
+{
+  float cx = bullet.xPos - bullet.startX;
+  float cy = bullet.yPos - bullet.startY;
+  float distance = sqrt(cx * cx + cy * cy);
+  return distance > bullet.range;
 }
 
 bullet& GetBullet(std::vector<bullet>& bullets)

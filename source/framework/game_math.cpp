@@ -36,7 +36,12 @@ bool PointInside(const game_point& point, const std::vector<game_line>& lines)
 
 int GetLineInterceptCount(const game_point& point, const std::vector<game_line>& lines)
 {
-  return std::accumulate(lines.cbegin(), lines.cend(), 0, [point](auto count, auto& line)
+  return GetLineInterceptCount(point, lines.cbegin(), lines.cend());
+}
+
+int GetLineInterceptCount(const game_point& point, std::vector<game_line>::const_iterator linesBegin, std::vector<game_line>::const_iterator linesEnd)
+{  
+  return std::accumulate(linesBegin, linesEnd, 0, [point](auto count, auto& line)
   {
     return AddLineToInterceptCount(line, point) ? count + 1 : count;
   });
