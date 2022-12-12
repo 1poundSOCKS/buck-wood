@@ -35,7 +35,9 @@ struct level_state
   bool targetShot = false;
 
   std::vector<game_line> theGround;
-  std::vector<object_state> objects;
+  std::vector<game_line> objectLines;
+
+  std::vector<object_state> objectStates;
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
 

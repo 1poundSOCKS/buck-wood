@@ -40,6 +40,11 @@ bool BulletHasHitTheGround(
   return GetGroundInterceptCount({ bullet.xPos, bullet.yPos }, groundBegin, groundEnd) % 2 ? true : false;
 }
 
+bool BulletHasHitAnObject(const bullet& bullet, const std::vector<game_line>::const_iterator linesBegin, const std::vector<game_line>::const_iterator linesEnd)
+{
+  return ( GetLineInterceptCount({bullet.xPos, bullet.yPos}, linesBegin, linesEnd) % 2 == 0 ) ? false : true;
+}
+
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 
   std::vector<bullet>::iterator bulletEnd, 
@@ -49,7 +54,7 @@ void GetBulletTargetCollisions(
 {
   for( auto& bullet = bulletBegin; bullet != bulletEnd; ++bullet )
   {
-    GetBulletTargetCollisions(*bullet, targetsBegin, targetsEnd, collisions);
+    if( !bullet->free ) GetBulletTargetCollisions(*bullet, targetsBegin, targetsEnd, collisions);
   }  
 }
 
@@ -66,25 +71,6 @@ void GetBulletTargetCollisions(
     if( PointInside(bulletPoint, targetState->shape) )
       collisions = bullet_target_collision { bullet, *targetState };
   }
-}
-
-int ProcessBulletTargetCollisions(
-  std::vector<bullet_target_collision>::iterator collisionsBegin, 
-  std::vector<bullet_target_collision>::iterator collisionsEnd)
-{
-  int activatedCount = 0;
-
-  for( auto& collision = collisionsBegin; collision != collisionsEnd; ++collision )
-  {
-    collision->bullet.free = true;
-    if( !collision->targetState.activated )
-    {
-      collision->targetState.activated = true;
-      ++activatedCount;
-    }
-  }
-
-  return activatedCount;
 }
 
 int GetGroundInterceptCount(const game_point& point, std::vector<game_line>::const_iterator groundBegin, std::vector<game_line>::const_iterator groundEnd)

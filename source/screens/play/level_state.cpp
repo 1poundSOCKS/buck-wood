@@ -16,6 +16,10 @@ bool PlayerCanShoot(const level_state& levelState);
 void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
 float GetUpdateInterval(const level_state& levelState);
 bool BulletHasExpired(const bullet& bullet);
+bool BulletHitSomething(const bullet& bulletState, const level_state& levelState);
+int ProcessBulletTargetCollisions(
+  std::vector<bullet_target_collision>::iterator collisionsBegin, 
+  std::vector<bullet_target_collision>::iterator collisionsEnd);
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
 : levelData(levelData), counterFrequency(counterFrequency)
@@ -32,14 +36,15 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(theGround), 0, 0, false);
 
-  std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objects), [](const auto& data)
+  std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objectStates), [](const auto& data)
   {
     return object_state(data);
   });
 
-  for( auto& object : objects)
+  for( auto& objectState : objectStates)
   {
-    CreateConnectedLines<game_point>(object.data.points.cbegin(), object.data.points.cend(), std::back_inserter(object.shape));
+    // CreateConnectedLines<game_point>(objectState.data.points.cbegin(), objectState.data.points.cend(), std::back_inserter(objectState.shape));
+    CreateConnectedLines<game_point>(objectState.data.points.cbegin(), objectState.data.points.cend(), std::back_inserter(objectLines));
   }
 
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
@@ -169,29 +174,18 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     std::back_inserter(bulletTargetCollisions)
   );
 
-  int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
+  int targetActivatedCount = 
+  ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
+  
   if( targetActivatedCount > 0 )
     levelState.targetShot = true;
 
   for( auto& bullet : levelState.bullets )
   {
-    if( BulletHasExpired(bullet) || BulletHasHitTheGround(bullet, levelState.theGround.cbegin(), levelState.theGround.cend()) )
+    if( bullet.free || BulletHasExpired(bullet) || BulletHitSomething(bullet, levelState) )
       bullet.free = true;
   }
 }
-
-bool BulletHitObject(const level_state& levelState, const bullet& bullet)
-{
-  const game_point bulletPoint(bullet.xPos, bullet.yPos);
-
-  for( const auto& object : levelState.objects )
-  {
-    if( PointInside(bulletPoint, object.shape) ) return true;
-  }
-
-  return false;
-}
-
 
 bool BulletHasExpired(const bullet& bullet)
 {
@@ -199,6 +193,32 @@ bool BulletHasExpired(const bullet& bullet)
   float cy = bullet.yPos - bullet.startY;
   float distance = sqrt(cx * cx + cy * cy);
   return distance > bullet.range;
+}
+
+bool BulletHitSomething(const bullet& bulletState, const level_state& levelState)
+{
+  return 
+    BulletHasHitTheGround(bulletState, levelState.theGround.cbegin(), levelState.theGround.cend()) ||
+    BulletHasHitAnObject(bulletState, levelState.objectLines.cbegin(), levelState.objectLines.cend());
+}
+
+int ProcessBulletTargetCollisions(
+  std::vector<bullet_target_collision>::iterator collisionsBegin, 
+  std::vector<bullet_target_collision>::iterator collisionsEnd)
+{
+  int activatedCount = 0;
+
+  for( auto& collision = collisionsBegin; collision != collisionsEnd; ++collision )
+  {
+    collision->bullet.free = true;
+    if( !collision->targetState.activated )
+    {
+      collision->targetState.activated = true;
+      ++activatedCount;
+    }
+  }
+
+  return activatedCount;
 }
 
 bullet& GetBullet(std::vector<bullet>& bullets)
