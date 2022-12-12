@@ -3,9 +3,20 @@
 
 #include "level_objects.h"
 
-bool PlayerHasHitTheGround(const std::vector<game_point>& player, const std::vector<game_line>::const_iterator groundBegin, const std::vector<game_line>::const_iterator groundEnd);
-bool BulletHasHitTheGround(const bullet& bullet, const std::vector<game_line>::const_iterator groundBegin, const std::vector<game_line>::const_iterator groundEnd);
-bool BulletHasHitAnObject(const bullet& bullet, const std::vector<game_line>::const_iterator linesBegin, const std::vector<game_line>::const_iterator linesEnd);
+bool PlayerHasHitTheGround(
+  const std::vector<game_point>& player, 
+  const std::vector<game_line>::const_iterator groundBegin, 
+  const std::vector<game_line>::const_iterator groundEnd);
+
+bool BulletHasHitTheGround(
+  const bullet& bullet, 
+  const std::vector<game_line>::const_iterator groundBegin, 
+  const std::vector<game_line>::const_iterator groundEnd);
+
+bool BulletHasHitAnObject(
+  const bullet& bullet, 
+  const std::vector<game_line>::const_iterator linesBegin, 
+  const std::vector<game_line>::const_iterator linesEnd);
 
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 
@@ -20,6 +31,9 @@ void GetBulletTargetCollisions(
   std::vector<target_state>::iterator targetsEnd,
   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
 
-int GetGroundInterceptCount(const game_point& point, std::vector<game_line>::const_iterator groundBegin, std::vector<game_line>::const_iterator groundEnd);
+int GetGroundInterceptCount(
+  const game_point& point, 
+  std::vector<game_line>::const_iterator groundBegin, 
+  std::vector<game_line>::const_iterator groundEnd);
 
 #endif

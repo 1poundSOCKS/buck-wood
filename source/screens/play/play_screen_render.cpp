@@ -39,7 +39,6 @@ void RenderFrame(
       break;
   }
 
-  // float levelTimeRemaining = GetTimeRemainingInSeconds(*screenState.levelTimer);
   float levelTimeRemaining = GetPlayTimeRemainingInSeconds(*screenState.levelState);
   static wchar_t timerText[64];
   swprintf(timerText, L"%.2f", levelTimeRemaining);

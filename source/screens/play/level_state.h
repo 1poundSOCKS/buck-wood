@@ -37,7 +37,6 @@ struct level_state
   std::vector<game_line> theGround;
   std::vector<game_line> objectLines;
 
-  std::vector<object_state> objectStates;
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
 

@@ -32,13 +32,6 @@ struct bullet
   float range = 1000;
 };
 
-struct object_state
-{
-  object_state(const game_level_object_data& data);
-  const game_level_object_data& data;
-  std::vector<game_line> shape;
-};
-
 struct target_state
 {
   target_state(const game_point& position);

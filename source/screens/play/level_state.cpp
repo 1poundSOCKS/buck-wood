@@ -7,7 +7,7 @@
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
-const int shotTimeDenominator = 30;
+const int shotTimeDenominator = 20;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
@@ -36,15 +36,9 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(theGround), 0, 0, false);
 
-  std::transform(levelData.objects.cbegin(), levelData.objects.cend(), std::back_inserter(objectStates), [](const auto& data)
+  for( auto& objectData : levelData.objects )
   {
-    return object_state(data);
-  });
-
-  for( auto& objectState : objectStates)
-  {
-    // CreateConnectedLines<game_point>(objectState.data.points.cbegin(), objectState.data.points.cend(), std::back_inserter(objectState.shape));
-    CreateConnectedLines<game_point>(objectState.data.points.cbegin(), objectState.data.points.cend(), std::back_inserter(objectLines));
+    CreateConnectedLines<game_point>(objectData.points.cbegin(), objectData.points.cend(), std::back_inserter(objectLines));
   }
 
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)

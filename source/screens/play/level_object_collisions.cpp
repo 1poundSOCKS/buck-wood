@@ -11,8 +11,7 @@ bool PlayerHasHitTheGround(
     player.cbegin(), 
     player.cend(), 
     std::back_inserter(interceptCounts),
-    [groundBegin, groundEnd](auto& point)
-    { return GetGroundInterceptCount(point, groundBegin, groundEnd); }
+    [groundBegin, groundEnd](auto& point) { return GetGroundInterceptCount(point, groundBegin, groundEnd); }
   );
 
   std::vector<bool> pointBelowBoundaryFlags;
@@ -27,8 +26,7 @@ bool PlayerHasHitTheGround(
     pointBelowBoundaryFlags.cbegin(),
     pointBelowBoundaryFlags.cend(),
     false,
-    [](auto flag, auto below)
-    { return flag || below; }
+    [](auto flag, auto below) { return flag || below; }
   );
 }
 
@@ -40,7 +38,10 @@ bool BulletHasHitTheGround(
   return GetGroundInterceptCount({ bullet.xPos, bullet.yPos }, groundBegin, groundEnd) % 2 ? true : false;
 }
 
-bool BulletHasHitAnObject(const bullet& bullet, const std::vector<game_line>::const_iterator linesBegin, const std::vector<game_line>::const_iterator linesEnd)
+bool BulletHasHitAnObject(
+  const bullet& bullet, 
+  const std::vector<game_line>::const_iterator linesBegin, 
+  const std::vector<game_line>::const_iterator linesEnd)
 {
   return ( GetLineInterceptCount({bullet.xPos, bullet.yPos}, linesBegin, linesEnd) % 2 == 0 ) ? false : true;
 }

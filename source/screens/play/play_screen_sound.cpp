@@ -17,7 +17,10 @@ void PlaySoundEffects(const play_screen_state& screenState, const bespoke_sound_
       StopSoundBufferPlay(soundBuffers[thrust]);
 
     if( levelState.playerShot )
+    {
+      ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[shoot]);
+    }
 
     if( levelState.targetShot ) PlaySoundBuffer(soundBuffers[target_activated]);
   }
