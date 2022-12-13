@@ -34,11 +34,11 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   bullets.resize(100);
 
-  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(groundLines), 0, 0, false);
+  CreateConnectedLines(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(groundLines), 0, 0, false);
 
   for( auto& objectData : levelData.objects )
   {
-    CreateConnectedLines<game_point>(objectData.points.cbegin(), objectData.points.cend(), std::back_inserter(objectLines));
+    CreateConnectedLines(objectData.points.cbegin(), objectData.points.cend(), std::back_inserter(objectLines));
   }
 
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
@@ -48,7 +48,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   for( auto& target : targets )
   {
-    CreateConnectedLines<game_point>(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
+    CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
 }
 
@@ -123,7 +123,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
     for( const auto& object : currentLevelData.objects)
     {
       std::vector<game_line> lines;
-      CreateConnectedLines<game_point>(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+      CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
       if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
       {
         levelState.player.state = player_ship::dead;

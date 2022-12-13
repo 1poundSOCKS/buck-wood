@@ -31,25 +31,17 @@ float GetYIntercept(float x, const game_line& line);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 void TransformPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y);
 
-template <typename T>
-void CreateConnectedLines(typename std::vector<T>::const_iterator begin, 
-                          typename std::vector<T>::const_iterator end, 
-                          std::back_insert_iterator<std::vector<game_line>> insertIterator,
-                          float x=0, float y=0, bool loop=true)
+void CreateConnectedLines(auto begin, auto end, auto lines, float x=0, float y=0, bool loop=true)
 {
-  std::transform(std::next(begin), end, begin, insertIterator, [x, y](const auto& point2, const auto& point1)
+  std::transform(std::next(begin), end, begin, lines, [x, y](const auto& point2, const auto& point1)
   {
-    game_point start(point1.x + x, point1.y + y);
-    game_point end(point2.x + x, point2.y + y);
-    return game_line(start, end);
+    return game_line { point1.x + x, point1.y + y, point2.x + x, point2.y + y };
   });
 
   if( loop )
   {
     auto last = std::prev(end);
-    game_point startPoint(last->x + x, last->y + y);
-    game_point endPoint(begin->x + x, begin->y + y);
-    insertIterator = game_line(startPoint, endPoint);
+    lines = game_line { last->x + x, last->y + y, begin->x + x, begin->y + y };
   }
 };
 
