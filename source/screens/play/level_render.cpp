@@ -5,6 +5,12 @@
 void CreateStaticLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
 void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
+template <typename insert_iterator_type>
+void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width);
+
+template <typename insert_iterator_type>
+void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width);
+
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const bespoke_render_data& renderData,
@@ -17,13 +23,17 @@ void RenderLevel(
   auto renderTargetSize = renderTarget->GetSize();
   renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize, renderScale));
 
-  std::vector<render_line> staticRenderLines;
-  CreateStaticLevelRenderLines(levelState, std::back_inserter(staticRenderLines), renderBrushSelector);
-
-  RenderLines(renderTarget, staticRenderLines.cbegin(), staticRenderLines.cend());
-
   std::vector<render_line> renderLines;
+  CreateStaticLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
+  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
+
+  renderLines.clear();
   CreateDynamicLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
+
+  auto brush = renderBrushSelector[grey];  
+  AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
+  AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
+
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 
   std::vector<render_point> renderBullets;
@@ -41,8 +51,7 @@ void CreateStaticLevelRenderLines(
   std::back_insert_iterator<std::vector<render_line>> insertIterator, 
   screen_render_brush_selector brushes)
 {
-  const auto& brush = brushes[grey];
-
+  auto brush = brushes[grey];
   CreateRenderLines(levelState.groundLines.cbegin(), levelState.groundLines.cend(), insertIterator, brush,6);
   CreateRenderLines(levelState.objectLines.cbegin(), levelState.objectLines.cend(), insertIterator, brush,6);
 }
@@ -85,4 +94,34 @@ void CreateDynamicLevelRenderLines(
 
     CreateDisconnectedRenderLines(points.cbegin(), points.cend(), renderLines, brushes[red], 5);
   }
+}
+
+template <typename insert_iterator_type>
+void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width)
+{
+  D2D1_POINT_2F inPoint { renderTargetSize.width, 0 };
+  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
+
+  renderLines =  
+  { 
+    { levelState.levelData.boundaryPoints.front().x, levelState.levelData.boundaryPoints.front().y} , 
+    { outPoint.x, levelState.levelData.boundaryPoints.front().y },
+    brush, 
+    width
+  };
+}
+
+template <typename insert_iterator_type>
+void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width)
+{
+  D2D1_POINT_2F inPoint { 0, 0 };
+  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
+
+  renderLines = 
+  { 
+    { levelState.levelData.boundaryPoints.back().x, levelState.levelData.boundaryPoints.back().y} , 
+    { outPoint.x, levelState.levelData.boundaryPoints.back().y },
+    brush, 
+    width
+  };
 }

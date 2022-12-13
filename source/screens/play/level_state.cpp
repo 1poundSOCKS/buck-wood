@@ -73,9 +73,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   levelState.invertedViewTransform = levelState.viewTransform;
   if( levelState.invertedViewTransform.Invert() )
   {
-    D2D1_POINT_2F inPoint;
-    inPoint.x = controlState.renderTargetMouseData.x;
-    inPoint.y = controlState.renderTargetMouseData.y;
+    D2D1_POINT_2F inPoint { controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y };
     auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
     levelState.mouseX = outPoint.x;
     levelState.mouseY = outPoint.y;
