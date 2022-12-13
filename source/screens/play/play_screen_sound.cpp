@@ -22,7 +22,11 @@ void PlaySoundEffects(const play_screen_state& screenState, const bespoke_sound_
       PlaySoundBuffer(soundBuffers[shoot]);
     }
 
-    if( levelState.targetShot ) PlaySoundBuffer(soundBuffers[target_activated]);
+    if( levelState.targetShot )
+    {
+      ResetSoundBuffer(soundBuffers[shoot]);
+      PlaySoundBuffer(soundBuffers[target_activated]);
+    }
   }
   else
   {

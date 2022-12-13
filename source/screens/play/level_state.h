@@ -27,19 +27,20 @@ struct level_state
   int64_t shotTimerInterval;
   int64_t lastShotTimerValue = 0;
 
-  player_ship player;
-
+  D2D1::Matrix3x2F viewTransform;
+  D2D1::Matrix3x2F invertedViewTransform;
+  
   float mouseX = 0;
   float mouseY = 0;
+  
   bool playerShot = false;
   bool targetShot = false;
 
-  std::vector<game_line> theGround;
+  player_ship player;
+  std::vector<game_line> groundLines;
   std::vector<game_line> objectLines;
-
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
-
   player_ship_point_data playerShipPointData;
 };
 

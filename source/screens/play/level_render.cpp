@@ -2,7 +2,7 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void CreateStaticLevelRenderLines(const game_level_data& gameLevelData, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
+void CreateStaticLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
 void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
 void RenderLevel(
@@ -18,7 +18,7 @@ void RenderLevel(
   renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize, renderScale));
 
   std::vector<render_line> staticRenderLines;
-  CreateStaticLevelRenderLines(levelState.levelData, std::back_inserter(staticRenderLines), renderBrushSelector);
+  CreateStaticLevelRenderLines(levelState, std::back_inserter(staticRenderLines), renderBrushSelector);
 
   RenderLines(renderTarget, staticRenderLines.cbegin(), staticRenderLines.cend());
 
@@ -37,41 +37,14 @@ void RenderLevel(
 }
 
 void CreateStaticLevelRenderLines(
-  const game_level_data& gameLevelData, 
+  const level_state& levelState,
   std::back_insert_iterator<std::vector<render_line>> insertIterator, 
   screen_render_brush_selector brushes)
 {
-  CreateConnectedRenderLines(
-    gameLevelData.boundaryPoints.cbegin(), 
-    gameLevelData.boundaryPoints.cend(), 
-    insertIterator, brushes[grey], 
-    6, 0, 0, false
-  );
+  const auto& brush = brushes[grey];
 
-  const game_point& firstBoundaryPoint = gameLevelData.boundaryPoints.front();
-  
-  insertIterator = render_line
-  {
-    D2D1_POINT_2F { firstBoundaryPoint.x, firstBoundaryPoint.y }, 
-    D2D1_POINT_2F { firstBoundaryPoint.x + 1000, firstBoundaryPoint.y }, 
-    brushes[grey],
-    6
-  };
-
-  const game_point& lastBoundaryPoint = gameLevelData.boundaryPoints.back();
-
-  insertIterator = render_line
-  {
-    D2D1_POINT_2F { lastBoundaryPoint.x, lastBoundaryPoint.y }, 
-    D2D1_POINT_2F { lastBoundaryPoint.x - 1000, lastBoundaryPoint.y }, 
-    brushes[grey],
-    6
-  };
-
-  for( auto& object : gameLevelData.objects )
-  {
-    CreateConnectedRenderLines(object.points.cbegin(), object.points.cend(), insertIterator, brushes[grey], 6);
-  }
+  CreateRenderLines(levelState.groundLines.cbegin(), levelState.groundLines.cend(), insertIterator, brush,6);
+  CreateRenderLines(levelState.objectLines.cbegin(), levelState.objectLines.cend(), insertIterator, brush,6);
 }
 
 void CreateDynamicLevelRenderLines(

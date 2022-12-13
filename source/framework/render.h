@@ -92,4 +92,29 @@ void CreateConnectedRenderLines(
   }
 };
 
+template <typename input_iterator_type, typename insert_iterator_type>
+void CreateRenderLines(
+  input_iterator_type begin, 
+  input_iterator_type end, 
+  insert_iterator_type insertIterator,
+  ID2D1SolidColorBrush* brush, 
+  float width)
+{
+  std::transform(
+    begin, 
+    end, 
+    insertIterator,
+    [brush, width](auto& line)
+    {
+      return render_line
+      {
+        D2D1_POINT_2F { line.start.x, line.start.y },
+        D2D1_POINT_2F { line.end.x, line.end.y },
+        brush,
+        width
+      };
+    }
+  );
+}
+
 #endif

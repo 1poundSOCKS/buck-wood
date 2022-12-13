@@ -34,7 +34,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   bullets.resize(100);
 
-  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(theGround), 0, 0, false);
+  CreateConnectedLines<game_point>(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(groundLines), 0, 0, false);
 
   for( auto& objectData : levelData.objects )
   {
@@ -68,14 +68,15 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   levelState.previousTimerCount = levelState.currentTimerCount;
   levelState.currentTimerCount = timerCount;
 
-  D2D1::Matrix3x2F mouseTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.0);
-
-  if( mouseTransform.Invert() )
+  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.0);
+  
+  levelState.invertedViewTransform = levelState.viewTransform;
+  if( levelState.invertedViewTransform.Invert() )
   {
     D2D1_POINT_2F inPoint;
     inPoint.x = controlState.renderTargetMouseData.x;
     inPoint.y = controlState.renderTargetMouseData.y;
-    auto outPoint = mouseTransform.TransformPoint(inPoint);
+    auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
     levelState.mouseX = outPoint.x;
     levelState.mouseY = outPoint.y;
   }
@@ -115,7 +116,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
 
   const auto& currentLevelData = levelState.levelData;
 
-  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, levelState.theGround.cbegin(), levelState.theGround.cend()) )
+  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, levelState.groundLines.cbegin(), levelState.groundLines.cend()) )
   {
     levelState.player.state = player_ship::dead;
   }
@@ -192,7 +193,7 @@ bool BulletHasExpired(const bullet& bullet)
 bool BulletHitSomething(const bullet& bulletState, const level_state& levelState)
 {
   return 
-    BulletHasHitTheGround(bulletState, levelState.theGround.cbegin(), levelState.theGround.cend()) ||
+    BulletHasHitTheGround(bulletState, levelState.groundLines.cbegin(), levelState.groundLines.cend()) ||
     BulletHasHitAnObject(bulletState, levelState.objectLines.cbegin(), levelState.objectLines.cend());
 }
 
