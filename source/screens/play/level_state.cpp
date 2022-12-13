@@ -68,7 +68,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   levelState.previousTimerCount = levelState.currentTimerCount;
   levelState.currentTimerCount = timerCount;
 
-  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.0);
+  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
   
   levelState.invertedViewTransform = levelState.viewTransform;
   if( levelState.invertedViewTransform.Invert() )

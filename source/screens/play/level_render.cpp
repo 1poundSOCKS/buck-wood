@@ -14,14 +14,12 @@ void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F rend
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const bespoke_render_data& renderData,
-  const level_state& levelState,
-  float renderScale)
+  const level_state& levelState)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
-  auto renderTargetSize = renderTarget->GetSize();
-  renderTarget->SetTransform(CreateViewTransform(levelState, renderTargetSize, renderScale));
+  renderTarget->SetTransform(levelState.viewTransform);
 
   std::vector<render_line> renderLines;
   CreateStaticLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
@@ -30,6 +28,7 @@ void RenderLevel(
   renderLines.clear();
   CreateDynamicLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
 
+  auto renderTargetSize = renderTarget->GetSize();
   auto brush = renderBrushSelector[grey];  
   AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
   AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
@@ -121,7 +120,6 @@ void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F rend
   { 
     { levelState.levelData.boundaryPoints.back().x, levelState.levelData.boundaryPoints.back().y} , 
     { outPoint.x, levelState.levelData.boundaryPoints.back().y },
-    brush, 
-    width
+    brush, width
   };
 }

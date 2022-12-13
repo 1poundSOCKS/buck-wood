@@ -17,9 +17,7 @@ void RenderFrame(
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  float renderScale = screenState.state == play_screen_state::STATE::state_playing ? 1.5 : 1.5;
-
-  RenderLevel(renderTarget, renderData, *screenState.levelState, renderScale);
+  RenderLevel(renderTarget, renderData, *screenState.levelState);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
@@ -49,14 +47,10 @@ void RenderFrame(
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
 {
-  std::wstring msg = L"";
-
+  std::wstring msg;
   for( auto levelTime: levelTimes )
   {
-    static wchar_t text[64];
-    swprintf(text, L"%.2f\n", levelTime);
-    msg += text;
+    msg += std::format(L"{:.2f}", levelTime);
   }
-
   return msg;
 }
