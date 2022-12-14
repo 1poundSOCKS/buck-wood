@@ -34,9 +34,9 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
-  switch( screenState.state )
+  switch( screenState.mode )
   {
-    case play_screen_state::state_paused:
+    case play_screen_state::paused:
       RenderText(
         renderTarget, 
         renderBrushSelector[cyan], 
@@ -45,7 +45,7 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
         DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
-    case play_screen_state::state_level_complete:
+    case play_screen_state::level_complete:
       RenderText(
         renderTarget, 
         renderBrushSelector[cyan], 
@@ -54,7 +54,7 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
         DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
-    case play_screen_state::state_game_complete:
+    case play_screen_state::game_complete:
       RenderText(
         renderTarget, 
         renderBrushSelector[cyan], 
@@ -63,7 +63,7 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
         DWRITE_TEXT_ALIGNMENT_CENTER);
       break;
-    case play_screen_state::state_player_dead:
+    case play_screen_state::player_dead:
       RenderText(
         renderTarget, 
         renderBrushSelector[cyan], 

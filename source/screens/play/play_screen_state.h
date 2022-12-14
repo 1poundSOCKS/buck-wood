@@ -14,14 +14,14 @@ struct play_screen_state
   );
 
   performance_counter::data timer = { 0, 0, 0 };
-  int64_t pauseStartCount = 0;
-  int64_t pauseTotalCount = 0;
-  int64_t levelStartCount = 0;
-  int64_t transitionEndCount = 0;
+  int64_t pauseStart = 0;
+  int64_t pauseTotal = 0;
+  int64_t levelStart = 0;
+  int64_t transitionEnd = 0;
 
-  enum STATE { state_playing, state_paused, state_level_complete, state_game_complete, state_player_dead };
-  STATE state = state_playing;
-  bool returnToMenu = false;
+  enum mode_type { playing, paused, level_complete, game_complete, player_dead };
+  mode_type mode = playing;
+  bool continueRunning = true;
 
   game_level_data_index::const_iterator currentLevelDataIterator;
   game_level_data_index::const_iterator endLevelDataIterator;

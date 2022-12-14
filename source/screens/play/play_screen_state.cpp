@@ -6,8 +6,9 @@
 
 void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState);
 void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState);
-void OnPlay(play_screen_state& screenState, const screen_input_state& inputState);
-void OnLevelComplete(play_screen_state& screenState);
+void OnGamePlaying(play_screen_state& screenState, const screen_input_state& inputState);
+bool AllLevelsAreComplete(play_screen_state& screenState);
+void LoadNextLevel(play_screen_state& screenState);
 bool ScreenTransitionTimeHasExpired(play_screen_state& screenState);
 void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds);
 level_control_state GetLevelControlState(const screen_input_state& inputState);
@@ -24,9 +25,9 @@ play_screen_state::play_screen_state(
   
   const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
-  levelStartCount = this->timer.initialValue;
+  levelStart = this->timer.initialValue;
 
-  state = play_screen_state::state_playing;
+  mode = playing;
 }
 
 void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState)
@@ -35,9 +36,9 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
 
-  screenState.returnToMenu = screenState.levelState->playerShot = screenState.levelState->targetShot = false;
+  screenState.levelState->playerShot = screenState.levelState->targetShot = false;
 
-  if( screenState.state == play_screen_state::state_paused )
+  if( screenState.mode == play_screen_state::paused )
     OnGamePaused(screenState, inputState);
   else if( ScreenTransitionTimeHasExpired(screenState) )
     OnGameRunning(screenState, inputState);
@@ -47,46 +48,85 @@ void OnGamePaused(play_screen_state& screenState, const screen_input_state& inpu
 {
   if( KeyPressed(inputState, DIK_Q) )
   {
-    screenState.returnToMenu = true;
+    screenState.continueRunning = false;
   }
   else if( KeyPressed(inputState, DIK_ESCAPE) )
   {
-    screenState.state = play_screen_state::state_playing;
-    screenState.pauseTotalCount += ( screenState.timer.currentValue - screenState.pauseStartCount );
+    screenState.mode = play_screen_state::playing;
+    screenState.pauseTotal += ( screenState.timer.currentValue - screenState.pauseStart );
   }
 }
 
 void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  if( screenState.state == play_screen_state::state_game_complete || 
-      screenState.state == play_screen_state::state_player_dead )
+  if( screenState.mode == play_screen_state::playing )
   {
-    screenState.returnToMenu = true;
+    OnGamePlaying(screenState, inputState);
   }
-  else if( screenState.state == play_screen_state::state_level_complete )
+  else if( screenState.mode == play_screen_state::level_complete )
   {
-    OnLevelComplete(screenState);
-  }
-  else if( screenState.state == play_screen_state::state_playing )
-  {
-    if( KeyPressed(inputState, DIK_ESCAPE) )
+    screenState.levelTimes.push_back(GetPlayTimeRemainingInSeconds(*screenState.levelState));
+    
+    if( AllLevelsAreComplete(screenState) )
     {
-      screenState.state = play_screen_state::state_paused;
-      screenState.pauseStartCount = screenState.timer.currentValue;
+      screenState.mode = play_screen_state::game_complete;
+      SetScreenTransitionDelay(screenState, 3);
     }
     else
-      OnPlay(screenState, inputState);
+    {
+      LoadNextLevel(screenState);
+      screenState.mode = play_screen_state::playing;
+    }
   }
+  else if( screenState.mode == play_screen_state::game_complete )
+  {
+    screenState.continueRunning = false;
+  }
+  else if( screenState.mode == play_screen_state::player_dead )
+  {
+    screenState.continueRunning = false;
+  }
+}
+
+void OnGamePlaying(play_screen_state& screenState, const screen_input_state& inputState)
+{
+  if( KeyPressed(inputState, DIK_ESCAPE) )
+  {
+    screenState.mode = play_screen_state::paused;
+    screenState.pauseStart = screenState.timer.currentValue;
+  }
+  else
+  {
+    UpdateLevelState(
+      *screenState.levelState, GetLevelControlState(inputState), 
+      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
+
+    if( LevelTimedOut(*screenState.levelState) )
+    {
+      screenState.mode = play_screen_state::player_dead;
+      SetScreenTransitionDelay(screenState, 3);
+    }
+    else if( LevelIsComplete(*screenState.levelState) )
+    {
+      screenState.mode = play_screen_state::level_complete;
+      SetScreenTransitionDelay(screenState, 3);
+    }
+    else if( screenState.levelState->player.state == player_ship::dead )
+    {
+      screenState.mode = play_screen_state::player_dead;
+      SetScreenTransitionDelay(screenState, 3);
+    }
+  }  
 }
 
 bool ScreenTransitionTimeHasExpired(play_screen_state& screenState)
 {
-  return screenState.timer.currentValue > screenState.transitionEndCount;
+  return screenState.timer.currentValue > screenState.transitionEnd;
 }
 
 void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds)
 {
-  screenState.transitionEndCount = screenState.timer.currentValue + (timeInSeconds * screenState.timer.frequency);
+  screenState.transitionEnd = screenState.timer.currentValue + (timeInSeconds * screenState.timer.frequency);
 }
 
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
@@ -96,51 +136,45 @@ void OnPlay(play_screen_state& screenState, const screen_input_state& inputState
     UpdateLevelState(
       *screenState.levelState, 
       GetLevelControlState(inputState), 
-      screenState.timer.currentValue - screenState.levelStartCount - screenState.pauseTotalCount);
+      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
 
     if( LevelIsComplete(*screenState.levelState) )
     {
-      screenState.state = play_screen_state::state_level_complete;
+      screenState.mode = play_screen_state::level_complete;
       SetScreenTransitionDelay(screenState, 3);
     }
     else if( screenState.levelState->player.state == player_ship::dead )
     {
-      screenState.state = play_screen_state::state_player_dead;
+      screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
     }
   }
   else
   {
-    screenState.state = play_screen_state::state_player_dead;
+    screenState.mode = play_screen_state::player_dead;
     SetScreenTransitionDelay(screenState, 3);
   }
 }
 
-void OnLevelComplete(play_screen_state& screenState)
+bool AllLevelsAreComplete(play_screen_state& screenState)
 {
-  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(*screenState.levelState);
-  screenState.levelTimes.push_back(levelTimeRemaining);
+  return std::next(screenState.currentLevelDataIterator) == screenState.endLevelDataIterator ? true : false;
+}
 
+void LoadNextLevel(play_screen_state& screenState)
+{
   auto nextLevel = std::next(screenState.currentLevelDataIterator);
-
-  if( nextLevel == screenState.endLevelDataIterator )
-  {
-    screenState.state = play_screen_state::state_game_complete;
-  }
-  else
-  {
-    screenState.currentLevelDataIterator = nextLevel;
-    const auto& levelData = **screenState.currentLevelDataIterator;
-    screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
-    screenState.levelStartCount = screenState.timer.currentValue;
-    screenState.timer.initialValue = screenState.timer.initialValue;
-    screenState.state = play_screen_state::state_playing;
-  }
+  assert(nextLevel != screenState.endLevelDataIterator);
+  screenState.currentLevelDataIterator = nextLevel;
+  const auto& levelData = **screenState.currentLevelDataIterator;
+  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
+  screenState.levelStart = screenState.timer.currentValue;
+  screenState.timer.initialValue = screenState.timer.initialValue;
 }
 
 bool ContinueRunning(const play_screen_state& screenState)
 {
-  return screenState.returnToMenu ? false : true;
+  return screenState.continueRunning;
 }
 
 void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState)

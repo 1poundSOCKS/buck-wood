@@ -7,7 +7,7 @@ void PlaySoundEffects(const play_screen_state& screenState, const bespoke_sound_
   const auto soundBuffers = global_sound_buffer_selector { soundData.soundBuffers };
   auto& levelState = *screenState.levelState;
 
-  if( screenState.state == play_screen_state::state_playing )
+  if( screenState.mode == play_screen_state::playing )
   {
     PlaySoundBuffer(soundBuffers[menu_theme], true);
 

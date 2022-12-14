@@ -68,19 +68,22 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   levelState.previousTimerCount = levelState.currentTimerCount;
   levelState.currentTimerCount = timerCount;
 
-  levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
-  
-  levelState.invertedViewTransform = levelState.viewTransform;
-  if( levelState.invertedViewTransform.Invert() )
+  if( GetPlayTimeRemaining(levelState) > 0 )
   {
-    D2D1_POINT_2F inPoint { controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y };
-    auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
-    levelState.mouseX = outPoint.x;
-    levelState.mouseY = outPoint.y;
-  }
+    levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
+    
+    levelState.invertedViewTransform = levelState.viewTransform;
+    if( levelState.invertedViewTransform.Invert() )
+    {
+      D2D1_POINT_2F inPoint { controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y };
+      auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
+      levelState.mouseX = outPoint.x;
+      levelState.mouseY = outPoint.y;
+    }
 
-  UpdatePlayer(levelState, controlState);
-  UpdateBullets(levelState, controlState);
+    UpdatePlayer(levelState, controlState);
+    UpdateBullets(levelState, controlState);
+  }
 }
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState)
@@ -252,6 +255,11 @@ float GetUpdateInterval(const level_state& levelState)
 bool PlayerCanShoot(const level_state& levelState)
 {
   return levelState.currentTimerCount - levelState.lastShotTimerValue > levelState.shotTimerInterval;
+}
+
+bool LevelTimedOut(const level_state& levelState)
+{
+  return GetPlayTimeRemaining(levelState) > 0 ? false : true;
 }
 
 int64_t GetPlayTimeRemaining(const level_state& screenState)
