@@ -2,24 +2,31 @@
 #include "screen_render.h"
 #include "render.h"
 
+consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
+{
+  const float cursorSize = 20.0f;
+  const float cursorSizeGap = 10.0f;
+
+  return std::array<D2D1_POINT_2F, 8> {
+    D2D1_POINT_2F { 0, -cursorSize },
+    D2D1_POINT_2F { 0,-cursorSizeGap },
+    D2D1_POINT_2F { 0,cursorSize },
+    D2D1_POINT_2F { 0,cursorSizeGap },
+    D2D1_POINT_2F { -cursorSize,0 },
+    D2D1_POINT_2F { -cursorSizeGap,0 },
+    D2D1_POINT_2F { cursorSize,0 },
+    D2D1_POINT_2F { cursorSizeGap,0 }
+  };
+}
+
 void RenderMouseCursor(ID2D1RenderTarget* renderTarget, ID2D1SolidColorBrush* brush, float x, float y)
 {
   static const float cursorSize = 20.0f;
   static const float cursorSizeGap = 10.0f;
 
-  std::vector<D2D1_POINT_2F> mouseCursor;
-  mouseCursor.reserve(8);
-  mouseCursor.emplace_back(D2D1_POINT_2F(0,-cursorSize));
-  mouseCursor.emplace_back(D2D1_POINT_2F(0,-cursorSizeGap));
-  mouseCursor.emplace_back(D2D1_POINT_2F(0,cursorSize));
-  mouseCursor.emplace_back(D2D1_POINT_2F(0,cursorSizeGap));
-  mouseCursor.emplace_back(D2D1_POINT_2F(-cursorSize,0));
-  mouseCursor.emplace_back(D2D1_POINT_2F(-cursorSizeGap,0));
-  mouseCursor.emplace_back(D2D1_POINT_2F(cursorSize,0));
-  mouseCursor.emplace_back(D2D1_POINT_2F(cursorSizeGap,0));
+  auto mouseCursor = GetCursorRenderData();
 
   std::vector<render_line> renderLines;
-  renderLines.reserve(4);
   
   CreateDisconnectedRenderLines(
     mouseCursor.cbegin(), 

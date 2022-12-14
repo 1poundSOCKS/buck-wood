@@ -111,12 +111,12 @@ void OnGamePlaying(play_screen_state& screenState, const screen_input_state& inp
       screenState.mode = play_screen_state::level_complete;
       SetScreenTransitionDelay(screenState, 3);
     }
-    else if( screenState.levelState->player.state == player_ship::dead )
+    else if( PlayerIsDead(*screenState.levelState) )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
     }
-  }  
+  }
 }
 
 bool ScreenTransitionTimeHasExpired(play_screen_state& screenState)

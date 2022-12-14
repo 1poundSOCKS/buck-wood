@@ -257,6 +257,11 @@ bool PlayerCanShoot(const level_state& levelState)
   return levelState.currentTimerCount - levelState.lastShotTimerValue > levelState.shotTimerInterval;
 }
 
+bool PlayerIsDead(const level_state& levelState)
+{
+  return levelState.player.state == player_ship::dead;
+}
+
 bool LevelTimedOut(const level_state& levelState)
 {
   return GetPlayTimeRemaining(levelState) > 0 ? false : true;

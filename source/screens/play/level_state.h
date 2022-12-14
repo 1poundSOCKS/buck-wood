@@ -46,6 +46,7 @@ struct level_state
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
 bool LevelIsComplete(const level_state& levelState);
+bool PlayerIsDead(const level_state& levelState);
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0);
 bool LevelTimedOut(const level_state& levelState);
 int64_t GetPlayTimeRemaining(const level_state& screenState);
