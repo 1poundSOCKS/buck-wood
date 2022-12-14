@@ -7,17 +7,14 @@
 
 struct game_point
 {
-  game_point(float x, float y) : x(x), y(y) {}
-
-  float x = 0, y = 0;
+  float x = 0;
+  float y = 0;
 };
 
 struct game_line
 {
-  game_line(const game_point& start, const game_point& end);
-  game_line(float startX, float startY, float endX, float endY);
-
-  game_point start, end;
+  game_point start;
+  game_point end;
 };
 
 int CalculateAngle(float x1, float y1, float x2, float y2);
@@ -29,7 +26,19 @@ int GetLineInterceptCount(const game_point& point, const std::vector<game_line>&
 int GetLineInterceptCount(const game_point& point, std::vector<game_line>::const_iterator linesBegin, std::vector<game_line>::const_iterator linesEnd);
 float GetYIntercept(float x, const game_line& line);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
-void TransformPoints(std::vector<game_point>::const_iterator begin, std::vector<game_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> transformedPoints, float angle, float x, float y);
+
+void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
+{
+  std::transform(begin, end, transformedPoints, [transform](const auto& point){
+    auto outPoint = transform.TransformPoint({point.x, point.y});
+    return decltype(transformedPoints)::container_type::value_type ( outPoint.x, outPoint.y );
+  });
+}
+
+void TransformPoints(auto begin, auto end, auto transformedPoints, float angle, float x, float y)
+{
+  TransformPoints(begin, end, transformedPoints, D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(x, y));
+}
 
 void CreateConnectedLines(auto begin, auto end, auto lines, float x=0, float y=0, bool loop=true)
 {

@@ -2,14 +2,6 @@
 #include "game_objects.h"
 #include "framework.h"
 
-game_line::game_line(const game_point& start, const game_point& end) : start(start), end(end)
-{
-}
-
-game_line::game_line(float startX, float startY, float endX, float endY) : start(startX, startY), end(endX, endY)
-{
-}
-
 void CreatePointsForTarget(float size, std::back_insert_iterator<std::vector<game_point>> inserter)
 {
   float halfSize = size / 2;

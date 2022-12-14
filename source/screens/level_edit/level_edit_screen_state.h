@@ -36,4 +36,12 @@ struct level_edit_screen_state
   std::unique_ptr<drag_drop_state> dragDropState;
 };
 
+void CreateDragDropPoints(auto begin, auto end, auto insertIterator)
+{
+  std::transform(begin, end, insertIterator, [](auto point)
+  {
+    return drag_drop_point(point.x, point.y, drag_drop_point::type::type_real);
+  });
+}
+
 #endif

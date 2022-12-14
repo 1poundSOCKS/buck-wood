@@ -241,9 +241,15 @@ void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, cons
   playerShipPointData.points.clear();
   playerShipPointData.thrusterPoints.clear();
   playerShipPointData.transformedPoints.clear();
-  CreatePointsForPlayer(std::back_inserter(playerShipPointData.points));
-  CreatePointsForPlayerThruster(std::back_insert_iterator(playerShipPointData.thrusterPoints));
-  TransformPoints(playerShipPointData.points.cbegin(), playerShipPointData.points.cend(), std::back_inserter(playerShipPointData.transformedPoints), playerShip.angle, playerShip.xPos, playerShip.yPos);
+  const auto& playerGeometryData = GetPlayerGeometryData();
+  // CreatePointsForPlayer(std::back_inserter(playerShipPointData.points));
+  // CreatePointsForPlayerThruster(std::back_insert_iterator(playerShipPointData.thrusterPoints));
+  // TransformPoints(playerShipPointData.points.cbegin(), playerShipPointData.points.cend(), std::back_inserter(playerShipPointData.transformedPoints), playerShip.angle, playerShip.xPos, playerShip.yPos);
+  TransformPoints(
+    playerGeometryData.cbegin(), 
+    playerGeometryData.cend(), 
+    std::back_inserter(playerShipPointData.transformedPoints), 
+    playerShip.angle, playerShip.xPos, playerShip.yPos);
 }
 
 float GetUpdateInterval(const level_state& levelState)
