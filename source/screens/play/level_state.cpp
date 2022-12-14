@@ -11,9 +11,9 @@ const int shotTimeDenominator = 20;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
+void ProcessCollisions(level_state& levelState);
 bullet& GetBullet(std::vector<bullet>& bullets);
 bool PlayerCanShoot(const level_state& levelState);
-void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip);
 float GetUpdateInterval(const level_state& levelState);
 bool BulletHasExpired(const bullet& bullet);
 bool BulletHitSomething(const bullet& bulletState, const level_state& levelState);
@@ -30,7 +30,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
-  UpdatePlayerShipPointData(playerShipPointData, player);
 
   bullets.resize(100);
 
@@ -54,11 +53,12 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
 bool LevelIsComplete(const level_state& levelState)
 {
-  int activatedTargetCount = 0;
-  for( const auto& target: levelState.targets )
-  {
-    if( target.activated ) activatedTargetCount++;
-  }
+  int activatedTargetCount = std::reduce(
+    levelState.targets.cbegin(), 
+    levelState.targets.cend(), 
+    0, 
+    [](auto count, auto& target){ return target.activated ? count + 1 : count; }
+  );
 
   return activatedTargetCount == levelState.targets.size();
 }
@@ -83,6 +83,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 
     UpdatePlayer(levelState, controlState);
     UpdateBullets(levelState, controlState);
+    ProcessCollisions(levelState);
   }
 }
 
@@ -112,27 +113,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
-
-  UpdatePlayerShipPointData(levelState.playerShipPointData, levelState.player);
-
-  const auto& currentLevelData = levelState.levelData;
-
-  if( PlayerHasHitTheGround(levelState.playerShipPointData.transformedPoints, levelState.groundLines.cbegin(), levelState.groundLines.cend()) )
-  {
-    levelState.player.state = player_ship::dead;
-  }
-  else
-  {
-    for( const auto& object : currentLevelData.objects)
-    {
-      std::vector<game_line> lines;
-      CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-      if( AnyPointInside(levelState.playerShipPointData.transformedPoints.cbegin(), levelState.playerShipPointData.transformedPoints.cend(), lines) )
-      {
-        levelState.player.state = player_ship::dead;
-      }
-    }
-  }
+  UpdatePlayerShipPointData(levelState.player);
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)
@@ -158,6 +139,26 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
   {
     bullet.xPos += ( bullet.xVelocity * gameUpdateInterval );
     bullet.yPos += ( bullet.yVelocity * gameUpdateInterval );
+  }
+}
+
+void ProcessCollisions(level_state& levelState)
+{
+  if( PlayerHasHitTheGround(levelState.player.transformedPoints, levelState.groundLines.cbegin(), levelState.groundLines.cend()) )
+  {
+    levelState.player.state = player_ship::dead;
+  }
+  else
+  {
+    for( const auto& object : levelState.levelData.objects)
+    {
+      std::vector<game_line> lines;
+      CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+      if( AnyPointInside(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), lines) )
+      {
+        levelState.player.state = player_ship::dead;
+      }
+    }
   }
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
@@ -234,22 +235,6 @@ bullet& GetBullet(std::vector<bullet>& bullets)
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale)
 {
   return CreateGameLevelTransform(levelState.player.xPos, levelState.player.yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
-}
-
-void UpdatePlayerShipPointData(player_ship_point_data& playerShipPointData, const player_ship& playerShip)
-{
-  playerShipPointData.points.clear();
-  playerShipPointData.thrusterPoints.clear();
-  playerShipPointData.transformedPoints.clear();
-  const auto& playerGeometryData = GetPlayerGeometryData();
-  // CreatePointsForPlayer(std::back_inserter(playerShipPointData.points));
-  // CreatePointsForPlayerThruster(std::back_insert_iterator(playerShipPointData.thrusterPoints));
-  // TransformPoints(playerShipPointData.points.cbegin(), playerShipPointData.points.cend(), std::back_inserter(playerShipPointData.transformedPoints), playerShip.angle, playerShip.xPos, playerShip.yPos);
-  TransformPoints(
-    playerGeometryData.cbegin(), 
-    playerGeometryData.cend(), 
-    std::back_inserter(playerShipPointData.transformedPoints), 
-    playerShip.angle, playerShip.xPos, playerShip.yPos);
 }
 
 float GetUpdateInterval(const level_state& levelState)

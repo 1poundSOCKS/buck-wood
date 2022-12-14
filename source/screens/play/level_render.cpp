@@ -39,7 +39,7 @@ void RenderLevel(
   for( const auto& bullet : levelState.bullets )
   {
     if( bullet.free ) continue;
-    renderBullets.emplace_back(render_point(bullet.xPos, bullet.yPos, renderBrushSelector[red], 8));
+    renderBullets.emplace_back(render_point { bullet.xPos, bullet.yPos, renderBrushSelector[red], 8 });
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
@@ -63,17 +63,16 @@ void CreateDynamicLevelRenderLines(
   for( const auto& target : levelState.targets )
   {
     auto renderBrush = target.activated ? brushes[red] : brushes[green];
-    std::vector<game_point> points;
-    CreatePointsForTarget(defaultTargetSize, std::back_inserter(points));
+    auto targetGeometryData = GetDefaultTargetGeometryData();
     std::vector<game_point> transformedPoints;
-    TransformPoints(points.cbegin(), points.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
+    TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
     CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 4);
   }
 
   const auto& player = levelState.player;
   CreateConnectedRenderLines(
-    levelState.playerShipPointData.transformedPoints.cbegin(), 
-    levelState.playerShipPointData.transformedPoints.cend(), 
+    levelState.player.transformedPoints.cbegin(), 
+    levelState.player.transformedPoints.cend(), 
     renderLines, 
     brushes[white], 
     2);
@@ -104,8 +103,7 @@ void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F ren
   D2D1_POINT_2F inPoint { renderTargetSize.width, 0 };
   auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
 
-  renderLines =  
-  { 
+  renderLines = { 
     { levelState.levelData.boundaryPoints.front().x, levelState.levelData.boundaryPoints.front().y} , 
     { outPoint.x, levelState.levelData.boundaryPoints.front().y },
     brush, 
@@ -119,8 +117,7 @@ void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F rend
   D2D1_POINT_2F inPoint { 0, 0 };
   auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
 
-  renderLines = 
-  { 
+  renderLines = { 
     { levelState.levelData.boundaryPoints.back().x, levelState.levelData.boundaryPoints.back().y} , 
     { outPoint.x, levelState.levelData.boundaryPoints.back().y },
     brush, width

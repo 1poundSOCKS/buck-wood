@@ -5,10 +5,7 @@
 
 static const float defaultTargetSize = 40;
 
-// void CreatePointsForPlayerThruster(std::back_insert_iterator<std::vector<game_point>> transformedPoints);
-void CreatePointsForTarget(float size, std::back_insert_iterator<std::vector<game_point>> inserter);
-
-consteval std::array<game_point, 3> GetPlayerGeometryData()
+constexpr std::array<game_point, 3> GetPlayerGeometryData()
 {
   return {
     game_point { 0, -10 },
@@ -23,6 +20,22 @@ consteval std::array<game_point, 2> GetPlayerThrusterGeometryData()
     game_point { 5, 14 },
     game_point { -5, 14 }
   };
+}
+
+constexpr std::array<game_point, 4> GetTargetGeometryData(float size)
+{
+  float halfSize = size / 2;
+  return {
+    game_point { 0, -halfSize },
+    game_point { halfSize, 0 },
+    game_point { 0, halfSize },
+    game_point { -halfSize, 0 }
+  };
+}
+
+consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
+{
+  return GetTargetGeometryData(40);
 }
 
 #endif

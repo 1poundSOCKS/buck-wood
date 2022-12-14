@@ -220,13 +220,13 @@ void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point&
 
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion)
 {
-  std::vector<game_point> targetPoints;
-  CreatePointsForTarget(defaultTargetSize, std::back_inserter(targetPoints));
+  // auto targetGeometryData = GetTargetGeometryData(defaultTargetSize);
+  auto targetGeometryData = GetDefaultTargetGeometryData();
   drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
   targetShape.fixedShape = true;
   targetShape.position.x = targetPostion.x;
   targetShape.position.y = targetPostion.y;
-  CreateDragDropPoints(targetPoints.cbegin(), targetPoints.cend(), std::back_inserter(targetShape.points));
+  CreateDragDropPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(targetShape.points));
   dragDropState.shapes.push_back(targetShape);
 }
 

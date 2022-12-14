@@ -5,6 +5,17 @@
 target_state::target_state(const game_point& position) : position(position)
 {
   std::vector<game_point> pointsTmp;
-  CreatePointsForTarget(defaultTargetSize, std::back_inserter(pointsTmp));
-  TransformPoints(pointsTmp.cbegin(), pointsTmp.cend(), std::back_inserter(points), 0, position.x, position.y);
+  auto targetGeometryData = GetDefaultTargetGeometryData();
+  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), 0, position.x, position.y);
+}
+
+void UpdatePlayerShipPointData(player_ship& playerShip)
+{
+  playerShip.transformedPoints.clear();
+  const auto& playerGeometryData = GetPlayerGeometryData();
+  TransformPoints(
+    playerGeometryData.cbegin(), 
+    playerGeometryData.cend(), 
+    std::back_inserter(playerShip.transformedPoints), 
+    playerShip.angle, playerShip.xPos, playerShip.yPos);
 }

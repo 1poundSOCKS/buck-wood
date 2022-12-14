@@ -13,13 +13,7 @@ struct player_ship
   float yVelocity = 0;
   float angle = 0;
   bool thrusterOn = false;
-};
-
-struct player_ship_point_data
-{
-  std::vector<game_point> points;
   std::vector<game_point> transformedPoints;
-  std::vector<game_point> thrusterPoints;
 };
 
 struct bullet
@@ -46,5 +40,7 @@ struct bullet_target_collision
   bullet& bullet;
   target_state& targetState;
 };
+
+void UpdatePlayerShipPointData(player_ship& playerShip);
 
 #endif

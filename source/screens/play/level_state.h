@@ -41,7 +41,6 @@ struct level_state
   std::vector<game_line> objectLines;
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
-  player_ship_point_data playerShipPointData;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
