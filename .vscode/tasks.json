@@ -12,6 +12,7 @@
 				"/std:c++latest",
 				"/await",
 				"/MD",
+				"/fp:fast",
 				"/Yupch.h",
 				"/Fo${workspaceFolder}/build/",
 				"/Fe${workspaceFolder}/app.exe",
@@ -34,7 +35,7 @@
 				"/SUBSYSTEM:WINDOWS"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$msCompile"
@@ -56,6 +57,7 @@
 				"/std:c++latest",
 				"/await",
 				"/MD",
+				"/fp:fast",
 				"/Ycpch.h",
 				"/c",
 				"/Fo${workspaceFolder}/build/",
@@ -70,7 +72,7 @@
 				"/I${workspaceFolder}/source/"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$msCompile"
@@ -92,6 +94,7 @@
 				"/std:c++latest",
 				"/await",
 				"/MD",
+				"/fp:fast",
 				"/Fo${workspaceFolder}/build/",
 				"/Fe${workspaceFolder}/test.exe",
 				"${workspaceFolder}/source/*.cpp",
