@@ -65,7 +65,12 @@ void CreateDynamicLevelRenderLines(
     auto renderBrush = target.activated ? brushes[red] : brushes[green];
     auto targetGeometryData = GetDefaultTargetGeometryData();
     std::vector<game_point> transformedPoints;
-    TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(transformedPoints), 0, target.position.x, target.position.y);
+    TransformPoints(
+      targetGeometryData.cbegin(), 
+      targetGeometryData.cend(), 
+      std::back_inserter(transformedPoints), 
+      D2D1::Matrix3x2F::Translation(target.position.x, target.position.y)
+    );
     CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 4);
   }
 
@@ -86,9 +91,8 @@ void CreateDynamicLevelRenderLines(
       thrusterGeometryData.cbegin(), 
       thrusterGeometryData.cend(), 
       std::back_inserter(transformedPoints), 
-      player.angle, 
-      player.xPos, 
-      player.yPos);
+      CreateRotateAndTranslateTransform(player.angle, player.xPos, player.yPos)
+    );
 
     CreateDisconnectedRenderLines(
       transformedPoints.cbegin(), 

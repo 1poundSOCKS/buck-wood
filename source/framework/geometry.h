@@ -19,17 +19,17 @@ struct game_line
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
+inline D2D1::Matrix3x2F CreateRotateAndTranslateTransform(float angle, float x, float y)
+{
+  return D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(x, y);
+}
+
 void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
 {
   std::transform(begin, end, transformedPoints, [transform](const auto& point){
     auto outPoint = transform.TransformPoint({point.x, point.y});
     return decltype(transformedPoints)::container_type::value_type ( outPoint.x, outPoint.y );
   });
-}
-
-void TransformPoints(auto begin, auto end, auto transformedPoints, float angle, float x, float y)
-{
-  TransformPoints(begin, end, transformedPoints, D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(x, y));
 }
 
 void CreateConnectedLines(auto begin, auto end, auto lines, float x=0, float y=0, bool loop=true)

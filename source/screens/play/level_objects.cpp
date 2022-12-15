@@ -5,8 +5,8 @@
 target_state::target_state(const game_point& position) : position(position)
 {
   std::vector<game_point> pointsTmp;
-  auto targetGeometryData = GetDefaultTargetGeometryData();
-  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), 0, position.x, position.y);
+  const auto& targetGeometryData = GetDefaultTargetGeometryData();
+  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(position.x, position.y));
 }
 
 void UpdatePlayerShipPointData(player_ship& playerShip)
@@ -17,5 +17,5 @@ void UpdatePlayerShipPointData(player_ship& playerShip)
     playerGeometryData.cbegin(), 
     playerGeometryData.cend(), 
     std::back_inserter(playerShip.transformedPoints), 
-    playerShip.angle, playerShip.xPos, playerShip.yPos);
+    CreateRotateAndTranslateTransform(playerShip.angle, playerShip.xPos, playerShip.yPos));
 }
