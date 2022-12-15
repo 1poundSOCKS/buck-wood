@@ -17,7 +17,7 @@ std::unique_ptr<game_level_object_data> CreateGameLevelObjectData(const drag_dro
 
 std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& gameLevelData);
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion);
-std::array<game_point, 3> GetDefaultObjectShape();
+constexpr std::array<game_point, 3> GetDefaultObjectShape();
 void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point& targetPosition);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
@@ -193,7 +193,7 @@ std::unique_ptr<drag_drop_state> CreateDragDropState(const game_level_data& game
   playerShape.fixedShape = true;
   playerShape.position.x = gameLevelData.playerStartPosX;
   playerShape.position.y = gameLevelData.playerStartPosY;
-  const auto& playerGeometryData = GetPlayerGeometryData();
+  auto playerGeometryData = GetPlayerGeometryData();
   CreateDragDropPoints(playerGeometryData.cbegin(), playerGeometryData.cend(), std::back_inserter(playerShape.points));
   dragDropState->shapes.push_back(playerShape);
 
@@ -220,7 +220,6 @@ void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point&
 
 void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point& targetPostion)
 {
-  // auto targetGeometryData = GetTargetGeometryData(defaultTargetSize);
   auto targetGeometryData = GetDefaultTargetGeometryData();
   drag_drop_shape targetShape(level_edit_screen_state::drag_drop_shape_type::type_target);
   targetShape.fixedShape = true;
@@ -230,9 +229,9 @@ void AddDragDropShapeForTarget(drag_drop_state& dragDropState, const game_point&
   dragDropState.shapes.push_back(targetShape);
 }
 
-std::array<game_point, 3> GetDefaultObjectShape()
+constexpr std::array<game_point, 3> GetDefaultObjectShape()
 {
-  static const float objectSize = 100.0;
+  const float objectSize = 100.0;
   return std::array<game_point, 3>({game_point(0, -objectSize), game_point(objectSize, objectSize), game_point(-objectSize, objectSize)});
 }
 

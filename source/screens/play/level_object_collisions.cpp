@@ -6,25 +6,12 @@ bool PlayerHasHitTheGround(
   const std::vector<game_line>::const_iterator groundBegin, 
   const std::vector<game_line>::const_iterator groundEnd)
 {
-  std::vector<int> interceptCounts;
-  std::transform(
-    player.cbegin(), 
-    player.cend(), 
-    std::back_inserter(interceptCounts),
-    [groundBegin, groundEnd](auto& point) { return GetGroundInterceptCount(point, groundBegin, groundEnd); }
-  );
-
-  std::vector<bool> pointBelowBoundaryFlags;
-  std::transform(
-    interceptCounts.cbegin(),
-    interceptCounts.cend(),
-    std::back_inserter(pointBelowBoundaryFlags),
-    [](auto& interceptCount) { return interceptCount % 2 == 1; }
-  );
+  std::vector<bool> belowGroundFlags;
+  GetBelowGroundFlags(player.cbegin(), player.cend(), groundBegin, groundEnd, std::back_inserter(belowGroundFlags));
 
   return std::reduce(
-    pointBelowBoundaryFlags.cbegin(),
-    pointBelowBoundaryFlags.cend(),
+    belowGroundFlags.cbegin(),
+    belowGroundFlags.cend(),
     false,
     [](auto flag, auto below) { return flag || below; }
   );
@@ -35,7 +22,7 @@ bool BulletHasHitTheGround(
   const std::vector<game_line>::const_iterator groundBegin, 
   const std::vector<game_line>::const_iterator groundEnd)
 {
-  return GetGroundInterceptCount({ bullet.xPos, bullet.yPos }, groundBegin, groundEnd) % 2 ? true : false;
+  return GetBelowGroundFlag(bullet.xPos, bullet.yPos, groundBegin, groundEnd);
 }
 
 bool BulletHasHitAnObject(
@@ -43,7 +30,7 @@ bool BulletHasHitAnObject(
   const std::vector<game_line>::const_iterator linesBegin, 
   const std::vector<game_line>::const_iterator linesEnd)
 {
-  return ( GetLineInterceptCount({bullet.xPos, bullet.yPos}, linesBegin, linesEnd) % 2 == 0 ) ? false : true;
+  return GetPointInsideShapeFlag(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
 }
 
 void GetBulletTargetCollisions(
@@ -56,7 +43,7 @@ void GetBulletTargetCollisions(
   for( auto& bullet = bulletBegin; bullet != bulletEnd; ++bullet )
   {
     if( !bullet->free ) GetBulletTargetCollisions(*bullet, targetsBegin, targetsEnd, collisions);
-  }  
+  }
 }
 
 void GetBulletTargetCollisions(
@@ -65,24 +52,9 @@ void GetBulletTargetCollisions(
   std::vector<target_state>::iterator targetsEnd,
   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions)
 {
-  const game_point bulletPoint(bullet.xPos, bullet.yPos);
-
   for( auto& targetState = targetsBegin; targetState != targetsEnd; ++targetState )
   {
-    if( PointInside(bulletPoint, targetState->shape) )
+    if( GetPointInsideShapeFlag(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
       collisions = bullet_target_collision { bullet, *targetState };
   }
-}
-
-int GetGroundInterceptCount(const game_point& point, std::vector<game_line>::const_iterator groundBegin, std::vector<game_line>::const_iterator groundEnd)
-{
-  auto& groundFirst = *groundBegin;
-  auto& groundLast = *std::prev(groundEnd);
-
-  int count = GetLineInterceptCount(point, groundBegin, groundEnd);
-  
-  if( point.x >= groundFirst.start.x && point.y > groundFirst.start.y ) ++count;
-  if( point.x <= groundLast.end.x && point.y > groundLast.end.y ) ++count;
-
-  return count;
 }

@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "play_screen_state.h"
 #include "render.h"
-#include "game_math.h"
 #include "diagnostics.h"
 
 void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState);

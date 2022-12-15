@@ -1,12 +1,5 @@
 #include "pch.h"
-#include "game_math.h"
-
-int CalculateAngle(float x1, float y1, float x2, float y2)
-{
-  float radians = atan2(y2 - y1, x2 - x1);
-  float degrees = RADTODEG(radians);
-  return degrees + 90.5;
-}
+#include "collisions.h"
 
 bool AllPointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area)
 {
@@ -64,11 +57,4 @@ float GetYIntercept(float x, const game_line& line)
   float m = cy / cx;
   float b = line.start.y - m * line.start.x;
   return m * x + b;
-}
-
-float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
-{
-  float cx = x2 - x1;
-  float cy = y2 - y1;
-  return sqrt( cx * cx + cy * cy );
 }

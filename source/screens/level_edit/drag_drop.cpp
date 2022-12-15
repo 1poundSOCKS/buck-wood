@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "drag_drop.h"
-#include "game_math.h"
+#include "geometry.h"
 
 void InitializeDragDropShape(drag_drop_shape& shape);
 void ProcessDragDrop(drag_drop_shape& shape, const drag_drop_control_state& controlState);

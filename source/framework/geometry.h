@@ -17,14 +17,6 @@ struct game_line
   game_point end;
 };
 
-int CalculateAngle(float x1, float y1, float x2, float y2);
-bool AllPointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area);
-bool AnyPointInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area);
-bool PointInside(const game_point& point, const std::vector<game_line>& area);
-bool AddLineToInterceptCount(const game_line& line, const game_point& point);
-int GetLineInterceptCount(const game_point& point, const std::vector<game_line>& lines);
-int GetLineInterceptCount(const game_point& point, std::vector<game_line>::const_iterator linesBegin, std::vector<game_line>::const_iterator linesEnd);
-float GetYIntercept(float x, const game_line& line);
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
 void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)

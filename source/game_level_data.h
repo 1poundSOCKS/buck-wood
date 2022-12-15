@@ -1,7 +1,7 @@
 #ifndef _game_level_data_
 #define _game_level_data_
 
-#include "game_math.h"
+#include "geometry.h"
 #include "render.h"
 
 struct game_level_object_data
