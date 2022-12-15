@@ -3,7 +3,6 @@
 
 #include "geometry.h"
 
-int CalculateAngle(float x1, float y1, float x2, float y2);
 bool AddLineToInterceptCount(const game_line& line, const game_point& point);
 float GetYIntercept(float x, const game_line& line);
 

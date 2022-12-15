@@ -113,7 +113,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
-  UpdatePlayerShipPointData(levelState.player);
+  UpdateShipPointData(levelState.player);
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)

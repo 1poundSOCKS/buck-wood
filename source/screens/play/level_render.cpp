@@ -84,19 +84,12 @@ void CreateDynamicLevelRenderLines(
 
   if( levelState.player.thrusterOn )
   {
-    const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
-
-    std::vector<game_point> transformedPoints;
-    TransformPoints(
-      thrusterGeometryData.cbegin(), 
-      thrusterGeometryData.cend(), 
-      std::back_inserter(transformedPoints), 
-      CreateRotateAndTranslateTransform(player.angle, player.xPos, player.yPos)
-    );
+    std::vector<game_point> thrusterPoints;
+    GetTransformedThrusterGeometry(levelState.player, std::back_inserter(thrusterPoints));
 
     CreateDisconnectedRenderLines(
-      transformedPoints.cbegin(), 
-      transformedPoints.cend(), 
+      thrusterPoints.cbegin(), 
+      thrusterPoints.cend(), 
       renderLines, brushes[red], 5);
   }
 }

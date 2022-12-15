@@ -17,12 +17,9 @@ struct game_line
   game_point end;
 };
 
-float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
+int CalculateAngle(float x1, float y1, float x2, float y2);
 
-inline D2D1::Matrix3x2F CreateRotateAndTranslateTransform(float angle, float x, float y)
-{
-  return D2D1::Matrix3x2F::Rotation(angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(x, y);
-}
+float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
 void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
 {

@@ -9,13 +9,8 @@ target_state::target_state(const game_point& position) : position(position)
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(position.x, position.y));
 }
 
-void UpdatePlayerShipPointData(player_ship& playerShip)
+void UpdateShipPointData(player_ship& ship)
 {
-  playerShip.transformedPoints.clear();
-  const auto& playerGeometryData = GetPlayerGeometryData();
-  TransformPoints(
-    playerGeometryData.cbegin(), 
-    playerGeometryData.cend(), 
-    std::back_inserter(playerShip.transformedPoints), 
-    CreateRotateAndTranslateTransform(playerShip.angle, playerShip.xPos, playerShip.yPos));
+  ship.transformedPoints.clear();
+  GetTransformedShipGeometry(ship, std::back_inserter(ship.transformedPoints));
 }

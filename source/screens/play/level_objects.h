@@ -2,6 +2,7 @@
 #define _level_objects_
 
 #include "game_level_data.h"
+#include "game_objects.h"
 
 struct player_ship
 {
@@ -41,6 +42,29 @@ struct bullet_target_collision
   target_state& targetState;
 };
 
-void UpdatePlayerShipPointData(player_ship& playerShip);
+void UpdateShipPointData(player_ship& playerShip);
+
+void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter)
+{
+  const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
+
+  TransformPoints(
+    thrusterGeometryData.cbegin(), 
+    thrusterGeometryData.cend(), 
+    pointsInserter, 
+    D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos)
+  );
+}
+
+void GetTransformedShipGeometry(const player_ship& ship, auto pointsInserter)
+{
+  const auto& shipGeometryData = GetPlayerGeometryData();
+
+  TransformPoints(
+    shipGeometryData.cbegin(), 
+    shipGeometryData.cend(), 
+    pointsInserter, 
+    D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos));
+}
 
 #endif
