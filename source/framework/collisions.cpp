@@ -1,45 +1,6 @@
 #include "pch.h"
 #include "collisions.h"
 
-bool AllPointsInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area)
-{
-  for( auto point = begin; point != end; ++point )
-  {
-    if( !PointInside(*point, area) ) return false;
-  }
-
-  return true;
-}
-
-bool AnyPointInside(const std::vector<game_point>::const_iterator& begin, const std::vector<game_point>::const_iterator& end, const std::vector<game_line>& area)
-{
-  for( auto point = begin; point != end; ++point )
-  {
-    if( PointInside(*point, area) ) return true;
-  }
-
-  return false;
-}
-
-bool PointInside(const game_point& point, const std::vector<game_line>& lines)
-{
-  auto matchingLines = GetLineInterceptCount(point, lines);  
-  return ( matchingLines % 2 > 0 );
-}
-
-int GetLineInterceptCount(const game_point& point, const std::vector<game_line>& lines)
-{
-  return GetLineInterceptCount(point, lines.cbegin(), lines.cend());
-}
-
-int GetLineInterceptCount(const game_point& point, std::vector<game_line>::const_iterator linesBegin, std::vector<game_line>::const_iterator linesEnd)
-{  
-  return std::accumulate(linesBegin, linesEnd, 0, [point](auto count, auto& line)
-  {
-    return AddLineToInterceptCount(line, point) ? count + 1 : count;
-  });
-}
-
 bool AddLineToInterceptCount(const game_line& line, const game_point& point)
 {
   if( point.x >= line.start.x && point.x < line.end.x || point.x < line.start.x && point.x >= line.end.x )

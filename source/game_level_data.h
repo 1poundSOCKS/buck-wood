@@ -13,7 +13,8 @@ struct game_level_data
 {
   std::wstring filename;
   std::string name;
-  float playerStartPosX = 0, playerStartPosY = 0;
+  float playerStartPosX = 0;
+  float playerStartPosY = 0;
   int timeLimitInSeconds = 0;
   std::vector<game_point> boundaryPoints;
   std::vector<game_level_object_data> objects;
