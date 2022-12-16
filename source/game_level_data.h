@@ -55,6 +55,12 @@ struct game_level_data_files
   std::vector<game_level_data_file_info> fileInfo;
 };
 
+struct game_level_boundary
+{
+  game_point topLeft;
+  game_point bottomRight;
+};
+
 std::unique_ptr<game_level_data> LoadLevelDataFromJSON(const Json::Value& jsonObject, game_level_data& gameLevelData);
 std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value& jsonObject);
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file);
@@ -63,5 +69,6 @@ bool SaveGameLevelData(const game_level_data& gameLevelData);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 std::string SaveJsonDataToString(Json::Value& root);
+game_level_boundary GetGameLevelBoundary(const game_level_data& levelData);
 
 #endif

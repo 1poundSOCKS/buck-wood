@@ -36,10 +36,19 @@ struct target_state
   std::vector<game_line> shape;
 };
 
-struct bullet_target_collision
+struct level_star
 {
-  bullet& bullet;
-  target_state& targetState;
+  game_point position;
+};
+
+struct level_starfield
+{
+  std::vector<level_star> stars;
+};
+
+struct level_background_data
+{
+  level_starfield starfield;
 };
 
 void UpdateShipPointData(player_ship& playerShip);
@@ -65,6 +74,25 @@ void GetTransformedShipGeometry(const player_ship& ship, auto pointsInserter)
     shipGeometryData.cend(), 
     pointsInserter, 
     D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos));
+}
+
+inline auto GenerateStar(std::uniform_int_distribution<int>& distX, std::uniform_int_distribution<int>& distY) -> level_star
+{
+  extern std::mt19937 rng;
+  return { static_cast<float>(distX(rng)), static_cast<float>(distY(rng)) };
+}
+
+void GenerateStarfield(const game_level_data& levelData, auto starInserter)
+{
+  auto levelBoundary = GetGameLevelBoundary(levelData);
+  
+  std::uniform_int_distribution<int> distX(levelBoundary.topLeft.x, levelBoundary.bottomRight.x);
+  std::uniform_int_distribution<int> distY(levelBoundary.topLeft.y, levelBoundary.bottomRight.y);
+
+  for( int starIndex = 0; starIndex < 1000; ++starIndex)
+  {
+    starInserter = GenerateStar(distX, distY);
+  }
 }
 
 #endif

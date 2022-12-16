@@ -249,3 +249,32 @@ std::wstring game_level_data_filenames::GetNext()
 {
   return std::format(L"level_{:03}.json", ++filenameIndex);
 }
+
+game_level_boundary GetGameLevelBoundary(const game_level_data& levelData)
+{
+  return 
+    std::reduce(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 
+    game_level_boundary { 0, 0, 0, 0 },
+    [](auto boundary, auto point)
+    {
+      return game_level_boundary {
+        min(boundary.topLeft.x, point.x),
+        min(boundary.topLeft.y, point.y),
+        max(boundary.bottomRight.x, point.x),
+        max(boundary.bottomRight.y, point.y) };
+    });
+}
+  // float rightBoundary = std::reduce(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 0, [](auto maxValue, auto point)
+  // {
+  //   return max(maxValue, point.x);
+  // });
+
+  // float topBoundary = std::reduce(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 0, [](auto minValue, auto point)
+  // {
+  //   return min(minValue, point.y);
+  // });
+
+  // float bottomBoundary = std::reduce(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 0, [](auto minValue, auto point)
+  // {
+  //   return min(minValue, point.y);
+  // });

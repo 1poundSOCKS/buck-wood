@@ -4,6 +4,12 @@
 #include "level_objects.h"
 #include "collisions.h"
 
+struct bullet_target_collision
+{
+  bullet& bullet;
+  target_state& targetState;
+};
+
 [[nodiscard]] bool PlayerHasHitTheGround(
   const std::vector<game_point>& player, 
   const std::vector<game_line>::const_iterator groundBegin, 

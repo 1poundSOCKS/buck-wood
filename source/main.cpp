@@ -29,11 +29,15 @@ const int fps = 60;
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
 void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
+std::mt19937 rng;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,_In_ LPWSTR lpCmdLine,_In_ int nCmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
+  rng.seed(QueryPerformanceCounter());
+  
   config_file configFile(L"config.txt");
   const auto& dataPath = configFile.settings[L"data_path"];
 

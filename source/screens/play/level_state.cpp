@@ -20,6 +20,7 @@ bool BulletHitSomething(const bullet& bulletState, const level_state& levelState
 int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsBegin, 
   std::vector<bullet_target_collision>::iterator collisionsEnd);
+void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData);
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
 : levelData(levelData), counterFrequency(counterFrequency)
@@ -49,6 +50,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   {
     CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
+
+  GenerateLevelBackgroundData(levelData, backgroundData);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -267,4 +270,9 @@ int64_t GetPlayTimeRemaining(const level_state& screenState)
 float GetPlayTimeRemainingInSeconds(const level_state& screenState)
 {
   return static_cast<float>(GetPlayTimeRemaining(screenState)) / static_cast<float>(screenState.counterFrequency);
+}
+
+void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData)
+{
+  GenerateStarfield(levelData, std::back_inserter(backgroundData.starfield.stars));
 }
