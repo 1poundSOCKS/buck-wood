@@ -11,6 +11,17 @@ void CreateDragDropRenderPoints(std::list<drag_drop_point>::const_iterator begin
 drag_drop_point GetMiddlePoint(const drag_drop_point& start, const drag_drop_point& end);
 ID2D1SolidColorBrush *GetDragDropPointBrush(const drag_drop_point& point, screen_render_brush_selector renderBrushSelector);
 
+constexpr D2D1_RECT_F GetDragDropPointRect()
+{
+  return { -2, -2, 2, 2 };
+}
+
+inline D2D1_RECT_F GetDragDropPointRect(float x, float y)
+{
+  const D2D1_RECT_F rect = GetDragDropPointRect(); 
+  return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
+}
+
 drag_drop_point::drag_drop_point(float x, float y, type pointType)
 : x(x), y(y), pointType(pointType)
 {
@@ -175,7 +186,7 @@ void CreateDragDropRenderPoints(
 {
   for( const auto shape : state.shapes )
   {
-    if( shape.fixedShape ) points.push_back(render_point(shape.position.x, shape.position.y, GetDragDropPointBrush(shape.position, renderBrushSelector), 4));
+    if( shape.fixedShape ) points.emplace_back(render_point { GetDragDropPointRect(shape.position.x, shape.position.y), GetDragDropPointBrush(shape.position, renderBrushSelector) });
     else CreateDragDropRenderPoints(shape.points.cbegin(), shape.points.cend(), std::back_inserter(points), renderBrushSelector);
   }
 }
@@ -188,7 +199,7 @@ void CreateDragDropRenderPoints(
 {
   std::transform(begin, end, insertIterator, [renderBrushSelector](const drag_drop_point& dragDropPoint)
   {
-    return render_point(dragDropPoint.x, dragDropPoint.y, GetDragDropPointBrush(dragDropPoint, renderBrushSelector), 8);
+    return render_point { GetDragDropPointRect(dragDropPoint.x, dragDropPoint.y), GetDragDropPointBrush(dragDropPoint, renderBrushSelector) };
   });
 }
 

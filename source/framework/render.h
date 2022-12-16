@@ -5,10 +5,8 @@
 
 struct render_point
 {
-  render_point(float x, float y, ID2D1SolidColorBrush* brush, float size);
-  
   D2D1_RECT_F rect;
-  ID2D1SolidColorBrush* brush = nullptr;
+  ID2D1SolidColorBrush* brush;
 };
 
 struct render_line
@@ -29,6 +27,18 @@ void RenderText(
   DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
 
 template <typename input_iterator_type>
+void RenderPoints(
+  ID2D1RenderTarget* renderTarget, 
+  const typename input_iterator_type begin, 
+  const typename input_iterator_type end)
+{
+  for( auto point = begin; point != end; ++point )
+  {
+    renderTarget->FillRectangle( point->rect, point->brush);
+  }
+}
+
+template <typename input_iterator_type>
 void RenderLines(
   ID2D1RenderTarget* renderTarget, 
   input_iterator_type begin, 
@@ -37,18 +47,6 @@ void RenderLines(
   for( auto line = begin; line != end; line++ )
   {
     renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
-  }
-}
-
-template <typename input_iterator_type>
-void RenderPoints(
-  ID2D1RenderTarget* renderTarget, 
-  const typename input_iterator_type begin, 
-  const typename input_iterator_type end)
-{
-  for( auto point = begin; point != end; ++point )
-  {
-    renderTarget->FillRectangle(point->rect, point->brush);
   }
 }
 

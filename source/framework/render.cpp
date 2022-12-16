@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "render.h"
 
-render_point::render_point(float x, float y, ID2D1SolidColorBrush* brush, float size)
-: rect({x - size / 2, y - size / 2, x + size / 2, y + size /2}), brush(brush)
-{
-}
-
 render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width)
 : start(start), end(end), brush(brush), width(width)
 {

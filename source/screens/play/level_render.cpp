@@ -11,6 +11,17 @@ void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F ren
 template <typename insert_iterator_type>
 void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width);
 
+constexpr D2D1_RECT_F GetBulletRect()
+{
+  return { -4, -4, 4, 4 };
+}
+
+inline D2D1_RECT_F GetBulletRect(float x, float y)
+{
+  const D2D1_RECT_F rect = GetBulletRect(); 
+  return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
+}
+
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const bespoke_render_data& renderData,
@@ -39,7 +50,7 @@ void RenderLevel(
   for( const auto& bullet : levelState.bullets )
   {
     if( bullet.free ) continue;
-    renderBullets.emplace_back(render_point { bullet.xPos, bullet.yPos, renderBrushSelector[red], 8 });
+    renderBullets.emplace_back(render_point { GetBulletRect(bullet.xPos, bullet.yPos), renderBrushSelector[red] });
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
