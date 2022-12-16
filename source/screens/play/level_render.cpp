@@ -63,15 +63,7 @@ void CreateDynamicLevelRenderLines(
   for( const auto& target : levelState.targets )
   {
     auto renderBrush = target.activated ? brushes[red] : brushes[green];
-    auto targetGeometryData = GetDefaultTargetGeometryData();
-    std::vector<game_point> transformedPoints;
-    TransformPoints(
-      targetGeometryData.cbegin(), 
-      targetGeometryData.cend(), 
-      std::back_inserter(transformedPoints), 
-      D2D1::Matrix3x2F::Translation(target.position.x, target.position.y)
-    );
-    CreateConnectedRenderLines(transformedPoints.cbegin(), transformedPoints.cend(), renderLines, renderBrush, 4);
+    CreateRenderLines(target.shape.cbegin(), target.shape.cend(), renderLines, renderBrush, 4);
   }
 
   const auto& player = levelState.player;
