@@ -114,7 +114,7 @@ void UpdateScreen(
   }
 
   {
-    d2d_frame frame(data.renderTarget);
+    render_guard renderGuard(data.renderTarget);
     auto start = QueryPerformanceCounter();
     RenderFrame(data.renderTarget.get(), renderData, screenState);
     auto end = QueryPerformanceCounter();
