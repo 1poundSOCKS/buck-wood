@@ -76,6 +76,7 @@
     "stack": "cpp",
     "filesystem": "cpp",
     "codecvt": "cpp",
-    "numeric": "cpp"
+    "numeric": "cpp",
+    "random": "cpp"
   }
 }

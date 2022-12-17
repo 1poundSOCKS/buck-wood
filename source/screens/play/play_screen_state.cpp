@@ -176,11 +176,6 @@ bool ContinueRunning(const play_screen_state& screenState)
   return screenState.continueRunning;
 }
 
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const play_screen_state& screenState)
-{
-  diagnosticsData = std::format(L"world mouse: {:.2f}, {:.2f}", screenState.levelState->mouseX, screenState.levelState->mouseY);
-}
-
 level_control_state GetLevelControlState(const screen_input_state& inputState)
 {
   return {

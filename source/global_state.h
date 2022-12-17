@@ -21,6 +21,4 @@ struct global_state
   bool gameLevelDataIndexUpdated = false;
 };
 
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const global_state& globalState);
-
 #endif

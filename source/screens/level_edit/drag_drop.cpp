@@ -218,26 +218,3 @@ ID2D1SolidColorBrush* GetDragDropPointBrush(const drag_drop_point& point, screen
     }
   }
 }
-
-void FormatDiagnostics(std::back_insert_iterator<diagnostics_data> diagnosticsData, const drag_drop_state& state)
-{
-  static wchar_t text[64];
-
-  for( const auto& shape : state.shapes )
-  {
-    if( shape.fixedShape && shape.position.highlighted )
-    {
-      swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", shape.position.x, shape.position.y, shape.position.distance);
-      diagnosticsData = text;
-    }
-
-    for( const auto& point : shape.points )
-    {
-      if( point.highlighted )
-      {
-        swprintf(text, L"highlight point: %.1f, %.1f (%.1f)", point.x, point.y, point.distance);
-        diagnosticsData = text;
-      }
-    }
-  }
-}

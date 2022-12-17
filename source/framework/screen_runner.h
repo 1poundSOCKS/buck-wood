@@ -16,9 +16,6 @@ struct screen_runner_data
   winrt::com_ptr<IDWriteFactory> dwriteFactory;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   const window_data& windowData;
-  system_timer& systemTimer;
-  perf_data& perfData;
-  int fps;
 };
 
 template
@@ -40,12 +37,7 @@ struct screen_diagnostics_render_data
   winrt::com_ptr<IDWriteTextFormat> textFormat;
 };
 
-template
-<
-  typename render_data_type,
-  typename sound_data_type,
-  typename screen_state_type
->
+template <typename render_data_type,typename sound_data_type, typename screen_state_type>
 void Start(
   screen_runner_data data,
   render_data_type renderData,
@@ -67,15 +59,25 @@ void Start(
   bool continueRunning = true;
 
   screen_input_state inputState;
+  performance::frame_data frameData;
   
   while( ProcessMessage() && ContinueRunning(screenState) )
   {
+    performance::UpdateFrameData(frameData);
+
     inputState.windowData = data.windowData;
     inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, data.renderTarget.get());
 
     ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
-    UpdateScreen(data, renderData, soundData, screenState, inputState, diagnosticsRenderData);
+    UpdateScreen(
+      data, 
+      renderData, 
+      soundData, 
+      screenState, 
+      inputState, 
+      frameData,
+      diagnosticsRenderData);
 
     inputState.previousWindowData = inputState.windowData;
     inputState.previousKeyboardState = inputState.keyboardState;
@@ -83,30 +85,24 @@ void Start(
   }
 }
 
-template
-<
-  typename render_data_type,
-  typename sound_data_type,
-  typename screen_state_type
->
+template <typename render_data_type, typename sound_data_type, typename screen_state_type>
 void UpdateScreen(
   screen_runner_data& data,
   render_data_type& renderData,
   sound_data_type& soundData, 
   screen_state_type& screenState,
   const screen_input_state& inputState,
+  const performance::frame_data& frameData,
   screen_diagnostics_render_data& diagnosticsRenderData)
 {
-  auto start = QueryPerformanceCounter();
+  auto startUpdate = performance_counter::QueryValue();
   UpdateScreenState(screenState, inputState);
-  auto end = QueryPerformanceCounter();
-  data.perfData.updateScreenStateTicks = end - start;
+  auto endUpdate = performance_counter::QueryValue();
 
-  static diagnostics_data diagnosticsData;
-  diagnosticsData.clear();
+  std::vector<std::wstring> diagnosticsData;
   diagnosticsData.reserve(50);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), data.perfData, data.systemTimer, data.fps);
-  FormatDiagnostics(std::back_inserter(diagnosticsData), inputState);
+  FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
+  diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
 
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
   {
@@ -115,10 +111,9 @@ void UpdateScreen(
 
   {
     render_guard renderGuard(data.renderTarget);
-    auto start = QueryPerformanceCounter();
+    auto startRender = performance_counter::QueryValue();
     RenderFrame(data.renderTarget.get(), renderData, screenState);
-    auto end = QueryPerformanceCounter();
-    data.perfData.renderFrameTicks = end - start;
+    auto endRender = performance_counter::QueryValue();
     data.renderTarget->SetTransform(D2D1::IdentityMatrix());
     
     RenderText(
@@ -132,9 +127,6 @@ void UpdateScreen(
   data.swapChain->Present(1, 0);
 
   PlaySoundEffects(screenState, soundData);
-
-  UpdateTimer(data.systemTimer);
-  UpdatePerformanceData(data.perfData);
 }
 
 #endif

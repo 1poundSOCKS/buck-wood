@@ -32,4 +32,9 @@ struct play_screen_state
   std::vector<float> levelTimes;
 };
 
+void FormatDiagnostics(const play_screen_state& screenState, auto diagnosticsDataInserter)
+{
+  diagnosticsDataInserter = std::format(L"world mouse: {:.2f}, {:.2f}", screenState.levelState->mouseX, screenState.levelState->mouseY);
+}
+
 #endif

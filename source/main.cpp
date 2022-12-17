@@ -36,7 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   wchar_t currentDirectory[MAX_PATH];
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
-  rng.seed(QueryPerformanceCounter());
+  rng.seed(performance_counter::QueryValue());
   
   config_file configFile(L"config.txt");
   const auto& dataPath = configFile.settings[L"data_path"];
@@ -75,19 +75,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   HRESULT hr = swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
-  system_timer systemTimer;
-  perf_data perfData;
-
   screen_runner_data screenRunnerData
   {
     swapChain,
     renderTarget, 
     dwriteFactory,
     keyboard, 
-    windowData, 
-    systemTimer, 
-    perfData, 
-    fps
+    windowData
   };
 
   bespoke_render_data bespokeRenderData { renderBrushes, textFormats };
@@ -107,7 +101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         globalState.gameLevelDataIndex->gameLevelData.cend()
       );
       
-      Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);
+       Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);
     }

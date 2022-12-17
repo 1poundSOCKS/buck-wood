@@ -3,20 +3,22 @@
 
 #include "timers.h"
 
-struct perf_data
+namespace performance
 {
-  perf_data();
+  struct frame_data
+  {
+    frame_data();
 
-  float fps;
-  float fpsFrames[20];
-  const int fpsFrameCount = sizeof(fpsFrames) / sizeof(float);
-  int fpsFrameIndex = 0;
-  int fpsAverage = 0;
-  std::unique_ptr<system_timer> timer;
-  int64_t updateScreenStateTicks = 0;
-  int64_t renderFrameTicks = 0;
+    int64_t frequency;
+    int64_t lastValue;
+    int64_t value;
+
+    std::array<int64_t, 20> intervalTimes;
+    int intervalIndex;
+  };
+
+  void UpdateFrameData(frame_data& frameData);
+  int64_t GetFPS(const frame_data& frameData);
 };
-
-void UpdatePerformanceData(perf_data& perfData);
 
 #endif
