@@ -2,8 +2,6 @@
 #define _diagnostics_
 
 #include "framework.h"
-#include "perf_data.h"
-#include "timers.h"
 #include "screen_input_state.h"
 
 void FormatDiagnostics(const screen_input_state& inputState, auto diagnosticsDataInserter)

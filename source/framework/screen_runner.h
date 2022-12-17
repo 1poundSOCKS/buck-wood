@@ -103,6 +103,7 @@ void UpdateScreen(
   diagnosticsData.reserve(50);
   FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
+  FormatDiagnostics(screenState, std::back_inserter(diagnosticsData));
 
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
   {

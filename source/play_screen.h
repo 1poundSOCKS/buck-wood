@@ -26,4 +26,9 @@ void PlaySoundEffects
 
 bool ContinueRunning(const play_screen_state& screenState);
 
+void FormatDiagnostics(const play_screen_state& screenState, auto diagnosticsDataInserter)
+{
+  diagnosticsDataInserter = std::format(L"world mouse: {:.2f}, {:.2f}", screenState.levelState->mouseX, screenState.levelState->mouseY);
+}
+
 #endif

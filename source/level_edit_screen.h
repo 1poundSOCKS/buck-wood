@@ -27,4 +27,8 @@ void PlaySoundEffects
 
 bool ContinueRunning(const level_edit_screen_state& screenState);
 
+void FormatDiagnostics(const level_edit_screen_state& screenState, auto diagnosticsDataInserter)
+{
+}
+
 #endif
