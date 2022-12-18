@@ -22,17 +22,6 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
-constexpr D2D1_RECT_F GetStarRect()
-{
-  return { -4, -4, 4, 4 };
-}
-
-inline D2D1_RECT_F GetStarRect(float x, float y)
-{
-  const D2D1_RECT_F rect = GetStarRect();
-  return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
-}
-
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const bespoke_render_data& renderData,
@@ -43,15 +32,7 @@ void RenderLevel(
 
   renderTarget->SetTransform(levelState.viewTransform);
 
-  std::vector<render_point> renderStars;
-  auto starBrush = renderBrushSelector[grey];
-  std::transform(
-    levelState.backgroundData.starfield.stars.cbegin(), 
-    levelState.backgroundData.starfield.stars.cend(),
-    std::back_inserter(renderStars),
-    [starBrush](auto star) { return render_point { GetStarRect(star.position.x, star.position.y), starBrush }; }
-  );
-  RenderPoints(renderTarget, renderStars.cbegin(), renderStars.cend());
+  RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
   std::vector<render_line> renderLines;
   CreateStaticLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);

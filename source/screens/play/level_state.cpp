@@ -23,7 +23,18 @@ int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsEnd);
 void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData);
 
-level_state::level_state(const game_level_data& levelData, int64_t counterFrequency)
+constexpr D2D1_RECT_F GetStarRect()
+{
+  return { -4, -4, 4, 4 };
+}
+
+inline D2D1_RECT_F GetStarRect(float x, float y)
+{
+  const D2D1_RECT_F rect = GetStarRect();
+  return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
+}
+
+level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const bespoke_render_data& renderData)
 : levelData(levelData), counterFrequency(counterFrequency)
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
@@ -53,6 +64,16 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   }
 
   GenerateLevelBackgroundData(levelData, backgroundData);
+
+  screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
+
+  auto starBrush = renderBrushSelector[dark_grey];
+  std::transform(
+    backgroundData.starfield.stars.cbegin(), 
+    backgroundData.starfield.stars.cend(),
+    std::back_inserter(renderStars),
+    [starBrush](auto star) { return render_point { GetStarRect(star.position.x, star.position.y), starBrush }; }
+  );
 }
 
 bool LevelIsComplete(const level_state& levelState)

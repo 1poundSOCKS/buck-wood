@@ -98,7 +98,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     {
       play_screen_state playScreenState(
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
-        globalState.gameLevelDataIndex->gameLevelData.cend()
+        globalState.gameLevelDataIndex->gameLevelData.cend(),
+        bespokeRenderData
       );
       
        Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);

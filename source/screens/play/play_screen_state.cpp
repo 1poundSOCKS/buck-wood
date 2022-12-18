@@ -14,16 +14,18 @@ level_control_state GetLevelControlState(const screen_input_state& inputState);
 
 play_screen_state::play_screen_state(
   game_level_data_index::const_iterator currentLevelDataIterator, 
-  game_level_data_index::const_iterator endLevelDataIterator) 
+  game_level_data_index::const_iterator endLevelDataIterator,
+  const bespoke_render_data& renderData)
 :
   currentLevelDataIterator(currentLevelDataIterator),
-  endLevelDataIterator(endLevelDataIterator)
+  endLevelDataIterator(endLevelDataIterator),
+  renderData(renderData)
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   
   const auto& levelData = **currentLevelDataIterator;
-  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
+  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency, renderData);
   levelStart = this->timer.initialValue;
 
   mode = playing;
@@ -166,7 +168,7 @@ void LoadNextLevel(play_screen_state& screenState)
   assert(nextLevel != screenState.endLevelDataIterator);
   screenState.currentLevelDataIterator = nextLevel;
   const auto& levelData = **screenState.currentLevelDataIterator;
-  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
+  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency, screenState.renderData);
   screenState.levelStart = screenState.timer.currentValue;
   screenState.timer.initialValue = screenState.timer.initialValue;
 }

@@ -3,7 +3,7 @@
 
 using screen_render_brushes = std::vector<winrt::com_ptr<ID2D1SolidColorBrush>>;
 
-enum screen_render_brush_color { white=0, grey, green, red, yellow, cyan, brown };
+enum screen_render_brush_color { white=0, grey, dark_grey, green, red, yellow, cyan, brown };
 
 struct screen_render_brush_selector
 {
