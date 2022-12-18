@@ -4,6 +4,7 @@
 #include "level_render.h"
 #include "screen_view.h"
 #include "level_object_collisions.h"
+#include "level_geometry.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
@@ -272,7 +273,19 @@ float GetPlayTimeRemainingInSeconds(const level_state& screenState)
   return static_cast<float>(GetPlayTimeRemaining(screenState)) / static_cast<float>(screenState.counterFrequency);
 }
 
+void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto starsEnd, auto starInserter)
+{
+  auto levelGeometry = CreateLevelGeometry(levelData);
+
+  std::copy_if(starsBegin, starsEnd, starInserter, [&levelGeometry](auto star)
+  {
+    return CoordinateIsVisible(star.position.x, star.position.y, levelGeometry.get());
+  });
+}
+
 void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData)
 {
-  GenerateStarfield(levelData, std::back_inserter(backgroundData.starfield.stars));
+  std::vector<level_star> starfield;
+  GenerateStarfield(levelData, std::back_inserter(starfield));
+  RemoveObscuredStars(levelData, starfield.cbegin(), starfield.cend(), std::back_inserter(backgroundData.starfield.stars));
 }

@@ -84,12 +84,17 @@ inline auto GenerateStar(std::uniform_int_distribution<int>& distX, std::uniform
 
 void GenerateStarfield(const game_level_data& levelData, auto starInserter)
 {
+  const float starDensity = 0.04;
   auto levelBoundary = GetGameLevelBoundary(levelData);
+  auto levelWidth = levelBoundary.bottomRight.x - levelBoundary.topLeft.x;
+  auto levelHeight = levelBoundary.bottomRight.y - levelBoundary.topLeft.y;
+  auto levelArea = levelWidth * levelHeight;
+  int starCount = static_cast<int>(levelArea * starDensity);
   
   std::uniform_int_distribution<int> distX(levelBoundary.topLeft.x, levelBoundary.bottomRight.x);
   std::uniform_int_distribution<int> distY(levelBoundary.topLeft.y, levelBoundary.bottomRight.y);
 
-  for( int starIndex = 0; starIndex < 1000; ++starIndex)
+  for( int starIndex = 0; starIndex < starCount; ++starIndex)
   {
     starInserter = GenerateStar(distX, distY);
   }
