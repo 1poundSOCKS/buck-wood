@@ -9,6 +9,11 @@
 
 bool ProcessMessage();
 
+inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
+{
+  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0;
+}
+
 struct screen_runner_data
 {
   winrt::com_ptr<IDXGISwapChain> swapChain;
@@ -16,6 +21,7 @@ struct screen_runner_data
   winrt::com_ptr<IDWriteFactory> dwriteFactory;
   winrt::com_ptr<IDirectInputDevice8> keyboard;
   const window_data& windowData;
+  int fps;
 };
 
 template
@@ -95,12 +101,18 @@ void UpdateScreen(
   const performance::frame_data& frameData,
   screen_diagnostics_render_data& diagnosticsRenderData)
 {
-  auto startUpdate = performance_counter::QueryValue();
-  UpdateScreenState(screenState, inputState);
-  auto endUpdate = performance_counter::QueryValue();
-
   std::vector<std::wstring> diagnosticsData;
   diagnosticsData.reserve(50);
+
+  auto timerFrequency = performance_counter::QueryFrequency();
+  auto frameTime = timerFrequency / data.fps;
+  
+  auto startUpdateTime = performance_counter::QueryValue();
+  UpdateScreenState(screenState, inputState);
+  auto endUpdateTime = performance_counter::QueryValue();
+
+  diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
+
   FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
   FormatDiagnostics(screenState, std::back_inserter(diagnosticsData));
@@ -112,11 +124,15 @@ void UpdateScreen(
 
   {
     render_guard renderGuard(data.renderTarget);
-    auto startRender = performance_counter::QueryValue();
+
+    auto startRenderTime = performance_counter::QueryValue();
     RenderFrame(data.renderTarget.get(), renderData, screenState);
-    auto endRender = performance_counter::QueryValue();
-    data.renderTarget->SetTransform(D2D1::IdentityMatrix());
+    auto endRenderTime = performance_counter::QueryValue();
+
+    diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
     
+    data.renderTarget->SetTransform(D2D1::IdentityMatrix());
+
     RenderText(
       data.renderTarget.get(), 
       diagnosticsRenderData.brush.get(), 

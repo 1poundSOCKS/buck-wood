@@ -294,11 +294,15 @@ float GetPlayTimeRemainingInSeconds(const level_state& screenState)
 
 void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto starsEnd, auto starInserter)
 {
-  auto levelGeometry = CreateLevelGeometry(levelData);
+  auto levelGroundGeometry = CreateLevelGroundGeometry(levelData);
+  auto levelTargetsGeometry = CreateLevelTargetsGeometry(levelData);
 
-  std::copy_if(starsBegin, starsEnd, starInserter, [&levelGeometry](auto star)
+  std::copy_if(starsBegin, starsEnd, starInserter, [&levelGroundGeometry,&levelTargetsGeometry](auto star)
   {
-    return CoordinateIsVisible(star.position.x, star.position.y, levelGeometry.get());
+    return !(
+      CoordinateIsUnderground(star.position.x, star.position.y, levelGroundGeometry) || 
+      CoordinateHitTarget(star.position.x, star.position.y, levelTargetsGeometry)
+    );
   });
 }
 

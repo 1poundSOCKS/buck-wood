@@ -81,7 +81,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     renderTarget, 
     dwriteFactory,
     keyboard, 
-    windowData
+    windowData,
+    fps
   };
 
   bespoke_render_data bespokeRenderData { renderBrushes, textFormats };

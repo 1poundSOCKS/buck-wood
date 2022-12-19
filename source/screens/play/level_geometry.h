@@ -3,14 +3,21 @@
 
 #include "game_level_data.h"
 
-struct level_geometry
+struct level_ground_geometry
 {
   std::vector<game_line> lines;
   game_point groundStart;
   game_point groundEnd;
 };
 
-[[nodiscard]] std::unique_ptr<level_geometry> CreateLevelGeometry(const game_level_data& levelData);
-[[nodiscard]] bool CoordinateIsVisible(float x, float y, const level_geometry* levelGeometry);
+struct level_targets_geometry
+{
+  std::vector<game_line> lines;
+};
+
+[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry;
+[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry;
+[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool;
+[[nodiscard]] auto CoordinateHitTarget(float x, float y, const level_targets_geometry& levelTargetsGeometry) -> bool;
 
 #endif
