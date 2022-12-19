@@ -21,7 +21,7 @@ bool BulletHitSomething(const bullet& bulletState, const level_state& levelState
 int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsBegin, 
   std::vector<bullet_target_collision>::iterator collisionsEnd);
-void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData);
+auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data;
 
 constexpr D2D1_RECT_F GetStarRect()
 {
@@ -35,7 +35,7 @@ inline D2D1_RECT_F GetStarRect(float x, float y)
 }
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const bespoke_render_data& renderData)
-: levelData(levelData), counterFrequency(counterFrequency)
+: levelData(levelData), counterFrequency(counterFrequency), backgroundData(GenerateLevelBackgroundData(levelData))
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
@@ -62,8 +62,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   {
     CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
-
-  GenerateLevelBackgroundData(levelData, backgroundData);
 
   screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
 
@@ -304,9 +302,11 @@ void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto
   });
 }
 
-void GenerateLevelBackgroundData(const game_level_data& levelData, level_background_data& backgroundData)
+auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data
 {
+  level_background_data backgroundData;
   std::vector<level_star> starfield;
   GenerateStarfield(levelData, std::back_inserter(starfield));
   RemoveObscuredStars(levelData, starfield.cbegin(), starfield.cend(), std::back_inserter(backgroundData.starfield.stars));
+  return backgroundData;
 }

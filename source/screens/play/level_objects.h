@@ -76,7 +76,7 @@ void GetTransformedShipGeometry(const player_ship& ship, auto pointsInserter)
     D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos));
 }
 
-inline auto GenerateStar(std::uniform_int_distribution<int>& distX, std::uniform_int_distribution<int>& distY) -> level_star
+inline auto GenerateStar(std::uniform_int_distribution<int> distX, std::uniform_int_distribution<int> distY) -> level_star
 {
   extern std::mt19937 rng;
   return { static_cast<float>(distX(rng)), static_cast<float>(distY(rng)) };
@@ -89,7 +89,7 @@ void GenerateStarfield(const game_level_data& levelData, auto starInserter)
   auto levelWidth = levelBoundary.bottomRight.x - levelBoundary.topLeft.x;
   auto levelHeight = levelBoundary.bottomRight.y - levelBoundary.topLeft.y;
   auto levelArea = levelWidth * levelHeight;
-  int starCount = static_cast<int>(levelArea * starDensity);
+  auto starCount = static_cast<int>(levelArea * starDensity);
   
   std::uniform_int_distribution<int> distX(levelBoundary.topLeft.x, levelBoundary.bottomRight.x);
   std::uniform_int_distribution<int> distY(levelBoundary.topLeft.y, levelBoundary.bottomRight.y);
