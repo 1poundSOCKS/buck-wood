@@ -15,7 +15,6 @@ void UpdateScreenState
 void RenderFrame
 (
   ID2D1RenderTarget* renderTarget, 
-  const bespoke_render_data& renderData,
   const level_edit_screen_state& screenState
 );
 

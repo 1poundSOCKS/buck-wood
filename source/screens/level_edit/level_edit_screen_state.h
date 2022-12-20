@@ -9,7 +9,9 @@ struct level_edit_screen_state
 {
   enum drag_drop_shape_type { type_boundary, type_object, type_player, type_target };
 
-  level_edit_screen_state(const game_level_data_index& gameLevelDataIndex);
+  level_edit_screen_state(const game_level_data_index& gameLevelDataIndex, const bespoke_render_data renderData);
+
+  bespoke_render_data renderData;
 
   performance_counter::data timer = { 0, 0, 0 };
   int64_t previousTimerValue = 0;

@@ -22,6 +22,8 @@ int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsBegin, 
   std::vector<bullet_target_collision>::iterator collisionsEnd);
 auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data;
+[[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool;
+[[nodiscard]] auto PlayerHitTarget(const level_state& levelState) -> bool;
 
 constexpr D2D1_RECT_F GetStarRect()
 {
@@ -170,29 +172,8 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
 void ProcessCollisions(level_state& levelState)
 {
-  bool playerHitGround = std::reduce(
-    levelState.player.transformedPoints.cbegin(), 
-    levelState.player.transformedPoints.cend(), 
-    false, 
-    [&levelState](auto hitGround, auto point)
-    {
-      return hitGround || CoordinateIsUnderground(point.x, point.y, levelState.groundGeometry);
-    }
-  );
-
-  if( playerHitGround ) levelState.player.state = player_ship::dead;
-
-  bool playerHitTarget = std::reduce(
-    levelState.player.transformedPoints.cbegin(), 
-    levelState.player.transformedPoints.cend(), 
-    false, 
-    [&levelState](auto hitTarget, auto point)
-    {
-      return hitTarget || CoordinateHitTarget(point.x, point.y, levelState.targetGeometry);
-    }
-  );
-
-  if( playerHitTarget ) levelState.player.state = player_ship::dead;
+  if( PlayerHitGround(levelState) || PlayerHitTarget(levelState) )
+    levelState.player.state = player_ship::dead;
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
 
@@ -215,6 +196,32 @@ void ProcessCollisions(level_state& levelState)
     if( bullet.free || BulletHasExpired(bullet) || BulletHitSomething(bullet, levelState) )
       bullet.free = true;
   }
+}
+
+[[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
+{
+  return std::reduce(
+    levelState.player.transformedPoints.cbegin(), 
+    levelState.player.transformedPoints.cend(), 
+    false, 
+    [&levelState](auto hitGround, auto point)
+    {
+      return hitGround || CoordinateIsUnderground(point.x, point.y, levelState.groundGeometry);
+    }
+  );
+}
+
+[[nodiscard]] auto PlayerHitTarget(const level_state& levelState) -> bool
+{
+  return std::reduce(
+    levelState.player.transformedPoints.cbegin(), 
+    levelState.player.transformedPoints.cend(), 
+    false, 
+    [&levelState](auto hitTarget, auto point)
+    {
+      return hitTarget || CoordinateHitTarget(point.x, point.y, levelState.targetGeometry);
+    }
+  );
 }
 
 bool BulletHasExpired(const bullet& bullet)

@@ -11,9 +11,10 @@ std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 
-  const bespoke_render_data& renderData,
   const play_screen_state& screenState)
 {
+  auto renderData = screenState.renderData;
+
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   RenderLevel(renderTarget, renderData, *screenState.levelState);

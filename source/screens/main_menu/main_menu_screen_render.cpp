@@ -6,9 +6,10 @@
 
 void RenderFrame(
   ID2D1RenderTarget* renderTarget, 
-  const bespoke_render_data& renderData, 
   const main_menu_screen_state& screenState)
 {
+  auto renderData = screenState.renderData;
+
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 

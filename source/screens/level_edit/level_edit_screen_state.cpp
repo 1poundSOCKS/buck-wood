@@ -21,8 +21,8 @@ constexpr std::array<game_point, 3> GetDefaultObjectShape();
 void AddDragDropShapeForObject(drag_drop_state& dragDropState, const game_point& targetPosition);
 void CreateGamePoints(std::list<drag_drop_point>::const_iterator begin, std::list<drag_drop_point>::const_iterator end, std::back_insert_iterator<std::vector<game_point>> gamePointInserter);
 
-level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex)
-: gameLevelDataIndex(gameLevelDataIndex)
+level_edit_screen_state::level_edit_screen_state(const game_level_data_index& gameLevelDataIndex, const bespoke_render_data renderData)
+: gameLevelDataIndex(gameLevelDataIndex), renderData(renderData)
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();

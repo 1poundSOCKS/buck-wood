@@ -43,10 +43,9 @@ struct screen_diagnostics_render_data
   winrt::com_ptr<IDWriteTextFormat> textFormat;
 };
 
-template <typename render_data_type,typename sound_data_type, typename screen_state_type>
+template <typename sound_data_type, typename screen_state_type>
 void Start(
   screen_runner_data data,
-  render_data_type renderData,
   sound_data_type soundData,
   screen_state_type& screenState)
 {
@@ -78,7 +77,6 @@ void Start(
 
     UpdateScreen(
       data, 
-      renderData, 
       soundData, 
       screenState, 
       inputState, 
@@ -91,10 +89,9 @@ void Start(
   }
 }
 
-template <typename render_data_type, typename sound_data_type, typename screen_state_type>
+template <typename sound_data_type, typename screen_state_type>
 void UpdateScreen(
   screen_runner_data& data,
-  render_data_type& renderData,
   sound_data_type& soundData, 
   screen_state_type& screenState,
   const screen_input_state& inputState,
@@ -126,7 +123,7 @@ void UpdateScreen(
     render_guard renderGuard(data.renderTarget);
 
     auto startRenderTime = performance_counter::QueryValue();
-    RenderFrame(data.renderTarget.get(), renderData, screenState);
+    RenderFrame(data.renderTarget.get(), screenState);
     auto endRenderTime = performance_counter::QueryValue();
 
     diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));

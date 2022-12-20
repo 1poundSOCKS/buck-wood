@@ -5,6 +5,11 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const screen_input_state& screenInputState);
 
+main_menu_screen_state::main_menu_screen_state(bespoke_render_data renderData)
+: renderData(renderData)
+{
+}
+
 void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& screenInputState)
 {
   screenState.mousePointerX = screenInputState.windowData.mouse.x;

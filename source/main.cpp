@@ -89,11 +89,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   bespoke_sound_data bespokeSoundData { soundBuffers };
 
-  main_menu_screen_state mainMenuScreenState;
+  main_menu_screen_state mainMenuScreenState(bespokeRenderData);
 
   while( !mainMenuScreenState.quit )
   {
-    Start(screenRunnerData, bespokeRenderData, bespokeSoundData, mainMenuScreenState);
+    Start(screenRunnerData, bespokeSoundData, mainMenuScreenState);
 
     if( mainMenuScreenState.startPlay )
     {
@@ -103,15 +103,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         bespokeRenderData
       );
       
-       Start(screenRunnerData, bespokeRenderData, bespokeSoundData, playScreenState);
+      Start(screenRunnerData, bespokeSoundData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);
     }
     else if( mainMenuScreenState.startLevelEdit )
     {
-      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex);
+      level_edit_screen_state levelEditScreenState(
+        *globalState.gameLevelDataIndex, 
+        bespokeRenderData
+      );
       
-      Start(screenRunnerData, bespokeRenderData, bespokeSoundData, levelEditScreenState);
+      Start(screenRunnerData, bespokeSoundData, levelEditScreenState);
       
       if( levelEditScreenState.saveChanges )
       {
