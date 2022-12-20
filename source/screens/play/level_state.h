@@ -5,6 +5,7 @@
 #include "level_objects.h"
 #include "screen_input_state.h"
 #include "screen_render_data.h"
+#include "level_geometry.h"
 
 struct level_control_state
 {
@@ -47,6 +48,8 @@ struct level_state
   std::vector<bullet> bullets;
   level_background_data backgroundData;
   std::vector<render_point> renderStars;
+  level_ground_geometry groundGeometry;
+  level_targets_geometry targetGeometry;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);

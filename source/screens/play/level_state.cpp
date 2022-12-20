@@ -72,6 +72,9 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
     std::back_inserter(renderStars),
     [starBrush](auto star) { return render_point { GetStarRect(star.position.x, star.position.y), starBrush }; }
   );
+
+  groundGeometry = CreateLevelGroundGeometry(levelData);
+  targetGeometry = CreateLevelTargetsGeometry(levelData);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -167,22 +170,29 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
 void ProcessCollisions(level_state& levelState)
 {
-  if( PlayerHasHitTheGround(levelState.player.transformedPoints, levelState.groundLines.cbegin(), levelState.groundLines.cend()) )
-  {
-    levelState.player.state = player_ship::dead;
-  }
-  else
-  {
-    for( const auto& object : levelState.levelData.objects)
+  bool playerHitGround = std::reduce(
+    levelState.player.transformedPoints.cbegin(), 
+    levelState.player.transformedPoints.cend(), 
+    false, 
+    [&levelState](auto hitGround, auto point)
     {
-      std::vector<game_line> lines;
-      CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
-      if( AnyPointInside(levelState.player.transformedPoints.cbegin(), levelState.player.transformedPoints.cend(), lines) )
-      {
-        levelState.player.state = player_ship::dead;
-      }
+      return hitGround || CoordinateIsUnderground(point.x, point.y, levelState.groundGeometry);
     }
-  }
+  );
+
+  if( playerHitGround ) levelState.player.state = player_ship::dead;
+
+  bool playerHitTarget = std::reduce(
+    levelState.player.transformedPoints.cbegin(), 
+    levelState.player.transformedPoints.cend(), 
+    false, 
+    [&levelState](auto hitTarget, auto point)
+    {
+      return hitTarget || CoordinateHitTarget(point.x, point.y, levelState.targetGeometry);
+    }
+  );
+
+  if( playerHitTarget ) levelState.player.state = player_ship::dead;
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
 
