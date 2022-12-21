@@ -90,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   while( !mainMenuScreenState.quit )
   {
-    Start(screenRunnerData, mainMenuScreenState);
+    OpenScreen(screenRunnerData, mainMenuScreenState);
 
     if( mainMenuScreenState.startPlay )
     {
@@ -101,18 +101,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         bespokeSoundData
       );
       
-      Start(screenRunnerData, playScreenState);
+      OpenScreen(screenRunnerData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);
     }
     else if( mainMenuScreenState.startLevelEdit )
     {
-      level_edit_screen_state levelEditScreenState(
-        *globalState.gameLevelDataIndex, 
-        bespokeRenderData
-      );
+      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, bespokeRenderData);
       
-      Start(screenRunnerData, levelEditScreenState);
+      OpenScreen(screenRunnerData, levelEditScreenState);
       
       if( levelEditScreenState.saveChanges )
       {

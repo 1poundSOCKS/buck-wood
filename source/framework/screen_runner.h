@@ -30,10 +30,7 @@ struct screen_diagnostics_render_data
   winrt::com_ptr<IDWriteTextFormat> textFormat;
 };
 
-template <typename screen_state_type>
-void Start(
-  screen_runner_data data,
-  screen_state_type& screenState)
+void OpenScreen(screen_runner_data data, auto& screenState)
 {
   screen_diagnostics_render_data diagnosticsRenderData
   {
@@ -74,10 +71,9 @@ void Start(
   }
 }
 
-template <typename screen_state_type>
 void UpdateScreen(
   screen_runner_data& data,
-  screen_state_type& screenState,
+  auto& screenState,
   const screen_input_state& inputState,
   const performance::frame_data& frameData,
   screen_diagnostics_render_data& diagnosticsRenderData)
