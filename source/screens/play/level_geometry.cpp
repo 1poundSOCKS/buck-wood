@@ -23,9 +23,29 @@
   level_targets_geometry levelTargetsGeometry;
   
   auto targetGeometry = GetDefaultTargetGeometryData();
+
   for( auto& target : levelData.targets )
   {
-    CreateConnectedLines(targetGeometry.cbegin(), targetGeometry.cend(), std::back_inserter(levelTargetsGeometry.lines), target.x, target.y);
+    std::vector<game_point> transformedPoints;
+
+    TransformPoints(
+      targetGeometry.cbegin(), 
+      targetGeometry.cend(), 
+      std::back_inserter(transformedPoints), 
+      D2D1::Matrix3x2F::Translation(target.x, target.y)
+    );
+
+    std::copy(
+      transformedPoints.cbegin(), 
+      transformedPoints.cend(),
+      std::back_inserter(levelTargetsGeometry.points)
+    );
+    
+    CreateConnectedLines(
+      transformedPoints.cbegin(), 
+      transformedPoints.cend(), 
+      std::back_inserter(levelTargetsGeometry.lines)
+    );
   }
 
   return levelTargetsGeometry;

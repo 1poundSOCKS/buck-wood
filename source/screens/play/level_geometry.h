@@ -12,6 +12,7 @@ struct level_ground_geometry
 
 struct level_targets_geometry
 {
+  std::vector<game_point> points;
   std::vector<game_line> lines;
 };
 

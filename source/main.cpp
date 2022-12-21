@@ -52,7 +52,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto keyboard = CreateKeyboard(hInstance, window);
 
   sound_buffers soundBuffers = LoadSoundBuffers(directSound.get(), dataPath);
-  global_sound_buffer_selector soundBufferSelector(soundBuffers);
 
   // ensure no sound glitch on first play
   {

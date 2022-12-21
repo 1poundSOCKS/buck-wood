@@ -52,6 +52,7 @@ struct level_background_data
 };
 
 void UpdateShipPointData(player_ship& playerShip);
+[[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>;
 
 void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter)
 {

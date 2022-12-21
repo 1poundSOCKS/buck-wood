@@ -14,3 +14,15 @@ void UpdateShipPointData(player_ship& ship)
   ship.transformedPoints.clear();
   GetTransformedShipGeometry(ship, std::back_inserter(ship.transformedPoints));
 }
+
+[[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>
+{
+  std::vector<game_line> lines;
+
+  CreateConnectedLines(
+    playerShip.transformedPoints.begin(), 
+    playerShip.transformedPoints.cend(),
+    std::back_inserter(lines));
+
+  return lines;
+}
