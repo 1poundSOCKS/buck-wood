@@ -19,7 +19,7 @@ struct level_state
   level_state(
     const game_level_data& levelData, 
     int64_t counterFrequency, 
-    const bespoke_render_data& renderData
+    const screen_render_data& renderData
   );
 
   const game_level_data& levelData;

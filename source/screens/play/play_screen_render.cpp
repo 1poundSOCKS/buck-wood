@@ -5,8 +5,8 @@
 #include "screen_render_data.h"
 #include "level_render.h"
 
-void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const bespoke_render_data& renderData);
-void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const bespoke_render_data& renderData);
+void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData);
+void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData);
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
 void RenderFrame(
@@ -30,7 +30,7 @@ void RenderFrame(
   RenderMouseCursor(renderTarget, renderBrushSelector[white], screenState.renderTargetMouseData.x, screenState.renderTargetMouseData.y);
 }
 
-void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const bespoke_render_data& renderData)
+void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
@@ -76,7 +76,7 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
   }
 }
 
-void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const bespoke_render_data& renderData)
+void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };

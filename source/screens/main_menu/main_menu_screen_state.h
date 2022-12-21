@@ -6,9 +6,9 @@
 
 struct main_menu_screen_state
 {
-  main_menu_screen_state(bespoke_render_data renderData);
+  main_menu_screen_state(screen_render_data renderData);
 
-  bespoke_render_data renderData;
+  screen_render_data renderData;
 
   enum view_state { view_default, view_exit };
   view_state viewState = view_default;

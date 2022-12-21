@@ -5,7 +5,7 @@
 
 void UpdateScreenExitState(main_menu_screen_state& screenState, const screen_input_state& screenInputState);
 
-main_menu_screen_state::main_menu_screen_state(bespoke_render_data renderData)
+main_menu_screen_state::main_menu_screen_state(screen_render_data renderData)
 : renderData(renderData)
 {
 }

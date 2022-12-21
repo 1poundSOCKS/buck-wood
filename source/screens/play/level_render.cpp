@@ -24,7 +24,7 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
 
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
-  const bespoke_render_data& renderData,
+  const screen_render_data& renderData,
   const level_state& levelState)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };

@@ -51,12 +51,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
 
-  screen_render_brushes renderBrushes;
-  CreateScreenRenderBrushes(renderTarget.get(), renderBrushes);
-
-  screen_render_text_formats textFormats;
-  CreateScreenRenderTextFormats(dwriteFactory.get(), textFormats);
-
   sound_buffers soundBuffers;
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
   global_sound_buffer_selector soundBufferSelector(soundBuffers);
@@ -83,10 +77,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     fps
   };
 
-  bespoke_render_data bespokeRenderData { renderBrushes, textFormats };
+  screen_render_data screenRenderData {
+    CreateScreenRenderBrushes(renderTarget.get()), 
+    CreateScreenRenderTextFormats(dwriteFactory.get())
+  };
+  
   bespoke_sound_data bespokeSoundData { soundBuffers };
 
-  main_menu_screen_state mainMenuScreenState(bespokeRenderData);
+  main_menu_screen_state mainMenuScreenState(screenRenderData);
 
   while( !mainMenuScreenState.quit )
   {
@@ -97,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
       play_screen_state playScreenState(
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
         globalState.gameLevelDataIndex->gameLevelData.cend(),
-        bespokeRenderData,
+        screenRenderData,
         bespokeSoundData
       );
       
@@ -107,7 +105,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     }
     else if( mainMenuScreenState.startLevelEdit )
     {
-      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, bespokeRenderData);
+      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
       
       OpenScreen(screenRunnerData, levelEditScreenState);
       

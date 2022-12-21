@@ -27,13 +27,13 @@ struct screen_render_text_format_selector
   }
 };
 
-struct bespoke_render_data
+struct screen_render_data
 {
   screen_render_brushes renderBrushes;
   screen_render_text_formats textFormats;
 };
 
-void CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, screen_render_brushes& brushes);
-void CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, screen_render_text_formats& textFormats);
+[[nodiscard]] auto CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget) -> screen_render_brushes;
+[[nodiscard]] auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory) -> screen_render_text_formats;
 
 #endif

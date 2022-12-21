@@ -36,7 +36,7 @@ inline D2D1_RECT_F GetStarRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
-level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const bespoke_render_data& renderData)
+level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData)
 : levelData(levelData), counterFrequency(counterFrequency), backgroundData(GenerateLevelBackgroundData(levelData))
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
