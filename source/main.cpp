@@ -10,7 +10,7 @@
 #include "screen_runner.h"
 #include "main_window.h"
 #include "screen_render_data.h"
-#include "screen_sound_data.h"
+#include "sound_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -51,8 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
   auto keyboard = CreateKeyboard(hInstance, window);
 
-  sound_buffers soundBuffers;
-  LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
+  sound_buffers soundBuffers = LoadSoundBuffers(directSound.get(), dataPath);
   global_sound_buffer_selector soundBufferSelector(soundBuffers);
 
   // ensure no sound glitch on first play
@@ -82,7 +81,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
     CreateScreenRenderTextFormats(dwriteFactory.get())
   };
   
-  bespoke_sound_data bespokeSoundData { soundBuffers };
+  sound_data soundData { soundBuffers };
 
   main_menu_screen_state mainMenuScreenState(screenRenderData);
 
@@ -96,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
         globalState.gameLevelDataIndex->gameLevelData.cend(),
         screenRenderData,
-        bespokeSoundData
+        soundData
       );
       
       OpenScreen(screenRunnerData, playScreenState);

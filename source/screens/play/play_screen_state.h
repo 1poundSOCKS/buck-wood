@@ -5,7 +5,7 @@
 #include "game_objects.h"
 #include "level_state.h"
 #include "timers.h"
-#include "screen_sound_data.h"
+#include "sound_data.h"
 
 struct play_screen_state
 {
@@ -13,11 +13,11 @@ struct play_screen_state
     game_level_data_index::const_iterator currentLevelDataIterator, 
     game_level_data_index::const_iterator endLevelDataIterator,
     const screen_render_data& renderData,
-    const bespoke_sound_data& bespokeSoundData
+    const sound_data& bespokeSoundData
   );
 
   const screen_render_data renderData;
-  const bespoke_sound_data soundData;
+  const sound_data soundData;
 
   performance_counter::data timer = { 0, 0, 0 };
   int64_t pauseStart = 0;

@@ -2,7 +2,6 @@
 #define _main_menu_screen_
 
 #include "screens/main_menu/main_menu_screen_state.h"
-#include "screen_render_data.h"
 #include "timers.h"
 
 void UpdateScreenState

@@ -2,8 +2,6 @@
 #define _play_screen_
 
 #include "screens/play/play_screen_state.h"
-#include "screen_render_data.h"
-#include "screen_sound_data.h"
 
 void UpdateScreenState
 (

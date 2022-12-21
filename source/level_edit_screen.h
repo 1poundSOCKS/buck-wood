@@ -3,8 +3,6 @@
 
 #include "screens/level_edit/level_edit_screen_state.h"
 #include "timers.h"
-#include "screen_render_data.h"
-#include "screen_sound_data.h"
 
 void UpdateScreenState
 (
