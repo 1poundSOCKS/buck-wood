@@ -15,11 +15,13 @@ level_control_state GetLevelControlState(const screen_input_state& inputState);
 play_screen_state::play_screen_state(
   game_level_data_index::const_iterator currentLevelDataIterator, 
   game_level_data_index::const_iterator endLevelDataIterator,
-  const bespoke_render_data& renderData)
+  const bespoke_render_data& renderData,
+  const bespoke_sound_data& soundData)
 :
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator),
-  renderData(renderData)
+  renderData(renderData),
+  soundData(soundData)
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();

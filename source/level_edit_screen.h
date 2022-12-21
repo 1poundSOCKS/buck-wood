@@ -20,8 +20,7 @@ void RenderFrame
 
 void PlaySoundEffects
 (
-  const level_edit_screen_state& screenState, 
-  const bespoke_sound_data& soundData
+  const level_edit_screen_state& screenState
 );
 
 bool ContinueRunning(const level_edit_screen_state& screenState);

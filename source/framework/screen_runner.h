@@ -24,29 +24,15 @@ struct screen_runner_data
   int fps;
 };
 
-template
-<
-  typename screen_render_brush_selector_type,
-  typename screen_render_text_format_selector_type,
-  typename sound_buffer_selector_type
->
-struct screen_runner_bespoke_data
-{
-  screen_render_brush_selector_type renderBrushSelector;
-  screen_render_text_format_selector_type textFormatSelector;
-  sound_buffer_selector_type soundBufferSelector;
-};
-
 struct screen_diagnostics_render_data
 {
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
   winrt::com_ptr<IDWriteTextFormat> textFormat;
 };
 
-template <typename sound_data_type, typename screen_state_type>
+template <typename screen_state_type>
 void Start(
   screen_runner_data data,
-  sound_data_type soundData,
   screen_state_type& screenState)
 {
   screen_diagnostics_render_data diagnosticsRenderData
@@ -77,7 +63,6 @@ void Start(
 
     UpdateScreen(
       data, 
-      soundData, 
       screenState, 
       inputState, 
       frameData,
@@ -89,10 +74,9 @@ void Start(
   }
 }
 
-template <typename sound_data_type, typename screen_state_type>
+template <typename screen_state_type>
 void UpdateScreen(
   screen_runner_data& data,
-  sound_data_type& soundData, 
   screen_state_type& screenState,
   const screen_input_state& inputState,
   const performance::frame_data& frameData,
@@ -140,7 +124,7 @@ void UpdateScreen(
 
   data.swapChain->Present(1, 0);
 
-  PlaySoundEffects(screenState, soundData);
+  PlaySoundEffects(screenState);
 }
 
 #endif

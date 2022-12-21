@@ -19,8 +19,7 @@ void RenderFrame
 
 void PlaySoundEffects
 (
-  const main_menu_screen_state& screenState, 
-  const bespoke_sound_data& soundData
+  const main_menu_screen_state& screenState
 );
 
 bool ContinueRunning(const main_menu_screen_state& screenState);

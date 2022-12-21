@@ -53,11 +53,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
 
   screen_render_brushes renderBrushes;
   CreateScreenRenderBrushes(renderTarget.get(), renderBrushes);
-  screen_render_brush_selector renderBrushSelector { renderBrushes };
 
   screen_render_text_formats textFormats;
   CreateScreenRenderTextFormats(dwriteFactory.get(), textFormats);
-  screen_render_text_format_selector textFormatSelector { textFormats};
 
   sound_buffers soundBuffers;
   LoadSoundBuffers(directSound.get(), dataPath, soundBuffers);
@@ -86,24 +84,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
   };
 
   bespoke_render_data bespokeRenderData { renderBrushes, textFormats };
-
   bespoke_sound_data bespokeSoundData { soundBuffers };
 
   main_menu_screen_state mainMenuScreenState(bespokeRenderData);
 
   while( !mainMenuScreenState.quit )
   {
-    Start(screenRunnerData, bespokeSoundData, mainMenuScreenState);
+    Start(screenRunnerData, mainMenuScreenState);
 
     if( mainMenuScreenState.startPlay )
     {
       play_screen_state playScreenState(
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
         globalState.gameLevelDataIndex->gameLevelData.cend(),
-        bespokeRenderData
+        bespokeRenderData,
+        bespokeSoundData
       );
       
-      Start(screenRunnerData, bespokeSoundData, playScreenState);
+      Start(screenRunnerData, playScreenState);
       
       UpdateGlobalState(globalState, playScreenState);
     }
@@ -114,7 +112,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE hPrevInstance,
         bespokeRenderData
       );
       
-      Start(screenRunnerData, bespokeSoundData, levelEditScreenState);
+      Start(screenRunnerData, levelEditScreenState);
       
       if( levelEditScreenState.saveChanges )
       {
