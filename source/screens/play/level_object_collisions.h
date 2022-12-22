@@ -19,31 +19,31 @@ struct bullet_target_collision
 bool BulletHasHitTheGround(
   const bullet& bullet, 
   const std::vector<game_line>::const_iterator groundBegin, 
-  const std::vector<game_line>::const_iterator groundEnd);
+  const std::vector<game_line>::const_iterator groundEnd) [[nothrow]];
 
 bool BulletHasHitAnObject(
   const bullet& bullet, 
   const std::vector<game_line>::const_iterator linesBegin, 
-  const std::vector<game_line>::const_iterator linesEnd);
+  const std::vector<game_line>::const_iterator linesEnd) [[nothrow]];
 
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 
   std::vector<bullet>::iterator bulletEnd, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
 
 void GetBulletTargetCollisions(
   bullet& bullet, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
 
 [[nodiscard]] auto PlayerHitAnyTarget(
   const player_ship& player,
-  const level_targets_geometry& targetsGeometry) -> bool;
+  const level_targets_geometry& targetsGeometry) -> bool [[nothrow]];
 
-int GetGroundInterceptCount(float x, float y, auto groundBegin, auto groundEnd)
+int GetGroundInterceptCount(float x, float y, auto groundBegin, auto groundEnd) [[nothrow]]
 {
   auto& groundFirst = *groundBegin;
   auto& groundLast = *std::prev(groundEnd);
@@ -56,7 +56,7 @@ int GetGroundInterceptCount(float x, float y, auto groundBegin, auto groundEnd)
   return count;
 }
 
-void GetGroundInterceptCounts(auto pointsBegin, auto pointsEnd, auto groundBegin, auto groundEnd, auto interceptCountsInserter)
+void GetGroundInterceptCounts(auto pointsBegin, auto pointsEnd, auto groundBegin, auto groundEnd, auto interceptCountsInserter) [[nothrow]]
 {
   std::transform(
     pointsBegin, 
@@ -66,12 +66,12 @@ void GetGroundInterceptCounts(auto pointsBegin, auto pointsEnd, auto groundBegin
   );
 }
 
-[[nodiscard]] bool GetBelowGroundFlag(float x, float y, auto groundBegin, auto groundEnd)
+[[nodiscard]] bool GetBelowGroundFlag(float x, float y, auto groundBegin, auto groundEnd) [[nothrow]]
 {
   return GetGroundInterceptCount(x, y, groundBegin, groundEnd) % 2 == 1;
 }
 
-void GetBelowGroundFlags(auto pointsBegin, auto pointsEnd, auto groundBegin, auto groundEnd, auto belowGroundFlagsInserter)
+void GetBelowGroundFlags(auto pointsBegin, auto pointsEnd, auto groundBegin, auto groundEnd, auto belowGroundFlagsInserter) [[nothrow]]
 {
   std::vector<int> groundInterceptCounts;
   GetGroundInterceptCounts(pointsBegin, pointsEnd, groundBegin, groundEnd, std::back_inserter(groundInterceptCounts));
@@ -84,6 +84,6 @@ void GetBelowGroundFlags(auto pointsBegin, auto pointsEnd, auto groundBegin, aut
   );
 }
 
-[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool;
+[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
 
 #endif
