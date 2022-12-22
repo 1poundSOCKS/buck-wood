@@ -23,7 +23,6 @@ int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsEnd);
 auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data;
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool;
-[[nodiscard]] auto PlayerHitTarget(const level_state& levelState) -> bool;
 
 constexpr D2D1_RECT_F GetStarRect()
 {
@@ -76,7 +75,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   );
 
   groundGeometry = CreateLevelGroundGeometry(levelData);
-  targetGeometry = CreateLevelTargetsGeometry(levelData);
+  targetsGeometry = CreateLevelTargetsGeometry(levelData);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -141,7 +140,7 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
   levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
-  UpdateShipPointData(levelState.player);
+  UpdateShipGeometryData(levelState.player);
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)
@@ -172,7 +171,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
 void ProcessCollisions(level_state& levelState)
 {
-  if( PlayerHitGround(levelState) || PlayerHitTarget(levelState) )
+  if( PlayerHitGround(levelState) || PlayerHitAnyTarget(levelState.player, levelState.targetsGeometry) )
     levelState.player.state = player_ship::dead;
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
@@ -207,19 +206,6 @@ void ProcessCollisions(level_state& levelState)
     [&levelState](auto hitGround, auto point)
     {
       return hitGround || CoordinateIsUnderground(point.x, point.y, levelState.groundGeometry);
-    }
-  );
-}
-
-[[nodiscard]] auto PlayerHitTarget(const level_state& levelState) -> bool
-{
-  return std::reduce(
-    levelState.player.transformedPoints.cbegin(), 
-    levelState.player.transformedPoints.cend(), 
-    false, 
-    [&levelState](auto hitTarget, auto point)
-    {
-      return hitTarget || CoordinateHitTarget(point.x, point.y, levelState.targetGeometry);
     }
   );
 }
@@ -318,7 +304,7 @@ void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto
   {
     return !(
       CoordinateIsUnderground(star.position.x, star.position.y, levelGroundGeometry) || 
-      CoordinateHitTarget(star.position.x, star.position.y, levelTargetsGeometry)
+      CoordinateHitShape(star.position.x, star.position.y, levelTargetsGeometry.lines.cbegin(), levelTargetsGeometry.lines.cend())
     );
   });
 }

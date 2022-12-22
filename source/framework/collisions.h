@@ -26,6 +26,14 @@ bool AllPointsInside(auto pointsBegin, auto pointsEnd, const std::vector<game_li
   return true;
 }
 
+[[nodiscard]] auto PointCollisionCount(auto pointsBegin, auto pointsEnd, auto linesBegin, auto linesEnd) -> int
+{
+  return std::accumulate(pointsBegin, pointsEnd, 0, [linesBegin, linesEnd](auto total, auto point)
+  {
+    return total += PointInside(point, linesBegin, linesEnd) ? 1 : 0;
+  });
+}
+
 bool PointInside(const game_point& point, auto linesBegin, auto linesEnd)
 {
   auto matchingLines = GetLineInterceptCount(point, linesBegin, linesEnd);
@@ -40,9 +48,9 @@ int GetLineInterceptCount(const game_point& point, auto linesBegin, auto linesEn
   });
 }
 
-[[nodiscard]] bool GetPointInsideShapeFlag(float x, float y, auto linesBegin, auto linesEnd)
+[[nodiscard]] auto CoordinateHitShape(float x, float y, auto linesBegin, auto linesEnd) -> bool
 {
-  return ( GetLineInterceptCount({x, y}, linesBegin, linesEnd) % 2 == 1 );
+  return GetLineInterceptCount({x, y}, linesBegin, linesEnd) % 2 == 1;
 }
 
 #endif

@@ -18,7 +18,5 @@ struct level_targets_geometry
 
 [[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry;
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry;
-[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool;
-[[nodiscard]] auto CoordinateHitTarget(float x, float y, const level_targets_geometry& levelTargetsGeometry) -> bool;
 
 #endif

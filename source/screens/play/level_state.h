@@ -49,7 +49,7 @@ struct level_state
   level_background_data backgroundData;
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;
-  level_targets_geometry targetGeometry;
+  level_targets_geometry targetsGeometry;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);

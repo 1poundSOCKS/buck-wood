@@ -50,18 +50,3 @@
 
   return levelTargetsGeometry;
 }
-
-[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool
-{
-  auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());
-  
-  if( x >= levelGoundGeometry.groundStart.x && y > levelGoundGeometry.groundStart.y ) ++lineInterceptCount;
-  if( x < levelGoundGeometry.groundEnd.x && y > levelGoundGeometry.groundEnd.y ) ++lineInterceptCount;
-
-  return lineInterceptCount % 2 == 1;
-}
-
-[[nodiscard]] auto CoordinateHitTarget(float x, float y, const level_targets_geometry& levelTargetsGeometry) -> bool
-{
-  return GetLineInterceptCount({x, y}, levelTargetsGeometry.lines.cbegin(), levelTargetsGeometry.lines.cend()) % 2 == 1;
-}

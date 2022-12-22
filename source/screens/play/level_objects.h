@@ -15,6 +15,7 @@ struct player_ship
   float angle = 0;
   bool thrusterOn = false;
   std::vector<game_point> transformedPoints;
+  std::vector<game_line> transformedLines;
 };
 
 struct bullet
@@ -51,7 +52,7 @@ struct level_background_data
   level_starfield starfield;
 };
 
-void UpdateShipPointData(player_ship& playerShip);
+void UpdateShipGeometryData(player_ship& playerShip);
 [[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>;
 
 void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter)
@@ -66,7 +67,7 @@ void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter
   );
 }
 
-void GetTransformedShipGeometry(const player_ship& ship, auto pointsInserter)
+void GetTransformedShipPointsGeometry(const player_ship& ship, auto pointsInserter)
 {
   const auto& shipGeometryData = GetPlayerGeometryData();
 

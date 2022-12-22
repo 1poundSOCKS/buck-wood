@@ -30,7 +30,7 @@ bool BulletHasHitAnObject(
   const std::vector<game_line>::const_iterator linesBegin, 
   const std::vector<game_line>::const_iterator linesEnd)
 {
-  return GetPointInsideShapeFlag(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
+  return CoordinateHitShape(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
 }
 
 void GetBulletTargetCollisions(
@@ -54,7 +54,41 @@ void GetBulletTargetCollisions(
 {
   for( auto& targetState = targetsBegin; targetState != targetsEnd; ++targetState )
   {
-    if( GetPointInsideShapeFlag(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
+    if( CoordinateHitShape(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
       collisions = bullet_target_collision { bullet, *targetState };
   }
+}
+
+[[nodiscard]] auto PlayerHitAnyTarget(
+  const player_ship& player,
+  const level_targets_geometry& targetsGeometry) -> bool
+{
+  return std::reduce(
+    player.transformedPoints.cbegin(), 
+    player.transformedPoints.cend(), 
+    false, 
+    [&targetsGeometry](auto hit, auto point)
+    {
+      return hit || CoordinateHitShape(point.x, point.y, targetsGeometry.lines.cbegin(), targetsGeometry.lines.cend());
+    }
+  ) ||
+  std::reduce(
+    targetsGeometry.points.cbegin(), 
+    targetsGeometry.points.cend(), 
+    false, 
+    [&player](auto hit, auto point)
+    {
+      return hit || CoordinateHitShape(point.x, point.y, player.transformedLines.cbegin(), player.transformedLines.cend());
+    }
+  );
+}
+
+[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool
+{
+  auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());
+  
+  if( x >= levelGoundGeometry.groundStart.x && y > levelGoundGeometry.groundStart.y ) ++lineInterceptCount;
+  if( x < levelGoundGeometry.groundEnd.x && y > levelGoundGeometry.groundEnd.y ) ++lineInterceptCount;
+
+  return lineInterceptCount % 2 == 1;
 }

@@ -1,6 +1,7 @@
 #ifndef _level_object_colllsions_
 #define _level_object_collisions_
 
+#include "level_geometry.h"
 #include "level_objects.h"
 #include "collisions.h"
 
@@ -37,6 +38,10 @@ void GetBulletTargetCollisions(
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
+
+[[nodiscard]] auto PlayerHitAnyTarget(
+  const player_ship& player,
+  const level_targets_geometry& targetsGeometry) -> bool;
 
 int GetGroundInterceptCount(float x, float y, auto groundBegin, auto groundEnd)
 {
@@ -78,5 +83,7 @@ void GetBelowGroundFlags(auto pointsBegin, auto pointsEnd, auto groundBegin, aut
     [](auto& count) { return count % 2 == 1; }
   );
 }
+
+[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool;
 
 #endif
