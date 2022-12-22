@@ -171,7 +171,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
 void ProcessCollisions(level_state& levelState)
 {
-  if( PlayerHitGround(levelState) || PlayerHitAnyTarget(levelState.player, levelState.targetsGeometry) )
+  if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
     levelState.player.state = player_ship::dead;
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
