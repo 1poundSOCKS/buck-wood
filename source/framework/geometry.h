@@ -1,5 +1,5 @@
-#ifndef _game_math_
-#define _game_math_
+#ifndef _geometry_
+#define _geometry_
 
 #define PI 3.14159265
 #define DEGTORAD(D)((D * PI) / 180.0)

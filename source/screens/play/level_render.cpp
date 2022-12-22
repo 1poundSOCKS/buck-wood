@@ -2,14 +2,40 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void CreateStaticLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> insertIterator, screen_render_brush_selector brushes);
-void CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
+void CreateStaticLevelRenderLines(
+  const level_state& levelState, 
+  std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+  screen_render_brush_selector brushes);
 
-template <typename insert_iterator_type>
-void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width);
+void CreateDynamicLevelRenderLines(
+  const level_state& levelState, 
+  std::back_insert_iterator<std::vector<render_line>> renderLines, 
+  screen_render_brush_selector brushes);
 
-template <typename insert_iterator_type>
-void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width);
+void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, auto renderLinesInserter, ID2D1SolidColorBrush* brush, float width)
+{
+  D2D1_POINT_2F inPoint { renderTargetSize.width, 0 };
+  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
+
+  renderLinesInserter = { 
+    { levelState.levelData.boundaryPoints.front().x, levelState.levelData.boundaryPoints.front().y} , 
+    { outPoint.x, levelState.levelData.boundaryPoints.front().y },
+    brush, 
+    width
+  };
+}
+
+void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, auto renderLinesInserter, ID2D1SolidColorBrush* brush, float width)
+{
+  D2D1_POINT_2F inPoint { 0, 0 };
+  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
+
+  renderLinesInserter = { 
+    { levelState.levelData.boundaryPoints.back().x, levelState.levelData.boundaryPoints.back().y} , 
+    { outPoint.x, levelState.levelData.boundaryPoints.back().y },
+    brush, width
+  };
+}
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -81,8 +107,8 @@ void CreateDynamicLevelRenderLines(
 
   const auto& player = levelState.player;
   CreateConnectedRenderLines(
-    levelState.player.transformedPoints.cbegin(), 
-    levelState.player.transformedPoints.cend(), 
+    levelState.player.points.cbegin(), 
+    levelState.player.points.cend(), 
     renderLines, 
     brushes[white], 
     2);
@@ -97,31 +123,4 @@ void CreateDynamicLevelRenderLines(
       thrusterPoints.cend(), 
       renderLines, brushes[red], 5);
   }
-}
-
-template <typename insert_iterator_type>
-void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width)
-{
-  D2D1_POINT_2F inPoint { renderTargetSize.width, 0 };
-  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
-
-  renderLines = { 
-    { levelState.levelData.boundaryPoints.front().x, levelState.levelData.boundaryPoints.front().y} , 
-    { outPoint.x, levelState.levelData.boundaryPoints.front().y },
-    brush, 
-    width
-  };
-}
-
-template <typename insert_iterator_type>
-void AddGroundHorizontalLeftHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, insert_iterator_type renderLines, ID2D1SolidColorBrush* brush, float width)
-{
-  D2D1_POINT_2F inPoint { 0, 0 };
-  auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
-
-  renderLines = { 
-    { levelState.levelData.boundaryPoints.back().x, levelState.levelData.boundaryPoints.back().y} , 
-    { outPoint.x, levelState.levelData.boundaryPoints.back().y },
-    brush, width
-  };
 }

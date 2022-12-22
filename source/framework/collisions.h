@@ -48,9 +48,31 @@ int GetLineInterceptCount(const game_point& point, auto linesBegin, auto linesEn
   });
 }
 
-[[nodiscard]] auto CoordinateHitShape(float x, float y, auto linesBegin, auto linesEnd) -> bool
+[[nodiscard]] auto PointInsideObject(float x, float y, auto linesBegin, auto linesEnd) -> bool
 {
   return GetLineInterceptCount({x, y}, linesBegin, linesEnd) % 2 == 1;
+}
+
+[[nodiscard]] auto ObjectsHaveCollided(const auto& object1, const auto& object2) -> bool
+{
+  return std::reduce(
+    object1.points.cbegin(), 
+    object1.points.cend(), 
+    false, 
+    [&object2](auto hit, auto point)
+    {
+      return hit || PointInsideObject(point.x, point.y, object2.lines.cbegin(), object2.lines.cend());
+    }
+  ) ||
+  std::reduce(
+    object2.points.cbegin(), 
+    object2.points.cend(), 
+    false, 
+    [&object1](auto hit, auto point)
+    {
+      return hit || PointInsideObject(point.x, point.y, object1.lines.cbegin(), object1.lines.cend());
+    }
+  );
 }
 
 #endif

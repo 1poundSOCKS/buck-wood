@@ -11,9 +11,9 @@ target_state::target_state(const game_point& position) : position(position)
 
 void UpdateShipGeometryData(player_ship& ship)
 {
-  ship.transformedPoints.clear();
-  GetTransformedShipPointsGeometry(ship, std::back_inserter(ship.transformedPoints));
-  CreateConnectedLines(ship.transformedPoints.cbegin(), ship.transformedPoints.cend(), std::back_inserter(ship.transformedLines));
+  ship.points.clear();
+  GetTransformedShipPointsGeometry(ship, std::back_inserter(ship.points));
+  CreateConnectedLines(ship.points.cbegin(), ship.points.cend(), std::back_inserter(ship.lines));
 }
 
 [[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>
@@ -21,8 +21,8 @@ void UpdateShipGeometryData(player_ship& ship)
   std::vector<game_line> lines;
 
   CreateConnectedLines(
-    playerShip.transformedPoints.begin(), 
-    playerShip.transformedPoints.cend(),
+    playerShip.points.begin(), 
+    playerShip.points.cend(),
     std::back_inserter(lines));
 
   return lines;

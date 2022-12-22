@@ -14,8 +14,8 @@ struct player_ship
   float yVelocity = 0;
   float angle = 0;
   bool thrusterOn = false;
-  std::vector<game_point> transformedPoints;
-  std::vector<game_line> transformedLines;
+  std::vector<game_point> points;
+  std::vector<game_line> lines;
 };
 
 struct bullet

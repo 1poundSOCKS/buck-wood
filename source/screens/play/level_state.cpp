@@ -200,8 +200,8 @@ void ProcessCollisions(level_state& levelState)
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
 {
   return std::reduce(
-    levelState.player.transformedPoints.cbegin(), 
-    levelState.player.transformedPoints.cend(), 
+    levelState.player.points.cbegin(), 
+    levelState.player.points.cend(), 
     false, 
     [&levelState](auto hitGround, auto point)
     {
@@ -304,7 +304,7 @@ void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto
   {
     return !(
       CoordinateIsUnderground(star.position.x, star.position.y, levelGroundGeometry) || 
-      CoordinateHitShape(star.position.x, star.position.y, levelTargetsGeometry.lines.cbegin(), levelTargetsGeometry.lines.cend())
+      PointInsideObject(star.position.x, star.position.y, levelTargetsGeometry.lines.cbegin(), levelTargetsGeometry.lines.cend())
     );
   });
 }

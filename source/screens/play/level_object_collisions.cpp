@@ -30,7 +30,7 @@ bool BulletHasHitAnObject(
   const std::vector<game_line>::const_iterator linesBegin, 
   const std::vector<game_line>::const_iterator linesEnd)
 {
-  return CoordinateHitShape(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
+  return PointInsideObject(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
 }
 
 void GetBulletTargetCollisions(
@@ -54,7 +54,7 @@ void GetBulletTargetCollisions(
 {
   for( auto& targetState = targetsBegin; targetState != targetsEnd; ++targetState )
   {
-    if( CoordinateHitShape(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
+    if( PointInsideObject(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
       collisions = bullet_target_collision { bullet, *targetState };
   }
 }
@@ -64,12 +64,12 @@ void GetBulletTargetCollisions(
   const level_targets_geometry& targetsGeometry) -> bool
 {
   return std::reduce(
-    player.transformedPoints.cbegin(), 
-    player.transformedPoints.cend(), 
+    player.points.cbegin(), 
+    player.points.cend(), 
     false, 
     [&targetsGeometry](auto hit, auto point)
     {
-      return hit || CoordinateHitShape(point.x, point.y, targetsGeometry.lines.cbegin(), targetsGeometry.lines.cend());
+      return hit || PointInsideObject(point.x, point.y, targetsGeometry.lines.cbegin(), targetsGeometry.lines.cend());
     }
   ) ||
   std::reduce(
@@ -78,7 +78,7 @@ void GetBulletTargetCollisions(
     false, 
     [&player](auto hit, auto point)
     {
-      return hit || CoordinateHitShape(point.x, point.y, player.transformedLines.cbegin(), player.transformedLines.cend());
+      return hit || PointInsideObject(point.x, point.y, player.lines.cbegin(), player.lines.cend());
     }
   );
 }
