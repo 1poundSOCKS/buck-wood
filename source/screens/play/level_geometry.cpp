@@ -3,7 +3,7 @@
 #include "framework.h"
 #include "level_objects.h"
 
-[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry
+[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]]
 {
   level_ground_geometry levelGoundGeometry;
   levelGoundGeometry.groundStart = levelData.boundaryPoints.front();
@@ -18,7 +18,7 @@
   return levelGoundGeometry;
 }
 
-[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry
+[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]]
 {
   level_targets_geometry levelTargetsGeometry;
   

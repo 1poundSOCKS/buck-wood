@@ -59,30 +59,6 @@ void GetBulletTargetCollisions(
   }
 }
 
-[[nodiscard]] auto PlayerHitAnyTarget(
-  const player_ship& player,
-  const level_targets_geometry& targetsGeometry) -> bool [[nothrow]]
-{
-  return std::reduce(
-    player.points.cbegin(), 
-    player.points.cend(), 
-    false, 
-    [&targetsGeometry](auto hit, auto point)
-    {
-      return hit || PointInsideObject(point.x, point.y, targetsGeometry.lines.cbegin(), targetsGeometry.lines.cend());
-    }
-  ) ||
-  std::reduce(
-    targetsGeometry.points.cbegin(), 
-    targetsGeometry.points.cend(), 
-    false, 
-    [&player](auto hit, auto point)
-    {
-      return hit || PointInsideObject(point.x, point.y, player.lines.cbegin(), player.lines.cend());
-    }
-  );
-}
-
 [[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool [[nothrow]]
 {
   auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());

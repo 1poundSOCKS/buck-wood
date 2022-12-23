@@ -39,10 +39,6 @@ void GetBulletTargetCollisions(
   std::vector<target_state>::iterator targetsEnd,
   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
 
-[[nodiscard]] auto PlayerHitAnyTarget(
-  const player_ship& player,
-  const level_targets_geometry& targetsGeometry) -> bool [[nothrow]];
-
 int GetGroundInterceptCount(float x, float y, auto groundBegin, auto groundEnd) [[nothrow]]
 {
   auto& groundFirst = *groundBegin;
