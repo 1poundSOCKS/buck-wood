@@ -2,11 +2,6 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void CreateStaticLevelRenderLines(
-  const level_state& levelState, 
-  std::back_insert_iterator<std::vector<render_line>> insertIterator, 
-  screen_render_brush_selector brushes);
-
 void CreateDynamicLevelRenderLines(
   const level_state& levelState, 
   std::back_insert_iterator<std::vector<render_line>> renderLines, 
@@ -59,20 +54,17 @@ void RenderLevel(
   renderTarget->SetTransform(levelState.viewTransform);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
+  
+  RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
 
-  std::vector<render_line> renderLines;
-  CreateStaticLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
-  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
-
-  renderLines.clear();
-  CreateDynamicLevelRenderLines(levelState, std::back_inserter(renderLines), renderBrushSelector);
-
+  std::vector<render_line> dynamicRenderLines;
+  CreateDynamicLevelRenderLines(levelState, std::back_inserter(dynamicRenderLines), renderBrushSelector);
   auto renderTargetSize = renderTarget->GetSize();
   auto brush = renderBrushSelector[grey];
-  AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
-  AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(renderLines), brush, 6);
+  AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
+  AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
 
-  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
+  RenderLines(renderTarget, dynamicRenderLines.cbegin(), dynamicRenderLines.cend());
 
   std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )
@@ -82,15 +74,6 @@ void RenderLevel(
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
-}
-
-void CreateStaticLevelRenderLines(
-  const level_state& levelState,
-  std::back_insert_iterator<std::vector<render_line>> insertIterator, 
-  screen_render_brush_selector brushes)
-{
-  auto brush = brushes[grey];
-  CreateRenderLines(levelState.groundGeometry.lines.cbegin(), levelState.groundGeometry.lines.cend(), insertIterator, brush, 5);
 }
 
 void CreateDynamicLevelRenderLines(

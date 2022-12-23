@@ -47,6 +47,7 @@ struct level_state
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;
   level_targets_geometry targetsGeometry;
+  std::vector<render_line> staticRenderLines;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);

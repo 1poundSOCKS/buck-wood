@@ -23,6 +23,11 @@ int ProcessBulletTargetCollisions(
 auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data;
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool;
 
+void CreateStaticLevelRenderLines(
+  const level_state& levelState, 
+  std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+  screen_render_brush_selector brushes);
+
 constexpr D2D1_RECT_F GetStarRect()
 {
   return { -4, -4, 4, 4 };
@@ -70,6 +75,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   groundGeometry = CreateLevelGroundGeometry(levelData);
   targetsGeometry = CreateLevelTargetsGeometry(levelData);
+
+  CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -303,4 +310,13 @@ auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_back
   GenerateStarfield(levelData, std::back_inserter(starfield));
   RemoveObscuredStars(levelData, starfield.cbegin(), starfield.cend(), std::back_inserter(backgroundData.starfield.stars));
   return backgroundData;
+}
+
+void CreateStaticLevelRenderLines(
+  const level_state& levelState,
+  std::back_insert_iterator<std::vector<render_line>> insertIterator, 
+  screen_render_brush_selector brushes)
+{
+  auto brush = brushes[grey];
+  CreateRenderLines(levelState.groundGeometry.lines.cbegin(), levelState.groundGeometry.lines.cend(), insertIterator, brush, 5);
 }
