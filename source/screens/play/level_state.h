@@ -42,11 +42,8 @@ struct level_state
   bool targetShot = false;
 
   player_ship player;
-  std::vector<game_line> groundLines;
-  std::vector<game_line> objectLines;
   std::vector<target_state> targets;
   std::vector<bullet> bullets;
-  level_background_data backgroundData;
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;
   level_targets_geometry targetsGeometry;

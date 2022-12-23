@@ -35,7 +35,7 @@ inline D2D1_RECT_F GetStarRect(float x, float y)
 }
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData)
-: levelData(levelData), counterFrequency(counterFrequency), backgroundData(GenerateLevelBackgroundData(levelData))
+: levelData(levelData), counterFrequency(counterFrequency)
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
@@ -46,13 +46,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   bullets.resize(100);
 
-  CreateConnectedLines(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(groundLines), 0, 0, false);
-
-  for( auto& objectData : levelData.objects )
-  {
-    CreateConnectedLines(objectData.points.cbegin(), objectData.points.cend(), std::back_inserter(objectLines));
-  }
-
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
   {
     return target_state(target);
@@ -62,6 +55,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   {
     CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
   }
+
+  level_background_data backgroundData = GenerateLevelBackgroundData(levelData);
 
   screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
 

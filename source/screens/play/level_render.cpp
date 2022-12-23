@@ -90,8 +90,7 @@ void CreateStaticLevelRenderLines(
   screen_render_brush_selector brushes)
 {
   auto brush = brushes[grey];
-  CreateRenderLines(levelState.groundLines.cbegin(), levelState.groundLines.cend(), insertIterator, brush,6);
-  CreateRenderLines(levelState.objectLines.cbegin(), levelState.objectLines.cend(), insertIterator, brush,6);
+  CreateRenderLines(levelState.groundGeometry.lines.cbegin(), levelState.groundGeometry.lines.cend(), insertIterator, brush, 5);
 }
 
 void CreateDynamicLevelRenderLines(
