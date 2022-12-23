@@ -17,7 +17,6 @@ bullet& GetBullet(std::vector<bullet>& bullets);
 bool PlayerCanShoot(const level_state& levelState);
 float GetUpdateInterval(const level_state& levelState);
 bool BulletHasExpired(const bullet& bullet);
-bool BulletHitSomething(const bullet& bulletState, const level_state& levelState);
 int ProcessBulletTargetCollisions(
   std::vector<bullet_target_collision>::iterator collisionsBegin, 
   std::vector<bullet_target_collision>::iterator collisionsEnd);
@@ -192,7 +191,7 @@ void ProcessCollisions(level_state& levelState)
 
   for( auto& bullet : levelState.bullets )
   {
-    if( bullet.free || BulletHasExpired(bullet) || BulletHitSomething(bullet, levelState) )
+    if( bullet.free || BulletHasExpired(bullet) || CoordinateIsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
       bullet.free = true;
   }
 }
@@ -216,13 +215,6 @@ bool BulletHasExpired(const bullet& bullet)
   float cy = bullet.yPos - bullet.startY;
   float distance = sqrt(cx * cx + cy * cy);
   return distance > bullet.range;
-}
-
-bool BulletHitSomething(const bullet& bulletState, const level_state& levelState)
-{
-  return 
-    BulletHasHitTheGround(bulletState, levelState.groundLines.cbegin(), levelState.groundLines.cend()) ||
-    BulletHasHitAnObject(bulletState, levelState.objectLines.cbegin(), levelState.objectLines.cend());
 }
 
 int ProcessBulletTargetCollisions(

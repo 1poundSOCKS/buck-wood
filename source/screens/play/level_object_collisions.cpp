@@ -1,36 +1,19 @@
 #include "pch.h"
 #include "level_object_collisions.h"
 
-bool PlayerHasHitTheGround(
-  const std::vector<game_point>& player, 
-  const std::vector<game_line>::const_iterator groundBegin, 
-  const std::vector<game_line>::const_iterator groundEnd) [[nothrow]]
+[[nodiscard]] auto PlayerHasHitTheGround(
+  const player_ship& player, 
+  const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
 {
-  std::vector<bool> belowGroundFlags;
-  GetBelowGroundFlags(player.cbegin(), player.cend(), groundBegin, groundEnd, std::back_inserter(belowGroundFlags));
-
   return std::reduce(
-    belowGroundFlags.cbegin(),
-    belowGroundFlags.cend(),
+    player.points.cbegin(),
+    player.points.cend(),
     false,
-    [](auto flag, auto below) { return flag || below; }
+    [&groundGeometry](auto hit, auto point)
+    {
+      return hit || CoordinateIsUnderground(point.x, point.y, groundGeometry);
+    }
   );
-}
-
-bool BulletHasHitTheGround(
-  const bullet& bullet, 
-  const std::vector<game_line>::const_iterator groundBegin, 
-  const std::vector<game_line>::const_iterator groundEnd) [[nothrow]]
-{
-  return GetBelowGroundFlag(bullet.xPos, bullet.yPos, groundBegin, groundEnd);
-}
-
-bool BulletHasHitAnObject(
-  const bullet& bullet, 
-  const std::vector<game_line>::const_iterator linesBegin, 
-  const std::vector<game_line>::const_iterator linesEnd) [[nothrow]]
-{
-  return PointInsideObject(bullet.xPos, bullet.yPos, linesBegin, linesEnd);
 }
 
 void GetBulletTargetCollisions(
