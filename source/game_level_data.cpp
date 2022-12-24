@@ -252,8 +252,8 @@ std::wstring game_level_data_filenames::GetNext()
 
 [[nodiscard]] auto GetGameLevelBoundary(const game_level_data& levelData) -> game_rect [[nothrow]]
 {
-  return 
-    std::reduce(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 
+  return std::reduce(
+    levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), 
     game_rect { 0, 0, 0, 0 },
     [](auto boundary, auto point) -> game_rect
     {
@@ -261,6 +261,8 @@ std::wstring game_level_data_filenames::GetNext()
         min(boundary.topLeft.x, point.x),
         min(boundary.topLeft.y, point.y),
         max(boundary.bottomRight.x, point.x),
-        max(boundary.bottomRight.y, point.y) };
-    });
+        max(boundary.bottomRight.y, point.y)
+      };
+    }
+  );
 }
