@@ -3,7 +3,7 @@
 
 #include "geometry.h"
 
-bool AddLineToInterceptCount(const game_line& line, const game_point& point);
+[[nodiscard]] bool AddLineToInterceptCount(const game_line& line, const game_point& point) [[nothrow]];
 float GetYIntercept(float x, const game_line& line);
 
 bool AnyPointInside(auto pointsBegin, auto pointsEnd, const std::vector<game_line>& area)

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "collisions.h"
 
-bool AddLineToInterceptCount(const game_line& line, const game_point& point)
+[[nodiscard]] bool AddLineToInterceptCount(const game_line& line, const game_point& point) [[nothrow]]
 {
   if( point.x >= line.start.x && point.x < line.end.x || point.x < line.start.x && point.x >= line.end.x )
   {

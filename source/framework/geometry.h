@@ -17,9 +17,19 @@ struct game_line
   game_point end;
 };
 
+struct game_rect
+{
+  game_point topLeft;
+  game_point bottomRight;
+};
+
 int CalculateAngle(float x1, float y1, float x2, float y2);
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
+
+[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect [[nothrow]];
+[[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool [[nothrow]];
+[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point [[nothrow]];
 
 void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
 {

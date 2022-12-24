@@ -18,5 +18,7 @@ struct level_targets_geometry
 
 [[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]];
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]];
+[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
+[[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
 
 #endif

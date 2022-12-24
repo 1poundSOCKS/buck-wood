@@ -50,3 +50,20 @@
 
   return levelTargetsGeometry;
 }
+
+[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool [[nothrow]]
+{
+  auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());
+  
+  if( x >= levelGoundGeometry.groundStart.x && y > levelGoundGeometry.groundStart.y ) ++lineInterceptCount;
+  if( x < levelGoundGeometry.groundEnd.x && y > levelGoundGeometry.groundEnd.y ) ++lineInterceptCount;
+
+  return lineInterceptCount % 2 == 1;
+}
+
+[[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
+{
+  return
+    IsUnderground(rect.topLeft.x, rect.topLeft.y, groundGeometry) && 
+    IsUnderground(rect.bottomRight.x, rect.bottomRight.y, groundGeometry);
+}

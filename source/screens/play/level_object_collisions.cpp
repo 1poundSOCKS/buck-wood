@@ -11,7 +11,7 @@
     false,
     [&groundGeometry](auto hit, auto point)
     {
-      return hit || CoordinateIsUnderground(point.x, point.y, groundGeometry);
+      return hit || IsUnderground(point.x, point.y, groundGeometry);
     }
   );
 }
@@ -40,14 +40,4 @@ void GetBulletTargetCollisions(
     if( PointInsideObject(bullet.xPos, bullet.yPos, targetState->shape.cbegin(), targetState->shape.cend()) )
       collisions = bullet_target_collision { bullet, *targetState };
   }
-}
-
-[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool [[nothrow]]
-{
-  auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());
-  
-  if( x >= levelGoundGeometry.groundStart.x && y > levelGoundGeometry.groundStart.y ) ++lineInterceptCount;
-  if( x < levelGoundGeometry.groundEnd.x && y > levelGoundGeometry.groundEnd.y ) ++lineInterceptCount;
-
-  return lineInterceptCount % 2 == 1;
 }

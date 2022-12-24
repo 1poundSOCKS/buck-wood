@@ -28,6 +28,4 @@ void GetBulletTargetCollisions(
   std::vector<target_state>::iterator targetsEnd,
   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
 
-[[nodiscard]] auto CoordinateIsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
-
 #endif

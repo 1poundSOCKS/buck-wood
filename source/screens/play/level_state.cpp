@@ -193,7 +193,7 @@ void ProcessCollisions(level_state& levelState)
 
   for( auto& bullet : levelState.bullets )
   {
-    if( bullet.free || BulletHasExpired(bullet) || CoordinateIsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
+    if( bullet.free || BulletHasExpired(bullet) || IsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
       bullet.free = true;
   }
 }
@@ -206,7 +206,7 @@ void ProcessCollisions(level_state& levelState)
     false, 
     [&levelState](auto hitGround, auto point)
     {
-      return hitGround || CoordinateIsUnderground(point.x, point.y, levelState.groundGeometry);
+      return hitGround || IsUnderground(point.x, point.y, levelState.groundGeometry);
     }
   );
 }
@@ -297,7 +297,7 @@ void RemoveObscuredStars(const game_level_data& levelData, auto starsBegin, auto
   std::copy_if(starsBegin, starsEnd, starInserter, [&levelGroundGeometry,&levelTargetsGeometry](auto star)
   {
     return !(
-      CoordinateIsUnderground(star.position.x, star.position.y, levelGroundGeometry) || 
+      IsUnderground(star.position.x, star.position.y, levelGroundGeometry) || 
       PointInsideObject(star.position.x, star.position.y, levelTargetsGeometry.lines.cbegin(), levelTargetsGeometry.lines.cend())
     );
   });
