@@ -132,8 +132,26 @@
   return { allRects };
 }
 
-[[nodiscard]] auto CreateLevelGroundMatrix(int granularity, const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]]
+[[nodiscard]] auto CreateLevelGroundMatrix(
+  const level_rect_grid& grid, 
+  const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]]
 {
-  std::vector<std::vector<rect_underground_flag>> undergroundFlags;
-  return { undergroundFlags };
+  std::vector<std::vector<rect_underground_flag>> allFlags;
+  std::transform(grid.rects.cbegin(), grid.rects.cend(), std::back_inserter(allFlags),
+  [&groundGeometry](auto row) -> std::vector<rect_underground_flag>
+  {
+    std::vector<rect_underground_flag> rowFlags;
+    std::transform(row.cbegin(), row.cend(), std::back_inserter(rowFlags), 
+    [&groundGeometry](auto rect) -> rect_underground_flag
+    {
+      return {
+        rect,
+        IsUnderground(rect, groundGeometry)
+      };
+    });
+
+    return rowFlags;
+  });
+
+  return { allFlags };
 }

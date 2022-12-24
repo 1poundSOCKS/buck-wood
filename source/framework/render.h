@@ -18,6 +18,8 @@ struct render_line
   float width = 1;
 };
 
+using render_rect = render_point;
+
 void RenderText(
   ID2D1RenderTarget* renderTarget, 
   ID2D1SolidColorBrush* brush, 
@@ -44,10 +46,19 @@ void RenderLines(
   input_iterator_type begin, 
   input_iterator_type end)
 {
-  for( auto line = begin; line != end; line++ )
+  for( auto line = begin; line != end; ++line )
   {
     renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
   }
+}
+
+template <typename input_iterator_type>
+void RenderRectangles(
+  ID2D1RenderTarget* renderTarget, 
+  const typename input_iterator_type begin, 
+  const typename input_iterator_type end)
+{
+  RenderPoints(renderTarget, begin, end);
 }
 
 template <typename input_iterator_type, typename insert_iterator_type>

@@ -2,6 +2,11 @@
 #include "level_state.h"
 #include "game_objects.h"
 
+void RenderGroundMatrix(
+  ID2D1RenderTarget* renderTarget, 
+  const screen_render_data& renderData,  
+  const level_ground_matrix& groundMatrix) [[nothrow]];
+
 void CreateDynamicLevelRenderLines(
   const level_state& levelState, 
   std::back_insert_iterator<std::vector<render_line>> renderLines, 
@@ -53,6 +58,8 @@ void RenderLevel(
 
   renderTarget->SetTransform(levelState.viewTransform);
 
+  RenderGroundMatrix(renderTarget, renderData, levelState.groundMatrix);
+
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
   
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
@@ -74,6 +81,36 @@ void RenderLevel(
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
+}
+
+void RenderGroundMatrix(
+  ID2D1RenderTarget* renderTarget, 
+  const screen_render_data& renderData,  
+  const level_ground_matrix& groundMatrix) [[nothrow]]
+{
+  const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
+  auto brush = renderBrushSelector[grey];
+
+  for( auto& row : groundMatrix.undergroundFlags )
+  {
+    std::vector<rect_underground_flag> rects;
+
+    std::copy_if(
+      row.cbegin(), row.cend(), std::back_inserter(rects), 
+      [](auto& rect) -> bool { return rect.undergroundFlag; }
+    );
+
+    std::vector<render_rect> renderRects;
+
+    std::transform(
+      rects.cbegin(),
+      rects.cend(),
+      std::back_inserter(renderRects),
+      [&brush](auto& rect) -> render_rect { return { rect.rect.topLeft.x, rect.rect.topLeft.y, rect.rect.bottomRight.x, rect.rect.bottomRight.y, brush };  }
+    );
+
+    RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
+  }
 }
 
 void CreateDynamicLevelRenderLines(

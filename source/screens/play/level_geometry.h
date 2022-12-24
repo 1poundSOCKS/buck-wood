@@ -49,6 +49,6 @@ struct level_targets_geometry
 [[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
 [[nodiscard]] auto CreateLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]];
 [[nodiscard]] auto CreateLevelRectGrid(level_grid_def gridDef) -> level_rect_grid [[nothrow]];
-[[nodiscard]] auto CreateLevelGroundMatrix(const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]];
+[[nodiscard]] auto CreateLevelGroundMatrix(const level_rect_grid& grid, const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]];
 
 #endif
