@@ -123,7 +123,7 @@
     std::transform(columns.cbegin(), columns.cend(), std::back_inserter(rowRects), 
     [row, &gridDef](auto column) -> game_rect
     {
-      return GetGridRect(row, column, gridDef.columnWidth, gridDef.rowHeight);
+      return GetGridRect(column, row, gridDef.columnWidth, gridDef.rowHeight);
     });
 
     return rowRects;

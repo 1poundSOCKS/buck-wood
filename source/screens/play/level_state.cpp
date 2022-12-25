@@ -78,7 +78,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 
-  auto gridDef = CreateLevelGridDef(10, 10, groundGeometry);
+  auto gridDef = CreateLevelGridDef(50, 50, groundGeometry);
   auto rectGrid = CreateLevelRectGrid(gridDef);
   groundMatrix = CreateLevelGroundMatrix(rectGrid, groundGeometry);
 }

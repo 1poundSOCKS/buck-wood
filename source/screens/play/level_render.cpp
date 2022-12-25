@@ -91,6 +91,8 @@ void RenderGroundMatrix(
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto brush = renderBrushSelector[grey];
 
+  std::vector<render_rect> renderRects;
+
   for( auto& row : groundMatrix.undergroundFlags )
   {
     std::vector<rect_underground_flag> rects;
@@ -100,17 +102,15 @@ void RenderGroundMatrix(
       [](auto& rect) -> bool { return rect.undergroundFlag; }
     );
 
-    std::vector<render_rect> renderRects;
-
     std::transform(
       rects.cbegin(),
       rects.cend(),
       std::back_inserter(renderRects),
       [&brush](auto& rect) -> render_rect { return { rect.rect.topLeft.x, rect.rect.topLeft.y, rect.rect.bottomRight.x, rect.rect.bottomRight.y, brush };  }
     );
-
-    RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
   }
+
+  RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }
 
 void CreateDynamicLevelRenderLines(

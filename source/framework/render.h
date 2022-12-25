@@ -58,7 +58,10 @@ void RenderRectangles(
   const typename input_iterator_type begin, 
   const typename input_iterator_type end)
 {
-  RenderPoints(renderTarget, begin, end);
+  for( auto rect = begin; rect != end; ++rect )
+  {
+    renderTarget->FillRectangle( rect->rect, rect->brush);
+  }
 }
 
 template <typename input_iterator_type, typename insert_iterator_type>
