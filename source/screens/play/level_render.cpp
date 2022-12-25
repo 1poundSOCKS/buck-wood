@@ -95,18 +95,24 @@ void RenderGroundMatrix(
 
   for( auto& row : groundMatrix.undergroundFlags )
   {
-    std::vector<rect_underground_flag> rects;
+    std::vector<rect_underground_state> rects;
 
     std::copy_if(
       row.cbegin(), row.cend(), std::back_inserter(rects), 
-      [](auto& rect) -> bool { return rect.undergroundFlag; }
+      [](auto& rect) -> bool { return rect.undergroundState == rect_underground_state::all; }
     );
 
     std::transform(
-      rects.cbegin(),
-      rects.cend(),
-      std::back_inserter(renderRects),
-      [&brush](auto& rect) -> render_rect { return { rect.rect.topLeft.x, rect.rect.topLeft.y, rect.rect.bottomRight.x, rect.rect.bottomRight.y, brush };  }
+      rects.cbegin(), rects.cend(), std::back_inserter(renderRects), [&brush](auto& rect) -> render_rect
+      {
+        return {
+          rect.rect.topLeft.x, 
+          rect.rect.topLeft.y, 
+          rect.rect.bottomRight.x + 1, 
+          rect.rect.bottomRight.y + 1, 
+          brush
+        };
+      }
     );
   }
 

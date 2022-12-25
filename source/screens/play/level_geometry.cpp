@@ -74,7 +74,7 @@
     IsUnderground(rect.topLeft.x, rect.bottomRight.y, groundGeometry);
 }
 
-[[nodiscard]] auto CreateLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]]
+[[nodiscard]] auto GetLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]]
 {
   int firstColumn = static_cast<int>(groundGeometry.boundary.topLeft.x) / columnWidth;
   int lastColumn = static_cast<int>(groundGeometry.boundary.bottomRight.x) / columnWidth;
@@ -136,22 +136,22 @@
   const level_rect_grid& grid, 
   const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]]
 {
-  std::vector<std::vector<rect_underground_flag>> allFlags;
-  std::transform(grid.rects.cbegin(), grid.rects.cend(), std::back_inserter(allFlags),
-  [&groundGeometry](auto row) -> std::vector<rect_underground_flag>
+  std::vector<std::vector<rect_underground_state>> allRects;
+  std::transform(grid.rects.cbegin(), grid.rects.cend(), std::back_inserter(allRects),
+  [&groundGeometry](auto row) -> std::vector<rect_underground_state>
   {
-    std::vector<rect_underground_flag> rowFlags;
-    std::transform(row.cbegin(), row.cend(), std::back_inserter(rowFlags), 
-    [&groundGeometry](auto rect) -> rect_underground_flag
+    std::vector<rect_underground_state> rowRects;
+    std::transform(row.cbegin(), row.cend(), std::back_inserter(rowRects), 
+    [&groundGeometry](auto rect) -> rect_underground_state
     {
       return {
         rect,
-        IsUnderground(rect, groundGeometry)
+        IsUnderground(rect, groundGeometry) ? rect_underground_state::all : rect_underground_state::none
       };
     });
 
-    return rowFlags;
+    return rowRects;
   });
 
-  return { allFlags };
+  return { allRects };
 }

@@ -11,10 +11,11 @@ struct level_ground_geometry
   std::vector<game_line> lines;
 };
 
-struct rect_underground_flag
+struct rect_underground_state
 {
+  enum underground_state_type { none, partial, all };
   game_rect rect;
-  bool undergroundFlag;
+  underground_state_type undergroundState;
 };
 
 struct level_grid_def
@@ -34,7 +35,7 @@ struct level_rect_grid
 
 struct level_ground_matrix
 {
-  std::vector<std::vector<rect_underground_flag>> undergroundFlags;
+  std::vector<std::vector<rect_underground_state>> undergroundFlags;
 };
 
 struct level_targets_geometry
@@ -47,7 +48,7 @@ struct level_targets_geometry
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]];
 [[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
 [[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
-[[nodiscard]] auto CreateLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]];
+[[nodiscard]] auto GetLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]];
 [[nodiscard]] auto CreateLevelRectGrid(level_grid_def gridDef) -> level_rect_grid [[nothrow]];
 [[nodiscard]] auto CreateLevelGroundMatrix(const level_rect_grid& grid, const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]];
 
