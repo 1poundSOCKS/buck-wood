@@ -19,6 +19,7 @@
 #include <format>
 #include <limits>
 #include <random>
+#include <cmath>
 
 #include <windows.h>
 #include <windowsx.h>

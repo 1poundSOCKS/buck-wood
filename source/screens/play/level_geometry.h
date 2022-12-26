@@ -20,7 +20,6 @@ struct level_targets_geometry
 [[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]];
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]];
 [[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
-[[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
 
 namespace level_grid
 {
@@ -42,15 +41,18 @@ namespace level_grid
 
   struct area_state
   {
-    enum state_type { none, partial, all };
+    enum state_type { not_underground, part_underground, all_underground };
     game_rect rect;
     state_type state;
   };
 
   [[nodiscard]] auto GetDefinition(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> definition [[nothrow]];
+  [[nodiscard]] auto GetDefinition(int scaleFactor, const level_ground_geometry& groundGeometry) -> definition [[nothrow]];
   [[nodiscard]] auto CreateCellReferences(const definition& gridDef) -> std::vector<cell_ref> [[nothrow]];
   [[nodiscard]] auto CreateGrid(definition gridDef, const std::vector<cell_ref>& cellRefs) -> std::vector<game_rect> [[nothrow]];
+  [[nodiscard]] auto GetUndergroundState(game_rect rect, const level_ground_geometry& groundGeometry) -> area_state::state_type [[nothrow]];
   [[nodiscard]] auto CreateMatrix(const std::vector<game_rect>& grid, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
+  [[nodiscard]] auto SplitMatrixPartials(const std::vector<area_state>& matrix, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
 };
 
 #endif

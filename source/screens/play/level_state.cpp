@@ -78,10 +78,11 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 
-  auto gridDef = level_grid::GetDefinition(50, 50, groundGeometry);
+  auto gridDef = level_grid::GetDefinition(5, groundGeometry);
   auto cellRefs = level_grid::CreateCellReferences(gridDef);
   auto rectGrid = level_grid::CreateGrid(gridDef, cellRefs);
-  groundMatrix = level_grid::CreateMatrix(rectGrid, groundGeometry);
+  auto initialMatrix = level_grid::CreateMatrix(rectGrid, groundGeometry);
+  groundMatrix = level_grid::SplitMatrixPartials(initialMatrix, groundGeometry);
 }
 
 bool LevelIsComplete(const level_state& levelState)

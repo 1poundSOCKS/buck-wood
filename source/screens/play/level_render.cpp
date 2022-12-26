@@ -91,26 +91,20 @@ void RenderGroundMatrix(
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto brush = renderBrushSelector[grey];
 
-  std::vector<level_grid::area_state> undergroundCells;
-  std::copy_if(cells.cbegin(), cells.cend(), std::back_inserter(undergroundCells), [](auto& cell) -> bool
-  {
-    return cell.state == level_grid::area_state::state_type::all;
-  });
-
   std::vector<render_rect> renderRects;
 
-  std::transform(
-    undergroundCells.cbegin(), undergroundCells.cend(), std::back_inserter(renderRects), [&brush](auto& rect) -> render_rect
-    {
-      return {
-        rect.rect.topLeft.x, 
-        rect.rect.topLeft.y, 
-        rect.rect.bottomRight.x + 1, 
-        rect.rect.bottomRight.y + 1, 
-        brush
-      };
-    }
-  );
+  auto ConvertRectToRenderRect = [&brush](auto& rect) -> render_rect
+  {
+    return {
+      rect.rect.topLeft.x, 
+      rect.rect.topLeft.y, 
+      rect.rect.bottomRight.x + 1, 
+      rect.rect.bottomRight.y + 1, 
+      brush
+    };
+  };
+
+  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(renderRects), ConvertRectToRenderRect);
 
   RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }

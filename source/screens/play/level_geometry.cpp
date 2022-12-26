@@ -65,15 +65,6 @@
   return lineInterceptCount % 2 == 1;
 }
 
-[[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
-{
-  return
-    IsUnderground(rect.topLeft.x, rect.topLeft.y, groundGeometry) && 
-    IsUnderground(rect.bottomRight.x, rect.topLeft.y, groundGeometry) && 
-    IsUnderground(rect.bottomRight.x, rect.bottomRight.y, groundGeometry) &&
-    IsUnderground(rect.topLeft.x, rect.bottomRight.y, groundGeometry);
-}
-
 [[nodiscard]] auto level_grid::GetDefinition(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid::definition [[nothrow]]
 {
   int firstColumn = static_cast<int>(groundGeometry.boundary.topLeft.x) / columnWidth;
@@ -95,6 +86,12 @@
     firstRow,
     lastRow - firstRow + 1
   };
+}
+
+[[nodiscard]] auto level_grid::GetDefinition(int scaleFactor, const level_ground_geometry& groundGeometry) -> definition [[nothrow]]
+{
+  int cellSize = pow(2,scaleFactor);
+  return level_grid::GetDefinition(cellSize, cellSize, groundGeometry);
 }
 
 [[nodiscard]] auto level_grid::CreateCellReferences(const definition& gridDef) -> std::vector<cell_ref> [[nothrow]]
@@ -129,7 +126,8 @@
   };
 }
 
-[[nodiscard]] auto level_grid::CreateGrid(level_grid::definition gridDef, const std::vector<cell_ref>& cellRefs) -> std::vector<game_rect> [[nothrow]]
+[[nodiscard]] auto level_grid::CreateGrid(level_grid::definition gridDef, const std::vector<cell_ref>& cellRefs)
+-> std::vector<game_rect> [[nothrow]]
 {
   std::vector<game_rect> allRects;
 
@@ -142,20 +140,106 @@
   return allRects;
 }
 
-[[nodiscard]] auto level_grid::CreateMatrix(
-  const std::vector<game_rect>& grid, 
-  const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]]
+[[nodiscard]] auto level_grid::GetUndergroundState(game_rect rect, const level_ground_geometry& groundGeometry)
+-> area_state::state_type [[nothrow]]
+{
+  std::array<game_point, 4> cornerPoints = {
+    rect.topLeft.x, rect.topLeft.y, 
+    rect.bottomRight.x, rect.topLeft.y, 
+    rect.bottomRight.x, rect.bottomRight.y,
+    rect.topLeft.x, rect.bottomRight.y
+  };
+
+  auto IsPointUnderground = [&groundGeometry](auto point)
+  {
+    return IsUnderground(point.x, point.y, groundGeometry);
+  };
+
+  std::vector<game_point> undergroundPoints;
+  std::copy_if(cornerPoints.cbegin(), cornerPoints.cend(), std::back_inserter(undergroundPoints), IsPointUnderground);
+
+  switch( undergroundPoints.size() )
+  {
+  case 4:
+    return area_state::all_underground;
+  case 0:
+    return area_state::not_underground;
+  default:
+    return area_state::part_underground;
+  }
+}
+
+[[nodiscard]] auto level_grid::CreateMatrix(const std::vector<game_rect>& grid, const level_ground_geometry& groundGeometry)
+-> std::vector<area_state> [[nothrow]]
 {
   std::vector<area_state> allRects;
 
-  std::transform(grid.cbegin(), grid.cend(), std::back_inserter(allRects),
-  [&groundGeometry](auto rect) -> area_state
+  auto ConvertRectToAreaState = [&groundGeometry](auto rect) -> area_state
   {
-    return {
-      rect,
-      IsUnderground(rect, groundGeometry) ? area_state::all : area_state::none
-    };
-  });
+    return { rect, GetUndergroundState(rect, groundGeometry) };
+  };
+
+  std::transform(grid.cbegin(), grid.cend(), std::back_inserter(allRects), ConvertRectToAreaState);
 
   return allRects;
+}
+
+void SplitAndExtractUndergroundAreas(const level_grid::area_state& areaState, auto areaInserter, const level_ground_geometry& groundGeometry)
+{
+  auto areaWidth = ( areaState.rect.bottomRight.x - areaState.rect.topLeft.x ) / 2;
+  auto areaHeight = ( areaState.rect.bottomRight.y - areaState.rect.topLeft.y ) / 2;
+  auto areaCentre = game_point { areaState.rect.topLeft.x + areaWidth, areaState.rect.topLeft.y + areaHeight };
+
+  std::array<game_rect, 4> subRects = {
+    game_point { areaState.rect.topLeft.x, areaState.rect.topLeft.y },
+    game_point { areaCentre.x, areaCentre.y },
+    game_point { areaCentre.x, areaState.rect.topLeft.y },
+    game_point { areaState.rect.bottomRight.x, areaCentre.y },
+    game_point { areaState.rect.topLeft.x, areaCentre.y },
+    game_point { areaCentre.x, areaState.rect.bottomRight.y },
+    game_point { areaCentre.x, areaCentre.y },
+    game_point { areaState.rect.bottomRight.x, areaState.rect.bottomRight.y }
+  };
+
+  auto ConvertRectToAreaState = [&groundGeometry](auto rect) -> level_grid::area_state
+  {
+    return { rect, level_grid::GetUndergroundState(rect, groundGeometry) };
+  };
+
+  std::vector<level_grid::area_state> areaStates;
+  std::transform(subRects.cbegin(), subRects.cend(), std::back_inserter(areaStates), ConvertRectToAreaState);
+
+  auto IsAllUnderground = [](auto area) -> bool
+  {
+    return area.state == level_grid::area_state::all_underground;
+  };
+
+  std::copy_if(areaStates.cbegin(), areaStates.cend(), areaInserter, IsAllUnderground);
+}
+
+[[nodiscard]] auto level_grid::SplitMatrixPartials(const std::vector<area_state>& matrix, const level_ground_geometry& groundGeometry)
+-> std::vector<area_state> [[nothrow]]
+{
+  auto IsAllUnderground = [](auto area) -> bool
+  {
+    return area.state == area_state::all_underground;
+  };
+
+  std::vector<area_state> allUnderground;
+  std::copy_if(matrix.cbegin(), matrix.cend(), std::back_inserter(allUnderground), IsAllUnderground);
+
+  auto IsPartUnderground = [](auto area) -> bool
+  {
+    return area.state == area_state::part_underground;
+  };
+
+  std::vector<area_state> partUnderground;
+  std::copy_if(matrix.cbegin(), matrix.cend(), std::back_inserter(partUnderground), IsPartUnderground);
+
+  for( auto area : partUnderground )
+  {
+    SplitAndExtractUndergroundAreas(area, std::back_inserter(allUnderground), groundGeometry);
+  }
+
+  return allUnderground;
 }
