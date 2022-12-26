@@ -11,33 +11,6 @@ struct level_ground_geometry
   std::vector<game_line> lines;
 };
 
-struct rect_underground_state
-{
-  enum underground_state_type { none, partial, all };
-  game_rect rect;
-  underground_state_type undergroundState;
-};
-
-struct level_grid_def
-{
-  int columnWidth;
-  int rowHeight;
-  int firstColumn;
-  int columnCount;
-  int firstRow;
-  int rowCount;
-};
-
-struct level_rect_grid
-{
-  std::vector<std::vector<game_rect>> rects;
-};
-
-struct level_ground_matrix
-{
-  std::vector<std::vector<rect_underground_state>> undergroundFlags;
-};
-
 struct level_targets_geometry
 {
   std::vector<game_point> points;
@@ -48,8 +21,36 @@ struct level_targets_geometry
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]];
 [[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
 [[nodiscard]] auto IsUnderground(game_rect rect, const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
-[[nodiscard]] auto GetLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]];
-[[nodiscard]] auto CreateLevelRectGrid(level_grid_def gridDef) -> level_rect_grid [[nothrow]];
-[[nodiscard]] auto CreateLevelGroundMatrix(const level_rect_grid& grid, const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]];
+
+namespace level_grid
+{
+  struct definition
+  {
+    int columnWidth;
+    int rowHeight;
+    int firstColumn;
+    int columnCount;
+    int firstRow;
+    int rowCount;
+  };
+
+  struct cell_ref
+  {
+    int column;
+    int row;
+  };
+
+  struct area_state
+  {
+    enum state_type { none, partial, all };
+    game_rect rect;
+    state_type state;
+  };
+
+  [[nodiscard]] auto GetDefinition(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> definition [[nothrow]];
+  [[nodiscard]] auto CreateCellReferences(const definition& gridDef) -> std::vector<cell_ref> [[nothrow]];
+  [[nodiscard]] auto CreateGrid(definition gridDef, const std::vector<cell_ref>& cellRefs) -> std::vector<game_rect> [[nothrow]];
+  [[nodiscard]] auto CreateMatrix(const std::vector<game_rect>& grid, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
+};
 
 #endif

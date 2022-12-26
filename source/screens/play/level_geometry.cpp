@@ -74,7 +74,7 @@
     IsUnderground(rect.topLeft.x, rect.bottomRight.y, groundGeometry);
 }
 
-[[nodiscard]] auto GetLevelGridDef(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid_def [[nothrow]]
+[[nodiscard]] auto level_grid::GetDefinition(int columnWidth, int rowHeight, const level_ground_geometry& groundGeometry) -> level_grid::definition [[nothrow]]
 {
   int firstColumn = static_cast<int>(groundGeometry.boundary.topLeft.x) / columnWidth;
   int lastColumn = static_cast<int>(groundGeometry.boundary.bottomRight.x) / columnWidth;
@@ -97,6 +97,28 @@
   };
 }
 
+[[nodiscard]] auto level_grid::CreateCellReferences(const definition& gridDef) -> std::vector<cell_ref> [[nothrow]]
+{
+  std::vector<int> rows(gridDef.rowCount);
+  std::iota(rows.begin(), rows.end(), gridDef.firstRow);
+
+  std::vector<int> columns(gridDef.columnCount);
+  std::iota(columns.begin(), columns.end(), gridDef.firstColumn);
+
+  std::vector<cell_ref> allCells;
+  auto newCell = std::back_inserter(allCells);
+
+  for( auto row : rows )
+  {
+    for( auto column : columns )
+    {
+      newCell = { column, row };
+    }
+  }
+
+  return allCells;
+}
+
 [[nodiscard]] auto GetGridRect(int row, int column, int columnWidth, int rowHeight) -> game_rect [[nothrow]]
 {
   return {
@@ -107,51 +129,33 @@
   };
 }
 
-[[nodiscard]] auto CreateLevelRectGrid(level_grid_def gridDef) -> level_rect_grid [[nothrow]]
+[[nodiscard]] auto level_grid::CreateGrid(level_grid::definition gridDef, const std::vector<cell_ref>& cellRefs) -> std::vector<game_rect> [[nothrow]]
 {
-  std::vector<int> rows(gridDef.rowCount);
-  std::iota(rows.begin(), rows.end(), gridDef.firstRow);
+  std::vector<game_rect> allRects;
 
-  std::vector<std::vector<game_rect>> allRects;
-  std::transform(rows.cbegin(), rows.cend(), std::back_inserter(allRects),
-  [&gridDef](auto row) -> std::vector<game_rect>
+  std::transform(cellRefs.cbegin(), cellRefs.cend(), std::back_inserter(allRects), 
+  [&gridDef](auto cellRef) -> game_rect
   {
-    std::vector<int> columns(gridDef.columnCount);
-    std::iota(columns.begin(), columns.end(), gridDef.firstColumn);
-    
-    std::vector<game_rect> rowRects;
-    std::transform(columns.cbegin(), columns.cend(), std::back_inserter(rowRects), 
-    [row, &gridDef](auto column) -> game_rect
-    {
-      return GetGridRect(column, row, gridDef.columnWidth, gridDef.rowHeight);
-    });
-
-    return rowRects;
+    return GetGridRect(cellRef.column, cellRef.row, gridDef.columnWidth, gridDef.rowHeight);
   });
 
-  return { allRects };
+  return allRects;
 }
 
-[[nodiscard]] auto CreateLevelGroundMatrix(
-  const level_rect_grid& grid, 
-  const level_ground_geometry& groundGeometry) -> level_ground_matrix [[nothrow]]
+[[nodiscard]] auto level_grid::CreateMatrix(
+  const std::vector<game_rect>& grid, 
+  const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]]
 {
-  std::vector<std::vector<rect_underground_state>> allRects;
-  std::transform(grid.rects.cbegin(), grid.rects.cend(), std::back_inserter(allRects),
-  [&groundGeometry](auto row) -> std::vector<rect_underground_state>
-  {
-    std::vector<rect_underground_state> rowRects;
-    std::transform(row.cbegin(), row.cend(), std::back_inserter(rowRects), 
-    [&groundGeometry](auto rect) -> rect_underground_state
-    {
-      return {
-        rect,
-        IsUnderground(rect, groundGeometry) ? rect_underground_state::all : rect_underground_state::none
-      };
-    });
+  std::vector<area_state> allRects;
 
-    return rowRects;
+  std::transform(grid.cbegin(), grid.cend(), std::back_inserter(allRects),
+  [&groundGeometry](auto rect) -> area_state
+  {
+    return {
+      rect,
+      IsUnderground(rect, groundGeometry) ? area_state::all : area_state::none
+    };
   });
 
-  return { allRects };
+  return allRects;
 }

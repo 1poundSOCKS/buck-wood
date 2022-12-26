@@ -5,7 +5,7 @@
 void RenderGroundMatrix(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,  
-  const level_ground_matrix& groundMatrix) [[nothrow]];
+  const std::vector<level_grid::area_state>& cells) [[nothrow]];
 
 void CreateDynamicLevelRenderLines(
   const level_state& levelState, 
@@ -86,35 +86,31 @@ void RenderLevel(
 void RenderGroundMatrix(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,  
-  const level_ground_matrix& groundMatrix) [[nothrow]]
+  const std::vector<level_grid::area_state>& cells) [[nothrow]]
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto brush = renderBrushSelector[grey];
 
+  std::vector<level_grid::area_state> undergroundCells;
+  std::copy_if(cells.cbegin(), cells.cend(), std::back_inserter(undergroundCells), [](auto& cell) -> bool
+  {
+    return cell.state == level_grid::area_state::state_type::all;
+  });
+
   std::vector<render_rect> renderRects;
 
-  for( auto& row : groundMatrix.undergroundFlags )
-  {
-    std::vector<rect_underground_state> rects;
-
-    std::copy_if(
-      row.cbegin(), row.cend(), std::back_inserter(rects), 
-      [](auto& rect) -> bool { return rect.undergroundState == rect_underground_state::all; }
-    );
-
-    std::transform(
-      rects.cbegin(), rects.cend(), std::back_inserter(renderRects), [&brush](auto& rect) -> render_rect
-      {
-        return {
-          rect.rect.topLeft.x, 
-          rect.rect.topLeft.y, 
-          rect.rect.bottomRight.x + 1, 
-          rect.rect.bottomRight.y + 1, 
-          brush
-        };
-      }
-    );
-  }
+  std::transform(
+    undergroundCells.cbegin(), undergroundCells.cend(), std::back_inserter(renderRects), [&brush](auto& rect) -> render_rect
+    {
+      return {
+        rect.rect.topLeft.x, 
+        rect.rect.topLeft.y, 
+        rect.rect.bottomRight.x + 1, 
+        rect.rect.bottomRight.y + 1, 
+        brush
+      };
+    }
+  );
 
   RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }
