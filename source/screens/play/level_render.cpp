@@ -61,15 +61,20 @@ void RenderLevel(
   RenderGroundMatrix(renderTarget, renderData, levelState.groundMatrix);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
-  
+
+#ifdef __RENDER_GROUND_LINES  
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
+#endif
 
   std::vector<render_line> dynamicRenderLines;
   CreateDynamicLevelRenderLines(levelState, std::back_inserter(dynamicRenderLines), renderBrushSelector);
   auto renderTargetSize = renderTarget->GetSize();
   auto brush = renderBrushSelector[grey];
+
+#ifdef __RENDER_GROUND_LINES  
   AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
   AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
+#endif
 
   RenderLines(renderTarget, dynamicRenderLines.cbegin(), dynamicRenderLines.cend());
 
@@ -91,8 +96,6 @@ void RenderGroundMatrix(
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto brush = renderBrushSelector[grey];
 
-  std::vector<render_rect> renderRects;
-
   auto ConvertRectToRenderRect = [&brush](auto& rect) -> render_rect
   {
     return {
@@ -104,8 +107,8 @@ void RenderGroundMatrix(
     };
   };
 
+  std::vector<render_rect> renderRects;
   std::transform(cells.cbegin(), cells.cend(), std::back_inserter(renderRects), ConvertRectToRenderRect);
-
   RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }
 
