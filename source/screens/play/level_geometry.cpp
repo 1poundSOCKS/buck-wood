@@ -184,22 +184,27 @@
   return allRects;
 }
 
+[[nodiscard]] auto SplitRect(game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
+{
+  auto areaWidth = ( rect.bottomRight.x - rect.topLeft.x ) / 2;
+  auto areaHeight = ( rect.bottomRight.y - rect.topLeft.y ) / 2;
+  auto areaCentre = game_point { rect.topLeft.x + areaWidth, rect.topLeft.y + areaHeight };
+
+  return {
+    game_point { rect.topLeft.x, rect.topLeft.y },
+    game_point { areaCentre.x, areaCentre.y },
+    game_point { areaCentre.x, rect.topLeft.y },
+    game_point { rect.bottomRight.x, areaCentre.y },
+    game_point { rect.topLeft.x, areaCentre.y },
+    game_point { areaCentre.x, rect.bottomRight.y },
+    game_point { areaCentre.x, areaCentre.y },
+    game_point { rect.bottomRight.x, rect.bottomRight.y }
+  };
+}
+
 void SplitAndExtractUndergroundAreas(const level_grid::area_state& areaState, auto areaInserter, const level_ground_geometry& groundGeometry)
 {
-  auto areaWidth = ( areaState.rect.bottomRight.x - areaState.rect.topLeft.x ) / 2;
-  auto areaHeight = ( areaState.rect.bottomRight.y - areaState.rect.topLeft.y ) / 2;
-  auto areaCentre = game_point { areaState.rect.topLeft.x + areaWidth, areaState.rect.topLeft.y + areaHeight };
-
-  std::array<game_rect, 4> subRects = {
-    game_point { areaState.rect.topLeft.x, areaState.rect.topLeft.y },
-    game_point { areaCentre.x, areaCentre.y },
-    game_point { areaCentre.x, areaState.rect.topLeft.y },
-    game_point { areaState.rect.bottomRight.x, areaCentre.y },
-    game_point { areaState.rect.topLeft.x, areaCentre.y },
-    game_point { areaCentre.x, areaState.rect.bottomRight.y },
-    game_point { areaCentre.x, areaCentre.y },
-    game_point { areaState.rect.bottomRight.x, areaState.rect.bottomRight.y }
-  };
+  auto subRects = SplitRect(areaState.rect);
 
   auto ConvertRectToAreaState = [&groundGeometry](auto rect) -> level_grid::area_state
   {
