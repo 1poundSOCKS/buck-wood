@@ -53,6 +53,67 @@ namespace level_grid
   [[nodiscard]] auto GetUndergroundState(game_rect rect, const level_ground_geometry& groundGeometry) -> area_state::state_type [[nothrow]];
   [[nodiscard]] auto CreateMatrix(const std::vector<game_rect>& grid, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
   [[nodiscard]] auto SplitMatrixPartials(const std::vector<area_state>& matrix, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
+  
+  [[nodiscard]] inline auto SplitRect(game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
+  {
+    auto areaWidth = ( rect.bottomRight.x - rect.topLeft.x ) / 2;
+    auto areaHeight = ( rect.bottomRight.y - rect.topLeft.y ) / 2;
+    auto areaCentre = game_point { rect.topLeft.x + areaWidth, rect.topLeft.y + areaHeight };
+
+    return {
+      game_point { rect.topLeft.x, rect.topLeft.y },
+      game_point { areaCentre.x, areaCentre.y },
+      game_point { areaCentre.x, rect.topLeft.y },
+      game_point { rect.bottomRight.x, areaCentre.y },
+      game_point { rect.topLeft.x, areaCentre.y },
+      game_point { areaCentre.x, rect.bottomRight.y },
+      game_point { areaCentre.x, areaCentre.y },
+      game_point { rect.bottomRight.x, rect.bottomRight.y }
+    };
+  }
+
+  auto SplitArea(const level_grid::area_state& areaState, auto areaInserter, const level_ground_geometry& groundGeometry) -> void
+  {
+    auto subRects = SplitRect(areaState.rect);
+
+    auto ConvertRectToAreaState = [&groundGeometry](auto rect) -> level_grid::area_state
+    {
+      return { rect, level_grid::GetUndergroundState(rect, groundGeometry) };
+    };
+
+    std::transform(subRects.cbegin(), subRects.cend(), areaInserter, ConvertRectToAreaState);
+  }
+
+  [[nodiscard]] auto SplitMatrixPartials(
+    area_state area, 
+    const level_ground_geometry& groundGeometry, 
+    auto undergroundAreaInserter, int recursionLevel) -> void [[nothrow]]
+  {
+    auto IsAllUnderground = [](auto area) -> bool
+    {
+      return area.state == area_state::all_underground;
+    };
+
+    auto IsPartUnderground = [](auto area) -> bool
+    {
+      return area.state == area_state::part_underground;
+    };
+
+    std::vector<level_grid::area_state> areaStates;
+    SplitArea(area, std::back_inserter(areaStates), groundGeometry);
+    std::copy_if(areaStates.cbegin(), areaStates.cend(), undergroundAreaInserter, IsAllUnderground);
+
+    if( --recursionLevel > 0 )
+    {
+      std::vector<area_state> partUnderground;
+      std::copy_if(areaStates.cbegin(), areaStates.cend(), std::back_inserter(partUnderground), IsPartUnderground);
+
+      for( auto area : partUnderground )
+      {
+        SplitMatrixPartials(area, groundGeometry, undergroundAreaInserter, recursionLevel);
+      }
+    }
+  }
 };
 
 #endif
