@@ -150,15 +150,14 @@
     rect.topLeft.x, rect.bottomRight.y
   };
 
-  auto IsPointUnderground = [&groundGeometry](auto point)
+  auto IncrementIfUnderground = [&groundGeometry](auto count, auto point) -> int
   {
-    return IsUnderground(point.x, point.y, groundGeometry);
+    return IsUnderground(point.x, point.y, groundGeometry) ? count + 1 : count;
   };
 
-  std::vector<game_point> undergroundPoints;
-  std::copy_if(cornerPoints.cbegin(), cornerPoints.cend(), std::back_inserter(undergroundPoints), IsPointUnderground);
+  auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
 
-  switch( undergroundPoints.size() )
+  switch( undergroundCount )
   {
   case 4:
     return area_state::all_underground;
