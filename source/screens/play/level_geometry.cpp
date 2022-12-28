@@ -183,9 +183,14 @@
   return allRects;
 }
 
-[[nodiscard]] auto level_grid::SplitMatrixPartials(const std::vector<area_state>& matrix, const level_ground_geometry& groundGeometry)
+[[nodiscard]] auto level_grid::SplitMatrixPartials(/*const std::vector<area_state>& matrix, */const level_ground_geometry& groundGeometry)
 -> std::vector<area_state> [[nothrow]]
 {
+  auto gridDef = GetDefinition(7, groundGeometry);
+  auto cellRefs = CreateCellReferences(gridDef);
+  auto rectGrid = CreateGrid(gridDef, cellRefs);
+  auto matrix = CreateMatrix(rectGrid, groundGeometry);
+
   auto IsAllUnderground = [](auto area) -> bool
   {
     return area.state == area_state::all_underground;

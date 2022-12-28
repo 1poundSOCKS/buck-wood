@@ -52,7 +52,7 @@ namespace level_grid
   [[nodiscard]] auto CreateGrid(definition gridDef, const std::vector<cell_ref>& cellRefs) -> std::vector<game_rect> [[nothrow]];
   [[nodiscard]] auto GetUndergroundState(game_rect rect, const level_ground_geometry& groundGeometry) -> area_state::state_type [[nothrow]];
   [[nodiscard]] auto CreateMatrix(const std::vector<game_rect>& grid, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
-  [[nodiscard]] auto SplitMatrixPartials(const std::vector<area_state>& matrix, const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
+  [[nodiscard]] auto SplitMatrixPartials(/*const std::vector<area_state>& matrix, */const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
   
   [[nodiscard]] inline auto SplitRect(game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
   {
