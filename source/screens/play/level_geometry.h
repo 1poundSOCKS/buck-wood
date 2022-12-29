@@ -30,8 +30,6 @@ namespace level_grid
     state_type state;
   };
 
-  [[nodiscard]] auto CreateMatrix(const level_ground_geometry& groundGeometry) -> std::vector<area_state> [[nothrow]];
-  
   [[nodiscard]] inline auto SplitRect(
     game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
   {
@@ -89,6 +87,16 @@ namespace level_grid
         SplitMatrixPartials(area, undergroundAreaInserter, recursionLevel, GetUndergroundState);
       }
     }
+  }
+
+  [[nodiscard]] auto CreateMatrix(game_rect area, auto GetUndergroundState)
+  -> std::vector<area_state> [[nothrow]]
+  {
+    area_state levelAreaState = { area, area_state::part_underground };
+
+    std::vector<area_state> undergroundAreas;
+    SplitMatrixPartials(levelAreaState, std::back_inserter(undergroundAreas), 9, GetUndergroundState);
+    return undergroundAreas;
   }
 };
 

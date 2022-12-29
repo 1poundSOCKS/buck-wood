@@ -78,7 +78,34 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 
-  groundMatrix = level_grid::CreateMatrix(groundGeometry);
+  auto GetUndergroundState = [this](game_rect rect) -> level_grid::area_state::state_type
+  {
+    auto cornerPoints = std::array {
+      game_point { rect.topLeft.x, rect.topLeft.y }, 
+      game_point { rect.bottomRight.x, rect.topLeft.y }, 
+      game_point { rect.bottomRight.x, rect.bottomRight.y },
+      game_point { rect.topLeft.x, rect.bottomRight.y }
+    };
+
+    auto IncrementIfUnderground = [this](auto count, auto point) -> int
+    {
+      return IsUnderground(point.x, point.y, this->groundGeometry) ? count + 1 : count;
+    };
+
+    auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
+
+    switch( undergroundCount )
+    {
+    case 4:
+      return level_grid::area_state::all_underground;
+    case 0:
+      // return area_state::not_underground;
+    default:
+      return level_grid::area_state::part_underground;
+    }
+  };
+
+  groundMatrix = level_grid::CreateMatrix(groundGeometry.boundary, GetUndergroundState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
