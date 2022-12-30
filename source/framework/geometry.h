@@ -60,8 +60,7 @@ struct area_state
   game_rect rect;
 };
 
-[[nodiscard]] inline auto QuarterRect(
-  game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
+[[nodiscard]] inline auto QuarterRect(game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
 {
   auto areaWidth = ( rect.bottomRight.x - rect.topLeft.x ) / 2;
   auto areaHeight = ( rect.bottomRight.y - rect.topLeft.y ) / 2;
@@ -75,9 +74,7 @@ struct area_state
   };
 }
 
-auto QuarterArea(
-  const area_state& areaState, auto areaInserter, 
-  auto GetAreaState) -> void
+void QuarterArea(const area_state& areaState, auto areaInserter, auto GetAreaState) [[nothrow]]
 {
   auto subRects = QuarterRect(areaState.rect);
 
@@ -89,9 +86,7 @@ auto QuarterArea(
   std::transform(subRects.cbegin(), subRects.cend(), areaInserter, ConvertRectToAreaState);
 }
 
-[[nodiscard]] auto SplitAreaPartials(
-  area_state area, 
-  auto undergroundAreaInserter, int recursionCount, auto GetAreaState) -> void [[nothrow]]
+void SplitAreaPartials(area_state area, int recursionCount, auto undergroundAreaInserter, auto GetAreaState) [[nothrow]]
 {
   auto Keep = [](auto area) -> bool
   { return area.state == area_state::keep; };
@@ -110,23 +105,15 @@ auto QuarterArea(
 
     for( auto area : areasToSplit )
     {
-      SplitAreaPartials(area, undergroundAreaInserter, recursionCount, GetAreaState);
+      SplitAreaPartials(area, recursionCount, undergroundAreaInserter, GetAreaState);
     }
   }
-  // else
-  // {
-  //   std::copy_if(areaStates.cbegin(), areaStates.cend(), undergroundAreaInserter, Split);
-  // }
 }
 
-[[nodiscard]] auto SplitArea(game_rect area, int recursionCount, auto GetAreaState)
--> std::vector<area_state> [[nothrow]]
+void SplitArea(game_rect area, int recursionCount, auto areaStateInserter, auto GetAreaState) [[nothrow]]
 {
   auto areaState = area_state { area_state::split, area };
-
-  std::vector<area_state> areaStates;
-  SplitAreaPartials(areaState, std::back_inserter(areaStates), recursionCount, GetAreaState);
-  return areaStates;
+  SplitAreaPartials(areaState, recursionCount, areaStateInserter, GetAreaState);
 }
 
 #endif

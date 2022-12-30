@@ -117,7 +117,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
     }
   };
 
-  groundMatrix = SplitArea(groundGeometry.boundary, 9, GetAreaState);
+  SplitArea(groundGeometry.boundary, 9, std::back_inserter(groundMatrix) ,GetAreaState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
