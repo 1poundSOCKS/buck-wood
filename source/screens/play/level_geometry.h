@@ -61,14 +61,14 @@ namespace level_grid
 
   [[nodiscard]] auto SplitMatrixPartials(
     area_state area, 
-    auto undergroundAreaInserter, int recursionLevel, auto GetUndergroundState) -> void [[nothrow]]
+    auto undergroundAreaInserter, int recursionCount, auto GetUndergroundState) -> void [[nothrow]]
   {
     auto IsAllUnderground = [](auto area) -> bool
     {
       return area.state == area_state::all_underground;
     };
 
-    auto IsNotAllUnderground = [](auto area) -> bool
+    auto IsPartUnderground = [](auto area) -> bool
     {
       return area.state == area_state::part_underground/* || area.state == area_state::not_underground*/;
     };
@@ -77,25 +77,25 @@ namespace level_grid
     SplitArea(area, std::back_inserter(areaStates), GetUndergroundState);
     std::copy_if(areaStates.cbegin(), areaStates.cend(), undergroundAreaInserter, IsAllUnderground);
 
-    if( --recursionLevel > 0 )
+    if( --recursionCount > 0 )
     {
       std::vector<area_state> partUnderground;
-      std::copy_if(areaStates.cbegin(), areaStates.cend(), std::back_inserter(partUnderground), IsNotAllUnderground);
+      std::copy_if(areaStates.cbegin(), areaStates.cend(), std::back_inserter(partUnderground), IsPartUnderground);
 
       for( auto area : partUnderground )
       {
-        SplitMatrixPartials(area, undergroundAreaInserter, recursionLevel, GetUndergroundState);
+        SplitMatrixPartials(area, undergroundAreaInserter, recursionCount, GetUndergroundState);
       }
     }
   }
 
-  [[nodiscard]] auto CreateMatrix(game_rect area, auto GetUndergroundState)
+  [[nodiscard]] auto CreateMatrix(game_rect area, int recursionCount, auto GetUndergroundState)
   -> std::vector<area_state> [[nothrow]]
   {
     area_state levelAreaState = { area, area_state::part_underground };
 
     std::vector<area_state> undergroundAreas;
-    SplitMatrixPartials(levelAreaState, std::back_inserter(undergroundAreas), 9, GetUndergroundState);
+    SplitMatrixPartials(levelAreaState, std::back_inserter(undergroundAreas), recursionCount, GetUndergroundState);
     return undergroundAreas;
   }
 };

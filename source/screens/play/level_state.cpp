@@ -105,7 +105,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
     }
   };
 
-  groundMatrix = level_grid::CreateMatrix(groundGeometry.boundary, GetUndergroundState);
+  groundMatrix = level_grid::CreateMatrix(groundGeometry.boundary, 9, GetUndergroundState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
