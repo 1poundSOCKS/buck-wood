@@ -113,6 +113,10 @@ auto QuarterArea(
       SplitAreaPartials(area, undergroundAreaInserter, recursionCount, GetAreaState);
     }
   }
+  // else
+  // {
+  //   std::copy_if(areaStates.cbegin(), areaStates.cend(), undergroundAreaInserter, Split);
+  // }
 }
 
 [[nodiscard]] auto SplitArea(game_rect area, int recursionCount, auto GetAreaState)

@@ -94,12 +94,24 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
     auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
 
+    auto DoOverlapReduce = [this, rect](auto overlapFlag, auto line)
+    {
+      return overlapFlag || DoOverlap(rect, GetBoundingRect(line));
+    };
+
+    auto overlapFlag = std::reduce(
+      this->groundGeometry.lines.cbegin(), 
+      this->groundGeometry.lines.cend(), 
+      false,
+      DoOverlapReduce
+    );
+
     switch( undergroundCount )
     {
     case 4:
-      return area_state::keep;
+      return overlapFlag ? area_state::split : area_state::keep;
     case 0:
-      // return area_state::omit;
+      return overlapFlag ? area_state::split: area_state::omit;
     default:
       return area_state::split;
     }

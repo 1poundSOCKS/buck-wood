@@ -48,6 +48,8 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
+#define __RENDER_GROUND_LINES
+
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,
