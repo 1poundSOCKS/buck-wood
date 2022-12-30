@@ -48,7 +48,7 @@ struct level_state
   level_ground_geometry groundGeometry;
   level_targets_geometry targetsGeometry;
   std::vector<render_line> staticRenderLines;
-  std::vector<level_grid::area_state> groundMatrix;
+  std::vector<area_state> groundMatrix;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);

@@ -5,7 +5,7 @@
 void RenderGroundMatrix(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,  
-  const std::vector<level_grid::area_state>& cells) [[nothrow]];
+  const std::vector<area_state>& cells) [[nothrow]];
 
 void CreateDynamicLevelRenderLines(
   const level_state& levelState, 
@@ -62,7 +62,7 @@ void RenderLevel(
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
-#ifdef __RENDER_GROUND_LINES  
+#ifdef __RENDER_GROUND_LINES
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
 #endif
 
@@ -91,7 +91,7 @@ void RenderLevel(
 void RenderGroundMatrix(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,  
-  const std::vector<level_grid::area_state>& cells) [[nothrow]]
+  const std::vector<area_state>& cells) [[nothrow]]
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto brush = renderBrushSelector[grey];
