@@ -40,6 +40,25 @@ bool PointInside(const game_point& point, auto linesBegin, auto linesEnd)
   return ( matchingLines % 2 > 0 );
 }
 
+  
+[[nodicard]] auto PointInsideCount(auto beginIterator, auto endIterator, const auto& linesCollection) -> int
+{
+  return std::reduce(
+    beginIterator, endIterator, 0,
+    [&linesCollection](auto total, auto point) -> int
+    {
+      return PointInside(point, linesCollection.cbegin(), linesCollection.cend()) ? total + 1 : total;
+    }
+  );
+}
+
+[[nodicard]] auto PointInsideCount(auto beginIterator, auto endIterator, game_rect rect) -> int
+{
+  std::vector<game_line> lines;
+  CreateConnectedLines(rect, std::back_inserter(lines));
+  return PointInsideCount(beginIterator, endIterator, lines);
+}
+
 int GetLineInterceptCount(const game_point& point, auto linesBegin, auto linesEnd)
 {  
   return std::accumulate(linesBegin, linesEnd, 0, [point](auto count, auto& line)

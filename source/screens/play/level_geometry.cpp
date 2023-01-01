@@ -6,19 +6,24 @@
 [[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]]
 {
   decltype(level_ground_geometry::lines) lines;
+  decltype(level_ground_geometry::points) points;
 
   CreateConnectedLines(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(lines), 0, 0, false);
+
+  std::copy(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(points));
 
   for( auto& object : levelData.objects )
   {
     CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+    std::copy(object.points.cbegin(), object.points.cend(), std::back_inserter(points));
   }
 
   return {
     GetGameLevelBoundary(levelData),
     levelData.boundaryPoints.front(),
     levelData.boundaryPoints.back(),
-    lines
+    lines,
+    points
   };
 }
 

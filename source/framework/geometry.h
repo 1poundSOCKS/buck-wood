@@ -53,6 +53,18 @@ void CreateConnectedLines(auto begin, auto end, auto lines, float x=0, float y=0
   }
 };
 
+void CreateConnectedLines(game_rect rect, auto lines)
+{
+  auto points = std::array {
+    rect.topLeft,
+    game_point { rect.bottomRight.x, rect.topLeft.y },
+    rect.bottomRight,
+    game_point { rect.topLeft.x, rect.bottomRight.y }
+  };
+
+  CreateConnectedLines(points.cbegin(), points.cend(), lines);
+};
+
 struct area_state
 {
   enum state_type { omit, split, keep };
@@ -60,7 +72,7 @@ struct area_state
   game_rect rect;
 };
 
-[[nodiscard]] inline auto QuarterRect(game_rect rect) -> std::array<game_rect, 4> [[nothrow]]
+[[nodiscard]] inline auto QuarterRect(game_rect rect) -> std::array<game_rect, 4>
 {
   auto areaWidth = ( rect.bottomRight.x - rect.topLeft.x ) / 2;
   auto areaHeight = ( rect.bottomRight.y - rect.topLeft.y ) / 2;
@@ -74,7 +86,7 @@ struct area_state
   };
 }
 
-void QuarterArea(const area_state& areaState, auto areaInserter, auto GetAreaState) [[nothrow]]
+void QuarterArea(const area_state& areaState, auto areaInserter, auto GetAreaState)
 {
   auto subRects = QuarterRect(areaState.rect);
 
@@ -86,7 +98,7 @@ void QuarterArea(const area_state& areaState, auto areaInserter, auto GetAreaSta
   std::transform(subRects.cbegin(), subRects.cend(), areaInserter, ConvertRectToAreaState);
 }
 
-void SplitAreaPartials(area_state area, int recursionCount, auto undergroundAreaInserter, auto GetAreaState) [[nothrow]]
+void SplitArea(area_state area, int recursionCount, auto areaStateInserter, auto GetAreaState)
 {
   auto Keep = [](auto area) -> bool
   { return area.state == area_state::keep; };
@@ -96,7 +108,7 @@ void SplitAreaPartials(area_state area, int recursionCount, auto undergroundArea
 
   std::vector<area_state> areaStates;
   QuarterArea(area, std::back_inserter(areaStates), GetAreaState);
-  std::copy_if(areaStates.cbegin(), areaStates.cend(), undergroundAreaInserter, Keep);
+  std::copy_if(areaStates.cbegin(), areaStates.cend(), areaStateInserter, Keep);
 
   if( --recursionCount > 0 )
   {
@@ -105,15 +117,19 @@ void SplitAreaPartials(area_state area, int recursionCount, auto undergroundArea
 
     for( auto area : areasToSplit )
     {
-      SplitAreaPartials(area, recursionCount, undergroundAreaInserter, GetAreaState);
+      SplitArea(area, recursionCount, areaStateInserter, GetAreaState);
     }
+  }
+  else
+  {
+    std::copy_if(areaStates.cbegin(), areaStates.cend(), areaStateInserter, Split);
   }
 }
 
-void SplitArea(game_rect area, int recursionCount, auto areaStateInserter, auto GetAreaState) [[nothrow]]
+void SplitArea(game_rect area, int recursionCount, auto areaStateInserter, auto GetAreaState)
 {
   auto areaState = area_state { area_state::split, area };
-  SplitAreaPartials(areaState, recursionCount, areaStateInserter, GetAreaState);
+  SplitArea(areaState, recursionCount, areaStateInserter, GetAreaState);
 }
 
 #endif

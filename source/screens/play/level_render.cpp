@@ -48,8 +48,6 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
-#define __RENDER_GROUND_LINES
-
 void RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,
@@ -96,15 +94,18 @@ void RenderGroundMatrix(
   const std::vector<area_state>& cells) [[nothrow]]
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
-  auto brush = renderBrushSelector[grey];
+  auto greyBrush = renderBrushSelector[grey];
+  auto darkGreyBrush = renderBrushSelector[dark_grey];
 
-  auto ConvertRectToRenderRect = [&brush](auto& rect) -> render_rect
+  auto ConvertRectToRenderRect = [&greyBrush, &darkGreyBrush](auto& areaState) -> render_rect
   {
+    auto& brush = ( areaState.state == area_state::split ? darkGreyBrush : greyBrush );
+
     return {
-      rect.rect.topLeft.x, 
-      rect.rect.topLeft.y, 
-      rect.rect.bottomRight.x + 1, 
-      rect.rect.bottomRight.y + 1, 
+      areaState.rect.topLeft.x, 
+      areaState.rect.topLeft.y, 
+      areaState.rect.bottomRight.x + 1, 
+      areaState.rect.bottomRight.y + 1, 
       brush
     };
   };

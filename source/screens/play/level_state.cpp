@@ -39,6 +39,38 @@ inline D2D1_RECT_F GetStarRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
+auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_state::state_type
+{
+  auto cornerPoints = std::array {
+    game_point { rect.topLeft.x, rect.topLeft.y }, 
+    game_point { rect.bottomRight.x, rect.topLeft.y }, 
+    game_point { rect.bottomRight.x, rect.bottomRight.y },
+    game_point { rect.topLeft.x, rect.bottomRight.y }
+  };
+
+  auto IncrementIfUnderground = [&levelState](auto count, auto point) -> int
+  {
+    return IsUnderground(point.x, point.y, levelState.groundGeometry) ? count + 1 : count;
+  };
+
+  auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
+
+  auto pointInsideCount = PointInsideCount(
+    levelState.groundGeometry.points.cbegin(),
+    levelState.groundGeometry.points.cend(),
+    rect);
+
+  switch( undergroundCount )
+  {
+  case 4:
+    return pointInsideCount > 0 ? area_state::split : area_state::keep;
+  case 0:
+    return pointInsideCount > 0 ? area_state::split : area_state::omit;
+  default:
+    return area_state::split;
+  }
+};
+
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData)
 : levelData(levelData), counterFrequency(counterFrequency)
 {
@@ -78,46 +110,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 
-  auto GetAreaState = [this](game_rect rect) -> area_state::state_type
-  {
-    auto cornerPoints = std::array {
-      game_point { rect.topLeft.x, rect.topLeft.y }, 
-      game_point { rect.bottomRight.x, rect.topLeft.y }, 
-      game_point { rect.bottomRight.x, rect.bottomRight.y },
-      game_point { rect.topLeft.x, rect.bottomRight.y }
-    };
-
-    auto IncrementIfUnderground = [this](auto count, auto point) -> int
-    {
-      return IsUnderground(point.x, point.y, this->groundGeometry) ? count + 1 : count;
-    };
-
-    auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
-
-    auto DoOverlapReduce = [this, rect](auto overlapFlag, auto line)
-    {
-      return overlapFlag || DoOverlap(rect, GetBoundingRect(line));
-    };
-
-    auto overlapFlag = std::reduce(
-      this->groundGeometry.lines.cbegin(), 
-      this->groundGeometry.lines.cend(), 
-      false,
-      DoOverlapReduce
-    );
-
-    switch( undergroundCount )
-    {
-    case 4:
-      return overlapFlag ? area_state::split : area_state::keep;
-    case 0:
-      return overlapFlag ? area_state::split: area_state::omit;
-    default:
-      return area_state::split;
-    }
-  };
-
-  SplitArea(groundGeometry.boundary, 9, std::back_inserter(groundMatrix) ,GetAreaState);
+  auto GetAreaState = [this](game_rect rect) -> area_state::state_type { return GetLevelAreaState(*this, rect); };
+  SplitArea(groundGeometry.boundary, 8, std::back_inserter(groundMatrix), GetAreaState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
