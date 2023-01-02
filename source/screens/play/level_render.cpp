@@ -2,7 +2,7 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void RenderGroundMatrix(
+void RenderGround(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,  
   const std::vector<area_state>& cells) [[nothrow]];
@@ -58,7 +58,7 @@ void RenderLevel(
 
   renderTarget->SetTransform(levelState.viewTransform);
 
-  RenderGroundMatrix(renderTarget, renderData, levelState.groundMatrix);
+  RenderGround(renderTarget, renderData, levelState.groundMatrix);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
@@ -88,16 +88,16 @@ void RenderLevel(
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
 }
 
-void RenderGroundMatrix(
+void RenderGround(
   ID2D1RenderTarget* renderTarget, 
-  const screen_render_data& renderData,  
+  const screen_render_data& renderData,
   const std::vector<area_state>& cells) [[nothrow]]
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto greyBrush = renderBrushSelector[grey];
   auto darkGreyBrush = renderBrushSelector[dark_grey];
 
-  auto ConvertRectToRenderRect = [&greyBrush, &darkGreyBrush](auto& areaState) -> render_rect
+  auto ConvertAreaStateToRenderRect = [&greyBrush, &darkGreyBrush](auto& areaState) -> render_rect
   {
     auto& brush = ( areaState.state == area_state::split ? darkGreyBrush : greyBrush );
 
@@ -111,7 +111,8 @@ void RenderGroundMatrix(
   };
 
   std::vector<render_rect> renderRects;
-  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(renderRects), ConvertRectToRenderRect);
+  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(renderRects), ConvertAreaStateToRenderRect);
+
   RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }
 

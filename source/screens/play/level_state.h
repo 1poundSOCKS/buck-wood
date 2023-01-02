@@ -37,6 +37,8 @@ struct level_state
   
   float mouseX = 0;
   float mouseY = 0;
+
+  game_rect viewRect;
   
   bool playerShot = false;
   bool targetShot = false;

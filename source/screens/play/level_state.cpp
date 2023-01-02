@@ -111,7 +111,11 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
 
   auto GetAreaState = [this](game_rect rect) -> area_state::state_type { return GetLevelAreaState(*this, rect); };
-  SplitArea(groundGeometry.boundary, 8, std::back_inserter(groundMatrix), GetAreaState);
+  auto levelBoundary = GetLevelBoundary(groundGeometry);
+  levelBoundary.topLeft.x -= 800;
+  levelBoundary.bottomRight.x += 800;
+  levelBoundary.bottomRight.y += 800;
+  SplitArea(levelBoundary, 8, std::back_inserter(groundMatrix), GetAreaState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -142,6 +146,13 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
       levelState.mouseX = outPoint.x;
       levelState.mouseY = outPoint.y;
+
+      D2D1_POINT_2F screenTopLeft { 0, 0 };
+      D2D1_POINT_2F screenBottomRight { controlState.renderTargetMouseData.size.width - 1, controlState.renderTargetMouseData.size.height - 1 };
+      auto viewTopLeft = levelState.invertedViewTransform.TransformPoint(screenTopLeft);
+      auto viewBottomRight = levelState.invertedViewTransform.TransformPoint(screenBottomRight);
+      levelState.viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
+      levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
     UpdatePlayer(levelState, controlState);
