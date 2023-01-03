@@ -27,25 +27,27 @@
 
 [[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]]
 {
-  decltype(level_ground_geometry::points) points;
+  std::vector<game_point> points;
   std::copy(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(points));
 
   auto levelOuterPoints = GetOuterBoundaryPoints(levelData);
   std::copy(levelOuterPoints.cbegin(), levelOuterPoints.cend(), std::back_inserter(points));
 
-  decltype(level_ground_geometry::lines) lines;
-  CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(lines));
+  level_ground_geometry groundGeometry;
+  groundGeometry.objects.emplace_back(LoadClosedObject(points.cbegin(), points.cend()));
 
   for( auto& object : levelData.objects )
   {
-    std::copy(object.points.cbegin(), object.points.cend(), std::back_inserter(points));
-    CreateConnectedLines(object.points.cbegin(), object.points.cend(), std::back_inserter(lines));
+    groundGeometry.objects.emplace_back(LoadClosedObject(object.points.cbegin(), object.points.cend()));
   }
 
-  return {
-    points,
-    lines
-  };
+  for( auto& object : groundGeometry.objects )
+  {
+    std::copy(object.points.cbegin(), object.points.cend(), std::back_inserter(groundGeometry.allPoints));
+    std::copy(object.lines.cbegin(), object.lines.cend(), std::back_inserter(groundGeometry.allLines));
+  }
+
+  return groundGeometry;
 }
 
 [[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]]
@@ -81,27 +83,30 @@
   return levelTargetsGeometry;
 }
 
-[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGoundGeometry) -> bool [[nothrow]]
+[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
 {
-  auto lineInterceptCount = GetLineInterceptCount({x, y}, levelGoundGeometry.lines.cbegin(), levelGoundGeometry.lines.cend());
-  
-  // if( x >= levelGoundGeometry.groundStart.x && y > levelGoundGeometry.groundStart.y ) ++lineInterceptCount;
-  // if( x < levelGoundGeometry.groundEnd.x && y > levelGoundGeometry.groundEnd.y ) ++lineInterceptCount;
+  auto lineInterceptCount = std::accumulate(groundGeometry.objects.cbegin(), groundGeometry.objects.cend(), 0,
+  [x, y, &groundGeometry](auto total, auto& object)
+  {
+    return total + GetLineInterceptCount({x, y}, object.lines.cbegin(), object.lines.cend());
+  });
 
   return lineInterceptCount % 2 == 1;
 }
 
 [[nodiscard]] auto GetLevelBoundary(const level_ground_geometry& groundGeometry) -> game_rect [[nothrow]]
 {
-  auto GetBoundaryRect = [&groundGeometry](auto rect, auto point) -> game_rect
+  std::vector<game_rect> boundaries;
+  std::transform(groundGeometry.objects.cbegin(), groundGeometry.objects.end(), std::back_inserter(boundaries), 
+  [](const game_closed_object& object) -> game_rect
   {
-    return {
-      min(rect.topLeft.x, point.x),
-      min(rect.topLeft.y, point.y),
-      max(rect.bottomRight.x, point.x),
-      max(rect.bottomRight.y, point.y)
-    };
-  };
+    return GetBoundingRect(object);
+  });
 
-  return std::reduce(groundGeometry.points.cbegin(), groundGeometry.points.cend(), game_rect { 0, 0, 0, 0 }, GetBoundaryRect);
+  auto firstBoundary = boundaries.cbegin();
+  return std::reduce(std::next(firstBoundary), boundaries.cend(), *firstBoundary,
+  [](game_rect rect1, game_rect rect2) -> game_rect
+  {
+    return GetBoundingRect(rect1, rect2);
+  });
 }

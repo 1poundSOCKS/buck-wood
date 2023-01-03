@@ -23,11 +23,19 @@ struct game_rect
   game_point bottomRight;
 };
 
+struct game_closed_object
+{
+  std::vector<game_point> points;
+  std::vector<game_line> lines;
+};
+
 int CalculateAngle(float x1, float y1, float x2, float y2);
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
 [[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect [[nothrow]];
+[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect [[nothrow]];
+[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect [[nothrow]];
 [[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool [[nothrow]];
 [[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point [[nothrow]];
 
@@ -64,6 +72,14 @@ void CreateConnectedLines(game_rect rect, auto lines)
 
   CreateConnectedLines(points.cbegin(), points.cend(), lines);
 };
+
+[[nodiscard]] auto LoadClosedObject(auto beginPoint, auto endPoint) -> game_closed_object
+{
+  game_closed_object closedObject;
+  std::copy(beginPoint, endPoint, std::back_inserter(closedObject.points));
+  CreateConnectedLines(closedObject.points.cbegin(), closedObject.points.cend(), std::back_inserter(closedObject.lines));
+  return closedObject;
+}
 
 struct area_state
 {

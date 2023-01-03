@@ -56,8 +56,8 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
   auto undergroundCount = std::reduce(cornerPoints.cbegin(), cornerPoints.cend(), 0, IncrementIfUnderground);
 
   auto pointInsideCount = PointInsideCount(
-    levelState.groundGeometry.points.cbegin(),
-    levelState.groundGeometry.points.cend(),
+    levelState.groundGeometry.allPoints.cbegin(),
+    levelState.groundGeometry.allPoints.cend(),
     rect);
 
   switch( undergroundCount )
@@ -115,7 +115,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.topLeft.x -= 800;
   levelBoundary.bottomRight.x += 800;
   levelBoundary.bottomRight.y += 800;
-  SplitArea(levelBoundary, 8, std::back_inserter(groundMatrix), GetAreaState);
+  SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -364,5 +364,5 @@ void CreateStaticLevelRenderLines(
   screen_render_brush_selector brushes)
 {
   auto brush = brushes[grey];
-  CreateRenderLines(levelState.groundGeometry.lines.cbegin(), levelState.groundGeometry.lines.cend(), insertIterator, brush, 5);
+  CreateRenderLines(levelState.groundGeometry.allLines.cbegin(), levelState.groundGeometry.allLines.cend(), insertIterator, brush, 5);
 }

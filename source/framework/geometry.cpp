@@ -15,7 +15,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   return sqrt( cx * cx + cy * cy );
 }
 
-[[nodiscard]] game_rect GetBoundingRect(game_line line) [[nothrow]]
+[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect [[nothrow]]
 {
   return {
     min(line.start.x, line.end.x),
@@ -23,6 +23,34 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
     max(line.start.x, line.end.x),
     max(line.start.y, line.end.y)
   };
+}
+
+[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect [[nothrow]]
+{
+  return {
+    min(rect1.topLeft.x, rect2.topLeft.x),
+    min(rect1.topLeft.y, rect2.topLeft.y),
+    max(rect1.bottomRight.x, rect2.bottomRight.x),
+    max(rect1.bottomRight.y, rect2.bottomRight.y)
+  };
+}
+
+[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect [[nothrow]]
+{
+  auto firstPoint = object.points.cbegin();
+  return std::reduce(
+    std::next(firstPoint), object.points.cend(), 
+    game_rect {firstPoint->x , firstPoint->y, firstPoint->x, firstPoint->y},
+    [](game_rect rect, game_point point) -> game_rect
+    {
+      return {
+        min(point.x, rect.topLeft.x),
+        min(point.y, rect.topLeft.y),
+        max(point.x, rect.bottomRight.x),
+        max(point.y, rect.bottomRight.y)
+      };
+    }
+  );
 }
 
 [[nodiscard]] bool DoOverlap(game_rect rect1, game_rect rect2) [[nothrow]]

@@ -5,8 +5,9 @@
 
 struct level_ground_geometry
 {
-  std::vector<game_point> points;
-  std::vector<game_line> lines;
+  std::vector<game_closed_object> objects;
+  std::vector<game_point> allPoints;
+  std::vector<game_line> allLines;
 };
 
 struct level_targets_geometry
