@@ -56,10 +56,10 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
 [[nodiscard]] bool DoOverlap(game_rect rect1, game_rect rect2) [[nothrow]]
 {
   return !(
-    ( rect1.topLeft.x < rect2.topLeft.x && rect1.bottomRight.x < rect2.topLeft.x ) ||
-    ( rect1.topLeft.x > rect2.topLeft.x && rect1.bottomRight.x > rect2.topLeft.x ) ||
-    ( rect1.topLeft.y < rect2.topLeft.y && rect1.bottomRight.y < rect2.topLeft.y ) ||
-    ( rect1.topLeft.y > rect2.topLeft.y && rect1.bottomRight.y > rect2.topLeft.y )
+    rect1.bottomRight.x < rect2.topLeft.x ||
+    rect1.topLeft.x > rect2.bottomRight.x ||
+    rect1.bottomRight.y < rect2.topLeft.y ||
+    rect1.topLeft.y > rect2.bottomRight.y
   );
 }
 

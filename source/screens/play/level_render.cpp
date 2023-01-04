@@ -2,15 +2,10 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void RenderGround(
-  ID2D1RenderTarget* renderTarget, 
-  const screen_render_data& renderData,  
-  const std::vector<area_state>& cells) [[nothrow]];
+void RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState) [[nothrow]];
 
 void CreateDynamicLevelRenderLines(
-  const level_state& levelState, 
-  std::back_insert_iterator<std::vector<render_line>> renderLines, 
-  screen_render_brush_selector brushes);
+  const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
 
 void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, auto renderLinesInserter, ID2D1SolidColorBrush* brush, float width)
 {
@@ -58,7 +53,7 @@ void RenderLevel(
 
   renderTarget->SetTransform(levelState.viewTransform);
 
-  RenderGround(renderTarget, renderData, levelState.groundMatrix);
+  RenderGround(renderTarget, renderData, levelState);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
@@ -91,11 +86,18 @@ void RenderLevel(
 void RenderGround(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,
-  const std::vector<area_state>& cells) [[nothrow]]
+  const level_state& levelState) [[nothrow]]
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto greyBrush = renderBrushSelector[grey];
   auto darkGreyBrush = renderBrushSelector[dark_grey];
+
+  std::vector<area_state> visibleCells;
+  std::copy_if(levelState.groundMatrix.cbegin(), levelState.groundMatrix.cend(), std::back_inserter(visibleCells), 
+  [&levelState](area_state areaState) -> bool
+  {
+    return DoOverlap(areaState.rect, levelState.viewRect);
+  });
 
   auto ConvertAreaStateToRenderRect = [&greyBrush, &darkGreyBrush](auto& areaState) -> render_rect
   {
@@ -111,7 +113,7 @@ void RenderGround(
   };
 
   std::vector<render_rect> renderRects;
-  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(renderRects), ConvertAreaStateToRenderRect);
+  std::transform(visibleCells.cbegin(), visibleCells.cend(), std::back_inserter(renderRects), ConvertAreaStateToRenderRect);
 
   RenderRectangles(renderTarget, renderRects.cbegin(), renderRects.cend());
 }

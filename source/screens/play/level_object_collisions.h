@@ -3,6 +3,7 @@
 
 #include "level_geometry.h"
 #include "level_objects.h"
+#include "player_ship.h"
 #include "collisions.h"
 
 struct bullet_target_collision

@@ -3,9 +3,11 @@
 
 #include "game_level_data.h"
 #include "level_objects.h"
+#include "player_ship.h"
 #include "screen_input_state.h"
 #include "screen_render_data.h"
 #include "level_geometry.h"
+#include "area_grid.h"
 
 struct level_control_state
 {
