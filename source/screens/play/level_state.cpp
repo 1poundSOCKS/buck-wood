@@ -12,14 +12,13 @@ const int shotTimeDenominator = 20;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
+void UpdateExplosions(level_state& levelState) [[nothrow]];
 void ProcessCollisions(level_state& levelState);
 bullet& GetBullet(std::vector<bullet>& bullets);
 bool PlayerCanShoot(const level_state& levelState);
 float GetUpdateInterval(const level_state& levelState);
 bool BulletHasExpired(const bullet& bullet);
-int ProcessBulletTargetCollisions(
-  std::vector<bullet_target_collision>::iterator collisionsBegin, 
-  std::vector<bullet_target_collision>::iterator collisionsEnd);
+int ProcessBulletTargetCollisions(std::vector<bullet_target_collision>::iterator collisionsBegin, std::vector<bullet_target_collision>::iterator collisionsEnd);
 auto GenerateLevelBackgroundData(const game_level_data& levelData) -> level_background_data;
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool;
 
@@ -120,7 +119,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
 bool LevelIsComplete(const level_state& levelState)
 {
-  int activatedTargetCount = std::reduce(
+  int activatedTargetCount = std::accumulate(
     levelState.targets.cbegin(), 
     levelState.targets.cend(), 
     0, 
@@ -155,8 +154,13 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
-    UpdatePlayer(levelState, controlState);
+    if( levelState.player.state == player_ship::alive )
+    {
+      UpdatePlayer(levelState, controlState);
+    }
+
     UpdateBullets(levelState, controlState);
+    UpdateExplosions(levelState);
     ProcessCollisions(levelState);
   }
 }
@@ -216,10 +220,28 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
   }
 }
 
+void UpdateExplosions(level_state& levelState) [[nothrow]]
+{
+  for( auto& explosion : levelState.explosions )
+  {
+    UpdateState(explosion, levelState.currentTimerCount - levelState.previousTimerCount);
+  }
+}
+
 void ProcessCollisions(level_state& levelState)
 {
-  if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
-    levelState.player.state = player_ship::dead;
+  if( levelState.player.state == player_ship::alive )
+  {
+    if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
+    {
+      levelState.player.state = player_ship::dead;
+      levelState.explosions.emplace_back(CreateExplosion(
+        levelState.player.xPos, 
+        levelState.player.yPos, 
+        levelState.currentTimerCount - levelState.previousTimerCount)
+      );
+    }
+  }
 
   std::vector<bullet_target_collision> bulletTargetCollisions;
 
@@ -231,8 +253,7 @@ void ProcessCollisions(level_state& levelState)
     std::back_inserter(bulletTargetCollisions)
   );
 
-  int targetActivatedCount = 
-  ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
+  int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
   
   if( targetActivatedCount > 0 )
     levelState.targetShot = true;

@@ -45,6 +45,12 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
     OnGamePaused(screenState, inputState);
   else if( ScreenTransitionTimeHasExpired(screenState) )
     OnGameRunning(screenState, inputState);
+  else
+    UpdateLevelState(
+      *screenState.levelState, 
+      GetLevelControlState(inputState), 
+      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal
+    );
 }
 
 void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState)
@@ -88,6 +94,12 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
   else if( screenState.mode == play_screen_state::player_dead )
   {
     screenState.continueRunning = false;
+    
+    UpdateLevelState(
+      *screenState.levelState, 
+      GetLevelControlState(inputState), 
+      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal
+    );
   }
 }
 

@@ -81,6 +81,10 @@ void RenderLevel(
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
+
+  std::vector<render_point> explosionParticles;
+  CreateRenderPoints(levelState.explosions.cbegin(), levelState.explosions.cend(), renderData.renderBrushes, std::back_inserter(explosionParticles));
+  RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
 }
 
 void RenderGround(
@@ -129,22 +133,24 @@ void CreateDynamicLevelRenderLines(
     CreateRenderLines(target.shape.cbegin(), target.shape.cend(), renderLines, renderBrush, 4);
   }
 
-  const auto& player = levelState.player;
-  CreateConnectedRenderLines(
-    levelState.player.points.cbegin(), 
-    levelState.player.points.cend(), 
-    renderLines, 
-    brushes[white], 
-    2);
-
-  if( levelState.player.thrusterOn )
+  if( levelState.player.state == player_ship::alive )
   {
-    std::vector<game_point> thrusterPoints;
-    GetTransformedThrusterGeometry(levelState.player, std::back_inserter(thrusterPoints));
+    CreateConnectedRenderLines(
+      levelState.player.points.cbegin(), 
+      levelState.player.points.cend(), 
+      renderLines, 
+      brushes[white], 
+      2);
 
-    CreateDisconnectedRenderLines(
-      thrusterPoints.cbegin(), 
-      thrusterPoints.cend(), 
-      renderLines, brushes[red], 5);
+    if( levelState.player.thrusterOn )
+    {
+      std::vector<game_point> thrusterPoints;
+      GetTransformedThrusterGeometry(levelState.player, std::back_inserter(thrusterPoints));
+
+      CreateDisconnectedRenderLines(
+        thrusterPoints.cbegin(), 
+        thrusterPoints.cend(), 
+        renderLines, brushes[red], 5);
+    }
   }
 }

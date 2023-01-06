@@ -8,6 +8,7 @@
 #include "screen_render_data.h"
 #include "level_geometry.h"
 #include "area_grid.h"
+#include "explosion.h"
 
 struct level_control_state
 {
@@ -53,6 +54,7 @@ struct level_state
   level_targets_geometry targetsGeometry;
   std::vector<render_line> staticRenderLines;
   std::vector<area_state> groundMatrix;
+  std::vector<explosion_state> explosions;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
