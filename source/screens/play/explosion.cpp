@@ -2,6 +2,7 @@
 #include "explosion.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
+std::uniform_int_distribution<int> particleSpeedDist(5, 10);
 
 void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]];
 
@@ -27,7 +28,8 @@ void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
 
 void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
 {
-  const auto velocity = 10.0f;
+  extern std::mt19937 rng;
+  const auto velocity = particleSpeedDist(rng);
   particleState.xVelocity = CalculateVectorX(velocity, angle);
   particleState.yVelocity = CalculateVectorY(velocity, angle);
 }
