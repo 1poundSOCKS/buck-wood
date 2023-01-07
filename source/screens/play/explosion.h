@@ -20,7 +20,7 @@ struct explosion_state
 };
 
 [[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state [[nothrow]];
-void UpdateState(explosion_state& state, int64_t elapsedTime) [[nothrow]];
+void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity) [[nothrow]];
 
 void CreateRenderPoints(const explosion_state& state, const screen_render_brushes& brushes, auto renderPointsInserter) [[nothrow]]
 {

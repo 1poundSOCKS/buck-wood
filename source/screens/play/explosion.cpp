@@ -2,7 +2,7 @@
 #include "explosion.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
-std::uniform_int_distribution<int> particleSpeedDist(5, 10);
+std::uniform_int_distribution<int> particleSpeedDist(100, 150);
 
 void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]];
 
@@ -34,11 +34,12 @@ void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
   particleState.yVelocity = CalculateVectorY(velocity, angle);
 }
 
-void UpdateState(explosion_state& state, int64_t elapsedTime) [[nothrow]]
+void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity) [[nothrow]]
 {
   for( auto& particle : state.particles )
   {
-    particle.x += particle.xVelocity * static_cast<float>(elapsedTime) / static_cast<float>(state.clockFrequency);
-    particle.y += particle.yVelocity * static_cast<float>(elapsedTime) / static_cast<float>(state.clockFrequency);
+    particle.yVelocity += forceOfGravity * updateInterval;
+    particle.x += particle.xVelocity * updateInterval;
+    particle.y += particle.yVelocity * updateInterval;
   }
 }

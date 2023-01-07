@@ -167,8 +167,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState)
 {
-  static const float forceOfGravity = 20.0f;
-  static const float playerThrust = 100.0f;
+  const float forceOfGravity = 20.0f;
+  const float playerThrust = 100.0f;
 
   float gameUpdateInterval = GetUpdateInterval(levelState);
 
@@ -222,9 +222,12 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 
 void UpdateExplosions(level_state& levelState) [[nothrow]]
 {
+  const float forceOfGravity = 20.0f;
+  auto updateInterval = GetUpdateInterval(levelState);
+
   for( auto& explosion : levelState.explosions )
   {
-    UpdateState(explosion, levelState.currentTimerCount - levelState.previousTimerCount);
+    UpdateState(explosion, updateInterval, forceOfGravity);
   }
 }
 
