@@ -2,7 +2,7 @@
 #include "explosion.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
-std::uniform_int_distribution<int> particleSpeedDist(100, 150);
+std::uniform_int_distribution<int> particleSpeedDist(150, 200);
 
 void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]];
 
@@ -17,6 +17,7 @@ void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
   
   for( int i =0; i < particleCount; ++i )
   {
+    explosionState.particles[i].condition = particle_state::alive;
     explosionState.particles[i].x = x;
     explosionState.particles[i].y = y;
     float angle = static_cast<float>(particleAngleDist(rng));
@@ -38,8 +39,20 @@ void UpdateState(explosion_state& state, float updateInterval, float forceOfGrav
 {
   for( auto& particle : state.particles )
   {
-    particle.yVelocity += forceOfGravity * updateInterval;
-    particle.x += particle.xVelocity * updateInterval;
-    particle.y += particle.yVelocity * updateInterval;
+    if( particle.condition == particle_state::alive )
+    {
+      particle.yVelocity += forceOfGravity * updateInterval;
+      particle.x += particle.xVelocity * updateInterval;
+      particle.y += particle.yVelocity * updateInterval;
+    }
+  }
+}
+
+void ProcessCollisions(explosion_state& explosion, const level_ground_geometry& groundGeometry)
+{
+  for( auto& particle : explosion.particles )
+  {
+    if( IsUnderground(particle.x, particle.y, groundGeometry) )
+      particle.condition = particle_state::dead;
   }
 }

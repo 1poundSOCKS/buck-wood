@@ -266,6 +266,11 @@ void ProcessCollisions(level_state& levelState)
     if( bullet.free || BulletHasExpired(bullet) || IsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
       bullet.free = true;
   }
+
+  for( auto& explosion : levelState.explosions )
+  {
+    ProcessCollisions(explosion, levelState.groundGeometry);
+  }
 }
 
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool

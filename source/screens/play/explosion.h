@@ -4,9 +4,12 @@
 #include "geometry.h"
 #include "screen_render_data.h"
 #include "render.h"
+#include "level_geometry.h"
 
 struct particle_state
 {
+  enum condition_type { alive, dead };
+  condition_type condition;
   float x;
   float y;
   float xVelocity;
@@ -24,10 +27,17 @@ void UpdateState(explosion_state& state, float updateInterval, float forceOfGrav
 
 void CreateRenderPoints(const explosion_state& state, const screen_render_brushes& brushes, auto renderPointsInserter) [[nothrow]]
 {
+  std::vector<particle_state> particles;
+  std::copy_if(state.particles.cbegin(), state.particles.cend(), std::back_inserter(particles), 
+  [](const particle_state& particle) -> bool
+  {
+    return particle.condition == particle_state::alive;
+  });
+
   screen_render_brush_selector brushSelector(brushes);
   auto brush = brushSelector[white];
 
-  std::transform(state.particles.cbegin(), state.particles.cend(), renderPointsInserter, 
+  std::transform(particles.cbegin(), particles.cend(), renderPointsInserter, 
   [brush](const particle_state& state) -> render_rect
   {
     const auto particleSize = 6.0f;
@@ -48,5 +58,7 @@ void CreateRenderPoints(auto explosionBegin, auto explosionEnd, const screen_ren
     CreateRenderPoints(*explosion, brushes, renderPointsInserter);
   }
 }
+
+void ProcessCollisions(explosion_state& explosion, const level_ground_geometry& groundGeometry);
 
 #endif
