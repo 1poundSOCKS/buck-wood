@@ -1,13 +1,6 @@
 #include "pch.h"
 #include "data_files.h"
 
-config_file::setting::setting(const std::wstring& text)
-{
-  size_t splitPos = text.find('=');
-  key = text.substr(0, splitPos);
-  value = text.substr(splitPos+1);
-}
-
 std::wstring ToWstr(std::string_view input)
 {
   const auto maxOutputLength = 1024u;
@@ -15,6 +8,13 @@ std::wstring ToWstr(std::string_view input)
   auto outputLength = ::MultiByteToWideChar(CP_ACP, 0, input.data(), static_cast<int>(input.length()), output, maxOutputLength);
   output[outputLength] = L'\0';
   return output;
+}
+
+config_file::setting::setting(const std::wstring& text)
+{
+  size_t splitPos = text.find('=');
+  key = text.substr(0, splitPos);
+  value = text.substr(splitPos+1);
 }
 
 config_file::config_file(const wchar_t* filename)
@@ -26,8 +26,6 @@ config_file::config_file(const wchar_t* filename)
   while( std::getline(fileReader, line) )
   {
     if( line.length() == 0 ) continue;
-    // std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    // std::wstring wideLine = converter.from_bytes(line);
     std::wstring wideLine = ToWstr(line);
 
     setting setting(wideLine);
