@@ -23,7 +23,7 @@ void PlaySoundEffects
 
 bool ContinueRunning(const main_menu_screen_state& screenState);
 
-void FormatDiagnostics(const main_menu_screen_state& screenState, auto diagnosticsDataInserter)
+void FormatDiagnostics(const main_menu_screen_state& /*screenState*/, auto /*diagnosticsDataInserter*/)
 {
 }
 

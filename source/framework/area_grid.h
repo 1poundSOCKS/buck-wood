@@ -53,9 +53,9 @@ void SplitArea(area_state area, int recursionCount, auto areaStateInserter, auto
     std::vector<area_state> areasToSplit;
     std::copy_if(areaStates.cbegin(), areaStates.cend(), std::back_inserter(areasToSplit), Split);
 
-    for( auto area : areasToSplit )
+    for( auto areaToSplit : areasToSplit )
     {
-      SplitArea(area, recursionCount, areaStateInserter, GetAreaState);
+      SplitArea(areaToSplit, recursionCount, areaStateInserter, GetAreaState);
     }
   }
   else

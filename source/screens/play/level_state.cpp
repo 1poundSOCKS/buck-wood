@@ -5,6 +5,7 @@
 #include "screen_view.h"
 #include "level_object_collisions.h"
 #include "level_geometry.h"
+#include "solid_object.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
@@ -12,7 +13,7 @@ const int shotTimeDenominator = 20;
 
 void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
-void UpdateExplosions(level_state& levelState) [[nothrow]];
+void UpdateExplosions(level_state& levelState);
 void ProcessCollisions(level_state& levelState);
 bullet& GetBullet(std::vector<bullet>& bullets);
 bool PlayerCanShoot(const level_state& levelState);
@@ -115,6 +116,19 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.bottomRight.x += 800;
   levelBoundary.bottomRight.y += 800;
   SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
+
+  solid_object solidObject { groundGeometry };
+  solidObject.HasCollided(0, 0);
+
+  std::vector<solid_object> solidObjects;
+  solidObjects.emplace_back(solid_object(groundGeometry));
+  solidObjects.emplace_back(solid_object(targetsGeometry));
+
+  for( auto& object : solidObjects )
+  {
+    auto collided = object.HasCollided(0, 0);
+    if( collided ) {}
+  }
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -190,7 +204,11 @@ void UpdatePlayer(level_state& levelState, const level_control_state& controlSta
   levelState.player.yVelocity += forceY * gameUpdateInterval;
   levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
   levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
-  levelState.player.angle = CalculateAngle(levelState.player.xPos, levelState.player.yPos, levelState.mouseX, levelState.mouseY);
+
+  levelState.player.angle = CalculateAngle(
+    levelState.player.xPos, levelState.player.yPos, 
+    levelState.mouseX, levelState.mouseY);
+
   UpdateShipGeometryData(levelState.player);
 }
 
@@ -220,7 +238,7 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
   }
 }
 
-void UpdateExplosions(level_state& levelState) [[nothrow]]
+void UpdateExplosions(level_state& levelState)
 {
   const float forceOfGravity = 20.0f;
   auto updateInterval = GetUpdateInterval(levelState);

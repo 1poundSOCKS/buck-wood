@@ -3,8 +3,8 @@
 
 #include "geometry.h"
 
-[[nodiscard]] bool AddLineToInterceptCount(const game_line& line, const game_point& point) [[nothrow]];
-float GetYIntercept(float x, const game_line& line);
+[[nodiscard]] auto AddLineToInterceptCount(const game_line& line, const game_point& point) -> bool;
+[[nodiscard]] auto GetYIntercept(float x, const game_line& line) -> float;
 
 bool AnyPointInside(auto pointsBegin, auto pointsEnd, const std::vector<game_line>& area)
 {
@@ -40,8 +40,7 @@ bool PointInside(const game_point& point, auto linesBegin, auto linesEnd)
   return ( matchingLines % 2 > 0 );
 }
 
-  
-[[nodicard]] auto PointInsideCount(auto beginIterator, auto endIterator, const auto& linesCollection) -> int
+[[nodiscard]] auto PointInsideCount(auto beginIterator, auto endIterator, const auto& linesCollection) -> int
 {
   return std::reduce(
     beginIterator, endIterator, 0,
@@ -52,7 +51,7 @@ bool PointInside(const game_point& point, auto linesBegin, auto linesEnd)
   );
 }
 
-[[nodicard]] auto PointInsideCount(auto beginIterator, auto endIterator, game_rect rect) -> int
+[[nodiscard]] auto PointInsideCount(auto beginIterator, auto endIterator, game_rect rect) -> int
 {
   std::vector<game_line> lines;
   CreateConnectedLines(rect, std::back_inserter(lines));

@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "geometry.h"
 
-int CalculateAngle(float x1, float y1, float x2, float y2)
+auto CalculateAngle(float x1, float y1, float x2, float y2) -> float
 {
   float radians = atan2(y2 - y1, x2 - x1);
   float degrees = RADTODEG(radians);
-  return degrees + 90.5;
+  return degrees + 90.0f;
 }
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
@@ -15,7 +15,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   return sqrt( cx * cx + cy * cy );
 }
 
-[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect [[nothrow]]
+[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect
 {
   return {
     min(line.start.x, line.end.x),
@@ -25,7 +25,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
-[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect [[nothrow]]
+[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect
 {
   return {
     min(rect1.topLeft.x, rect2.topLeft.x),
@@ -35,7 +35,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
-[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect [[nothrow]]
+[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect
 {
   auto firstPoint = object.points.cbegin();
   return std::reduce(
@@ -53,7 +53,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   );
 }
 
-[[nodiscard]] bool DoOverlap(game_rect rect1, game_rect rect2) [[nothrow]]
+[[nodiscard]] bool DoOverlap(game_rect rect1, game_rect rect2) 
 {
   return !(
     rect1.bottomRight.x < rect2.topLeft.x ||
@@ -63,7 +63,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   );
 }
 
-[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point [[nothrow]]
+[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point
 {
   return {
     (rect.topLeft.x + rect.bottomRight.x) / 2,

@@ -26,7 +26,6 @@ play_screen_state::play_screen_state(
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   
-  const auto& levelData = **currentLevelDataIterator;
   levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency, renderData);
   levelStart = this->timer.initialValue;
 
@@ -181,7 +180,6 @@ void LoadNextLevel(play_screen_state& screenState)
   auto nextLevel = std::next(screenState.currentLevelDataIterator);
   assert(nextLevel != screenState.endLevelDataIterator);
   screenState.currentLevelDataIterator = nextLevel;
-  const auto& levelData = **screenState.currentLevelDataIterator;
   screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency, screenState.renderData);
   screenState.levelStart = screenState.timer.currentValue;
   screenState.timer.initialValue = screenState.timer.initialValue;

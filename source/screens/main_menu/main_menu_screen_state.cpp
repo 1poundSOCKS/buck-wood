@@ -12,8 +12,8 @@ main_menu_screen_state::main_menu_screen_state(screen_render_data renderData)
 
 void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& screenInputState)
 {
-  screenState.mousePointerX = screenInputState.windowData.mouse.x;
-  screenState.mousePointerY = screenInputState.windowData.mouse.y;
+  screenState.mousePointerX = static_cast<float>(screenInputState.windowData.mouse.x);
+  screenState.mousePointerY = static_cast<float>(screenInputState.windowData.mouse.y);
   
   if( screenState.viewState == main_menu_screen_state::view_exit )
   {

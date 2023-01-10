@@ -1,9 +1,9 @@
 #ifndef _geometry_
 #define _geometry_
 
-#define PI 3.14159265
-#define DEGTORAD(D)((D * PI) / 180.0)
-#define RADTODEG(R)((180.0 * R) / PI)
+#define PI 3.14159265f
+#define DEGTORAD(D)((D * PI) / 180.0f)
+#define RADTODEG(R)((180.0f * R) / PI)
 
 [[nodiscard]] inline auto CalculateVectorX(float value, float angle) -> float
 {
@@ -39,15 +39,15 @@ struct game_closed_object
   std::vector<game_line> lines;
 };
 
-int CalculateAngle(float x1, float y1, float x2, float y2);
+auto CalculateAngle(float x1, float y1, float x2, float y2) -> float;
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
-[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect [[nothrow]];
-[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect [[nothrow]];
-[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect [[nothrow]];
-[[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool [[nothrow]];
-[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point [[nothrow]];
+[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect ;
+[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect;
+[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
+[[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool;
+[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point;
 
 void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
 {

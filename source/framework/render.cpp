@@ -22,5 +22,5 @@ void RenderText(
 
   D2D1_SIZE_F size = renderTarget->GetSize();
   D2D1_RECT_F rect { 0, 0, size.width - 1, size.height - 1 };
-  renderTarget->DrawText(text.data(), text.length(), textFormat, rect, brush);
+  renderTarget->DrawText(text.data(), static_cast<UINT32>(text.length()), textFormat, rect, brush);
 }

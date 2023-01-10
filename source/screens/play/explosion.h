@@ -22,10 +22,10 @@ struct explosion_state
   std::vector<particle_state> particles;
 };
 
-[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state [[nothrow]];
-void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity) [[nothrow]];
+[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state;
+void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity);
 
-void CreateRenderPoints(const explosion_state& state, const screen_render_brushes& brushes, auto renderPointsInserter) [[nothrow]]
+void CreateRenderPoints(const explosion_state& state, const screen_render_brushes& brushes, auto renderPointsInserter)
 {
   std::vector<particle_state> particles;
   std::copy_if(state.particles.cbegin(), state.particles.cend(), std::back_inserter(particles), 
@@ -51,7 +51,7 @@ void CreateRenderPoints(const explosion_state& state, const screen_render_brushe
   });
 }
 
-void CreateRenderPoints(auto explosionBegin, auto explosionEnd, const screen_render_brushes& brushes, auto renderPointsInserter) [[nothrow]]
+void CreateRenderPoints(auto explosionBegin, auto explosionEnd, const screen_render_brushes& brushes, auto renderPointsInserter)
 {
   for( auto explosion = explosionBegin; explosion != explosionEnd; ++explosion )
   {

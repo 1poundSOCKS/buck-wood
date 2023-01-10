@@ -11,7 +11,7 @@ bool ProcessMessage();
 
 inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
 {
-  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0;
+  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
 }
 
 struct screen_runner_data
@@ -43,8 +43,6 @@ void OpenScreen(screen_runner_data data, auto& screenState)
         DWRITE_FONT_STRETCH_NORMAL,
         20)
   };
-
-  bool continueRunning = true;
 
   screen_input_state inputState;
   performance::frame_data frameData;

@@ -52,9 +52,14 @@ void GenerateStarfield(const game_level_data& levelData, auto starInserter)
   auto levelHeight = levelBoundary.bottomRight.y - levelBoundary.topLeft.y;
   auto levelArea = levelWidth * levelHeight;
   auto starCount = static_cast<int>(levelArea * starDensity);
+
+  auto leftBoundary = static_cast<int>(levelBoundary.topLeft.x);
+  auto rightBoundary = static_cast<int>(levelBoundary.bottomRight.x);
+  auto topBoundary = static_cast<int>(levelBoundary.topLeft.y);
+  auto bottomBoundary = static_cast<int>(levelBoundary.bottomRight.y);
   
-  std::uniform_int_distribution<int> distX(levelBoundary.topLeft.x, levelBoundary.bottomRight.x);
-  std::uniform_int_distribution<int> distY(levelBoundary.topLeft.y, levelBoundary.bottomRight.y);
+  std::uniform_int_distribution<int> distX(leftBoundary, rightBoundary);
+  std::uniform_int_distribution<int> distY(topBoundary, bottomBoundary);
 
   for( int starIndex = 0; starIndex < starCount; ++starIndex)
   {

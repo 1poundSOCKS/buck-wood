@@ -6,11 +6,8 @@
 
 void FormatDiagnostics(const screen_input_state& inputState, auto diagnosticsDataInserter)
 {
-  static wchar_t text[64];
-  swprintf(text, L"mouse: %i,%i", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
-  diagnosticsDataInserter = text;
-  swprintf(text, L"client rect: %i,%i", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
-  diagnosticsDataInserter = text;
+  diagnosticsDataInserter = std::format(L"mouse: {}, {}", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
+  diagnosticsDataInserter = std::format(L"client rect: {}, {}", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
 }
 
 std::wstring GetDiagnosticsString(auto textBegin, auto textEnd)

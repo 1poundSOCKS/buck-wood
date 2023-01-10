@@ -63,6 +63,6 @@ bool SaveGameLevelData(const game_level_data& gameLevelData);
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath);
 bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 std::string SaveJsonDataToString(Json::Value& root);
-[[nodiscard]] auto GetGameLevelBoundary(const game_level_data& levelData) -> game_rect [[nothrow]];
+[[nodiscard]] auto GetGameLevelBoundary(const game_level_data& levelData) -> game_rect;
 
 #endif

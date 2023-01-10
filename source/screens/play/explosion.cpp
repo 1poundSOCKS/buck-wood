@@ -4,9 +4,9 @@
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(150, 200);
 
-void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]];
+void SetParticleVelocity(particle_state& particleState, float angle);
 
-[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state [[nothrow]]
+[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state
 {
   extern std::mt19937 rng;
   const int particleCount = 50;
@@ -27,15 +27,15 @@ void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
   return explosionState;
 }
 
-void SetParticleVelocity(particle_state& particleState, float angle) [[nothrow]]
+void SetParticleVelocity(particle_state& particleState, float angle)
 {
   extern std::mt19937 rng;
-  const auto velocity = particleSpeedDist(rng);
+  const auto velocity = static_cast<float>(particleSpeedDist(rng));
   particleState.xVelocity = CalculateVectorX(velocity, angle);
   particleState.yVelocity = CalculateVectorY(velocity, angle);
 }
 
-void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity) [[nothrow]]
+void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity)
 {
   for( auto& particle : state.particles )
   {

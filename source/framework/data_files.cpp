@@ -3,9 +3,18 @@
 
 config_file::setting::setting(const std::wstring& text)
 {
-  int splitPos = text.find('=');
+  size_t splitPos = text.find('=');
   key = text.substr(0, splitPos);
   value = text.substr(splitPos+1);
+}
+
+std::wstring ToWstr(std::string_view input)
+{
+  const auto maxOutputLength = 1024u;
+  wchar_t output[maxOutputLength+1];
+  auto outputLength = ::MultiByteToWideChar(CP_ACP, 0, input.data(), static_cast<int>(input.length()), output, maxOutputLength);
+  output[outputLength] = L'\0';
+  return output;
 }
 
 config_file::config_file(const wchar_t* filename)
@@ -17,8 +26,10 @@ config_file::config_file(const wchar_t* filename)
   while( std::getline(fileReader, line) )
   {
     if( line.length() == 0 ) continue;
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    std::wstring wideLine = converter.from_bytes(line);
+    // std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    // std::wstring wideLine = converter.from_bytes(line);
+    std::wstring wideLine = ToWstr(line);
+
     setting setting(wideLine);
     settings.insert(std::make_pair(setting.key, setting.value));
   }
@@ -47,7 +58,7 @@ wav_file_data::wav_file_data(const wchar_t* filename)
   if( fileReader.fail() )
   {
     char* error = strerror(errno);
-    throw L"error";
+    throw std::format("error: {}", error);
   }
 
   header = std::make_unique<wav_file_header>(fileReader);

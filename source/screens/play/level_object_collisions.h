@@ -14,19 +14,19 @@ struct bullet_target_collision
 
 [[nodiscard]] auto PlayerHasHitTheGround(
   const player_ship& player, 
-  const level_ground_geometry& groundGeometry) -> bool [[nothrow]];
+  const level_ground_geometry& groundGeometry) -> bool;
 
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 
   std::vector<bullet>::iterator bulletEnd, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
 
 void GetBulletTargetCollisions(
   bullet& bullet, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]];
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions);
 
 #endif

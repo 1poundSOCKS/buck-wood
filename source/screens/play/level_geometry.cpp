@@ -25,7 +25,7 @@
   };
 }
 
-[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]]
+[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry
 {
   std::vector<game_point> points;
   std::copy(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend(), std::back_inserter(points));
@@ -50,7 +50,7 @@
   return groundGeometry;
 }
 
-[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]]
+[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry
 {
   level_targets_geometry levelTargetsGeometry;
   
@@ -83,7 +83,7 @@
   return levelTargetsGeometry;
 }
 
-[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
+[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& groundGeometry) -> bool
 {
   auto lineInterceptCount = std::accumulate(groundGeometry.objects.cbegin(), groundGeometry.objects.cend(), 0,
   [x, y, &groundGeometry](auto total, auto& object)
@@ -94,7 +94,7 @@
   return lineInterceptCount % 2 == 1;
 }
 
-[[nodiscard]] auto GetLevelBoundary(const level_ground_geometry& groundGeometry) -> game_rect [[nothrow]]
+[[nodiscard]] auto GetLevelBoundary(const level_ground_geometry& groundGeometry) -> game_rect
 {
   std::vector<game_rect> boundaries;
   std::transform(groundGeometry.objects.cbegin(), groundGeometry.objects.end(), std::back_inserter(boundaries), 

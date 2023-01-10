@@ -2,7 +2,7 @@
 #include "level_state.h"
 #include "game_objects.h"
 
-void RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState) [[nothrow]];
+void RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState);
 
 void CreateDynamicLevelRenderLines(
   const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
@@ -64,9 +64,9 @@ void RenderLevel(
   std::vector<render_line> dynamicRenderLines;
   CreateDynamicLevelRenderLines(levelState, std::back_inserter(dynamicRenderLines), renderBrushSelector);
   auto renderTargetSize = renderTarget->GetSize();
-  auto brush = renderBrushSelector[grey];
 
 #ifdef __RENDER_GROUND_LINES  
+  auto brush = renderBrushSelector[grey];
   AddGroundHorizontalRightHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
   AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
 #endif
@@ -90,7 +90,7 @@ void RenderLevel(
 void RenderGround(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,
-  const level_state& levelState) [[nothrow]]
+  const level_state& levelState)
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   auto greyBrush = renderBrushSelector[grey];

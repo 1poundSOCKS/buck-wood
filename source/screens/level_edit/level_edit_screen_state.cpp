@@ -315,7 +315,7 @@ float GetScreenUpdateIntervalInSeconds(const level_edit_screen_state& screenStat
 void ScrollView(level_edit_screen_state& screenState, const screen_input_state& screenInputState)
 {
   float intervalTime = GetScreenUpdateIntervalInSeconds(screenState);
-  float scrollDistance = 500.0 * intervalTime;
+  float scrollDistance = 500.0f * intervalTime;
 
   float ratioMouseX = GetRatioMouseX(screenInputState);
   float ratioMouseY = GetRatioMouseY(screenInputState);

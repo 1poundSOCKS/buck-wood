@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "collisions.h"
 
-[[nodiscard]] bool AddLineToInterceptCount(const game_line& line, const game_point& point) [[nothrow]]
+[[nodiscard]] auto AddLineToInterceptCount(const game_line& line, const game_point& point) -> bool
 {
   if( point.x >= line.start.x && point.x < line.end.x || point.x < line.start.x && point.x >= line.end.x )
   {
@@ -11,7 +11,7 @@
   return false;
 }
 
-float GetYIntercept(float x, const game_line& line)
+[[nodiscard]] auto GetYIntercept(float x, const game_line& line) -> float
 {
   float cx = line.end.x - line.start.x;
   float cy = line.end.y - line.start.y;

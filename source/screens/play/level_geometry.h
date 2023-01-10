@@ -16,9 +16,19 @@ struct level_targets_geometry
   std::vector<game_line> lines;
 };
 
-[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry [[nothrow]];
-[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry [[nothrow]];
-[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool [[nothrow]];
-[[nodiscard]] auto GetLevelBoundary(const level_ground_geometry& groundGeometry) -> game_rect [[nothrow]];
+[[nodiscard]] auto CreateLevelGroundGeometry(const game_level_data& levelData) -> level_ground_geometry;
+[[nodiscard]] auto CreateLevelTargetsGeometry(const game_level_data& levelData) -> level_targets_geometry;
+[[nodiscard]] auto IsUnderground(float x, float y, const level_ground_geometry& levelGroundGeometry) -> bool;
+[[nodiscard]] auto GetLevelBoundary(const level_ground_geometry& groundGeometry) -> game_rect;
+
+inline [[nodiscard]] auto HasCollided(float x, float y, const level_ground_geometry& groundGeometry) -> bool
+{
+  return IsUnderground(x, y, groundGeometry);
+}
+
+inline [[nodiscard]] auto HasCollided(float x, float y, const level_targets_geometry& geometry) -> bool
+{
+  return PointInside({ x, y}, geometry.lines.cbegin(), geometry.lines.cend());
+}
 
 #endif

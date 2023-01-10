@@ -1,12 +1,15 @@
+#define _CRT_SECURE_NO_WARNINGS
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
 #define DIRECTINPUT_VERSION 0x0800
 
-#include <iostream>
+#include <stdint.h>
 #include <tchar.h>
+#include <math.h>
+
+#include <iostream>
 #include <string>
 #include <string_view>
-#include <math.h>
 #include <cstdint>
 #include <filesystem>
 #include <memory>

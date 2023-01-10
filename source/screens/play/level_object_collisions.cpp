@@ -3,7 +3,7 @@
 
 [[nodiscard]] auto PlayerHasHitTheGround(
   const player_ship& player, 
-  const level_ground_geometry& groundGeometry) -> bool [[nothrow]]
+  const level_ground_geometry& groundGeometry) -> bool
 {
   return std::reduce(
     player.points.cbegin(),
@@ -21,7 +21,7 @@ void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletEnd, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]]
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions)
 {
   for( auto& bullet = bulletBegin; bullet != bulletEnd; ++bullet )
   {
@@ -33,7 +33,7 @@ void GetBulletTargetCollisions(
   bullet& bullet, 
   std::vector<target_state>::iterator targetsBegin, 
   std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions) [[nothrow]]
+  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions)
 {
   for( auto& targetState = targetsBegin; targetState != targetsEnd; ++targetState )
   {
