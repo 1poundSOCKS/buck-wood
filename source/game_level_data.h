@@ -65,4 +65,15 @@ bool SaveAllGameLevelData(const game_level_data_index& gameLevelDataIndex);
 std::string SaveJsonDataToString(Json::Value& root);
 [[nodiscard]] auto GetGameLevelBoundary(const game_level_data& levelData) -> game_rect;
 
+[[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_closed_object;
+
+void LoadLevelObjects(const game_level_data& levelData, auto objectInserter)
+{
+  // objectInserter = LoadClosedObject(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend());
+  std::transform(levelData.objects.cbegin(), levelData.objects.cend(), objectInserter, [](const game_level_object_data& objectData) -> game_closed_object
+  {
+    return LoadClosedObject(objectData.points.cbegin(), objectData.points.cend());
+  });
+}
+
 #endif

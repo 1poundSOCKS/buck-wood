@@ -40,6 +40,11 @@ bool PointInside(const game_point& point, auto linesBegin, auto linesEnd)
   return ( matchingLines % 2 > 0 );
 }
 
+inline [[nodiscard]] auto HasCollided(float x, float y, const game_closed_object& object) -> bool
+{
+  return PointInside({ x, y }, object.lines.cbegin(), object.lines.cend());
+}
+
 [[nodiscard]] auto PointInsideCount(auto beginIterator, auto endIterator, const auto& linesCollection) -> int
 {
   return std::reduce(

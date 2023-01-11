@@ -5,7 +5,6 @@
 #include "screen_view.h"
 #include "level_object_collisions.h"
 #include "level_geometry.h"
-#include "solid_object.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
@@ -117,18 +116,12 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.bottomRight.y += 800;
   SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
 
-  solid_object solidObject { groundGeometry };
-  solidObject.HasCollided(0, 0);
+  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData) };
+  solidObjects.emplace_back(levelBoundaryObject);
 
-  std::vector<solid_object> solidObjects;
-  solidObjects.emplace_back(solid_object(groundGeometry));
-  solidObjects.emplace_back(solid_object(targetsGeometry));
-
-  for( auto& object : solidObjects )
-  {
-    auto collided = object.HasCollided(0, 0);
-    if( collided ) {}
-  }
+  std::vector<game_closed_object> levelObjects;
+  LoadLevelObjects(levelData, std::back_inserter(levelObjects));
+  std::copy(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(solidObjects));
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -281,8 +274,18 @@ void ProcessCollisions(level_state& levelState)
 
   for( auto& bullet : levelState.bullets )
   {
-    if( bullet.free || BulletHasExpired(bullet) || IsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
-      bullet.free = true;
+    if( !bullet.free )
+    {
+      auto collisionCount = std::accumulate(levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), 0, 
+      [bullet](int count, const solid_object& solidObject) -> int
+      {
+        return solidObject.HasCollided(bullet.xPos, bullet.yPos) ? count + 1 : count;
+      });
+
+      // if( bullet.free || BulletHasExpired(bullet) || IsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
+      if( BulletHasExpired(bullet) || collisionCount > 0 )
+        bullet.free = true;
+    }
   }
 
   for( auto& explosion : levelState.explosions )

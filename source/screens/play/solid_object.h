@@ -7,8 +7,8 @@ private:
   struct object_concept
   {
     virtual ~object_concept() {}
-    virtual [[nodiscard]] auto clone() -> std::unique_ptr<object_concept> = 0;
-    virtual [[nodiscard]] auto HasCollided(float x, float y) -> bool = 0;
+    [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
+    [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
   };
 
   template <typename object_type>
@@ -21,7 +21,7 @@ private:
       return std::make_unique<object_model<object_type>>(*this);
     }
 
-    [[nodiscard]] auto HasCollided(float x, float y) -> bool override
+    [[nodiscard]] auto HasCollided(float x, float y) const -> bool override
     {
       return ::HasCollided(x, y, object);
     }
@@ -31,17 +31,26 @@ private:
 
 public:
   template <typename object_type>
-  explicit solid_object(const object_type& object)
+  solid_object(const object_type& object)
   : objectConcept(std::make_unique<object_model<object_type>>(object))
   {
   }
 
-  solid_object(const solid_object& solidObject)
-  : objectConcept(solidObject.objectConcept->clone())
+  solid_object(const solid_object& solidObject) = delete;
+
+  solid_object(solid_object&& solidObject)
+  : objectConcept(std::move(solidObject.objectConcept))
   {
   }
 
-  virtual [[nodiscard]] auto HasCollided(float x, float y) -> bool
+  void operator=(const solid_object& solidObject) = delete;
+
+  void operator=(solid_object&& solidObject)
+  {
+    objectConcept = std::move(solidObject.objectConcept);
+  }
+
+  [[nodiscard]] auto HasCollided(float x, float y) const -> bool
   {
     return objectConcept->HasCollided(x, y);
   }

@@ -9,6 +9,8 @@
 #include "level_geometry.h"
 #include "area_grid.h"
 #include "explosion.h"
+#include "level_boundary.h"
+#include "solid_object.h"
 
 struct level_control_state
 {
@@ -55,6 +57,8 @@ struct level_state
   std::vector<render_line> staticRenderLines;
   std::vector<area_state> groundMatrix;
   std::vector<explosion_state> explosions;
+  
+  std::vector<solid_object> solidObjects;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
