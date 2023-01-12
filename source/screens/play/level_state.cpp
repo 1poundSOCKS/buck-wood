@@ -282,7 +282,6 @@ void ProcessCollisions(level_state& levelState)
         return solidObject.HasCollided(bullet.xPos, bullet.yPos) ? count + 1 : count;
       });
 
-      // if( bullet.free || BulletHasExpired(bullet) || IsUnderground(bullet.xPos, bullet.yPos, levelState.groundGeometry) )
       if( BulletHasExpired(bullet) || collisionCount > 0 )
         bullet.free = true;
     }

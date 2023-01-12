@@ -2,12 +2,14 @@
 #define _level_boundary_
 
 #include "geometry.h"
+#include "game_level_data.h"
 
 struct level_boundary
 {
-  game_closed_object object;
+  game_open_object object;
 };
 
+[[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_open_object;
 [[nodiscard]] auto HasCollided(float x, float y, const level_boundary& levelBoundary) -> bool;
 
 #endif

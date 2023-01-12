@@ -265,8 +265,3 @@ std::wstring game_level_data_filenames::GetNext()
     }
   );
 }
-
-[[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_closed_object
-{
-  return LoadClosedObject(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend());
-}

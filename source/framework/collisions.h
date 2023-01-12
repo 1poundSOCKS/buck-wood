@@ -63,7 +63,7 @@ inline [[nodiscard]] auto HasCollided(float x, float y, const game_closed_object
   return PointInsideCount(beginIterator, endIterator, lines);
 }
 
-int GetLineInterceptCount(const game_point& point, auto linesBegin, auto linesEnd)
+[[nodiscard]] auto GetLineInterceptCount(const game_point& point, auto linesBegin, auto linesEnd) -> int
 {  
   return std::accumulate(linesBegin, linesEnd, 0, [point](auto count, auto& line)
   {

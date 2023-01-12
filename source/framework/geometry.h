@@ -39,6 +39,12 @@ struct game_closed_object
   std::vector<game_line> lines;
 };
 
+struct game_open_object
+{
+  std::vector<game_point> points;
+  std::vector<game_line> lines;
+};
+
 auto CalculateAngle(float x1, float y1, float x2, float y2) -> float;
 
 float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
@@ -57,17 +63,17 @@ void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::M
   });
 }
 
-void CreateConnectedLines(auto begin, auto end, auto lines, float x=0, float y=0, bool loop=true)
+void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
-  std::transform(std::next(begin), end, begin, lines, [x, y](const auto& point2, const auto& point1)
+  std::transform(std::next(begin), end, begin, lines, [](const auto& point2, const auto& point1)
   {
-    return game_line { point1.x + x, point1.y + y, point2.x + x, point2.y + y };
+    return game_line { point1.x, point1.y, point2.x, point2.y };
   });
 
   if( loop )
   {
     auto last = std::prev(end);
-    lines = game_line { last->x + x, last->y + y, begin->x + x, begin->y + y };
+    lines = game_line { last->x, last->y, begin->x, begin->y };
   }
 };
 
@@ -89,6 +95,14 @@ void CreateConnectedLines(game_rect rect, auto lines)
   std::copy(beginPoint, endPoint, std::back_inserter(closedObject.points));
   CreateConnectedLines(closedObject.points.cbegin(), closedObject.points.cend(), std::back_inserter(closedObject.lines));
   return closedObject;
+}
+
+[[nodiscard]] auto LoadOpenObject(auto beginPoint, auto endPoint) -> game_open_object
+{
+  game_open_object openObject;
+  std::copy(beginPoint, endPoint, std::back_inserter(openObject.points));
+  CreateConnectedLines(openObject.points.cbegin(), openObject.points.cend(), std::back_inserter(openObject.lines), false);
+  return openObject;
 }
 
 #endif
