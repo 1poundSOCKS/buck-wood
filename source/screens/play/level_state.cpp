@@ -122,6 +122,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
   std::copy(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(solidObjects));
+
+  std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -257,32 +259,37 @@ void ProcessCollisions(level_state& levelState)
     }
   }
 
-  std::vector<bullet_target_collision> bulletTargetCollisions;
+  // std::vector<bullet_target_collision> bulletTargetCollisions;
 
-  GetBulletTargetCollisions(
-    levelState.bullets.begin(), 
-    levelState.bullets.end(), 
-    levelState.targets.begin(),
-    levelState.targets.end(),
-    std::back_inserter(bulletTargetCollisions)
-  );
+  // GetBulletTargetCollisions(
+  //   levelState.bullets.begin(), 
+  //   levelState.bullets.end(), 
+  //   levelState.targets.begin(),
+  //   levelState.targets.end(),
+  //   std::back_inserter(bulletTargetCollisions)
+  // );
 
-  int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
+  // int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
   
-  if( targetActivatedCount > 0 )
-    levelState.targetShot = true;
+  // if( targetActivatedCount > 0 )
+  //   levelState.targetShot = true;
 
   for( auto& bullet : levelState.bullets )
   {
     if( !bullet.free )
     {
-      auto collisionCount = std::accumulate(levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), 0, 
-      [bullet](int count, const solid_object& solidObject) -> int
+      auto hitCount = std::accumulate(levelState.solidObjects.begin(), levelState.solidObjects.end(), 0, 
+      [&bullet](int count, solid_object& solidObject) -> int
       {
-        return solidObject.HasCollided(bullet.xPos, bullet.yPos) ? count + 1 : count;
+        if( solidObject.HasCollided(bullet.xPos, bullet.yPos) )
+        {
+          ++count;
+          solidObject.HitByBullet();
+        }
+        return count;
       });
 
-      if( BulletHasExpired(bullet) || collisionCount > 0 )
+      if( BulletHasExpired(bullet) || hitCount > 0 )
         bullet.free = true;
     }
   }

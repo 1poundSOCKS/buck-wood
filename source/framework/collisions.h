@@ -45,6 +45,10 @@ inline [[nodiscard]] auto HasCollided(float x, float y, const game_closed_object
   return PointInside({ x, y }, object.lines.cbegin(), object.lines.cend());
 }
 
+inline auto HitByBullet(game_closed_object&) -> void
+{
+}
+
 [[nodiscard]] auto PointInsideCount(auto beginIterator, auto endIterator, const auto& linesCollection) -> int
 {
   return std::reduce(

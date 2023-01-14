@@ -9,6 +9,7 @@ private:
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
+    virtual auto HitByBullet() -> void = 0;
   };
 
   template <typename object_type>
@@ -26,6 +27,11 @@ private:
       return ::HasCollided(x, y, object);
     }
 
+    auto HitByBullet() -> void override
+    {
+      ::HitByBullet(object);
+    }
+
     object_type object;
   };
 
@@ -36,23 +42,27 @@ public:
   {
   }
 
-  solid_object(const solid_object& solidObject) = delete;
-
   solid_object(solid_object&& solidObject)
   : objectConcept(std::move(solidObject.objectConcept))
   {
   }
-
-  void operator=(const solid_object& solidObject) = delete;
 
   void operator=(solid_object&& solidObject)
   {
     objectConcept = std::move(solidObject.objectConcept);
   }
 
+  solid_object(const solid_object& solidObject) = delete;
+  void operator=(const solid_object& solidObject) = delete;
+
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool
   {
     return objectConcept->HasCollided(x, y);
+  }
+
+  void HitByBullet()
+  {
+    objectConcept->HitByBullet();
   }
 
 private:

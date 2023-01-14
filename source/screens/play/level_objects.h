@@ -14,15 +14,6 @@ struct bullet
   float range = 1000;
 };
 
-struct target_state
-{
-  target_state(const game_point& position);
-  const game_point& position;
-  std::vector<game_point> points;
-  bool activated = false;
-  std::vector<game_line> shape;
-};
-
 struct level_star
 {
   game_point position;

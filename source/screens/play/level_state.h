@@ -10,6 +10,7 @@
 #include "area_grid.h"
 #include "explosion.h"
 #include "level_boundary.h"
+#include "level_target.h"
 #include "solid_object.h"
 
 struct level_control_state

@@ -3,6 +3,7 @@
 
 #include "level_geometry.h"
 #include "level_objects.h"
+#include "level_target.h"
 #include "player_ship.h"
 #include "collisions.h"
 
