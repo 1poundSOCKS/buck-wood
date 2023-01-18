@@ -82,9 +82,11 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   bullets.resize(100);
 
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [](const auto& target)
+  screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
+
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [renderBrushSelector](const auto& target)
   {
-    return target_state(target);
+    return target_state(target, renderBrushSelector);
   });
 
   for( auto& target : targets )
@@ -93,8 +95,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   }
 
   level_background_data backgroundData = GenerateLevelBackgroundData(levelData);
-
-  screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
 
   auto starBrush = renderBrushSelector[dark_grey];
   std::transform(

@@ -1,6 +1,8 @@
 #ifndef _solid_object_
 #define _solid_object_
 
+#include "framework.h"
+
 class solid_object
 {
 private:
@@ -10,6 +12,7 @@ private:
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
+    virtual auto GetRenderLines(render_line_inserter_type inserter) const -> void = 0;
   };
 
   template <typename object_type>
@@ -30,6 +33,11 @@ private:
     auto HitByBullet() -> void override
     {
       ::HitByBullet(object);
+    }
+
+    auto GetRenderLines(render_line_inserter_type inserter) const -> void override
+    {
+      ::GetRenderLines(object, inserter);
     }
 
     object_type object;
@@ -63,6 +71,11 @@ public:
   void HitByBullet()
   {
     objectConcept->HitByBullet();
+  }
+
+  auto GetRenderLines(render_line_inserter_type inserter) const -> void
+  {
+    objectConcept->GetRenderLines(inserter); 
   }
 
 private:

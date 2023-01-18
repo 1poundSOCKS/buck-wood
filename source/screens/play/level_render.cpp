@@ -43,10 +43,10 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
-void RenderLevel(
+auto RenderLevel(
   ID2D1RenderTarget* renderTarget, 
   const screen_render_data& renderData,
-  const level_state& levelState)
+  const level_state& levelState) -> void
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
@@ -127,10 +127,15 @@ void CreateDynamicLevelRenderLines(
   std::back_insert_iterator<std::vector<render_line>> renderLines, 
   screen_render_brush_selector brushes)
 {
-  for( const auto& target : levelState.targets )
+  // for( const auto& target : levelState.targets )
+  // {
+  //   auto renderBrush = target.activated ? brushes[red] : brushes[green];
+  //   CreateRenderLines(target.shape.cbegin(), target.shape.cend(), renderLines, renderBrush, 4);
+  // }
+
+  for( const auto& object : levelState.solidObjects )
   {
-    auto renderBrush = target.activated ? brushes[red] : brushes[green];
-    CreateRenderLines(target.shape.cbegin(), target.shape.cend(), renderLines, renderBrush, 4);
+    object.GetRenderLines(renderLines);
   }
 
   if( levelState.player.state == player_ship::alive )

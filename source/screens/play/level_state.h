@@ -11,6 +11,11 @@
 #include "explosion.h"
 #include "level_boundary.h"
 #include "level_target.h"
+
+inline auto GetRenderLines(const game_closed_object&, render_line_inserter_type) -> void
+{
+}
+
 #include "solid_object.h"
 
 struct level_control_state

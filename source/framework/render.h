@@ -18,6 +18,8 @@ struct render_line
   float width = 1;
 };
 
+using render_point_inserter_type = std::back_insert_iterator<std::vector<render_point>>;
+using render_line_inserter_type = std::back_insert_iterator<std::vector<render_line>>;
 using render_rect = render_point;
 
 void RenderText(

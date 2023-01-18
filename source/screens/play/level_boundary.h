@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 #include "game_level_data.h"
+#include "screen_render_data.h"
 
 struct level_boundary
 {
@@ -14,6 +15,10 @@ struct level_boundary
 [[nodiscard]] auto HasCollided(float x, float y, const level_boundary& levelBoundary) -> bool;
 
 inline auto HitByBullet(level_boundary&) -> void
+{
+}
+
+inline auto GetRenderLines(const level_boundary&, render_line_inserter_type) -> void
 {
 }
 
