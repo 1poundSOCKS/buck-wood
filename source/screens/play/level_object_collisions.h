@@ -2,10 +2,10 @@
 #define _level_object_collisions_
 
 #include "level_geometry.h"
-#include "level_objects.h"
 #include "level_target.h"
 #include "player_ship.h"
 #include "collisions.h"
+#include "bullet.h"
 
 struct bullet_target_collision
 {

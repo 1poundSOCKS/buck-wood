@@ -84,6 +84,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
 
+  std::vector<target_state> targets;
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [renderBrushSelector](const auto& target)
   {
     return target_state(target, renderBrushSelector);
@@ -121,21 +122,23 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
-  std::copy(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(solidObjects));
 
+  std::vector<level_island> islands;
+  std::copy(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands));
+  std::copy(islands.cbegin(), islands.cend(), std::back_inserter(solidObjects));
   std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }
 
 bool LevelIsComplete(const level_state& levelState)
 {
-  int activatedTargetCount = std::accumulate(
-    levelState.targets.cbegin(), 
-    levelState.targets.cend(), 
+  int total = std::reduce(
+    levelState.solidObjects.cbegin(), 
+    levelState.solidObjects.cend(), 
     0, 
-    [](auto count, auto& target){ return target.activated ? count + 1 : count; }
+    [](auto count, const solid_object& object){ return object.LevelIsComplete() ? count + 1 : count; }
   );
 
-  return activatedTargetCount == levelState.targets.size();
+  return total == levelState.solidObjects.size();
 }
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t timerCount)

@@ -2,8 +2,8 @@
 #define _level_state_
 
 #include "game_level_data.h"
-#include "level_objects.h"
 #include "player_ship.h"
+#include "bullet.h"
 #include "screen_input_state.h"
 #include "screen_render_data.h"
 #include "level_geometry.h"
@@ -11,12 +11,9 @@
 #include "explosion.h"
 #include "level_boundary.h"
 #include "level_target.h"
-
-inline auto GetRenderLines(const game_closed_object&, render_line_inserter_type) -> void
-{
-}
-
+#include "level_island.h"
 #include "solid_object.h"
+#include "starfield.h"
 
 struct level_control_state
 {
@@ -55,7 +52,7 @@ struct level_state
   bool targetShot = false;
 
   player_ship player;
-  std::vector<target_state> targets;
+  // std::vector<target_state> targets;
   std::vector<bullet> bullets;
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;

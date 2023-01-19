@@ -14,7 +14,7 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   brushActivated->AddRef();
 }
 
-[[nodiscard]] auto HasCollided(float x, float y, const target_state& target) -> bool
+[[nodiscard]] auto HasCollided(const target_state& target, float x, float y) -> bool
 {
   return PointInside({ x, y }, target.shape.cbegin(), target.shape.cend());
 }
@@ -28,4 +28,9 @@ auto GetRenderLines(const target_state& targetState, render_line_inserter_type i
 {
   auto renderBrush = targetState.activated ? targetState.brushActivated : targetState.brushNotActivated;
   CreateRenderLines(targetState.shape.cbegin(), targetState.shape.cend(), inserter, renderBrush.get(), 4);
+}
+
+auto LevelIsComplete(const target_state& targetState) -> bool
+{
+  return targetState.activated;
 }

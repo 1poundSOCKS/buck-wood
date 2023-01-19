@@ -16,8 +16,9 @@ struct target_state
   winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
 };
 
-[[nodiscard]] auto HasCollided(float x, float y, const target_state& target) -> bool;
+[[nodiscard]] auto HasCollided(const target_state& target, float x, float y) -> bool;
 auto HitByBullet(target_state& targetState) -> void;
 auto GetRenderLines(const target_state& targetState, render_line_inserter_type inserter) -> void;
+auto LevelIsComplete(const target_state& targetState) -> bool;
 
 #endif

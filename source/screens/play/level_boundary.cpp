@@ -7,7 +7,7 @@
   return LoadOpenObject(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend());
 }
 
-[[nodiscard]] auto HasCollided(float x, float y, const level_boundary& levelBoundary) -> bool
+[[nodiscard]] auto HasCollided(const level_boundary& levelBoundary, float x, float y) -> bool
 {
   auto lineCount = GetLineInterceptCount({ x, y }, levelBoundary.object.lines.cbegin(), levelBoundary.object.lines.cend());
   auto firstPoint = levelBoundary.object.points.front();

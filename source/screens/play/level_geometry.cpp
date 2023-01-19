@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "level_geometry.h"
 #include "framework.h"
-#include "level_objects.h"
+#include "level_geometry.h"
+#include "game_objects.h"
 
 [[nodiscard]] auto GetOuterBoundaryPoints(const game_level_data& levelData) -> std::array<game_point, 4>
 {
