@@ -7,6 +7,7 @@
 struct target_state
 {
   target_state(const game_point& position, screen_render_brush_selector brushes);
+  void RenderTo(ID2D1RenderTarget* renderTarget) const;
 
   const game_point& position;
   std::vector<game_point> points;

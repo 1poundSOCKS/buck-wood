@@ -2,6 +2,7 @@
 #define _solid_object_
 
 #include "framework.h"
+#include "level_render_object.h"
 
 class solid_object
 {
@@ -14,6 +15,7 @@ private:
     virtual auto HitByBullet() -> void = 0;
     virtual auto GetRenderLines(render_line_inserter_type inserter) const -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
+    virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void = 0;
   };
 
   template <typename object_type>
@@ -44,6 +46,11 @@ private:
     auto LevelIsComplete() const -> bool override
     {
       return ::LevelIsComplete(object);
+    }
+
+    virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+    {
+      object.RenderTo(renderTarget);
     }
 
     object_type object;
@@ -87,6 +94,11 @@ public:
   auto LevelIsComplete() const -> bool
   {
     return objectConcept->LevelIsComplete();
+  }
+
+  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+  {
+    objectConcept->RenderTo(renderTarget);
   }
 
 private:

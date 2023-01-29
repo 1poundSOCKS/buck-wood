@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "level_state.h"
 #include "game_objects.h"
+#include "level_render_object.h"
 
 void RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState);
 
@@ -51,11 +52,28 @@ auto RenderLevel(
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
+  // std::vector<level_render_object> renderObjects;
+  // std::transform(levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), std::back_inserter(renderObjects),
+  // [renderTarget](solid_object& solidObject) -> level_render_object
+  // {
+  //   return solidObject.GetRenderer();
+  // });
+
+  // for( auto& renderObject : renderObjects )
+  // {
+  //   renderObject.Render();
+  // }
+
   renderTarget->SetTransform(levelState.viewTransform);
 
   RenderGround(renderTarget, renderData, levelState);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
+
+  for( const auto& object : levelState.solidObjects )
+  {
+    object.RenderTo(renderTarget);
+  }
 
 #ifdef __RENDER_GROUND_LINES
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
@@ -127,16 +145,10 @@ void CreateDynamicLevelRenderLines(
   std::back_insert_iterator<std::vector<render_line>> renderLines, 
   screen_render_brush_selector brushes)
 {
-  // for( const auto& target : levelState.targets )
+  // for( const auto& object : levelState.solidObjects )
   // {
-  //   auto renderBrush = target.activated ? brushes[red] : brushes[green];
-  //   CreateRenderLines(target.shape.cbegin(), target.shape.cend(), renderLines, renderBrush, 4);
+  //   object.GetRenderLines(renderLines);
   // }
-
-  for( const auto& object : levelState.solidObjects )
-  {
-    object.GetRenderLines(renderLines);
-  }
 
   if( levelState.player.state == player_ship::alive )
   {

@@ -2,6 +2,11 @@
 #include "level_boundary.h"
 #include "collisions.h"
 
+void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget) const
+{
+  renderTarget;
+}
+
 [[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_open_object
 {
   return LoadOpenObject(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend());

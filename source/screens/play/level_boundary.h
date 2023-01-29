@@ -7,6 +7,8 @@
 
 struct level_boundary
 {
+  void RenderTo(ID2D1RenderTarget* renderTarget) const;
+  
   game_open_object object;
 };
 
