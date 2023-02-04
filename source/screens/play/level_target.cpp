@@ -24,12 +24,6 @@ auto target_state::HitByBullet() -> void
   activated = true;
 }
 
-auto target_state::GetRenderLines(render_line_inserter_type inserter) const -> void
-{
-  auto renderBrush = activated ? brushActivated : brushNotActivated;
-  CreateRenderLines(shape.cbegin(), shape.cend(), inserter, renderBrush.get(), 4);
-}
-
 [[nodiscard]] auto target_state::LevelIsComplete() const -> bool
 {
   return activated;

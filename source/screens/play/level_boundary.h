@@ -9,7 +9,6 @@ struct level_boundary
 {
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
-  auto GetRenderLines(render_line_inserter_type inserter) const -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget) const;
 

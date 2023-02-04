@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "level_island.h"
 
-level_island::level_island(const game_closed_object& object) : object(object)
+level_island::level_island(const game_closed_object& object, screen_render_brush_selector brushes) : object(object)
 {
+  brush.attach(brushes[brown]);
+  brush->AddRef();
 }
 
 [[nodiscard]] auto level_island::HasCollided(float x, float y) const -> bool
@@ -14,10 +16,6 @@ auto level_island::HitByBullet() -> void
 {
 }
 
-auto level_island::GetRenderLines(render_line_inserter_type) const -> void
-{
-}
-
 [[nodiscard]] auto level_island::LevelIsComplete() const -> bool
 {
   return true;
@@ -25,5 +23,7 @@ auto level_island::GetRenderLines(render_line_inserter_type) const -> void
 
 void level_island::RenderTo(ID2D1RenderTarget* renderTarget) const
 {
-  renderTarget;
+  std::vector<render_line> renderLines;
+  CreateRenderLines(object.lines.cbegin(), object.lines.cend(), std::back_inserter(renderLines), brush.get(), 6);
+  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }

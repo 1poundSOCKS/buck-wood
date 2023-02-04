@@ -66,7 +66,7 @@ auto RenderLevel(
 
   renderTarget->SetTransform(levelState.viewTransform);
 
-  RenderGround(renderTarget, renderData, levelState);
+  // RenderGround(renderTarget, renderData, levelState);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
@@ -94,8 +94,8 @@ auto RenderLevel(
   std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )
   {
-    if( bullet.free ) continue;
-    renderBullets.emplace_back(render_point { GetBulletRect(bullet.xPos, bullet.yPos), renderBrushSelector[red] });
+    if( !bullet.free )
+      renderBullets.emplace_back(render_point { GetBulletRect(bullet.xPos, bullet.yPos), renderBrushSelector[red] });
   }
 
   RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());

@@ -124,7 +124,11 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::copy(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands));
+  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [renderBrushSelector](const auto& object) -> level_island
+  {
+    return { object, renderBrushSelector };
+  });
+  
   std::copy(islands.cbegin(), islands.cend(), std::back_inserter(solidObjects));
   std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }

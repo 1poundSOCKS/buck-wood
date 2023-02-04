@@ -16,10 +16,6 @@ auto level_boundary::HitByBullet() -> void
 {
 }
 
-auto level_boundary::GetRenderLines(render_line_inserter_type) const -> void
-{
-}
-
 [[nodiscard]] auto level_boundary::LevelIsComplete() const -> bool
 {
   return true;

@@ -13,7 +13,6 @@ private:
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
-    virtual auto GetRenderLines(render_line_inserter_type inserter) const -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void = 0;
   };
@@ -36,11 +35,6 @@ private:
     auto HitByBullet() -> void override
     {
       object.HitByBullet();
-    }
-
-    auto GetRenderLines(render_line_inserter_type inserter) const -> void override
-    {
-      object.GetRenderLines(inserter);
     }
 
     auto LevelIsComplete() const -> bool override
@@ -84,11 +78,6 @@ public:
   void HitByBullet()
   {
     objectConcept->HitByBullet();
-  }
-
-  auto GetRenderLines(render_line_inserter_type inserter) const -> void
-  {
-    objectConcept->GetRenderLines(inserter); 
   }
 
   auto LevelIsComplete() const -> bool
