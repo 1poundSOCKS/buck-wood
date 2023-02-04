@@ -70,10 +70,10 @@ auto RenderLevel(
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
-  for( const auto& object : levelState.solidObjects )
+  std::for_each(std::execution::seq, levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), [renderTarget](const auto& object)
   {
     object.RenderTo(renderTarget);
-  }
+  });
 
 #ifdef __RENDER_GROUND_LINES
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
