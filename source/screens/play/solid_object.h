@@ -30,22 +30,22 @@ private:
 
     [[nodiscard]] auto HasCollided(float x, float y) const -> bool override
     {
-      return ::HasCollided(object, x, y);
+      return object.HasCollided(x, y);
     }
 
     auto HitByBullet() -> void override
     {
-      ::HitByBullet(object);
+      object.HitByBullet();
     }
 
     auto GetRenderLines(render_line_inserter_type inserter) const -> void override
     {
-      ::GetRenderLines(object, inserter);
+      object.GetRenderLines(inserter);
     }
 
     auto LevelIsComplete() const -> bool override
     {
-      return ::LevelIsComplete(object);
+      return object.LevelIsComplete();
     }
 
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void

@@ -14,30 +14,30 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   brushActivated->AddRef();
 }
 
+[[nodiscard]] auto target_state::HasCollided(float x, float y) const -> bool
+{
+  return PointInside({ x, y }, shape.cbegin(), shape.cend());
+}
+
+auto target_state::HitByBullet() -> void
+{
+  activated = true;
+}
+
+auto target_state::GetRenderLines(render_line_inserter_type inserter) const -> void
+{
+  auto renderBrush = activated ? brushActivated : brushNotActivated;
+  CreateRenderLines(shape.cbegin(), shape.cend(), inserter, renderBrush.get(), 4);
+}
+
+[[nodiscard]] auto target_state::LevelIsComplete() const -> bool
+{
+  return activated;
+}
+
 void target_state::RenderTo(ID2D1RenderTarget* renderTarget) const
 {
   std::vector<render_line> renderLines;
   CreateRenderLines(shape.cbegin(), shape.cend(), std::back_inserter(renderLines), activated ? brushActivated.get() : brushNotActivated.get(), 6);
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
-}
-
-[[nodiscard]] auto HasCollided(const target_state& target, float x, float y) -> bool
-{
-  return PointInside({ x, y }, target.shape.cbegin(), target.shape.cend());
-}
-
-auto HitByBullet(target_state& targetState) -> void
-{
-  targetState.activated = true;
-}
-
-auto GetRenderLines(const target_state& targetState, render_line_inserter_type inserter) -> void
-{
-  auto renderBrush = targetState.activated ? targetState.brushActivated : targetState.brushNotActivated;
-  CreateRenderLines(targetState.shape.cbegin(), targetState.shape.cend(), inserter, renderBrush.get(), 4);
-}
-
-auto LevelIsComplete(const target_state& targetState) -> bool
-{
-  return targetState.activated;
 }

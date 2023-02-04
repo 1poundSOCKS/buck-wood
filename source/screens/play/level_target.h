@@ -7,6 +7,11 @@
 struct target_state
 {
   target_state(const game_point& position, screen_render_brush_selector brushes);
+  
+  [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
+  auto HitByBullet() -> void;
+  auto GetRenderLines(render_line_inserter_type inserter) const -> void;
+  [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget) const;
 
   const game_point& position;
@@ -16,10 +21,5 @@ struct target_state
   winrt::com_ptr<ID2D1SolidColorBrush> brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
 };
-
-[[nodiscard]] auto HasCollided(const target_state& target, float x, float y) -> bool;
-auto HitByBullet(target_state& targetState) -> void;
-auto GetRenderLines(const target_state& targetState, render_line_inserter_type inserter) -> void;
-auto LevelIsComplete(const target_state& targetState) -> bool;
 
 #endif
