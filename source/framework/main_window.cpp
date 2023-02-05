@@ -87,7 +87,7 @@ winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain)
   );
   
   winrt::com_ptr<ID2D1Factory> d2dFactory;
-	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,d2dFactory.put());
+	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
   if( FAILED(hr) ) throw L"error";
 
   hr = d2dFactory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, renderTarget.put());
