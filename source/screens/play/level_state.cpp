@@ -117,7 +117,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.bottomRight.y += 800;
   SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
 
-  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData) };
+  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData), renderBrushSelector };
   solidObjects.emplace_back(levelBoundaryObject);
 
   std::vector<game_closed_object> levelObjects;
