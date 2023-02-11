@@ -14,7 +14,7 @@ private:
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void = 0;
+    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
   };
 
   template <typename object_type>
@@ -42,9 +42,9 @@ private:
       return object.LevelIsComplete();
     }
 
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
     {
-      object.RenderTo(renderTarget);
+      object.RenderTo(renderTarget, viewRect);
     }
 
     object_type object;
@@ -85,9 +85,9 @@ public:
     return objectConcept->LevelIsComplete();
   }
 
-  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const -> void
+  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
   {
-    objectConcept->RenderTo(renderTarget);
+    objectConcept->RenderTo(renderTarget, viewRect);
   }
 
 private:

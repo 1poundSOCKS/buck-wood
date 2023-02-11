@@ -27,7 +27,7 @@ auto level_boundary::HitByBullet() -> void
   return true;
 }
 
-void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget) const
+void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const
 {
   std::vector<render_line> renderLines;
   CreateRenderLines(object.lines.cbegin(), object.lines.cend(), std::back_inserter(renderLines), brush.get(), 6);

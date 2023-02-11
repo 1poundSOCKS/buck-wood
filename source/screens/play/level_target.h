@@ -11,7 +11,7 @@ struct target_state
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  void RenderTo(ID2D1RenderTarget* renderTarget) const;
+  void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
   const game_point& position;
   std::vector<game_point> points;

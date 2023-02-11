@@ -29,7 +29,7 @@ auto target_state::HitByBullet() -> void
   return activated;
 }
 
-void target_state::RenderTo(ID2D1RenderTarget* renderTarget) const
+void target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const
 {
   std::vector<render_line> renderLines;
   CreateRenderLines(shape.cbegin(), shape.cend(), std::back_inserter(renderLines), activated ? brushActivated.get() : brushNotActivated.get(), 6);
