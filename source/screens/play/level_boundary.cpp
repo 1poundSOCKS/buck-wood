@@ -38,3 +38,27 @@ void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget) const
 {
   return LoadOpenObject(levelData.boundaryPoints.cbegin(), levelData.boundaryPoints.cend());
 }
+
+void level_boundary::AddGroundHorizontalRightHand(D2D1_SIZE_F renderTargetSize, const D2D1::Matrix3x2F& invertedViewTransform, auto renderLinesInserter)
+{
+  D2D1_POINT_2F inPoint { renderTargetSize.width, 0 };
+  auto outPoint = invertedViewTransform.TransformPoint(inPoint);
+
+  renderLinesInserter = { 
+    { object.points.front().x, object.points.front().y} , 
+    { outPoint.x, object.points.front().y },
+    brush.get(), 6
+  };
+}
+
+void level_boundary::AddGroundHorizontalLeftHand(D2D1_SIZE_F renderTargetSize, const D2D1::Matrix3x2F& invertedViewTransform, auto renderLinesInserter)
+{
+  D2D1_POINT_2F inPoint { 0, 0 };
+  auto outPoint = invertedViewTransform.TransformPoint(inPoint);
+
+  renderLinesInserter = { 
+    { object.points.back().x, object.points.back().y} , 
+    { outPoint.x, object.points.back().y },
+    brush.get(), 6
+  };
+}

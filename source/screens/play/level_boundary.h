@@ -14,6 +14,9 @@ struct level_boundary
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget) const;
 
+  void AddGroundHorizontalRightHand(D2D1_SIZE_F renderTargetSize, const D2D1::Matrix3x2F& invertedViewTransform, auto renderLinesInserter);
+  void AddGroundHorizontalLeftHand(D2D1_SIZE_F renderTargetSize, const D2D1::Matrix3x2F& invertedViewTransform, auto renderLinesInserter);
+
   game_open_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
 };
