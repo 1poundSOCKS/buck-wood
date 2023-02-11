@@ -3,10 +3,9 @@
 #include "game_objects.h"
 #include "level_render_object.h"
 
-void RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState);
-
-void CreateDynamicLevelRenderLines(
-  const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes);
+auto RenderGround(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,  const level_state& levelState) -> void;
+[[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const level_state& levelState) -> D2D1_RECT_F;
+auto CreateDynamicLevelRenderLines(const level_state& levelState, std::back_insert_iterator<std::vector<render_line>> renderLines, screen_render_brush_selector brushes) -> void;
 
 void AddGroundHorizontalRightHand(const level_state& levelState, D2D1_SIZE_F renderTargetSize, auto renderLinesInserter, ID2D1SolidColorBrush* brush, float width)
 {
@@ -44,35 +43,20 @@ inline D2D1_RECT_F GetBulletRect(float x, float y)
   return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
 }
 
-auto RenderLevel(
-  ID2D1RenderTarget* renderTarget, 
-  const screen_render_data& renderData,
-  const level_state& levelState) -> void
+auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& renderData,const level_state& levelState) -> void
 {
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
-  // std::vector<level_render_object> renderObjects;
-  // std::transform(levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), std::back_inserter(renderObjects),
-  // [renderTarget](solid_object& solidObject) -> level_render_object
-  // {
-  //   return solidObject.GetRenderer();
-  // });
-
-  // for( auto& renderObject : renderObjects )
-  // {
-  //   renderObject.Render();
-  // }
-
   renderTarget->SetTransform(levelState.viewTransform);
-
-  // RenderGround(renderTarget, renderData, levelState);
 
   RenderPoints(renderTarget, levelState.renderStars.cbegin(), levelState.renderStars.cend());
 
-  std::for_each(std::execution::par_unseq, levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), [renderTarget](const auto& object)
+  auto viewRect = GetViewRect(renderTarget, levelState);
+
+  std::for_each(std::execution::seq, levelState.solidObjects.cbegin(), levelState.solidObjects.cend(), [renderTarget, viewRect](const auto& object)
   {
-    object.RenderTo(renderTarget);
+    object.RenderTo(renderTarget, viewRect);
   });
 
 #ifdef __RENDER_GROUND_LINES
@@ -170,4 +154,14 @@ void CreateDynamicLevelRenderLines(
         renderLines, brushes[red], 5);
     }
   }
+}
+
+auto GetViewRect(ID2D1RenderTarget* renderTarget, const level_state& levelState) -> D2D1_RECT_F
+{
+  auto renderTargetSize = renderTarget->GetSize();
+  auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };
+  auto renderTargetBottomRight  = D2D1_POINT_2F { renderTargetSize.width - 1.0f, renderTargetSize.height - 1.0f };
+  auto topLeft = levelState.invertedViewTransform.TransformPoint(renderTargetTopLeft);
+  auto bottomRight = levelState.invertedViewTransform.TransformPoint(renderTargetBottomRight);
+  return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
 }

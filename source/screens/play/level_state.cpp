@@ -266,21 +266,6 @@ void ProcessCollisions(level_state& levelState)
     }
   }
 
-  // std::vector<bullet_target_collision> bulletTargetCollisions;
-
-  // GetBulletTargetCollisions(
-  //   levelState.bullets.begin(), 
-  //   levelState.bullets.end(), 
-  //   levelState.targets.begin(),
-  //   levelState.targets.end(),
-  //   std::back_inserter(bulletTargetCollisions)
-  // );
-
-  // int targetActivatedCount = ProcessBulletTargetCollisions(bulletTargetCollisions.begin(), bulletTargetCollisions.end());
-  
-  // if( targetActivatedCount > 0 )
-  //   levelState.targetShot = true;
-
   for( auto& bullet : levelState.bullets )
   {
     if( !bullet.free )

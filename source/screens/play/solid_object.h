@@ -85,7 +85,7 @@ public:
     return objectConcept->LevelIsComplete();
   }
 
-  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const -> void
   {
     objectConcept->RenderTo(renderTarget);
   }
