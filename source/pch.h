@@ -3,6 +3,8 @@
 #define UNICODE
 #define DIRECTINPUT_VERSION 0x0800
 
+#pragma warning(disable: 4100)
+
 #include <stdint.h>
 #include <tchar.h>
 #include <math.h>

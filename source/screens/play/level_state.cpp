@@ -152,6 +152,11 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 
   if( GetPlayTimeRemaining(levelState) > 0 )
   {
+    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount](auto& object)
+    {
+      object.Update(levelState.counterFrequency, timerCount);
+    });
+    
     levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
     
     levelState.invertedViewTransform = levelState.viewTransform;

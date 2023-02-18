@@ -14,6 +14,10 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   brushActivated->AddRef();
 }
 
+auto target_state::Update(int64_t tickFrequency, int64_t tickCount) -> void
+{
+}
+
 [[nodiscard]] auto target_state::HasCollided(float x, float y) const -> bool
 {
   return PointInside({ x, y }, shape.cbegin(), shape.cend());

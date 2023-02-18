@@ -9,6 +9,7 @@ struct level_boundary
 {
   level_boundary(const game_open_object& object, screen_render_brush_selector brushes);
   
+  auto Update(int64_t tickFrequency, int64_t tickCount) -> void;
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;

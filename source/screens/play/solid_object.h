@@ -11,6 +11,7 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
+    virtual auto Update(int64_t clockFrequency, int64_t clockCount) -> void = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
@@ -25,6 +26,11 @@ private:
     [[nodiscard]] auto clone() -> std::unique_ptr<object_concept> override
     {
       return std::make_unique<object_model<object_type>>(*this);
+    }
+
+    auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+    {
+      object.Update(clockFrequency, clockCount);
     }
 
     [[nodiscard]] auto HasCollided(float x, float y) const -> bool override
@@ -69,6 +75,11 @@ public:
 
   solid_object(const solid_object& solidObject) = delete;
   void operator=(const solid_object& solidObject) = delete;
+
+  auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+  {
+    objectConcept->Update(clockFrequency, clockCount);
+  }
 
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool
   {
