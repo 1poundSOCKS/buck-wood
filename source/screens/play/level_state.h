@@ -7,6 +7,7 @@
 #include "screen_input_state.h"
 #include "screen_render_data.h"
 #include "level_geometry.h"
+#include "level_control_state.h"
 #include "area_grid.h"
 #include "explosion.h"
 #include "level_boundary.h"
@@ -14,13 +15,6 @@
 #include "level_island.h"
 #include "solid_object.h"
 #include "starfield.h"
-
-struct level_control_state
-{
-  bool thrust = false;
-  bool shoot = false;
-  render_target_mouse_data renderTargetMouseData;
-};
 
 struct level_state
 {
