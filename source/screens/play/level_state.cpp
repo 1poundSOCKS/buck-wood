@@ -71,7 +71,7 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
 };
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData)
-: levelData(levelData), counterFrequency(counterFrequency)
+: levelData(levelData), counterFrequency(counterFrequency), controlState(std::make_shared<player_control_state>())
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
@@ -79,6 +79,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   player.xPos = levelData.playerStartPosX;
   player.yPos = levelData.playerStartPosY;
+  player.controlState = controlState;
 
   bullets.resize(100);
 
@@ -147,6 +148,9 @@ bool LevelIsComplete(const level_state& levelState)
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t timerCount)
 {
+  levelState.controlState->thrust = controlState.thrust;
+  levelState.controlState->shoot = controlState.shoot;
+  
   levelState.previousTimerCount = levelState.currentTimerCount;
   levelState.currentTimerCount = timerCount;
 
@@ -164,8 +168,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
     {
       D2D1_POINT_2F inPoint { controlState.renderTargetMouseData.x, controlState.renderTargetMouseData.y };
       auto outPoint = levelState.invertedViewTransform.TransformPoint(inPoint);
-      levelState.mouseX = outPoint.x;
-      levelState.mouseY = outPoint.y;
+      levelState.controlState->mouseX = levelState.mouseX = outPoint.x;
+      levelState.controlState->mouseY = levelState.mouseY = outPoint.y;
 
       D2D1_POINT_2F screenTopLeft { 0, 0 };
       D2D1_POINT_2F screenBottomRight { controlState.renderTargetMouseData.size.width - 1, controlState.renderTargetMouseData.size.height - 1 };
@@ -175,10 +179,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
-    if( levelState.player.state == player_ship::alive )
-    {
-      UpdatePlayer(levelState, controlState);
-    }
+    levelState.player.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount);
 
     UpdateBullets(levelState, controlState);
     UpdateExplosions(levelState);

@@ -2,9 +2,12 @@
 #define _player_ship_
 
 #include "game_objects.h"
+#include "player_control_state.h"
 
 struct player_ship
 {
+  auto Update(int64_t tickFrequency, int64_t tickCount) -> void;
+
   enum state_type { alive, dead };
   state_type state = alive;
   float xPos = 0;
@@ -15,6 +18,7 @@ struct player_ship
   bool thrusterOn = false;
   std::vector<game_point> points;
   std::vector<game_line> lines;
+  std::shared_ptr<player_control_state> controlState;
 };
 
 void UpdateShipGeometryData(player_ship& playerShip);

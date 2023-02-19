@@ -18,11 +18,7 @@
 
 struct level_state
 {
-  level_state(
-    const game_level_data& levelData, 
-    int64_t counterFrequency, 
-    const screen_render_data& renderData
-  );
+  level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData);
 
   const game_level_data& levelData;
   const int64_t counterFrequency;
@@ -46,7 +42,6 @@ struct level_state
   bool targetShot = false;
 
   player_ship player;
-  // std::vector<target_state> targets;
   std::vector<bullet> bullets;
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;
@@ -56,6 +51,7 @@ struct level_state
   std::vector<explosion_state> explosions;
   
   std::vector<solid_object> solidObjects;
+  std::shared_ptr<player_control_state> controlState;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);
