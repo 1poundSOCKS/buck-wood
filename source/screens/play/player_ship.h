@@ -3,10 +3,14 @@
 
 #include "game_objects.h"
 #include "player_control_state.h"
+#include "screen_render_data.h"
 
 struct player_ship
 {
+  player_ship(screen_render_brush_selector brushes);
+
   auto Update(int64_t tickFrequency, int64_t tickCount) -> void;
+  void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
   enum state_type { alive, dead };
   state_type state = alive;
@@ -19,6 +23,8 @@ struct player_ship
   std::vector<game_point> points;
   std::vector<game_line> lines;
   std::shared_ptr<player_control_state> controlState;
+  winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
 };
 
 void UpdateShipGeometryData(player_ship& playerShip);

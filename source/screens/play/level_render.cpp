@@ -63,9 +63,9 @@ auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& rend
   RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
 #endif
 
-  std::vector<render_line> dynamicRenderLines;
-  CreateDynamicLevelRenderLines(levelState, std::back_inserter(dynamicRenderLines), renderBrushSelector);
-  auto renderTargetSize = renderTarget->GetSize();
+  // std::vector<render_line> dynamicRenderLines;
+  // CreateDynamicLevelRenderLines(levelState, std::back_inserter(dynamicRenderLines), renderBrushSelector);
+  // auto renderTargetSize = renderTarget->GetSize();
 
 #ifdef __RENDER_GROUND_LINES  
   auto brush = renderBrushSelector[grey];
@@ -73,7 +73,8 @@ auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& rend
   AddGroundHorizontalLeftHand(levelState, renderTargetSize, std::back_inserter(dynamicRenderLines), brush, 6);
 #endif
 
-  RenderLines(renderTarget, dynamicRenderLines.cbegin(), dynamicRenderLines.cend());
+  // RenderLines(renderTarget, dynamicRenderLines.cbegin(), dynamicRenderLines.cend());
+  levelState.player.RenderTo(renderTarget, viewRect);
 
   std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )
@@ -134,26 +135,26 @@ void CreateDynamicLevelRenderLines(
   //   object.GetRenderLines(renderLines);
   // }
 
-  if( levelState.player.state == player_ship::alive )
-  {
-    CreateConnectedRenderLines(
-      levelState.player.points.cbegin(), 
-      levelState.player.points.cend(), 
-      renderLines, 
-      brushes[white], 
-      2);
+  // if( levelState.player.state == player_ship::alive )
+  // {
+  //   CreateConnectedRenderLines(
+  //     levelState.player.points.cbegin(), 
+  //     levelState.player.points.cend(), 
+  //     renderLines, 
+  //     brushes[white], 
+  //     2);
 
-    if( levelState.player.thrusterOn )
-    {
-      std::vector<game_point> thrusterPoints;
-      GetTransformedThrusterGeometry(levelState.player, std::back_inserter(thrusterPoints));
+  //   if( levelState.player.thrusterOn )
+  //   {
+  //     std::vector<game_point> thrusterPoints;
+  //     GetTransformedThrusterGeometry(levelState.player, std::back_inserter(thrusterPoints));
 
-      CreateDisconnectedRenderLines(
-        thrusterPoints.cbegin(), 
-        thrusterPoints.cend(), 
-        renderLines, brushes[red], 5);
-    }
-  }
+  //     CreateDisconnectedRenderLines(
+  //       thrusterPoints.cbegin(), 
+  //       thrusterPoints.cend(), 
+  //       renderLines, brushes[red], 5);
+  //   }
+  // }
 }
 
 auto GetViewRect(ID2D1RenderTarget* renderTarget, const level_state& levelState) -> D2D1_RECT_F

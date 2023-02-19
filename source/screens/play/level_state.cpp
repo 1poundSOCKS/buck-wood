@@ -71,7 +71,7 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
 };
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData)
-: levelData(levelData), counterFrequency(counterFrequency), controlState(std::make_shared<player_control_state>())
+: levelData(levelData), counterFrequency(counterFrequency), controlState(std::make_shared<player_control_state>()), player(screen_render_brush_selector(renderData.renderBrushes))
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
