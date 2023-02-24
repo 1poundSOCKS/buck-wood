@@ -50,7 +50,7 @@ struct level_state
   std::vector<area_state> groundMatrix;
   std::vector<explosion_state> explosions;
   
-  std::vector<solid_object> solidObjects;
+  std::list<solid_object> solidObjects;
   std::shared_ptr<player_control_state> controlState;
 };
 

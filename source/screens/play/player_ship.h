@@ -10,6 +10,9 @@ struct player_ship
   player_ship(screen_render_brush_selector brushes);
 
   auto Update(int64_t tickFrequency, int64_t tickCount) -> void;
+  [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
+  auto HitByBullet() -> void;
+  [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
   enum state_type { alive, dead };

@@ -45,6 +45,20 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount) -> void
   UpdateShipGeometryData(*this);
 }
 
+[[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool
+{
+  return false;
+}
+
+auto player_ship::HitByBullet() -> void
+{
+}
+
+[[nodiscard]] auto player_ship::LevelIsComplete() const -> bool
+{
+  return true;
+}
+
 void player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const
 {
   if( state != player_ship::alive ) return;
