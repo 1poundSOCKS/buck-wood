@@ -10,7 +10,6 @@ const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
 const int shotTimeDenominator = 20;
 
-void UpdatePlayer(level_state& levelState, const level_control_state& controlState);
 void UpdateBullets(level_state& levelState, const level_control_state& controlState);
 void UpdateExplosions(level_state& levelState);
 void ProcessCollisions(level_state& levelState);
@@ -72,16 +71,12 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData) : 
   levelData(levelData), counterFrequency(counterFrequency), 
-  controlState(std::make_shared<player_control_state>()), 
-  player(screen_render_brush_selector(renderData.renderBrushes))
+  controlState(std::make_shared<player_control_state>()/*, 
+  player(screen_render_brush_selector(renderData.renderBrushes)*/)
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
   shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
-
-  player.xPos = levelData.playerStartPosX;
-  player.yPos = levelData.playerStartPosY;
-  player.controlState = controlState;
 
   bullets.resize(100);
 
@@ -133,6 +128,14 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   });
   
   std::copy(islands.cbegin(), islands.cend(), std::back_inserter(solidObjects));
+  
+  player_ship player(screen_render_brush_selector(renderData.renderBrushes));
+  playerData = player.data;
+  playerData->xPos = levelData.playerStartPosX;
+  playerData->yPos = levelData.playerStartPosY;
+  playerData->controlState = controlState;
+  solidObjects.push_back(player);
+
   std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }
 
@@ -160,7 +163,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   {
     std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount](auto& object)
     {
-      object.Update(levelState.counterFrequency, timerCount);
+      object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount);
     });
     
     levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
@@ -181,45 +184,10 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
-    levelState.player.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount);
-
     UpdateBullets(levelState, controlState);
     UpdateExplosions(levelState);
     ProcessCollisions(levelState);
   }
-}
-
-void UpdatePlayer(level_state& levelState, const level_control_state& controlState)
-{
-  const float forceOfGravity = 20.0f;
-  const float playerThrust = 100.0f;
-
-  float gameUpdateInterval = GetUpdateInterval(levelState);
-
-  float forceX = 0.0f;
-  float forceY = forceOfGravity;
-
-  if( controlState.thrust )
-  {
-    levelState.player.thrusterOn = true;
-    forceX += playerThrust * sin(DEGTORAD(levelState.player.angle));
-    forceY -= playerThrust * cos(DEGTORAD(levelState.player.angle));
-  }
-  else
-  {
-    levelState.player.thrusterOn = false;
-  }
-  
-  levelState.player.xVelocity += forceX * gameUpdateInterval;
-  levelState.player.yVelocity += forceY * gameUpdateInterval;
-  levelState.player.xPos += levelState.player.xVelocity * gameUpdateInterval;
-  levelState.player.yPos += levelState.player.yVelocity * gameUpdateInterval;
-
-  levelState.player.angle = CalculateAngle(
-    levelState.player.xPos, levelState.player.yPos, 
-    levelState.mouseX, levelState.mouseY);
-
-  UpdateShipGeometryData(levelState.player);
 }
 
 void UpdateBullets(level_state& levelState, const level_control_state& controlState)
@@ -232,8 +200,8 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
     static const float bulletRange = 2000.0f;
 
     auto& bullet = GetBullet(levelState.bullets);
-    bullet.startX = bullet.xPos = levelState.player.xPos;
-    bullet.startY = bullet.yPos = levelState.player.yPos;
+    bullet.startX = bullet.xPos = levelState.playerData->xPos;
+    bullet.startY = bullet.yPos = levelState.playerData->yPos;
     bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
     bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
     bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
@@ -261,18 +229,18 @@ void UpdateExplosions(level_state& levelState)
 
 void ProcessCollisions(level_state& levelState)
 {
-  if( levelState.player.state == player_ship::alive )
-  {
-    if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
-    {
-      levelState.player.state = player_ship::dead;
-      levelState.explosions.emplace_back(CreateExplosion(
-        levelState.player.xPos, 
-        levelState.player.yPos, 
-        levelState.currentTimerCount - levelState.previousTimerCount)
-      );
-    }
-  }
+  // if( levelState.player.state == player_ship::alive )
+  // {
+  //   if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
+  //   {
+  //     levelState.player.state = player_ship::dead;
+  //     levelState.explosions.emplace_back(CreateExplosion(
+  //       levelState.player.xPos, 
+  //       levelState.player.yPos, 
+  //       levelState.currentTimerCount - levelState.previousTimerCount)
+  //     );
+  //   }
+  // }
 
   for( auto& bullet : levelState.bullets )
   {
@@ -300,18 +268,18 @@ void ProcessCollisions(level_state& levelState)
   }
 }
 
-[[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
-{
-  return std::reduce(
-    levelState.player.points.cbegin(), 
-    levelState.player.points.cend(), 
-    false, 
-    [&levelState](auto hitGround, auto point)
-    {
-      return hitGround || IsUnderground(point.x, point.y, levelState.groundGeometry);
-    }
-  );
-}
+// [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
+// {
+//   return std::reduce(
+//     levelState.player.points.cbegin(), 
+//     levelState.player.points.cend(), 
+//     false, 
+//     [&levelState](auto hitGround, auto point)
+//     {
+//       return hitGround || IsUnderground(point.x, point.y, levelState.groundGeometry);
+//     }
+//   );
+// }
 
 bool BulletHasExpired(const bullet& bullet)
 {
@@ -356,7 +324,7 @@ bullet& GetBullet(std::vector<bullet>& bullets)
 
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale)
 {
-  return CreateGameLevelTransform(levelState.player.xPos, levelState.player.yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
+  return CreateGameLevelTransform(levelState.playerData->xPos, levelState.playerData->yPos, renderScale, renderTargetSize.width, renderTargetSize.height);
 }
 
 float GetUpdateInterval(const level_state& levelState)
@@ -372,7 +340,7 @@ bool PlayerCanShoot(const level_state& levelState)
 
 bool PlayerIsDead(const level_state& levelState)
 {
-  return levelState.player.state == player_ship::dead;
+  return levelState.playerData->state == player_ship::dead;
 }
 
 bool LevelTimedOut(const level_state& levelState)

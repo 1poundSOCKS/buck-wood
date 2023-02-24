@@ -157,7 +157,7 @@ void OnPlay(play_screen_state& screenState, const screen_input_state& inputState
       screenState.mode = play_screen_state::level_complete;
       SetScreenTransitionDelay(screenState, 3);
     }
-    else if( screenState.levelState->player.state == player_ship::dead )
+    else if( screenState.levelState->playerData->state == player_ship::dead )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);

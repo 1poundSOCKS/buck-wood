@@ -16,18 +16,24 @@ struct player_ship
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
   enum state_type { alive, dead };
-  state_type state = alive;
-  float xPos = 0;
-  float yPos = 0;
-  float xVelocity = 0;
-  float yVelocity = 0;
-  float angle = 0;
-  bool thrusterOn = false;
-  std::vector<game_point> points;
-  std::vector<game_line> lines;
-  std::shared_ptr<player_control_state> controlState;
-  winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
-  winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
+
+  struct data_type
+  {
+    state_type state = alive;
+    float xPos = 0;
+    float yPos = 0;
+    float xVelocity = 0;
+    float yVelocity = 0;
+    float angle = 0;
+    bool thrusterOn = false;
+    std::vector<game_point> points;
+    std::vector<game_line> lines;
+    std::shared_ptr<player_control_state> controlState;
+    winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
+    winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
+  };
+
+  std::shared_ptr<data_type> data;
 };
 
 void UpdateShipGeometryData(player_ship& playerShip);
@@ -42,7 +48,7 @@ void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter
     thrusterGeometryData.cbegin(), 
     thrusterGeometryData.cend(), 
     pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos)
+    D2D1::Matrix3x2F::Rotation(ship.data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.data->xPos, ship.data->yPos)
   );
 }
 
@@ -54,7 +60,7 @@ void GetTransformedShipPointsGeometry(const player_ship& ship, auto pointsInsert
     shipGeometryData.cbegin(), 
     shipGeometryData.cend(), 
     pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(ship.angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.xPos, ship.yPos));
+    D2D1::Matrix3x2F::Rotation(ship.data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.data->xPos, ship.data->yPos));
 }
 
 #endif

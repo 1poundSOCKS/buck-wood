@@ -74,7 +74,7 @@ auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& rend
 #endif
 
   // RenderLines(renderTarget, dynamicRenderLines.cbegin(), dynamicRenderLines.cend());
-  levelState.player.RenderTo(renderTarget, viewRect);
+  // levelState.player.RenderTo(renderTarget, viewRect);
 
   std::vector<render_point> renderBullets;
   for( const auto& bullet : levelState.bullets )

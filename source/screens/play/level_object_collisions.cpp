@@ -1,20 +1,20 @@
 #include "pch.h"
 #include "level_object_collisions.h"
 
-[[nodiscard]] auto PlayerHasHitTheGround(
-  const player_ship& player, 
-  const level_ground_geometry& groundGeometry) -> bool
-{
-  return std::reduce(
-    player.points.cbegin(),
-    player.points.cend(),
-    false,
-    [&groundGeometry](auto hit, auto point)
-    {
-      return hit || IsUnderground(point.x, point.y, groundGeometry);
-    }
-  );
-}
+// [[nodiscard]] auto PlayerHasHitTheGround(
+//   const player_ship& player, 
+//   const level_ground_geometry& groundGeometry) -> bool
+// {
+//   return std::reduce(
+//     player.points.cbegin(),
+//     player.points.cend(),
+//     false,
+//     [&groundGeometry](auto hit, auto point)
+//     {
+//       return hit || IsUnderground(point.x, point.y, groundGeometry);
+//     }
+//   );
+// }
 
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 

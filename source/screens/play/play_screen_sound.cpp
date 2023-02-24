@@ -13,7 +13,7 @@ void PlaySoundEffects(const play_screen_state& screenState)
   {
     PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-    if( levelState.player.thrusterOn )
+    if( levelState.playerData->thrusterOn )
       PlaySoundBuffer(soundBuffers[thrust], true);
     else
       StopSoundBufferPlay(soundBuffers[thrust]);

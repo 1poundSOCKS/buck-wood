@@ -41,7 +41,8 @@ struct level_state
   bool playerShot = false;
   bool targetShot = false;
 
-  player_ship player;
+  // player_ship player;
+  std::shared_ptr<player_ship::data_type> playerData;
   std::vector<bullet> bullets;
   std::vector<render_point> renderStars;
   level_ground_geometry groundGeometry;

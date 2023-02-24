@@ -13,9 +13,9 @@ struct bullet_target_collision
   target_state& targetState;
 };
 
-[[nodiscard]] auto PlayerHasHitTheGround(
-  const player_ship& player, 
-  const level_ground_geometry& groundGeometry) -> bool;
+// [[nodiscard]] auto PlayerHasHitTheGround(
+//   const player_ship& player, 
+//   const level_ground_geometry& groundGeometry) -> bool;
 
 void GetBulletTargetCollisions(
   std::vector<bullet>::iterator bulletBegin, 
