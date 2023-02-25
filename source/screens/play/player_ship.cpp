@@ -3,6 +3,8 @@
 #include "math.h"
 
 const float gameSpeedMultiplier = 2.0f;
+const int shotTimeNumerator = 1;
+const int shotTimeDenominator = 20;
 
 player_ship::player_ship(screen_render_brush_selector brushes) : data(std::make_shared<data_type>())
 {
@@ -44,6 +46,9 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   data->angle = CalculateAngle(data->xPos, data->yPos, data->controlState->mouseX, data->controlState->mouseY);
 
   UpdateShipGeometryData();
+
+  if( PlayerCanShoot(tickCount) )
+    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle };
 }
 
 [[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool
@@ -96,4 +101,10 @@ auto player_ship::UpdateShipGeometryData() -> void
     std::back_inserter(lines));
 
   return lines;
+}
+
+[[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) const -> bool
+{
+  return data->controlState->shoot;
+//  return currentTimerCount - lastShotTimerValue > shotTimerInterval;
 }

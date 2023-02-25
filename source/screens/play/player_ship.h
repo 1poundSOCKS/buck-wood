@@ -43,6 +43,8 @@ struct player_ship
       D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos));
   }
 
+  [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) const -> bool;
+
   enum state_type { alive, dead };
 
   struct data_type
@@ -62,6 +64,13 @@ struct player_ship
   };
 
   std::shared_ptr<data_type> data;
+};
+
+struct event_player_shot
+{
+  float x = 0;
+  float y = 0;
+  float angle = 0;
 };
 
 #endif

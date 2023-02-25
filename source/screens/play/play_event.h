@@ -17,6 +17,11 @@ private:
   {
     object_model(const object_type& objectIn) : object(std::forward<const object_type>(objectIn)) {}
 
+    [[nodiscard]] auto clone() -> std::unique_ptr<object_concept> override
+    {
+      return std::make_unique<object_model<object_type>>(*this);
+    }
+
     object_type object;
   };
 
