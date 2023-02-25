@@ -229,18 +229,18 @@ void UpdateExplosions(level_state& levelState)
 
 void ProcessCollisions(level_state& levelState)
 {
-  // if( levelState.player.state == player_ship::alive )
-  // {
-  //   if( PlayerHitGround(levelState) || ObjectsHaveCollided(levelState.player, levelState.targetsGeometry) )
-  //   {
-  //     levelState.player.state = player_ship::dead;
-  //     levelState.explosions.emplace_back(CreateExplosion(
-  //       levelState.player.xPos, 
-  //       levelState.player.yPos, 
-  //       levelState.currentTimerCount - levelState.previousTimerCount)
-  //     );
-  //   }
-  // }
+  if( levelState.playerData->state == player_ship::alive )
+  {
+    if( PlayerHitGround(levelState) || ObjectsHaveCollided(*levelState.playerData, levelState.targetsGeometry) )
+    {
+      levelState.playerData->state = player_ship::dead;
+      levelState.explosions.emplace_back(CreateExplosion(
+        levelState.playerData->xPos, 
+        levelState.playerData->yPos, 
+        levelState.currentTimerCount - levelState.previousTimerCount)
+      );
+    }
+  }
 
   for( auto& bullet : levelState.bullets )
   {
@@ -268,18 +268,18 @@ void ProcessCollisions(level_state& levelState)
   }
 }
 
-// [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
-// {
-//   return std::reduce(
-//     levelState.player.points.cbegin(), 
-//     levelState.player.points.cend(), 
-//     false, 
-//     [&levelState](auto hitGround, auto point)
-//     {
-//       return hitGround || IsUnderground(point.x, point.y, levelState.groundGeometry);
-//     }
-//   );
-// }
+[[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool
+{
+  return std::reduce(
+    levelState.playerData->points.cbegin(), 
+    levelState.playerData->points.cend(), 
+    false, 
+    [&levelState](auto hitGround, auto point)
+    {
+      return hitGround || IsUnderground(point.x, point.y, levelState.groundGeometry);
+    }
+  );
+}
 
 bool BulletHasExpired(const bullet& bullet)
 {

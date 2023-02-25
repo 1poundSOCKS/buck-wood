@@ -9,9 +9,7 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
 void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData);
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes);
 
-void RenderFrame(
-  ID2D1RenderTarget* renderTarget, 
-  const play_screen_state& screenState)
+void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
 {
   auto renderData = screenState.renderData;
 
