@@ -16,6 +16,33 @@ struct player_ship
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
+  void UpdateShipGeometryData();
+
+  [[nodiscard]] auto GetPlayerShipLineData() const -> std::vector<game_line>;
+
+  auto GetTransformedThrusterGeometry(auto pointsInserter) const -> void
+  {
+    const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
+
+    TransformPoints(
+      thrusterGeometryData.cbegin(), 
+      thrusterGeometryData.cend(), 
+      pointsInserter, 
+      D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos)
+    );
+  }
+
+  auto GetTransformedShipPointsGeometry(auto pointsInserter) const -> void
+  {
+    const auto& shipGeometryData = GetPlayerGeometryData();
+
+    TransformPoints(
+      shipGeometryData.cbegin(), 
+      shipGeometryData.cend(), 
+      pointsInserter, 
+      D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos));
+  }
+
   enum state_type { alive, dead };
 
   struct data_type
@@ -36,32 +63,5 @@ struct player_ship
 
   std::shared_ptr<data_type> data;
 };
-
-void UpdateShipGeometryData(player_ship& playerShip);
-
-[[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>;
-
-void GetTransformedThrusterGeometry(const player_ship& ship, auto pointsInserter)
-{
-  const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
-
-  TransformPoints(
-    thrusterGeometryData.cbegin(), 
-    thrusterGeometryData.cend(), 
-    pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(ship.data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.data->xPos, ship.data->yPos)
-  );
-}
-
-void GetTransformedShipPointsGeometry(const player_ship& ship, auto pointsInserter)
-{
-  const auto& shipGeometryData = GetPlayerGeometryData();
-
-  TransformPoints(
-    shipGeometryData.cbegin(), 
-    shipGeometryData.cend(), 
-    pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(ship.data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(ship.data->xPos, ship.data->yPos));
-}
 
 #endif

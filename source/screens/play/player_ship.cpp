@@ -6,7 +6,7 @@ const float gameSpeedMultiplier = 2.0f;
 
 player_ship::player_ship(screen_render_brush_selector brushes) : data(std::make_shared<data_type>())
 {
-  UpdateShipGeometryData(*this);
+  UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
   data->shipBrush->AddRef();
   data->thrusterBrush.attach(brushes[red]);
@@ -43,7 +43,7 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
 
   data->angle = CalculateAngle(data->xPos, data->yPos, data->controlState->mouseX, data->controlState->mouseY);
 
-  UpdateShipGeometryData(*this);
+  UpdateShipGeometryData();
 }
 
 [[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool
@@ -72,28 +72,27 @@ void player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   if( data->thrusterOn )
   {
     std::vector<game_point> thrusterPoints;
-    GetTransformedThrusterGeometry(*this, std::back_inserter(thrusterPoints));
-
+    GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
     CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, data->thrusterBrush.get(), 5);
   }
 
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-void UpdateShipGeometryData(player_ship& ship)
+auto player_ship::UpdateShipGeometryData() -> void
 {
-  ship.data->points.clear();
-  GetTransformedShipPointsGeometry(ship, std::back_inserter(ship.data->points));
-  CreateConnectedLines(ship.data->points.cbegin(), ship.data->points.cend(), std::back_inserter(ship.data->lines));
+  data->points.clear();
+  GetTransformedShipPointsGeometry(std::back_inserter(data->points));
+  CreateConnectedLines(data->points.cbegin(), data->points.cend(), std::back_inserter(data->lines));
 }
 
-[[nodiscard]] auto GetPlayerShipLineData(const player_ship& playerShip) -> std::vector<game_line>
+[[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>
 {
   std::vector<game_line> lines;
 
   CreateConnectedLines(
-    playerShip.data->points.cbegin(), 
-    playerShip.data->points.cend(),
+    data->points.cbegin(), 
+    data->points.cend(),
     std::back_inserter(lines));
 
   return lines;
