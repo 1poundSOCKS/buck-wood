@@ -14,6 +14,7 @@
 #include "level_target.h"
 #include "level_island.h"
 #include "solid_object.h"
+#include "play_event.h"
 #include "starfield.h"
 
 struct level_state

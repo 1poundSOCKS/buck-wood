@@ -3,12 +3,13 @@
 
 #include "framework.h"
 #include "screen_render_data.h"
+#include "play_event.h"
 
 struct target_state
 {
   target_state(const game_point& position, screen_render_brush_selector brushes);
   
-  auto Update(int64_t tickFrequency, int64_t tickCount) -> void;
+  auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;

@@ -161,9 +161,11 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
 
   if( GetPlayTimeRemaining(levelState) > 0 )
   {
-    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount](auto& object)
+    std::list<play_event> events;
+
+    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
     {
-      object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount);
+      object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount, std::back_inserter(events));
     });
     
     levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);

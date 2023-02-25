@@ -14,7 +14,7 @@ bullet::bullet(screen_render_brush_selector brushes)
   brush->AddRef();
 }
 
-auto bullet::Update(int64_t tickFrequency, int64_t tickCount) -> void
+auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );

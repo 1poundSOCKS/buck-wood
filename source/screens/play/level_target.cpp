@@ -14,7 +14,7 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   brushActivated->AddRef();
 }
 
-auto target_state::Update(int64_t tickFrequency, int64_t tickCount) -> void
+auto target_state::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
 }
 

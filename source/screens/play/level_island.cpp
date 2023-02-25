@@ -7,7 +7,7 @@ level_island::level_island(const game_closed_object& object, screen_render_brush
   brush->AddRef();
 }
 
-auto level_island::Update(int64_t tickFrequency, int64_t tickCount) -> void
+auto level_island::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
 }
 

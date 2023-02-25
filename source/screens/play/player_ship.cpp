@@ -13,7 +13,7 @@ player_ship::player_ship(screen_render_brush_selector brushes) : data(std::make_
   data->thrusterBrush->AddRef();
 }
 
-auto player_ship::Update(int64_t tickFrequency, int64_t tickCount) -> void
+auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
   if( data->state != player_ship::alive ) return;
 

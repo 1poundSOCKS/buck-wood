@@ -8,7 +8,7 @@ level_boundary::level_boundary(const game_open_object& object, screen_render_bru
   brush->AddRef();
 }
 
-auto level_boundary::Update(int64_t tickFrequency, int64_t tickCount) -> void
+auto level_boundary::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
 }
 

@@ -2,6 +2,7 @@
 #define _solid_object_
 
 #include "framework.h"
+#include "play_event.h"
 #include "level_render_object.h"
 
 class solid_object
@@ -11,7 +12,7 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
-    virtual auto Update(int64_t clockFrequency, int64_t clockCount) -> void = 0;
+    virtual auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
@@ -28,9 +29,9 @@ private:
       return std::make_unique<object_model<object_type>>(*this);
     }
 
-    auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+    auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
     {
-      object.Update(clockFrequency, clockCount);
+      object.Update(clockFrequency, clockCount, playEventInserter);
     }
 
     [[nodiscard]] auto HasCollided(float x, float y) const -> bool override
@@ -76,9 +77,9 @@ public:
   solid_object(const solid_object& solidObject) = delete;
   void operator=(const solid_object& solidObject) = delete;
 
-  auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+  auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
   {
-    objectConcept->Update(clockFrequency, clockCount);
+    objectConcept->Update(clockFrequency, clockCount, playEventInserter);
   }
 
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool
