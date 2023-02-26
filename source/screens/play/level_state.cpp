@@ -71,8 +71,7 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData) : 
   levelData(levelData), counterFrequency(counterFrequency), 
-  controlState(std::make_shared<player_control_state>()/*, 
-  player(screen_render_brush_selector(renderData.renderBrushes)*/)
+  controlState(std::make_shared<player_control_state>())
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
@@ -186,6 +185,11 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
+    std::for_each(events.cbegin(), events.cend(), [](auto& event)
+    {
+      event.Trigger();
+    });
+
     UpdateBullets(levelState, controlState);
     UpdateExplosions(levelState);
     ProcessCollisions(levelState);
@@ -196,20 +200,20 @@ void UpdateBullets(level_state& levelState, const level_control_state& controlSt
 {
   float gameUpdateInterval = GetUpdateInterval(levelState);
 
-  if( controlState.shoot && PlayerCanShoot(levelState) )
-  {
-    static const float bulletSpeed = 200.0f;
-    static const float bulletRange = 2000.0f;
+  // if( controlState.shoot && PlayerCanShoot(levelState) )
+  // {
+  //   static const float bulletSpeed = 200.0f;
+  //   static const float bulletRange = 2000.0f;
 
-    auto& bullet = GetBullet(levelState.bullets);
-    bullet.startX = bullet.xPos = levelState.playerData->xPos;
-    bullet.startY = bullet.yPos = levelState.playerData->yPos;
-    bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
-    bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
-    bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
-    levelState.lastShotTimerValue = levelState.currentTimerCount;
-    levelState.playerShot = true;
-  }
+  //   auto& bullet = GetBullet(levelState.bullets);
+  //   bullet.startX = bullet.xPos = levelState.playerData->xPos;
+  //   bullet.startY = bullet.yPos = levelState.playerData->yPos;
+  //   bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
+  //   bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
+  //   bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
+  //   levelState.lastShotTimerValue = levelState.currentTimerCount;
+  //   levelState.playerShot = true;
+  // }
 
   for( auto& bullet : levelState.bullets )
   {

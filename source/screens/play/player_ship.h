@@ -66,11 +66,4 @@ struct player_ship
   std::shared_ptr<data_type> data;
 };
 
-struct event_player_shot
-{
-  float x = 0;
-  float y = 0;
-  float angle = 0;
-};
-
 #endif

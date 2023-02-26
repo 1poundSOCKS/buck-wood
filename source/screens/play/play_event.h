@@ -10,6 +10,7 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
+    virtual auto Trigger() const -> void = 0;
   };
 
   template <typename object_type>
@@ -20,6 +21,11 @@ private:
     [[nodiscard]] auto clone() -> std::unique_ptr<object_concept> override
     {
       return std::make_unique<object_model<object_type>>(*this);
+    }
+
+    auto Trigger() const -> void override
+    {
+      object.Trigger();
     }
 
     object_type object;
@@ -44,6 +50,11 @@ public:
 
   play_event(const play_event& solidObject) = delete;
   void operator=(const play_event& solidObject) = delete;
+
+  auto Trigger() const -> void
+  {
+    objectConcept->Trigger();
+  }
 
 private:
   std::unique_ptr<object_concept> objectConcept;

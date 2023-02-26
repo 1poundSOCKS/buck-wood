@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "math.h"
+#include "event_player_shot.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
