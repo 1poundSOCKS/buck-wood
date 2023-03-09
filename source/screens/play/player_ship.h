@@ -61,6 +61,7 @@ struct player_ship
     std::shared_ptr<player_control_state> controlState;
     winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
     winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
+    std::function<void(float,float,float)> eventShot;
   };
 
   std::shared_ptr<data_type> data;

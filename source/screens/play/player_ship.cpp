@@ -49,7 +49,7 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   UpdateShipGeometryData();
 
   if( data->controlState->shoot && PlayerCanShoot(tickCount) )
-    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle };
+    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle, data->eventShot };
 }
 
 [[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool

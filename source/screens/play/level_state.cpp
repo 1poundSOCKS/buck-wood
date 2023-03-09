@@ -129,10 +129,26 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   std::copy(islands.cbegin(), islands.cend(), std::back_inserter(solidObjects));
   
   player_ship player(screen_render_brush_selector(renderData.renderBrushes));
+
   playerData = player.data;
   playerData->xPos = levelData.playerStartPosX;
   playerData->yPos = levelData.playerStartPosY;
   playerData->controlState = controlState;
+
+  playerData->eventShot = [this](float x,float y,float angle) -> void
+  {
+    static const float bulletSpeed = 200.0f;
+    static const float bulletRange = 2000.0f;
+
+    auto& bullet = GetBullet(this->bullets);
+    bullet.startX = bullet.xPos = x;
+    bullet.startY = bullet.yPos = y;
+    bullet.angle = CalculateAngle(x, y, this->mouseX, this->mouseY);
+    bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
+    bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
+    this->lastShotTimerValue = this->currentTimerCount;
+  };
+
   solidObjects.push_back(player);
 
   std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
