@@ -78,5 +78,6 @@
     "codecvt": "cpp",
     "numeric": "cpp",
     "random": "cpp"
-  }
+  },
+  "cmake.configureOnOpen": false
 }

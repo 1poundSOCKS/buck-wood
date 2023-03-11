@@ -5,6 +5,7 @@
 #include "player_control_state.h"
 #include "screen_render_data.h"
 #include "play_event.h"
+#include "bullet.h"
 
 struct player_ship
 {
@@ -61,9 +62,10 @@ struct player_ship
     std::shared_ptr<player_control_state> controlState;
     winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
     winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
-    std::function<void(float,float,float)> eventShot;
+    std::function<void(bullet playerBullet)> eventShot;
   };
 
+  screen_render_brush_selector brushes;
   std::shared_ptr<data_type> data;
 };
 

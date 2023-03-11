@@ -77,8 +77,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   
   shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
 
-  bullets.resize(100);
-
   screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
 
   std::vector<target_state> targets;
@@ -135,18 +133,9 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   playerData->yPos = levelData.playerStartPosY;
   playerData->controlState = controlState;
 
-  playerData->eventShot = [this](float x,float y,float angle) -> void
+  playerData->eventShot = [this](bullet newBullet) -> void
   {
-    static const float bulletSpeed = 200.0f;
-    static const float bulletRange = 2000.0f;
-
-    auto& bullet = GetBullet(this->bullets);
-    bullet.startX = bullet.xPos = x;
-    bullet.startY = bullet.yPos = y;
-    bullet.angle = CalculateAngle(x, y, this->mouseX, this->mouseY);
-    bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
-    bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
-    this->lastShotTimerValue = this->currentTimerCount;
+    solidObjects.push_back(newBullet);
   };
 
   solidObjects.push_back(player);
@@ -206,35 +195,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    UpdateBullets(levelState, controlState);
     UpdateExplosions(levelState);
     ProcessCollisions(levelState);
-  }
-}
-
-void UpdateBullets(level_state& levelState, const level_control_state& controlState)
-{
-  float gameUpdateInterval = GetUpdateInterval(levelState);
-
-  // if( controlState.shoot && PlayerCanShoot(levelState) )
-  // {
-  //   static const float bulletSpeed = 200.0f;
-  //   static const float bulletRange = 2000.0f;
-
-  //   auto& bullet = GetBullet(levelState.bullets);
-  //   bullet.startX = bullet.xPos = levelState.playerData->xPos;
-  //   bullet.startY = bullet.yPos = levelState.playerData->yPos;
-  //   bullet.angle = CalculateAngle(bullet.xPos, bullet.yPos, levelState.mouseX, levelState.mouseY);
-  //   bullet.yVelocity = -bulletSpeed * cos(DEGTORAD(bullet.angle));
-  //   bullet.xVelocity = bulletSpeed * sin(DEGTORAD(bullet.angle));
-  //   levelState.lastShotTimerValue = levelState.currentTimerCount;
-  //   levelState.playerShot = true;
-  // }
-
-  for( auto& bullet : levelState.bullets )
-  {
-    bullet.xPos += ( bullet.xVelocity * gameUpdateInterval );
-    bullet.yPos += ( bullet.yVelocity * gameUpdateInterval );
   }
 }
 
@@ -264,25 +226,25 @@ void ProcessCollisions(level_state& levelState)
     }
   }
 
-  for( auto& bullet : levelState.bullets )
-  {
-    if( !bullet.free )
-    {
-      auto hitCount = std::accumulate(levelState.solidObjects.begin(), levelState.solidObjects.end(), 0, 
-      [&bullet](int count, solid_object& solidObject) -> int
-      {
-        if( solidObject.HasCollided(bullet.xPos, bullet.yPos) )
-        {
-          ++count;
-          solidObject.HitByBullet();
-        }
-        return count;
-      });
+  // for( auto& bullet : levelState.bullets )
+  // {
+  //   if( !bullet.free )
+  //   {
+  //     auto hitCount = std::accumulate(levelState.solidObjects.begin(), levelState.solidObjects.end(), 0, 
+  //     [&bullet](int count, solid_object& solidObject) -> int
+  //     {
+  //       if( solidObject.HasCollided(bullet.xPos, bullet.yPos) )
+  //       {
+  //         ++count;
+  //         solidObject.HitByBullet();
+  //       }
+  //       return count;
+  //     });
 
-      if( BulletHasExpired(bullet) || hitCount > 0 )
-        bullet.free = true;
-    }
-  }
+  //     if( BulletHasExpired(bullet) || hitCount > 0 )
+  //       bullet.free = true;
+  //   }
+  // }
 
   for( auto& explosion : levelState.explosions )
   {
@@ -317,31 +279,17 @@ int ProcessBulletTargetCollisions(
 {
   int activatedCount = 0;
 
-  for( auto& collision = collisionsBegin; collision != collisionsEnd; ++collision )
-  {
-    collision->bullet.free = true;
-    if( !collision->targetState.activated )
-    {
-      collision->targetState.activated = true;
-      ++activatedCount;
-    }
-  }
+  // for( auto& collision = collisionsBegin; collision != collisionsEnd; ++collision )
+  // {
+  //   collision->bullet.free = true;
+  //   if( !collision->targetState.activated )
+  //   {
+  //     collision->targetState.activated = true;
+  //     ++activatedCount;
+  //   }
+  // }
 
   return activatedCount;
-}
-
-bullet& GetBullet(std::vector<bullet>& bullets)
-{
-  for( auto& bullet : bullets )
-  {
-    if( bullet.free )
-    {
-      bullet.free = false;
-      return bullet;
-    }
-  }
-
-  return bullets.front();
 }
 
 D2D1::Matrix3x2F CreateViewTransform(const level_state& levelState, const D2D1_SIZE_F& renderTargetSize, float renderScale)

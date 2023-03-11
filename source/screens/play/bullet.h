@@ -6,7 +6,6 @@
 
 struct bullet
 {
-  bullet() {}
   bullet(screen_render_brush_selector brushes);
 
   auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
@@ -15,7 +14,6 @@ struct bullet
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
 
-  bool free = true;
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;
   float xVelocity = 0, yVelocity = 0;

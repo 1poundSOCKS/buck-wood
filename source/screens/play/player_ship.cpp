@@ -7,7 +7,7 @@ const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
 const int shotTimeDenominator = 20;
 
-player_ship::player_ship(screen_render_brush_selector brushes) : data(std::make_shared<data_type>())
+player_ship::player_ship(screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
 {
   UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
@@ -49,7 +49,17 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   UpdateShipGeometryData();
 
   if( data->controlState->shoot && PlayerCanShoot(tickCount) )
-    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle, data->eventShot };
+  {
+    bullet newBullet { brushes };
+    static const float bulletSpeed = 200.0f;
+    static const float bulletRange = 2000.0f;
+    newBullet.startX = newBullet.xPos = data->xPos;
+    newBullet.startY = newBullet.yPos = data->yPos;
+    newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState->mouseX, data->controlState->mouseY);
+    newBullet.yVelocity = -bulletSpeed * cos(DEGTORAD(newBullet.angle));
+    newBullet.xVelocity = bulletSpeed * sin(DEGTORAD(newBullet.angle));
+    playEventInserter = event_player_shot { newBullet, data->eventShot };
+  }
 }
 
 [[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool
@@ -106,6 +116,5 @@ auto player_ship::UpdateShipGeometryData() -> void
 
 [[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) const -> bool
 {
-  return data->controlState->shoot;
-//  return currentTimerCount - lastShotTimerValue > shotTimerInterval;
+  return true;
 }

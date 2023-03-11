@@ -16,18 +16,18 @@
 //   );
 // }
 
-void GetBulletTargetCollisions(
-  std::vector<bullet>::iterator bulletBegin, 
-  std::vector<bullet>::iterator bulletEnd, 
-  std::vector<target_state>::iterator targetsBegin, 
-  std::vector<target_state>::iterator targetsEnd,
-  std::back_insert_iterator<std::vector<bullet_target_collision>> collisions)
-{
-  for( auto& bullet = bulletBegin; bullet != bulletEnd; ++bullet )
-  {
-    if( !bullet->free ) GetBulletTargetCollisions(*bullet, targetsBegin, targetsEnd, collisions);
-  }
-}
+// void GetBulletTargetCollisions(
+//   std::vector<bullet>::iterator bulletBegin, 
+//   std::vector<bullet>::iterator bulletEnd, 
+//   std::vector<target_state>::iterator targetsBegin, 
+//   std::vector<target_state>::iterator targetsEnd,
+//   std::back_insert_iterator<std::vector<bullet_target_collision>> collisions)
+// {
+//   for( auto& bullet = bulletBegin; bullet != bulletEnd; ++bullet )
+//   {
+//     if( !bullet->free ) GetBulletTargetCollisions(*bullet, targetsBegin, targetsEnd, collisions);
+//   }
+// }
 
 void GetBulletTargetCollisions(
   bullet& bullet, 
