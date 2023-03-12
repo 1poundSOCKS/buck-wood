@@ -20,10 +20,10 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
 {
   if( data->state != player_ship::alive ) return;
 
-  const float forceOfGravity = 20.0f;
-  const float playerThrust = 100.0f;
+  const auto forceOfGravity = 20.0f;
+  const auto playerThrust = 100.0f;
 
-  float gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
+  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;

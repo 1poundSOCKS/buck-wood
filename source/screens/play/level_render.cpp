@@ -85,9 +85,9 @@ auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& rend
 
   // RenderPoints(renderTarget, renderBullets.cbegin(), renderBullets.cend());
 
-  std::vector<render_point> explosionParticles;
-  CreateRenderPoints(levelState.explosions.cbegin(), levelState.explosions.cend(), renderData.renderBrushes, std::back_inserter(explosionParticles));
-  RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
+  // std::vector<render_point> explosionParticles;
+  // CreateRenderPoints(levelState.explosions.cbegin(), levelState.explosions.cend(), renderData.renderBrushes, std::back_inserter(explosionParticles));
+  // RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
 }
 
 void RenderGround(

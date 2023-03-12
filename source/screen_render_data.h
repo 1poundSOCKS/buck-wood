@@ -7,7 +7,8 @@ enum screen_render_brush_color { white=0, grey, dark_grey, green, red, yellow, c
 
 struct screen_render_brush_selector
 {
-  const screen_render_brushes& brushes;
+  const screen_render_brushes brushes;
+
   ID2D1SolidColorBrush* operator[](screen_render_brush_color brushColor) const
   {
     return brushes[brushColor].get();

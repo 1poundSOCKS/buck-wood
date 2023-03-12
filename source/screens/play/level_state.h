@@ -48,10 +48,11 @@ struct level_state
   level_targets_geometry targetsGeometry;
   std::vector<render_line> staticRenderLines;
   std::vector<area_state> groundMatrix;
-  std::vector<explosion_state> explosions;
   
   std::list<solid_object> solidObjects;
   std::shared_ptr<player_control_state> controlState;
+
+  screen_render_brush_selector brushes;
 };
 
 void UpdateLevelState(level_state& levelState, const level_control_state& controlState, int64_t counterValue);

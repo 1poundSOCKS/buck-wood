@@ -71,18 +71,17 @@ auto GetLevelAreaState(const level_state& levelState, game_rect rect) -> area_st
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData) : 
   levelData(levelData), counterFrequency(counterFrequency), 
-  controlState(std::make_shared<player_control_state>())
+  controlState(std::make_shared<player_control_state>()),
+  brushes { renderData.renderBrushes }
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
   shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
 
-  screen_render_brush_selector renderBrushSelector(renderData.renderBrushes);
-
   std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [renderBrushSelector](const auto& target)
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [this](const auto& target)
   {
-    return target_state(target, renderBrushSelector);
+    return target_state(target, this->brushes);
   });
 
   for( auto& target : targets )
@@ -92,7 +91,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   level_background_data backgroundData = GenerateLevelBackgroundData(levelData);
 
-  auto starBrush = renderBrushSelector[dark_grey];
+  auto starBrush = brushes[dark_grey];
   std::transform(
     backgroundData.starfield.stars.cbegin(), 
     backgroundData.starfield.stars.cend(),
@@ -103,7 +102,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   groundGeometry = CreateLevelGroundGeometry(levelData);
   targetsGeometry = CreateLevelTargetsGeometry(levelData);
 
-  CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), renderBrushSelector);
+  CreateStaticLevelRenderLines(*this, std::back_inserter(staticRenderLines), brushes);
 
   auto GetAreaState = [this](game_rect rect) -> area_state::state_type { return GetLevelAreaState(*this, rect); };
   auto levelBoundary = GetLevelBoundary(groundGeometry);
@@ -112,16 +111,16 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.bottomRight.y += 800;
   SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
 
-  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData), renderBrushSelector };
+  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData), brushes };
   solidObjects.emplace_back(levelBoundaryObject);
 
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [renderBrushSelector](const auto& object) -> level_island
+  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [this](const auto& object) -> level_island
   {
-    return { object, renderBrushSelector };
+    return { object, this->brushes };
   });
   
   std::copy(islands.cbegin(), islands.cend(), std::back_inserter(solidObjects));
@@ -195,21 +194,21 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    UpdateExplosions(levelState);
+    // UpdateExplosions(levelState);
     ProcessCollisions(levelState);
   }
 }
 
-void UpdateExplosions(level_state& levelState)
-{
-  const float forceOfGravity = 20.0f;
-  auto updateInterval = GetUpdateInterval(levelState);
+// void UpdateExplosions(level_state& levelState)
+// {
+//   const float forceOfGravity = 20.0f;
+//   auto updateInterval = GetUpdateInterval(levelState);
 
-  for( auto& explosion : levelState.explosions )
-  {
-    UpdateState(explosion, updateInterval, forceOfGravity);
-  }
-}
+//   for( auto& explosion : levelState.explosions )
+//   {
+//     UpdateState(explosion, updateInterval, forceOfGravity);
+//   }
+// }
 
 void ProcessCollisions(level_state& levelState)
 {
@@ -217,12 +216,16 @@ void ProcessCollisions(level_state& levelState)
   {
     if( PlayerHitGround(levelState) || ObjectsHaveCollided(*levelState.playerData, levelState.targetsGeometry) )
     {
-      levelState.playerData->state = player_ship::dead;
-      levelState.explosions.emplace_back(CreateExplosion(
-        levelState.playerData->xPos, 
-        levelState.playerData->yPos, 
-        levelState.currentTimerCount - levelState.previousTimerCount)
-      );
+      // levelState.playerData->state = player_ship::dead;
+      // levelState.explosions.emplace_back(CreateExplosion(
+      //   levelState.playerData->xPos, 
+      //   levelState.playerData->yPos, 
+      //   levelState.currentTimerCount - levelState.previousTimerCount)
+      // );
+      explosion_state explosion = CreateExplosion(levelState.playerData->xPos, levelState.playerData->yPos, 
+        levelState.currentTimerCount - levelState.previousTimerCount, levelState.brushes);
+      
+      levelState.solidObjects.emplace_back(explosion);
     }
   }
 
@@ -246,10 +249,10 @@ void ProcessCollisions(level_state& levelState)
   //   }
   // }
 
-  for( auto& explosion : levelState.explosions )
-  {
-    ProcessCollisions(explosion, levelState.groundGeometry);
-  }
+  // for( auto& explosion : levelState.explosions )
+  // {
+  //   ProcessCollisions(explosion, levelState.groundGeometry);
+  // }
 }
 
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool

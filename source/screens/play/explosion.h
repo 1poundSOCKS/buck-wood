@@ -5,6 +5,7 @@
 #include "screen_render_data.h"
 #include "render.h"
 #include "level_geometry.h"
+#include "play_event.h"
 
 struct particle_state
 {
@@ -18,11 +19,20 @@ struct particle_state
 
 struct explosion_state
 {
+  explosion_state(screen_render_brush_selector brushes);
+  
+  auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
+  auto HitByBullet() -> void;
+  [[nodiscard]] auto LevelIsComplete() const -> bool;
+  void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
+
   int64_t clockFrequency;
   std::vector<particle_state> particles;
+  winrt::com_ptr<ID2D1SolidColorBrush> brush;
 };
 
-[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state;
+[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency, screen_render_brush_selector brushes) -> explosion_state;
 void UpdateState(explosion_state& state, float updateInterval, float forceOfGravity);
 
 void CreateRenderPoints(const explosion_state& state, const screen_render_brushes& brushes, auto renderPointsInserter)

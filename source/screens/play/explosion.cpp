@@ -6,12 +6,75 @@ std::uniform_int_distribution<int> particleSpeedDist(150, 200);
 
 void SetParticleVelocity(particle_state& particleState, float angle);
 
-[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency) -> explosion_state
+explosion_state::explosion_state(screen_render_brush_selector brushes)
+{
+  brush.attach(brushes[white]);
+  brush->AddRef();
+}
+
+auto explosion_state::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
+{
+  const auto gameSpeedMultiplier = 2.0f;
+  const auto forceOfGravity = 20.0f;
+
+  auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
+
+  for( auto& particle : particles )
+  {
+    if( particle.condition == particle_state::alive )
+    {
+      particle.yVelocity += forceOfGravity * updateInterval;
+      particle.x += particle.xVelocity * updateInterval;
+      particle.y += particle.yVelocity * updateInterval;
+    }
+  }
+}
+
+[[nodiscard]] auto explosion_state::HasCollided(float x, float y) const -> bool
+{
+  return false;
+}
+
+auto explosion_state::HitByBullet() -> void
+{
+}
+
+[[nodiscard]] auto explosion_state::LevelIsComplete() const -> bool
+{
+  return true;
+}
+
+void explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const
+{
+  std::vector<render_point> explosionParticles;
+  std::vector<particle_state> aliveParticles;
+
+  std::copy_if(particles.cbegin(), particles.cend(), std::back_inserter(aliveParticles), [](auto particle) -> bool
+  {
+    return particle.condition == particle_state::alive;
+  });
+
+  std::transform(aliveParticles.cbegin(), aliveParticles.cend(), std::back_inserter(explosionParticles), [this](auto state) -> render_rect
+  {
+    const auto particleSize = 6.0f;
+    return {
+      state.x - particleSize,
+      state.y - particleSize,
+      state.x + particleSize,
+      state.y + particleSize,
+      this->brush.get()
+    };
+  });
+
+  RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
+}
+
+[[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency, screen_render_brush_selector brushes) -> explosion_state
 {
   extern std::mt19937 rng;
   const int particleCount = 50;
 
-  explosion_state explosionState;
+  explosion_state explosionState { brushes };
   explosionState.clockFrequency = clockFrequency;
   explosionState.particles.resize(particleCount);
   
