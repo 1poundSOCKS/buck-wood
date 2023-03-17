@@ -194,21 +194,9 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    // UpdateExplosions(levelState);
     ProcessCollisions(levelState);
   }
 }
-
-// void UpdateExplosions(level_state& levelState)
-// {
-//   const float forceOfGravity = 20.0f;
-//   auto updateInterval = GetUpdateInterval(levelState);
-
-//   for( auto& explosion : levelState.explosions )
-//   {
-//     UpdateState(explosion, updateInterval, forceOfGravity);
-//   }
-// }
 
 void ProcessCollisions(level_state& levelState)
 {
@@ -216,7 +204,7 @@ void ProcessCollisions(level_state& levelState)
   {
     if( PlayerHitGround(levelState) || ObjectsHaveCollided(*levelState.playerData, levelState.targetsGeometry) )
     {
-      // levelState.playerData->state = player_ship::dead;
+      levelState.playerData->state = player_ship::dead;
       // levelState.explosions.emplace_back(CreateExplosion(
       //   levelState.playerData->xPos, 
       //   levelState.playerData->yPos, 
