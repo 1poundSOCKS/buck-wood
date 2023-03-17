@@ -15,7 +15,7 @@ struct target_state
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
-  auto GetOutline() -> object_outline;
+  [[nodiscard]] auto GetOutline() -> object_outline;
 
   const game_point& position;
   std::vector<game_point> points;

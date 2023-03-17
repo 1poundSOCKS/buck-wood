@@ -31,7 +31,7 @@ auto level_boundary::HitByBullet() -> void
   return true;
 }
 
-void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const
+auto level_boundary::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   std::vector<render_line> renderLines;
   auto renderLinesInserter = std::back_inserter(renderLines);
@@ -52,9 +52,9 @@ void level_boundary::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewR
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-auto level_boundary::GetOutline() -> object_outline
+[[nodiscard]] auto level_boundary::GetOutline() -> object_outline
 {
-  return outline;  
+  return outline;
 }
 
 [[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_open_object

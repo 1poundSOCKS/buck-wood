@@ -17,7 +17,7 @@ struct player_ship
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
-  auto GetOutline() -> object_outline;
+  [[nodiscard]] auto GetOutline() -> object_outline;
 
   void UpdateShipGeometryData();
 

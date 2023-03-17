@@ -15,8 +15,8 @@ struct level_boundary
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
-  auto GetOutline() -> object_outline;
+  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  [[nodiscard]] auto GetOutline() -> object_outline;
 
   game_open_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;

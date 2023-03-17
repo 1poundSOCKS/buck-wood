@@ -16,9 +16,9 @@ private:
     virtual auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
     [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
     virtual auto HitByBullet() -> void = 0;
-    virtual auto LevelIsComplete() const -> bool = 0;
+    [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
-    virtual auto GetOutline() -> object_outline = 0;
+    [[nodiscard]] virtual auto GetOutline() -> object_outline = 0;
   };
 
   template <typename object_type>
@@ -46,17 +46,17 @@ private:
       object.HitByBullet();
     }
 
-    auto LevelIsComplete() const -> bool override
+    [[nodiscard]] auto LevelIsComplete() const -> bool override
     {
       return object.LevelIsComplete();
     }
 
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void override
     {
       object.RenderTo(renderTarget, viewRect);
     }
 
-    virtual auto GetOutline() -> object_outline
+    [[nodiscard]] virtual auto GetOutline() -> object_outline override
     {
       return object.GetOutline();
     }
@@ -94,12 +94,12 @@ public:
     return objectConcept->HasCollided(x, y);
   }
 
-  void HitByBullet()
+  auto HitByBullet() -> void
   {
     objectConcept->HitByBullet();
   }
 
-  auto LevelIsComplete() const -> bool
+  [[nodiscard]] auto LevelIsComplete() const -> bool
   {
     return objectConcept->LevelIsComplete();
   }
@@ -109,7 +109,7 @@ public:
     objectConcept->RenderTo(renderTarget, viewRect);
   }
 
-  auto GetOutline() -> object_outline
+  [[nodiscard]] auto GetOutline() -> object_outline
   {
     return objectConcept->GetOutline();   
   }

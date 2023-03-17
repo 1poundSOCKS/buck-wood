@@ -44,7 +44,7 @@ auto explosion_state::HitByBullet() -> void
   return true;
 }
 
-void explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const
+auto explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   std::vector<render_point> explosionParticles;
   std::vector<particle_state> aliveParticles;
@@ -69,7 +69,7 @@ void explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F view
   RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
 }
 
-auto explosion_state::GetOutline() -> object_outline
+[[nodiscard]] auto explosion_state::GetOutline() -> object_outline
 {
   return outline;
 }

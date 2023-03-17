@@ -76,7 +76,7 @@ auto player_ship::HitByBullet() -> void
   return true;
 }
 
-void player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const
+auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   if( data->state != player_ship::alive ) return;
 
@@ -95,7 +95,7 @@ void player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-auto player_ship::GetOutline() -> object_outline
+[[nodiscard]] auto player_ship::GetOutline() -> object_outline
 {
   return outline;
 }
