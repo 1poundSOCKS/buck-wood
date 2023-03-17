@@ -39,3 +39,8 @@ void target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const
   CreateRenderLines(shape.cbegin(), shape.cend(), std::back_inserter(renderLines), activated ? brushActivated.get() : brushNotActivated.get(), 6);
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
+
+auto target_state::GetOutline() -> object_outline
+{
+  return outline;
+}

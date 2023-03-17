@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "screen_render_data.h"
 #include "play_event.h"
+#include "object_outline.h"
 
 struct target_state
 {
@@ -14,6 +15,7 @@ struct target_state
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
+  auto GetOutline() -> object_outline;
 
   const game_point& position;
   std::vector<game_point> points;
@@ -21,6 +23,7 @@ struct target_state
   std::vector<game_line> shape;
   winrt::com_ptr<ID2D1SolidColorBrush> brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
+  object_outline outline;
 };
 
 #endif

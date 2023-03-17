@@ -95,6 +95,11 @@ void player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
+auto player_ship::GetOutline() -> object_outline
+{
+  return outline;
+}
+
 auto player_ship::UpdateShipGeometryData() -> void
 {
   data->points.clear();

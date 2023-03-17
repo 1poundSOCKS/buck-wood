@@ -69,6 +69,11 @@ void explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F view
   RenderPoints(renderTarget, explosionParticles.cbegin(), explosionParticles.cend());
 }
 
+auto explosion_state::GetOutline() -> object_outline
+{
+  return outline;
+}
+
 [[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency, screen_render_brush_selector brushes) -> explosion_state
 {
   extern std::mt19937 rng;

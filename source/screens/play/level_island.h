@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "screen_render_data.h"
 #include "play_event.h"
+#include "object_outline.h"
 
 struct level_island
 {
@@ -14,9 +15,11 @@ struct level_island
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
+  auto GetOutline() -> object_outline;
 
   game_closed_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  object_outline outline;
 };
 
 #endif

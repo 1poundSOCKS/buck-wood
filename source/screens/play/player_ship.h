@@ -6,6 +6,7 @@
 #include "screen_render_data.h"
 #include "play_event.h"
 #include "bullet.h"
+#include "object_outline.h"
 
 struct player_ship
 {
@@ -15,7 +16,8 @@ struct player_ship
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
+  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  auto GetOutline() -> object_outline;
 
   void UpdateShipGeometryData();
 
@@ -67,6 +69,7 @@ struct player_ship
 
   screen_render_brush_selector brushes;
   std::shared_ptr<data_type> data;
+  object_outline outline;
 };
 
 #endif

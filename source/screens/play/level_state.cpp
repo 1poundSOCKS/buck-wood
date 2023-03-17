@@ -205,11 +205,7 @@ void ProcessCollisions(level_state& levelState)
     if( PlayerHitGround(levelState) || ObjectsHaveCollided(*levelState.playerData, levelState.targetsGeometry) )
     {
       levelState.playerData->state = player_ship::dead;
-      // levelState.explosions.emplace_back(CreateExplosion(
-      //   levelState.playerData->xPos, 
-      //   levelState.playerData->yPos, 
-      //   levelState.currentTimerCount - levelState.previousTimerCount)
-      // );
+
       explosion_state explosion = CreateExplosion(levelState.playerData->xPos, levelState.playerData->yPos, 
         levelState.currentTimerCount - levelState.previousTimerCount, levelState.brushes);
       

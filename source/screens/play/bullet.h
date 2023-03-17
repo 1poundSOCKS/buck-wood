@@ -3,6 +3,7 @@
 
 #include "screen_render_data.h"
 #include "play_event.h"
+#include "object_outline.h"
 
 struct bullet
 {
@@ -13,6 +14,7 @@ struct bullet
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   void RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const;
+  auto GetOutline() -> object_outline;
 
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;
@@ -20,6 +22,7 @@ struct bullet
   float angle = 0;
   float range = 1000;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  object_outline outline;
 };
 
 #endif

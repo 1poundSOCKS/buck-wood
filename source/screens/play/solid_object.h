@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "play_event.h"
 #include "level_render_object.h"
+#include "object_outline.h"
 
 class solid_object
 {
@@ -17,6 +18,7 @@ private:
     virtual auto HitByBullet() -> void = 0;
     virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
+    virtual auto GetOutline() -> object_outline = 0;
   };
 
   template <typename object_type>
@@ -52,6 +54,11 @@ private:
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
     {
       object.RenderTo(renderTarget, viewRect);
+    }
+
+    virtual auto GetOutline() -> object_outline
+    {
+      return object.GetOutline();
     }
 
     object_type object;
@@ -100,6 +107,11 @@ public:
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
   {
     objectConcept->RenderTo(renderTarget, viewRect);
+  }
+
+  auto GetOutline() -> object_outline
+  {
+    return objectConcept->GetOutline();   
   }
 
 private:

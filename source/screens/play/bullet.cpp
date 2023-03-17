@@ -40,3 +40,8 @@ void bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
   const D2D1_RECT_F rect = GetBulletRect();
   renderTarget->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
 }
+
+auto bullet::GetOutline() -> object_outline
+{
+  return outline;
+}
