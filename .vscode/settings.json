@@ -77,7 +77,10 @@
     "filesystem": "cpp",
     "codecvt": "cpp",
     "numeric": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "execution": "cpp",
+    "functional": "cpp",
+    "queue": "cpp"
   },
   "cmake.configureOnOpen": false
 }

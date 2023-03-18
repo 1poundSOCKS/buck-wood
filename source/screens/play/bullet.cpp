@@ -12,6 +12,7 @@ bullet::bullet(screen_render_brush_selector brushes)
 {
   brush.attach(brushes[green]);
   brush->AddRef();
+  outline.GetPointInserter() = { xPos, yPos };
 }
 
 auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
@@ -19,6 +20,8 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
+  outline.Begin()->x = xPos;
+  outline.Begin()->y = yPos;
 }
 
 [[nodiscard]] auto bullet::HasCollided(float x, float y) const -> bool

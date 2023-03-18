@@ -7,6 +7,7 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   std::vector<game_point> pointsTmp;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(position.x, position.y));
+  std::copy(targetGeometryData.cbegin(), targetGeometryData.cend(), outline.GetPointInserter());
 
   brushNotActivated.attach(brushes[green]);
   brushNotActivated->AddRef();

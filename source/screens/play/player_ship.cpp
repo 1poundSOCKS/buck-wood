@@ -105,6 +105,8 @@ auto player_ship::UpdateShipGeometryData() -> void
   data->points.clear();
   GetTransformedShipPointsGeometry(std::back_inserter(data->points));
   CreateConnectedLines(data->points.cbegin(), data->points.cend(), std::back_inserter(data->lines));
+  outline.Clear();
+  std::copy(data->points.cbegin(), data->points.cend(), outline.GetPointInserter());
 }
 
 [[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>

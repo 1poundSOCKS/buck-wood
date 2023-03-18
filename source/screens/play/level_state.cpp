@@ -170,7 +170,22 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
     {
       object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount, std::back_inserter(events));
     });
-    
+
+    std::for_each(events.cbegin(), events.cend(), [](auto& event)
+    {
+      event.Trigger();
+    });
+
+    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+    {
+      object_outline outline = object.GetOutline();
+      
+      std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+      {
+        object_outline outline = object.GetOutline();
+      });
+    });
+
     levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
     
     levelState.invertedViewTransform = levelState.viewTransform;
@@ -188,11 +203,6 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
-
-    std::for_each(events.cbegin(), events.cend(), [](auto& event)
-    {
-      event.Trigger();
-    });
 
     ProcessCollisions(levelState);
   }
