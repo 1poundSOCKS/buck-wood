@@ -166,7 +166,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   {
     std::list<play_event> events;
 
-    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
     {
       object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount, std::back_inserter(events));
     });
@@ -176,7 +176,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
     {
       object_outline outline = object.GetOutline();
       
