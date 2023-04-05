@@ -19,6 +19,7 @@ struct player_ship
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetOutline() -> object_outline;
+  [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
 
@@ -72,7 +73,7 @@ struct player_ship
 
   screen_render_brush_selector brushes;
   std::shared_ptr<data_type> data;
-  object_outline outline;
+  object_outline m_outline;
 };
 
 #endif

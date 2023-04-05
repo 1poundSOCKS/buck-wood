@@ -17,12 +17,13 @@ struct level_island
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetOutline() -> object_outline;
+  [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
 
   game_closed_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  object_outline outline;
+  object_outline m_outline;
 };
 
 #endif

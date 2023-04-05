@@ -12,7 +12,7 @@ bullet::bullet(screen_render_brush_selector brushes)
 {
   brush.attach(brushes[green]);
   brush->AddRef();
-  outline.GetPointInserter() = { xPos, yPos };
+  m_outline.GetPointInserter() = { xPos, yPos };
 }
 
 auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
@@ -20,8 +20,8 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
-  outline.Begin()->x = xPos;
-  outline.Begin()->y = yPos;
+  m_outline.Begin()->x = xPos;
+  m_outline.Begin()->y = yPos;
 }
 
 [[nodiscard]] auto bullet::HasCollided(float x, float y) const -> bool
@@ -46,7 +46,12 @@ auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
 
 [[nodiscard]] auto bullet::GetOutline() -> object_outline
 {
-  return outline;
+  return m_outline;
+}
+
+[[nodiscard]] auto bullet::HasCollidedWith(const object_outline& outline) const -> bool
+{
+  return false;
 }
 
 [[nodiscard]] auto bullet::GetCollisionEffect() const -> collision_effect

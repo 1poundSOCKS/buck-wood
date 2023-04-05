@@ -67,9 +67,9 @@ private:
 
     [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool override
     {
-      return false;
+      return object.HasCollidedWith(outline);
     }
-
+#
     [[nodiscard]] auto GetCollisionEffect() const -> collision_effect override
     {
       return object.GetCollisionEffect();
