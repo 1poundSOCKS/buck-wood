@@ -7,6 +7,7 @@
 #include "play_event.h"
 #include "bullet.h"
 #include "object_outline.h"
+#include "collision_effect.h"
 
 struct player_ship
 {
@@ -18,6 +19,8 @@ struct player_ship
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetOutline() -> object_outline;
+  [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
+  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
 
   void UpdateShipGeometryData();
 

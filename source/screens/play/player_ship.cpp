@@ -100,6 +100,15 @@ auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   return outline;
 }
 
+[[nodiscard]] auto player_ship::GetCollisionEffect() const -> collision_effect
+{
+  return {};
+}
+
+auto player_ship::ApplyCollisionEffect(const collision_effect& effect) -> void
+{
+}
+
 auto player_ship::UpdateShipGeometryData() -> void
 {
   data->points.clear();

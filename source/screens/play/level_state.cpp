@@ -111,8 +111,8 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   levelBoundary.bottomRight.y += 800;
   SplitArea(levelBoundary, 9, std::back_inserter(groundMatrix), GetAreaState);
 
-  level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData), brushes };
-  solidObjects.emplace_back(levelBoundaryObject);
+  // level_boundary levelBoundaryObject = { LoadLevelBoundary(levelData), brushes };
+  // solidObjects.emplace_back(levelBoundaryObject);
 
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
@@ -139,7 +139,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   solidObjects.push_back(player);
 
-  std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
+  // std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }
 
 bool LevelIsComplete(const level_state& levelState)
@@ -183,7 +183,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
         object_outline outline = collisionObject.GetOutline();
         if( mainObject.HasCollidedWith(outline) )
         {
-          
+          auto effect = collisionObject.GetCollisionEffect();
+          mainObject.ApplyCollisionEffect(effect);
         }
       });
     });
@@ -221,34 +222,9 @@ void ProcessCollisions(level_state& levelState)
       explosion_state explosion = CreateExplosion(levelState.playerData->xPos, levelState.playerData->yPos, 
         levelState.currentTimerCount - levelState.previousTimerCount, levelState.brushes);
       
-      levelState.solidObjects.emplace_back(explosion);
+      // levelState.solidObjects.emplace_back(explosion);
     }
   }
-
-  // for( auto& bullet : levelState.bullets )
-  // {
-  //   if( !bullet.free )
-  //   {
-  //     auto hitCount = std::accumulate(levelState.solidObjects.begin(), levelState.solidObjects.end(), 0, 
-  //     [&bullet](int count, solid_object& solidObject) -> int
-  //     {
-  //       if( solidObject.HasCollided(bullet.xPos, bullet.yPos) )
-  //       {
-  //         ++count;
-  //         solidObject.HitByBullet();
-  //       }
-  //       return count;
-  //     });
-
-  //     if( BulletHasExpired(bullet) || hitCount > 0 )
-  //       bullet.free = true;
-  //   }
-  // }
-
-  // for( auto& explosion : levelState.explosions )
-  // {
-  //   ProcessCollisions(explosion, levelState.groundGeometry);
-  // }
 }
 
 [[nodiscard]] auto PlayerHitGround(const level_state& levelState) -> bool

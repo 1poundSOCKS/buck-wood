@@ -48,3 +48,12 @@ auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
 {
   return outline;
 }
+
+[[nodiscard]] auto bullet::GetCollisionEffect() const -> collision_effect
+{
+  return {};
+}
+
+auto bullet::ApplyCollisionEffect(const collision_effect& effect) -> void
+{
+}

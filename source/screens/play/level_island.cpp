@@ -36,3 +36,12 @@ auto level_island::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
 {
   return outline;
 }
+
+[[nodiscard]] auto level_island::GetCollisionEffect() const -> collision_effect
+{
+  return {};
+}
+
+auto level_island::ApplyCollisionEffect(const collision_effect& effect) -> void
+{
+}

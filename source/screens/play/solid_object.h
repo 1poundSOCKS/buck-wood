@@ -5,6 +5,7 @@
 #include "play_event.h"
 #include "level_render_object.h"
 #include "object_outline.h"
+#include "collision_effect.h"
 
 class solid_object
 {
@@ -20,6 +21,8 @@ private:
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetOutline() -> object_outline = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const object_outline& outline) const -> bool = 0;
+    [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
+    virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
   };
 
   template <typename object_type>
@@ -65,6 +68,16 @@ private:
     [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool override
     {
       return false;
+    }
+
+    [[nodiscard]] auto GetCollisionEffect() const -> collision_effect override
+    {
+      return object.GetCollisionEffect();
+    }
+
+    auto ApplyCollisionEffect(const collision_effect& effect) -> void override
+    {
+      object.ApplyCollisionEffect(effect);
     }
 
     object_type object;
@@ -123,6 +136,16 @@ public:
   [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool
   {
     return objectConcept->HasCollidedWith(outline);
+  }
+
+  [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect
+  {
+    return objectConcept->GetCollisionEffect();
+  }
+
+  virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void
+  {
+    objectConcept->ApplyCollisionEffect(effect);
   }
 
 private:
