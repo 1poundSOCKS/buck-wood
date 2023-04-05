@@ -19,6 +19,7 @@ private:
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetOutline() -> object_outline = 0;
+    [[nodiscard]] virtual auto HasCollidedWith(const object_outline& outline) const -> bool = 0;
   };
 
   template <typename object_type>
@@ -51,14 +52,19 @@ private:
       return object.LevelIsComplete();
     }
 
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void override
+    auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void override
     {
       object.RenderTo(renderTarget, viewRect);
     }
 
-    [[nodiscard]] virtual auto GetOutline() -> object_outline override
+    [[nodiscard]] auto GetOutline() -> object_outline override
     {
       return object.GetOutline();
+    }
+
+    [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool override
+    {
+      return false;
     }
 
     object_type object;
@@ -112,6 +118,11 @@ public:
   [[nodiscard]] auto GetOutline() -> object_outline
   {
     return objectConcept->GetOutline();   
+  }
+
+  [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool
+  {
+    return objectConcept->HasCollidedWith(outline);
   }
 
 private:

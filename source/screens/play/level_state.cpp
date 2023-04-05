@@ -176,13 +176,15 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& mainObject)
     {
-      object_outline outline = object.GetOutline();
-      
-      std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+      std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&mainObject, &events](auto& collisionObject)
       {
-        object_outline outline = object.GetOutline();
+        object_outline outline = collisionObject.GetOutline();
+        if( mainObject.HasCollidedWith(outline) )
+        {
+          
+        }
       });
     });
 
@@ -204,7 +206,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
 
-    ProcessCollisions(levelState);
+    // ProcessCollisions(levelState);
   }
 }
 
