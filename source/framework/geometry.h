@@ -65,15 +65,18 @@ void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::M
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
-  std::transform(std::next(begin), end, begin, lines, [](const auto& point2, const auto& point1)
+  if( std::distance(begin, end) > 0 )
   {
-    return game_line { point1.x, point1.y, point2.x, point2.y };
-  });
+    std::transform(std::next(begin), end, begin, lines, [](const auto& point2, const auto& point1)
+    {
+      return game_line { point1.x, point1.y, point2.x, point2.y };
+    });
 
-  if( loop )
-  {
-    auto last = std::prev(end);
-    lines = game_line { last->x, last->y, begin->x, begin->y };
+    if( loop )
+    {
+      auto last = std::prev(end);
+      lines = game_line { last->x, last->y, begin->x, begin->y };
+    }
   }
 };
 

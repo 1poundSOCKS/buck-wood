@@ -7,7 +7,7 @@ class object_outline_data
 public:
 
   using points_type = std::vector<game_point>;
-  using point_iterator = points_type::iterator;
+  using point_iterator = points_type::const_iterator;
   using point_inserter = std::back_insert_iterator<points_type>;
 
   object_outline_data()
@@ -19,14 +19,14 @@ public:
     return std::back_inserter(m_points);
   }
 
-  auto Begin() -> point_iterator
+  auto Begin() const -> point_iterator
   {
-    return m_points.begin();
+    return m_points.cbegin();
   }
 
-  auto End() -> point_iterator
+  auto End() const -> point_iterator
   {
-    return m_points.end();
+    return m_points.cend();
   }
 
   auto Clear() -> void
@@ -55,12 +55,12 @@ public:
     return m_data->GetPointInserter();
   }
 
-  auto Begin() -> point_iterator
+  auto Begin() const -> point_iterator
   {
     return m_data->Begin();
   }
 
-  auto End() -> point_iterator
+  auto End() const -> point_iterator
   {
     return m_data->End();
   }

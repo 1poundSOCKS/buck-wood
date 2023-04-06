@@ -20,8 +20,8 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
-  m_outline.Begin()->x = xPos;
-  m_outline.Begin()->y = yPos;
+  m_outline.Clear();
+  m_outline.GetPointInserter() = { xPos, yPos };
 }
 
 [[nodiscard]] auto bullet::HasCollided(float x, float y) const -> bool
@@ -51,7 +51,9 @@ auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
 
 [[nodiscard]] auto bullet::HasCollidedWith(const object_outline& outline) const -> bool
 {
-  return false;
+  std::vector<game_line> lines;
+  CreateConnectedLines(outline.Begin(), outline.End(), std::back_inserter(lines));
+  return PointInside( {xPos, yPos}, lines.cbegin(), lines.cend());
 }
 
 [[nodiscard]] auto bullet::GetCollisionEffect() const -> collision_effect
