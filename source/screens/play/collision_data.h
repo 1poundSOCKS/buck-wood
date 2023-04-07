@@ -39,14 +39,18 @@ private:
   points_type m_points;
 };
 
-class object_outline
+class collision_data
 {
 public:
 
   using point_iterator = object_outline_data::point_iterator;
   using point_inserter = object_outline_data::point_inserter;
 
-  object_outline() : m_data(std::make_shared<object_outline_data>())
+  collision_data() : m_data(std::make_shared<object_outline_data>())
+  {
+  }
+
+  collision_data(const game_closed_object& closedObject) : m_closedObject(closedObject)
   {
   }
 
@@ -70,7 +74,13 @@ public:
     m_data->Clear();
   }
 
+  [[nodiscard]] auto PointInside(float x, float y) const -> bool
+  {
+    return ::PointInside(x, y, m_closedObject);
+  }
+
 private:
 
+  game_closed_object m_closedObject;
   std::shared_ptr<object_outline_data> m_data;
 };

@@ -4,7 +4,7 @@
 #include "framework.h"
 #include "play_event.h"
 #include "level_render_object.h"
-#include "object_outline.h"
+#include "collision_data.h"
 #include "collision_effect.h"
 
 class solid_object
@@ -19,8 +19,8 @@ private:
     virtual auto HitByBullet() -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
-    [[nodiscard]] virtual auto GetOutline() -> object_outline = 0;
-    [[nodiscard]] virtual auto HasCollidedWith(const object_outline& outline) const -> bool = 0;
+    [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
+    [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
     virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
   };
@@ -60,16 +60,16 @@ private:
       object.RenderTo(renderTarget, viewRect);
     }
 
-    [[nodiscard]] auto GetOutline() -> object_outline override
+    [[nodiscard]] auto GetCollisionData() -> collision_data override
     {
-      return object.GetOutline();
+      return object.GetCollisionData();
     }
 
-    [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool override
+    [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool override
     {
-      return object.HasCollidedWith(outline);
+      return object.HasCollidedWith(collisionData);
     }
-#
+
     [[nodiscard]] auto GetCollisionEffect() const -> collision_effect override
     {
       return object.GetCollisionEffect();
@@ -128,14 +128,14 @@ public:
     objectConcept->RenderTo(renderTarget, viewRect);
   }
 
-  [[nodiscard]] auto GetOutline() -> object_outline
+  [[nodiscard]] auto GetCollisionData() -> collision_data
   {
-    return objectConcept->GetOutline();   
+    return objectConcept->GetCollisionData();
   }
 
-  [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool
+  [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool
   {
-    return objectConcept->HasCollidedWith(outline);
+    return objectConcept->HasCollidedWith(collisionData);
   }
 
   [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect

@@ -95,14 +95,14 @@ auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-[[nodiscard]] auto player_ship::GetOutline() -> object_outline
+[[nodiscard]] auto player_ship::GetCollisionData() -> collision_data
 {
-  return m_outline;
+  return m_collisionData;
 }
 
-[[nodiscard]] auto player_ship::HasCollidedWith(const object_outline& outline) const -> bool
+[[nodiscard]] auto player_ship::HasCollidedWith(const collision_data& collisionData) const -> bool
 {
-  return false;
+  return collisionData.PointInside(data->xPos, data->yPos);
 }
 
 [[nodiscard]] auto player_ship::GetCollisionEffect() const -> collision_effect
@@ -119,8 +119,6 @@ auto player_ship::UpdateShipGeometryData() -> void
   data->points.clear();
   GetTransformedShipPointsGeometry(std::back_inserter(data->points));
   CreateConnectedLines(data->points.cbegin(), data->points.cend(), std::back_inserter(data->lines));
-  m_outline.Clear();
-  std::copy(data->points.cbegin(), data->points.cend(), m_outline.GetPointInserter());
 }
 
 [[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>

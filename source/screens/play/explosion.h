@@ -6,7 +6,7 @@
 #include "render.h"
 #include "level_geometry.h"
 #include "play_event.h"
-#include "object_outline.h"
+#include "collision_data.h"
 
 struct particle_state
 {
@@ -27,12 +27,10 @@ struct explosion_state
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
-  [[nodiscard]] auto GetOutline() -> object_outline;
 
   int64_t clockFrequency;
   std::vector<particle_state> particles;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  object_outline outline;
 };
 
 [[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency, screen_render_brush_selector brushes) -> explosion_state;

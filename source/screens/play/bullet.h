@@ -3,7 +3,7 @@
 
 #include "screen_render_data.h"
 #include "play_event.h"
-#include "object_outline.h"
+#include "collision_data.h"
 #include "collision_effect.h"
 
 struct bullet
@@ -15,8 +15,8 @@ struct bullet
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
-  [[nodiscard]] auto GetOutline() -> object_outline;
-  [[nodiscard]] auto HasCollidedWith(const object_outline& outline) const -> bool;
+  [[nodiscard]] auto GetCollisionData() -> collision_data;
+  [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
 
@@ -26,7 +26,7 @@ struct bullet
   float angle = 0;
   float range = 1000;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  object_outline m_outline;
+  collision_data m_collisionData;
 };
 
 #endif

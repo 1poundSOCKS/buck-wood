@@ -7,7 +7,6 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
   std::vector<game_point> pointsTmp;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(position.x, position.y));
-  std::copy(targetGeometryData.cbegin(), targetGeometryData.cend(), outline.GetPointInserter());
 
   brushNotActivated.attach(brushes[green]);
   brushNotActivated->AddRef();
@@ -39,9 +38,4 @@ auto target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
   std::vector<render_line> renderLines;
   CreateRenderLines(shape.cbegin(), shape.cend(), std::back_inserter(renderLines), activated ? brushActivated.get() : brushNotActivated.get(), 6);
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
-}
-
-[[nodiscard]] auto target_state::GetOutline() -> object_outline
-{
-  return outline;
 }

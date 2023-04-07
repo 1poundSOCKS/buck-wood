@@ -5,7 +5,7 @@
 #include "game_level_data.h"
 #include "screen_render_data.h"
 #include "play_event.h"
-#include "object_outline.h"
+#include "collision_data.h"
 
 struct level_boundary
 {
@@ -16,11 +16,9 @@ struct level_boundary
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
-  [[nodiscard]] auto GetOutline() -> object_outline;
 
   game_open_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  object_outline outline;
 };
 
 [[nodiscard]] auto LoadLevelBoundary(const game_level_data& levelData) -> game_open_object;

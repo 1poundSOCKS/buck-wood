@@ -180,8 +180,8 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
     {
       std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&mainObject, &events](auto& collisionObject)
       {
-        object_outline outline = collisionObject.GetOutline();
-        if( mainObject.HasCollidedWith(outline) )
+        auto collisionData = collisionObject.GetCollisionData();
+        if( mainObject.HasCollidedWith(collisionData) )
         {
           auto effect = collisionObject.GetCollisionEffect();
           mainObject.ApplyCollisionEffect(effect);

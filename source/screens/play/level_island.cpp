@@ -1,12 +1,12 @@
 #include "pch.h"
 #include "level_island.h"
 
-level_island::level_island(const game_closed_object& object, screen_render_brush_selector brushes) : object(object)
+level_island::level_island(const game_closed_object& object, screen_render_brush_selector brushes) : object(object), m_collisionData(object)
 {
   brush.attach(brushes[brown]);
   brush->AddRef();
 }
-
+#
 auto level_island::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
 }
@@ -32,12 +32,12 @@ auto level_island::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
   RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
 }
 
-[[nodiscard]] auto level_island::GetOutline() -> object_outline
+[[nodiscard]] auto level_island::GetCollisionData() -> collision_data
 {
-  return m_outline;
+  return m_collisionData;
 }
 
-[[nodiscard]] auto level_island::HasCollidedWith(const object_outline& outline) const -> bool
+[[nodiscard]] auto level_island::HasCollidedWith(const collision_data& collisionData) const -> bool
 {
   return false;
 }
