@@ -22,6 +22,7 @@ struct player_ship
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
+  [[nodiscard]] auto Destroyed() const -> bool;
 
   void UpdateShipGeometryData();
 

@@ -166,7 +166,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
   {
     std::list<play_event> events;
 
-    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
+    std::for_each(std::execution::seq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& object)
     {
       object.Update(levelState.counterFrequency, timerCount - levelState.previousTimerCount, std::back_inserter(events));
     });
@@ -176,7 +176,7 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       event.Trigger();
     });
 
-    std::for_each(std::execution::par_unseq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& mainObject)
+    std::for_each(std::execution::seq, levelState.solidObjects.begin(), levelState.solidObjects.end(), [&levelState, timerCount, &events](auto& mainObject)
     {
       std::for_each(levelState.solidObjects.begin(), levelState.solidObjects.end(), [&mainObject, &events](auto& collisionObject)
       {
@@ -188,6 +188,13 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
         }
       });
     });
+
+    auto object = levelState.solidObjects.begin();
+
+    while( object != levelState.solidObjects.end() )
+    {
+      object = object->Destroyed() ? levelState.solidObjects.erase(object) : ++object;
+    }
 
     levelState.viewTransform = CreateViewTransform(levelState, controlState.renderTargetMouseData.size, 1.2);
     
@@ -206,8 +213,6 @@ void UpdateLevelState(level_state& levelState, const level_control_state& contro
       levelState.viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
       levelState.viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
-
-    // ProcessCollisions(levelState);
   }
 }
 

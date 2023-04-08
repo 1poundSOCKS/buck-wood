@@ -20,6 +20,7 @@ struct level_island
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
+  [[nodiscard]] auto Destroyed() const -> bool;
 
   game_closed_object object;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;

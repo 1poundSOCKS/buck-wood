@@ -114,6 +114,11 @@ auto player_ship::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
 }
 
+[[nodiscard]] auto player_ship::Destroyed() const -> bool
+{
+  return false;
+}
+
 auto player_ship::UpdateShipGeometryData() -> void
 {
   data->points.clear();

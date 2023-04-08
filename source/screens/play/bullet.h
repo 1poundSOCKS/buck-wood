@@ -19,6 +19,7 @@ struct bullet
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
+  [[nodiscard]] auto Destroyed() const -> bool;
 
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;
@@ -27,6 +28,7 @@ struct bullet
   float range = 1000;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
   collision_data m_collisionData;
+  bool destroyed = false;
 };
 
 #endif

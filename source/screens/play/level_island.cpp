@@ -50,3 +50,8 @@ auto level_island::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
 auto level_island::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
 }
+
+[[nodiscard]] auto level_island::Destroyed() const -> bool
+{
+  return false;
+}

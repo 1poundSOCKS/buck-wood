@@ -23,6 +23,7 @@ private:
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
     virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
+    [[nodiscard]] virtual auto Destroyed() const -> bool = 0;
   };
 
   template <typename object_type>
@@ -78,6 +79,11 @@ private:
     auto ApplyCollisionEffect(const collision_effect& effect) -> void override
     {
       object.ApplyCollisionEffect(effect);
+    }
+
+    [[nodiscard]] auto Destroyed() const -> bool override
+    {
+      return object.Destroyed();
     }
 
     object_type object;
@@ -143,9 +149,14 @@ public:
     return objectConcept->GetCollisionEffect();
   }
 
-  virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void
+  auto ApplyCollisionEffect(const collision_effect& effect) -> void
   {
     objectConcept->ApplyCollisionEffect(effect);
+  }
+
+  [[nodiscard]] auto Destroyed() const -> bool
+  {
+    return objectConcept->Destroyed();
   }
 
 private:
