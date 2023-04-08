@@ -3,10 +3,13 @@
 
 level_island::level_island(const game_closed_object& object, screen_render_brush_selector brushes) : object(object), m_collisionData(object)
 {
+  m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
+  m_collisionEffect.SetProperty(collision_effect::kills_player, true);
+
   brush.attach(brushes[brown]);
   brush->AddRef();
 }
-#
+
 auto level_island::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
 }
@@ -44,7 +47,7 @@ auto level_island::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
 
 [[nodiscard]] auto level_island::GetCollisionEffect() const -> collision_effect
 {
-  return {};
+  return m_collisionEffect;
 }
 
 auto level_island::ApplyCollisionEffect(const collision_effect& effect) -> void

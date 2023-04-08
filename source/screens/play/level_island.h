@@ -23,8 +23,9 @@ struct level_island
   [[nodiscard]] auto Destroyed() const -> bool;
 
   game_closed_object object;
-  winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  collision_effect m_collisionEffect;
   collision_data m_collisionData;
+  winrt::com_ptr<ID2D1SolidColorBrush> brush;
 };
 
 #endif

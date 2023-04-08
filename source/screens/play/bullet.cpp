@@ -56,9 +56,9 @@ auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
   return {};
 }
 
-auto bullet::ApplyCollisionEffect(const collision_effect& effect) -> void
+auto bullet::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
 {
-  destroyed = true;
+  destroyed = collisionEffect.GetProperty(collision_effect::stops_bullets);
 }
 
 [[nodiscard]] auto bullet::Destroyed() const -> bool
