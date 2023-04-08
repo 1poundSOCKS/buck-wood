@@ -15,8 +15,6 @@ private:
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     virtual auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
-    [[nodiscard]] virtual auto HasCollided(float x, float y) const -> bool = 0;
-    virtual auto HitByBullet() -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
@@ -39,16 +37,6 @@ private:
     auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
     {
       object.Update(clockFrequency, clockCount, playEventInserter);
-    }
-
-    [[nodiscard]] auto HasCollided(float x, float y) const -> bool override
-    {
-      return object.HasCollided(x, y);
-    }
-
-    auto HitByBullet() -> void override
-    {
-      object.HitByBullet();
     }
 
     [[nodiscard]] auto LevelIsComplete() const -> bool override
@@ -112,16 +100,6 @@ public:
   auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
   {
     objectConcept->Update(clockFrequency, clockCount, playEventInserter);
-  }
-
-  [[nodiscard]] auto HasCollided(float x, float y) const -> bool
-  {
-    return objectConcept->HasCollided(x, y);
-  }
-
-  auto HitByBullet() -> void
-  {
-    objectConcept->HitByBullet();
   }
 
   [[nodiscard]] auto LevelIsComplete() const -> bool

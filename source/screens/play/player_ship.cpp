@@ -130,12 +130,7 @@ auto player_ship::UpdateShipGeometryData() -> void
 [[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>
 {
   std::vector<game_line> lines;
-
-  CreateConnectedLines(
-    data->points.cbegin(), 
-    data->points.cend(),
-    std::back_inserter(lines));
-
+  CreateConnectedLines(data->points.cbegin(), data->points.cend(),std::back_inserter(lines));
   return lines;
 }
 
