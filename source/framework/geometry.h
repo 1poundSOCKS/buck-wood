@@ -33,36 +33,6 @@ struct game_rect
   game_point bottomRight;
 };
 
-struct game_closed_object
-{
-  std::vector<game_point> points;
-  std::vector<game_line> lines;
-};
-
-struct game_open_object
-{
-  std::vector<game_point> points;
-  std::vector<game_line> lines;
-};
-
-auto CalculateAngle(float x1, float y1, float x2, float y2) -> float;
-
-float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
-
-[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect ;
-[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect;
-[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
-[[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool;
-[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point;
-
-void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
-{
-  std::transform(begin, end, transformedPoints, [transform](const auto& point){
-    auto outPoint = transform.TransformPoint({point.x, point.y});
-    return decltype(transformedPoints)::container_type::value_type ( outPoint.x, outPoint.y );
-  });
-}
-
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
   if( std::distance(begin, end) > 0 )
@@ -92,12 +62,58 @@ void CreateConnectedLines(game_rect rect, auto lines)
   CreateConnectedLines(points.cbegin(), points.cend(), lines);
 };
 
-[[nodiscard]] auto LoadClosedObject(auto beginPoint, auto endPoint) -> game_closed_object
+struct game_closed_object
 {
-  game_closed_object closedObject;
-  std::copy(beginPoint, endPoint, std::back_inserter(closedObject.points));
-  CreateConnectedLines(closedObject.points.cbegin(), closedObject.points.cend(), std::back_inserter(closedObject.lines));
-  return closedObject;
+  game_closed_object()
+  {
+  }
+
+  template <typename point_iterator_type>
+  game_closed_object(point_iterator_type begin, point_iterator_type end)
+  {
+    Load(begin, end);
+  }
+
+  template <typename point_iterator_type>
+  auto Load(point_iterator_type begin, point_iterator_type end) -> void
+  {
+    Clear();
+    std::copy(begin, end, std::back_inserter(points));
+    CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(lines));
+  }
+
+  auto Clear() -> void
+  {
+    points.clear();
+    lines.clear();
+  }
+
+  std::vector<game_point> points;
+  std::vector<game_line> lines;
+};
+
+struct game_open_object
+{
+  std::vector<game_point> points;
+  std::vector<game_line> lines;
+};
+
+auto CalculateAngle(float x1, float y1, float x2, float y2) -> float;
+
+float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
+
+[[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect ;
+[[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect;
+[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
+[[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool;
+[[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point;
+
+void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::Matrix3x2F& transform)
+{
+  std::transform(begin, end, transformedPoints, [transform](const auto& point){
+    auto outPoint = transform.TransformPoint({point.x, point.y});
+    return decltype(transformedPoints)::container_type::value_type ( outPoint.x, outPoint.y );
+  });
 }
 
 [[nodiscard]] auto LoadOpenObject(auto beginPoint, auto endPoint) -> game_open_object

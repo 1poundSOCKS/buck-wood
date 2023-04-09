@@ -35,11 +35,13 @@
   std::copy(levelOuterPoints.cbegin(), levelOuterPoints.cend(), std::back_inserter(points));
 
   level_ground_geometry groundGeometry;
-  groundGeometry.objects.emplace_back(LoadClosedObject(points.cbegin(), points.cend()));
+  groundGeometry.objects.emplace_back();
+  groundGeometry.objects.back().Load(points.cbegin(), points.cend());
 
   for( auto& object : levelData.objects )
   {
-    groundGeometry.objects.emplace_back(LoadClosedObject(object.points.cbegin(), object.points.cend()));
+    groundGeometry.objects.emplace_back();
+    groundGeometry.objects.back().Load(object.points.cbegin(), object.points.cend());
   }
 
   for( auto& object : groundGeometry.objects )

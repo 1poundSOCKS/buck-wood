@@ -62,15 +62,6 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   }
 }
 
-[[nodiscard]] auto player_ship::HasCollided(float x, float y) const -> bool
-{
-  return false;
-}
-
-auto player_ship::HitByBullet() -> void
-{
-}
-
 [[nodiscard]] auto player_ship::LevelIsComplete() const -> bool
 {
   return true;

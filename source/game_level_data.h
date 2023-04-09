@@ -70,7 +70,9 @@ void LoadLevelObjects(const game_level_data& levelData, auto objectInserter)
   std::transform(levelData.objects.cbegin(), levelData.objects.cend(), objectInserter,
   [](const game_level_object_data& objectData) -> game_closed_object
   {
-    return LoadClosedObject(objectData.points.cbegin(), objectData.points.cend());
+    game_closed_object object(objectData.points.cbegin(), objectData.points.cend());
+    return object;
+    // return LoadClosedObject(objectData.points.cbegin(), objectData.points.cend());
   });
 }
 

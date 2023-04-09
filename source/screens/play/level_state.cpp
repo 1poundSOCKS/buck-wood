@@ -78,16 +78,10 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   
   shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
 
-  std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [this](const auto& target)
-  {
-    return target_state(target, this->brushes);
-  });
-
-  for( auto& target : targets )
-  {
-    CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
-  }
+  // for( auto& target : targets )
+  // {
+  //   CreateConnectedLines(target.points.cbegin(), target.points.cend(), std::back_inserter(target.shape));
+  // }
 
   level_background_data backgroundData = GenerateLevelBackgroundData(levelData);
 
@@ -139,7 +133,13 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 
   solidObjects.push_back(player);
 
-  // std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
+  std::vector<target_state> targets;
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [this](const auto& target)
+  {
+    return target_state(target, this->brushes);
+  });
+
+  std::copy(targets.cbegin(), targets.cend(), std::back_inserter(solidObjects));
 }
 
 bool LevelIsComplete(const level_state& levelState)
