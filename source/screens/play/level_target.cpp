@@ -12,6 +12,7 @@ target_state::target_state(const game_point& position, screen_render_brush_selec
 
   m_collisionData = collision_data { points.cbegin(), points.cend() };
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
+  m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 
   brushNotActivated.attach(brushes[green]);
   brushNotActivated->AddRef();
@@ -52,6 +53,8 @@ auto target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
 
 auto target_state::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
+  if( effect.GetProperty(collision_effect::activates_target) )
+    activated = true;
 }
 
 [[nodiscard]] auto target_state::Destroyed() const -> bool

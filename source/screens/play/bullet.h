@@ -27,6 +27,7 @@ struct bullet
   float angle = 0;
   float range = 1000;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  collision_effect m_collisionEffect;
   collision_data m_collisionData;
   bool destroyed = false;
 };
