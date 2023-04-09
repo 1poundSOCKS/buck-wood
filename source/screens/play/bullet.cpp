@@ -11,7 +11,7 @@ constexpr D2D1_RECT_F GetBulletRect()
 bullet::bullet(screen_render_brush_selector brushes)
 {
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
-  
+
   brush.attach(brushes[green]);
   brush->AddRef();
 }
@@ -45,7 +45,7 @@ auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) con
 
 [[nodiscard]] auto bullet::GetCollisionData() -> collision_data
 {
-  return m_collisionData;
+  return { xPos, yPos };
 }
 
 [[nodiscard]] auto bullet::HasCollidedWith(const collision_data& collisionData) const -> bool

@@ -43,7 +43,7 @@ auto target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
 
 [[nodiscard]] auto target_state::HasCollidedWith(const collision_data& collisionData) const -> bool
 {
-  return false;
+  return m_collisionData.HasCollidedWith(collisionData);
 }
 
 [[nodiscard]] auto target_state::GetCollisionEffect() const -> collision_effect
