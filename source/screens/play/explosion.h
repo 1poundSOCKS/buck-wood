@@ -4,7 +4,6 @@
 #include "geometry.h"
 #include "screen_render_data.h"
 #include "render.h"
-#include "level_geometry.h"
 #include "play_event.h"
 #include "collision_data.h"
 
@@ -69,7 +68,5 @@ void CreateRenderPoints(auto explosionBegin, auto explosionEnd, const screen_ren
     CreateRenderPoints(*explosion, brushes, renderPointsInserter);
   }
 }
-
-void ProcessCollisions(explosion_state& explosion, const level_ground_geometry& groundGeometry);
 
 #endif

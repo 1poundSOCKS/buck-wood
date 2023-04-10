@@ -110,12 +110,3 @@ void UpdateState(explosion_state& state, float updateInterval, float forceOfGrav
     }
   }
 }
-
-void ProcessCollisions(explosion_state& explosion, const level_ground_geometry& groundGeometry)
-{
-  for( auto& particle : explosion.particles )
-  {
-    if( IsUnderground(particle.x, particle.y, groundGeometry) )
-      particle.condition = particle_state::dead;
-  }
-}

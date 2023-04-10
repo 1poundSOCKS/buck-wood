@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "level_state.h"
-#include "game_objects.h"
-#include "level_render_object.h"
 
 [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const level_state& levelState) -> D2D1_RECT_F;
 
@@ -18,10 +16,6 @@ auto RenderLevel(ID2D1RenderTarget* renderTarget, const screen_render_data& rend
   {
     object.RenderTo(renderTarget, viewRect);
   });
-
-#ifdef __RENDER_GROUND_LINES
-  RenderLines(renderTarget, levelState.staticRenderLines.cbegin(), levelState.staticRenderLines.cend());
-#endif
 }
 
 auto GetViewRect(ID2D1RenderTarget* renderTarget, const level_state& levelState) -> D2D1_RECT_F

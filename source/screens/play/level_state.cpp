@@ -3,8 +3,6 @@
 #include "game_objects.h"
 #include "level_render.h"
 #include "screen_view.h"
-#include "level_object_collisions.h"
-#include "level_geometry.h"
 
 const float gameSpeedMultiplier = 2.0f;
 const int shotTimeNumerator = 1;
