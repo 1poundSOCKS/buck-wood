@@ -42,16 +42,9 @@ struct level_state
   bool playerShot = false;
   bool targetShot = false;
 
-  std::shared_ptr<player_ship::data_type> playerData;
-  std::vector<render_point> renderStars;
-  level_ground_geometry groundGeometry;
-  level_targets_geometry targetsGeometry;
-  std::vector<render_line> staticRenderLines;
-  std::vector<area_state> groundMatrix;
-  
+  std::shared_ptr<player_ship::data_type> playerData;  
   std::list<solid_object> solidObjects;
   std::shared_ptr<player_control_state> controlState;
-
   screen_render_brush_selector brushes;
 };
 
