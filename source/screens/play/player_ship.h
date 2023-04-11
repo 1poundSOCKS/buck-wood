@@ -9,9 +9,12 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
+inline int shotTimeNumerator = 1;
+inline int shotTimeDenominator = 20;
+
 struct player_ship
 {
-  player_ship(screen_render_brush_selector brushes);
+  player_ship(int64_t counterFrequency, screen_render_brush_selector brushes);
 
   auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
@@ -62,6 +65,9 @@ struct player_ship
     float yVelocity = 0;
     float angle = 0;
     bool thrusterOn = false;
+    int64_t shotTimerInterval = 0;
+    int64_t shotTimer = 0;
+
     std::vector<game_point> points;
     std::vector<game_line> lines;
     std::shared_ptr<player_control_state> controlState;

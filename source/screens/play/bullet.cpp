@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "bullet.h"
-
-const float gameSpeedMultiplier = 2.0f;
+#include "game_constants.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -21,6 +20,8 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
+
+  destroyed = HasExpired();
 }
 
 [[nodiscard]] auto bullet::HasCollided(float x, float y) const -> bool
@@ -66,4 +67,12 @@ auto bullet::ApplyCollisionEffect(const collision_effect& collisionEffect) -> vo
 [[nodiscard]] auto bullet::Destroyed() const -> bool
 {
   return destroyed;
+}
+
+[[nodiscard]] auto bullet::HasExpired() -> bool
+{
+  float cx = xPos - startX;
+  float cy = yPos - startY;
+  float distance = sqrt(cx * cx + cy * cy);
+  return distance > range;
 }

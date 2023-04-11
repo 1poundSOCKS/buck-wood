@@ -2,18 +2,16 @@
 #include "player_ship.h"
 #include "math.h"
 #include "event_player_shot.h"
+#include "game_constants.h"
 
-const float gameSpeedMultiplier = 2.0f;
-const int shotTimeNumerator = 1;
-const int shotTimeDenominator = 20;
-
-player_ship::player_ship(screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
+player_ship::player_ship(int64_t counterFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
 {
   UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
   data->shipBrush->AddRef();
   data->thrusterBrush.attach(brushes[red]);
   data->thrusterBrush->AddRef();
+  data->shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
 }
 
 auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
@@ -127,5 +125,13 @@ auto player_ship::UpdateShipGeometryData() -> void
 
 [[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) const -> bool
 {
-  return true;
+  data->shotTimer += tickCount;
+
+  if( data->shotTimer >= data->shotTimerInterval )
+  {
+    data->shotTimer %= data->shotTimerInterval;
+    return true;
+  }
+  else
+    return false;
 }

@@ -21,6 +21,8 @@ struct bullet
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
+  [[nodiscard]] auto HasExpired() -> bool;
+
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;
   float xVelocity = 0, yVelocity = 0;

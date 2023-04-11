@@ -3,25 +3,7 @@
 #include "game_objects.h"
 #include "level_render.h"
 #include "screen_view.h"
-
-const float gameSpeedMultiplier = 2.0f;
-const int shotTimeNumerator = 1;
-const int shotTimeDenominator = 20;
-
-void UpdateExplosions(level_state& levelState);
-bullet& GetBullet(std::vector<bullet>& bullets);
-bool BulletHasExpired(const bullet& bullet);
-
-constexpr D2D1_RECT_F GetStarRect()
-{
-  return { -4, -4, 4, 4 };
-}
-
-inline D2D1_RECT_F GetStarRect(float x, float y)
-{
-  const D2D1_RECT_F rect = GetStarRect();
-  return { rect.left + x, rect.top + y, rect.right + x, rect.bottom + y };
-}
+#include "game_constants.h"
 
 level_state::level_state(const game_level_data& levelData, int64_t counterFrequency, const screen_render_data& renderData) : 
   levelData(levelData), counterFrequency(counterFrequency), 
@@ -43,7 +25,7 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
   
   std::copy(islands.cbegin(), islands.cend(), std::back_inserter(m_activeObjects));
   
-  player_ship player(screen_render_brush_selector(renderData.renderBrushes));
+  player_ship player(counterFrequency, screen_render_brush_selector(renderData.renderBrushes));
 
   playerData = player.data;
   playerData->xPos = levelData.playerStartPosX;
@@ -136,14 +118,6 @@ auto level_state::Update(const level_control_state& levelControlState, int64_t c
       m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
     }
   }
-}
-
-bool BulletHasExpired(const bullet& bullet)
-{
-  float cx = bullet.xPos - bullet.startX;
-  float cy = bullet.yPos - bullet.startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > bullet.range;
 }
 
 [[nodiscard]] auto level_state::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F

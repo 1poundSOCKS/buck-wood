@@ -38,8 +38,6 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
 
-  // screenState.levelState->playerShot = screenState.levelState->targetShot = false;
-
   if( screenState.mode == play_screen_state::paused )
   {
     OnGamePaused(screenState, inputState);
