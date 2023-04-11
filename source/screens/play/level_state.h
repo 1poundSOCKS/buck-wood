@@ -49,9 +49,6 @@ private:
   int64_t currentTimerCount = 0;
   int64_t previousTimerCount = 0;
 
-  int64_t shotTimerInterval;
-  int64_t lastShotTimerValue = 0;
-
   D2D1::Matrix3x2F viewTransform;
   D2D1::Matrix3x2F invertedViewTransform;
   

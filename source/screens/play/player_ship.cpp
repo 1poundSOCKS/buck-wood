@@ -4,14 +4,17 @@
 #include "event_player_shot.h"
 #include "game_constants.h"
 
-player_ship::player_ship(int64_t counterFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
+inline int shotTimeNumerator = 1;
+inline int shotTimeDenominator = 20;
+
+player_ship::player_ship(int64_t tickFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
 {
   UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
   data->shipBrush->AddRef();
   data->thrusterBrush.attach(brushes[red]);
   data->thrusterBrush->AddRef();
-  data->shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
+  data->shotTimerInterval = ( tickFrequency * shotTimeNumerator ) / shotTimeDenominator;
 }
 
 auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void

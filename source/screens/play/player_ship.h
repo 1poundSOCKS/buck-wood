@@ -9,9 +9,6 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
-inline int shotTimeNumerator = 1;
-inline int shotTimeDenominator = 20;
-
 struct player_ship
 {
   player_ship(int64_t counterFrequency, screen_render_brush_selector brushes);

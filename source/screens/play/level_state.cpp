@@ -12,8 +12,6 @@ level_state::level_state(const game_level_data& levelData, int64_t counterFreque
 {
   levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
   
-  shotTimerInterval = ( counterFrequency * shotTimeNumerator ) / shotTimeDenominator;
-
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
