@@ -1,6 +1,6 @@
 #pragma once
 
-#include "player_ship.h"
+#include "bullet.h"
 
 struct event_player_shot
 {

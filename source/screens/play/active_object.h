@@ -1,12 +1,12 @@
-#ifndef _solid_object_
-#define _solid_object_
+#ifndef _active_object_
+#define _active_object_
 
 #include "framework.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
 
-class solid_object
+class active_object
 {
 private:
   struct object_concept
@@ -78,23 +78,23 @@ private:
 
 public:
   template <typename object_type>
-  solid_object(const object_type& object)
+  active_object(const object_type& object)
   : objectConcept(std::make_unique<object_model<object_type>>(object))
   {
   }
 
-  solid_object(solid_object&& solidObject)
+  active_object(active_object&& solidObject)
   : objectConcept(std::move(solidObject.objectConcept))
   {
   }
 
-  void operator=(solid_object&& solidObject)
+  void operator=(active_object&& solidObject)
   {
     objectConcept = std::move(solidObject.objectConcept);
   }
 
-  solid_object(const solid_object& solidObject) = delete;
-  void operator=(const solid_object& solidObject) = delete;
+  active_object(const active_object& solidObject) = delete;
+  void operator=(const active_object& solidObject) = delete;
 
   auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
   {

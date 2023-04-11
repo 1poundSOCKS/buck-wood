@@ -15,7 +15,8 @@ void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& scree
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  RenderLevel(renderTarget, renderData, *screenState.levelState);
+//  RenderLevel(renderTarget, renderData, *);
+  screenState.levelState->RenderTo(renderTarget, renderData);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
@@ -79,7 +80,8 @@ void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& 
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
-  float levelTimeRemaining = GetPlayTimeRemainingInSeconds(*screenState.levelState);
+  float levelTimeRemaining = screenState.levelState->GetPlayTimeRemainingInSeconds();
+  
   std::wstring timerText = std::format(L"{:.2f}", levelTimeRemaining);
   RenderText(
     renderTarget, 

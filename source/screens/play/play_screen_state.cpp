@@ -38,18 +38,20 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
 
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
 
-  screenState.levelState->playerShot = screenState.levelState->targetShot = false;
+  // screenState.levelState->playerShot = screenState.levelState->targetShot = false;
 
   if( screenState.mode == play_screen_state::paused )
+  {
     OnGamePaused(screenState, inputState);
+  }
   else if( ScreenTransitionTimeHasExpired(screenState) )
+  {
     OnGameRunning(screenState, inputState);
+  }
   else
-    UpdateLevelState(
-      *screenState.levelState, 
-      GetLevelControlState(inputState), 
-      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal
-    );
+  {
+    screenState.levelState->Update(GetLevelControlState(inputState), screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
+  }
 }
 
 void OnGamePaused(play_screen_state& screenState, const screen_input_state& inputState)
@@ -73,7 +75,7 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
   }
   else if( screenState.mode == play_screen_state::level_complete )
   {
-    screenState.levelTimes.push_back(GetPlayTimeRemainingInSeconds(*screenState.levelState));
+    screenState.levelTimes.push_back(screenState.levelState->GetPlayTimeRemainingInSeconds());
     
     if( AllLevelsAreComplete(screenState) )
     {
@@ -92,13 +94,8 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
   }
   else if( screenState.mode == play_screen_state::player_dead )
   {
-    screenState.continueRunning = false;
-    
-    UpdateLevelState(
-      *screenState.levelState, 
-      GetLevelControlState(inputState), 
-      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal
-    );
+    screenState.continueRunning = false;    
+    screenState.levelState->Update(GetLevelControlState(inputState), screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
   }
 }
 
@@ -111,21 +108,19 @@ void OnGamePlaying(play_screen_state& screenState, const screen_input_state& inp
   }
   else
   {
-    UpdateLevelState(
-      *screenState.levelState, GetLevelControlState(inputState), 
-      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
+    screenState.levelState->Update(GetLevelControlState(inputState), screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
 
-    if( LevelTimedOut(*screenState.levelState) )
+    if( screenState.levelState->TimedOut() )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
     }
-    else if( LevelIsComplete(*screenState.levelState) )
+    else if( screenState.levelState->IsComplete() )
     {
       screenState.mode = play_screen_state::level_complete;
       SetScreenTransitionDelay(screenState, 3);
     }
-    else if( PlayerIsDead(*screenState.levelState) )
+    else if( screenState.levelState->PlayerIsDead() )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
@@ -145,19 +140,16 @@ void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds)
 
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  if( GetPlayTimeRemaining(*screenState.levelState) > 0 )
+  if( screenState.levelState->GetPlayTimeRemaining() > 0 )
   {
-    UpdateLevelState(
-      *screenState.levelState, 
-      GetLevelControlState(inputState), 
-      screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
+    screenState.levelState->Update(GetLevelControlState(inputState), screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
 
-    if( LevelIsComplete(*screenState.levelState) )
+    if( screenState.levelState->IsComplete() )
     {
       screenState.mode = play_screen_state::level_complete;
       SetScreenTransitionDelay(screenState, 3);
     }
-    else if( screenState.levelState->playerData->state == player_ship::dead )
+    else if( screenState.levelState->PlayerIsDead() )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
@@ -198,3 +190,4 @@ level_control_state GetLevelControlState(const screen_input_state& inputState)
     inputState.renderTargetMouseData
   };
 }
+
