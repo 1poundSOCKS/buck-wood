@@ -8,7 +8,7 @@ void PlaySoundEffects(const play_screen_state& screenState)
 
   if( screenState.mode == play_screen_state::playing )
   {
-    screenState.levelState->PlaySoundEffects(soundBuffers);
+    screenState.PlaySoundEffects(soundBuffers);
   }
   else
   {

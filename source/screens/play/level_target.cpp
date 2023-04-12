@@ -51,7 +51,7 @@ auto target_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
   return m_collisionEffect;
 }
 
-auto target_state::ApplyCollisionEffect(const collision_effect& effect) -> void
+auto target_state::ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
 {
   if( effect.GetProperty(collision_effect::activates_target) )
     activated = true;

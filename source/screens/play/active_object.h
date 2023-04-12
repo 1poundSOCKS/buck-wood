@@ -19,7 +19,7 @@ private:
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
-    virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
+    virtual auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void = 0;
     [[nodiscard]] virtual auto Destroyed() const -> bool = 0;
   };
 
@@ -63,9 +63,9 @@ private:
       return object.GetCollisionEffect();
     }
 
-    auto ApplyCollisionEffect(const collision_effect& effect) -> void override
+    auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void override
     {
-      object.ApplyCollisionEffect(effect);
+      object.ApplyCollisionEffect(effect, playEventInserter);
     }
 
     [[nodiscard]] auto Destroyed() const -> bool override
@@ -126,9 +126,9 @@ public:
     return objectConcept->GetCollisionEffect();
   }
 
-  auto ApplyCollisionEffect(const collision_effect& effect) -> void
+  auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
   {
-    objectConcept->ApplyCollisionEffect(effect);
+    objectConcept->ApplyCollisionEffect(effect, playEventInserter);
   }
 
   [[nodiscard]] auto Destroyed() const -> bool

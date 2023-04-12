@@ -18,7 +18,7 @@ struct bullet
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
-  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
+  auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
   [[nodiscard]] auto HasExpired() -> bool;

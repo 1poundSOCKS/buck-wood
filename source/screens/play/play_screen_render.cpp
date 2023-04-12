@@ -3,7 +3,6 @@
 #include "screen_render.h"
 #include "play_screen_state.h"
 #include "screen_render_data.h"
-#include "level_render.h"
 
 void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData);
 void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData);
@@ -15,7 +14,11 @@ void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& scree
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  screenState.levelState->RenderTo(renderTarget, renderData);
+  auto renderTargetSize = renderTarget->GetSize();
+
+  auto viewTransform = screenState.CreateViewTransform(renderTargetSize);
+
+  screenState.levelState->RenderTo(renderTarget, viewTransform);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

@@ -21,7 +21,7 @@ bool ContinueRunning(const play_screen_state& screenState);
 
 void FormatDiagnostics(const play_screen_state& screenState, auto diagnosticsDataInserter)
 {
-  diagnosticsDataInserter = screenState.levelState->GetMouseDiagnostics();
+  diagnosticsDataInserter = screenState.GetMouseDiagnostics();
 }
 
 #endif

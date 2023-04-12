@@ -2,6 +2,7 @@
 #include "player_ship.h"
 #include "math.h"
 #include "event_player_shot.h"
+#include "event_player_dead.h"
 #include "game_constants.h"
 
 inline int shotTimeNumerator = 1;
@@ -102,9 +103,14 @@ auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
   return {};
 }
 
-auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
+auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, play_event_inserter playEventInserter) -> void
 {
   data->state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
+
+  if( data->state == dead )
+  {
+    playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDead };
+  }
 }
 
 [[nodiscard]] auto player_ship::Destroyed() const -> bool

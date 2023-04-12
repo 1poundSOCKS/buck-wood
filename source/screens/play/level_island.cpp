@@ -50,7 +50,7 @@ auto level_island::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F) const 
   return m_collisionEffect;
 }
 
-auto level_island::ApplyCollisionEffect(const collision_effect& effect) -> void
+auto level_island::ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
 {
 }
 
