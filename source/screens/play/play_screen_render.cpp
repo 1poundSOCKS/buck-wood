@@ -14,11 +14,7 @@ void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& scree
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  auto renderTargetSize = renderTarget->GetSize();
-
-  auto viewTransform = screenState.CreateViewTransform(renderTargetSize);
-
-  screenState.levelState->RenderTo(renderTarget, viewTransform);
+  screenState.levelState->RenderTo(renderTarget, screenState.m_viewTransform);
 
   renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 

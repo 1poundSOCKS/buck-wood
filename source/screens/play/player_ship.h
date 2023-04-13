@@ -11,7 +11,21 @@
 
 struct player_ship
 {
-  player_ship(int64_t counterFrequency, screen_render_brush_selector brushes);
+  enum state_type { alive, dead };
+
+  player_ship(screen_render_brush_selector brushes);
+
+  auto SetTickFrequency(int64_t tickFrequency) -> void;
+  auto SetPosition(float x, float y) -> void;
+  auto SetThruster(bool thrusterOn) -> void;
+  auto SetShoot(bool shoot) -> void;
+  auto SetAngle(float angle) -> void;
+  auto SetEventShot(std::function<void(bullet)> eventShot) -> void;
+
+  [[nodiscard]] auto GetXPos() const -> float;
+  [[nodiscard]] auto GetYPos() const -> float;
+  [[nodiscard]] auto GetState() const -> state_type;
+  [[nodiscard]] auto ThrusterOn() const -> bool;
 
   auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
@@ -51,8 +65,6 @@ struct player_ship
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) const -> bool;
 
-  enum state_type { alive, dead };
-
   struct data_type
   {
     state_type state = alive;
@@ -67,7 +79,7 @@ struct player_ship
 
     std::vector<game_point> points;
     std::vector<game_line> lines;
-    std::shared_ptr<player_control_state> controlState;
+    player_control_state controlState;
     winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
     winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
     std::function<void(bullet playerBullet)> eventShot;

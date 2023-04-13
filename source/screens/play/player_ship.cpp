@@ -8,14 +8,64 @@
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-player_ship::player_ship(int64_t tickFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
+player_ship::player_ship(screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
 {
   UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
   data->shipBrush->AddRef();
   data->thrusterBrush.attach(brushes[red]);
   data->thrusterBrush->AddRef();
+}
+
+auto player_ship::SetTickFrequency(int64_t tickFrequency) -> void
+{
   data->shotTimerInterval = ( tickFrequency * shotTimeNumerator ) / shotTimeDenominator;
+}
+
+auto player_ship::SetPosition(float x, float y) -> void
+{
+  data->xPos = x;
+  data->yPos = y;
+}
+
+auto player_ship::SetThruster(bool thrusterOn) -> void
+{
+  data->controlState.thrust = thrusterOn;
+}
+
+auto player_ship::SetShoot(bool shoot) -> void
+{
+  data->controlState.shoot = shoot;  
+}
+
+auto player_ship::SetAngle(float angle) -> void
+{
+  data->angle = angle;
+}
+
+auto player_ship::SetEventShot(std::function<void(bullet)> eventShot) -> void
+{
+  data->eventShot = eventShot;
+}
+
+[[nodiscard]] auto player_ship::GetXPos() const -> float
+{
+  return data->xPos;
+}
+
+[[nodiscard]] auto player_ship::GetYPos() const -> float
+{
+  return data->yPos;
+}
+
+[[nodiscard]] auto player_ship::GetState() const -> state_type
+{
+  return data->state;
+}
+
+[[nodiscard]] auto player_ship::ThrusterOn() const -> bool
+{
+  return data->thrusterOn;
 }
 
 auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
@@ -30,7 +80,7 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   float forceX = 0.0f;
   float forceY = forceOfGravity;
 
-  if( data->controlState->thrust )
+  if( data->controlState.thrust )
   {
     data->thrusterOn = true;
     forceX += playerThrust * sin(DEGTORAD(data->angle));
@@ -46,18 +96,18 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   data->xPos += data->xVelocity * gameUpdateInterval;
   data->yPos += data->yVelocity * gameUpdateInterval;
 
-  data->angle = CalculateAngle(data->xPos, data->yPos, data->controlState->mouseX, data->controlState->mouseY);
+  // data->angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
 
   UpdateShipGeometryData();
 
-  if( data->controlState->shoot && PlayerCanShoot(tickCount) )
+  if( data->controlState.shoot && PlayerCanShoot(tickCount) )
   {
     bullet newBullet { brushes };
     static const float bulletSpeed = 200.0f;
     static const float bulletRange = 2000.0f;
     newBullet.startX = newBullet.xPos = data->xPos;
     newBullet.startY = newBullet.yPos = data->yPos;
-    newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState->mouseX, data->controlState->mouseY);
+    newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
     newBullet.yVelocity = -bulletSpeed * cos(DEGTORAD(newBullet.angle));
     newBullet.xVelocity = bulletSpeed * sin(DEGTORAD(newBullet.angle));
     playEventInserter = event_player_shot { newBullet, data->eventShot };
