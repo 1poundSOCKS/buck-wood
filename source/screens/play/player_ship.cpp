@@ -43,7 +43,7 @@ auto player_ship::SetAngle(float angle) -> void
   data->angle = angle;
 }
 
-auto player_ship::SetEventShot(std::function<void(bullet)> eventShot) -> void
+auto player_ship::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
   data->eventShot = eventShot;
 }
@@ -102,15 +102,15 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
 
   if( data->controlState.shoot && PlayerCanShoot(tickCount) )
   {
-    bullet newBullet { brushes };
-    static const float bulletSpeed = 200.0f;
-    static const float bulletRange = 2000.0f;
-    newBullet.startX = newBullet.xPos = data->xPos;
-    newBullet.startY = newBullet.yPos = data->yPos;
-    newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
-    newBullet.yVelocity = -bulletSpeed * cos(DEGTORAD(newBullet.angle));
-    newBullet.xVelocity = bulletSpeed * sin(DEGTORAD(newBullet.angle));
-    playEventInserter = event_player_shot { newBullet, data->eventShot };
+    // bullet newBullet { brushes };
+    // static const float bulletSpeed = 200.0f;
+    // static const float bulletRange = 2000.0f;
+    // newBullet.startX = newBullet.xPos = data->xPos;
+    // newBullet.startY = newBullet.yPos = data->yPos;
+    // newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
+    // newBullet.yVelocity = -bulletSpeed * cos(DEGTORAD(newBullet.angle));
+    // newBullet.xVelocity = bulletSpeed * sin(DEGTORAD(newBullet.angle));
+    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle, data->eventShot };
   }
 }
 
@@ -157,10 +157,10 @@ auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, 
 {
   data->state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
 
-  if( data->state == dead )
-  {
-    playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDead };
-  }
+  // if( data->state == dead )
+  // {
+  //   playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDead };
+  // }
 }
 
 [[nodiscard]] auto player_ship::Destroyed() const -> bool

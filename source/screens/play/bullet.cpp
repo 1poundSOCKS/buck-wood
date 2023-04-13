@@ -7,8 +7,14 @@ constexpr D2D1_RECT_F GetBulletRect()
   return { -4, -4, 4, 4 };
 }
 
-bullet::bullet(screen_render_brush_selector brushes)
+bullet::bullet(float x, float y, float angle, screen_render_brush_selector brushes) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
 {
+  static const float bulletSpeed = 500.0f;
+  static const float bulletRange = 2000.0f;
+  
+  yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
+  xVelocity = bulletSpeed * sin(DEGTORAD(angle));
+
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
 
   brush.attach(brushes[green]);
@@ -22,15 +28,6 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   yPos += ( yVelocity * updateInterval );
 
   destroyed = HasExpired();
-}
-
-[[nodiscard]] auto bullet::HasCollided(float x, float y) const -> bool
-{
-  return false;
-}
-
-auto bullet::HitByBullet() -> void
-{
 }
 
 [[nodiscard]] auto bullet::LevelIsComplete() const -> bool

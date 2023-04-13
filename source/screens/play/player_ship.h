@@ -20,7 +20,7 @@ struct player_ship
   auto SetThruster(bool thrusterOn) -> void;
   auto SetShoot(bool shoot) -> void;
   auto SetAngle(float angle) -> void;
-  auto SetEventShot(std::function<void(bullet)> eventShot) -> void;
+  auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
 
   [[nodiscard]] auto GetXPos() const -> float;
   [[nodiscard]] auto GetYPos() const -> float;
@@ -82,8 +82,8 @@ struct player_ship
     player_control_state controlState;
     winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
     winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
-    std::function<void(bullet playerBullet)> eventShot;
-    std::function<void(float,float)> eventDead;
+    std::function<void(float,float,float)> eventShot;
+    // std::function<void(float,float)> eventDead;
   };
 
   screen_render_brush_selector brushes;

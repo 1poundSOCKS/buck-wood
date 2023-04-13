@@ -87,7 +87,7 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
     screenState.mouseX = outPoint.x;
     screenState.mouseY = outPoint.y;
 
-    auto playerAngle = CalculateAngle(screenState.player.GetXPos(), screenState.player.GetXPos(), outPoint.x, outPoint.y);
+    auto playerAngle = CalculateAngle(screenState.player.GetXPos(), screenState.player.GetYPos(), outPoint.x, outPoint.y);
     screenState.player.SetAngle(playerAngle);
 
     D2D1_POINT_2F screenTopLeft { 0, 0 };
@@ -256,17 +256,14 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
 
   auto activeObjectInserter = levelState->GetActiveObjectInserter();
 
-  player.SetEventShot([this, activeObjectInserter](bullet newBullet) -> void
+  player.SetEventShot([this](float x, float y, float angle) -> void
   {
-    // activeObjectInserter = active_object { newBullet };
-    // this->playerShot = true;
-    std::cout << "player shot\n";
+    screen_render_brush_selector renderBrushSelector { renderData.renderBrushes };
+    bullet newBullet { x, y, angle, renderBrushSelector };
+    auto activeObjectInserter = this->levelState->GetActiveObjectInserter();
+    activeObjectInserter = newBullet;
+    playerShot = true;
   });
-
-  // playerData->eventDead = [activeObjectInserter](float x, float y) -> void
-  // {
-  //   std::cout << "player died\n";
-  // };
 
   activeObjectInserter = player;
 }

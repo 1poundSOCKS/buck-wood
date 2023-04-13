@@ -4,15 +4,17 @@
 
 struct event_player_shot
 {
-  event_player_shot(bullet newBullet, std::function<void(bullet)> event) : newBullet(newBullet), event(event)
+  event_player_shot(float x, float y, float angle, std::function<void(float,float,float)> event) : x(x), y(y), angle(angle), event(event)
   {
   }
 
   auto Trigger() const -> void
   {
-    event(newBullet);
+    event(x, y, angle);
   }
 
-  bullet newBullet;
-  std::function<void(bullet)> event;
+  float x = 0;
+  float y = 0;
+  float angle = 0;
+  std::function<void(float,float,float)> event;
 };
