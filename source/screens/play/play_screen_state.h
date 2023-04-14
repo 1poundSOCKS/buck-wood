@@ -17,11 +17,16 @@ struct play_screen_state
   );
 
   auto LoadLevel(const game_level_data& levelData) -> void;
+  auto UpdateLevelState(const screen_input_state& inputState) -> void;
   auto AddPlayer(float x, float y) -> void;
   [[nodiscard]] auto CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0) -> D2D1::Matrix3x2F;
   [[nodiscard]] auto PlayerIsDead() -> bool;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
+  
+  [[nodiscard]] auto TimedOut() const -> bool;
+  [[nodiscard]] auto GetPlayTimeRemaining() const -> int64_t;
+  [[nodiscard]] auto GetPlayTimeRemainingInSeconds() const -> float;
 
   const screen_render_data renderData;
   const sound_data soundData;
@@ -44,6 +49,7 @@ struct play_screen_state
   D2D1::Matrix3x2F m_viewTransform;
 
   std::unique_ptr<level_state> levelState;
+  int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
   player_ship player;

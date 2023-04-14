@@ -78,7 +78,7 @@ void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& 
   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
 
-  float levelTimeRemaining = screenState.levelState->GetPlayTimeRemainingInSeconds();
+  float levelTimeRemaining = screenState.GetPlayTimeRemainingInSeconds();
   
   std::wstring timerText = std::format(L"{:.2f}", levelTimeRemaining);
   RenderText(

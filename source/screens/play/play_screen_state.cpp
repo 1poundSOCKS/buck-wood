@@ -30,7 +30,7 @@ play_screen_state::play_screen_state(
 
   player.SetTickFrequency(timer.frequency);
   
-  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency, renderData);
+  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
   levelStart = this->timer.initialValue;
 
   auto& gameLevelData = **currentLevelDataIterator;
@@ -51,11 +51,12 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
   }
   else if( ScreenTransitionTimeHasExpired(screenState) )
   {
+    screenState.UpdateLevelState(inputState);
     OnGameRunning(screenState, inputState);
   }
   else
   {
-    screenState.levelState->Update(screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
+    screenState.UpdateLevelState(inputState);
   }
 }
 
@@ -72,39 +73,44 @@ void OnGamePaused(play_screen_state& screenState, const screen_input_state& inpu
   }
 }
 
-void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState)
+auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
-  screenState.player.SetThruster(levelControlState.thrust);
-  screenState.player.SetShoot(levelControlState.shoot);
+  player.SetThruster(levelControlState.thrust);
+  player.SetShoot(levelControlState.shoot);
 
-  auto invertedViewTransform = screenState.CreateViewTransform(levelControlState.renderTargetMouseData.size);
+  levelState->Update(timer.currentValue - levelStart - pauseTotal);
+  
+  auto invertedViewTransform = CreateViewTransform(levelControlState.renderTargetMouseData.size);
   if( invertedViewTransform.Invert() )
   {
     D2D1_POINT_2F inPoint { levelControlState.renderTargetMouseData.x, levelControlState.renderTargetMouseData.y };
     auto outPoint = invertedViewTransform.TransformPoint(inPoint);
 
-    screenState.mouseX = outPoint.x;
-    screenState.mouseY = outPoint.y;
+    mouseX = outPoint.x;
+    mouseY = outPoint.y;
 
-    auto playerAngle = CalculateAngle(screenState.player.GetXPos(), screenState.player.GetYPos(), outPoint.x, outPoint.y);
-    screenState.player.SetAngle(playerAngle);
+    auto playerAngle = CalculateAngle(player.GetXPos(), player.GetYPos(), outPoint.x, outPoint.y);
+    player.SetAngle(playerAngle);
 
     D2D1_POINT_2F screenTopLeft { 0, 0 };
     D2D1_POINT_2F screenBottomRight { levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 };
     auto viewTopLeft = invertedViewTransform.TransformPoint(screenTopLeft);
     auto viewBottomRight = invertedViewTransform.TransformPoint(screenBottomRight);
-    screenState.m_viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
-    screenState.m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
+    m_viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
+    m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
+}
 
+void OnGameRunning(play_screen_state& screenState, const screen_input_state& inputState)
+{
   if( screenState.mode == play_screen_state::playing )
   {
     OnGamePlaying(screenState, inputState);
   }
   else if( screenState.mode == play_screen_state::level_complete )
   {
-    screenState.levelTimes.push_back(screenState.levelState->GetPlayTimeRemainingInSeconds());
+    screenState.levelTimes.push_back(screenState.GetPlayTimeRemainingInSeconds());
     
     if( AllLevelsAreComplete(screenState) )
     {
@@ -124,7 +130,6 @@ void OnGameRunning(play_screen_state& screenState, const screen_input_state& inp
   else if( screenState.mode == play_screen_state::player_dead )
   {
     screenState.continueRunning = false;
-    screenState.levelState->Update(screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
   }
 }
 
@@ -139,7 +144,7 @@ void OnGamePlaying(play_screen_state& screenState, const screen_input_state& inp
   {
     screenState.levelState->Update(screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
 
-    if( screenState.levelState->TimedOut() )
+    if( screenState.TimedOut() )
     {
       screenState.mode = play_screen_state::player_dead;
       SetScreenTransitionDelay(screenState, 3);
@@ -169,7 +174,7 @@ void SetScreenTransitionDelay(play_screen_state& screenState, int timeInSeconds)
 
 void OnPlay(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  if( screenState.levelState->GetPlayTimeRemaining() > 0 )
+  if( screenState.GetPlayTimeRemaining() > 0 )
   {
     screenState.levelState->Update(screenState.timer.currentValue - screenState.levelStart - screenState.pauseTotal);
 
@@ -201,7 +206,7 @@ void LoadNextLevel(play_screen_state& screenState)
   auto nextLevel = std::next(screenState.currentLevelDataIterator);
   assert(nextLevel != screenState.endLevelDataIterator);
   screenState.currentLevelDataIterator = nextLevel;
-  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency, screenState.renderData);
+  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
   const game_level_data& gameLevelData = **screenState.currentLevelDataIterator;
   screenState.LoadLevel(gameLevelData);
   screenState.levelStart = screenState.timer.currentValue;
@@ -246,6 +251,9 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
   std::copy(targets.cbegin(), targets.cend(), levelState->GetActiveObjectInserter());
 
   AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
+
+  levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
+  pauseTotal = 0;
 }
 
 auto play_screen_state::AddPlayer(float x, float y) -> void
@@ -299,6 +307,22 @@ auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& sou
     ResetSoundBuffer(soundBuffers[shoot]);
     PlaySoundBuffer(soundBuffers[target_activated]);
   }
+}
+
+[[nodiscard]] auto play_screen_state::TimedOut() const -> bool
+{
+  return GetPlayTimeRemaining() > 0 ? false : true;
+}
+
+[[nodiscard]] auto play_screen_state::GetPlayTimeRemaining() const -> int64_t
+{
+  int64_t playTimeRemaining = levelTimeLimit - (timer.currentValue - timer.initialValue) - pauseTotal;
+  return max(0, playTimeRemaining);
+}
+
+[[nodiscard]] auto play_screen_state::GetPlayTimeRemainingInSeconds() const -> float
+{
+  return static_cast<float>(GetPlayTimeRemaining()) / static_cast<float>(timer.frequency);
 }
 
 [[nodiscard]] auto play_screen_state::GetMouseDiagnostics() const -> std::wstring
