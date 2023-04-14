@@ -9,18 +9,20 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
-struct player_ship
+class player_ship
 {
+public:
+
   enum state_type { alive, dead };
 
-  player_ship(screen_render_brush_selector brushes);
+  player_ship(int64_t tickFrequency, screen_render_brush_selector brushes);
 
-  auto SetTickFrequency(int64_t tickFrequency) -> void;
   auto SetPosition(float x, float y) -> void;
   auto SetThruster(bool thrusterOn) -> void;
   auto SetShoot(bool shoot) -> void;
   auto SetAngle(float angle) -> void;
   auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
+  auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
 
   [[nodiscard]] auto GetXPos() const -> float;
   [[nodiscard]] auto GetYPos() const -> float;
@@ -35,6 +37,8 @@ struct player_ship
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
+
+private:
 
   void UpdateShipGeometryData();
 
@@ -83,7 +87,7 @@ struct player_ship
     winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
     winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
     std::function<void(float,float,float)> eventShot;
-    // std::function<void(float,float)> eventDead;
+    std::function<void(float,float)> eventDied;
   };
 
   screen_render_brush_selector brushes;

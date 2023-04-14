@@ -3,10 +3,8 @@
 #include "game_objects.h"
 #include "game_constants.h"
 
-level_state::level_state(const game_level_data& levelData, int64_t counterFrequency) : 
-  levelData(levelData), counterFrequency(counterFrequency)
+level_state::level_state(int64_t counterFrequency) : counterFrequency(counterFrequency)
 {
-  // levelTimeLimit = levelData.timeLimitInSeconds * counterFrequency;
 }
 
 [[nodiscard]] auto level_state::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>

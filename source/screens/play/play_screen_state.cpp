@@ -22,19 +22,13 @@ play_screen_state::play_screen_state(
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator),
   renderData(renderData),
-  soundData(soundData),
-  player({renderData.renderBrushes})
+  soundData(soundData)
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
-
-  player.SetTickFrequency(timer.frequency);
-  
-  levelState = std::make_unique<level_state>(**currentLevelDataIterator, this->timer.frequency);
   levelStart = this->timer.initialValue;
 
-  auto& gameLevelData = **currentLevelDataIterator;
-  LoadLevel(gameLevelData);
+  LoadLevel(**currentLevelDataIterator);
 
   mode = playing;
 }
@@ -76,8 +70,8 @@ void OnGamePaused(play_screen_state& screenState, const screen_input_state& inpu
 auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
-  player.SetThruster(levelControlState.thrust);
-  player.SetShoot(levelControlState.shoot);
+  player->SetThruster(levelControlState.thrust);
+  player->SetShoot(levelControlState.shoot);
 
   levelState->Update(timer.currentValue - levelStart - pauseTotal);
   
@@ -90,8 +84,8 @@ auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -
     mouseX = outPoint.x;
     mouseY = outPoint.y;
 
-    auto playerAngle = CalculateAngle(player.GetXPos(), player.GetYPos(), outPoint.x, outPoint.y);
-    player.SetAngle(playerAngle);
+    auto playerAngle = CalculateAngle(player->GetXPos(), player->GetYPos(), outPoint.x, outPoint.y);
+    player->SetAngle(playerAngle);
 
     D2D1_POINT_2F screenTopLeft { 0, 0 };
     D2D1_POINT_2F screenBottomRight { levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 };
@@ -206,7 +200,6 @@ void LoadNextLevel(play_screen_state& screenState)
   auto nextLevel = std::next(screenState.currentLevelDataIterator);
   assert(nextLevel != screenState.endLevelDataIterator);
   screenState.currentLevelDataIterator = nextLevel;
-  screenState.levelState = std::make_unique<level_state>(**screenState.currentLevelDataIterator, screenState.timer.frequency);
   const game_level_data& gameLevelData = **screenState.currentLevelDataIterator;
   screenState.LoadLevel(gameLevelData);
   screenState.levelStart = screenState.timer.currentValue;
@@ -229,6 +222,8 @@ level_control_state GetLevelControlState(const screen_input_state& inputState)
 
 auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
 {
+  levelState = std::make_unique<level_state>(timer.frequency);
+
   screen_render_brush_selector brushSelector { renderData.renderBrushes };
 
   std::vector<game_closed_object> levelObjects;
@@ -253,18 +248,15 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
   AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
 
   levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
-  pauseTotal = 0;
 }
 
 auto play_screen_state::AddPlayer(float x, float y) -> void
 {
   screen_render_brush_selector brushSelector { renderData.renderBrushes };
+  player = std::make_unique<player_ship>(timer.frequency, brushSelector);
+  player->SetPosition(x, y);
 
-  player.SetPosition(x, y);
-
-  auto activeObjectInserter = levelState->GetActiveObjectInserter();
-
-  player.SetEventShot([this](float x, float y, float angle) -> void
+  player->SetEventShot([this](float x, float y, float angle) -> void
   {
     screen_render_brush_selector renderBrushSelector { renderData.renderBrushes };
     bullet newBullet { x, y, angle, renderBrushSelector };
@@ -273,25 +265,30 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
     playerShot = true;
   });
 
-  activeObjectInserter = player;
+  player->SetEventDied([this](float x, float y) -> void
+  {
+  });
+
+  auto activeObjectInserter = levelState->GetActiveObjectInserter();
+  activeObjectInserter = *player;
 }
 
 [[nodiscard]] auto play_screen_state::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F
 {
-  m_viewTransform = CreateGameLevelTransform(player.GetXPos(), player.GetYPos(), renderScale, renderTargetSize.width, renderTargetSize.height);
+  m_viewTransform = CreateGameLevelTransform(player->GetXPos(), player->GetYPos(), renderScale, renderTargetSize.width, renderTargetSize.height);
   return m_viewTransform;
 }
 
 [[nodiscard]] auto play_screen_state::PlayerIsDead() -> bool
 {
-  return player.GetState() == player_ship::dead;
+  return player->GetState() == player_ship::dead;
 }
 
 auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
 {
   PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-  if( player.ThrusterOn() )
+  if( player->ThrusterOn() )
     PlaySoundBuffer(soundBuffers[thrust], true);
   else
     StopSoundBufferPlay(soundBuffers[thrust]);

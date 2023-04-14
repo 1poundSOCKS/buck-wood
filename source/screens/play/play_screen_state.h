@@ -32,6 +32,7 @@ struct play_screen_state
   const sound_data soundData;
 
   performance_counter::data timer = { 0, 0, 0 };
+  
   int64_t pauseStart = 0;
   int64_t pauseTotal = 0;
   int64_t levelStart = 0;
@@ -52,7 +53,7 @@ struct play_screen_state
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
-  player_ship player;
+  std::unique_ptr<player_ship> player;
 
   float mouseX = 0;
   float mouseY = 0;

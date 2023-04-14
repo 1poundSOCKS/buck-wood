@@ -8,18 +8,14 @@
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-player_ship::player_ship(screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
+player_ship::player_ship(int64_t tickFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
 {
+  data->shotTimerInterval = ( tickFrequency * shotTimeNumerator ) / shotTimeDenominator;
   UpdateShipGeometryData();
   data->shipBrush.attach(brushes[white]);
   data->shipBrush->AddRef();
   data->thrusterBrush.attach(brushes[red]);
   data->thrusterBrush->AddRef();
-}
-
-auto player_ship::SetTickFrequency(int64_t tickFrequency) -> void
-{
-  data->shotTimerInterval = ( tickFrequency * shotTimeNumerator ) / shotTimeDenominator;
 }
 
 auto player_ship::SetPosition(float x, float y) -> void
@@ -46,6 +42,11 @@ auto player_ship::SetAngle(float angle) -> void
 auto player_ship::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
   data->eventShot = eventShot;
+}
+
+auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> void
+{
+  data->eventDied = eventDied;
 }
 
 [[nodiscard]] auto player_ship::GetXPos() const -> float
@@ -96,20 +97,10 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   data->xPos += data->xVelocity * gameUpdateInterval;
   data->yPos += data->yVelocity * gameUpdateInterval;
 
-  // data->angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
-
   UpdateShipGeometryData();
 
   if( data->controlState.shoot && PlayerCanShoot(tickCount) )
   {
-    // bullet newBullet { brushes };
-    // static const float bulletSpeed = 200.0f;
-    // static const float bulletRange = 2000.0f;
-    // newBullet.startX = newBullet.xPos = data->xPos;
-    // newBullet.startY = newBullet.yPos = data->yPos;
-    // newBullet.angle = CalculateAngle(data->xPos, data->yPos, data->controlState.mouseX, data->controlState.mouseY);
-    // newBullet.yVelocity = -bulletSpeed * cos(DEGTORAD(newBullet.angle));
-    // newBullet.xVelocity = bulletSpeed * sin(DEGTORAD(newBullet.angle));
     playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle, data->eventShot };
   }
 }
@@ -157,10 +148,10 @@ auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, 
 {
   data->state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
 
-  // if( data->state == dead )
-  // {
-  //   playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDead };
-  // }
+  if( data->state == dead )
+  {
+    playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDied };
+  }
 }
 
 [[nodiscard]] auto player_ship::Destroyed() const -> bool

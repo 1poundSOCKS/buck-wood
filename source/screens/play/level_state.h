@@ -22,22 +22,18 @@ public:
 
   using active_object_collection_type = std::list<active_object>;
 
-  level_state(const game_level_data& levelData, int64_t counterFrequency);
-
+  level_state(int64_t counterFrequency);
   [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
-
   auto Update(int64_t counterValue) -> void;
   auto RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> void;
-
   [[nodiscard]] auto IsComplete() -> bool;
   [[nodiscard]] auto GetUpdateInterval() -> float;
 
 private:
+
   [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> D2D1_RECT_F;
 
-  const game_level_data& levelData;
-  const int64_t counterFrequency;
-  // int64_t levelTimeLimit;
+  const int64_t counterFrequency = 0;
   int64_t currentTimerCount = 0;
   int64_t previousTimerCount = 0;
   active_object_collection_type m_activeObjects;
