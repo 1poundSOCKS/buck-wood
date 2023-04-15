@@ -6,6 +6,18 @@
 #include "level_state.h"
 #include "timers.h"
 #include "sound_data.h"
+#include "player_ship.h"
+#include "bullet.h"
+#include "screen_input_state.h"
+#include "screen_render_data.h"
+#include "level_control_state.h"
+#include "area_grid.h"
+#include "explosion.h"
+#include "level_target.h"
+#include "level_island.h"
+#include "sound_data.h"
+#include "game_level_data.h"
+#include "level_timer.h"
 
 struct play_screen_state
 {
@@ -20,13 +32,12 @@ struct play_screen_state
   auto UpdateLevelState(const screen_input_state& inputState) -> void;
   auto AddPlayer(float x, float y) -> void;
   [[nodiscard]] auto CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0) -> D2D1::Matrix3x2F;
-  [[nodiscard]] auto PlayerIsDead() -> bool;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
   
-  [[nodiscard]] auto TimedOut() const -> bool;
-  [[nodiscard]] auto GetPlayTimeRemaining() const -> int64_t;
-  [[nodiscard]] auto GetPlayTimeRemainingInSeconds() const -> float;
+  // [[nodiscard]] auto TimedOut() const -> bool;
+  // [[nodiscard]] auto GetPlayTimeRemaining() const -> int64_t;
+  // [[nodiscard]] auto GetPlayTimeRemainingInSeconds() const -> float;
 
   void OnGamePaused(const screen_input_state& inputState);
   void OnGameRunning(const screen_input_state& inputState);
@@ -62,6 +73,7 @@ struct play_screen_state
   std::vector<float> levelTimes;
 
   std::unique_ptr<player_ship> player;
+  std::unique_ptr<level_timer> m_levelTimer;
 
   float mouseX = 0;
   float mouseY = 0;

@@ -12,6 +12,11 @@ level_state::level_state(int64_t counterFrequency) : counterFrequency(counterFre
   return std::back_inserter(m_activeObjects);
 }
 
+[[nodiscard]] auto level_state::GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>
+{
+  return std::back_inserter(m_overlayObjects);
+}
+
 [[nodiscard]] auto level_state::IsComplete() -> bool
 {
   int total = std::reduce(m_activeObjects.cbegin(), m_activeObjects.cend(), 0, [](auto count, const active_object& object)
@@ -56,6 +61,11 @@ auto level_state::Update(int64_t counterValue) -> void
   {
     object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
   }
+
+  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
+  {
+    object.Update(this->counterFrequency, this->currentTimerCount - this->previousTimerCount);
+  });
 }
 
 float level_state::GetUpdateInterval()
@@ -73,6 +83,13 @@ auto level_state::RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x
   std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [renderTarget, viewRect](const auto& object)
   {
     object.RenderTo(renderTarget, viewRect);
+  });
+
+  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [renderTarget](const auto& object)
+  {
+    object.RenderTo(renderTarget);
   });
 }
 

@@ -56,7 +56,8 @@ void play_screen_state::OnGameRunning(const screen_input_state& inputState)
   }
   else if( mode == level_complete )
   {
-    levelTimes.push_back(GetPlayTimeRemainingInSeconds());
+    // levelTimes.push_back(GetPlayTimeRemainingInSeconds());
+    levelTimes.push_back(m_levelTimer->GetTimeRemainingInSeconds());
     
     if( AllLevelsAreComplete() )
     {
@@ -90,19 +91,21 @@ void play_screen_state::OnGamePlaying(const screen_input_state& inputState)
   {
     levelState->Update(timer.currentValue - levelStart - pauseTotal);
 
-    if( TimedOut() )
+    if( m_levelTimer->HasExpired() )
     {
       mode = player_dead;
       SetScreenTransitionDelay(3);
     }
     else if( levelState->IsComplete() )
     {
+      m_levelTimer->Stop();
       mode = level_complete;
       SetScreenTransitionDelay(3);
     }
-    else if( PlayerIsDead() )
+    else if( player->GetState() == player_ship::dead )
     {
       mode = player_dead;
+      m_levelTimer->Stop();
       SetScreenTransitionDelay(3);
     }
   }
@@ -190,23 +193,24 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
 {
   levelState = std::make_unique<level_state>(timer.frequency);
 
-  screen_render_brush_selector brushSelector { renderData.renderBrushes };
+  screen_render_brush_selector brushes { renderData.renderBrushes };
+  screen_render_text_format_selector textFormats { renderData.textFormats };
 
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [brushSelector](const auto& object) -> level_island
+  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [brushes](const auto& object) -> level_island
   {
-    return { object, brushSelector };
+    return { object, brushes };
   });
   
   std::copy(islands.cbegin(), islands.cend(), levelState->GetActiveObjectInserter());
 
   std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [brushSelector](const auto& target) -> target_state
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [brushes](const auto& target) -> target_state
   {
-    return { target, brushSelector };
+    return { target, brushes };
   });
 
   std::copy(targets.cbegin(), targets.cend(), levelState->GetActiveObjectInserter());
@@ -214,6 +218,9 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
   AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
 
   levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
+
+  m_levelTimer = std::make_unique<level_timer>(brushes, textFormats, levelData.timeLimitInSeconds);
+  levelState->GetOverlayObjectInserter() = *m_levelTimer;
 }
 
 auto play_screen_state::AddPlayer(float x, float y) -> void
@@ -245,11 +252,6 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
   return m_viewTransform;
 }
 
-[[nodiscard]] auto play_screen_state::PlayerIsDead() -> bool
-{
-  return player->GetState() == player_ship::dead;
-}
-
 auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
 {
   PlaySoundBuffer(soundBuffers[menu_theme], true);
@@ -272,21 +274,21 @@ auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& sou
   }
 }
 
-[[nodiscard]] auto play_screen_state::TimedOut() const -> bool
-{
-  return GetPlayTimeRemaining() > 0 ? false : true;
-}
+// [[nodiscard]] auto play_screen_state::TimedOut() const -> bool
+// {
+//   return GetPlayTimeRemaining() > 0 ? false : true;
+// }
 
-[[nodiscard]] auto play_screen_state::GetPlayTimeRemaining() const -> int64_t
-{
-  int64_t playTimeRemaining = levelTimeLimit - (timer.currentValue - timer.initialValue) - pauseTotal;
-  return max(0, playTimeRemaining);
-}
+// [[nodiscard]] auto play_screen_state::GetPlayTimeRemaining() const -> int64_t
+// {
+//   int64_t playTimeRemaining = levelTimeLimit - (timer.currentValue - timer.initialValue) - pauseTotal;
+//   return max(0, playTimeRemaining);
+// }
 
-[[nodiscard]] auto play_screen_state::GetPlayTimeRemainingInSeconds() const -> float
-{
-  return static_cast<float>(GetPlayTimeRemaining()) / static_cast<float>(timer.frequency);
-}
+// [[nodiscard]] auto play_screen_state::GetPlayTimeRemainingInSeconds() const -> float
+// {
+//   return static_cast<float>(GetPlayTimeRemaining()) / static_cast<float>(timer.frequency);
+// }
 
 [[nodiscard]] auto play_screen_state::GetMouseDiagnostics() const -> std::wstring
 {
