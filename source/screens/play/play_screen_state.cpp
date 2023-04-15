@@ -56,7 +56,6 @@ void play_screen_state::OnGameRunning(const screen_input_state& inputState)
   }
   else if( mode == level_complete )
   {
-    // levelTimes.push_back(GetPlayTimeRemainingInSeconds());
     levelTimes.push_back(m_levelTimer->GetTimeRemainingInSeconds());
     
     if( AllLevelsAreComplete() )
@@ -273,22 +272,6 @@ auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& sou
     PlaySoundBuffer(soundBuffers[target_activated]);
   }
 }
-
-// [[nodiscard]] auto play_screen_state::TimedOut() const -> bool
-// {
-//   return GetPlayTimeRemaining() > 0 ? false : true;
-// }
-
-// [[nodiscard]] auto play_screen_state::GetPlayTimeRemaining() const -> int64_t
-// {
-//   int64_t playTimeRemaining = levelTimeLimit - (timer.currentValue - timer.initialValue) - pauseTotal;
-//   return max(0, playTimeRemaining);
-// }
-
-// [[nodiscard]] auto play_screen_state::GetPlayTimeRemainingInSeconds() const -> float
-// {
-//   return static_cast<float>(GetPlayTimeRemaining()) / static_cast<float>(timer.frequency);
-// }
 
 [[nodiscard]] auto play_screen_state::GetMouseDiagnostics() const -> std::wstring
 {

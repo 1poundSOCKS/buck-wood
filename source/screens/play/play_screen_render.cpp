@@ -71,23 +71,6 @@ void RenderScreenStateText(ID2D1RenderTarget* renderTarget, const play_screen_st
   }
 }
 
-// void RenderLevelTimer(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState, const screen_render_data& renderData)
-// {
-//   const auto renderBrushSelector = screen_render_brush_selector { renderData.renderBrushes };
-//   const auto textFormatSelector = screen_render_text_format_selector { renderData.textFormats };
-
-//   float levelTimeRemaining = screenState.GetPlayTimeRemainingInSeconds();
-  
-//   std::wstring timerText = std::format(L"{:.2f}", levelTimeRemaining);
-//   RenderText(
-//     renderTarget, 
-//     renderBrushSelector[yellow], 
-//     textFormatSelector[srtf_play_screen_timer], 
-//     timerText, 
-//     DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
-//     DWRITE_TEXT_ALIGNMENT_TRAILING);
-// }
-
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
 {
   std::wstring msg;

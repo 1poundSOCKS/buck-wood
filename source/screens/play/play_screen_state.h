@@ -35,10 +35,6 @@ struct play_screen_state
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
   
-  // [[nodiscard]] auto TimedOut() const -> bool;
-  // [[nodiscard]] auto GetPlayTimeRemaining() const -> int64_t;
-  // [[nodiscard]] auto GetPlayTimeRemainingInSeconds() const -> float;
-
   void OnGamePaused(const screen_input_state& inputState);
   void OnGameRunning(const screen_input_state& inputState);
   void OnGamePlaying(const screen_input_state& inputState);
