@@ -28,6 +28,14 @@ struct play_screen_state
   [[nodiscard]] auto GetPlayTimeRemaining() const -> int64_t;
   [[nodiscard]] auto GetPlayTimeRemainingInSeconds() const -> float;
 
+  void OnGamePaused(const screen_input_state& inputState);
+  void OnGameRunning(const screen_input_state& inputState);
+  void OnGamePlaying(const screen_input_state& inputState);
+  bool AllLevelsAreComplete();
+  void LoadNextLevel();
+  bool ScreenTransitionTimeHasExpired();
+  void SetScreenTransitionDelay(int timeInSeconds);
+
   const screen_render_data renderData;
   const sound_data soundData;
 
