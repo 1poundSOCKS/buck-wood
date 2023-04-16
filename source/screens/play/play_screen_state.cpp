@@ -8,55 +8,27 @@ level_control_state GetLevelControlState(const screen_input_state& inputState);
 
 void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState)
 {
-  screenState.timer.currentValue = performance_counter::QueryValue();
-  screenState.renderTargetMouseData = inputState.renderTargetMouseData;
-  screenState.playerShot = screenState.targetShot = false;
-
-  screenState.UpdateMouseCursorPosition();
-
-  if( screenState.m_levelState->GetState() == level_state::paused )
-  {
-    screenState.OnGamePaused(inputState);
-  }
-  else
-  {
-    screenState.UpdateLevelState(inputState);
-
-    if( screenState.ScreenTransitionTimeHasExpired() )
-      screenState.OnGameRunning(inputState);
-  }
+  screenState.Update(inputState);
 }
 
 void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
 {
-  auto renderData = screenState.renderData;
-  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  screenState.m_levelObjectContainer->RenderTo(renderTarget, screenState.m_viewTransform);
+  screenState.RenderTo(renderTarget);
 }
 
 bool ContinueRunning(const play_screen_state& screenState)
 {
-  return screenState.continueRunning;
+  return screenState.ContinueRunning();
 }
 
 void PlaySoundEffects(const play_screen_state& screenState)
 {
-  const auto soundBuffers = global_sound_buffer_selector { screenState.soundData.soundBuffers };
-
-  if( screenState.m_levelState->GetState() == level_state::playing )
-  {
-    screenState.PlaySoundEffects(soundBuffers);
-  }
-  else
-  {
-    StopSoundBufferPlay(soundBuffers[menu_theme]);
-    StopSoundBufferPlay(soundBuffers[thrust]);
-  }
+  screenState.PlaySoundEffects();
 }
 
 void FormatDiagnostics(const play_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter)
 {
-  diagnosticsDataInserter = screenState.GetMouseDiagnostics();
+  screenState.FormatDiagnostics(diagnosticsDataInserter);
 }
 
 play_screen_state::play_screen_state(game_level_data_index::const_iterator currentLevelDataIterator, 
@@ -70,6 +42,58 @@ play_screen_state::play_screen_state(game_level_data_index::const_iterator curre
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   levelStart = this->timer.initialValue;
   LoadLevel(**currentLevelDataIterator);
+}
+
+auto play_screen_state::Update(const screen_input_state& inputState) -> void
+{
+  timer.currentValue = performance_counter::QueryValue();
+  renderTargetMouseData = inputState.renderTargetMouseData;
+  playerShot = targetShot = false;
+
+  UpdateMouseCursorPosition();
+
+  if( m_levelState->GetState() == level_state::paused )
+  {
+    OnGamePaused(inputState);
+  }
+  else
+  {
+    UpdateLevelState(inputState);
+
+    if( ScreenTransitionTimeHasExpired() )
+      OnGameRunning(inputState);
+  }
+}
+
+auto play_screen_state::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+{
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  m_levelObjectContainer->RenderTo(renderTarget, m_viewTransform);
+}
+
+auto play_screen_state::PlaySoundEffects() const -> void
+{
+  const auto soundBuffers = global_sound_buffer_selector { soundData.soundBuffers };
+
+  if( m_levelState->GetState() == level_state::playing )
+  {
+    PlaySoundEffects(soundBuffers);
+  }
+  else
+  {
+    StopSoundBufferPlay(soundBuffers[menu_theme]);
+    StopSoundBufferPlay(soundBuffers[thrust]);
+  }
+}
+
+auto play_screen_state::ContinueRunning() const -> bool
+{
+  return continueRunning;
+}
+
+auto play_screen_state::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
+{
+  diagnosticsDataInserter = GetMouseDiagnostics();
 }
 
 void play_screen_state::OnGameRunning(const screen_input_state& inputState)

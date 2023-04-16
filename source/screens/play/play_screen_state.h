@@ -22,14 +22,24 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 
-struct play_screen_state
+class play_screen_state
 {
+public:
+
   play_screen_state(
     game_level_data_index::const_iterator currentLevelDataIterator, 
     game_level_data_index::const_iterator endLevelDataIterator,
     const screen_render_data& renderData,
     const sound_data& bespokeSoundData
   );
+
+  auto Update(const screen_input_state& inputState) -> void;
+  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
+  auto PlaySoundEffects() const -> void;
+  auto ContinueRunning() const -> bool;
+  auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
+
+private:
 
   auto UpdateMouseCursorPosition() -> void;
   auto LoadLevel(const game_level_data& levelData) -> void;
