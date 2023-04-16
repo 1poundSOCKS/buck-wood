@@ -12,6 +12,8 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
   screenState.playerShot = screenState.targetShot = false;
 
+  screenState.UpdateMouseCursorPosition();
+
   if( screenState.m_levelState->GetState() == level_state::paused )
   {
     screenState.OnGamePaused(inputState);
@@ -23,6 +25,13 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
     if( screenState.ScreenTransitionTimeHasExpired() )
       screenState.OnGameRunning(inputState);
   }
+}
+
+void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
+{
+  auto renderData = screenState.renderData;
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  screenState.m_levelObjectContainer->RenderTo(renderTarget, screenState.m_viewTransform);
 }
 
 bool ContinueRunning(const play_screen_state& screenState)
@@ -39,7 +48,8 @@ play_screen_state::play_screen_state(
   currentLevelDataIterator(currentLevelDataIterator),
   endLevelDataIterator(endLevelDataIterator),
   renderData(renderData),
-  soundData(soundData)
+  soundData(soundData),
+  m_mouseCursor(screen_render_brush_selector { renderData.renderBrushes })
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
@@ -122,6 +132,11 @@ void play_screen_state::OnGamePaused(const screen_input_state& inputState)
   }
 }
 
+auto play_screen_state::UpdateMouseCursorPosition() -> void
+{
+  m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
+}
+
 auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
@@ -190,6 +205,8 @@ level_control_state GetLevelControlState(const screen_input_state& inputState)
 auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
 {
   m_levelObjectContainer = std::make_unique<level_object_container>(timer.frequency);
+
+  m_levelObjectContainer->GetOverlayObjectInserter() = m_mouseCursor;
 
   screen_render_brush_selector brushes { renderData.renderBrushes };
   screen_render_text_format_selector textFormats { renderData.textFormats };

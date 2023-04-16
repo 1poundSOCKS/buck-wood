@@ -19,6 +19,7 @@
 #include "game_level_data.h"
 #include "level_timer.h"
 #include "level_state.h"
+#include "mouse_cursor.h"
 
 struct play_screen_state
 {
@@ -29,6 +30,7 @@ struct play_screen_state
     const sound_data& bespokeSoundData
   );
 
+  auto UpdateMouseCursorPosition() -> void;
   auto LoadLevel(const game_level_data& levelData) -> void;
   auto UpdateLevelState(const screen_input_state& inputState) -> void;
   auto AddPlayer(float x, float y) -> void;
@@ -54,8 +56,6 @@ struct play_screen_state
   int64_t levelStart = 0;
   int64_t transitionEnd = 0;
 
-//  enum mode_type { playing, paused, level_complete, game_complete, player_dead };
-//  mode_type mode = playing;
   bool m_gameComplete = false;
   bool continueRunning = true;
 
@@ -70,6 +70,7 @@ struct play_screen_state
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
+  mouse_cursor m_mouseCursor;
   std::unique_ptr<player_ship> player;
   std::unique_ptr<level_timer> m_levelTimer;
   std::unique_ptr<level_state> m_levelState;
