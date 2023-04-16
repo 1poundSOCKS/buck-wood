@@ -20,6 +20,7 @@
 #include "level_timer.h"
 #include "level_state.h"
 #include "mouse_cursor.h"
+#include "diagnostics.h"
 
 struct play_screen_state
 {
@@ -81,5 +82,11 @@ struct play_screen_state
   bool playerShot = false;
   bool targetShot = false;
 };
+
+void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState);
+void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState);
+void PlaySoundEffects(const play_screen_state& screenState);
+bool ContinueRunning(const play_screen_state& screenState);
+void FormatDiagnostics(const play_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter);
 
 #endif

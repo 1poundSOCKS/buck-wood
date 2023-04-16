@@ -4,18 +4,11 @@
 #include "framework.h"
 #include "screen_input_state.h"
 
-void FormatDiagnostics(const screen_input_state& inputState, auto diagnosticsDataInserter)
-{
-  diagnosticsDataInserter = std::format(L"mouse: {}, {}", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
-  diagnosticsDataInserter = std::format(L"client rect: {}, {}", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
-}
+using diagnostics_data_collection = std::vector<std::wstring>;
+using diagnostics_data_const_iterator = diagnostics_data_collection::const_iterator;
+using diagnostics_data_inserter_type = std::back_insert_iterator<diagnostics_data_collection>;
 
-std::wstring GetDiagnosticsString(auto textBegin, auto textEnd)
-{
-  return std::reduce(textBegin, textEnd, std::wstring(L""), [](const auto& complete, const auto& value)
-  {
-    return complete + value + L'\n';
-  });
-}
+void FormatDiagnostics(const screen_input_state& inputState, diagnostics_data_inserter_type diagnosticsDataInserter);
+std::wstring GetDiagnosticsString(diagnostics_data_const_iterator textBegin, diagnostics_data_const_iterator textEnd);
 
 #endif

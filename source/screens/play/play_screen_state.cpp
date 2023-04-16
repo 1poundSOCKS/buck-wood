@@ -39,16 +39,31 @@ bool ContinueRunning(const play_screen_state& screenState)
   return screenState.continueRunning;
 }
 
-play_screen_state::play_screen_state(
-  game_level_data_index::const_iterator currentLevelDataIterator, 
-  game_level_data_index::const_iterator endLevelDataIterator,
-  const screen_render_data& renderData,
-  const sound_data& soundData)
+void PlaySoundEffects(const play_screen_state& screenState)
+{
+  const auto soundBuffers = global_sound_buffer_selector { screenState.soundData.soundBuffers };
+
+  if( screenState.m_levelState->GetState() == level_state::playing )
+  {
+    screenState.PlaySoundEffects(soundBuffers);
+  }
+  else
+  {
+    StopSoundBufferPlay(soundBuffers[menu_theme]);
+    StopSoundBufferPlay(soundBuffers[thrust]);
+  }
+}
+
+void FormatDiagnostics(const play_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter)
+{
+  diagnosticsDataInserter = screenState.GetMouseDiagnostics();
+}
+
+play_screen_state::play_screen_state(game_level_data_index::const_iterator currentLevelDataIterator, 
+  game_level_data_index::const_iterator endLevelDataIterator, const screen_render_data& renderData, const sound_data& soundData)
 :
-  currentLevelDataIterator(currentLevelDataIterator),
-  endLevelDataIterator(endLevelDataIterator),
-  renderData(renderData),
-  soundData(soundData),
+  currentLevelDataIterator(currentLevelDataIterator), endLevelDataIterator(endLevelDataIterator),
+  renderData(renderData), soundData(soundData),
   m_mouseCursor(screen_render_brush_selector { renderData.renderBrushes })
 {
   timer.frequency = performance_counter::QueryFrequency();
