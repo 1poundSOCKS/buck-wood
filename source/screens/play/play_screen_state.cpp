@@ -6,31 +6,6 @@
 
 level_control_state GetLevelControlState(const screen_input_state& inputState);
 
-void UpdateScreenState(play_screen_state& screenState, const screen_input_state& inputState)
-{
-  screenState.Update(inputState);
-}
-
-void RenderFrame(ID2D1RenderTarget* renderTarget, const play_screen_state& screenState)
-{
-  screenState.RenderTo(renderTarget);
-}
-
-bool ContinueRunning(const play_screen_state& screenState)
-{
-  return screenState.ContinueRunning();
-}
-
-void PlaySoundEffects(const play_screen_state& screenState)
-{
-  screenState.PlaySoundEffects();
-}
-
-void FormatDiagnostics(const play_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter)
-{
-  screenState.FormatDiagnostics(diagnosticsDataInserter);
-}
-
 play_screen_state::play_screen_state(game_level_data_index::const_iterator currentLevelDataIterator, 
   game_level_data_index::const_iterator endLevelDataIterator, const screen_render_data& renderData, const sound_data& soundData)
 :

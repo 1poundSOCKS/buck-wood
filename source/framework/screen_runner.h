@@ -47,7 +47,7 @@ void OpenScreen(screen_runner_data data, auto& screenState)
   screen_input_state inputState;
   performance::frame_data frameData;
   
-  while( ProcessMessage() && ContinueRunning(screenState) )
+  while( ProcessMessage() && screenState.ContinueRunning() )
   {
     performance::UpdateFrameData(frameData);
 
@@ -83,14 +83,14 @@ void UpdateScreen(
   auto frameTime = timerFrequency / data.fps;
   
   auto startUpdateTime = performance_counter::QueryValue();
-  UpdateScreenState(screenState, inputState);
+  screenState.Update(inputState);
   auto endUpdateTime = performance_counter::QueryValue();
 
   diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
 
   FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
-  FormatDiagnostics(screenState, std::back_inserter(diagnosticsData));
+  screenState.FormatDiagnostics(std::back_inserter(diagnosticsData));
 
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
   {
@@ -101,24 +101,20 @@ void UpdateScreen(
     render_guard renderGuard(data.renderTarget);
 
     auto startRenderTime = performance_counter::QueryValue();
-    RenderFrame(data.renderTarget.get(), screenState);
+    screenState.RenderTo(data.renderTarget.get());
     auto endRenderTime = performance_counter::QueryValue();
 
     diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
     
     data.renderTarget->SetTransform(D2D1::IdentityMatrix());
 
-    RenderText(
-      data.renderTarget.get(), 
-      diagnosticsRenderData.brush.get(), 
-      diagnosticsRenderData.textFormat.get(), 
-      GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend())
-    );
+    RenderText(data.renderTarget.get(), diagnosticsRenderData.brush.get(), diagnosticsRenderData.textFormat.get(), 
+      GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
   }
 
   data.swapChain->Present(1, 0);
 
-  PlaySoundEffects(screenState);
+  screenState.PlaySoundEffects();
 }
 
 #endif

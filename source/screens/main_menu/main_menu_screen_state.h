@@ -42,10 +42,4 @@ private:
   float mousePointerY = 0;
 };
 
-void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& inputState);
-void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState);
-void PlaySoundEffects(const main_menu_screen_state& screenState);
-bool ContinueRunning(const main_menu_screen_state& screenState);
-void FormatDiagnostics(const main_menu_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter);
-
 #endif

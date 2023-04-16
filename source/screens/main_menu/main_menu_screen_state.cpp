@@ -4,26 +4,6 @@
 #include "timers.h"
 #include "screen_render.h"
 
-void UpdateScreenState(main_menu_screen_state& screenState, const screen_input_state& screenInputState)
-{
-  screenState.Update(screenInputState);
-}
-
-void RenderFrame(ID2D1RenderTarget* renderTarget, const main_menu_screen_state& screenState)
-{
-  screenState.RenderTo(renderTarget);
-}
-
-bool ContinueRunning(const main_menu_screen_state& screenState)
-{
-  return screenState.ContinueRunning();
-}
-
-void FormatDiagnostics(const main_menu_screen_state& screenState, diagnostics_data_inserter_type diagnosticsDataInserter)
-{
-  screenState.FormatDiagnostics(diagnosticsDataInserter);
-}
-
 main_menu_screen_state::main_menu_screen_state(screen_render_data renderData)
 : renderData(renderData)
 {
