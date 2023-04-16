@@ -36,7 +36,7 @@ public:
   auto Update(const screen_input_state& inputState) -> void;
   auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
   auto PlaySoundEffects() const -> void;
-  auto ContinueRunning() const -> bool;
+  [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
 private:

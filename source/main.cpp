@@ -1,16 +1,15 @@
 #include "pch.h"
 
 #include "framework.h"
-#include "math.h"
-#include "render.h"
-#include "level_edit_screen.h"
-#include "play_screen.h"
-#include "main_menu_screen.h"
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
 #include "screen_render_data.h"
 #include "sound_data.h"
+
+#include "screens/main_menu/main_menu_screen_state.h"
+#include "screens/play/play_screen_state.h"
+#include "screens/level_edit/level_edit_screen_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -53,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
 
   sound_buffers soundBuffers = LoadSoundBuffers(directSound.get(), dataPath);
 
-  // ensure no sound glitch on first play
+  // play sound now to ensure no sound glitch on first real play
   {
     global_sound_buffer_selector dummySelector { soundBuffers };
     sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
@@ -82,13 +81,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
   
   sound_data soundData { soundBuffers };
 
-  main_menu_screen_state mainMenuScreenState(screenRenderData);
+  bool continueRunning = true;
+  bool saveGameLevelData = false;
 
-  while( !mainMenuScreenState.quit )
+  while( continueRunning )
   {
+    main_menu_screen_state mainMenuScreenState(screenRenderData);
     OpenScreen(screenRunnerData, mainMenuScreenState);
 
-    if( mainMenuScreenState.startPlay )
+    if( mainMenuScreenState.StartPlay() )
     {
       play_screen_state playScreenState(
         globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
@@ -99,25 +100,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
       
       OpenScreen(screenRunnerData, playScreenState);
     }
-    else if( mainMenuScreenState.startLevelEdit )
-    {
-      level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
+    // else if( mainMenuScreenState.startLevelEdit )
+    // {
+    //   level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
       
-      OpenScreen(screenRunnerData, levelEditScreenState);
+    //   OpenScreen(screenRunnerData, levelEditScreenState);
       
-      if( levelEditScreenState.saveChanges )
-      {
-        UpdateGlobalState(globalState, levelEditScreenState);
-        mainMenuScreenState.checkSaveOnExit = true;
-      }
-    }
+    //   if( levelEditScreenState.saveChanges )
+    //   {
+    //     UpdateGlobalState(globalState, levelEditScreenState);
+    //     mainMenuScreenState.checkSaveOnExit = true;
+    //   }
+    // }
     else
-      mainMenuScreenState.quit = true;
-
-    mainMenuScreenState.startPlay = mainMenuScreenState.startLevelEdit = false;
+    {
+      continueRunning = false;
+      saveGameLevelData = mainMenuScreenState.SaveGameLevelData();
+    }
   }
 
-  if( mainMenuScreenState.saveGameLevelData )
+  if( saveGameLevelData )
     SaveAllGameLevelData(*globalState.gameLevelDataIndex);
 
   return 0;

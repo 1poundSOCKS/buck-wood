@@ -86,7 +86,7 @@ auto play_screen_state::PlaySoundEffects() const -> void
   }
 }
 
-auto play_screen_state::ContinueRunning() const -> bool
+[[nodiscard]] auto play_screen_state::ContinueRunning() const -> bool
 {
   return continueRunning;
 }
