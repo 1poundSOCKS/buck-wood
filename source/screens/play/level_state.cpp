@@ -1,113 +1,77 @@
 #include "pch.h"
 #include "level_state.h"
-#include "game_objects.h"
-#include "game_constants.h"
+#include "render.h"
 
-level_state::level_state(int64_t counterFrequency) : counterFrequency(counterFrequency)
+level_state::level_state(screen_render_brush_selector brushes, screen_render_text_format_selector textFormats)
+: m_sharedData(std::make_shared<shared_data_type>())
 {
+  m_brush.attach(brushes[cyan]);
+  m_brush->AddRef();
+  m_textFormat.attach(textFormats[srtf_play_screen_state]);
+  m_textFormat->AddRef();
 }
 
-[[nodiscard]] auto level_state::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>
+auto level_state::Update(int64_t clockFrequency, int64_t clockCount) -> void
 {
-  return std::back_inserter(m_activeObjects);
+
 }
 
-[[nodiscard]] auto level_state::GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>
+auto level_state::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
 {
-  return std::back_inserter(m_overlayObjects);
-}
-
-[[nodiscard]] auto level_state::IsComplete() -> bool
-{
-  int total = std::reduce(m_activeObjects.cbegin(), m_activeObjects.cend(), 0, [](auto count, const active_object& object)
+  switch( m_sharedData->state )
   {
-    return object.LevelIsComplete() ? count + 1 : count;
-  });
-
-  return total == m_activeObjects.size();
-}
-
-auto level_state::Update(int64_t counterValue) -> void
-{
-  previousTimerCount = currentTimerCount;
-  currentTimerCount = counterValue;
-
-  std::list<play_event> events;
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& object)
-  {
-    object.Update(this->counterFrequency, this->currentTimerCount - this->previousTimerCount, std::back_inserter(events));
-  });
-
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& mainObject)
-  {
-    std::for_each(m_activeObjects.begin(), m_activeObjects.end(), [&mainObject, &events](auto& collisionObject)
-    {
-      auto collisionData = collisionObject.GetCollisionData();
-      if( mainObject.HasCollidedWith(collisionData) )
-      {
-        auto effect = collisionObject.GetCollisionEffect();
-        mainObject.ApplyCollisionEffect(effect, std::back_inserter(events));
-      }
-    });
-  });
-
-  std::for_each(events.cbegin(), events.cend(), [](auto& event)
-  {
-    event.Trigger();
-  });
-
-  auto object = m_activeObjects.begin();
-  while( object != m_activeObjects.end() )
-  {
-    object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
+    case paused:
+      RenderText(
+        renderTarget, 
+        m_brush.get(), 
+        m_textFormat.get(), 
+        L"PAUSED", 
+        DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+        DWRITE_TEXT_ALIGNMENT_CENTER);
+      break;
+    case dead:
+      RenderText(
+        renderTarget, 
+        m_brush.get(), 
+        m_textFormat.get(), 
+        L"DEAD", 
+        DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+        DWRITE_TEXT_ALIGNMENT_CENTER);
+      break;
+    case complete:
+      RenderText(
+        renderTarget, 
+        m_brush.get(), 
+        m_textFormat.get(), 
+        L"LEVEL COMPLETE", 
+        DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+        DWRITE_TEXT_ALIGNMENT_CENTER);
+      break;
+    // case complete:
+    //   RenderText(
+    //     renderTarget, 
+    //     renderBrushSelector[cyan], 
+    //     textFormatSelector[srtf_play_screen_state], 
+    //     GetGameCompleteMsg(screenState.levelTimes), 
+    //     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+    //     DWRITE_TEXT_ALIGNMENT_CENTER);
+    //   break;
   }
-
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
-  {
-    object.Update(this->counterFrequency, this->currentTimerCount - this->previousTimerCount);
-  });
 }
 
-float level_state::GetUpdateInterval()
+auto level_state::SetState(state_type state) -> void
 {
-  int64_t intervalCount = currentTimerCount - previousTimerCount;
-  return static_cast<float>(intervalCount) / static_cast<float>(counterFrequency) * gameSpeedMultiplier;
+  m_sharedData->state = state;  
 }
 
-auto level_state::RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> void
+auto level_state::GetState() const -> state_type
 {
-  renderTarget->SetTransform(viewTransform);
-
-  auto viewRect = GetViewRect(renderTarget, viewTransform);
-
-  std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [renderTarget, viewRect](const auto& object)
-  {
-    object.RenderTo(renderTarget, viewRect);
-  });
-
-  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [renderTarget](const auto& object)
-  {
-    object.RenderTo(renderTarget);
-  });
+  return m_sharedData->state;
 }
 
-[[nodiscard]] auto level_state::GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> D2D1_RECT_F
+std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)
 {
-  auto renderTargetSize = renderTarget->GetSize();
-  auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };
-  auto renderTargetBottomRight  = D2D1_POINT_2F { renderTargetSize.width - 1.0f, renderTargetSize.height - 1.0f };
-
-  auto invertedViewTransform = viewTransform;
-  if( invertedViewTransform.Invert() )
-  {
-    auto topLeft = invertedViewTransform.TransformPoint(renderTargetTopLeft);
-    auto bottomRight = invertedViewTransform.TransformPoint(renderTargetBottomRight);
-    return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
-  }
-  else
-  {
-    return { renderTargetTopLeft.x, renderTargetTopLeft.y, renderTargetBottomRight.x, renderTargetBottomRight.y };
-  }
+  std::wstring msg;
+  for( auto levelTime: levelTimes ) { msg += std::format(L"{:.2f}", levelTime); }
+  return msg;
 }

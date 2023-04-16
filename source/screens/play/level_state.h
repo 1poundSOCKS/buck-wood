@@ -1,33 +1,29 @@
-#ifndef _level_state_
-#define _level_state_
+#pragma once
 
-#include "active_object.h"
-#include "passive_object.h"
+#include "screen_render_data.h"
 
-struct level_state
+class level_state
 {
 public:
 
-  using active_object_collection_type = std::list<active_object>;
-  using passive_object_collection_type = std::vector<passive_object>;
+  enum state_type { playing, paused, dead, complete };
+  
+  level_state(screen_render_brush_selector brushes, screen_render_text_format_selector textFormats);
 
-  level_state(int64_t counterFrequency);
-  [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
-  [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
-  auto Update(int64_t counterValue) -> void;
-  auto RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> void;
-  [[nodiscard]] auto IsComplete() -> bool;
-  [[nodiscard]] auto GetUpdateInterval() -> float;
+  auto Update(int64_t clockFrequency, int64_t clockCount) -> void;
+  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
+
+  auto SetState(state_type state) -> void;
+  auto GetState() const -> state_type;
 
 private:
 
-  [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> D2D1_RECT_F;
+  struct shared_data_type
+  {
+    state_type state = playing;
+  };
 
-  const int64_t counterFrequency = 0;
-  int64_t currentTimerCount = 0;
-  int64_t previousTimerCount = 0;
-  active_object_collection_type m_activeObjects;
-  passive_object_collection_type m_overlayObjects;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_brush;
+  winrt::com_ptr<IDWriteTextFormat> m_textFormat;
+  std::shared_ptr<shared_data_type> m_sharedData;
 };
-
-#endif

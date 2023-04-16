@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "game_objects.h"
-#include "level_state.h"
+#include "level_object_container.h"
 #include "timers.h"
 #include "sound_data.h"
 #include "player_ship.h"
@@ -18,6 +18,7 @@
 #include "sound_data.h"
 #include "game_level_data.h"
 #include "level_timer.h"
+#include "level_state.h"
 
 struct play_screen_state
 {
@@ -53,8 +54,9 @@ struct play_screen_state
   int64_t levelStart = 0;
   int64_t transitionEnd = 0;
 
-  enum mode_type { playing, paused, level_complete, game_complete, player_dead };
-  mode_type mode = playing;
+//  enum mode_type { playing, paused, level_complete, game_complete, player_dead };
+//  mode_type mode = playing;
+  bool m_gameComplete = false;
   bool continueRunning = true;
 
   game_level_data_index::const_iterator currentLevelDataIterator;
@@ -64,12 +66,13 @@ struct play_screen_state
   game_rect m_viewRect;
   D2D1::Matrix3x2F m_viewTransform;
 
-  std::unique_ptr<level_state> levelState;
+  std::unique_ptr<level_object_container> m_levelObjectContainer;
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
   std::unique_ptr<player_ship> player;
   std::unique_ptr<level_timer> m_levelTimer;
+  std::unique_ptr<level_state> m_levelState;
 
   float mouseX = 0;
   float mouseY = 0;

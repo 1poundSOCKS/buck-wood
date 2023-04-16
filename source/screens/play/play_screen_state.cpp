@@ -12,7 +12,7 @@ void UpdateScreenState(play_screen_state& screenState, const screen_input_state&
   screenState.renderTargetMouseData = inputState.renderTargetMouseData;
   screenState.playerShot = screenState.targetShot = false;
 
-  if( screenState.mode == play_screen_state::paused )
+  if( screenState.m_levelState->GetState() == level_state::paused )
   {
     screenState.OnGamePaused(inputState);
   }
@@ -45,35 +45,34 @@ play_screen_state::play_screen_state(
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   levelStart = this->timer.initialValue;
   LoadLevel(**currentLevelDataIterator);
-  mode = playing;
 }
 
 void play_screen_state::OnGameRunning(const screen_input_state& inputState)
 {
-  if( mode == playing )
+  if( m_levelState->GetState() == level_state::playing )
   {
     OnGamePlaying(inputState);
   }
-  else if( mode == level_complete )
+  else if( m_levelState->GetState() == level_state::complete )
   {
     levelTimes.push_back(m_levelTimer->GetTimeRemainingInSeconds());
     
     if( AllLevelsAreComplete() )
     {
-      mode = game_complete;
+      m_gameComplete = true;
+      continueRunning = false;
       SetScreenTransitionDelay(3);
     }
     else
     {
       LoadNextLevel();
-      mode = playing;
     }
   }
-  else if( mode == game_complete )
+  else if( m_gameComplete )
   {
     continueRunning = false;
   }
-  else if( mode == player_dead )
+  else if( m_levelState->GetState() == level_state::dead )
   {
     continueRunning = false;
   }
@@ -83,27 +82,27 @@ void play_screen_state::OnGamePlaying(const screen_input_state& inputState)
 {
   if( KeyPressed(inputState, DIK_ESCAPE) )
   {
-    mode = paused;
+    m_levelState->SetState(level_state::paused);
     pauseStart = timer.currentValue;
   }
   else
   {
-    levelState->Update(timer.currentValue - levelStart - pauseTotal);
+    m_levelObjectContainer->Update(timer.currentValue - levelStart - pauseTotal);
 
     if( m_levelTimer->HasExpired() )
     {
-      mode = player_dead;
+      m_levelState->SetState(level_state::dead);
       SetScreenTransitionDelay(3);
     }
-    else if( levelState->IsComplete() )
+    else if( m_levelObjectContainer->IsComplete() )
     {
+      m_levelState->SetState(level_state::complete);
       m_levelTimer->Stop();
-      mode = level_complete;
       SetScreenTransitionDelay(3);
     }
     else if( player->GetState() == player_ship::dead )
     {
-      mode = player_dead;
+      m_levelState->SetState(level_state::dead);
       m_levelTimer->Stop();
       SetScreenTransitionDelay(3);
     }
@@ -118,7 +117,7 @@ void play_screen_state::OnGamePaused(const screen_input_state& inputState)
   }
   else if( KeyPressed(inputState, DIK_ESCAPE) )
   {
-    mode = playing;
+    m_levelState->SetState(level_state::playing);
     pauseTotal += ( timer.currentValue - pauseStart );
   }
 }
@@ -150,7 +149,7 @@ auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
-  levelState->Update(timer.currentValue - levelStart - pauseTotal);
+  m_levelObjectContainer->Update(timer.currentValue - levelStart - pauseTotal);
 }
 
 bool play_screen_state::ScreenTransitionTimeHasExpired()
@@ -190,7 +189,7 @@ level_control_state GetLevelControlState(const screen_input_state& inputState)
 
 auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
 {
-  levelState = std::make_unique<level_state>(timer.frequency);
+  m_levelObjectContainer = std::make_unique<level_object_container>(timer.frequency);
 
   screen_render_brush_selector brushes { renderData.renderBrushes };
   screen_render_text_format_selector textFormats { renderData.textFormats };
@@ -204,7 +203,7 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
     return { object, brushes };
   });
   
-  std::copy(islands.cbegin(), islands.cend(), levelState->GetActiveObjectInserter());
+  std::copy(islands.cbegin(), islands.cend(), m_levelObjectContainer->GetActiveObjectInserter());
 
   std::vector<target_state> targets;
   std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [brushes](const auto& target) -> target_state
@@ -212,14 +211,17 @@ auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
     return { target, brushes };
   });
 
-  std::copy(targets.cbegin(), targets.cend(), levelState->GetActiveObjectInserter());
+  std::copy(targets.cbegin(), targets.cend(), m_levelObjectContainer->GetActiveObjectInserter());
 
   AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
+
+  m_levelState = std::make_unique<level_state>(brushes, textFormats);
+  m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelState;
 
   levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
 
   m_levelTimer = std::make_unique<level_timer>(brushes, textFormats, levelData.timeLimitInSeconds);
-  levelState->GetOverlayObjectInserter() = *m_levelTimer;
+  m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelTimer;
 }
 
 auto play_screen_state::AddPlayer(float x, float y) -> void
@@ -232,7 +234,7 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
   {
     screen_render_brush_selector renderBrushSelector { renderData.renderBrushes };
     bullet newBullet { x, y, angle, renderBrushSelector };
-    auto activeObjectInserter = this->levelState->GetActiveObjectInserter();
+    auto activeObjectInserter = this->m_levelObjectContainer->GetActiveObjectInserter();
     activeObjectInserter = newBullet;
     playerShot = true;
   });
@@ -241,7 +243,7 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
   {
   });
 
-  auto activeObjectInserter = levelState->GetActiveObjectInserter();
+  auto activeObjectInserter = m_levelObjectContainer->GetActiveObjectInserter();
   activeObjectInserter = *player;
 }
 

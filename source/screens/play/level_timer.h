@@ -7,8 +7,10 @@ class level_timer
 public:
 
   level_timer(screen_render_brush_selector brushes, screen_render_text_format_selector textFormats, int timeInSeconds);
+
   auto Update(int64_t clockFrequency, int64_t clockCount) -> void;
   auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
+
   [[nodiscard]] auto HasExpired() const -> bool;
   [[nodiscard]] auto GetTimeRemainingInSeconds() const -> float;
   auto Stop() -> void;
