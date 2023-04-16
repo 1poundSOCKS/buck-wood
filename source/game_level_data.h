@@ -72,7 +72,6 @@ void LoadLevelObjects(const game_level_data& levelData, auto objectInserter)
   {
     game_closed_object object(objectData.points.cbegin(), objectData.points.cend());
     return object;
-    // return LoadClosedObject(objectData.points.cbegin(), objectData.points.cend());
   });
 }
 
