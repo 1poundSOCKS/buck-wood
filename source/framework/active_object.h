@@ -1,7 +1,7 @@
 #ifndef _active_object_
 #define _active_object_
 
-#include "framework.h"
+// #include "framework.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"

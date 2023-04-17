@@ -71,7 +71,7 @@ auto explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F view
 
 [[nodiscard]] auto CreateExplosion(float x, float y, int64_t clockFrequency, screen_render_brush_selector brushes) -> explosion_state
 {
-  extern std::mt19937 rng;
+  // extern std::mt19937 rng;
   const int particleCount = 50;
 
   explosion_state explosionState { brushes };
@@ -83,7 +83,7 @@ auto explosion_state::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F view
     explosionState.particles[i].condition = particle_state::alive;
     explosionState.particles[i].x = x;
     explosionState.particles[i].y = y;
-    float angle = static_cast<float>(particleAngleDist(rng));
+    float angle = static_cast<float>(particleAngleDist(framework::rng()));
     SetParticleVelocity(explosionState.particles[i], angle);
   }
 

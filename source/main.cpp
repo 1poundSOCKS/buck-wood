@@ -7,9 +7,8 @@
 #include "screen_render_data.h"
 #include "sound_data.h"
 
-#include "screens/main_menu/main_menu_screen_state.h"
-#include "screens/play/play_screen_state.h"
-#include "screens/level_edit/level_edit_screen_state.h"
+#include "main_menu_screen_state.h"
+#include "play_screen_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -26,31 +25,19 @@
 const int fps = 60;
 
 void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
-void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
+// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
-std::mt19937 rng; // pseudo-random generator
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstance*/,_In_ LPWSTR /*lpCmdLine*/,_In_ int nCmdShow)
+int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
-  rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
-  
   config_file configFile(L"config.txt");
   const auto& dataPath = configFile.settings[L"data_path"];
 
-  RegisterMainWindowClass(hInstance);
-  window_data windowData;
-  auto window = CreateMainWindow(hInstance, nCmdShow, windowData);
-  auto swapChain = CreateSwapChain(window, fps, 1);
-  auto renderTarget = CreateRenderTarget(swapChain.get());
-  auto dwriteFactory = CreateDWriteFactory();
-  auto directSound = CreateDirectSound(window);
-  auto primarySoundBuffer = CreatePrimarySoundBuffer(directSound.get());
-  auto keyboard = CreateKeyboard(hInstance, window);
+  framework::create(instance, cmdShow);
 
-  sound_buffers soundBuffers = LoadSoundBuffers(directSound.get(), dataPath);
+  sound_buffers soundBuffers = LoadSoundBuffers(framework::directSound().get(), dataPath);
 
   // play sound now to ensure no sound glitch on first real play
   {
@@ -61,22 +48,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
 
   global_state globalState(dataPath);
   
-  HRESULT hr = swapChain->SetFullscreenState(FALSE, NULL);
+  HRESULT hr = framework::swapChain()->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) return 0;
 
-  screen_runner_data screenRunnerData
-  {
-    swapChain,
-    renderTarget, 
-    dwriteFactory,
-    keyboard, 
-    windowData,
-    fps
-  };
-
   screen_render_data screenRenderData {
-    CreateScreenRenderBrushes(renderTarget.get()), 
-    CreateScreenRenderTextFormats(dwriteFactory.get())
+    CreateScreenRenderBrushes(framework::renderTarget().get()), 
+    CreateScreenRenderTextFormats(framework::dwriteFactory().get())
   };
   
   sound_data soundData { soundBuffers };
@@ -87,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
   while( continueRunning )
   {
     main_menu_screen_state mainMenuScreenState(screenRenderData);
-    OpenScreen(screenRunnerData, mainMenuScreenState);
+    framework::openScreen(mainMenuScreenState);
 
     if( mainMenuScreenState.StartPlay() )
     {
@@ -98,7 +75,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
         soundData
       );
       
-      OpenScreen(screenRunnerData, playScreenState);
+      framework::openScreen(playScreenState);
     }
     // else if( mainMenuScreenState.startLevelEdit )
     // {
@@ -125,9 +102,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,_In_opt_ HINSTANCE /*hPrevInstanc
   return 0;
 }
 
-void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
-{
-  globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
-  globalState.gameLevelDataIndexUpdated = true;
-  globalState.currentScreenId = screen_main_menu;
-}
+// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
+// {
+//   globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
+//   globalState.gameLevelDataIndexUpdated = true;
+//   globalState.currentScreenId = screen_main_menu;
+// }

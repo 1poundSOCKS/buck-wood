@@ -12,7 +12,6 @@
 #include "screen_render_data.h"
 #include "level_control_state.h"
 #include "area_grid.h"
-#include "explosion.h"
 #include "level_target.h"
 #include "level_island.h"
 #include "sound_data.h"

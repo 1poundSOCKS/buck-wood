@@ -4,6 +4,7 @@
 #include "game_level_data.h"
 #include "screen_input_state.h"
 #include "drag_drop.h"
+#include "perf_data.h"
 
 struct level_edit_screen_state
 {

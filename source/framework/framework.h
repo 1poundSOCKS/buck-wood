@@ -1,6 +1,7 @@
-#ifndef _framework_
-#define _framework_
+#pragma once
 
+#include "screen_render.h"
+#include "screen_input_state.h"
 #include "timers.h"
 #include "perf_data.h"
 #include "render_guard.h"
@@ -10,5 +11,55 @@
 #include "sound_buffer_player.h"
 #include "data_files.h"
 #include "collisions.h"
+#include "screen_runner.h"
 
-#endif
+class framework
+{
+public:
+
+  static auto create(HINSTANCE instance, int cmdShow) -> void;
+  static auto get() -> framework&;
+  static auto windowData() -> window_data&;
+  static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
+  static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
+  static auto dwriteFactory() -> winrt::com_ptr<IDWriteFactory>&;
+  static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
+  static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
+  static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
+  static auto fps() -> int;
+  static auto rng() -> std::mt19937&;
+
+  template <typename screen_state> static auto openScreen(screen_state& screenState) -> void;
+
+private:
+
+  framework(HINSTANCE instance, int cmdShow);
+  auto Init() -> void;
+  static framework* m_framework;
+
+  HINSTANCE m_instance = nullptr;
+  int m_cmdShow = 0;
+  HWND m_window = nullptr;
+  window_data m_windowData;
+  winrt::com_ptr<IDXGISwapChain> m_swapChain;
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
+  winrt::com_ptr<IDirectSound8> m_directSound;
+  winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
+  winrt::com_ptr<IDirectInputDevice8> m_keyboard;
+};
+
+template <typename screen_state> static auto framework::openScreen(screen_state& screenState) -> void
+{
+  screen_runner_data screenRunnerData
+  {
+    swapChain(),
+    renderTarget(), 
+    dwriteFactory(),
+    keyboard(), 
+    windowData(),
+    fps()
+  };
+
+  OpenScreen(screenRunnerData, screenState);
+}

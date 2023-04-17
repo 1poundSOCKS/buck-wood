@@ -21,8 +21,8 @@ struct level_background_data
 
 inline auto GenerateStar(std::uniform_int_distribution<int> distX, std::uniform_int_distribution<int> distY) -> level_star
 {
-  extern std::mt19937 rng;
-  return { static_cast<float>(distX(rng)), static_cast<float>(distY(rng)) };
+  // extern std::mt19937 rng;
+  return { static_cast<float>(distX(framework::rng())), static_cast<float>(distY(framework::rng())) };
 }
 
 void GenerateStarfield(const game_level_data& levelData, auto starInserter)

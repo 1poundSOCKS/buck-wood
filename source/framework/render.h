@@ -1,8 +1,6 @@
 #ifndef _render_
 #define _render_
 
-#include "framework.h"
-
 struct render_point
 {
   D2D1_RECT_F rect;

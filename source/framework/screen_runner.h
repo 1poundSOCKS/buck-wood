@@ -2,10 +2,12 @@
 #define _screen_runner_
 
 #include "screen_render.h"
-#include "global_state.h"
+// #include "global_state.h"
+#include "perf_data.h"
 #include "diagnostics.h"
 #include "main_window.h"
 #include "screen_input_state.h"
+#include "render_guard.h"
 
 bool ProcessMessage();
 
