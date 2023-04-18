@@ -97,7 +97,9 @@ void UpdateScreen(
 
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
   {
-    data.swapChain->SetFullscreenState(TRUE, NULL);
+    BOOL fullScreen = FALSE;
+    data.swapChain->GetFullscreenState(&fullScreen, nullptr);
+    data.swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, NULL);
   }
 
   {
