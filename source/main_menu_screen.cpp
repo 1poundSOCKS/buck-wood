@@ -9,8 +9,8 @@ main_menu_screen::main_menu_screen()
 
 auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
-  m_mouseCursorBrush = CreateScreenRenderBrush(renderTarget, screen_render_brush_white);
-  m_menuTextBrush = CreateScreenRenderBrush(renderTarget, screen_render_brush_cyan);
+  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
+  m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
   m_menuTextFormat = CreateScreenRenderTextFormat(dwriteFactory, L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 30);
 }
 

@@ -5,20 +5,20 @@
 
 auto CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, std::back_insert_iterator<screen_render_brushes> brushInserter) -> void
 {
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_white);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_grey);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_dark_grey);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_green);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_red);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_yellow);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_cyan);
-  brushInserter = CreateScreenRenderBrush(renderTarget, screen_render_brush_brown);
+  brushInserter = screen_render_brush_white.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_grey.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_dark_grey.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_green.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_red.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_yellow.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_cyan.CreateBrush(renderTarget);
+  brushInserter = screen_render_brush_brown.CreateBrush(renderTarget);
 }
 
 auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, std::back_insert_iterator<screen_render_text_formats> textFormatInserter) -> void
 {
-  textFormatInserter = CreateScreenRenderTextFormat(dwriteFactory, L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
-  textFormatInserter = CreateScreenRenderTextFormat(dwriteFactory, L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
-  textFormatInserter = CreateScreenRenderTextFormat(dwriteFactory, L"Franklin Gothic", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 80);
-  textFormatInserter = CreateScreenRenderTextFormat(dwriteFactory, L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100);
+  textFormatInserter = render_text_format_prompt.CreateTextFormat(dwriteFactory);
+  textFormatInserter = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
+  textFormatInserter = render_text_format_play_screen_state.CreateTextFormat(dwriteFactory);
+  textFormatInserter = render_text_format_play_screen_timer.CreateTextFormat(dwriteFactory);
 }
