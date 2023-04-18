@@ -8,8 +8,19 @@
 
 enum screen_id { screen_none, screen_main_menu, screen_play, screen_level_editor };
 
-struct global_state
+class global_state
 {
+public:
+
+  static auto create(const std::wstring& dataPath) -> void;
+  static auto save() -> void;
+  [[nodiscard]] static auto firstLevelData() -> game_level_data_index::const_iterator;
+  [[nodiscard]] static auto endLevelData() -> game_level_data_index::const_iterator;
+
+private:
+
+  static global_state* m_globalState;
+
   global_state(const std::wstring& dataPath);
 
   std::wstring dataPath;
@@ -17,8 +28,8 @@ struct global_state
 
   screen_id currentScreenId = screen_main_menu;
 
-  bool saveGameLevelData = false;
-  bool gameLevelDataIndexUpdated = false;
+  bool m_saveGameLevelData = false;
+  bool m_gameLevelDataIndexUpdated = false;
 };
 
 #endif

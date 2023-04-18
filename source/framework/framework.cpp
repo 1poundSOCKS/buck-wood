@@ -75,4 +75,8 @@ auto framework::Init() -> void
   m_directSound = CreateDirectSound(m_window);
   m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
   m_keyboard = CreateKeyboard(m_instance, m_window);
+
+  HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
+  if( FAILED(hr) ) 
+    throw std::exception();
 }

@@ -1,7 +1,7 @@
 #ifndef _level_edit_screen_
 #define _level_edit_screen_
 
-#include "screens/level_edit/level_edit_screen_state.h"
+#include "level_edit_screen/level_edit_screen_state.h"
 #include "timers.h"
 
 void UpdateScreenState

@@ -1,5 +1,5 @@
-#ifndef _play_screen_state_
-#define _play_screen_state_
+#ifndef _play_screen_
+#define _play_screen_
 
 #include "framework.h"
 #include "game_objects.h"
@@ -21,17 +21,13 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 
-class play_screen_state
+class play_screen
 {
 public:
 
-  play_screen_state(
-    game_level_data_index::const_iterator currentLevelDataIterator, 
-    game_level_data_index::const_iterator endLevelDataIterator,
-    const screen_render_data& renderData,
-    const sound_data& bespokeSoundData
-  );
+  play_screen();
 
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const screen_input_state& inputState) -> void;
   auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
   auto PlaySoundEffects() const -> void;
@@ -39,6 +35,8 @@ public:
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
 private:
+
+  static level_control_state GetLevelControlState(const screen_input_state& inputState);
 
   auto UpdateMouseCursorPosition() -> void;
   auto LoadLevel(const game_level_data& levelData) -> void;
@@ -56,8 +54,8 @@ private:
   bool ScreenTransitionTimeHasExpired();
   void SetScreenTransitionDelay(int timeInSeconds);
 
-  const screen_render_data renderData;
-  const sound_data soundData;
+  screen_render_brushes m_renderBrushes;
+  screen_render_text_formats m_textFormats;
 
   performance_counter::data timer = { 0, 0, 0 };
   
@@ -80,7 +78,7 @@ private:
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
-  mouse_cursor m_mouseCursor;
+  std::unique_ptr<mouse_cursor> m_mouseCursor;
   std::unique_ptr<player_ship> player;
   std::unique_ptr<level_timer> m_levelTimer;
   std::unique_ptr<level_state> m_levelState;

@@ -7,8 +7,8 @@
 #include "screen_render_data.h"
 #include "sound_data.h"
 
-#include "main_menu_screen_state.h"
-#include "play_screen_state.h"
+#include "main_menu_screen.h"
+#include "play_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -22,9 +22,7 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
 
-const int fps = 60;
-
-void UpdateGlobalState(global_state& globalState, const play_screen_state& screenState);
+void UpdateGlobalState(global_state& globalState, const play_screen& screenState);
 // void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
@@ -32,72 +30,53 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
   wchar_t currentDirectory[MAX_PATH];
   GetCurrentDirectory(MAX_PATH, currentDirectory);
 
-  config_file configFile(L"config.txt");
-  const auto& dataPath = configFile.settings[L"data_path"];
-
+  config_file::create(L"config.txt");
+  const auto& dataPath = config_file::getSetting(L"data_path");
   framework::create(instance, cmdShow);
-
-  sound_buffers soundBuffers = LoadSoundBuffers(framework::directSound().get(), dataPath);
+  global_state::create(dataPath);
+  sound_data::create(framework::directSound().get(), dataPath);
 
   // play sound now to ensure no sound glitch on first real play
   {
-    global_sound_buffer_selector dummySelector { soundBuffers };
+    global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
     sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
     dummyPlayer.Play();
   }
-
-  global_state globalState(dataPath);
-  
-  HRESULT hr = framework::swapChain()->SetFullscreenState(FALSE, NULL);
-  if( FAILED(hr) ) return 0;
-
-  screen_render_data screenRenderData {
-    CreateScreenRenderBrushes(framework::renderTarget().get()), 
-    CreateScreenRenderTextFormats(framework::dwriteFactory().get())
-  };
-  
-  sound_data soundData { soundBuffers };
 
   bool continueRunning = true;
   bool saveGameLevelData = false;
 
   while( continueRunning )
   {
-    main_menu_screen_state mainMenuScreenState(screenRenderData);
-    framework::openScreen(mainMenuScreenState);
+    main_menu_screen mainMenuScreen;
+    framework::openScreen(mainMenuScreen);
 
-    if( mainMenuScreenState.StartPlay() )
+    if( mainMenuScreen.StartPlay() )
     {
-      play_screen_state playScreenState(
-        globalState.gameLevelDataIndex->gameLevelData.cbegin(), 
-        globalState.gameLevelDataIndex->gameLevelData.cend(),
-        screenRenderData,
-        soundData
-      );
-      
-      framework::openScreen(playScreenState);
+      play_screen playScreen;
+      framework::openScreen(playScreen);
     }
-    // else if( mainMenuScreenState.startLevelEdit )
-    // {
-    //   level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
+    else if( mainMenuScreen.StartLevelEditor() )
+    {
+      // level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
       
-    //   OpenScreen(screenRunnerData, levelEditScreenState);
+      // OpenScreen(screenRunnerData, levelEditScreenState);
       
-    //   if( levelEditScreenState.saveChanges )
-    //   {
-    //     UpdateGlobalState(globalState, levelEditScreenState);
-    //     mainMenuScreenState.checkSaveOnExit = true;
-    //   }
-    // }
+      // if( levelEditScreenState.saveChanges )
+      // {
+      //   UpdateGlobalState(globalState, levelEditScreenState);
+      //   mainMenuScreenState.checkSaveOnExit = true;
+      // }
+    }
     else
     {
       continueRunning = false;
-      saveGameLevelData = mainMenuScreenState.SaveGameLevelData();
+      saveGameLevelData = mainMenuScreen.SaveGameLevelData();
     }
   }
 
   if( saveGameLevelData )
-    SaveAllGameLevelData(*globalState.gameLevelDataIndex);
+    global_state::save();
 
   return 0;
 }

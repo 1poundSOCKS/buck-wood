@@ -10,6 +10,18 @@ std::wstring ToWstr(std::string_view input)
   return output;
 }
 
+config_file* config_file::m_configFile = nullptr;
+
+auto config_file::create(const wchar_t* filename) -> void
+{
+  m_configFile = new config_file(filename);
+}
+
+auto config_file::getSetting(const std::wstring& name) -> std::wstring
+{
+  return m_configFile->m_settings[name];
+}
+
 config_file::setting::setting(const std::wstring& text)
 {
   size_t splitPos = text.find('=');
@@ -28,8 +40,8 @@ config_file::config_file(const wchar_t* filename)
     if( line.length() == 0 ) continue;
     std::wstring wideLine = ToWstr(line);
 
-    setting setting(wideLine);
-    settings.insert(std::make_pair(setting.key, setting.value));
+    setting newSetting(wideLine);
+    m_settings.insert(std::make_pair(newSetting.key, newSetting.value));
   }
 
   fileReader.close();

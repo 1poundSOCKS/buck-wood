@@ -2,7 +2,6 @@
 #define _screen_runner_
 
 #include "screen_render.h"
-// #include "global_state.h"
 #include "perf_data.h"
 #include "diagnostics.h"
 #include "main_window.h"
@@ -48,6 +47,8 @@ void OpenScreen(screen_runner_data data, auto& screenState)
 
   screen_input_state inputState;
   performance::frame_data frameData;
+
+  screenState.Initialize(data.renderTarget.get(), data.dwriteFactory.get());
   
   while( ProcessMessage() && screenState.ContinueRunning() )
   {

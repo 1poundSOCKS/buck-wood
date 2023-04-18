@@ -1,25 +1,28 @@
 #include "pch.h"
-#include "play_screen_state.h"
+#include "play_screen.h"
 #include "render.h"
 #include "diagnostics.h"
 #include "screen_view.h"
+#include "global_state.h"
 
-level_control_state GetLevelControlState(const screen_input_state& inputState);
+play_screen::play_screen()
+{
+}
 
-play_screen_state::play_screen_state(game_level_data_index::const_iterator currentLevelDataIterator, 
-  game_level_data_index::const_iterator endLevelDataIterator, const screen_render_data& renderData, const sound_data& soundData)
-:
-  currentLevelDataIterator(currentLevelDataIterator), endLevelDataIterator(endLevelDataIterator),
-  renderData(renderData), soundData(soundData),
-  m_mouseCursor(screen_render_brush_selector { renderData.renderBrushes })
+auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
   timer.frequency = performance_counter::QueryFrequency();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   levelStart = this->timer.initialValue;
+  currentLevelDataIterator = { global_state::firstLevelData() };
+  endLevelDataIterator = { global_state::endLevelData() };
+  CreateScreenRenderBrushes(renderTarget, std::back_inserter(m_renderBrushes));
+  CreateScreenRenderTextFormats(dwriteFactory, std::back_inserter(m_textFormats));
+  m_mouseCursor = std::make_unique<mouse_cursor>(screen_render_brush_selector { m_renderBrushes });
   LoadLevel(**currentLevelDataIterator);
 }
 
-auto play_screen_state::Update(const screen_input_state& inputState) -> void
+auto play_screen::Update(const screen_input_state& inputState) -> void
 {
   timer.currentValue = performance_counter::QueryValue();
   renderTargetMouseData = inputState.renderTargetMouseData;
@@ -40,15 +43,15 @@ auto play_screen_state::Update(const screen_input_state& inputState) -> void
   }
 }
 
-auto play_screen_state::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+auto play_screen::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
 {
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   m_levelObjectContainer->RenderTo(renderTarget, m_viewTransform);
 }
 
-auto play_screen_state::PlaySoundEffects() const -> void
+auto play_screen::PlaySoundEffects() const -> void
 {
-  const auto soundBuffers = global_sound_buffer_selector { soundData.soundBuffers };
+  const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
 
   if( m_levelState->GetState() == level_state::playing )
   {
@@ -61,17 +64,17 @@ auto play_screen_state::PlaySoundEffects() const -> void
   }
 }
 
-[[nodiscard]] auto play_screen_state::ContinueRunning() const -> bool
+[[nodiscard]] auto play_screen::ContinueRunning() const -> bool
 {
   return continueRunning;
 }
 
-auto play_screen_state::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
+auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
 {
   diagnosticsDataInserter = GetMouseDiagnostics();
 }
 
-void play_screen_state::OnGameRunning(const screen_input_state& inputState)
+void play_screen::OnGameRunning(const screen_input_state& inputState)
 {
   if( m_levelState->GetState() == level_state::playing )
   {
@@ -102,7 +105,7 @@ void play_screen_state::OnGameRunning(const screen_input_state& inputState)
   }
 }
 
-void play_screen_state::OnGamePlaying(const screen_input_state& inputState)
+void play_screen::OnGamePlaying(const screen_input_state& inputState)
 {
   if( KeyPressed(inputState, DIK_ESCAPE) )
   {
@@ -133,7 +136,7 @@ void play_screen_state::OnGamePlaying(const screen_input_state& inputState)
   }
 }
 
-void play_screen_state::OnGamePaused(const screen_input_state& inputState)
+void play_screen::OnGamePaused(const screen_input_state& inputState)
 {
   if( KeyPressed(inputState, DIK_Q) )
   {
@@ -146,12 +149,12 @@ void play_screen_state::OnGamePaused(const screen_input_state& inputState)
   }
 }
 
-auto play_screen_state::UpdateMouseCursorPosition() -> void
+auto play_screen::UpdateMouseCursorPosition() -> void
 {
-  m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
+  m_mouseCursor->SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
 }
 
-auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -> void
+auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
   player->SetThruster(levelControlState.thrust);
@@ -181,22 +184,22 @@ auto play_screen_state::UpdateLevelState(const screen_input_state& inputState) -
   m_levelObjectContainer->Update(timer.currentValue - levelStart - pauseTotal);
 }
 
-bool play_screen_state::ScreenTransitionTimeHasExpired()
+bool play_screen::ScreenTransitionTimeHasExpired()
 {
   return timer.currentValue > transitionEnd;
 }
 
-void play_screen_state::SetScreenTransitionDelay(int timeInSeconds)
+void play_screen::SetScreenTransitionDelay(int timeInSeconds)
 {
   transitionEnd = timer.currentValue + (timeInSeconds * timer.frequency);
 }
 
-bool play_screen_state::AllLevelsAreComplete()
+bool play_screen::AllLevelsAreComplete()
 {
   return std::next(currentLevelDataIterator) == endLevelDataIterator ? true : false;
 }
 
-void play_screen_state::LoadNextLevel()
+void play_screen::LoadNextLevel()
 {
   auto nextLevel = std::next(currentLevelDataIterator);
   assert(nextLevel != endLevelDataIterator);
@@ -207,7 +210,7 @@ void play_screen_state::LoadNextLevel()
   timer.initialValue = timer.initialValue;
 }
 
-level_control_state GetLevelControlState(const screen_input_state& inputState)
+level_control_state play_screen::GetLevelControlState(const screen_input_state& inputState)
 {
   return {
     inputState.windowData.mouse.rightButtonDown, 
@@ -216,55 +219,54 @@ level_control_state GetLevelControlState(const screen_input_state& inputState)
   };
 }
 
-auto play_screen_state::LoadLevel(const game_level_data& levelData) -> void
+auto play_screen::LoadLevel(const game_level_data& levelData) -> void
 {
   m_levelObjectContainer = std::make_unique<level_object_container>(timer.frequency);
 
-  m_levelObjectContainer->GetOverlayObjectInserter() = m_mouseCursor;
-
-  screen_render_brush_selector brushes { renderData.renderBrushes };
-  screen_render_text_format_selector textFormats { renderData.textFormats };
+  m_levelObjectContainer->GetOverlayObjectInserter() = *m_mouseCursor;
 
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [brushes](const auto& object) -> level_island
+  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [this](const auto& object) -> level_island
   {
-    return { object, brushes };
+    return { object, screen_render_brush_selector { m_renderBrushes } };
   });
   
   std::copy(islands.cbegin(), islands.cend(), m_levelObjectContainer->GetActiveObjectInserter());
 
   std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [brushes](const auto& target) -> target_state
+  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [this](const auto& target) -> target_state
   {
-    return { target, brushes };
+    return { target, screen_render_brush_selector { m_renderBrushes } };
   });
 
   std::copy(targets.cbegin(), targets.cend(), m_levelObjectContainer->GetActiveObjectInserter());
 
   AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
 
-  m_levelState = std::make_unique<level_state>(brushes, textFormats);
+  m_levelState = std::make_unique<level_state>( screen_render_brush_selector { m_renderBrushes }, screen_render_text_format_selector { m_textFormats } );
   m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelState;
 
   levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
 
-  m_levelTimer = std::make_unique<level_timer>(brushes, textFormats, levelData.timeLimitInSeconds);
+  m_levelTimer = std::make_unique<level_timer>(screen_render_brush_selector { m_renderBrushes }, screen_render_text_format_selector { m_textFormats } ,
+    levelData.timeLimitInSeconds);
+  
   m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelTimer;
 }
 
-auto play_screen_state::AddPlayer(float x, float y) -> void
+auto play_screen::AddPlayer(float x, float y) -> void
 {
-  screen_render_brush_selector brushSelector { renderData.renderBrushes };
+  screen_render_brush_selector brushSelector { m_renderBrushes };
   player = std::make_unique<player_ship>(timer.frequency, brushSelector);
   player->SetPosition(x, y);
 
   player->SetEventShot([this](float x, float y, float angle) -> void
   {
-    screen_render_brush_selector renderBrushSelector { renderData.renderBrushes };
-    bullet newBullet { x, y, angle, renderBrushSelector };
+    screen_render_brush_selector brushSelector { m_renderBrushes };
+    bullet newBullet { x, y, angle, brushSelector };
     auto activeObjectInserter = this->m_levelObjectContainer->GetActiveObjectInserter();
     activeObjectInserter = newBullet;
     playerShot = true;
@@ -278,13 +280,13 @@ auto play_screen_state::AddPlayer(float x, float y) -> void
   activeObjectInserter = *player;
 }
 
-[[nodiscard]] auto play_screen_state::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F
+[[nodiscard]] auto play_screen::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F
 {
   m_viewTransform = CreateGameLevelTransform(player->GetXPos(), player->GetYPos(), renderScale, renderTargetSize.width, renderTargetSize.height);
   return m_viewTransform;
 }
 
-auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
+auto play_screen::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
 {
   PlaySoundBuffer(soundBuffers[menu_theme], true);
 
@@ -306,7 +308,7 @@ auto play_screen_state::PlaySoundEffects(const global_sound_buffer_selector& sou
   }
 }
 
-[[nodiscard]] auto play_screen_state::GetMouseDiagnostics() const -> std::wstring
+[[nodiscard]] auto play_screen::GetMouseDiagnostics() const -> std::wstring
 {
   return std::format(L"world mouse: {:.2f}, {:.2f}", mouseX, mouseY);
 }

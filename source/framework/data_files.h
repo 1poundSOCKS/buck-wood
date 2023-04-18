@@ -1,8 +1,19 @@
 #ifndef _data_files_
 #define _data_files_
 
-struct config_file
+class config_file
 {
+public:
+
+  static auto create(const wchar_t* filename) -> void;
+  static auto getSetting(const std::wstring& name) -> std::wstring;
+
+private:
+
+  static config_file* m_configFile;
+
+  config_file(const wchar_t* filename);
+
   struct setting
   {
     setting(const std::wstring& text);
@@ -11,9 +22,8 @@ struct config_file
     std::wstring value;
   };
 
-  config_file(const wchar_t* filename);
-
-  std::map<std::wstring, std::wstring> settings;
+  using settings_collection = std::map<std::wstring, std::wstring>;
+  settings_collection m_settings;
 };
 
 struct wav_file_header
