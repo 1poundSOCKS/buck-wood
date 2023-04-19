@@ -82,7 +82,7 @@ private:
   std::vector<float> levelTimes;
 
   game_level_data_loader m_gameLevelDataLoader;
-  std::unique_ptr<mouse_cursor> m_mouseCursor;
+  mouse_cursor m_mouseCursor;
   std::unique_ptr<player_ship> player;
   std::unique_ptr<level_timer> m_levelTimer;
   std::unique_ptr<level_state> m_levelState;

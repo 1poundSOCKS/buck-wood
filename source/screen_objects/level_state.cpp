@@ -10,6 +10,8 @@ level_state::level_state()
 
 auto level_state::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
   m_brush = screen_render_brush_cyan.CreateBrush(renderTarget);
   m_textFormat = render_text_format_play_screen_state.CreateTextFormat(dwriteFactory);
 }

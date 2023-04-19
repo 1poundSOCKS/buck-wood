@@ -151,7 +151,7 @@ void play_screen::OnGamePaused(const screen_input_state& inputState)
 
 auto play_screen::UpdateMouseCursorPosition() -> void
 {
-  m_mouseCursor->SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
+  m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
 }
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
@@ -208,7 +208,6 @@ bool play_screen::AllLevelsAreComplete()
   else
   {
     m_levelObjectContainer.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
-    m_mouseCursor = std::make_unique<mouse_cursor>();
     LoadCurrentLevel();
     return true;
   }
@@ -233,7 +232,7 @@ auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelObjectContainer.Clear();
 
-  m_levelObjectContainer.AppendOverlayObject(*m_mouseCursor);
+  m_levelObjectContainer.AppendOverlayObject(m_mouseCursor);
 
   std::vector<level_island> islands;
   m_gameLevelDataLoader.LoadIslands(std::back_inserter(islands));
