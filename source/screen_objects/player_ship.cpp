@@ -10,74 +10,64 @@
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-player_ship::player_ship() : data(std::make_shared<data_type>())
+auto player_ship::control::SetPosition(float x, float y) -> void
 {
-  data->shotTimerInterval = ( clock_frequency::get() * shotTimeNumerator ) / shotTimeDenominator;
+  m_x = x;
+  m_y = y;
+}
+
+auto player_ship::control::SetAngle(float angle) -> void
+{
+  m_angle = angle;
+}
+
+auto player_ship::control::SetThruster(bool thrusterOn) -> void
+{
+  m_thrusterOn = thrusterOn;
+}
+
+auto player_ship::control::SetTrigger(bool triggerPressed) -> void
+{
+  m_triggerPressed = triggerPressed;
+}
+
+auto player_ship::control::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
+{
+  m_eventShot = eventShot;
+}
+
+auto player_ship::control::SetEventDied(std::function<void(float,float)> eventDied) -> void
+{
+  m_eventDied = eventDied;
+}
+
+[[nodiscard]] auto player_ship::control::GetPosition() const -> game_point
+{
+  return { m_x, m_y };
+}
+
+[[nodiscard]] auto player_ship::control::ThrusterOn() const -> bool
+{
+  return m_thrusterOn;
+}
+
+player_ship::player_ship(control_data controlData) : m_controlData(controlData)
+{
+  m_shotTimerInterval = ( clock_frequency::get() * shotTimeNumerator ) / shotTimeDenominator;
   UpdateShipGeometryData();
-}
-
-auto player_ship::SetPosition(float x, float y) -> void
-{
-  data->xPos = x;
-  data->yPos = y;
-}
-
-auto player_ship::SetThruster(bool thrusterOn) -> void
-{
-  data->controlState.thrust = thrusterOn;
-}
-
-auto player_ship::SetShoot(bool shoot) -> void
-{
-  data->controlState.shoot = shoot;  
-}
-
-auto player_ship::SetAngle(float angle) -> void
-{
-  data->angle = angle;
-}
-
-auto player_ship::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
-{
-  data->eventShot = eventShot;
-}
-
-auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> void
-{
-  data->eventDied = eventDied;
-}
-
-[[nodiscard]] auto player_ship::GetXPos() const -> float
-{
-  return data->xPos;
-}
-
-[[nodiscard]] auto player_ship::GetYPos() const -> float
-{
-  return data->yPos;
-}
-
-[[nodiscard]] auto player_ship::GetState() const -> state_type
-{
-  return data->state;
-}
-
-[[nodiscard]] auto player_ship::ThrusterOn() const -> bool
-{
-  return data->thrusterOn;
 }
 
 auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
-  data->shipBrush = screen_render_brush_white.CreateBrush(renderTarget);
-  data->thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
+  m_shipBrush = screen_render_brush_white.CreateBrush(renderTarget);
+  m_thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
 }
 
 auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
-  if( data->state != player_ship::alive ) return;
+  if( m_state != player_ship::alive ) return;
 
   const auto forceOfGravity = 0.0f;
   const auto playerThrust = 200.0f;
@@ -87,27 +77,22 @@ auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserte
   float forceX = 0.0f;
   float forceY = forceOfGravity;
 
-  if( data->controlState.thrust )
+  if( m_controlData->m_thrusterOn )
   {
-    data->thrusterOn = true;
-    forceX += playerThrust * sin(DEGTORAD(data->angle));
-    forceY -= playerThrust * cos(DEGTORAD(data->angle));
-  }
-  else
-  {
-    data->thrusterOn = false;
+    forceX += playerThrust * sin(DEGTORAD(m_controlData->m_angle));
+    forceY -= playerThrust * cos(DEGTORAD(m_controlData->m_angle));
   }
   
-  data->xVelocity += forceX * gameUpdateInterval;
-  data->yVelocity += forceY * gameUpdateInterval;
-  data->xPos += data->xVelocity * gameUpdateInterval;
-  data->yPos += data->yVelocity * gameUpdateInterval;
+  m_velocityX += forceX * gameUpdateInterval;
+  m_velocityY += forceY * gameUpdateInterval;
+  m_controlData->m_x += m_velocityX * gameUpdateInterval;
+  m_controlData->m_y += m_velocityY * gameUpdateInterval;
 
   UpdateShipGeometryData();
 
-  if( data->controlState.shoot && PlayerCanShoot(tickCount) )
+  if( m_controlData->m_triggerPressed && PlayerCanShoot(tickCount) )
   {
-    playEventInserter = event_player_shot { data->xPos, data->yPos, data->angle, data->eventShot };
+    playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
   }
 }
 
@@ -118,18 +103,18 @@ auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserte
 
 auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 {
-  if( data->state != player_ship::alive ) return;
+  if( m_state != player_ship::alive ) return;
 
   std::vector<render_line> renderLines;
   auto renderLinesInserter = std::back_inserter(renderLines);
 
-  CreateConnectedRenderLines(data->points.cbegin(), data->points.cend(), renderLinesInserter, data->shipBrush.get(), 2);
+  CreateConnectedRenderLines(m_points.cbegin(), m_points.cend(), renderLinesInserter, m_shipBrush.get(), 2);
 
-  if( data->thrusterOn )
+  if( m_controlData->m_thrusterOn )
   {
     std::vector<game_point> thrusterPoints;
     GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
-    CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, data->thrusterBrush.get(), 5);
+    CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_thrusterBrush.get(), 5);
   }
 
   RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
@@ -142,7 +127,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 
 [[nodiscard]] auto player_ship::HasCollidedWith(const collision_data& collisionData) const -> bool
 {
-  return collisionData.PointInside(data->xPos, data->yPos);
+  return collisionData.PointInside(m_controlData->m_x, m_controlData->m_y);
 }
 
 [[nodiscard]] auto player_ship::GetCollisionEffect() const -> collision_effect
@@ -152,11 +137,11 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 
 auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, play_event_inserter playEventInserter) -> void
 {
-  data->state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
+  m_state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
 
-  if( data->state == dead )
+  if( m_state == dead )
   {
-    playEventInserter = event_player_dead { data->xPos, data->yPos, data->eventDied };
+    playEventInserter = event_player_dead { m_controlData->m_x, m_controlData->m_y, m_controlData->m_eventDied };
   }
 }
 
@@ -167,25 +152,26 @@ auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, 
 
 auto player_ship::UpdateShipGeometryData() -> void
 {
-  data->points.clear();
-  GetTransformedShipPointsGeometry(std::back_inserter(data->points));
-  CreateConnectedLines(data->points.cbegin(), data->points.cend(), std::back_inserter(data->lines));
+  m_points.clear();
+  m_lines.clear();
+  GetTransformedShipPointsGeometry(std::back_inserter(m_points));
+  CreateConnectedLines(m_points.cbegin(), m_points.cend(), std::back_inserter(m_lines));
 }
 
 [[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>
 {
   std::vector<game_line> lines;
-  CreateConnectedLines(data->points.cbegin(), data->points.cend(),std::back_inserter(lines));
+  CreateConnectedLines(m_points.cbegin(), m_points.cend(),std::back_inserter(lines));
   return lines;
 }
 
-[[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) const -> bool
+[[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) -> bool
 {
-  data->shotTimer += tickCount;
+  m_shotTimer += tickCount;
 
-  if( data->shotTimer >= data->shotTimerInterval )
+  if( m_shotTimer >= m_shotTimerInterval )
   {
-    data->shotTimer %= data->shotTimerInterval;
+    m_shotTimer %= m_shotTimerInterval;
     return true;
   }
   else

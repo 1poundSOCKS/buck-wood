@@ -9,7 +9,7 @@ class target_state
 {
 public:
 
-  target_state(const game_point& position);
+  target_state(float x, float y);
   
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;
@@ -23,7 +23,6 @@ public:
 
 private:
 
-  const game_point& position;
   std::vector<game_point> m_points;
   bool activated = false;
   std::vector<game_line> shape;

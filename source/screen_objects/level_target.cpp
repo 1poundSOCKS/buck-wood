@@ -3,11 +3,11 @@
 #include "game_objects.h"
 #include "render_defs.h"
 
-target_state::target_state(const game_point& position) : position(position)
+target_state::target_state(float x, float y)
 {
   std::vector<game_point> points;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
-  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(position.x, position.y));
+  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(x, y));
 
   CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(shape));
 

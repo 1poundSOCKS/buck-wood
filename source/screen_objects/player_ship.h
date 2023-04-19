@@ -13,14 +13,41 @@ public:
 
   enum state_type { alive, dead };
 
-  player_ship();
+  class control
+  {
+    friend class player_ship;
+
+  public:
+  
+    auto SetPosition(float x, float y) -> void;
+    auto SetAngle(float angle) -> void;
+    auto SetThruster(bool thrusterOn) -> void;
+    auto SetTrigger(bool triggerPressed) -> void;
+    auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
+    auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
+
+    [[nodiscard]] auto GetPosition() const -> game_point;
+    [[nodiscard]] auto ThrusterOn() const -> bool;
+
+  private:
+
+    float m_x = 0;
+    float m_y = 0;
+    float m_angle = 0;
+    bool m_thrusterOn = false;
+    bool m_triggerPressed = false;
+    std::function<void(float,float,float)> m_eventShot;
+    std::function<void(float,float)> m_eventDied;
+  };
+
+  using control_data = std::shared_ptr<control>;
+
+  player_ship(control_data controlData);
 
   auto SetPosition(float x, float y) -> void;
   auto SetThruster(bool thrusterOn) -> void;
   auto SetShoot(bool shoot) -> void;
   auto SetAngle(float angle) -> void;
-  auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
-  auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
 
   [[nodiscard]] auto GetXPos() const -> float;
   [[nodiscard]] auto GetYPos() const -> float;
@@ -65,32 +92,24 @@ private:
       D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos));
   }
 
-  [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) const -> bool;
+  [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
 
-  struct data_type
-  {
-    state_type state = alive;
-    float xPos = 0;
-    float yPos = 0;
-    float xVelocity = 0;
-    float yVelocity = 0;
-    float angle = 0;
-    bool thrusterOn = false;
-    int64_t shotTimerInterval = 0;
-    int64_t shotTimer = 0;
-
-    std::vector<game_point> points;
-    std::vector<game_line> lines;
-    player_control_state controlState;
-    winrt::com_ptr<ID2D1SolidColorBrush> shipBrush;
-    winrt::com_ptr<ID2D1SolidColorBrush> thrusterBrush;
-    std::function<void(float,float,float)> eventShot;
-    std::function<void(float,float)> eventDied;
-  };
+  control_data m_controlData;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  std::shared_ptr<data_type> data;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_shipBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_thrusterBrush;
+
   collision_data m_collisionData;
+
+  state_type m_state = alive;
+  float m_velocityX = 0;
+  float m_velocityY = 0;
+  int64_t m_shotTimerInterval = 0;
+  int64_t m_shotTimer = 0;
+
+  std::vector<game_point> m_points;
+  std::vector<game_line> m_lines;
 };
 
 #endif

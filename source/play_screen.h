@@ -20,6 +20,8 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
+#include "pausable_timer.h"
+#include "stopwatch.h"
 
 class play_screen
 {
@@ -59,38 +61,40 @@ private:
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
-  performance_counter::data timer = { 0, 0, 0 };
-  
-  int64_t pauseStart = 0;
-  int64_t pauseTotal = 0;
-  int64_t levelStart = 0;
-  int64_t transitionEnd = 0;
+  pausable_timer m_timer;
 
+  stopwatch m_levelStopwatch;
+  stopwatch m_transitionStopwatch;
+
+  int64_t m_elapsedTicks = 0;
+  int64_t m_levelRemainingTicks = 0;
+  int64_t m_transitionRemainingTicks = 0;
+  
   bool m_gameComplete = false;
   bool continueRunning = true;
-
-  game_level_data_index::const_iterator currentLevelDataIterator;
-  game_level_data_index::const_iterator endLevelDataIterator;
 
   render_target_mouse_data renderTargetMouseData;
   game_rect m_viewRect;
   D2D1::Matrix3x2F m_viewTransform;
 
   level_object_container m_levelObjectContainer;
+
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
   game_level_data_loader m_gameLevelDataLoader;
+
   mouse_cursor m_mouseCursor;
-  std::unique_ptr<player_ship> player;
-  std::unique_ptr<level_timer> m_levelTimer;
-  std::unique_ptr<level_state> m_levelState;
+
+  player_ship::control_data m_playerControlData;
+  level_timer::control_data m_timerControlData;
+  level_state::control_data m_stateControlData;
 
   float mouseX = 0;
   float mouseY = 0;
 
-  bool playerShot = false;
-  bool targetShot = false;
+  bool m_playerShot = false;
+  bool m_targetActivated = false;
 };
 
 #endif

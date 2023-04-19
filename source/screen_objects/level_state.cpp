@@ -3,8 +3,27 @@
 #include "render.h"
 #include "render_defs.h"
 
-level_state::level_state()
-: m_sharedData(std::make_shared<shared_data_type>())
+auto level_state::control::SetState(state_type stateValue) -> void
+{
+  m_state = stateValue;
+}
+
+auto level_state::control::GetText() const -> LPCWSTR
+{
+  switch( m_state )
+  {
+    case paused:
+      return L"PAUSED";
+    case dead:
+      return L"DEAD";
+    case complete:
+      return L"COMPLETE";
+    default:
+      return nullptr;
+  }
+}
+
+level_state::level_state(control_data controlData) : m_controlData(controlData)
 {
 }
 
@@ -22,28 +41,12 @@ auto level_state::Update(int64_t clockCount) -> void
 
 auto level_state::Render(D2D1_RECT_F viewRect) const -> void
 {
-  switch( m_sharedData->state )
+  LPCWSTR renderText = m_controlData->GetText();
+
+  if( renderText )
   {
-    case paused:
-      RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), L"PAUSED", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-      break;
-    case dead:
-      RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), L"DEAD", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-      break;
-    case complete:
-      RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), L"LEVEL COMPLETE", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-      break;
+    RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), renderText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
-}
-
-auto level_state::SetState(state_type state) -> void
-{
-  m_sharedData->state = state;  
-}
-
-auto level_state::GetState() const -> state_type
-{
-  return m_sharedData->state;
 }
 
 std::wstring GetGameCompleteMsg(const std::vector<float>& levelTimes)

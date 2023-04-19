@@ -16,14 +16,14 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_renderTarget->AddRef();
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
-  timer.initialValue = timer.currentValue = performance_counter::QueryValue();
-  levelStart = this->timer.initialValue;
   continueRunning = LoadFirstLevel();
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  timer.currentValue = performance_counter::QueryValue();
+  m_elapsedTicks = m_timer.Update(performance_counter::QueryValue());
+  m_levelRemainingTicks = m_levelStopwatch.Update(m_elapsedTicks);
+
   renderTargetMouseData = inputState.renderTargetMouseData;
   playerShot = targetShot = false;
 
@@ -81,13 +81,13 @@ void play_screen::OnGameRunning(const screen_input_state& inputState)
   }
   else if( m_levelState->GetState() == level_state::complete )
   {
-    levelTimes.push_back(m_levelTimer->GetTimeRemainingInSeconds());
+    levelTimes.push_back(static_cast<float>(m_levelRemainingTicks) / static_cast<float>(clock_frequency::get()));
     
     if( AllLevelsAreComplete() )
     {
       m_gameComplete = true;
       continueRunning = false;
-      SetScreenTransitionDelay(3);
+      m_transitionStopwatch.Start(3 * clock_frequency::get());
     }
     else
     {
@@ -110,28 +110,28 @@ void play_screen::OnGamePlaying(const screen_input_state& inputState)
   if( KeyPressed(inputState, DIK_ESCAPE) )
   {
     m_levelState->SetState(level_state::paused);
-    pauseStart = timer.currentValue;
+    m_timer.Pause();
   }
   else
   {
-    m_levelObjectContainer.Update(timer.currentValue - levelStart - pauseTotal);
+    m_levelObjectContainer.Update(m_elapsedTicks);
 
-    if( m_levelTimer->HasExpired() )
+    if( m_levelRemainingTicks == 0 )
     {
       m_levelState->SetState(level_state::dead);
-      SetScreenTransitionDelay(3);
+      m_transitionStopwatch.Start(3 * clock_frequency::get());
     }
     else if( m_levelObjectContainer.IsComplete() )
     {
       m_levelState->SetState(level_state::complete);
-      m_levelTimer->Stop();
-      SetScreenTransitionDelay(3);
+      m_timer.Stop();
+      m_transitionStopwatch.Start(3 * clock_frequency::get());
     }
     else if( player->GetState() == player_ship::dead )
     {
       m_levelState->SetState(level_state::dead);
-      m_levelTimer->Stop();
-      SetScreenTransitionDelay(3);
+      m_timer.Stop();
+      m_transitionStopwatch.Start(3 * clock_frequency::get());
     }
   }
 }
@@ -145,7 +145,7 @@ void play_screen::OnGamePaused(const screen_input_state& inputState)
   else if( KeyPressed(inputState, DIK_ESCAPE) )
   {
     m_levelState->SetState(level_state::playing);
-    pauseTotal += ( timer.currentValue - pauseStart );
+    m_timer.Unpause();
   }
 }
 
@@ -157,8 +157,9 @@ auto play_screen::UpdateMouseCursorPosition() -> void
 auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
-  player->SetThruster(levelControlState.thrust);
-  player->SetShoot(levelControlState.shoot);
+
+  m_playerControlData->SetThruster(levelControlState.thrust);
+  m_playerControlData->SetTrigger(levelControlState.shoot);
 
   auto invertedViewTransform = CreateViewTransform(levelControlState.renderTargetMouseData.size);
 
@@ -170,8 +171,9 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
     mouseX = outPoint.x;
     mouseY = outPoint.y;
 
-    auto playerAngle = CalculateAngle(player->GetXPos(), player->GetYPos(), outPoint.x, outPoint.y);
-    player->SetAngle(playerAngle);
+    auto playerPosition = m_playerControlData->GetPosition();
+    auto playerAngle = CalculateAngle(playerPosition.x, playerPosition.y, outPoint.x, outPoint.y);
+    m_playerControlData->SetAngle(playerAngle);
 
     D2D1_POINT_2F screenTopLeft { 0, 0 };
     D2D1_POINT_2F screenBottomRight { levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 };
@@ -181,17 +183,12 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
-  m_levelObjectContainer.Update(timer.currentValue - levelStart - pauseTotal);
+  m_levelObjectContainer.Update(m_elapsedTicks);
 }
 
 bool play_screen::ScreenTransitionTimeHasExpired()
 {
-  return timer.currentValue > transitionEnd;
-}
-
-void play_screen::SetScreenTransitionDelay(int timeInSeconds)
-{
-  transitionEnd = timer.currentValue + (timeInSeconds * clock_frequency::get());
+  return m_transitionRemainingTicks == 0;
 }
 
 bool play_screen::AllLevelsAreComplete()
@@ -223,7 +220,6 @@ bool play_screen::AllLevelsAreComplete()
   {
     m_gameLevelDataLoader.NextLevel();
     LoadCurrentLevel();
-    levelStart = timer.currentValue;
     return true;
   }
 }
@@ -234,29 +230,25 @@ auto play_screen::LoadCurrentLevel() -> void
 
   m_levelObjectContainer.AppendOverlayObject(m_mouseCursor);
 
-  std::vector<level_island> islands;
-  m_gameLevelDataLoader.LoadIslands(std::back_inserter(islands));
+  m_gameLevelDataLoader.LoadIslands(m_levelObjectContainer);
+  m_gameLevelDataLoader.LoadTargets(m_levelObjectContainer);
 
-  std::for_each(islands.begin(), islands.end(), [this](auto& island)
+  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_levelObjectContainer);
+  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_levelObjectContainer);
+  m_stateControlData = m_gameLevelDataLoader.LoadState(m_levelObjectContainer);
+
+  m_playerControlData->SetEventShot([this](float x, float y, float angle) -> void
   {
-    m_levelObjectContainer.AppendActiveObject(island);
+    m_levelObjectContainer.AppendActiveObject(bullet { x, y, angle });
+    m_playerShot = true;
   });
 
-  std::vector<target_state> targets;
-  m_gameLevelDataLoader.LoadTargets(std::back_inserter(targets));
-
-  std::for_each(targets.begin(), targets.end(), [this](auto& target)
+  m_playerControlData->SetEventDied([this](float x, float y) -> void
   {
-    m_levelObjectContainer.AppendActiveObject(target);
   });
 
-  LoadPlayer();
-
-  m_levelState = std::make_unique<level_state>();
-  m_levelObjectContainer.AppendOverlayObject(*m_levelState);
-  
-  m_levelTimer = m_gameLevelDataLoader.LoadTimer();
-  m_levelObjectContainer.AppendOverlayObject(*m_levelTimer);
+  m_timer.Start(performance_counter::QueryValue());
+  m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * clock_frequency::get());
 }
 
 level_control_state play_screen::GetLevelControlState(const screen_input_state& inputState)
@@ -268,26 +260,10 @@ level_control_state play_screen::GetLevelControlState(const screen_input_state& 
   };
 }
 
-auto play_screen::LoadPlayer() -> void
-{
-  player = m_gameLevelDataLoader.LoadPlayer();
-
-  player->SetEventShot([this](float x, float y, float angle) -> void
-  {
-    m_levelObjectContainer.AppendActiveObject(bullet { x, y, angle });
-    playerShot = true;
-  });
-
-  player->SetEventDied([this](float x, float y) -> void
-  {
-  });
-
-  m_levelObjectContainer.AppendActiveObject(*player);
-}
-
 [[nodiscard]] auto play_screen::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F
 {
-  m_viewTransform = CreateGameLevelTransform(player->GetXPos(), player->GetYPos(), renderScale, renderTargetSize.width, renderTargetSize.height);
+  auto playerPosition = m_playerControlData->GetPosition();
+  m_viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, renderScale, renderTargetSize.width, renderTargetSize.height);
   return m_viewTransform;
 }
 
@@ -295,18 +271,18 @@ auto play_screen::PlaySoundEffects(const global_sound_buffer_selector& soundBuff
 {
   PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-  if( player->ThrusterOn() )
+  if( m_playerControlData->ThrusterOn() )
     PlaySoundBuffer(soundBuffers[thrust], true);
   else
     StopSoundBufferPlay(soundBuffers[thrust]);
 
-  if( playerShot )
+  if( m_playerShot )
   {
     ResetSoundBuffer(soundBuffers[shoot]);
     PlaySoundBuffer(soundBuffers[shoot]);
   }
 
-  if( targetShot )
+  if( m_targetActivated )
   {
     ResetSoundBuffer(soundBuffers[shoot]);
     PlaySoundBuffer(soundBuffers[target_activated]);

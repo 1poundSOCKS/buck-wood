@@ -1,29 +1,35 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "global_state.h"
+#include "level_object_container.h"
 
 game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(global_state::firstLevelData())
 {
 }
 
-auto game_level_data_loader::LoadIslands(std::back_insert_iterator<std::vector<level_island>> islandInserter) const -> void
+auto game_level_data_loader::LoadIslands(level_object_container& levelObjectContainer) const -> void
 {
-  LoadIslands(**m_currentLevelDataIterator, islandInserter);
+  LoadIslands(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-auto game_level_data_loader::LoadTargets(std::back_insert_iterator<std::vector<target_state>> targetInserter) const -> void
+auto game_level_data_loader::LoadTargets(level_object_container& levelObjectContainer) const -> void
 {
-  LoadTargets(**m_currentLevelDataIterator, targetInserter);
+  LoadTargets(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer() const -> std::unique_ptr<player_ship>
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(level_object_container& levelObjectContainer) const -> player_ship::control_data
 {
-  return LoadPlayer(**m_currentLevelDataIterator);
+  return LoadPlayer(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadTimer() const -> std::unique_ptr<level_timer>
+[[nodiscard]] auto game_level_data_loader::LoadTimer(level_object_container& levelObjectContainer) const -> level_timer::control_data
 {
-  return LoadTimer(**m_currentLevelDataIterator);
+  return LoadTimer(**m_currentLevelDataIterator, levelObjectContainer);
+}
+
+[[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int64_t
+{
+  (*m_currentLevelDataIterator)->timeLimitInSeconds;
 }
 
 auto game_level_data_loader::NextLevel() -> void
@@ -35,35 +41,44 @@ auto game_level_data_loader::NextLevel() -> void
   return m_currentLevelDataIterator == global_state::endLevelData();
 }
 
-auto game_level_data_loader::LoadIslands(const game_level_data& levelData, std::back_insert_iterator<std::vector<level_island>> islandInserter) const -> void
+auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
 {
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::transform(levelObjects.cbegin(), levelObjects.cend(), islandInserter, [this](const auto& object) -> level_island
+  std::for_each(levelObjects.cbegin(), levelObjects.cend(), [this, &levelObjectContainer](const auto& object) -> level_island
   {
-    return { object };
+    levelObjectContainer.AppendActiveObject(level_island { object });
   });
 }
 
-auto game_level_data_loader::LoadTargets(const game_level_data& levelData, std::back_insert_iterator<std::vector<target_state>> targetInserter) const -> void
+auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
 {
   std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), targetInserter, [this](const auto& position) -> target_state
+  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> target_state
   {
-    return { position };
+    levelObjectContainer.AppendActiveObject(target_state { position.x, position.y });
   });
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData) const -> std::unique_ptr<player_ship>
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> player_ship::control_data
 {
-  auto playerShip = std::make_unique<player_ship>();
-  playerShip->SetPosition(levelData.playerStartPosX, levelData.playerStartPosY);
-  return playerShip;
+  auto controlData = std::make_shared<player_ship::control>();
+  levelObjectContainer.AppendActiveObject(player_ship { controlData });
+  return controlData;
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData) const -> std::unique_ptr<level_timer>
+[[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> level_timer::control_data
 {
-  return std::make_unique<level_timer>(levelData.timeLimitInSeconds);
+  auto controlData = std::make_shared<level_timer::control>();
+  levelObjectContainer.AppendOverlayObject(level_timer { controlData });
+  return controlData;
+}
+
+[[nodiscard]] auto game_level_data_loader::LoadState(level_object_container& levelObjectContainer) const -> level_state::control_data
+{
+  auto controlData = std::make_shared<level_state::control>();
+  levelObjectContainer.AppendOverlayObject(level_state { controlData });
+  return controlData;
 }
