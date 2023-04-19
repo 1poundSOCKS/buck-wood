@@ -1,7 +1,5 @@
 #pragma once
 
-#include "screen_render_data.h"
-
 class level_state
 {
 public:

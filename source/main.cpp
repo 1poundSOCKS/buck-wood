@@ -4,7 +4,6 @@
 #include "global_state.h"
 #include "screen_runner.h"
 #include "main_window.h"
-#include "screen_render_data.h"
 #include "sound_data.h"
 
 #include "main_menu_screen.h"

@@ -1,18 +1,15 @@
 #pragma once
 
-#include "screen_render_data.h"
-
 class mouse_cursor
 {
 public:
 
   mouse_cursor();
+  auto SetPosition(float x, float y) -> void;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(int64_t clockCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
-
-  auto SetPosition(float x, float y) -> void;
 
 private:
 

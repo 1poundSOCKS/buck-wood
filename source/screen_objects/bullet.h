@@ -1,7 +1,6 @@
 #ifndef _bullet_
 #define _bullet_
 
-#include "screen_render_data.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"

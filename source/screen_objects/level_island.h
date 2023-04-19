@@ -1,8 +1,6 @@
 #ifndef _level_island_
 #define _level_island_
 
-#include "framework.h"
-#include "screen_render_data.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"

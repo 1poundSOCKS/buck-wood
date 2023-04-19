@@ -3,9 +3,7 @@
 
 #include "game_objects.h"
 #include "player_control_state.h"
-#include "screen_render_data.h"
 #include "play_event.h"
-#include "bullet.h"
 #include "collision_data.h"
 #include "collision_effect.h"
 
@@ -91,7 +89,6 @@ private:
   };
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  screen_render_brush_selector brushes;
   std::shared_ptr<data_type> data;
   collision_data m_collisionData;
 };

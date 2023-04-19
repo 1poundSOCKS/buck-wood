@@ -9,7 +9,6 @@
 #include "player_ship.h"
 #include "bullet.h"
 #include "screen_input_state.h"
-#include "screen_render_data.h"
 #include "level_control_state.h"
 #include "area_grid.h"
 #include "level_target.h"

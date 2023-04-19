@@ -1,8 +1,6 @@
 #ifndef _level_target_
 #define _level_target_
 
-#include "framework.h"
-#include "screen_render_data.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
@@ -10,6 +8,7 @@
 class target_state
 {
 public:
+
   target_state(const game_point& position);
   
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
@@ -23,6 +22,7 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:
+
   const game_point& position;
   std::vector<game_point> m_points;
   bool activated = false;
