@@ -2,9 +2,29 @@
 #include "level_object_container.h"
 #include "game_objects.h"
 #include "game_constants.h"
+#include "clock_frequency.h"
 
-level_object_container::level_object_container(int64_t counterFrequency) : counterFrequency(counterFrequency)
+level_object_container::level_object_container()
 {
+}
+
+auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+{
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
+
+  m_dwriteFactory.attach(dwriteFactory);
+  m_dwriteFactory->AddRef();
+
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, renderTarget, dwriteFactory](auto& object)
+  {
+    object.Initialize(renderTarget, dwriteFactory);
+  });
+
+  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this, renderTarget, dwriteFactory](auto& object)
+  {
+    object.Initialize(renderTarget, dwriteFactory);
+  });
 }
 
 [[nodiscard]] auto level_object_container::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>
@@ -35,7 +55,7 @@ auto level_object_container::Update(int64_t counterValue) -> void
   std::list<play_event> events;
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& object)
   {
-    object.Update(this->counterFrequency, this->currentTimerCount - this->previousTimerCount, std::back_inserter(events));
+    object.Update(currentTimerCount - previousTimerCount, std::back_inserter(events));
   });
 
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& mainObject)
@@ -64,36 +84,45 @@ auto level_object_container::Update(int64_t counterValue) -> void
 
   std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
   {
-    object.Update(this->counterFrequency, this->currentTimerCount - this->previousTimerCount);
+    object.Update(currentTimerCount - previousTimerCount);
   });
 }
 
 float level_object_container::GetUpdateInterval()
 {
   int64_t intervalCount = currentTimerCount - previousTimerCount;
-  return static_cast<float>(intervalCount) / static_cast<float>(counterFrequency) * gameSpeedMultiplier;
+  return static_cast<float>(intervalCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
 }
 
-auto level_object_container::RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> void
+auto level_object_container::Render(const D2D1::Matrix3x2F& viewTransform) const -> void
 {
-  renderTarget->SetTransform(viewTransform);
+  m_renderTarget->SetTransform(viewTransform);
 
-  auto viewRect = GetViewRect(renderTarget, viewTransform);
+  auto viewRect = GetViewRect(m_renderTarget.get(), viewTransform);
 
-  std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [renderTarget, viewRect](const auto& object)
+  std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [viewRect](const auto& object)
   {
-    object.RenderTo(renderTarget, viewRect);
+    object.Render(viewRect);
   });
 
-  renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  auto renderTargetSize = m_renderTarget->GetSize();
+  D2D1_RECT_F overlayViewRect = { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 };
 
-  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [renderTarget](const auto& object)
+  m_renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+
+  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [overlayViewRect](const auto& object)
   {
-    object.RenderTo(renderTarget);
+    object.Render(overlayViewRect);
   });
 }
 
-[[nodiscard]] auto level_object_container::GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> D2D1_RECT_F
+auto level_object_container::Clear() -> void
+{
+  m_activeObjects.clear();
+  m_overlayObjects.clear();  
+}
+
+[[nodiscard]] auto level_object_container::GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) const -> D2D1_RECT_F
 {
   auto renderTargetSize = renderTarget->GetSize();
   auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };

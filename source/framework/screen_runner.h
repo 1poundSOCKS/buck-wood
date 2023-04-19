@@ -106,7 +106,7 @@ void UpdateScreen(
     render_guard renderGuard(data.renderTarget);
 
     auto startRenderTime = performance_counter::QueryValue();
-    screenState.RenderTo(data.renderTarget.get());
+    screenState.Render();
     auto endRenderTime = performance_counter::QueryValue();
 
     diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));

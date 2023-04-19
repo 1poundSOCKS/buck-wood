@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "bullet.h"
 #include "game_constants.h"
+#include "render_defs.h"
+#include "clock_frequency.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
   return { -4, -4, 4, 4 };
 }
 
-bullet::bullet(float x, float y, float angle, screen_render_brush_selector brushes) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
+bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
 {
   static const float bulletSpeed = 300.0f;
   static const float bulletRange = 2000.0f;
@@ -16,14 +18,18 @@ bullet::bullet(float x, float y, float angle, screen_render_brush_selector brush
   xVelocity = bulletSpeed * sin(DEGTORAD(angle));
 
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
-
-  brush.attach(brushes[green]);
-  brush->AddRef();
 }
 
-auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto bullet::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
-  auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
+  brush = screen_render_brush_yellow.CreateBrush(renderTarget);
+}
+
+auto bullet::Update(int64_t tickCount, play_event_inserter playEventInserter) -> void
+{
+  auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
 
@@ -35,10 +41,10 @@ auto bullet::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserte
   return true;
 }
 
-auto bullet::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+auto bullet::Render(D2D1_RECT_F viewRect) const -> void
 {
   const D2D1_RECT_F rect = GetBulletRect();
-  renderTarget->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
+  m_renderTarget->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
 }
 
 [[nodiscard]] auto bullet::GetCollisionData() -> collision_data

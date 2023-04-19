@@ -4,18 +4,16 @@
 #include "event_player_shot.h"
 #include "event_player_dead.h"
 #include "game_constants.h"
+#include "render_defs.h"
+#include "clock_frequency.h"
 
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-player_ship::player_ship(int64_t tickFrequency, screen_render_brush_selector brushes) : brushes(brushes), data(std::make_shared<data_type>())
+player_ship::player_ship() : data(std::make_shared<data_type>())
 {
-  data->shotTimerInterval = ( tickFrequency * shotTimeNumerator ) / shotTimeDenominator;
+  data->shotTimerInterval = ( clock_frequency::get() * shotTimeNumerator ) / shotTimeDenominator;
   UpdateShipGeometryData();
-  data->shipBrush.attach(brushes[white]);
-  data->shipBrush->AddRef();
-  data->thrusterBrush.attach(brushes[red]);
-  data->thrusterBrush->AddRef();
 }
 
 auto player_ship::SetPosition(float x, float y) -> void
@@ -69,14 +67,22 @@ auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> vo
   return data->thrusterOn;
 }
 
-auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+{
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
+  data->shipBrush = screen_render_brush_white.CreateBrush(renderTarget);
+  data->thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
+}
+
+auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
   if( data->state != player_ship::alive ) return;
 
   const auto forceOfGravity = 0.0f;
   const auto playerThrust = 200.0f;
 
-  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(tickFrequency) * gameSpeedMultiplier;
+  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
@@ -110,7 +116,7 @@ auto player_ship::Update(int64_t tickFrequency, int64_t tickCount, play_event_in
   return true;
 }
 
-auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( data->state != player_ship::alive ) return;
 
@@ -126,7 +132,7 @@ auto player_ship::RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect
     CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, data->thrusterBrush.get(), 5);
   }
 
-  RenderLines(renderTarget, renderLines.cbegin(), renderLines.cend());
+  RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
 }
 
 [[nodiscard]] auto player_ship::GetCollisionData() -> collision_data

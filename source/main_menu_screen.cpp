@@ -3,15 +3,19 @@
 #include "screen_render.h"
 #include "render_defs.h"
 
+inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
+
 main_menu_screen::main_menu_screen()
 {
 }
 
 auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
   m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
-  m_menuTextFormat = CreateScreenRenderTextFormat(dwriteFactory, L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 30);
+  m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
@@ -50,14 +54,13 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
   }
 }
 
-auto main_menu_screen::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+auto main_menu_screen::Render() const -> void
 {
-  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   if( viewState == view_exit )
   {
-    RenderText(renderTarget, m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", 
-      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
   else
   {
@@ -66,10 +69,8 @@ auto main_menu_screen::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
     titleText += L"Left mouse button - shoot\n";
     titleText += L"\nPress SPACE to start";
 
-    RenderText(renderTarget, m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, 
-      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-    
-    RenderMouseCursor(renderTarget, m_mouseCursorBrush.get(), renderTargetMouseData.x, renderTargetMouseData.y);
+    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
+    RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), renderTargetMouseData.x, renderTargetMouseData.y);
   }
 }
 

@@ -15,7 +15,7 @@ public:
 
   enum state_type { alive, dead };
 
-  player_ship(int64_t tickFrequency, screen_render_brush_selector brushes);
+  player_ship();
 
   auto SetPosition(float x, float y) -> void;
   auto SetThruster(bool thrusterOn) -> void;
@@ -29,9 +29,10 @@ public:
   [[nodiscard]] auto GetState() const -> state_type;
   [[nodiscard]] auto ThrusterOn() const -> bool;
 
-  auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
@@ -41,7 +42,6 @@ public:
 private:
 
   void UpdateShipGeometryData();
-
   [[nodiscard]] auto GetPlayerShipLineData() const -> std::vector<game_line>;
 
   auto GetTransformedThrusterGeometry(auto pointsInserter) const -> void
@@ -90,6 +90,7 @@ private:
     std::function<void(float,float)> eventDied;
   };
 
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   screen_render_brush_selector brushes;
   std::shared_ptr<data_type> data;
   collision_data m_collisionData;

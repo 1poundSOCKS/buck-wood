@@ -7,23 +7,27 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
-struct target_state
+class target_state
 {
-  target_state(const game_point& position, screen_render_brush_selector brushes);
+public:
+  target_state(const game_point& position);
   
-  auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
+private:
   const game_point& position;
   std::vector<game_point> m_points;
   bool activated = false;
   std::vector<game_line> shape;
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
   collision_data m_collisionData;

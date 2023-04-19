@@ -4,30 +4,63 @@
 #include "active_object.h"
 #include "passive_object.h"
 
-struct level_object_container
+class level_object_container
 {
 public:
 
   using active_object_collection_type = std::list<active_object>;
   using passive_object_collection_type = std::vector<passive_object>;
 
-  level_object_container(int64_t counterFrequency);
-  [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
-  [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
+  level_object_container();
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+
+  template <typename object_type> auto AppendActiveObject(object_type& object) -> void;
+  template <typename object_type> auto AppendActiveObject(object_type&& object) -> void;
+  template <typename object_type> auto AppendOverlayObject(object_type& object) -> void;
+  template <typename object_type> auto AppendOverlayObject(object_type&& object) -> void;
+
   auto Update(int64_t counterValue) -> void;
-  auto RenderTo(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> void;
+  auto Render(const D2D1::Matrix3x2F& viewTransform) const -> void;
   [[nodiscard]] auto IsComplete() -> bool;
   [[nodiscard]] auto GetUpdateInterval() -> float;
+  auto Clear() -> void;
 
 private:
 
-  [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) -> D2D1_RECT_F;
+  [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
+  [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
+  [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) const -> D2D1_RECT_F;
 
-  const int64_t counterFrequency = 0;
   int64_t currentTimerCount = 0;
   int64_t previousTimerCount = 0;
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
   active_object_collection_type m_activeObjects;
   passive_object_collection_type m_overlayObjects;
 };
+
+template <typename object_type> auto level_object_container::AppendActiveObject(object_type& object) -> void
+{
+  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  m_activeObjects.emplace_back(object);
+}
+
+template <typename object_type> auto level_object_container::AppendActiveObject(object_type&& object) -> void
+{
+  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  m_activeObjects.emplace_back(object);
+}
+
+template <typename object_type> auto level_object_container::AppendOverlayObject(object_type& object) -> void
+{
+  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  m_overlayObjects.emplace_back(object);
+}
+
+template <typename object_type> auto level_object_container::AppendOverlayObject(object_type&& object) -> void
+{
+  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  m_overlayObjects.emplace_back(object);
+}
 
 #endif

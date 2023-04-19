@@ -4,6 +4,7 @@
 #include "diagnostics.h"
 #include "screen_view.h"
 #include "global_state.h"
+#include "clock_frequency.h"
 
 play_screen::play_screen()
 {
@@ -11,15 +12,13 @@ play_screen::play_screen()
 
 auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
-  timer.frequency = performance_counter::QueryFrequency();
+  m_renderTarget.attach(renderTarget);
+  m_renderTarget->AddRef();
+  m_dwriteFactory.attach(dwriteFactory);
+  m_dwriteFactory->AddRef();
   timer.initialValue = timer.currentValue = performance_counter::QueryValue();
   levelStart = this->timer.initialValue;
-  currentLevelDataIterator = { global_state::firstLevelData() };
-  endLevelDataIterator = { global_state::endLevelData() };
-  CreateScreenRenderBrushes(renderTarget, std::back_inserter(m_renderBrushes));
-  CreateScreenRenderTextFormats(dwriteFactory, std::back_inserter(m_textFormats));
-  m_mouseCursor = std::make_unique<mouse_cursor>(screen_render_brush_selector { m_renderBrushes });
-  LoadLevel(**currentLevelDataIterator);
+  continueRunning = LoadFirstLevel();
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
@@ -43,10 +42,10 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   }
 }
 
-auto play_screen::RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+auto play_screen::Render() const -> void
 {
-  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_levelObjectContainer->RenderTo(renderTarget, m_viewTransform);
+  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  m_levelObjectContainer.Render(m_viewTransform);
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -92,7 +91,8 @@ void play_screen::OnGameRunning(const screen_input_state& inputState)
     }
     else
     {
-      LoadNextLevel();
+      if( !LoadNextLevel() )
+        m_gameComplete = true;
     }
   }
   else if( m_gameComplete )
@@ -114,14 +114,14 @@ void play_screen::OnGamePlaying(const screen_input_state& inputState)
   }
   else
   {
-    m_levelObjectContainer->Update(timer.currentValue - levelStart - pauseTotal);
+    m_levelObjectContainer.Update(timer.currentValue - levelStart - pauseTotal);
 
     if( m_levelTimer->HasExpired() )
     {
       m_levelState->SetState(level_state::dead);
       SetScreenTransitionDelay(3);
     }
-    else if( m_levelObjectContainer->IsComplete() )
+    else if( m_levelObjectContainer.IsComplete() )
     {
       m_levelState->SetState(level_state::complete);
       m_levelTimer->Stop();
@@ -181,7 +181,7 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
-  m_levelObjectContainer->Update(timer.currentValue - levelStart - pauseTotal);
+  m_levelObjectContainer.Update(timer.currentValue - levelStart - pauseTotal);
 }
 
 bool play_screen::ScreenTransitionTimeHasExpired()
@@ -191,23 +191,73 @@ bool play_screen::ScreenTransitionTimeHasExpired()
 
 void play_screen::SetScreenTransitionDelay(int timeInSeconds)
 {
-  transitionEnd = timer.currentValue + (timeInSeconds * timer.frequency);
+  transitionEnd = timer.currentValue + (timeInSeconds * clock_frequency::get());
 }
 
 bool play_screen::AllLevelsAreComplete()
 {
-  return std::next(currentLevelDataIterator) == endLevelDataIterator ? true : false;
+  return m_gameLevelDataLoader.EndOfLevels();
 }
 
-void play_screen::LoadNextLevel()
+[[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
 {
-  auto nextLevel = std::next(currentLevelDataIterator);
-  assert(nextLevel != endLevelDataIterator);
-  currentLevelDataIterator = nextLevel;
-  const game_level_data& gameLevelData = **currentLevelDataIterator;
-  LoadLevel(gameLevelData);
-  levelStart = timer.currentValue;
-  timer.initialValue = timer.initialValue;
+  if( m_gameLevelDataLoader.EndOfLevels() )
+  {
+    return false;
+  }
+  else
+  {
+    m_levelObjectContainer.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+    m_mouseCursor = std::make_unique<mouse_cursor>();
+    LoadCurrentLevel();
+    return true;
+  }
+}
+
+[[nodiscard]] auto play_screen::LoadNextLevel() -> bool
+{
+  if( m_gameLevelDataLoader.EndOfLevels() )
+  {
+    return false;
+  }
+  else
+  {
+    m_gameLevelDataLoader.NextLevel();
+    LoadCurrentLevel();
+    levelStart = timer.currentValue;
+    return true;
+  }
+}
+
+auto play_screen::LoadCurrentLevel() -> void
+{
+  m_levelObjectContainer.Clear();
+
+  m_levelObjectContainer.AppendOverlayObject(*m_mouseCursor);
+
+  std::vector<level_island> islands;
+  m_gameLevelDataLoader.LoadIslands(std::back_inserter(islands));
+
+  std::for_each(islands.begin(), islands.end(), [this](auto& island)
+  {
+    m_levelObjectContainer.AppendActiveObject(island);
+  });
+
+  std::vector<target_state> targets;
+  m_gameLevelDataLoader.LoadTargets(std::back_inserter(targets));
+
+  std::for_each(targets.begin(), targets.end(), [this](auto& target)
+  {
+    m_levelObjectContainer.AppendActiveObject(target);
+  });
+
+  LoadPlayer();
+
+  m_levelState = std::make_unique<level_state>();
+  m_levelObjectContainer.AppendOverlayObject(*m_levelState);
+  
+  m_levelTimer = m_gameLevelDataLoader.LoadTimer();
+  m_levelObjectContainer.AppendOverlayObject(*m_levelTimer);
 }
 
 level_control_state play_screen::GetLevelControlState(const screen_input_state& inputState)
@@ -219,56 +269,13 @@ level_control_state play_screen::GetLevelControlState(const screen_input_state& 
   };
 }
 
-auto play_screen::LoadLevel(const game_level_data& levelData) -> void
+auto play_screen::LoadPlayer() -> void
 {
-  m_levelObjectContainer = std::make_unique<level_object_container>(timer.frequency);
-
-  m_levelObjectContainer->GetOverlayObjectInserter() = *m_mouseCursor;
-
-  std::vector<game_closed_object> levelObjects;
-  LoadLevelObjects(levelData, std::back_inserter(levelObjects));
-
-  std::vector<level_island> islands;
-  std::transform(levelObjects.cbegin(), levelObjects.cend(), std::back_inserter(islands), [this](const auto& object) -> level_island
-  {
-    return { object, screen_render_brush_selector { m_renderBrushes } };
-  });
-  
-  std::copy(islands.cbegin(), islands.cend(), m_levelObjectContainer->GetActiveObjectInserter());
-
-  std::vector<target_state> targets;
-  std::transform(levelData.targets.cbegin(), levelData.targets.cend(), std::back_inserter(targets), [this](const auto& target) -> target_state
-  {
-    return { target, screen_render_brush_selector { m_renderBrushes } };
-  });
-
-  std::copy(targets.cbegin(), targets.cend(), m_levelObjectContainer->GetActiveObjectInserter());
-
-  AddPlayer(levelData.playerStartPosX, levelData.playerStartPosY);
-
-  m_levelState = std::make_unique<level_state>( screen_render_brush_selector { m_renderBrushes }, screen_render_text_format_selector { m_textFormats } );
-  m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelState;
-
-  levelTimeLimit = levelData.timeLimitInSeconds * timer.frequency;
-
-  m_levelTimer = std::make_unique<level_timer>(screen_render_brush_selector { m_renderBrushes }, screen_render_text_format_selector { m_textFormats } ,
-    levelData.timeLimitInSeconds);
-  
-  m_levelObjectContainer->GetOverlayObjectInserter() = *m_levelTimer;
-}
-
-auto play_screen::AddPlayer(float x, float y) -> void
-{
-  screen_render_brush_selector brushSelector { m_renderBrushes };
-  player = std::make_unique<player_ship>(timer.frequency, brushSelector);
-  player->SetPosition(x, y);
+  player = m_gameLevelDataLoader.LoadPlayer();
 
   player->SetEventShot([this](float x, float y, float angle) -> void
   {
-    screen_render_brush_selector brushSelector { m_renderBrushes };
-    bullet newBullet { x, y, angle, brushSelector };
-    auto activeObjectInserter = this->m_levelObjectContainer->GetActiveObjectInserter();
-    activeObjectInserter = newBullet;
+    m_levelObjectContainer.AppendActiveObject(bullet { x, y, angle });
     playerShot = true;
   });
 
@@ -276,8 +283,7 @@ auto play_screen::AddPlayer(float x, float y) -> void
   {
   });
 
-  auto activeObjectInserter = m_levelObjectContainer->GetActiveObjectInserter();
-  activeObjectInserter = *player;
+  m_levelObjectContainer.AppendActiveObject(*player);
 }
 
 [[nodiscard]] auto play_screen::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F

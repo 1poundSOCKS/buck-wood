@@ -35,6 +35,6 @@ struct screen_render_data
 };
 
 auto CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, std::back_insert_iterator<screen_render_brushes> brushInserter) -> void;
-auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, std::back_insert_iterator<screen_render_text_formats> textFormatInserter) -> void;
+// auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, std::back_insert_iterator<screen_render_text_formats> textFormatInserter) -> void;
 
 #endif

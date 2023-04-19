@@ -15,10 +15,10 @@ auto CreateScreenRenderBrushes(ID2D1RenderTarget* renderTarget, std::back_insert
   brushInserter = screen_render_brush_brown.CreateBrush(renderTarget);
 }
 
-auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, std::back_insert_iterator<screen_render_text_formats> textFormatInserter) -> void
-{
-  textFormatInserter = render_text_format_prompt.CreateTextFormat(dwriteFactory);
-  textFormatInserter = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
-  textFormatInserter = render_text_format_play_screen_state.CreateTextFormat(dwriteFactory);
-  textFormatInserter = render_text_format_play_screen_timer.CreateTextFormat(dwriteFactory);
-}
+// auto CreateScreenRenderTextFormats(IDWriteFactory* dwriteFactory, std::back_insert_iterator<screen_render_text_formats> textFormatInserter) -> void
+// {
+//   textFormatInserter = render_text_format_prompt.CreateTextFormat(dwriteFactory);
+//   textFormatInserter = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
+//   textFormatInserter = render_text_format_play_screen_state.CreateTextFormat(dwriteFactory);
+//   textFormatInserter = render_text_format_play_screen_timer.CreateTextFormat(dwriteFactory);
+// }

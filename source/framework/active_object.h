@@ -1,7 +1,6 @@
 #ifndef _active_object_
 #define _active_object_
 
-// #include "framework.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
@@ -13,9 +12,10 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
-    virtual auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
+    virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
+    virtual auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void = 0;
+    virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
@@ -33,9 +33,14 @@ private:
       return std::make_unique<object_model<object_type>>(*this);
     }
 
-    auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
+    auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void override
     {
-      object.Update(clockFrequency, clockCount, playEventInserter);
+      object.Initialize(renderTarget, dwriteFactory);
+    }
+
+    auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void override
+    {
+      object.Update(clockCount, playEventInserter);
     }
 
     [[nodiscard]] auto LevelIsComplete() const -> bool override
@@ -43,9 +48,9 @@ private:
       return object.LevelIsComplete();
     }
 
-    auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void override
+    auto Render(D2D1_RECT_F viewRect) const -> void override
     {
-      object.RenderTo(renderTarget, viewRect);
+      object.Render(viewRect);
     }
 
     [[nodiscard]] auto GetCollisionData() -> collision_data override
@@ -96,9 +101,14 @@ public:
   active_object(const active_object& solidObject) = delete;
   void operator=(const active_object& solidObject) = delete;
 
-  auto Update(int64_t clockFrequency, int64_t clockCount, play_event_inserter playEventInserter) -> void
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
   {
-    objectConcept->Update(clockFrequency, clockCount, playEventInserter);
+    objectConcept->Initialize(renderTarget, dwriteFactory);
+  }
+
+  auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void
+  {
+    objectConcept->Update(clockCount, playEventInserter);
   }
 
   [[nodiscard]] auto LevelIsComplete() const -> bool
@@ -106,9 +116,9 @@ public:
     return objectConcept->LevelIsComplete();
   }
 
-  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+  auto Render(D2D1_RECT_F viewRect) const -> void
   {
-    objectConcept->RenderTo(renderTarget, viewRect);
+    objectConcept->Render(viewRect);
   }
 
   [[nodiscard]] auto GetCollisionData() -> collision_data

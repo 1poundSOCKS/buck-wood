@@ -12,8 +12,9 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
-    virtual auto Update(int64_t clockFrequency, int64_t clockCount) -> void = 0;
-    virtual auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void = 0;
+    virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
+    virtual auto Update(int64_t clockCount) -> void = 0;
+    virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
   };
 
   template <typename object_type>
@@ -26,14 +27,19 @@ private:
       return std::make_unique<object_model<object_type>>(*this);
     }
 
-    auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+    auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void override
     {
-      object.Update(clockFrequency, clockCount);
+      object.Initialize(renderTarget, dwriteFactory);
     }
 
-    auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void override
+    auto Update(int64_t clockCount) -> void override
     {
-      object.RenderTo(renderTarget);
+      object.Update(clockCount);
+    }
+
+    auto Render(D2D1_RECT_F viewRect) const -> void override
+    {
+      object.Render(viewRect);
     }
 
     object_type object;
@@ -60,14 +66,19 @@ public:
   passive_object(const passive_object& passiveObject) = delete;
   void operator=(const passive_object& passiveObject) = delete;
 
-  auto Update(int64_t clockFrequency, int64_t clockCount) -> void
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
   {
-    objectConcept->Update(clockFrequency, clockCount);
+    objectConcept->Initialize(renderTarget, dwriteFactory);
   }
 
-  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void
+  auto Update(int64_t clockCount) -> void
   {
-    objectConcept->RenderTo(renderTarget);
+    objectConcept->Update(clockCount);
+  }
+
+  auto Render(D2D1_RECT_F viewRect) const -> void
+  {
+    objectConcept->Render(viewRect);
   }
 
 private:

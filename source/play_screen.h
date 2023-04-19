@@ -20,6 +20,7 @@
 #include "level_state.h"
 #include "mouse_cursor.h"
 #include "diagnostics.h"
+#include "game_level_data_loader.h"
 
 class play_screen
 {
@@ -29,7 +30,7 @@ public:
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const screen_input_state& inputState) -> void;
-  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
+  auto Render() const -> void;
   auto PlaySoundEffects() const -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
@@ -39,9 +40,7 @@ private:
   static level_control_state GetLevelControlState(const screen_input_state& inputState);
 
   auto UpdateMouseCursorPosition() -> void;
-  auto LoadLevel(const game_level_data& levelData) -> void;
   auto UpdateLevelState(const screen_input_state& inputState) -> void;
-  auto AddPlayer(float x, float y) -> void;
   [[nodiscard]] auto CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0) -> D2D1::Matrix3x2F;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
@@ -50,12 +49,16 @@ private:
   void OnGameRunning(const screen_input_state& inputState);
   void OnGamePlaying(const screen_input_state& inputState);
   bool AllLevelsAreComplete();
-  void LoadNextLevel();
   bool ScreenTransitionTimeHasExpired();
   void SetScreenTransitionDelay(int timeInSeconds);
 
-  screen_render_brushes m_renderBrushes;
-  screen_render_text_formats m_textFormats;
+  [[nodiscard]] auto LoadFirstLevel() -> bool;
+  [[nodiscard]] auto LoadNextLevel() -> bool;
+  auto LoadCurrentLevel() -> void;
+  auto LoadPlayer() -> void;
+
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
   performance_counter::data timer = { 0, 0, 0 };
   
@@ -74,10 +77,11 @@ private:
   game_rect m_viewRect;
   D2D1::Matrix3x2F m_viewTransform;
 
-  std::unique_ptr<level_object_container> m_levelObjectContainer;
+  level_object_container m_levelObjectContainer;
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;
 
+  game_level_data_loader m_gameLevelDataLoader;
   std::unique_ptr<mouse_cursor> m_mouseCursor;
   std::unique_ptr<player_ship> player;
   std::unique_ptr<level_timer> m_levelTimer;

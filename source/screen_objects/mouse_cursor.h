@@ -6,10 +6,11 @@ class mouse_cursor
 {
 public:
 
-  mouse_cursor(screen_render_brush_selector brushes);
+  mouse_cursor();
 
-  auto Update(int64_t clockFrequency, int64_t clockCount) -> void;
-  auto RenderTo(ID2D1RenderTarget* renderTarget) const -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Update(int64_t clockCount) -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
 
   auto SetPosition(float x, float y) -> void;
 
@@ -21,6 +22,7 @@ private:
     float y = 0;
   };
 
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brush;
   std::shared_ptr<shared_data_type> m_sharedData;
 };

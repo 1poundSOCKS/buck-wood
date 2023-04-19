@@ -7,24 +7,30 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
-struct level_island
+class level_island
 {
-  level_island(const game_closed_object& object, screen_render_brush_selector brushes);
+public:
 
-  auto Update(int64_t tickFrequency, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  level_island(const game_closed_object& object);
+
+  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
-  auto RenderTo(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
+private:
+
   game_closed_object object;
   collision_effect m_collisionEffect;
   collision_data m_collisionData;
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
 };
 
