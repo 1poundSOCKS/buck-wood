@@ -49,9 +49,6 @@ auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrite
 
 auto level_object_container::Update(int64_t elapsedTicks) -> void
 {
-  // previousTimerCount = currentTimerCount;
-  // currentTimerCount = counterValue;
-
   std::list<play_event> events;
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [elapsedTicks, &events](auto& object)
   {
