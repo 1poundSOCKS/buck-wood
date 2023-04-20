@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "bullet.h"
 #include "game_constants.h"
-#include "render_defs.h"
+#include "render_brush_defs.h"
+#include "render_text_format_def.h"
 #include "clock_frequency.h"
 
 constexpr D2D1_RECT_F GetBulletRect()

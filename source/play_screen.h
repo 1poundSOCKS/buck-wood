@@ -20,7 +20,6 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
-#include "pausable_timer.h"
 #include "stopwatch.h"
 
 class play_screen
@@ -41,15 +40,12 @@ private:
   static level_control_state GetLevelControlState(const screen_input_state& inputState);
 
   auto UpdateMouseCursorPosition() -> void;
-  [[nodiscard]] auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> bool;
-  [[nodiscard]] auto CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0) -> D2D1::Matrix3x2F;
+  auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
   
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto QuitPressed(const screen_input_state& inputState) -> bool;
-
-  [[nodiscard]] auto AllLevelsAreComplete() -> bool;
 
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
@@ -81,8 +77,7 @@ private:
   level_timer::control_data m_timerControlData;
   level_state::control_data m_stateControlData;
 
-  float mouseX = 0;
-  float mouseY = 0;
+  D2D1_POINT_2F m_mouseLevelPosition = { 0, 0 };
 
   bool m_playerShot = false;
   bool m_targetActivated = false;

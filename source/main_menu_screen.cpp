@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "main_menu_screen.h"
 #include "screen_render.h"
-#include "render_defs.h"
+#include "render_brush_defs.h"
+#include "render_text_format_def.h"
+#include "play_screen.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -46,11 +48,12 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
   }
   else if( KeyPressed(inputState, DIK_SPACE) )
   {
-    startPlay = true;
+    play_screen playScreen;
+    framework::openScreen(playScreen);
+
   }
   else if( KeyPressed(inputState, DIK_F1) )
   {
-    startLevelEdit = true;
   }
 }
 

@@ -55,10 +55,10 @@ auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level
 
 auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
 {
-  std::vector<target_state> targets;
+  std::vector<level_target> targets;
   std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> void
   {
-    levelObjectContainer.AppendActiveObject(target_state { position.x, position.y });
+    levelObjectContainer.AppendActiveObject(level_target { position.x, position.y });
   });
 }
 

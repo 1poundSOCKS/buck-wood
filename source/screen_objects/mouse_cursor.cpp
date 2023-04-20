@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mouse_cursor.h"
 #include "screen_render.h"
-#include "render_defs.h"
+#include "render_brush_defs.h"
 
 mouse_cursor::mouse_cursor() : m_sharedData(std::make_shared<shared_data_type>())
 {

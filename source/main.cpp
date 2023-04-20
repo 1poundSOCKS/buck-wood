@@ -21,9 +21,6 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"jsoncpp.lib")
 
-void UpdateGlobalState(global_state& globalState, const play_screen& screenState);
-// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState);
-
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
   wchar_t currentDirectory[MAX_PATH];
@@ -42,47 +39,11 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
     dummyPlayer.Play();
   }
 
-  bool continueRunning = true;
-  bool saveGameLevelData = false;
+  main_menu_screen mainMenuScreen;
+  framework::openScreen(mainMenuScreen);
 
-  while( continueRunning )
-  {
-    main_menu_screen mainMenuScreen;
-    framework::openScreen(mainMenuScreen);
-
-    if( mainMenuScreen.StartPlay() )
-    {
-      play_screen playScreen;
-      framework::openScreen(playScreen);
-    }
-    else if( mainMenuScreen.StartLevelEditor() )
-    {
-      // level_edit_screen_state levelEditScreenState(*globalState.gameLevelDataIndex, screenRenderData);
-      
-      // OpenScreen(screenRunnerData, levelEditScreenState);
-      
-      // if( levelEditScreenState.saveChanges )
-      // {
-      //   UpdateGlobalState(globalState, levelEditScreenState);
-      //   mainMenuScreenState.checkSaveOnExit = true;
-      // }
-    }
-    else
-    {
-      continueRunning = false;
-      saveGameLevelData = mainMenuScreen.SaveGameLevelData();
-    }
-  }
-
-  if( saveGameLevelData )
+  if( mainMenuScreen.SaveGameLevelData() )
     global_state::save();
 
   return 0;
 }
-
-// void UpdateGlobalState(global_state& globalState, const level_edit_screen_state& screenState)
-// {
-//   globalState.gameLevelDataIndex = std::make_unique<game_level_data_index>(screenState.gameLevelDataIndex);
-//   globalState.gameLevelDataIndexUpdated = true;
-//   globalState.currentScreenId = screen_main_menu;
-// }

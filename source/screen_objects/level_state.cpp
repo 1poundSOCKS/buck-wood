@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "level_state.h"
 #include "render.h"
-#include "render_defs.h"
+#include "render_brush_defs.h"
+#include "render_text_format_def.h"
+
+inline auto render_text_format_level_state = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 80);
 
 auto level_state::control::SetState(state_type stateValue) -> void
 {
@@ -32,7 +35,7 @@ auto level_state::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
   m_brush = screen_render_brush_cyan.CreateBrush(renderTarget);
-  m_textFormat = render_text_format_play_screen_state.CreateTextFormat(dwriteFactory);
+  m_textFormat = render_text_format_level_state.CreateTextFormat(dwriteFactory);
 }
 
 auto level_state::Update(int64_t clockCount) -> void

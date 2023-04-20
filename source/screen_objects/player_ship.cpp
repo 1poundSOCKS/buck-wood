@@ -4,8 +4,8 @@
 #include "event_player_shot.h"
 #include "event_player_dead.h"
 #include "game_constants.h"
-#include "render_defs.h"
-#include "clock_frequency.h"
+#include "render_brush_defs.h"
+#include "perf_data.h"
 
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
@@ -53,7 +53,7 @@ auto player_ship::control::SetEventDied(std::function<void(float,float)> eventDi
 
 player_ship::player_ship(control_data controlData) : m_controlData(controlData)
 {
-  m_shotTimerInterval = ( clock_frequency::get() * shotTimeNumerator ) / shotTimeDenominator;
+  m_shotTimerInterval = ( performance_counter::QueryFrequency() * shotTimeNumerator ) / shotTimeDenominator;
   UpdateShipGeometryData();
 }
 

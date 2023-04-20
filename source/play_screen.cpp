@@ -49,10 +49,12 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   if( elapsedTicks > 0 )
   {
-    auto levelComplete = UpdateLevelState(inputState, elapsedTicks);
+    UpdateLevelState(inputState, elapsedTicks);
     
-    if( levelComplete )
+    if( m_levelObjectContainer.IsComplete() )
+    {
       m_continueRunning = false;
+    }
   }
 }
 
@@ -92,37 +94,32 @@ auto play_screen::UpdateMouseCursorPosition() -> void
   m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
 }
 
-[[nodiscard]] auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> bool
+auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
   auto levelControlState = GetLevelControlState(inputState);
 
   m_playerControlData->SetThruster(levelControlState.thrust);
   m_playerControlData->SetTrigger(levelControlState.shoot);
 
-  auto invertedViewTransform = CreateViewTransform(levelControlState.renderTargetMouseData.size);
+  auto playerPosition = m_playerControlData->GetPosition();
+  m_viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, levelControlState.renderTargetMouseData.size.width, levelControlState.renderTargetMouseData.size.height);
+
+  auto invertedViewTransform = m_viewTransform;
 
   if( invertedViewTransform.Invert() )
   {
-    D2D1_POINT_2F inPoint { levelControlState.renderTargetMouseData.x, levelControlState.renderTargetMouseData.y };
-    auto outPoint = invertedViewTransform.TransformPoint(inPoint);
+    m_mouseLevelPosition = invertedViewTransform.TransformPoint({ levelControlState.renderTargetMouseData.x, levelControlState.renderTargetMouseData.y });
 
-    mouseX = outPoint.x;
-    mouseY = outPoint.y;
-
-    auto playerPosition = m_playerControlData->GetPosition();
-    auto playerAngle = CalculateAngle(playerPosition.x, playerPosition.y, outPoint.x, outPoint.y);
+    auto playerAngle = CalculateAngle(playerPosition.x, playerPosition.y, m_mouseLevelPosition.x, m_mouseLevelPosition.y);
     m_playerControlData->SetAngle(playerAngle);
 
-    D2D1_POINT_2F screenTopLeft { 0, 0 };
-    D2D1_POINT_2F screenBottomRight { levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 };
-    auto viewTopLeft = invertedViewTransform.TransformPoint(screenTopLeft);
-    auto viewBottomRight = invertedViewTransform.TransformPoint(screenBottomRight);
+    auto viewTopLeft = invertedViewTransform.TransformPoint({ 0, 0 });
+    auto viewBottomRight = invertedViewTransform.TransformPoint({ levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 });
     m_viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
   m_levelObjectContainer.Update(elapsedTicks);
-  return m_levelObjectContainer.IsComplete();
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
@@ -133,11 +130,6 @@ auto play_screen::UpdateMouseCursorPosition() -> void
 [[nodiscard]] auto play_screen::QuitPressed(const screen_input_state& inputState) -> bool
 {
   return KeyPressed(inputState, DIK_Q);
-}
-
-[[nodiscard]] auto play_screen::AllLevelsAreComplete() -> bool
-{
-  return m_gameLevelDataLoader.EndOfLevels();
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
@@ -189,6 +181,7 @@ auto play_screen::LoadCurrentLevel() -> void
 
   m_playerControlData->SetEventDied([this](float x, float y) -> void
   {
+    m_continueRunning = false;
   });
 
   m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
@@ -201,13 +194,6 @@ level_control_state play_screen::GetLevelControlState(const screen_input_state& 
     inputState.windowData.mouse.leftButtonDown, 
     inputState.renderTargetMouseData
   };
-}
-
-[[nodiscard]] auto play_screen::CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale) -> D2D1::Matrix3x2F
-{
-  auto playerPosition = m_playerControlData->GetPosition();
-  m_viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, renderScale, renderTargetSize.width, renderTargetSize.height);
-  return m_viewTransform;
 }
 
 auto play_screen::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
@@ -234,5 +220,5 @@ auto play_screen::PlaySoundEffects(const global_sound_buffer_selector& soundBuff
 
 [[nodiscard]] auto play_screen::GetMouseDiagnostics() const -> std::wstring
 {
-  return std::format(L"world mouse: {:.2f}, {:.2f}", mouseX, mouseY);
+  return std::format(L"world mouse: {:.2f}, {:.2f}", m_mouseLevelPosition.x, m_mouseLevelPosition.y);
 }

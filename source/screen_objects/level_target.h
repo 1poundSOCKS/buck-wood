@@ -5,11 +5,11 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 
-class target_state
+class level_target
 {
 public:
 
-  target_state(float x, float y);
+  level_target(float x, float y);
   
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;

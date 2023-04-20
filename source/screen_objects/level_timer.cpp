@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "level_timer.h"
 #include "render.h"
-#include "render_defs.h"
-#include "clock_frequency.h"
+#include "render_brush_defs.h"
+#include "render_text_format_def.h"
+
+inline auto render_text_format_level_timer = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100);
 
 auto level_timer::control::SetValue(float value) -> void
 {
@@ -19,7 +21,7 @@ auto level_timer::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
   m_brush = screen_render_brush_yellow.CreateBrush(renderTarget);
-  m_textFormat = render_text_format_play_screen_timer.CreateTextFormat(dwriteFactory);
+  m_textFormat = render_text_format_level_timer.CreateTextFormat(dwriteFactory);
 }
 
 auto level_timer::Update(int64_t clockCount) -> void

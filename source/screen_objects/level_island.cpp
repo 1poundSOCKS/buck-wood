@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "level_island.h"
-#include "render_defs.h"
+#include "render_brush_defs.h"
 
 level_island::level_island(const game_closed_object& object) : object(object), m_collisionData(object)
 {
