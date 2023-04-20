@@ -29,7 +29,7 @@ auto game_level_data_loader::LoadTargets(level_object_container& levelObjectCont
 
 [[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int64_t
 {
-  (*m_currentLevelDataIterator)->timeLimitInSeconds;
+  return (*m_currentLevelDataIterator)->timeLimitInSeconds;
 }
 
 auto game_level_data_loader::NextLevel() -> void
@@ -47,7 +47,7 @@ auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::for_each(levelObjects.cbegin(), levelObjects.cend(), [this, &levelObjectContainer](const auto& object) -> level_island
+  std::for_each(levelObjects.cbegin(), levelObjects.cend(), [this, &levelObjectContainer](const auto& object) -> void
   {
     levelObjectContainer.AppendActiveObject(level_island { object });
   });
@@ -56,7 +56,7 @@ auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level
 auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
 {
   std::vector<target_state> targets;
-  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> target_state
+  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> void
   {
     levelObjectContainer.AppendActiveObject(target_state { position.x, position.y });
   });

@@ -14,7 +14,7 @@ public:
 
   private:
 
-    float value = 0;
+    float m_value = 0;
   };
 
   using control_data = std::shared_ptr<control>;

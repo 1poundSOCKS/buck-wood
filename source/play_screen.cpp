@@ -16,29 +16,43 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_renderTarget->AddRef();
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
-  continueRunning = LoadFirstLevel();
+  m_continueRunning = LoadFirstLevel();
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  m_elapsedTicks = m_timer.Update(performance_counter::QueryValue());
-  m_levelRemainingTicks = m_levelStopwatch.Update(m_elapsedTicks);
-
   renderTargetMouseData = inputState.renderTargetMouseData;
-  playerShot = targetShot = false;
+  m_playerShot = m_targetActivated = false;
 
   UpdateMouseCursorPosition();
 
-  if( m_levelState->GetState() == level_state::paused )
+  if( PausePressed(inputState) )
   {
-    OnGamePaused(inputState);
+    m_paused = !m_paused;
   }
-  else
-  {
-    UpdateLevelState(inputState);
 
-    if( ScreenTransitionTimeHasExpired() )
-      OnGameRunning(inputState);
+  auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
+  auto levelRemainingTicks = m_levelStopwatch.Update(elapsedTicks);
+
+  auto levelRemainingTime = static_cast<float>(levelRemainingTicks) / static_cast<float>(performance_counter::QueryFrequency());
+  m_timerControlData->SetValue(levelRemainingTime);
+
+  if( levelRemainingTicks == 0 )
+  {
+    m_continueRunning = false;
+  }
+
+  if( QuitPressed(inputState) )
+  {
+    m_continueRunning = false;
+  }
+
+  if( elapsedTicks > 0 )
+  {
+    auto levelComplete = UpdateLevelState(inputState, elapsedTicks);
+    
+    if( levelComplete )
+      m_continueRunning = false;
   }
 }
 
@@ -52,20 +66,20 @@ auto play_screen::PlaySoundEffects() const -> void
 {
   const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
 
-  if( m_levelState->GetState() == level_state::playing )
-  {
-    PlaySoundEffects(soundBuffers);
-  }
-  else
+  if( m_paused || !m_continueRunning )
   {
     StopSoundBufferPlay(soundBuffers[menu_theme]);
     StopSoundBufferPlay(soundBuffers[thrust]);
+  }
+  else
+  {
+    PlaySoundEffects(soundBuffers);
   }
 }
 
 [[nodiscard]] auto play_screen::ContinueRunning() const -> bool
 {
-  return continueRunning;
+  return m_continueRunning;
 }
 
 auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
@@ -73,88 +87,12 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
   diagnosticsDataInserter = GetMouseDiagnostics();
 }
 
-void play_screen::OnGameRunning(const screen_input_state& inputState)
-{
-  if( m_levelState->GetState() == level_state::playing )
-  {
-    OnGamePlaying(inputState);
-  }
-  else if( m_levelState->GetState() == level_state::complete )
-  {
-    levelTimes.push_back(static_cast<float>(m_levelRemainingTicks) / static_cast<float>(clock_frequency::get()));
-    
-    if( AllLevelsAreComplete() )
-    {
-      m_gameComplete = true;
-      continueRunning = false;
-      m_transitionStopwatch.Start(3 * clock_frequency::get());
-    }
-    else
-    {
-      if( !LoadNextLevel() )
-        m_gameComplete = true;
-    }
-  }
-  else if( m_gameComplete )
-  {
-    continueRunning = false;
-  }
-  else if( m_levelState->GetState() == level_state::dead )
-  {
-    continueRunning = false;
-  }
-}
-
-void play_screen::OnGamePlaying(const screen_input_state& inputState)
-{
-  if( KeyPressed(inputState, DIK_ESCAPE) )
-  {
-    m_levelState->SetState(level_state::paused);
-    m_timer.Pause();
-  }
-  else
-  {
-    m_levelObjectContainer.Update(m_elapsedTicks);
-
-    if( m_levelRemainingTicks == 0 )
-    {
-      m_levelState->SetState(level_state::dead);
-      m_transitionStopwatch.Start(3 * clock_frequency::get());
-    }
-    else if( m_levelObjectContainer.IsComplete() )
-    {
-      m_levelState->SetState(level_state::complete);
-      m_timer.Stop();
-      m_transitionStopwatch.Start(3 * clock_frequency::get());
-    }
-    else if( player->GetState() == player_ship::dead )
-    {
-      m_levelState->SetState(level_state::dead);
-      m_timer.Stop();
-      m_transitionStopwatch.Start(3 * clock_frequency::get());
-    }
-  }
-}
-
-void play_screen::OnGamePaused(const screen_input_state& inputState)
-{
-  if( KeyPressed(inputState, DIK_Q) )
-  {
-    continueRunning = false;
-  }
-  else if( KeyPressed(inputState, DIK_ESCAPE) )
-  {
-    m_levelState->SetState(level_state::playing);
-    m_timer.Unpause();
-  }
-}
-
 auto play_screen::UpdateMouseCursorPosition() -> void
 {
   m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
 }
 
-auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
+[[nodiscard]] auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> bool
 {
   auto levelControlState = GetLevelControlState(inputState);
 
@@ -183,15 +121,21 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState) -> void
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
-  m_levelObjectContainer.Update(m_elapsedTicks);
+  m_levelObjectContainer.Update(elapsedTicks);
+  return m_levelObjectContainer.IsComplete();
 }
 
-bool play_screen::ScreenTransitionTimeHasExpired()
+[[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
 {
-  return m_transitionRemainingTicks == 0;
+  return KeyPressed(inputState, DIK_ESCAPE);
 }
 
-bool play_screen::AllLevelsAreComplete()
+[[nodiscard]] auto play_screen::QuitPressed(const screen_input_state& inputState) -> bool
+{
+  return KeyPressed(inputState, DIK_Q);
+}
+
+[[nodiscard]] auto play_screen::AllLevelsAreComplete() -> bool
 {
   return m_gameLevelDataLoader.EndOfLevels();
 }
@@ -247,8 +191,7 @@ auto play_screen::LoadCurrentLevel() -> void
   {
   });
 
-  m_timer.Start(performance_counter::QueryValue());
-  m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * clock_frequency::get());
+  m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
 }
 
 level_control_state play_screen::GetLevelControlState(const screen_input_state& inputState)

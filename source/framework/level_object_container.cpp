@@ -47,15 +47,15 @@ auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrite
   return total == m_activeObjects.size();
 }
 
-auto level_object_container::Update(int64_t counterValue) -> void
+auto level_object_container::Update(int64_t elapsedTicks) -> void
 {
-  previousTimerCount = currentTimerCount;
-  currentTimerCount = counterValue;
+  // previousTimerCount = currentTimerCount;
+  // currentTimerCount = counterValue;
 
   std::list<play_event> events;
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& object)
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [elapsedTicks, &events](auto& object)
   {
-    object.Update(currentTimerCount - previousTimerCount, std::back_inserter(events));
+    object.Update(elapsedTicks, std::back_inserter(events));
   });
 
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& mainObject)
@@ -82,16 +82,10 @@ auto level_object_container::Update(int64_t counterValue) -> void
     object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
   }
 
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
+  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [elapsedTicks](auto& object)
   {
-    object.Update(currentTimerCount - previousTimerCount);
+    object.Update(elapsedTicks);
   });
-}
-
-float level_object_container::GetUpdateInterval()
-{
-  int64_t intervalCount = currentTimerCount - previousTimerCount;
-  return static_cast<float>(intervalCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
 }
 
 auto level_object_container::Render(const D2D1::Matrix3x2F& viewTransform) const -> void

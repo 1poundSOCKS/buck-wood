@@ -41,37 +41,28 @@ private:
   static level_control_state GetLevelControlState(const screen_input_state& inputState);
 
   auto UpdateMouseCursorPosition() -> void;
-  auto UpdateLevelState(const screen_input_state& inputState) -> void;
+  [[nodiscard]] auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> bool;
   [[nodiscard]] auto CreateViewTransform(const D2D1_SIZE_F& renderTargetSize, float renderScale = 1.0) -> D2D1::Matrix3x2F;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
   
-  void OnGamePaused(const screen_input_state& inputState);
-  void OnGameRunning(const screen_input_state& inputState);
-  void OnGamePlaying(const screen_input_state& inputState);
-  bool AllLevelsAreComplete();
-  bool ScreenTransitionTimeHasExpired();
-  void SetScreenTransitionDelay(int timeInSeconds);
+  [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
+  [[nodiscard]] auto QuitPressed(const screen_input_state& inputState) -> bool;
+
+  [[nodiscard]] auto AllLevelsAreComplete() -> bool;
 
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
   auto LoadCurrentLevel() -> void;
-  auto LoadPlayer() -> void;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
-  pausable_timer m_timer;
-
   stopwatch m_levelStopwatch;
-  stopwatch m_transitionStopwatch;
 
-  int64_t m_elapsedTicks = 0;
-  int64_t m_levelRemainingTicks = 0;
-  int64_t m_transitionRemainingTicks = 0;
-  
+  bool m_paused = false;
   bool m_gameComplete = false;
-  bool continueRunning = true;
+  bool m_continueRunning = true;
 
   render_target_mouse_data renderTargetMouseData;
   game_rect m_viewRect;

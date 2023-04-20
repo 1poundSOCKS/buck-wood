@@ -5,11 +5,11 @@ class pausable_timer
 public:
 
   pausable_timer();
-  auto Start(int64_t currentClockTicks) -> void;
+  auto Start() -> void;
+  auto Update() -> int64_t;
   auto Pause() -> void;
-  auto Stop() -> void;
   auto Unpause() -> void;
-  auto Update(int64_t currentClockTicks) -> int64_t;
+  auto Stop() -> void;
 
 private:
 

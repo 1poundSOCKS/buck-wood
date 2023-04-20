@@ -77,7 +77,7 @@ private:
       thrusterGeometryData.cbegin(), 
       thrusterGeometryData.cend(), 
       pointsInserter, 
-      D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos)
+      D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y)
     );
   }
 
@@ -89,7 +89,7 @@ private:
       shipGeometryData.cbegin(), 
       shipGeometryData.cend(), 
       pointsInserter, 
-      D2D1::Matrix3x2F::Rotation(data->angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(data->xPos, data->yPos));
+      D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
   }
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;

@@ -72,7 +72,7 @@ auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserte
   const auto forceOfGravity = 0.0f;
   const auto playerThrust = 200.0f;
 
-  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
+  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
 
   float forceX = 0.0f;
   float forceY = forceOfGravity;
