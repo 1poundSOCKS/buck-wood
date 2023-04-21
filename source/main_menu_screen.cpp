@@ -4,6 +4,7 @@
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "play_screen.h"
+#include "global_state.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -18,42 +19,29 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
   m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
   m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
+  config_file::create(L"config.txt");
+  const auto& dataPath = config_file::getSetting(L"data_path");
+  global_state::create(dataPath);
+  sound_data::create(framework::directSound().get(), dataPath);
+
+  // play sound now to ensure no sound glitch on first real play
+  {
+    global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
+    sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
+    dummyPlayer.Play();
+  }
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 {
-  if( viewState == view_exit )
+  switch( m_view )
   {
-    UpdateScreenExitState(inputState);
-    return;
-  }
-
-  if( KeyPressed(inputState, DIK_ESCAPE) )
-  {
-    if( checkSaveOnExit )
-      viewState = view_exit;
-    else
-      quit = true;
-    
-    return;
-  }
-
-  renderTargetMouseData = inputState.renderTargetMouseData;
-  
-  startPlay = startLevelEdit = false;
-  
-  if( starting )
-  {
-    starting = false;
-  }
-  else if( KeyPressed(inputState, DIK_SPACE) )
-  {
-    play_screen playScreen;
-    framework::openScreen(playScreen);
-
-  }
-  else if( KeyPressed(inputState, DIK_F1) )
-  {
+    case view_exit:
+      UpdateScreenExitState(inputState);
+      break;
+    default:
+      OnViewDefault(inputState);
+      break;
   }
 }
 
@@ -61,7 +49,7 @@ auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  if( viewState == view_exit )
+  if( m_view == view_exit )
   {
     RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
@@ -73,7 +61,7 @@ auto main_menu_screen::Render() const -> void
     titleText += L"\nPress SPACE to start";
 
     RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
-    RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), renderTargetMouseData.x, renderTargetMouseData.y);
+    RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), m_renderTargetMouseData.x, m_renderTargetMouseData.y);
   }
 }
 
@@ -83,42 +71,55 @@ auto main_menu_screen::PlaySoundEffects() const -> void
 
 [[nodiscard]] auto main_menu_screen::ContinueRunning() const -> bool
 {
-  return quit || startPlay || startLevelEdit ? false : true;
+  if( !m_continueRunning && m_saveGameLevelData )
+    global_state::save();
+
+  return m_continueRunning;
 }
 
 auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
 {
 }
 
-auto main_menu_screen::StartPlay() const -> bool
+auto main_menu_screen::OnViewDefault(const screen_input_state& inputState) -> void
 {
-  return startPlay;
-}
-
-auto main_menu_screen::StartLevelEditor() const -> bool
-{
-  return startLevelEdit;
-}
-
-auto main_menu_screen::SaveGameLevelData() const -> bool
-{
-  return saveGameLevelData;
+  m_renderTargetMouseData = inputState.renderTargetMouseData;
+  
+  if( KeyPressed(inputState, DIK_SPACE) )
+  {
+    play_screen playScreen;
+    framework::openScreen(playScreen);
+  }
+  else if( KeyPressed(inputState, DIK_F1) )
+  {
+  }
+  else if( KeyPressed(inputState, DIK_ESCAPE) )
+  {
+    if( m_checkSaveOnExit )
+    {
+      m_view = view_exit;
+    }
+    else
+    {
+      m_continueRunning = false;
+    }
+  }
 }
 
 auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInputState) -> void
 {
   if( KeyPressed(screenInputState, DIK_ESCAPE) )
   {
-    viewState = view_default;
+    m_view = view_default;
   }
   else if( KeyPressed(screenInputState, DIK_N) )
   {
-    saveGameLevelData = false;
-    quit = true;
+    m_saveGameLevelData = false;
+    m_continueRunning = false;
   }
   else if( KeyPressed(screenInputState, DIK_Y) )
   {
-    saveGameLevelData = true;
-    quit = true;
+    m_saveGameLevelData = true;
+    m_continueRunning = true;
   }
 }

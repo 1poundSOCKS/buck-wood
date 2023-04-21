@@ -1,6 +1,7 @@
 #pragma once
 
 #include "diagnostics.h"
+#include "level_object_container.h"
 
 class main_menu_screen
 {
@@ -15,26 +16,23 @@ public:
   [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
-  auto StartPlay() const -> bool;
-  auto StartLevelEditor() const -> bool;
-  auto SaveGameLevelData() const -> bool;
-
 private:
 
+  auto OnViewDefault(const screen_input_state& inputState) -> void;
   auto UpdateScreenExitState(const screen_input_state& screenInputState) -> void;
 
-  enum view_state { view_default, view_exit };
-  view_state viewState = view_default;
-  render_target_mouse_data renderTargetMouseData;
+  enum view_type { view_default, view_exit };
+  view_type m_view = view_default;
+
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
-  bool starting = true;
-  bool running = true;
-  bool quit = false;
-  bool startPlay = false;
-  bool startLevelEdit = false;
-  bool saveGameLevelData = false;
-  bool checkSaveOnExit = false;
+
+  render_target_mouse_data m_renderTargetMouseData;
+  level_object_container m_levelObjectContainer;
+  
+  bool m_continueRunning = true;
+  bool m_saveGameLevelData = false;
+  bool m_checkSaveOnExit = false;
 };
