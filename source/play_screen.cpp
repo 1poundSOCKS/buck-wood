@@ -16,6 +16,10 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_renderTarget->AddRef();
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
+
+  m_containerView.Initialize(renderTarget);
+  m_objectContainer.Initialize(renderTarget, dwriteFactory);
+
   m_continueRunning = LoadFirstLevel();
 }
 
@@ -51,7 +55,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   {
     UpdateLevelState(inputState, elapsedTicks);
     
-    if( m_levelObjectContainer.IsComplete() )
+    if( m_objectContainer.IsComplete() )
     {
       m_continueRunning = false;
     }
@@ -61,7 +65,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 auto play_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_levelObjectContainer.Render(m_viewTransform);
+  m_containerView.Render(m_objectContainer);
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -119,7 +123,7 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
     m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
   }
 
-  m_levelObjectContainer.Update(elapsedTicks);
+  m_containerView.Update(m_objectContainer, inputState, elapsedTicks);
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
@@ -140,7 +144,6 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
   }
   else
   {
-    m_levelObjectContainer.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
     LoadCurrentLevel();
     return true;
   }
@@ -162,20 +165,20 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 
 auto play_screen::LoadCurrentLevel() -> void
 {
-  m_levelObjectContainer.Clear();
+  m_objectContainer.Clear();
 
-  m_levelObjectContainer.AppendOverlayObject(m_mouseCursor);
+  m_objectContainer.AppendOverlayObject(m_mouseCursor);
 
-  m_gameLevelDataLoader.LoadIslands(m_levelObjectContainer);
-  m_gameLevelDataLoader.LoadTargets(m_levelObjectContainer);
+  m_gameLevelDataLoader.LoadIslands(m_objectContainer);
+  m_gameLevelDataLoader.LoadTargets(m_objectContainer);
 
-  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_levelObjectContainer);
-  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_levelObjectContainer);
-  m_stateControlData = m_gameLevelDataLoader.LoadState(m_levelObjectContainer);
+  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_objectContainer);
+  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_objectContainer);
+  m_stateControlData = m_gameLevelDataLoader.LoadState(m_objectContainer);
 
   m_playerControlData->SetEventShot([this](float x, float y, float angle) -> void
   {
-    m_levelObjectContainer.AppendActiveObject(bullet { x, y, angle });
+    m_objectContainer.AppendActiveObject(bullet { x, y, angle });
     m_playerShot = true;
   });
 

@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "game_objects.h"
 #include "level_object_container.h"
+#include "object_container_view.h"
 #include "timers.h"
 #include "sound_data.h"
 #include "player_ship.h"
@@ -64,7 +65,8 @@ private:
   game_rect m_viewRect;
   D2D1::Matrix3x2F m_viewTransform;
 
-  level_object_container m_levelObjectContainer;
+  object_container_view m_containerView;
+  level_object_container m_objectContainer;
 
   int64_t levelTimeLimit;
   std::vector<float> levelTimes;

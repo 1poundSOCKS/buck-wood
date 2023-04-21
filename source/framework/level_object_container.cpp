@@ -85,25 +85,16 @@ auto level_object_container::Update(int64_t elapsedTicks) -> void
   });
 }
 
-auto level_object_container::Render(const D2D1::Matrix3x2F& viewTransform) const -> void
+auto level_object_container::Render(D2D1_RECT_F viewRect) const -> void
 {
-  m_renderTarget->SetTransform(viewTransform);
-
-  auto viewRect = GetViewRect(m_renderTarget.get(), viewTransform);
-
   std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [viewRect](const auto& object)
   {
     object.Render(viewRect);
   });
 
-  auto renderTargetSize = m_renderTarget->GetSize();
-  D2D1_RECT_F overlayViewRect = { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 };
-
-  m_renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [overlayViewRect](const auto& object)
+  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [viewRect](const auto& object)
   {
-    object.Render(overlayViewRect);
+    object.Render(viewRect);
   });
 }
 
@@ -111,23 +102,4 @@ auto level_object_container::Clear() -> void
 {
   m_activeObjects.clear();
   m_overlayObjects.clear();  
-}
-
-[[nodiscard]] auto level_object_container::GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) const -> D2D1_RECT_F
-{
-  auto renderTargetSize = renderTarget->GetSize();
-  auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };
-  auto renderTargetBottomRight  = D2D1_POINT_2F { renderTargetSize.width - 1.0f, renderTargetSize.height - 1.0f };
-
-  auto invertedViewTransform = viewTransform;
-  if( invertedViewTransform.Invert() )
-  {
-    auto topLeft = invertedViewTransform.TransformPoint(renderTargetTopLeft);
-    auto bottomRight = invertedViewTransform.TransformPoint(renderTargetBottomRight);
-    return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
-  }
-  else
-  {
-    return { renderTargetTopLeft.x, renderTargetTopLeft.y, renderTargetBottomRight.x, renderTargetBottomRight.y };
-  }
 }

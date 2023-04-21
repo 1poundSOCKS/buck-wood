@@ -16,9 +16,11 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
+
   m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
   m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
+  
   config_file::create(L"config.txt");
   const auto& dataPath = config_file::getSetting(L"data_path");
   global_state::create(dataPath);
@@ -30,10 +32,15 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
     sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
     dummyPlayer.Play();
   }
+
+  m_containerView.Initialize(renderTarget);
+  m_objectContainer.Initialize(renderTarget, dwriteFactory);
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 {
+  m_containerView.Update(m_objectContainer, inputState, 0);
+
   switch( m_view )
   {
     case view_exit:
@@ -48,21 +55,22 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  m_containerView.Render(m_objectContainer);
 
-  if( m_view == view_exit )
-  {
-    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-  }
-  else
-  {
-    std::wstring titleText;
-    titleText += L"Right mouse button - accelerate\n";
-    titleText += L"Left mouse button - shoot\n";
-    titleText += L"\nPress SPACE to start";
+  // if( m_view == view_exit )
+  // {
+  //   RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+  // }
+  // else
+  // {
+  //   std::wstring titleText;
+  //   titleText += L"Right mouse button - accelerate\n";
+  //   titleText += L"Left mouse button - shoot\n";
+  //   titleText += L"\nPress SPACE to start";
 
-    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
-    RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), m_renderTargetMouseData.x, m_renderTargetMouseData.y);
-  }
+  //   RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
+  //   RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), m_renderTargetMouseData.x, m_renderTargetMouseData.y);
+  // }
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void
@@ -84,7 +92,7 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
 auto main_menu_screen::OnViewDefault(const screen_input_state& inputState) -> void
 {
   m_renderTargetMouseData = inputState.renderTargetMouseData;
-  
+
   if( KeyPressed(inputState, DIK_SPACE) )
   {
     play_screen playScreen;

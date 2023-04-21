@@ -20,7 +20,7 @@ public:
   template <typename object_type> auto AppendOverlayObject(object_type&& object) -> void;
 
   auto Update(int64_t elapsedTicks) -> void;
-  auto Render(const D2D1::Matrix3x2F& viewTransform) const -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto IsComplete() -> bool;
   auto Clear() -> void;
 
@@ -28,7 +28,6 @@ private:
 
   [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
   [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
-  [[nodiscard]] auto GetViewRect(ID2D1RenderTarget* renderTarget, const D2D1::Matrix3x2F& viewTransform) const -> D2D1_RECT_F;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
