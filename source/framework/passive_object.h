@@ -2,6 +2,7 @@
 #define _passive_object_
 
 #include "framework.h"
+#include "object_input_data.h"
 #include "play_event.h"
 
 class passive_object
@@ -13,7 +14,7 @@ private:
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
-    virtual auto Update(int64_t clockCount) -> void = 0;
+    virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
   };
 
@@ -32,9 +33,9 @@ private:
       object.Initialize(renderTarget, dwriteFactory);
     }
 
-    auto Update(int64_t clockCount) -> void override
+    auto Update(const object_input_data& inputData, int64_t clockCount) -> void override
     {
-      object.Update(clockCount);
+      object.Update(inputData, clockCount);
     }
 
     auto Render(D2D1_RECT_F viewRect) const -> void override
@@ -71,9 +72,9 @@ public:
     objectConcept->Initialize(renderTarget, dwriteFactory);
   }
 
-  auto Update(int64_t clockCount) -> void
+  auto Update(const object_input_data& inputData, int64_t clockCount) -> void
   {
-    objectConcept->Update(clockCount);
+    objectConcept->Update(inputData, clockCount);
   }
 
   auto Render(D2D1_RECT_F viewRect) const -> void

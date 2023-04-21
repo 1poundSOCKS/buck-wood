@@ -35,6 +35,9 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
 
   m_containerView.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget, dwriteFactory);
+
+  mouse_cursor mouseCursor;
+  m_objectContainer.AppendOverlayObject(mouseCursor);
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
@@ -57,20 +60,19 @@ auto main_menu_screen::Render() const -> void
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
   m_containerView.Render(m_objectContainer);
 
-  // if( m_view == view_exit )
-  // {
-  //   RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-  // }
-  // else
-  // {
-  //   std::wstring titleText;
-  //   titleText += L"Right mouse button - accelerate\n";
-  //   titleText += L"Left mouse button - shoot\n";
-  //   titleText += L"\nPress SPACE to start";
+  if( m_view == view_exit )
+  {
+    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+  }
+  else
+  {
+    std::wstring titleText;
+    titleText += L"Right mouse button - accelerate\n";
+    titleText += L"Left mouse button - shoot\n";
+    titleText += L"\nPress SPACE to start";
 
-  //   RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
-  //   RenderMouseCursor(m_renderTarget.get(), m_mouseCursorBrush.get(), m_renderTargetMouseData.x, m_renderTargetMouseData.y);
-  // }
+    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
+  }
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void

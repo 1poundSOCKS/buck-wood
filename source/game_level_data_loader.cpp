@@ -1,28 +1,27 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "global_state.h"
-#include "level_object_container.h"
 
 game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(global_state::firstLevelData())
 {
 }
 
-auto game_level_data_loader::LoadIslands(level_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadIslands(active_object_container& levelObjectContainer) const -> void
 {
   LoadIslands(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-auto game_level_data_loader::LoadTargets(level_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(active_object_container& levelObjectContainer) const -> void
 {
   LoadTargets(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer(level_object_container& levelObjectContainer) const -> player_ship::control_data
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(active_object_container& levelObjectContainer) const -> player_ship::control_data
 {
   return LoadPlayer(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadTimer(level_object_container& levelObjectContainer) const -> level_timer::control_data
+[[nodiscard]] auto game_level_data_loader::LoadTimer(passive_object_container& levelObjectContainer) const -> level_timer::control_data
 {
   return LoadTimer(**m_currentLevelDataIterator, levelObjectContainer);
 }
@@ -41,7 +40,7 @@ auto game_level_data_loader::NextLevel() -> void
   return m_currentLevelDataIterator == global_state::endLevelData();
 }
 
-auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadIslands(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
 {
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
@@ -53,7 +52,7 @@ auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level
   });
 }
 
-auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
 {
   std::vector<level_target> targets;
   std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> void
@@ -62,21 +61,21 @@ auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level
   });
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> player_ship::control_data
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> player_ship::control_data
 {
   auto controlData = std::make_shared<player_ship::control>();
   levelObjectContainer.AppendActiveObject(player_ship { controlData });
   return controlData;
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData, level_object_container& levelObjectContainer) const -> level_timer::control_data
+[[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData, passive_object_container& levelObjectContainer) const -> level_timer::control_data
 {
   auto controlData = std::make_shared<level_timer::control>();
   levelObjectContainer.AppendOverlayObject(level_timer { controlData });
   return controlData;
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadState(level_object_container& levelObjectContainer) const -> level_state::control_data
+[[nodiscard]] auto game_level_data_loader::LoadState(passive_object_container& levelObjectContainer) const -> level_state::control_data
 {
   auto controlData = std::make_shared<level_state::control>();
   levelObjectContainer.AppendOverlayObject(level_state { controlData });

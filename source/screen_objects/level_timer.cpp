@@ -24,7 +24,7 @@ auto level_timer::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_textFormat = render_text_format_level_timer.CreateTextFormat(dwriteFactory);
 }
 
-auto level_timer::Update(int64_t clockCount) -> void
+auto level_timer::Update(const object_input_data& inputData, int64_t clockCount) -> void
 {
 }
 

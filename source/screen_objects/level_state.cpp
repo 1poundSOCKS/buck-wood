@@ -38,7 +38,7 @@ auto level_state::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_textFormat = render_text_format_level_state.CreateTextFormat(dwriteFactory);
 }
 
-auto level_state::Update(int64_t clockCount) -> void
+auto level_state::Update(const object_input_data& inputData, int64_t clockCount) -> void
 {
 }
 

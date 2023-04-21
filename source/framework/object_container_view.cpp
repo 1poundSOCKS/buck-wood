@@ -18,12 +18,25 @@ auto object_container_view::SetTransform(const D2D1::Matrix3x2F& transform) -> b
   return m_invertedTransform.Invert();
 }
 
-auto object_container_view::Update(level_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
+auto object_container_view::Update(active_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
   objectContainer.Update(elapsedTicks);
 }
 
-auto object_container_view::Render(const level_object_container& objectContainer) const -> void
+auto object_container_view::Update(passive_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
+{
+  auto inputData = GetObjectInputData(inputState);
+  objectContainer.Update(inputData, elapsedTicks);
+}
+
+auto object_container_view::Render(const active_object_container& objectContainer) const -> void
+{
+  auto viewRect = GetViewRect();
+  m_renderTarget->SetTransform(m_transform);
+  objectContainer.Render(viewRect);
+}
+
+auto object_container_view::Render(const passive_object_container& objectContainer) const -> void
 {
   auto viewRect = GetViewRect();
   m_renderTarget->SetTransform(m_transform);
@@ -39,4 +52,13 @@ auto object_container_view::Render(const level_object_container& objectContainer
   auto topLeft = m_invertedTransform.TransformPoint(renderTargetTopLeft);
   auto bottomRight = m_invertedTransform.TransformPoint(renderTargetBottomRight);
   return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
+}
+
+[[nodiscard]] auto object_container_view::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
+{
+  auto mousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.windowData.mouse.x), static_cast<float>(screenInputState.windowData.mouse.y) });
+
+  object_input_data objectInputData;
+  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  return objectInputData;
 }

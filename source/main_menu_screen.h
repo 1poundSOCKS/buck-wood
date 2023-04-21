@@ -31,7 +31,7 @@ private:
 
   render_target_mouse_data m_renderTargetMouseData;
   object_container_view m_containerView;
-  level_object_container m_objectContainer;
+  passive_object_container m_objectContainer;
   
   bool m_continueRunning = true;
   bool m_saveGameLevelData = false;

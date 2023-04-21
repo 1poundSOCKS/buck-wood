@@ -17,15 +17,18 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
 
-  m_containerView.Initialize(renderTarget);
-  m_objectContainer.Initialize(renderTarget, dwriteFactory);
+  m_levelContainer.Initialize(renderTarget, dwriteFactory);
+  m_overlayContainer.Initialize(renderTarget, dwriteFactory);
+
+  m_levelView.Initialize(renderTarget);
+  m_overlayView.Initialize(renderTarget);
 
   m_continueRunning = LoadFirstLevel();
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  renderTargetMouseData = inputState.renderTargetMouseData;
+  m_renderTargetMouseData = inputState.renderTargetMouseData;
   m_playerShot = m_targetActivated = false;
 
   UpdateMouseCursorPosition();
@@ -51,21 +54,19 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_continueRunning = false;
   }
 
-  if( elapsedTicks > 0 )
+  UpdateLevelState(inputState, elapsedTicks);
+  
+  if( m_levelContainer.IsComplete() )
   {
-    UpdateLevelState(inputState, elapsedTicks);
-    
-    if( m_objectContainer.IsComplete() )
-    {
-      m_continueRunning = false;
-    }
+    m_continueRunning = false;
   }
 }
 
 auto play_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_containerView.Render(m_objectContainer);
+  m_levelView.Render(m_levelContainer);
+  m_overlayView.Render(m_overlayContainer);
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -95,7 +96,7 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
 
 auto play_screen::UpdateMouseCursorPosition() -> void
 {
-  m_mouseCursor.SetPosition(renderTargetMouseData.x, renderTargetMouseData.y);
+  // m_mouseCursor.SetPosition(m_renderTargetMouseData.x, m_renderTargetMouseData.y);
 }
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
@@ -106,24 +107,11 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
   m_playerControlData->SetTrigger(levelControlState.shoot);
 
   auto playerPosition = m_playerControlData->GetPosition();
-  m_viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, levelControlState.renderTargetMouseData.size.width, levelControlState.renderTargetMouseData.size.height);
+  auto viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, levelControlState.renderTargetMouseData.size.width, levelControlState.renderTargetMouseData.size.height);
+  m_levelView.SetTransform(viewTransform);
 
-  auto invertedViewTransform = m_viewTransform;
-
-  if( invertedViewTransform.Invert() )
-  {
-    m_mouseLevelPosition = invertedViewTransform.TransformPoint({ levelControlState.renderTargetMouseData.x, levelControlState.renderTargetMouseData.y });
-
-    auto playerAngle = CalculateAngle(playerPosition.x, playerPosition.y, m_mouseLevelPosition.x, m_mouseLevelPosition.y);
-    m_playerControlData->SetAngle(playerAngle);
-
-    auto viewTopLeft = invertedViewTransform.TransformPoint({ 0, 0 });
-    auto viewBottomRight = invertedViewTransform.TransformPoint({ levelControlState.renderTargetMouseData.size.width - 1, levelControlState.renderTargetMouseData.size.height - 1 });
-    m_viewRect.topLeft = { viewTopLeft.x, viewTopLeft.y };
-    m_viewRect.bottomRight = { viewBottomRight.x, viewBottomRight.y };
-  }
-
-  m_containerView.Update(m_objectContainer, inputState, elapsedTicks);
+  m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
+  m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
@@ -165,20 +153,20 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 
 auto play_screen::LoadCurrentLevel() -> void
 {
-  m_objectContainer.Clear();
+  m_levelContainer.Clear();
 
-  m_objectContainer.AppendOverlayObject(m_mouseCursor);
+  m_overlayContainer.AppendOverlayObject(m_mouseCursor);
 
-  m_gameLevelDataLoader.LoadIslands(m_objectContainer);
-  m_gameLevelDataLoader.LoadTargets(m_objectContainer);
+  m_gameLevelDataLoader.LoadIslands(m_levelContainer);
+  m_gameLevelDataLoader.LoadTargets(m_levelContainer);
 
-  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_objectContainer);
-  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_objectContainer);
-  m_stateControlData = m_gameLevelDataLoader.LoadState(m_objectContainer);
+  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_levelContainer);
+  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_overlayContainer);
+  m_stateControlData = m_gameLevelDataLoader.LoadState(m_overlayContainer);
 
   m_playerControlData->SetEventShot([this](float x, float y, float angle) -> void
   {
-    m_objectContainer.AppendActiveObject(bullet { x, y, angle });
+    m_levelContainer.AppendActiveObject(bullet { x, y, angle });
     m_playerShot = true;
   });
 

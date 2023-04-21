@@ -1,14 +1,14 @@
 #include "pch.h"
-#include "level_object_container.h"
+#include "active_object_container.h"
 #include "game_objects.h"
 #include "game_constants.h"
 #include "clock_frequency.h"
 
-level_object_container::level_object_container()
+active_object_container::active_object_container()
 {
 }
 
-auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto active_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
@@ -20,24 +20,14 @@ auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrite
   {
     object.Initialize(renderTarget, dwriteFactory);
   });
-
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this, renderTarget, dwriteFactory](auto& object)
-  {
-    object.Initialize(renderTarget, dwriteFactory);
-  });
 }
 
-[[nodiscard]] auto level_object_container::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>
+[[nodiscard]] auto active_object_container::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>
 {
   return std::back_inserter(m_activeObjects);
 }
 
-[[nodiscard]] auto level_object_container::GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>
-{
-  return std::back_inserter(m_overlayObjects);
-}
-
-[[nodiscard]] auto level_object_container::IsComplete() -> bool
+[[nodiscard]] auto active_object_container::IsComplete() -> bool
 {
   int total = std::reduce(m_activeObjects.cbegin(), m_activeObjects.cend(), 0, [](auto count, const active_object& object)
   {
@@ -47,7 +37,7 @@ auto level_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrite
   return total == m_activeObjects.size();
 }
 
-auto level_object_container::Update(int64_t elapsedTicks) -> void
+auto active_object_container::Update(int64_t elapsedTicks) -> void
 {
   std::list<play_event> events;
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [elapsedTicks, &events](auto& object)
@@ -78,28 +68,17 @@ auto level_object_container::Update(int64_t elapsedTicks) -> void
   {
     object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
   }
-
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [elapsedTicks](auto& object)
-  {
-    object.Update(elapsedTicks);
-  });
 }
 
-auto level_object_container::Render(D2D1_RECT_F viewRect) const -> void
+auto active_object_container::Render(D2D1_RECT_F viewRect) const -> void
 {
   std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [viewRect](const auto& object)
   {
     object.Render(viewRect);
   });
-
-  std::for_each(std::execution::seq, m_overlayObjects.cbegin(), m_overlayObjects.cend(), [viewRect](const auto& object)
-  {
-    object.Render(viewRect);
-  });
 }
 
-auto level_object_container::Clear() -> void
+auto active_object_container::Clear() -> void
 {
   m_activeObjects.clear();
-  m_overlayObjects.clear();  
 }
