@@ -37,11 +37,7 @@ public:
 
 private:
 
-  static level_control_state GetLevelControlState(const screen_input_state& inputState);
-
   auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
-  auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
-  [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
   
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto QuitPressed(const screen_input_state& inputState) -> bool;
@@ -59,12 +55,10 @@ private:
   bool m_gameComplete = false;
   bool m_continueRunning = true;
 
-  render_target_mouse_data m_renderTargetMouseData;
-
   active_object_container m_levelContainer;
-  passive_object_container m_overlayContainer;
-
   object_container_view m_levelView;
+
+  passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
 
   int64_t levelTimeLimit;
@@ -72,13 +66,9 @@ private:
 
   game_level_data_loader m_gameLevelDataLoader;
 
-  mouse_cursor m_mouseCursor;
-
   player_ship::control_data m_playerControlData;
   level_timer::control_data m_timerControlData;
   level_state::control_data m_stateControlData;
-
-  D2D1_POINT_2F m_mouseLevelPosition = { 0, 0 };
 
   bool m_playerShot = false;
   bool m_targetActivated = false;

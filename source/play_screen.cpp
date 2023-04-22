@@ -28,7 +28,6 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  m_renderTargetMouseData = inputState.renderTargetMouseData;
   m_playerShot = m_targetActivated = false;
 
   if( PausePressed(inputState) )
@@ -73,7 +72,24 @@ auto play_screen::PlaySoundEffects() const -> void
   }
   else
   {
-    PlaySoundEffects(soundBuffers);
+    PlaySoundBuffer(soundBuffers[menu_theme], true);
+
+    if( m_playerControlData->ThrusterOn() )
+      PlaySoundBuffer(soundBuffers[thrust], true);
+    else
+      StopSoundBufferPlay(soundBuffers[thrust]);
+
+    if( m_playerShot )
+    {
+      ResetSoundBuffer(soundBuffers[shoot]);
+      PlaySoundBuffer(soundBuffers[shoot]);
+    }
+
+    if( m_targetActivated )
+    {
+      ResetSoundBuffer(soundBuffers[shoot]);
+      PlaySoundBuffer(soundBuffers[target_activated]);
+    }
   }
 }
 
@@ -84,7 +100,6 @@ auto play_screen::PlaySoundEffects() const -> void
 
 auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
 {
-  diagnosticsDataInserter = GetMouseDiagnostics();
 }
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
@@ -136,7 +151,7 @@ auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelContainer.Clear();
 
-  m_overlayContainer.AppendOverlayObject(m_mouseCursor);
+  m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 
   m_gameLevelDataLoader.LoadIslands(m_levelContainer);
   m_gameLevelDataLoader.LoadTargets(m_levelContainer);
@@ -157,40 +172,4 @@ auto play_screen::LoadCurrentLevel() -> void
   });
 
   m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
-}
-
-level_control_state play_screen::GetLevelControlState(const screen_input_state& inputState)
-{
-  return {
-    inputState.windowData.mouse.rightButtonDown, 
-    inputState.windowData.mouse.leftButtonDown, 
-    inputState.renderTargetMouseData
-  };
-}
-
-auto play_screen::PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void
-{
-  PlaySoundBuffer(soundBuffers[menu_theme], true);
-
-  if( m_playerControlData->ThrusterOn() )
-    PlaySoundBuffer(soundBuffers[thrust], true);
-  else
-    StopSoundBufferPlay(soundBuffers[thrust]);
-
-  if( m_playerShot )
-  {
-    ResetSoundBuffer(soundBuffers[shoot]);
-    PlaySoundBuffer(soundBuffers[shoot]);
-  }
-
-  if( m_targetActivated )
-  {
-    ResetSoundBuffer(soundBuffers[shoot]);
-    PlaySoundBuffer(soundBuffers[target_activated]);
-  }
-}
-
-[[nodiscard]] auto play_screen::GetMouseDiagnostics() const -> std::wstring
-{
-  return std::format(L"world mouse: {:.2f}, {:.2f}", m_mouseLevelPosition.x, m_mouseLevelPosition.y);
 }
