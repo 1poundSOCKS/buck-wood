@@ -6,6 +6,7 @@
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
+#include "object_input_data.h"
 
 class player_ship
 {
@@ -18,11 +19,7 @@ public:
     friend class player_ship;
 
   public:
-  
-    auto SetPosition(float x, float y) -> void;
-    auto SetAngle(float angle) -> void;
-    auto SetThruster(bool thrusterOn) -> void;
-    auto SetTrigger(bool triggerPressed) -> void;
+
     auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
     auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
 
@@ -35,7 +32,6 @@ public:
     float m_y = 0;
     float m_angle = 0;
     bool m_thrusterOn = false;
-    bool m_triggerPressed = false;
     std::function<void(float,float,float)> m_eventShot;
     std::function<void(float,float)> m_eventDied;
   };
@@ -55,7 +51,7 @@ public:
   [[nodiscard]] auto ThrusterOn() const -> bool;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
-  auto Update(int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  auto Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;

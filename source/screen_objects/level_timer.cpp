@@ -30,6 +30,6 @@ auto level_timer::Update(const object_input_data& inputData, int64_t clockCount)
 
 auto level_timer::Render(D2D1_RECT_F viewRect) const -> void
 {
-  std::wstring timerText = std::format(L"{:.2f}", m_controlData->m_value);
+  std::wstring timerText = std::format(L"{:.1f}", m_controlData->m_value);
   RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
 }

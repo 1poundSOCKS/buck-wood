@@ -28,7 +28,7 @@ auto bullet::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteF
   brush = screen_render_brush_yellow.CreateBrush(renderTarget);
 }
 
-auto bullet::Update(int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto bullet::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
   auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
   xPos += ( xVelocity * updateInterval );

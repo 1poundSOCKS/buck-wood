@@ -39,7 +39,6 @@ private:
 
   static level_control_state GetLevelControlState(const screen_input_state& inputState);
 
-  auto UpdateMouseCursorPosition() -> void;
   auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
   auto PlaySoundEffects(const global_sound_buffer_selector& soundBuffers) const -> void;
   [[nodiscard]] auto GetMouseDiagnostics() const -> std::wstring;
@@ -61,8 +60,6 @@ private:
   bool m_continueRunning = true;
 
   render_target_mouse_data m_renderTargetMouseData;
-  // game_rect m_viewRect;
-  // D2D1::Matrix3x2F m_viewTransform;
 
   active_object_container m_levelContainer;
   passive_object_container m_overlayContainer;

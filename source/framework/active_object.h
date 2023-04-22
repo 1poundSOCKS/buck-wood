@@ -4,6 +4,7 @@
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
+#include "object_input_data.h"
 
 class active_object
 {
@@ -13,7 +14,7 @@ private:
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
-    virtual auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
+    virtual auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
@@ -38,9 +39,9 @@ private:
       object.Initialize(renderTarget, dwriteFactory);
     }
 
-    auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void override
+    auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void override
     {
-      object.Update(clockCount, playEventInserter);
+      object.Update(inputData, clockCount, playEventInserter);
     }
 
     [[nodiscard]] auto LevelIsComplete() const -> bool override
@@ -106,9 +107,9 @@ public:
     objectConcept->Initialize(renderTarget, dwriteFactory);
   }
 
-  auto Update(int64_t clockCount, play_event_inserter playEventInserter) -> void
+  auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void
   {
-    objectConcept->Update(clockCount, playEventInserter);
+    objectConcept->Update(inputData, clockCount, playEventInserter);
   }
 
   [[nodiscard]] auto LevelIsComplete() const -> bool

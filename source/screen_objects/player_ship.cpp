@@ -10,26 +10,26 @@
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-auto player_ship::control::SetPosition(float x, float y) -> void
-{
-  m_x = x;
-  m_y = y;
-}
+// auto player_ship::control::SetPosition(float x, float y) -> void
+// {
+//   m_x = x;
+//   m_y = y;
+// }
 
-auto player_ship::control::SetAngle(float angle) -> void
-{
-  m_angle = angle;
-}
+// auto player_ship::control::SetAngle(float angle) -> void
+// {
+//   m_angle = angle;
+// }
 
-auto player_ship::control::SetThruster(bool thrusterOn) -> void
-{
-  m_thrusterOn = thrusterOn;
-}
+// auto player_ship::control::SetThruster(bool thrusterOn) -> void
+// {
+//   m_thrusterOn = thrusterOn;
+// }
 
-auto player_ship::control::SetTrigger(bool triggerPressed) -> void
-{
-  m_triggerPressed = triggerPressed;
-}
+// auto player_ship::control::SetTrigger(bool triggerPressed) -> void
+// {
+//   m_triggerPressed = triggerPressed;
+// }
 
 auto player_ship::control::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
@@ -65,34 +65,39 @@ auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
 }
 
-auto player_ship::Update(int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto player_ship::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
 {
-  if( m_state != player_ship::alive ) return;
-
-  const auto forceOfGravity = 0.0f;
-  const auto playerThrust = 200.0f;
-
-  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
-
-  float forceX = 0.0f;
-  float forceY = forceOfGravity;
-
-  if( m_controlData->m_thrusterOn )
+  if( m_state == player_ship::alive && tickCount > 0 )
   {
-    forceX += playerThrust * sin(DEGTORAD(m_controlData->m_angle));
-    forceY -= playerThrust * cos(DEGTORAD(m_controlData->m_angle));
-  }
-  
-  m_velocityX += forceX * gameUpdateInterval;
-  m_velocityY += forceY * gameUpdateInterval;
-  m_controlData->m_x += m_velocityX * gameUpdateInterval;
-  m_controlData->m_y += m_velocityY * gameUpdateInterval;
+    m_controlData->m_thrusterOn = inputData.GetMouseData().rightButtonDown;
 
-  UpdateShipGeometryData();
+    m_controlData->m_angle = CalculateAngle(m_controlData->m_x, m_controlData->m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
 
-  if( m_controlData->m_triggerPressed && PlayerCanShoot(tickCount) )
-  {
-    playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
+    const auto forceOfGravity = 0.0f;
+    const auto playerThrust = 200.0f;
+
+    auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
+
+    float forceX = 0.0f;
+    float forceY = forceOfGravity;
+
+    if( m_controlData->ThrusterOn() )
+    {
+      forceX += playerThrust * sin(DEGTORAD(m_controlData->m_angle));
+      forceY -= playerThrust * cos(DEGTORAD(m_controlData->m_angle));
+    }
+    
+    m_velocityX += forceX * gameUpdateInterval;
+    m_velocityY += forceY * gameUpdateInterval;
+    m_controlData->m_x += m_velocityX * gameUpdateInterval;
+    m_controlData->m_y += m_velocityY * gameUpdateInterval;
+
+    UpdateShipGeometryData();
+
+    if( inputData.GetMouseData().leftButtonDown && PlayerCanShoot(tickCount) )
+    {
+      playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
+    }
   }
 }
 

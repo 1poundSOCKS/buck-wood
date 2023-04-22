@@ -20,7 +20,8 @@ auto object_container_view::SetTransform(const D2D1::Matrix3x2F& transform) -> b
 
 auto object_container_view::Update(active_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  objectContainer.Update(elapsedTicks);
+  auto inputData = GetObjectInputData(inputState);
+  objectContainer.Update(inputData, elapsedTicks);
 }
 
 auto object_container_view::Update(passive_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void

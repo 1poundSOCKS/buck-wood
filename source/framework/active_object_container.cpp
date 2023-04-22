@@ -37,12 +37,12 @@ auto active_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrit
   return total == m_activeObjects.size();
 }
 
-auto active_object_container::Update(int64_t elapsedTicks) -> void
+auto active_object_container::Update(const object_input_data& inputData, int64_t elapsedTicks) -> void
 {
   std::list<play_event> events;
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [elapsedTicks, &events](auto& object)
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks, &events](auto& object)
   {
-    object.Update(elapsedTicks, std::back_inserter(events));
+    object.Update(inputData, elapsedTicks, std::back_inserter(events));
   });
 
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& mainObject)

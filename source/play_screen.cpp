@@ -31,12 +31,8 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_renderTargetMouseData = inputState.renderTargetMouseData;
   m_playerShot = m_targetActivated = false;
 
-  UpdateMouseCursorPosition();
-
   if( PausePressed(inputState) )
-  {
     m_paused = !m_paused;
-  }
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
   auto levelRemainingTicks = m_levelStopwatch.Update(elapsedTicks);
@@ -45,21 +41,18 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_timerControlData->SetValue(levelRemainingTime);
 
   if( levelRemainingTicks == 0 )
-  {
     m_continueRunning = false;
-  }
 
   if( QuitPressed(inputState) )
-  {
     m_continueRunning = false;
-  }
 
-  UpdateLevelState(inputState, elapsedTicks);
+  if( elapsedTicks > 0 )
+    UpdateLevelState(inputState, elapsedTicks);
   
+  m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
+
   if( m_levelContainer.IsComplete() )
-  {
     m_continueRunning = false;
-  }
 }
 
 auto play_screen::Render() const -> void
@@ -94,24 +87,12 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
   diagnosticsDataInserter = GetMouseDiagnostics();
 }
 
-auto play_screen::UpdateMouseCursorPosition() -> void
-{
-  // m_mouseCursor.SetPosition(m_renderTargetMouseData.x, m_renderTargetMouseData.y);
-}
-
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  auto levelControlState = GetLevelControlState(inputState);
-
-  m_playerControlData->SetThruster(levelControlState.thrust);
-  m_playerControlData->SetTrigger(levelControlState.shoot);
-
   auto playerPosition = m_playerControlData->GetPosition();
-  auto viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, levelControlState.renderTargetMouseData.size.width, levelControlState.renderTargetMouseData.size.height);
+  auto viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
   m_levelView.SetTransform(viewTransform);
-
   m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
-  m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
