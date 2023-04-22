@@ -26,8 +26,13 @@ auto level_state::control::GetText() const -> LPCWSTR
   }
 }
 
-level_state::level_state(control_data controlData) : m_controlData(controlData)
+level_state::level_state() : m_controlData(std::make_shared<control>())
 {
+}
+
+auto level_state::GetControlData() const -> control_data
+{
+  return m_controlData;
 }
 
 auto level_state::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void

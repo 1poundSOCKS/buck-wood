@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "timers.h"
+#include "performance_counter.h"
 
 float GetElapsedTimeInSeconds(int64_t ticks, int64_t ticksPerSecond)
 {

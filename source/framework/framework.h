@@ -2,7 +2,7 @@
 
 #include "screen_render.h"
 #include "screen_input_state.h"
-#include "timers.h"
+#include "performance_counter.h"
 #include "perf_data.h"
 #include "render_guard.h"
 #include "render.h"

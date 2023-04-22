@@ -1,7 +1,7 @@
 #ifndef _perf_data_
 #define _perf_data_
 
-#include "timers.h"
+#include "performance_counter.h"
 
 namespace performance
 {

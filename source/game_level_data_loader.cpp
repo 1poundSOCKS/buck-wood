@@ -1,9 +1,24 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "global_state.h"
+#include "mouse_cursor.h"
 
 game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(global_state::firstLevelData())
 {
+}
+
+auto game_level_data_loader::LoadLevel(active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer) const -> const level_control_data
+{
+  overlayObjectContainer.AppendOverlayObject(mouse_cursor {});
+
+  LoadIslands(levelObjectContainer);
+  LoadTargets(levelObjectContainer);
+
+  auto playerControlData = LoadPlayer(levelObjectContainer);
+  auto timerControlData = LoadTimer(overlayObjectContainer);
+  auto stateControlData = LoadState(overlayObjectContainer);
+
+  return { playerControlData, timerControlData, stateControlData };
 }
 
 auto game_level_data_loader::LoadIslands(active_object_container& levelObjectContainer) const -> void
@@ -77,7 +92,7 @@ auto game_level_data_loader::LoadTargets(const game_level_data& levelData, activ
 
 [[nodiscard]] auto game_level_data_loader::LoadState(passive_object_container& levelObjectContainer) const -> level_state::control_data
 {
-  auto controlData = std::make_shared<level_state::control>();
-  levelObjectContainer.AppendOverlayObject(level_state { controlData });
-  return controlData;
+  level_state levelState;
+  levelObjectContainer.AppendOverlayObject(levelState);
+  return levelState.GetControlData();
 }

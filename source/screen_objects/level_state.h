@@ -23,7 +23,8 @@ public:
 
   using control_data = std::shared_ptr<control>;
 
-  level_state(control_data controlData);
+  level_state();
+  auto GetControlData() const -> control_data;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;

@@ -59,9 +59,7 @@ private:
 
   game_level_data_loader m_gameLevelDataLoader;
 
-  player_ship::control_data m_playerControlData;
-  level_timer::control_data m_timerControlData;
-  level_state::control_data m_stateControlData;
+  level_control_data m_levelControlData;
 
   bool m_playerShot = false;
   bool m_targetActivated = false;

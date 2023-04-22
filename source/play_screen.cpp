@@ -32,8 +32,12 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   if( PausePressed(inputState) )
     m_paused = !m_paused;
 
+  if( m_paused )
+    m_levelControlData.GetStateControl()->SetState(level_state::control::paused);
+  else
+    m_levelControlData.GetStateControl()->SetState(level_state::control::playing);
+
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
-  // auto levelRemainingTicks = m_levelStopwatch.Update(elapsedTicks);
 
   if( QuitPressed(inputState) )
     m_continueRunning = false;
@@ -46,8 +50,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   if( m_levelContainer.IsComplete() )
     m_continueRunning = false;
 
-  // auto levelRemainingTime = static_cast<float>(levelRemainingTicks) / static_cast<float>(performance_counter::QueryFrequency());
-  auto levelRemainingTime = m_timerControlData->GetValue();
+  auto levelRemainingTime = m_levelControlData.GetTimerControl()->GetValue();
 
   if( levelRemainingTime == 0 )
     m_continueRunning = false;
@@ -73,7 +76,7 @@ auto play_screen::PlaySoundEffects() const -> void
   {
     PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-    if( m_playerControlData->ThrusterOn() )
+    if( m_levelControlData.GetPlayerControl()->ThrusterOn() )
       PlaySoundBuffer(soundBuffers[thrust], true);
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
@@ -103,7 +106,7 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  auto playerPosition = m_playerControlData->GetPosition();
+  auto playerPosition = m_levelControlData.GetPlayerControl()->GetPosition();
   auto viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
   m_levelView.SetTransform(viewTransform);
   m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
@@ -149,26 +152,16 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelContainer.Clear();
+  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer);
 
-  m_overlayContainer.AppendOverlayObject(mouse_cursor {});
-
-  m_gameLevelDataLoader.LoadIslands(m_levelContainer);
-  m_gameLevelDataLoader.LoadTargets(m_levelContainer);
-
-  m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_levelContainer);
-
-  m_playerControlData->SetEventShot([this](float x, float y, float angle) -> void
+  m_levelControlData.GetPlayerControl()->SetEventShot([this](float x, float y, float angle) -> void
   {
     m_levelContainer.AppendActiveObject(bullet { x, y, angle });
     m_playerShot = true;
   });
 
-  m_playerControlData->SetEventDied([this](float x, float y) -> void
+  m_levelControlData.GetPlayerControl()->SetEventDied([this](float x, float y) -> void
   {
     m_continueRunning = false;
   });
-
-  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_overlayContainer);
-  m_stateControlData = m_gameLevelDataLoader.LoadState(m_overlayContainer);
-  // m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
 }

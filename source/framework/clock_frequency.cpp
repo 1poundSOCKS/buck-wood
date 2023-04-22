@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "clock_frequency.h"
-#include "timers.h"
+#include "performance_counter.h"
 
 clock_frequency* clock_frequency::m_clockFrequency = new clock_frequency();
 
