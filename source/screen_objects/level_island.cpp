@@ -15,7 +15,7 @@ auto level_island::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* d
   brush = screen_render_brush_brown.CreateBrush(renderTarget);
 }
 
-auto level_island::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto level_island::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
 }
 
@@ -55,7 +55,7 @@ auto level_island::Render(D2D1_RECT_F) const -> void
   return m_collisionEffect;
 }
 
-auto level_island::ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
+auto level_island::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
 }
 

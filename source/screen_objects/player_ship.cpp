@@ -80,7 +80,7 @@ auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
 }
 
-auto player_ship::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
   if( m_state == player_ship::alive && tickCount > 0 )
   {
@@ -109,9 +109,10 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount, 
 
     UpdateShipGeometryData();
 
-    if( inputData.GetMouseData().leftButtonDown && PlayerCanShoot(tickCount) )
+    if( inputData.GetMouseData().leftButtonDown && PlayerCanShoot(tickCount) &&  m_controlData->m_eventShot )
     {
-      playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
+      // playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
+      m_controlData->m_eventShot(m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle);
     }
   }
 }
@@ -155,13 +156,13 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
   return {};
 }
 
-auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect, play_event_inserter playEventInserter) -> void
+auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
 {
   m_state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
 
-  if( m_state == dead )
+  if( m_state == dead && m_controlData->m_eventDied )
   {
-    playEventInserter = event_player_dead { m_controlData->m_x, m_controlData->m_y, m_controlData->m_eventDied };
+    m_controlData->m_eventDied(m_controlData->m_x, m_controlData->m_y);
   }
 }
 

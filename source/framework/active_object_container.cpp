@@ -36,35 +36,26 @@ auto active_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWrit
 
 auto active_object_container::Update(const object_input_data& inputData, int64_t elapsedTicks) -> void
 {
-  std::list<play_event> events;
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks, &events](auto& object)
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks](auto& object)
   {
-    object.Update(inputData, elapsedTicks, std::back_inserter(events));
+    object.Update(inputData, elapsedTicks);
   });
+}
 
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, &events](auto& mainObject)
+auto active_object_container::DoCollisions() -> void
+{
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this](auto& mainObject)
   {
-    std::for_each(m_activeObjects.begin(), m_activeObjects.end(), [&mainObject, &events](auto& collisionObject)
+    std::for_each(m_activeObjects.begin(), m_activeObjects.end(), [&mainObject](auto& collisionObject)
     {
       auto collisionData = collisionObject.GetCollisionData();
       if( mainObject.HasCollidedWith(collisionData) )
       {
         auto effect = collisionObject.GetCollisionEffect();
-        mainObject.ApplyCollisionEffect(effect, std::back_inserter(events));
+        mainObject.ApplyCollisionEffect(effect);
       }
     });
   });
-
-  std::for_each(events.cbegin(), events.cend(), [](auto& event)
-  {
-    event.Trigger();
-  });
-
-  auto object = m_activeObjects.begin();
-  while( object != m_activeObjects.end() )
-  {
-    object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
-  }
 }
 
 auto active_object_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -75,7 +66,17 @@ auto active_object_container::Render(D2D1_RECT_F viewRect) const -> void
   });
 }
 
-auto active_object_container::Clear() -> void
+auto active_object_container::ClearAll() -> void
 {
   m_activeObjects.clear();
+}
+
+
+auto active_object_container::ClearDestroyedObjects() -> void
+{
+  auto object = m_activeObjects.begin();
+  while( object != m_activeObjects.end() )
+  {
+    object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
+  }
 }

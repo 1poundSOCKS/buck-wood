@@ -13,7 +13,7 @@ public:
   level_island(const game_closed_object& object);
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
-  auto Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
@@ -21,7 +21,7 @@ public:
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
-  auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
+  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:

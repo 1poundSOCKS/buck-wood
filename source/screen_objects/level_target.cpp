@@ -41,7 +41,7 @@ auto level_target::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* d
   m_brushActivated =  screen_render_brush_red.CreateBrush(renderTarget);
 }
 
-auto level_target::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
+auto level_target::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
 }
 
@@ -72,7 +72,7 @@ auto level_target::Render(D2D1_RECT_F viewRect) const -> void
   return m_collisionEffect;
 }
 
-auto level_target::ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
+auto level_target::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
   if( effect.GetProperty(collision_effect::activates_target) )
     m_activated = true;

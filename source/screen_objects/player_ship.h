@@ -42,13 +42,13 @@ public:
   auto GetControlData() const -> control_data;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
-  auto Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void;
+  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
-  auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void;
+  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:

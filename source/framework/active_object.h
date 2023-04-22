@@ -14,13 +14,13 @@ private:
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
-    virtual auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void = 0;
+    virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
-    virtual auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void = 0;
+    virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
     [[nodiscard]] virtual auto Destroyed() const -> bool = 0;
   };
 
@@ -39,9 +39,9 @@ private:
       object.Initialize(renderTarget, dwriteFactory);
     }
 
-    auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void override
+    auto Update(const object_input_data& inputData, int64_t clockCount) -> void override
     {
-      object.Update(inputData, clockCount, playEventInserter);
+      object.Update(inputData, clockCount);
     }
 
     [[nodiscard]] auto LevelIsComplete() const -> bool override
@@ -69,9 +69,9 @@ private:
       return object.GetCollisionEffect();
     }
 
-    auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void override
+    auto ApplyCollisionEffect(const collision_effect& effect) -> void override
     {
-      object.ApplyCollisionEffect(effect, playEventInserter);
+      object.ApplyCollisionEffect(effect);
     }
 
     [[nodiscard]] auto Destroyed() const -> bool override
@@ -107,9 +107,9 @@ public:
     objectConcept->Initialize(renderTarget, dwriteFactory);
   }
 
-  auto Update(const object_input_data& inputData, int64_t clockCount, play_event_inserter playEventInserter) -> void
+  auto Update(const object_input_data& inputData, int64_t clockCount) -> void
   {
-    objectConcept->Update(inputData, clockCount, playEventInserter);
+    objectConcept->Update(inputData, clockCount);
   }
 
   [[nodiscard]] auto LevelIsComplete() const -> bool
@@ -137,9 +137,9 @@ public:
     return objectConcept->GetCollisionEffect();
   }
 
-  auto ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
+  auto ApplyCollisionEffect(const collision_effect& effect) -> void
   {
-    objectConcept->ApplyCollisionEffect(effect, playEventInserter);
+    objectConcept->ApplyCollisionEffect(effect);
   }
 
   [[nodiscard]] auto Destroyed() const -> bool

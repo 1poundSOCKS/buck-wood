@@ -16,9 +16,11 @@ public:
   template <typename object_type> auto AppendActiveObject(object_type&& object) -> void;
 
   auto Update(const object_input_data& inputData, int64_t elapsedTicks) -> void;
+  auto DoCollisions() -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto IsComplete() -> bool;
-  auto Clear() -> void;
+  auto ClearDestroyedObjects() -> void;
+  auto ClearAll() -> void;
 
 private:
 
