@@ -4,7 +4,6 @@
 #include "diagnostics.h"
 #include "screen_view.h"
 #include "global_state.h"
-#include "clock_frequency.h"
 
 play_screen::play_screen()
 {

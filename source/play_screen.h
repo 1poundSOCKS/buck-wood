@@ -2,25 +2,21 @@
 #define _play_screen_
 
 #include "framework.h"
-#include "game_objects.h"
 #include "object_container_view.h"
-#include "timers.h"
+#include "stopwatch.h"
 #include "sound_data.h"
-#include "player_ship.h"
-#include "bullet.h"
 #include "screen_input_state.h"
 #include "level_control_state.h"
-#include "area_grid.h"
+#include "player_ship.h"
+#include "bullet.h"
 #include "level_target.h"
 #include "level_island.h"
 #include "sound_data.h"
-#include "game_level_data.h"
 #include "level_timer.h"
 #include "level_state.h"
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
-#include "stopwatch.h"
 
 class play_screen
 {
@@ -49,8 +45,6 @@ private:
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
-  stopwatch m_levelStopwatch;
-
   bool m_paused = false;
   bool m_gameComplete = false;
   bool m_continueRunning = true;
@@ -62,6 +56,7 @@ private:
   object_container_view m_overlayView;
 
   int64_t levelTimeLimit;
+  stopwatch m_levelStopwatch;
   std::vector<float> levelTimes;
 
   game_level_data_loader m_gameLevelDataLoader;
