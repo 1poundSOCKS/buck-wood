@@ -63,16 +63,16 @@ auto game_level_data_loader::LoadTargets(const game_level_data& levelData, activ
 
 [[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> player_ship::control_data
 {
-  auto controlData = std::make_shared<player_ship::control>();
-  levelObjectContainer.AppendActiveObject(player_ship { controlData });
-  return controlData;
+  player_ship playerShip { levelData.playerStartPosX, levelData.playerStartPosY };
+  levelObjectContainer.AppendActiveObject(playerShip);
+  return playerShip.GetControlData();
 }
 
 [[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData, passive_object_container& levelObjectContainer) const -> level_timer::control_data
 {
-  auto controlData = std::make_shared<level_timer::control>();
-  levelObjectContainer.AppendOverlayObject(level_timer { controlData });
-  return controlData;
+  level_timer levelTimer { levelData.timeLimitInSeconds * performance_counter::QueryFrequency() };
+  levelObjectContainer.AppendOverlayObject(levelTimer);
+  return levelTimer.GetControlData();
 }
 
 [[nodiscard]] auto game_level_data_loader::LoadState(passive_object_container& levelObjectContainer) const -> level_state::control_data

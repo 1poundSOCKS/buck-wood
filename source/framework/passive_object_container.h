@@ -1,6 +1,5 @@
 #pragma once
 
-#include "active_object.h"
 #include "passive_object.h"
 #include "object_input_data.h"
 

@@ -3,17 +3,28 @@
 #include "render.h"
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
+#include "perf_data.h"
 
 inline auto render_text_format_level_timer = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100);
 
-auto level_timer::control::SetValue(float value) -> void
+auto level_timer::control::GetValue() const -> int64_t
+{
+  return m_value;
+}
+
+auto level_timer::control::SetValue(int64_t value) -> void
 {
   m_value = value;
 }
 
-level_timer::level_timer(control_data controlData)
-: m_controlData(controlData)
+level_timer::level_timer(int64_t value) : m_controlData(std::make_shared<control>())
 {
+  m_controlData->m_value = value;
+}
+
+auto level_timer::GetControlData() const -> control_data
+{
+  return m_controlData;
 }
 
 auto level_timer::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
@@ -26,10 +37,13 @@ auto level_timer::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
 
 auto level_timer::Update(const object_input_data& inputData, int64_t clockCount) -> void
 {
+  auto newValue = m_controlData->m_value - clockCount;
+  m_controlData->m_value = max(0, newValue);
 }
 
 auto level_timer::Render(D2D1_RECT_F viewRect) const -> void
 {
-  std::wstring timerText = std::format(L"{:.1f}", m_controlData->m_value);
+  auto value = static_cast<float>(m_controlData->m_value) / static_cast<float>(performance_counter::QueryFrequency());
+  std::wstring timerText = std::format(L"{:.1f}", value);
   RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), timerText, DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_TRAILING);
 }

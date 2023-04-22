@@ -33,13 +33,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_paused = !m_paused;
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
-  auto levelRemainingTicks = m_levelStopwatch.Update(elapsedTicks);
-
-  auto levelRemainingTime = static_cast<float>(levelRemainingTicks) / static_cast<float>(performance_counter::QueryFrequency());
-  m_timerControlData->SetValue(levelRemainingTime);
-
-  if( levelRemainingTicks == 0 )
-    m_continueRunning = false;
+  // auto levelRemainingTicks = m_levelStopwatch.Update(elapsedTicks);
 
   if( QuitPressed(inputState) )
     m_continueRunning = false;
@@ -50,6 +44,12 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
 
   if( m_levelContainer.IsComplete() )
+    m_continueRunning = false;
+
+  // auto levelRemainingTime = static_cast<float>(levelRemainingTicks) / static_cast<float>(performance_counter::QueryFrequency());
+  auto levelRemainingTime = m_timerControlData->GetValue();
+
+  if( levelRemainingTime == 0 )
     m_continueRunning = false;
 }
 
@@ -156,8 +156,6 @@ auto play_screen::LoadCurrentLevel() -> void
   m_gameLevelDataLoader.LoadTargets(m_levelContainer);
 
   m_playerControlData = m_gameLevelDataLoader.LoadPlayer(m_levelContainer);
-  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_overlayContainer);
-  m_stateControlData = m_gameLevelDataLoader.LoadState(m_overlayContainer);
 
   m_playerControlData->SetEventShot([this](float x, float y, float angle) -> void
   {
@@ -170,5 +168,7 @@ auto play_screen::LoadCurrentLevel() -> void
     m_continueRunning = false;
   });
 
-  m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
+  m_timerControlData = m_gameLevelDataLoader.LoadTimer(m_overlayContainer);
+  m_stateControlData = m_gameLevelDataLoader.LoadState(m_overlayContainer);
+  // m_levelStopwatch.Start(m_gameLevelDataLoader.GetTimeLimit() * performance_counter::QueryFrequency());
 }

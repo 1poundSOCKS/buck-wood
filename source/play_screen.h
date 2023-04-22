@@ -55,8 +55,6 @@ private:
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
 
-  int64_t levelTimeLimit;
-  stopwatch m_levelStopwatch;
   std::vector<float> levelTimes;
 
   game_level_data_loader m_gameLevelDataLoader;

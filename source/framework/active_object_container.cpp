@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "active_object_container.h"
-#include "game_objects.h"
-#include "game_constants.h"
-#include "clock_frequency.h"
 
 active_object_container::active_object_container()
 {

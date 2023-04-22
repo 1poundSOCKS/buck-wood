@@ -12,16 +12,18 @@ public:
 
   public:
     
-    auto SetValue(float value) -> void;
+    auto GetValue() const -> int64_t;
+    auto SetValue(int64_t value) -> void;
 
   private:
 
-    float m_value = 0;
+    int64_t m_value = 0;
   };
 
   using control_data = std::shared_ptr<control>;
 
-  level_timer(control_data controlData);
+  level_timer(int64_t value);
+  auto GetControlData() const -> control_data;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;

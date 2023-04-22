@@ -1,8 +1,6 @@
 #ifndef _player_ship_
 #define _player_ship_
 
-#include "game_objects.h"
-#include "player_control_state.h"
 #include "play_event.h"
 #include "collision_data.h"
 #include "collision_effect.h"
@@ -24,6 +22,7 @@ public:
     auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
 
     [[nodiscard]] auto GetPosition() const -> game_point;
+    auto SetPosition(float x, float y) -> void;
     [[nodiscard]] auto ThrusterOn() const -> bool;
 
   private:
@@ -38,17 +37,9 @@ public:
 
   using control_data = std::shared_ptr<control>;
 
-  player_ship(control_data controlData);
-
-  auto SetPosition(float x, float y) -> void;
-  auto SetThruster(bool thrusterOn) -> void;
-  auto SetShoot(bool shoot) -> void;
-  auto SetAngle(float angle) -> void;
-
-  [[nodiscard]] auto GetXPos() const -> float;
-  [[nodiscard]] auto GetYPos() const -> float;
-  [[nodiscard]] auto GetState() const -> state_type;
-  [[nodiscard]] auto ThrusterOn() const -> bool;
+  player_ship();
+  player_ship(float x, float y);
+  auto GetControlData() const -> control_data;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void;
@@ -62,31 +53,12 @@ public:
 
 private:
 
+  using points_collection = std::vector<game_point>;
+  using lines_collection = std::vector<game_line>;
+
   void UpdateShipGeometryData();
-  [[nodiscard]] auto GetPlayerShipLineData() const -> std::vector<game_line>;
-
-  auto GetTransformedThrusterGeometry(auto pointsInserter) const -> void
-  {
-    const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
-
-    TransformPoints(
-      thrusterGeometryData.cbegin(), 
-      thrusterGeometryData.cend(), 
-      pointsInserter, 
-      D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y)
-    );
-  }
-
-  auto GetTransformedShipPointsGeometry(auto pointsInserter) const -> void
-  {
-    const auto& shipGeometryData = GetPlayerGeometryData();
-
-    TransformPoints(
-      shipGeometryData.cbegin(), 
-      shipGeometryData.cend(), 
-      pointsInserter, 
-      D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
-  }
+  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
+  auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
 
@@ -104,8 +76,8 @@ private:
   int64_t m_shotTimerInterval = 0;
   int64_t m_shotTimer = 0;
 
-  std::vector<game_point> m_points;
-  std::vector<game_line> m_lines;
+  points_collection m_points;
+  lines_collection m_lines;
 };
 
 #endif

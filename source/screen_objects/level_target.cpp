@@ -1,7 +1,24 @@
 #include "pch.h"
 #include "level_target.h"
-#include "game_objects.h"
 #include "render_brush_defs.h"
+
+static const float defaultTargetSize = 40;
+
+constexpr std::array<game_point, 4> GetTargetGeometryData(float size)
+{
+  float halfSize = size / 2;
+  return {
+    game_point { 0, -halfSize },
+    game_point { halfSize, 0 },
+    game_point { 0, halfSize },
+    game_point { -halfSize, 0 }
+  };
+}
+
+consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
+{
+  return GetTargetGeometryData(40);
+}
 
 level_target::level_target(float x, float y)
 {
@@ -9,7 +26,7 @@ level_target::level_target(float x, float y)
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(x, y));
 
-  CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(shape));
+  CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(m_shape));
 
   m_collisionData = collision_data { points.cbegin(), points.cend() };
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
@@ -20,8 +37,8 @@ auto level_target::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* d
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
-  brushNotActivated = screen_render_brush_green.CreateBrush(renderTarget);
-  brushActivated =  screen_render_brush_red.CreateBrush(renderTarget);
+  m_brushNotActivated = screen_render_brush_green.CreateBrush(renderTarget);
+  m_brushActivated =  screen_render_brush_red.CreateBrush(renderTarget);
 }
 
 auto level_target::Update(const object_input_data& inputData, int64_t tickCount, play_event_inserter playEventInserter) -> void
@@ -30,13 +47,13 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount,
 
 [[nodiscard]] auto level_target::LevelIsComplete() const -> bool
 {
-  return activated;
+  return m_activated;
 }
 
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
   std::vector<render_line> renderLines;
-  CreateRenderLines(shape.cbegin(), shape.cend(), std::back_inserter(renderLines), activated ? brushActivated.get() : brushNotActivated.get(), 6);
+  CreateRenderLines(m_shape.cbegin(), m_shape.cend(), std::back_inserter(renderLines), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 6);
   RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
 }
 
@@ -58,7 +75,7 @@ auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 auto level_target::ApplyCollisionEffect(const collision_effect& effect, play_event_inserter playEventInserter) -> void
 {
   if( effect.GetProperty(collision_effect::activates_target) )
-    activated = true;
+    m_activated = true;
 }
 
 [[nodiscard]] auto level_target::Destroyed() const -> bool

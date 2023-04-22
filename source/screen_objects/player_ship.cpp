@@ -10,26 +10,22 @@
 inline int shotTimeNumerator = 1;
 inline int shotTimeDenominator = 20;
 
-// auto player_ship::control::SetPosition(float x, float y) -> void
-// {
-//   m_x = x;
-//   m_y = y;
-// }
+constexpr std::array<game_point, 3> GetPlayerGeometryData()
+{
+  return {
+    game_point { 0, -10 },
+    game_point { 7, 10 },
+    game_point { -7, 10 }
+  };
+}
 
-// auto player_ship::control::SetAngle(float angle) -> void
-// {
-//   m_angle = angle;
-// }
-
-// auto player_ship::control::SetThruster(bool thrusterOn) -> void
-// {
-//   m_thrusterOn = thrusterOn;
-// }
-
-// auto player_ship::control::SetTrigger(bool triggerPressed) -> void
-// {
-//   m_triggerPressed = triggerPressed;
-// }
+consteval std::array<game_point, 2> GetPlayerThrusterGeometryData()
+{
+  return {
+    game_point { 5, 14 },
+    game_point { -5, 14 }
+  };
+}
 
 auto player_ship::control::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
@@ -46,15 +42,34 @@ auto player_ship::control::SetEventDied(std::function<void(float,float)> eventDi
   return { m_x, m_y };
 }
 
+auto player_ship::control::SetPosition(float x, float y) -> void
+{
+  m_x = x;
+  m_y = y;
+}
+
 [[nodiscard]] auto player_ship::control::ThrusterOn() const -> bool
 {
   return m_thrusterOn;
 }
 
-player_ship::player_ship(control_data controlData) : m_controlData(controlData)
+player_ship::player_ship() : m_controlData(std::make_shared<control>())
 {
   m_shotTimerInterval = ( performance_counter::QueryFrequency() * shotTimeNumerator ) / shotTimeDenominator;
   UpdateShipGeometryData();
+}
+
+player_ship::player_ship(float x, float y) : m_controlData(std::make_shared<control>())
+{
+  m_shotTimerInterval = ( performance_counter::QueryFrequency() * shotTimeNumerator ) / shotTimeDenominator;
+  UpdateShipGeometryData();
+  m_controlData->m_x = x;
+  m_controlData->m_y = y;
+}
+
+auto player_ship::GetControlData() const -> control_data
+{
+  return m_controlData;
 }
 
 auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
@@ -163,22 +178,33 @@ auto player_ship::UpdateShipGeometryData() -> void
   CreateConnectedLines(m_points.cbegin(), m_points.cend(), std::back_inserter(m_lines));
 }
 
-[[nodiscard]] auto player_ship::GetPlayerShipLineData() const -> std::vector<game_line>
+auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
 {
-  std::vector<game_line> lines;
-  CreateConnectedLines(m_points.cbegin(), m_points.cend(),std::back_inserter(lines));
-  return lines;
+  const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
+
+  TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
+    D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
+}
+
+auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
+{
+  const auto& shipGeometryData = GetPlayerGeometryData();
+
+  TransformPoints(shipGeometryData.cbegin(), shipGeometryData.cend(), pointsInserter, 
+    D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
 }
 
 [[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) -> bool
 {
   m_shotTimer += tickCount;
 
-  if( m_shotTimer >= m_shotTimerInterval )
+  if( m_shotTimer < m_shotTimerInterval )
+  {
+    return false;
+  }
+  else
   {
     m_shotTimer %= m_shotTimerInterval;
     return true;
   }
-  else
-    return false;
 }

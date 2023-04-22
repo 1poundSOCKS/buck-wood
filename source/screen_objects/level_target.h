@@ -25,11 +25,11 @@ public:
 private:
 
   std::vector<game_point> m_points;
-  bool activated = false;
-  std::vector<game_line> shape;
+  bool m_activated = false;
+  std::vector<game_line> m_shape;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushNotActivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> brushActivated;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;
   collision_data m_collisionData;
   collision_effect m_collisionEffect;
 };
