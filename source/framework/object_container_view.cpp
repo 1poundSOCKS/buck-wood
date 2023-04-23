@@ -57,9 +57,14 @@ auto object_container_view::Render(const passive_object_container& objectContain
 
 [[nodiscard]] auto object_container_view::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
 {
-  auto mousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.windowData.mouse.x), static_cast<float>(screenInputState.windowData.mouse.y) });
+  auto mousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.windowData.mouse.x), 
+    static_cast<float>(screenInputState.windowData.mouse.y) });
+
+  auto previousMousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.previousWindowData.mouse.x), 
+    static_cast<float>(screenInputState.previousWindowData.mouse.y) });
 
   object_input_data objectInputData;
   objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
   return objectInputData;
 }

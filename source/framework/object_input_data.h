@@ -19,7 +19,13 @@ public:
   auto SetMouseData(const mouse_data& mouseData) -> void;
   auto GetMouseData() const -> const mouse_data&;
 
+  auto SetPreviousMouseData(const mouse_data& mouseData) -> void;
+  auto GetPreviousMouseData() const -> const mouse_data&;
+
+  [[nodiscard]] auto LeftMouseButtonClicked() const -> bool;
+
 private:
 
   mouse_data m_mouseData;
+  mouse_data m_previousMouseData;
 };

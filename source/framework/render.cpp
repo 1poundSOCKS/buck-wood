@@ -24,3 +24,21 @@ void RenderText(
   D2D1_RECT_F rect { 0, 0, size.width - 1, size.height - 1 };
   renderTarget->DrawText(text.data(), static_cast<UINT32>(text.length()), textFormat, rect, brush);
 }
+
+void RenderText(
+  ID2D1RenderTarget* renderTarget, 
+  ID2D1SolidColorBrush* brush, 
+  IDWriteTextFormat* textFormat, 
+  std::wstring_view text,
+  D2D1_RECT_F rect,
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, 
+  DWRITE_TEXT_ALIGNMENT textAlignment)
+{
+  HRESULT hr = textFormat->SetParagraphAlignment(paragraphAlignment);
+  if( FAILED(hr) ) throw L"error";
+
+  hr = textFormat->SetTextAlignment(textAlignment);
+  if( FAILED(hr) ) throw L"error";
+
+  renderTarget->DrawText(text.data(), static_cast<UINT32>(text.length()), textFormat, rect, brush);
+}

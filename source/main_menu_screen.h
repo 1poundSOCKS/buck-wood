@@ -34,6 +34,7 @@ private:
   passive_object_container m_objectContainer;
   
   bool m_continueRunning = true;
+  bool m_startPlay = false;
   bool m_saveGameLevelData = false;
   bool m_checkSaveOnExit = false;
 };

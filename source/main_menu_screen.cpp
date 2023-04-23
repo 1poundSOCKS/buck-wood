@@ -5,6 +5,7 @@
 #include "render_text_format_def.h"
 #include "play_screen.h"
 #include "global_state.h"
+#include "button.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -36,8 +37,19 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
   m_containerView.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget, dwriteFactory);
 
-  mouse_cursor mouseCursor;
-  m_objectContainer.AppendOverlayObject(mouseCursor);
+  auto renderTargetSize = renderTarget->GetSize();
+
+  m_objectContainer.AppendOverlayObject( button { { 500, 300, renderTargetSize.width - 500, 400 }, L"Start", [this]()
+  {
+    m_startPlay = true;
+  }});
+
+  m_objectContainer.AppendOverlayObject( button { { 500, 500, renderTargetSize.width - 500, 600 }, L"Exit", [this]()
+  {
+    m_continueRunning = false;
+  }});
+
+  m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
@@ -64,15 +76,6 @@ auto main_menu_screen::Render() const -> void
   {
     RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
-  else
-  {
-    std::wstring titleText;
-    titleText += L"Right mouse button - accelerate\n";
-    titleText += L"Left mouse button - shoot\n";
-    titleText += L"\nPress SPACE to start";
-
-    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), titleText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);    
-  }
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void
@@ -95,24 +98,11 @@ auto main_menu_screen::OnViewDefault(const screen_input_state& inputState) -> vo
 {
   m_renderTargetMouseData = inputState.renderTargetMouseData;
 
-  if( KeyPressed(inputState, DIK_SPACE) )
-  {
+  if( m_startPlay )
+  {    
     play_screen playScreen;
     framework::openScreen(playScreen);
-  }
-  else if( KeyPressed(inputState, DIK_F1) )
-  {
-  }
-  else if( KeyPressed(inputState, DIK_ESCAPE) )
-  {
-    if( m_checkSaveOnExit )
-    {
-      m_view = view_exit;
-    }
-    else
-    {
-      m_continueRunning = false;
-    }
+    m_startPlay = false;
   }
 }
 

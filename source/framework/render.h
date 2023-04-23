@@ -28,6 +28,15 @@ void RenderText(
   DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
   DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
 
+void RenderText(
+  ID2D1RenderTarget* renderTarget, 
+  ID2D1SolidColorBrush* brush, 
+  IDWriteTextFormat* textFormat, 
+  std::wstring_view text,
+  D2D1_RECT_F rect,
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
+  DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
+
 template <typename input_iterator_type>
 void RenderPoints(
   ID2D1RenderTarget* renderTarget, 
