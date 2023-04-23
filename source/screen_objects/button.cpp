@@ -3,7 +3,9 @@
 #include "render_brush_defs.h"
 
 button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked) : 
-  m_textFormatDef { L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, rect.bottom - rect.top },
+  m_buttonHeight { rect.bottom - rect.top },
+  m_textFormatDef { L"Franklin Gothic", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
+  m_hoverTextFormatDef { L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
   m_text { text },
   m_eventClicked(eventClicked)
 {
@@ -19,6 +21,7 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteF
   m_buttonBorderBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_buttonHoverBrush = screen_render_brush_yellow.CreateBrush(renderTarget);
   m_textFormat = m_textFormatDef.CreateTextFormat(dwriteFactory);
+  m_hoverTextFormat = m_hoverTextFormatDef.CreateTextFormat(dwriteFactory);
 }
 
 auto button::Update(const object_input_data& inputData, int64_t clockCount) -> void
@@ -38,12 +41,14 @@ auto button::Render(D2D1_RECT_F viewRect) const -> void
   if( m_hover )
   {
     m_renderTarget->DrawRectangle(m_rect, m_buttonHoverBrush.get(), 5.0f);
-    RenderText(m_renderTarget.get(), m_buttonHoverBrush.get(), m_textFormat.get(), m_text, m_rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(m_renderTarget.get(), m_buttonHoverBrush.get(), m_hoverTextFormat.get(), m_text, m_rect, 
+      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
   else
   {
     m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 5.0f);
-    RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
+      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
 }
 

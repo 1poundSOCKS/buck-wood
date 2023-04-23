@@ -17,14 +17,12 @@ private:
 
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
 
-  float m_x = 0;
-  float m_y = 0;
-  float m_width = 0;
-  float m_height = 0;
   std::wstring m_text = L"";
+  float m_buttonHeight = 0;
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
 
   render_text_format_def m_textFormatDef;
+  render_text_format_def m_hoverTextFormatDef;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBrush;
@@ -32,6 +30,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_buttonHoverBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_textBrush;
   winrt::com_ptr<IDWriteTextFormat> m_textFormat;
+  winrt::com_ptr<IDWriteTextFormat> m_hoverTextFormat;
 
   std::function<void()> m_eventClicked = [](){};
 

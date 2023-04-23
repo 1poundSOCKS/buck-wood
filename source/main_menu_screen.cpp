@@ -44,7 +44,7 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
     m_startPlay = true;
   }});
 
-  m_objectContainer.AppendOverlayObject( button { { 500, 500, renderTargetSize.width - 500, 600 }, L"Exit", [this]()
+  m_objectContainer.AppendOverlayObject( button { { 500, 450, renderTargetSize.width - 500, 550 }, L"Exit", [this]()
   {
     m_continueRunning = false;
   }});
