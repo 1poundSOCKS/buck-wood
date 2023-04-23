@@ -15,8 +15,8 @@ auto button::control::Unhide() -> void
 button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked, bool hidden) : 
   m_controlData(std::make_shared<control>()),
   m_buttonHeight { rect.bottom - rect.top },
-  m_textFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
-  m_hoverTextFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
+  m_textFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
+  m_hoverTextFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
   m_text { text }, m_eventClicked { eventClicked }
 {
   m_rect = rect;
@@ -34,7 +34,7 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteF
   m_textBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_buttonBrush = screen_render_brush_grey.CreateBrush(renderTarget);
   m_buttonBorderBrush = screen_render_brush_white.CreateBrush(renderTarget);
-  m_buttonHoverBrush = screen_render_brush_yellow.CreateBrush(renderTarget);
+  m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
   m_textFormat = m_textFormatDef.CreateTextFormat(dwriteFactory);
   m_hoverTextFormat = m_hoverTextFormatDef.CreateTextFormat(dwriteFactory);
 }

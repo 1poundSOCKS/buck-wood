@@ -39,12 +39,25 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
 
   auto renderTargetSize = renderTarget->GetSize();
 
-  auto startPlay = button { { 500, 300, renderTargetSize.width - 500, 400 }, L"START", [this]()
+  auto buttonWidth = renderTargetSize.width / 3.0f;
+  auto startButtonHeight = buttonWidth / 4.0f;
+  auto exitButtonHeight = startButtonHeight / 2.0f;
+
+  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
+  auto buttonRight = buttonLeft + buttonWidth;
+
+  auto startButtonTop = (renderTargetSize.height - startButtonHeight) / 2.0f;
+  auto startButtonBottom = startButtonTop + startButtonHeight;
+
+  auto exitButtonTop = (renderTargetSize.height - exitButtonHeight) / 1.4f;
+  auto exitButtonBottom = exitButtonTop + exitButtonHeight;
+
+  auto startPlay = button { { buttonLeft, startButtonTop, buttonRight, startButtonBottom }, L"START", [this]()
   {
     m_startPlay = true;
   }};
 
-  auto exitGame = button { { 500, 450, renderTargetSize.width - 500, 550 }, L"EXIT", [this]()
+  auto exitGame = button { { buttonLeft, exitButtonTop, buttonRight, exitButtonBottom }, L"EXIT", [this]()
   {
     m_continueRunning = false;
   }};
