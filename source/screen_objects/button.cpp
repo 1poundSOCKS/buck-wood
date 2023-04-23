@@ -2,14 +2,29 @@
 #include "button.h"
 #include "render_brush_defs.h"
 
-button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked) : 
+auto button::control::Hide() -> void
+{
+  m_hidden = true;
+}
+
+auto button::control::Unhide() -> void
+{
+  m_hidden = false;
+}
+
+button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked, bool hidden) : 
+  m_controlData(std::make_shared<control>()),
   m_buttonHeight { rect.bottom - rect.top },
-  m_textFormatDef { L"Franklin Gothic", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
-  m_hoverTextFormatDef { L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
-  m_text { text },
-  m_eventClicked(eventClicked)
+  m_textFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
+  m_hoverTextFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight },
+  m_text { text }, m_eventClicked { eventClicked }
 {
   m_rect = rect;
+}
+
+auto button::GetControlData() const -> control_data
+{
+  return m_controlData;
 }
 
 auto button::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
@@ -28,27 +43,33 @@ auto button::Update(const object_input_data& inputData, int64_t clockCount) -> v
 {
   m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
 
-  if( m_hover && inputData.LeftMouseButtonClicked() )
+  if( !m_controlData->m_hidden )
   {
-    m_eventClicked();
+    if( m_hover && inputData.LeftMouseButtonClicked() )
+    {
+      m_eventClicked();
+    }
   }
 }
 
 auto button::Render(D2D1_RECT_F viewRect) const -> void
 {
-  m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
-  
-  if( m_hover )
+  if( !m_controlData->m_hidden )
   {
-    m_renderTarget->DrawRectangle(m_rect, m_buttonHoverBrush.get(), 5.0f);
-    RenderText(m_renderTarget.get(), m_buttonHoverBrush.get(), m_hoverTextFormat.get(), m_text, m_rect, 
-      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-  }
-  else
-  {
-    m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 5.0f);
-    RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
-      DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
+    
+    if( m_hover )
+    {
+      m_renderTarget->DrawRectangle(m_rect, m_buttonHoverBrush.get(), 5.0f);
+      RenderText(m_renderTarget.get(), m_buttonHoverBrush.get(), m_hoverTextFormat.get(), m_text, m_rect, 
+        DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    }
+    else
+    {
+      m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 5.0f);
+      RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
+        DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    }
   }
 }
 

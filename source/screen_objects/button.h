@@ -7,7 +7,24 @@ class button
 {
 public:
 
-  button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked);
+  class control
+  {
+    friend class button;
+
+  public:
+    
+    auto Hide() -> void;
+    auto Unhide() -> void;
+
+  private:
+
+    bool m_hidden = false;
+  };
+
+  using control_data = std::shared_ptr<control>;
+
+  button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked, bool hidden = false);
+  auto GetControlData() const -> control_data;
 
   auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
@@ -17,9 +34,12 @@ private:
 
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
 
+  control_data m_controlData;
+
   std::wstring m_text = L"";
   float m_buttonHeight = 0;
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
+  std::function<void()> m_eventClicked = [](){};
 
   render_text_format_def m_textFormatDef;
   render_text_format_def m_hoverTextFormatDef;
@@ -31,8 +51,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_textBrush;
   winrt::com_ptr<IDWriteTextFormat> m_textFormat;
   winrt::com_ptr<IDWriteTextFormat> m_hoverTextFormat;
-
-  std::function<void()> m_eventClicked = [](){};
 
   bool m_hover = false;
 };

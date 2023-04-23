@@ -39,16 +39,18 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactor
 
   auto renderTargetSize = renderTarget->GetSize();
 
-  m_objectContainer.AppendOverlayObject( button { { 500, 300, renderTargetSize.width - 500, 400 }, L"Start", [this]()
+  auto startPlay = button { { 500, 300, renderTargetSize.width - 500, 400 }, L"START", [this]()
   {
     m_startPlay = true;
-  }});
+  }};
 
-  m_objectContainer.AppendOverlayObject( button { { 500, 450, renderTargetSize.width - 500, 550 }, L"Exit", [this]()
+  auto exitGame = button { { 500, 450, renderTargetSize.width - 500, 550 }, L"EXIT", [this]()
   {
     m_continueRunning = false;
-  }});
+  }};
 
+  m_objectContainer.AppendOverlayObject(startPlay);
+  m_objectContainer.AppendOverlayObject(exitGame);
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
 
