@@ -23,6 +23,40 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   m_overlayView.Initialize(renderTarget);
 
   m_continueRunning = LoadFirstLevel();
+
+  auto renderTargetSize = renderTarget->GetSize();
+
+  auto buttonWidth = renderTargetSize.width / 3.0f;
+  auto resumeButtonHeight = buttonWidth / 4.0f;
+  auto quitButtonHeight = resumeButtonHeight / 2.0f;
+
+  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
+  auto buttonRight = buttonLeft + buttonWidth;
+
+  auto resumeButtonTop = (renderTargetSize.height - resumeButtonHeight) / 2.0f;
+  auto resumeButtonBottom = resumeButtonTop + resumeButtonHeight;
+
+  auto quitButtonTop = (renderTargetSize.height - quitButtonHeight) / 1.4f;
+  auto quitButtonBottom = quitButtonTop + quitButtonHeight;
+
+  auto resumePlay = button { { buttonLeft, resumeButtonTop, buttonRight, resumeButtonBottom }, L"RESUME", [this]()
+  {
+    m_paused = false;
+  }, 
+  true};
+
+  auto quitPlay = button { { buttonLeft, quitButtonTop, buttonRight, quitButtonBottom }, L"QUIT", [this]()
+  {
+    m_continueRunning = false;
+  }, 
+  true};
+
+  m_resumePlay = resumePlay.GetControlData();
+  m_quitPlay = quitPlay.GetControlData();
+
+  m_overlayContainer.AppendOverlayObject(resumePlay);
+  m_overlayContainer.AppendOverlayObject(quitPlay);
+  m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
@@ -33,9 +67,17 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_paused = !m_paused;
 
   if( m_paused )
+  {
     m_levelControlData.GetStateControl()->SetState(level_state::control::paused);
+    m_resumePlay->Unhide();
+    m_quitPlay->Unhide();
+  }
   else
+  {
     m_levelControlData.GetStateControl()->SetState(level_state::control::playing);
+    m_resumePlay->Hide();
+    m_quitPlay->Hide();
+  }
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
 

@@ -15,8 +15,6 @@ auto level_state::control::GetText() const -> LPCWSTR
 {
   switch( m_state )
   {
-    case paused:
-      return L"PAUSED";
     case dead:
       return L"DEAD";
     case complete:

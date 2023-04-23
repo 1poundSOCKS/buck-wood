@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "global_state.h"
-#include "mouse_cursor.h"
 
 game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(global_state::firstLevelData())
 {
@@ -9,8 +8,6 @@ game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(gl
 
 auto game_level_data_loader::LoadLevel(active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer) const -> const level_control_data
 {
-  overlayObjectContainer.AppendOverlayObject(mouse_cursor {});
-
   LoadIslands(levelObjectContainer);
   LoadTargets(levelObjectContainer);
 

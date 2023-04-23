@@ -56,17 +56,17 @@ auto button::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( !m_controlData->m_hidden )
   {
-    m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
+    // m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
     
     if( m_hover )
     {
-      m_renderTarget->DrawRectangle(m_rect, m_buttonHoverBrush.get(), 5.0f);
+      m_renderTarget->DrawRectangle(m_rect, m_buttonHoverBrush.get(), 10.0f);
       RenderText(m_renderTarget.get(), m_buttonHoverBrush.get(), m_hoverTextFormat.get(), m_text, m_rect, 
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     }
     else
     {
-      m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 5.0f);
+      m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 10.0f);
       RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     }

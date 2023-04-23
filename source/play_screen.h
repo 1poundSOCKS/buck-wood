@@ -17,6 +17,7 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
+#include "button.h"
 
 class play_screen
 {
@@ -54,6 +55,9 @@ private:
 
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
+
+  button::control_data m_resumePlay;
+  button::control_data m_quitPlay;
 
   std::vector<float> levelTimes;
 
