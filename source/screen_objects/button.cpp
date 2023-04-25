@@ -15,8 +15,8 @@ auto button::control::Unhide() -> void
 button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked, bool hidden) : 
   m_controlData(std::make_shared<control>()),
   m_buttonHeight { rect.bottom - rect.top },
-  m_textFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
-  m_hoverTextFormatDef { L"Verdana", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
+  m_textFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
+  m_hoverTextFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
   m_text { text }, m_eventClicked { eventClicked }
 {
   m_rect = rect;
@@ -56,7 +56,7 @@ auto button::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( !m_controlData->m_hidden )
   {
-    // m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
+    m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
     
     if( m_hover )
     {
@@ -66,7 +66,6 @@ auto button::Render(D2D1_RECT_F viewRect) const -> void
     }
     else
     {
-      m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 10.0f);
       RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     }

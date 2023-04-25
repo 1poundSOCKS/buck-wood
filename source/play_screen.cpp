@@ -36,16 +36,16 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dw
   auto resumeButtonTop = (renderTargetSize.height - resumeButtonHeight) / 2.0f;
   auto resumeButtonBottom = resumeButtonTop + resumeButtonHeight;
 
-  auto quitButtonTop = (renderTargetSize.height - quitButtonHeight) / 1.4f;
+  auto quitButtonTop = (renderTargetSize.height - quitButtonHeight) / 1.5f;
   auto quitButtonBottom = quitButtonTop + quitButtonHeight;
 
-  auto resumePlay = button { { buttonLeft, resumeButtonTop, buttonRight, resumeButtonBottom }, L"RESUME", [this]()
+  auto resumePlay = button { { buttonLeft, resumeButtonTop, buttonRight, resumeButtonBottom }, L"Resume", [this]()
   {
     m_paused = false;
   }, 
   true};
 
-  auto quitPlay = button { { buttonLeft, quitButtonTop, buttonRight, quitButtonBottom }, L"QUIT", [this]()
+  auto quitPlay = button { { buttonLeft, quitButtonTop, buttonRight, quitButtonBottom }, L"Quit", [this]()
   {
     m_continueRunning = false;
   }, 
