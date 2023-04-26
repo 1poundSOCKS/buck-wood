@@ -9,8 +9,10 @@ play_screen::play_screen()
 {
 }
 
-auto play_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
+  auto dwriteFactory = dwrite_factory::get().get();
+
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
   m_dwriteFactory.attach(dwriteFactory);

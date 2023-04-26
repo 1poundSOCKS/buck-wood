@@ -48,7 +48,7 @@ void OpenScreen(screen_runner_data data, auto& screenState)
   screen_input_state inputState;
   performance::frame_data frameData;
 
-  screenState.Initialize(data.renderTarget.get(), data.dwriteFactory.get());
+  screenState.Initialize(data.renderTarget.get());
   
   while( ProcessMessage() && screenState.ContinueRunning() )
   {

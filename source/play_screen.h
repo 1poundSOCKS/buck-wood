@@ -25,7 +25,7 @@ public:
 
   play_screen();
 
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const screen_input_state& inputState) -> void;
   auto Render() const -> void;
   auto PlaySoundEffects() const -> void;

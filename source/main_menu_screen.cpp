@@ -6,6 +6,7 @@
 #include "play_screen.h"
 #include "global_state.h"
 #include "button.h"
+#include "dwrite_factory.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -13,8 +14,10 @@ main_menu_screen::main_menu_screen()
 {
 }
 
-auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
+  auto dwriteFactory = dwrite_factory::get().get();
+
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 

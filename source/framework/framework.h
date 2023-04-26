@@ -12,6 +12,7 @@
 #include "data_files.h"
 #include "collisions.h"
 #include "screen_runner.h"
+#include "dwrite_factory.h"
 
 class framework
 {
@@ -22,7 +23,6 @@ public:
   static auto windowData() -> window_data&;
   static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
   static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  static auto dwriteFactory() -> winrt::com_ptr<IDWriteFactory>&;
   static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
   static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
@@ -43,7 +43,6 @@ private:
   window_data m_windowData;
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
   winrt::com_ptr<IDirectSound8> m_directSound;
   winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
@@ -55,7 +54,7 @@ template <typename screen_state> static auto framework::openScreen(screen_state&
   {
     swapChain(),
     renderTarget(), 
-    dwriteFactory(),
+    dwrite_factory::get(),
     keyboard(), 
     windowData(),
     fps()

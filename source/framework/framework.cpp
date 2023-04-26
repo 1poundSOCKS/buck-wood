@@ -8,6 +8,7 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
 {
   m_framework = new framework(instance, cmdShow);
   m_framework->Init();
+  dwrite_factory::create();
   g_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 }
 
@@ -31,10 +32,10 @@ auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
   return get().m_renderTarget;
 }
 
-auto framework::dwriteFactory() -> winrt::com_ptr<IDWriteFactory>&
-{
-  return get().m_dwriteFactory;
-}
+// auto framework::dwriteFactory() -> winrt::com_ptr<IDWriteFactory>&
+// {
+//   return get().m_dwriteFactory;
+// }
 
 auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
 {
@@ -71,7 +72,7 @@ auto framework::Init() -> void
   m_window = CreateMainWindow(m_instance, m_cmdShow, m_windowData);
   m_swapChain = CreateSwapChain(m_window, framework::fps(), 1);
   m_renderTarget = CreateRenderTarget(m_swapChain.get());
-  m_dwriteFactory = CreateDWriteFactory();
+  // m_dwriteFactory = CreateDWriteFactory();
   m_directSound = CreateDirectSound(m_window);
   m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
   m_keyboard = CreateKeyboard(m_instance, m_window);
