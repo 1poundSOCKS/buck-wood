@@ -18,8 +18,8 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
 
-  m_levelContainer.Initialize(renderTarget, dwriteFactory);
-  m_overlayContainer.Initialize(renderTarget, dwriteFactory);
+  m_levelContainer.Initialize(renderTarget);
+  m_overlayContainer.Initialize(renderTarget);
 
   m_levelView.Initialize(renderTarget);
   m_overlayView.Initialize(renderTarget);

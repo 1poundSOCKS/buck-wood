@@ -10,7 +10,7 @@ public:
   using active_object_collection_type = std::list<active_object>;
 
   active_object_container();
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   template <typename object_type> auto AppendActiveObject(object_type& object) -> void;
   template <typename object_type> auto AppendActiveObject(object_type&& object) -> void;

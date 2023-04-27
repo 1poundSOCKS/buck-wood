@@ -1,12 +1,15 @@
 #include "pch.h"
 #include "passive_object_container.h"
+#include "dwrite_factory.h"
 
 passive_object_container::passive_object_container()
 {
 }
 
-auto passive_object_container::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto passive_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
+  auto dwriteFactory = dwrite_factory::get().get();
+
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 

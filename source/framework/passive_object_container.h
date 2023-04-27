@@ -10,7 +10,7 @@ public:
   using passive_object_collection_type = std::vector<passive_object>;
 
   passive_object_container();
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   template <typename object_type> auto AppendOverlayObject(object_type& object) -> void;
   template <typename object_type> auto AppendOverlayObject(object_type&& object) -> void;

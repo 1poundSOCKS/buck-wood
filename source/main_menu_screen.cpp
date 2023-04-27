@@ -38,7 +38,7 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   }
 
   m_containerView.Initialize(renderTarget);
-  m_objectContainer.Initialize(renderTarget, dwriteFactory);
+  m_objectContainer.Initialize(renderTarget);
 
   auto renderTargetSize = renderTarget->GetSize();
 
