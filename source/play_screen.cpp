@@ -200,7 +200,10 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelContainer.ClearAll();
-  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer);
+  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer, [this]()
+  {
+    m_targetActivated = true;
+  });
 
   m_levelControlData.GetPlayerControl()->SetEventShot([this](float x, float y, float angle) -> void
   {

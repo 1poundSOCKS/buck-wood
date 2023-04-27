@@ -6,7 +6,7 @@ class level_state
 {
 public:
 
-  class control  
+  class control
   {
     friend class level_state;
 

@@ -20,7 +20,7 @@ consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
   return GetTargetGeometryData(40);
 }
 
-level_target::level_target(float x, float y)
+level_target::level_target(float x, float y, std::function<void()> eventTargetActivated) : m_eventTargetActivated(eventTargetActivated)
 {
   std::vector<game_point> points;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
@@ -74,8 +74,11 @@ auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_target::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
-  if( effect.GetProperty(collision_effect::activates_target) )
+  if( effect.GetProperty(collision_effect::activates_target) && !m_activated )
+  {
     m_activated = true;
+    m_eventTargetActivated();
+  }
 }
 
 [[nodiscard]] auto level_target::Destroyed() const -> bool

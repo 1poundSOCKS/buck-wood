@@ -6,10 +6,10 @@ game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(gl
 {
 }
 
-auto game_level_data_loader::LoadLevel(active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer) const -> const level_control_data
+auto game_level_data_loader::LoadLevel(active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer, std::function<void()> eventTargetActivated) const -> const level_control_data
 {
   LoadIslands(levelObjectContainer);
-  LoadTargets(levelObjectContainer);
+  LoadTargets(levelObjectContainer, eventTargetActivated);
 
   auto playerControlData = LoadPlayer(levelObjectContainer);
   auto timerControlData = LoadTimer(overlayObjectContainer);
@@ -23,9 +23,9 @@ auto game_level_data_loader::LoadIslands(active_object_container& levelObjectCon
   LoadIslands(**m_currentLevelDataIterator, levelObjectContainer);
 }
 
-auto game_level_data_loader::LoadTargets(active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(active_object_container& levelObjectContainer, std::function<void()> eventTargetActivated) const -> void
 {
-  LoadTargets(**m_currentLevelDataIterator, levelObjectContainer);
+  LoadTargets(**m_currentLevelDataIterator, levelObjectContainer, eventTargetActivated);
 }
 
 [[nodiscard]] auto game_level_data_loader::LoadPlayer(active_object_container& levelObjectContainer) const -> player_ship::control_data
@@ -64,12 +64,12 @@ auto game_level_data_loader::LoadIslands(const game_level_data& levelData, activ
   });
 }
 
-auto game_level_data_loader::LoadTargets(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(const game_level_data& levelData, active_object_container& levelObjectContainer, std::function<void()> eventTargetActivated) const -> void
 {
   std::vector<level_target> targets;
-  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer](const auto& position) -> void
+  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [&levelObjectContainer,&eventTargetActivated](const auto& position) -> void
   {
-    levelObjectContainer.AppendActiveObject(level_target { position.x, position.y });
+    levelObjectContainer.AppendActiveObject(level_target { position.x, position.y, eventTargetActivated });
   });
 }
 
