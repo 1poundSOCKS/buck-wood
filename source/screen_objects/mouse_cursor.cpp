@@ -24,7 +24,7 @@ mouse_cursor::mouse_cursor()
 {
 }
 
-auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();

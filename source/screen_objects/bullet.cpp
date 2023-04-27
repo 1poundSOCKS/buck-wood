@@ -21,7 +21,7 @@ bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), y
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
 }
 
-auto bullet::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto bullet::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();

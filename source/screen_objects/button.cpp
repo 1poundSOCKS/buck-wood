@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "button.h"
 #include "render_brush_defs.h"
+#include "dwrite_factory.h"
 
 auto button::control::Hide() -> void
 {
@@ -27,7 +28,7 @@ auto button::GetControlData() const -> control_data
   return m_controlData;
 }
 
-auto button::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
@@ -35,6 +36,7 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteF
   m_buttonBrush = screen_render_brush_grey.CreateBrush(renderTarget);
   m_buttonBorderBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
+  auto dwriteFactory = dwrite_factory::get().get();
   m_textFormat = m_textFormatDef.CreateTextFormat(dwriteFactory);
   m_hoverTextFormat = m_hoverTextFormatDef.CreateTextFormat(dwriteFactory);
 }

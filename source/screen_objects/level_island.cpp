@@ -8,7 +8,7 @@ level_island::level_island(const game_closed_object& object) : object(object), m
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 }
 
-auto level_island::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto level_island::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();

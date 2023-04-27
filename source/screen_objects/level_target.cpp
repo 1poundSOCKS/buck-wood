@@ -33,7 +33,7 @@ level_target::level_target(float x, float y)
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 }
 
-auto level_target::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto level_target::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();

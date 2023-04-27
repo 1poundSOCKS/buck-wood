@@ -25,7 +25,7 @@ public:
   level_timer(int64_t value);
   auto GetControlData() const -> control_data;
 
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 

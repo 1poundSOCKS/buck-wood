@@ -8,17 +8,12 @@ passive_object_container::passive_object_container()
 
 auto passive_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  auto dwriteFactory = dwrite_factory::get().get();
-
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 
-  m_dwriteFactory.attach(dwriteFactory);
-  m_dwriteFactory->AddRef();
-
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this, renderTarget, dwriteFactory](auto& object)
+  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
   {
-    object.Initialize(renderTarget, dwriteFactory);
+    object.Initialize(m_renderTarget.get());
   });
 }
 

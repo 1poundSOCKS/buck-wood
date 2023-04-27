@@ -13,7 +13,7 @@ private:
   {
     virtual ~object_concept() {}
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
-    virtual auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void = 0;
+    virtual auto Initialize(ID2D1RenderTarget* renderTarget) -> void = 0;
     virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
     [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
@@ -34,9 +34,9 @@ private:
       return std::make_unique<object_model<object_type>>(*this);
     }
 
-    auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void override
+    auto Initialize(ID2D1RenderTarget* renderTarget) -> void override
     {
-      object.Initialize(renderTarget, dwriteFactory);
+      object.Initialize(renderTarget);
     }
 
     auto Update(const object_input_data& inputData, int64_t clockCount) -> void override
@@ -102,9 +102,9 @@ public:
   active_object(const active_object& solidObject) = delete;
   void operator=(const active_object& solidObject) = delete;
 
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void
   {
-    objectConcept->Initialize(renderTarget, dwriteFactory);
+    objectConcept->Initialize(renderTarget);
   }
 
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void

@@ -12,7 +12,7 @@ public:
 
   level_target(float x, float y);
   
-  auto Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   [[nodiscard]] auto LevelIsComplete() const -> bool;
   auto Render(D2D1_RECT_F viewRect) const -> void;

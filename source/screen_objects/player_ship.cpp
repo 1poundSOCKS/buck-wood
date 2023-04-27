@@ -72,7 +72,7 @@ auto player_ship::GetControlData() const -> control_data
   return m_controlData;
 }
 
-auto player_ship::Initialize(ID2D1RenderTarget* renderTarget, IDWriteFactory* dwriteFactory) -> void
+auto player_ship::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
@@ -111,7 +111,6 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
 
     if( inputData.GetMouseData().leftButtonDown && PlayerCanShoot(tickCount) &&  m_controlData->m_eventShot )
     {
-      // playEventInserter = event_player_shot { m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle, m_controlData->m_eventShot };
       m_controlData->m_eventShot(m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle);
     }
   }

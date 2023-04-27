@@ -27,18 +27,17 @@ private:
   [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
   active_object_collection_type m_activeObjects;
 };
 
 template <typename object_type> auto active_object_container::AppendActiveObject(object_type& object) -> void
 {
-  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  object.Initialize(m_renderTarget.get());
   m_activeObjects.emplace_back(object);
 }
 
 template <typename object_type> auto active_object_container::AppendActiveObject(object_type&& object) -> void
 {
-  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  object.Initialize(m_renderTarget.get());
   m_activeObjects.emplace_back(object);
 }

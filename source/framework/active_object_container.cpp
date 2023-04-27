@@ -8,17 +8,12 @@ active_object_container::active_object_container()
 
 auto active_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  auto dwriteFactory = dwrite_factory::get().get();
-
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 
-  m_dwriteFactory.attach(dwriteFactory);
-  m_dwriteFactory->AddRef();
-
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this, renderTarget, dwriteFactory](auto& object)
+  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this](auto& object)
   {
-    object.Initialize(renderTarget, dwriteFactory);
+    object.Initialize(m_renderTarget.get());
   });
 }
 

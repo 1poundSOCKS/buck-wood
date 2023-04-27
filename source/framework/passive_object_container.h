@@ -24,18 +24,17 @@ private:
   [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
   passive_object_collection_type m_overlayObjects;
 };
 
 template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type& object) -> void
 {
-  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  object.Initialize(m_renderTarget.get());
   m_overlayObjects.emplace_back(object);
 }
 
 template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type&& object) -> void
 {
-  object.Initialize(m_renderTarget.get(), m_dwriteFactory.get());
+  object.Initialize(m_renderTarget.get());
   m_overlayObjects.emplace_back(object);
 }
