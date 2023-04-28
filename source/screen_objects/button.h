@@ -7,24 +7,11 @@ class button
 {
 public:
 
-  class control
-  {
-    friend class button;
+  using callback_for_hidden_flag = std::function<bool()>;
 
-  public:
-    
-    auto Hide() -> void;
-    auto Unhide() -> void;
-
-  private:
-
-    bool m_hidden = false;
-  };
-
-  using control_data = std::shared_ptr<control>;
-
-  button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked, bool hidden = false);
-  auto GetControlData() const -> control_data;
+  button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked);
+  auto SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHidden) -> void;
+  auto GetHoverState() const -> bool;
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
@@ -34,13 +21,14 @@ private:
 
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
 
-  control_data m_controlData;
-
   std::wstring m_text = L"";
   float m_buttonHeight = 0;
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
   std::function<void()> m_eventClicked = [](){};
 
+  bool m_hidden = false;
+  callback_for_hidden_flag m_callbackForHiddenFlag = [](){ return false; };
+  
   render_text_format_def m_textFormatDef;
   render_text_format_def m_hoverTextFormatDef;
 

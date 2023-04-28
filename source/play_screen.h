@@ -17,7 +17,7 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
-#include "button.h"
+#include "menu_def.h"
 
 class play_screen
 {
@@ -43,6 +43,8 @@ private:
   [[nodiscard]] auto LoadNextLevel() -> bool;
   auto LoadCurrentLevel() -> void;
 
+  [[nodiscard]] auto GetMenuDef() -> menu_def;
+
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
@@ -55,9 +57,6 @@ private:
 
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
-
-  button::control_data m_resumePlay;
-  button::control_data m_quitPlay;
 
   std::vector<float> levelTimes;
 

@@ -3,18 +3,7 @@
 #include "render_brush_defs.h"
 #include "dwrite_factory.h"
 
-auto button::control::Hide() -> void
-{
-  m_hidden = true;
-}
-
-auto button::control::Unhide() -> void
-{
-  m_hidden = false;
-}
-
-button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked, bool hidden) : 
-  m_controlData(std::make_shared<control>()),
+button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked) : 
   m_buttonHeight { rect.bottom - rect.top },
   m_textFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
   m_hoverTextFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
@@ -23,9 +12,14 @@ button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicke
   m_rect = rect;
 }
 
-auto button::GetControlData() const -> control_data
+auto button::SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHiddenFlag) -> void
 {
-  return m_controlData;
+  m_callbackForHiddenFlag = callbackForHiddenFlag;
+}
+
+auto button::GetHoverState() const -> bool
+{
+  return m_hover;  
 }
 
 auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -45,18 +39,17 @@ auto button::Update(const object_input_data& inputData, int64_t clockCount) -> v
 {
   m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
 
-  if( !m_controlData->m_hidden )
+  m_hidden = m_callbackForHiddenFlag();
+
+  if( !m_hidden && m_hover && inputData.LeftMouseButtonClicked() )
   {
-    if( m_hover && inputData.LeftMouseButtonClicked() )
-    {
-      m_eventClicked();
-    }
+    m_eventClicked();
   }
 }
 
 auto button::Render(D2D1_RECT_F viewRect) const -> void
 {
-  if( !m_controlData->m_hidden )
+  if( !m_hidden )
   {
     m_renderTarget->FillRectangle(m_rect, m_buttonBrush.get());
     

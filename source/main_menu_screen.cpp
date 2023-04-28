@@ -7,6 +7,7 @@
 #include "global_state.h"
 #include "button.h"
 #include "dwrite_factory.h"
+#include "render_target_area.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -41,12 +42,6 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_objectContainer.Initialize(renderTarget);
 
   m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
-
-  // auto buttonDefs = GetMenuDef().GetButtonDefs();
-  // for( const auto& buttonDef : buttonDefs )
-  // {
-  //   m_objectContainer.AppendOverlayObject(buttonDef.CreateButton());
-  // }
 
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
@@ -123,48 +118,18 @@ auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInp
   }
 }
 
-[[nodiscard]] auto main_menu_screen::GetStartButtonDef(std::function<void()> eventClicked) const -> button_def
-{
-  auto renderTargetSize = m_renderTarget->GetSize();
-
-  auto buttonWidth = renderTargetSize.width / 3.0f;
-  auto startButtonHeight = buttonWidth / 4.0f;
-
-  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
-  auto buttonRight = buttonLeft + buttonWidth;
-
-  auto startButtonTop = (renderTargetSize.height - startButtonHeight) / 2.0f;
-  auto startButtonBottom = startButtonTop + startButtonHeight;
-
-  return button_def(L"Start", false, { buttonLeft, startButtonTop, buttonRight, startButtonBottom }, eventClicked);
-}
-
-[[nodiscard]] auto main_menu_screen::GetExitButtonDef(std::function<void()> eventClicked) const -> button_def
-{
-  auto renderTargetSize = m_renderTarget->GetSize();
-
-  auto buttonWidth = renderTargetSize.width / 3.0f;
-  auto exitButtonHeight = buttonWidth / 8.0f;
-
-  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
-  auto buttonRight = buttonLeft + buttonWidth;
-
-  auto exitButtonTop = (renderTargetSize.height - exitButtonHeight) / 1.5f;
-  auto exitButtonBottom = exitButtonTop + exitButtonHeight;
-
-  return button_def(L"Exit", false, { buttonLeft, exitButtonTop, buttonRight, exitButtonBottom }, eventClicked);
-}
-
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
 {
-  menu_def menuDef(GetRenderTargetArea(m_renderTarget.get(), 0.5f, 0.5f));
+  auto menuArea = render_target_area(m_renderTarget.get(), 0.5f, 0.5f);
 
-  menuDef.AddButtonDef({ L"Start", false, [this]() -> void
+  menu_def menuDef(menuArea.GetRect());
+
+  menuDef.AddButtonDef({ L"Start", [this]() -> void
   {
     m_startPlay = true;
   }});
 
-  menuDef.AddButtonDef({ L"Exit", false, [this]() -> void
+  menuDef.AddButtonDef({ L"Exit", [this]() -> void
   {
     m_continueRunning = false;
   }});
@@ -172,12 +137,4 @@ auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInp
   menuDef.UpdateButtons();
 
   return menuDef;
-}
-
-[[nodiscard]] auto main_menu_screen::GetRenderTargetArea(ID2D1RenderTarget* renderTarget, float width, float height) -> D2D1_RECT_F
-{
-  auto renderTargetSize = m_renderTarget->GetSize();
-  auto borderWidth = renderTargetSize.width * (1.0f - width) / 2.0f;
-  auto borderHeight = renderTargetSize.height * (1.0f - height) / 2.0f;
-  return { borderWidth, borderHeight, renderTargetSize.width - borderWidth - 1, renderTargetSize.height - borderHeight - 1 };
 }

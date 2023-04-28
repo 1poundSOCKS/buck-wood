@@ -23,10 +23,7 @@ private:
   auto OnViewDefault(const screen_input_state& inputState) -> void;
   auto UpdateScreenExitState(const screen_input_state& screenInputState) -> void;
 
-  [[nodiscard]] auto GetStartButtonDef(std::function<void()> eventClicked) const -> button_def;
-  [[nodiscard]] auto GetExitButtonDef(std::function<void()> eventClicked) const -> button_def;
   [[nodiscard]] auto GetMenuDef() -> menu_def;
-  [[nodiscard]] auto GetRenderTargetArea(ID2D1RenderTarget* renderTarget, float width, float height) -> D2D1_RECT_F;
 
   enum view_type { view_default, view_exit };
   view_type m_view = view_default;

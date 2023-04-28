@@ -8,7 +8,9 @@ class menu
 public:
 
   using button_collection = std::vector<button>;
+  using callback_for_hidden_flag = std::function<bool()>;
 
+  auto SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHidden) -> void;
   auto AddButton(button&& menuButton) -> void;
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
@@ -17,6 +19,8 @@ public:
 
 private:
   
+  callback_for_hidden_flag m_callbackForHiddenFlag = [](){ return false; };
+  bool m_hidden = false;
   button_collection m_buttons;
 
 };

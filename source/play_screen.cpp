@@ -4,6 +4,7 @@
 #include "diagnostics.h"
 #include "screen_view.h"
 #include "global_state.h"
+#include "render_target_area.h"
 
 play_screen::play_screen()
 {
@@ -26,38 +27,15 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   m_continueRunning = LoadFirstLevel();
 
-  auto renderTargetSize = renderTarget->GetSize();
+  auto menu = GetMenuDef().CreateMenu();
 
-  auto buttonWidth = renderTargetSize.width / 3.0f;
-  auto resumeButtonHeight = buttonWidth / 4.0f;
-  auto quitButtonHeight = resumeButtonHeight / 2.0f;
-
-  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
-  auto buttonRight = buttonLeft + buttonWidth;
-
-  auto resumeButtonTop = (renderTargetSize.height - resumeButtonHeight) / 2.0f;
-  auto resumeButtonBottom = resumeButtonTop + resumeButtonHeight;
-
-  auto quitButtonTop = (renderTargetSize.height - quitButtonHeight) / 1.5f;
-  auto quitButtonBottom = quitButtonTop + quitButtonHeight;
-
-  auto resumePlay = button { { buttonLeft, resumeButtonTop, buttonRight, resumeButtonBottom }, L"Resume", [this]()
+  menu.SetCallbackForHiddenFlag([this]() -> bool
   {
-    m_paused = false;
-  }, 
-  true};
+    return !m_paused;
+  });
+  
+  m_overlayContainer.AppendOverlayObject(menu);
 
-  auto quitPlay = button { { buttonLeft, quitButtonTop, buttonRight, quitButtonBottom }, L"Quit", [this]()
-  {
-    m_continueRunning = false;
-  }, 
-  true};
-
-  m_resumePlay = resumePlay.GetControlData();
-  m_quitPlay = quitPlay.GetControlData();
-
-  m_overlayContainer.AppendOverlayObject(resumePlay);
-  m_overlayContainer.AppendOverlayObject(quitPlay);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 }
 
@@ -71,14 +49,10 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   if( m_paused )
   {
     m_levelControlData.GetStateControl()->SetState(level_state::control::paused);
-    m_resumePlay->Unhide();
-    m_quitPlay->Unhide();
   }
   else
   {
     m_levelControlData.GetStateControl()->SetState(level_state::control::playing);
-    m_resumePlay->Hide();
-    m_quitPlay->Hide();
   }
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
@@ -215,4 +189,25 @@ auto play_screen::LoadCurrentLevel() -> void
   {
     m_continueRunning = false;
   });
+}
+
+[[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
+{
+  auto menuArea = render_target_area(m_renderTarget.get(), 0.5f, 0.5f);
+
+  menu_def menuDef(menuArea.GetRect());
+
+  menuDef.AddButtonDef({ L"Resume", [this]() -> void
+  {
+    m_paused = false;
+  }});
+
+  menuDef.AddButtonDef({ L"Quit", [this]() -> void
+  {
+    m_continueRunning = false;
+  }});
+
+  menuDef.UpdateButtons();
+
+  return menuDef;
 }
