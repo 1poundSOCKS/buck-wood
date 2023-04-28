@@ -40,33 +40,8 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_containerView.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
 
-  auto renderTargetSize = renderTarget->GetSize();
-
-  auto buttonWidth = renderTargetSize.width / 3.0f;
-  auto startButtonHeight = buttonWidth / 4.0f;
-  auto exitButtonHeight = startButtonHeight / 2.0f;
-
-  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
-  auto buttonRight = buttonLeft + buttonWidth;
-
-  auto startButtonTop = (renderTargetSize.height - startButtonHeight) / 2.0f;
-  auto startButtonBottom = startButtonTop + startButtonHeight;
-
-  auto exitButtonTop = (renderTargetSize.height - exitButtonHeight) / 1.5f;
-  auto exitButtonBottom = exitButtonTop + exitButtonHeight;
-
-  auto startPlay = button { { buttonLeft, startButtonTop, buttonRight, startButtonBottom }, L"Start", [this]()
-  {
-    m_startPlay = true;
-  }};
-
-  auto exitGame = button { { buttonLeft, exitButtonTop, buttonRight, exitButtonBottom }, L"Exit", [this]()
-  {
-    m_continueRunning = false;
-  }};
-
-  m_objectContainer.AppendOverlayObject(startPlay);
-  m_objectContainer.AppendOverlayObject(exitGame);
+  m_objectContainer.AppendOverlayObject(GetStartButtonDef().CreateButton());
+  m_objectContainer.AppendOverlayObject(GetExitButtonDef().CreateButton());
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
 
@@ -140,4 +115,42 @@ auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInp
     m_saveGameLevelData = true;
     m_continueRunning = true;
   }
+}
+
+[[nodiscard]] auto main_menu_screen::GetStartButtonDef() -> button_def
+{
+  auto renderTargetSize = m_renderTarget->GetSize();
+
+  auto buttonWidth = renderTargetSize.width / 3.0f;
+  auto startButtonHeight = buttonWidth / 4.0f;
+
+  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
+  auto buttonRight = buttonLeft + buttonWidth;
+
+  auto startButtonTop = (renderTargetSize.height - startButtonHeight) / 2.0f;
+  auto startButtonBottom = startButtonTop + startButtonHeight;
+
+  return button_def({ buttonLeft, startButtonTop, buttonRight, startButtonBottom }, L"Start", [this]() -> void
+  {
+    m_startPlay = true;
+  });
+}
+
+[[nodiscard]] auto main_menu_screen::GetExitButtonDef() -> button_def
+{
+  auto renderTargetSize = m_renderTarget->GetSize();
+
+  auto buttonWidth = renderTargetSize.width / 3.0f;
+  auto exitButtonHeight = buttonWidth / 8.0f;
+
+  auto buttonLeft = (renderTargetSize.width - buttonWidth) / 2.0f;
+  auto buttonRight = buttonLeft + buttonWidth;
+
+  auto exitButtonTop = (renderTargetSize.height - exitButtonHeight) / 1.5f;
+  auto exitButtonBottom = exitButtonTop + exitButtonHeight;
+
+  return button_def({ buttonLeft, exitButtonTop, buttonRight, exitButtonBottom }, L"Exit", [this]() -> void
+  {
+    m_continueRunning = false;
+  });
 }

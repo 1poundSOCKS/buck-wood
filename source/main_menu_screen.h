@@ -2,6 +2,7 @@
 
 #include "diagnostics.h"
 #include "object_container_view.h"
+#include "button_def.h"
 
 class main_menu_screen
 {
@@ -20,6 +21,9 @@ private:
 
   auto OnViewDefault(const screen_input_state& inputState) -> void;
   auto UpdateScreenExitState(const screen_input_state& screenInputState) -> void;
+
+  [[nodiscard]] auto GetStartButtonDef() -> button_def;
+  [[nodiscard]] auto GetExitButtonDef() -> button_def;
 
   enum view_type { view_default, view_exit };
   view_type m_view = view_default;
