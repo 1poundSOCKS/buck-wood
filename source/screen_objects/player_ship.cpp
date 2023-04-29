@@ -7,26 +7,6 @@
 #include "render_brush_defs.h"
 #include "perf_data.h"
 
-inline int shotTimeNumerator = 1;
-inline int shotTimeDenominator = 20;
-
-constexpr std::array<game_point, 3> GetPlayerGeometryData()
-{
-  return {
-    game_point { 0, -10 },
-    game_point { 7, 10 },
-    game_point { -7, 10 }
-  };
-}
-
-consteval std::array<game_point, 2> GetPlayerThrusterGeometryData()
-{
-  return {
-    game_point { 5, 14 },
-    game_point { -5, 14 }
-  };
-}
-
 auto player_ship::control::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
   m_eventShot = eventShot;
@@ -55,13 +35,13 @@ auto player_ship::control::SetPosition(float x, float y) -> void
 
 player_ship::player_ship() : m_controlData(std::make_shared<control>())
 {
-  m_shotTimerInterval = ( performance_counter::QueryFrequency() * shotTimeNumerator ) / shotTimeDenominator;
+  m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
 }
 
 player_ship::player_ship(float x, float y) : m_controlData(std::make_shared<control>())
 {
-  m_shotTimerInterval = ( performance_counter::QueryFrequency() * shotTimeNumerator ) / shotTimeDenominator;
+  m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
   m_controlData->m_x = x;
   m_controlData->m_y = y;
@@ -207,4 +187,36 @@ auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<poi
     m_shotTimer %= m_shotTimerInterval;
     return true;
   }
+}
+
+auto player_ship::GetShotTimeInterval() -> int64_t
+{
+  return performance_counter::QueryFrequency() * GetShotTimeNumerator() / GetShotTimeDenominator();
+}
+
+constexpr auto player_ship::GetShotTimeNumerator() -> int64_t
+{
+  return 1;
+}
+
+constexpr auto player_ship::GetShotTimeDenominator() -> int64_t
+{
+  return 20;
+}
+
+constexpr std::array<game_point, 3> player_ship::GetPlayerGeometryData()
+{
+  return {
+    game_point { 0, -10 },
+    game_point { 7, 10 },
+    game_point { -7, 10 }
+  };
+}
+
+constexpr std::array<game_point, 2> player_ship::GetPlayerThrusterGeometryData()
+{
+  return {
+    game_point { 5, 14 },
+    game_point { -5, 14 }
+  };
 }

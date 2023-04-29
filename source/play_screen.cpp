@@ -193,7 +193,7 @@ auto play_screen::LoadCurrentLevel() -> void
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget.get(), 0.5f, 0.5f);
+  auto menuArea = render_target_area(m_renderTarget.get(), 0.3f, 0.3f);
 
   menu_def menuDef(menuArea.GetRect());
 

@@ -62,6 +62,19 @@ private:
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
 
+  static constexpr std::array<game_point, 3> GetPlayerGeometryData();
+  static constexpr std::array<game_point, 2> GetPlayerThrusterGeometryData();
+
+  static auto GetShotTimeInterval() -> int64_t;
+  static constexpr auto GetShotTimeNumerator() -> int64_t;
+  static constexpr auto GetShotTimeDenominator() -> int64_t;
+
+  static inline int m_shotTimeNumerator = 1;
+  static inline int m_shotTimeDenominator = 20;
+
+  int64_t m_shotTimerInterval = 0;
+  int64_t m_shotTimer = 0;
+
   control_data m_controlData;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
@@ -73,8 +86,6 @@ private:
   state_type m_state = alive;
   float m_velocityX = 0;
   float m_velocityY = 0;
-  int64_t m_shotTimerInterval = 0;
-  int64_t m_shotTimer = 0;
 
   points_collection m_points;
   lines_collection m_lines;
