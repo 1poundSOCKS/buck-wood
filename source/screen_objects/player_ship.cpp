@@ -7,49 +7,32 @@
 #include "render_brush_defs.h"
 #include "perf_data.h"
 
-auto player_ship::control::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
+player_ship::player_ship()
+{
+  m_shotTimerInterval = GetShotTimeInterval();
+  UpdateShipGeometryData();
+}
+
+player_ship::player_ship(float x, float y) : m_x(x), m_y(y)
+{
+  m_shotTimerInterval = GetShotTimeInterval();
+  UpdateShipGeometryData();
+}
+
+auto player_ship::SetPositionUpdate(position_update positionUpdate) -> void
+{
+  m_positionUpdate = positionUpdate;
+  m_positionUpdate(m_x, m_y, m_thrusterOn);
+}
+
+auto player_ship::SetEventShot(std::function<void(float,float,float)> eventShot) -> void
 {
   m_eventShot = eventShot;
 }
 
-auto player_ship::control::SetEventDied(std::function<void(float,float)> eventDied) -> void
+auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> void
 {
   m_eventDied = eventDied;
-}
-
-[[nodiscard]] auto player_ship::control::GetPosition() const -> game_point
-{
-  return { m_x, m_y };
-}
-
-auto player_ship::control::SetPosition(float x, float y) -> void
-{
-  m_x = x;
-  m_y = y;
-}
-
-[[nodiscard]] auto player_ship::control::ThrusterOn() const -> bool
-{
-  return m_thrusterOn;
-}
-
-player_ship::player_ship() : m_controlData(std::make_shared<control>())
-{
-  m_shotTimerInterval = GetShotTimeInterval();
-  UpdateShipGeometryData();
-}
-
-player_ship::player_ship(float x, float y) : m_controlData(std::make_shared<control>())
-{
-  m_shotTimerInterval = GetShotTimeInterval();
-  UpdateShipGeometryData();
-  m_controlData->m_x = x;
-  m_controlData->m_y = y;
-}
-
-auto player_ship::GetControlData() const -> control_data
-{
-  return m_controlData;
 }
 
 auto player_ship::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -64,35 +47,45 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
 {
   if( m_state == player_ship::alive && tickCount > 0 )
   {
-    m_controlData->m_thrusterOn = inputData.GetMouseData().rightButtonDown;
+    auto thrusterOn = inputData.GetMouseData().rightButtonDown;
+    auto triggerPressed = inputData.GetMouseData().leftButtonDown;
+    auto angle = CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
 
-    m_controlData->m_angle = CalculateAngle(m_controlData->m_x, m_controlData->m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+    Update(thrusterOn, triggerPressed, angle, tickCount);
+  }
+}
 
-    const auto forceOfGravity = 0.0f;
-    const auto playerThrust = 200.0f;
+auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void
+{
+  const auto forceOfGravity = 0.0f;
+  const auto playerThrust = 200.0f;
 
-    auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
+  m_thrusterOn = thrusterOn;
+  m_angle = angle;
 
-    float forceX = 0.0f;
-    float forceY = forceOfGravity;
+  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
 
-    if( m_controlData->ThrusterOn() )
-    {
-      forceX += playerThrust * sin(DEGTORAD(m_controlData->m_angle));
-      forceY -= playerThrust * cos(DEGTORAD(m_controlData->m_angle));
-    }
-    
-    m_velocityX += forceX * gameUpdateInterval;
-    m_velocityY += forceY * gameUpdateInterval;
-    m_controlData->m_x += m_velocityX * gameUpdateInterval;
-    m_controlData->m_y += m_velocityY * gameUpdateInterval;
+  float forceX = 0.0f;
+  float forceY = forceOfGravity;
 
-    UpdateShipGeometryData();
+  if( m_thrusterOn )
+  {
+    forceX += playerThrust * sin(DEGTORAD(m_angle));
+    forceY -= playerThrust * cos(DEGTORAD(m_angle));
+  }
+  
+  m_velocityX += forceX * gameUpdateInterval;
+  m_velocityY += forceY * gameUpdateInterval;
+  m_x += m_velocityX * gameUpdateInterval;
+  m_y += m_velocityY * gameUpdateInterval;
 
-    if( inputData.GetMouseData().leftButtonDown && PlayerCanShoot(tickCount) &&  m_controlData->m_eventShot )
-    {
-      m_controlData->m_eventShot(m_controlData->m_x, m_controlData->m_y, m_controlData->m_angle);
-    }
+  m_positionUpdate(m_x, m_y, m_thrusterOn);
+
+  UpdateShipGeometryData();
+
+  if( triggerPressed && PlayerCanShoot(tickCount) &&  m_eventShot )
+  {
+    m_eventShot(m_x, m_y, m_angle);
   }
 }
 
@@ -110,7 +103,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 
   CreateConnectedRenderLines(m_points.cbegin(), m_points.cend(), renderLinesInserter, m_shipBrush.get(), 2);
 
-  if( m_controlData->m_thrusterOn )
+  if( m_thrusterOn )
   {
     std::vector<game_point> thrusterPoints;
     GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
@@ -127,7 +120,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 
 [[nodiscard]] auto player_ship::HasCollidedWith(const collision_data& collisionData) const -> bool
 {
-  return collisionData.PointInside(m_controlData->m_x, m_controlData->m_y);
+  return collisionData.PointInside(m_x, m_y);
 }
 
 [[nodiscard]] auto player_ship::GetCollisionEffect() const -> collision_effect
@@ -139,9 +132,9 @@ auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect) 
 {
   m_state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
 
-  if( m_state == dead && m_controlData->m_eventDied )
+  if( m_state == dead && m_eventDied )
   {
-    m_controlData->m_eventDied(m_controlData->m_x, m_controlData->m_y);
+    m_eventDied(m_x, m_y);
   }
 }
 
@@ -163,7 +156,7 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
   const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
 
   TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
+    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_x, m_y));
 }
 
 auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
@@ -171,7 +164,7 @@ auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<poi
   const auto& shipGeometryData = GetPlayerGeometryData();
 
   TransformPoints(shipGeometryData.cbegin(), shipGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_controlData->m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_controlData->m_x, m_controlData->m_y));
+    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_x, m_y));
 }
 
 [[nodiscard]] auto player_ship::PlayerCanShoot(int64_t tickCount) -> bool

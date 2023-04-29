@@ -12,34 +12,15 @@ public:
 
   enum state_type { alive, dead };
 
-  class control
-  {
-    friend class player_ship;
-
-  public:
-
-    auto SetEventShot(std::function<void(float,float,float)> eventShot) -> void;
-    auto SetEventDied(std::function<void(float,float)> eventDied) -> void;
-
-    [[nodiscard]] auto GetPosition() const -> game_point;
-    auto SetPosition(float x, float y) -> void;
-    [[nodiscard]] auto ThrusterOn() const -> bool;
-
-  private:
-
-    float m_x = 0;
-    float m_y = 0;
-    float m_angle = 0;
-    bool m_thrusterOn = false;
-    std::function<void(float,float,float)> m_eventShot;
-    std::function<void(float,float)> m_eventDied;
-  };
-
-  using control_data = std::shared_ptr<control>;
+  using position_update = std::function<void(float, float, bool)>;
+  using event_shot = std::function<void(float,float,float)>;
+  using event_died = std::function<void(float,float)>;
 
   player_ship();
   player_ship(float x, float y);
-  auto GetControlData() const -> control_data;
+  auto SetPositionUpdate(position_update positionUpdate) -> void;
+  auto SetEventShot(event_shot eventShot) -> void;
+  auto SetEventDied(event_died eventDied) -> void;
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
@@ -56,6 +37,7 @@ private:
   using points_collection = std::vector<game_point>;
   using lines_collection = std::vector<game_line>;
 
+  auto Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void;
   void UpdateShipGeometryData();
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
@@ -75,7 +57,13 @@ private:
   int64_t m_shotTimerInterval = 0;
   int64_t m_shotTimer = 0;
 
-  control_data m_controlData;
+  float m_x = 0;
+  float m_y = 0;
+  float m_angle = 0;
+  bool m_thrusterOn = false;
+  position_update m_positionUpdate = [](float,float,bool)->void{};
+  event_shot m_eventShot;
+  event_died m_eventDied;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_shipBrush;

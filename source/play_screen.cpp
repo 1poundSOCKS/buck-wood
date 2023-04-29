@@ -98,7 +98,7 @@ auto play_screen::PlaySoundEffects() const -> void
   {
     PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-    if( m_levelControlData.GetPlayerControl()->ThrusterOn() )
+    if( m_playerHasThrusterOn )
       PlaySoundBuffer(soundBuffers[thrust], true);
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
@@ -128,8 +128,8 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  auto playerPosition = m_levelControlData.GetPlayerControl()->GetPosition();
-  auto viewTransform = CreateGameLevelTransform(playerPosition.x, playerPosition.y, 1.4f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
+  // auto playerPosition = m_levelControlData.GetPlayerControl()->GetPosition();
+  auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.4f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
   m_levelView.SetTransform(viewTransform);
   m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
 }
@@ -174,21 +174,32 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelContainer.ClearAll();
-  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer, [this]()
+
+  auto playerPositionUpdate = [this](float x, float y, bool thrusterOn) -> void
+  {
+    m_levelViewCentreX = x;
+    m_levelViewCentreY = y;
+    m_playerHasThrusterOn = thrusterOn;
+  };
+
+  auto targetActivated = [this]() -> void
   {
     m_targetActivated = true;
-  });
+  };
 
-  m_levelControlData.GetPlayerControl()->SetEventShot([this](float x, float y, float angle) -> void
+  auto playerShot = [this](float x, float y, float angle) -> void
   {
     m_levelContainer.AppendActiveObject(bullet { x, y, angle });
     m_playerShot = true;
-  });
+  };
 
-  m_levelControlData.GetPlayerControl()->SetEventDied([this](float x, float y) -> void
+  auto playerDied = [this](float x, float y) -> void
   {
     m_continueRunning = false;
-  });
+  };
+
+  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer, 
+    playerPositionUpdate, playerShot, playerDied, targetActivated);
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

@@ -52,6 +52,11 @@ private:
   bool m_gameComplete = false;
   bool m_continueRunning = true;
 
+  float m_levelViewCentreX = 0;
+  float m_levelViewCentreY = 0;
+
+  bool m_playerHasThrusterOn = false;
+
   active_object_container m_levelContainer;
   object_container_view m_levelView;
 
