@@ -7,10 +7,11 @@ class button
 {
 public:
 
-  using callback_for_hidden_flag = std::function<bool()>;
+  using callback_for_flag = std::function<bool()>;
 
   button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked);
-  auto SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHidden) -> void;
+  auto SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void;
+  auto SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void;
   auto GetHoverState() const -> bool;
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
@@ -27,8 +28,11 @@ private:
   std::function<void()> m_eventClicked = [](){};
 
   bool m_hidden = false;
-  callback_for_hidden_flag m_callbackForHiddenFlag = [](){ return false; };
-  
+  callback_for_flag m_callbackForHiddenFlag = [](){ return false; };
+
+  bool m_enabled = true;
+  callback_for_flag m_callbackForEnabledFlag = [](){ return true; };  
+
   render_text_format_def m_textFormatDef;
   render_text_format_def m_hoverTextFormatDef;
 

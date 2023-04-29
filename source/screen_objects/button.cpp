@@ -5,21 +5,26 @@
 
 button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicked) : 
   m_buttonHeight { rect.bottom - rect.top },
-  m_textFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
-  m_hoverTextFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.8f },
+  m_textFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.7f },
+  m_hoverTextFormatDef { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, m_buttonHeight * 0.7f },
   m_text { text }, m_eventClicked { eventClicked }
 {
   m_rect = rect;
 }
 
-auto button::SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHiddenFlag) -> void
+auto button::SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void
 {
   m_callbackForHiddenFlag = callbackForHiddenFlag;
 }
 
+auto button::SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void
+{
+  m_callbackForEnabledFlag = callbackForEnabledFlag;
+}
+
 auto button::GetHoverState() const -> bool
 {
-  return m_hover;  
+  return m_hover;
 }
 
 auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -38,10 +43,10 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
 auto button::Update(const object_input_data& inputData, int64_t clockCount) -> void
 {
   m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
-
   m_hidden = m_callbackForHiddenFlag();
+  m_enabled = m_callbackForEnabledFlag();
 
-  if( !m_hidden && m_hover && inputData.LeftMouseButtonClicked() )
+  if( !m_hidden && m_enabled && m_hover && inputData.LeftMouseButtonClicked() )
   {
     m_eventClicked();
   }
@@ -61,6 +66,7 @@ auto button::Render(D2D1_RECT_F viewRect) const -> void
     }
     else
     {
+      m_renderTarget->DrawRectangle(m_rect, m_buttonBorderBrush.get(), 2.0f);
       RenderText(m_renderTarget.get(), m_buttonBorderBrush.get(), m_textFormat.get(), m_text, m_rect, 
         DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     }

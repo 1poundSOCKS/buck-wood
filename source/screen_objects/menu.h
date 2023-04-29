@@ -10,6 +10,9 @@ public:
   using button_collection = std::vector<button>;
   using callback_for_hidden_flag = std::function<bool()>;
 
+  menu();
+  menu(const menu& sourceMenu);
+
   auto SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHidden) -> void;
   auto AddButton(button&& menuButton) -> void;
 
@@ -18,6 +21,9 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
+  
+  auto UpdateAllButtonCallbacks() -> void;
+  auto UpdateButtonCallbacks(button& buttonToUpdate) -> void;
   
   callback_for_hidden_flag m_callbackForHiddenFlag = [](){ return false; };
   bool m_hidden = false;

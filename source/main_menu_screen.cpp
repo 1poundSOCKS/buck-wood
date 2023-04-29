@@ -129,6 +129,10 @@ auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInp
     m_startPlay = true;
   }});
 
+  menuDef.AddButtonDef({ L"Options", [this]() -> void
+  {
+  }});
+
   menuDef.AddButtonDef({ L"Exit", [this]() -> void
   {
     m_continueRunning = false;
