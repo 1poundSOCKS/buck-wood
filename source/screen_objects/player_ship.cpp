@@ -101,7 +101,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
   std::vector<render_line> renderLines;
   auto renderLinesInserter = std::back_inserter(renderLines);
 
-  CreateConnectedRenderLines(m_points.cbegin(), m_points.cend(), renderLinesInserter, m_shipBrush.get(), 2);
+  CreateConnectedRenderLines(m_points.cbegin(), m_points.cend(), renderLinesInserter, m_shipBrush.get(), 3);
 
   if( m_thrusterOn )
   {

@@ -10,7 +10,9 @@ class level_target
 {
 public:
 
-  level_target(float x, float y, std::function<void()> eventTargetActivated);
+  using event_activated = std::function<void()>;
+
+  level_target(float x, float y, event_activated eventTargetActivated);
   
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
@@ -27,7 +29,7 @@ private:
   std::vector<game_point> m_points;
   std::vector<game_line> m_shape;
   bool m_activated = false;
-  std::function<void()> m_eventTargetActivated;
+  event_activated m_eventTargetActivated;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;

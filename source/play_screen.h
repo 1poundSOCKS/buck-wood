@@ -67,8 +67,6 @@ private:
 
   game_level_data_loader m_gameLevelDataLoader;
 
-  level_control_data m_levelControlData;
-
   bool m_playerShot = false;
   bool m_targetActivated = false;
 };

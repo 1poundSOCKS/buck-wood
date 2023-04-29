@@ -9,10 +9,10 @@ class level_control_data
 public:
 
   level_control_data();
-  level_control_data(/*const player_ship::control_data playerControl, */const level_timer::control_data timerControl, const level_state::control_data stateControl);
+  level_control_data(const level_state::control_data stateControl);
 
   // auto Attach(const player_ship::control_data& playerControl) -> void;
-  auto Attach(const level_timer::control_data& levelControl) -> void;
+  // auto Attach(const level_timer::control_data& levelControl) -> void;
   auto Attach(const level_state::control_data& stateControl) -> void;
 
   auto operator=(const level_control_data& levelControl) -> const level_control_data&;

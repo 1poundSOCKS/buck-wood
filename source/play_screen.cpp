@@ -46,15 +46,6 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   if( PausePressed(inputState) )
     m_paused = !m_paused;
 
-  if( m_paused )
-  {
-    m_levelControlData.GetStateControl()->SetState(level_state::control::paused);
-  }
-  else
-  {
-    m_levelControlData.GetStateControl()->SetState(level_state::control::playing);
-  }
-
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
 
   if( QuitPressed(inputState) )
@@ -70,11 +61,6 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
 
   if( m_levelContainer.IsComplete() )
-    m_continueRunning = false;
-
-  auto levelRemainingTime = m_levelControlData.GetTimerControl()->GetValue();
-
-  if( levelRemainingTime == 0 )
     m_continueRunning = false;
 }
 
@@ -128,8 +114,7 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
 
 auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  // auto playerPosition = m_levelControlData.GetPlayerControl()->GetPosition();
-  auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.4f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
+  auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.5f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
   m_levelView.SetTransform(viewTransform);
   m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
 }
@@ -152,6 +137,34 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
   }
   else
   {
+    m_gameLevelDataLoader.SetPlayerPositionUpdate([this](float x, float y, bool thrusterOn) -> void
+    {
+      m_levelViewCentreX = x;
+      m_levelViewCentreY = y;
+      m_playerHasThrusterOn = thrusterOn;
+    });
+    
+    m_gameLevelDataLoader.SetPlayerShot([this](float x, float y, float angle) -> void
+    {
+      m_levelContainer.AppendActiveObject(bullet { x, y, angle });
+      m_playerShot = true;
+    });
+
+    m_gameLevelDataLoader.SetPlayerDied([this](float x, float y) -> void
+    {
+      m_continueRunning = false;
+    });
+
+    m_gameLevelDataLoader.SetTargetActivated([this]() -> void
+    {
+      m_targetActivated = true;
+    });
+
+    m_gameLevelDataLoader.SetTimerUpdate([this](int64_t ticksLeft) -> void
+    {
+      if( ticksLeft == 0 ) m_continueRunning = false;
+    });
+
     LoadCurrentLevel();
     return true;
   }
@@ -174,32 +187,7 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 auto play_screen::LoadCurrentLevel() -> void
 {
   m_levelContainer.ClearAll();
-
-  auto playerPositionUpdate = [this](float x, float y, bool thrusterOn) -> void
-  {
-    m_levelViewCentreX = x;
-    m_levelViewCentreY = y;
-    m_playerHasThrusterOn = thrusterOn;
-  };
-
-  auto targetActivated = [this]() -> void
-  {
-    m_targetActivated = true;
-  };
-
-  auto playerShot = [this](float x, float y, float angle) -> void
-  {
-    m_levelContainer.AppendActiveObject(bullet { x, y, angle });
-    m_playerShot = true;
-  };
-
-  auto playerDied = [this](float x, float y) -> void
-  {
-    m_continueRunning = false;
-  };
-
-  m_levelControlData = m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer, 
-    playerPositionUpdate, playerShot, playerDied, targetActivated);
+  m_gameLevelDataLoader.LoadLevel(m_levelContainer, m_overlayContainer);
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
