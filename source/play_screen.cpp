@@ -74,7 +74,10 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
 
   if( m_levelContainer->GetObjectContainer().IsComplete() )
+  {
+    m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
     m_continueRunning = false;
+  }
 }
 
 auto play_screen::Render() const -> void

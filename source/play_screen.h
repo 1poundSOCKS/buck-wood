@@ -51,15 +51,15 @@ private:
   bool m_gameComplete = false;
   bool m_continueRunning = true;
 
-  object_container_view m_levelView;
   std::unique_ptr<level_container> m_levelContainer;
+  object_container_view m_levelView;
 
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
 
   game_level_data_loader m_gameLevelDataLoader;
 
-  std::vector<float> levelTimes;
+  std::vector<int64_t> m_levelTimes;
 };
 
 #endif
