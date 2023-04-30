@@ -6,7 +6,7 @@
 #include "global_state.h"
 #include "render_target_area.h"
 
-play_screen::play_screen()
+play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
 }
 
@@ -19,7 +19,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
 
-  m_levelContainer.GetObjectContainer().Initialize(renderTarget);
+  m_levelContainer->GetObjectContainer().Initialize(renderTarget);
   m_overlayContainer.Initialize(renderTarget);
 
   m_levelView.Initialize(renderTarget);
@@ -41,31 +41,27 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  m_playerShot = m_targetActivated = false;
-
-  if( PausePressed(inputState) )
-    m_paused = !m_paused;
+  if( PausePressed(inputState) ) m_paused = !m_paused;
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
 
-  if( QuitPressed(inputState) )
-    m_continueRunning = false;
+  if( QuitPressed(inputState) ) m_continueRunning = false;
 
   if( elapsedTicks > 0 )
   {
-    auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.5f, 
+    auto viewTransform = CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.6f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
     
     m_levelView.SetTransform(viewTransform);
     auto levelInputData = m_levelView.GetObjectInputData(inputState);
-    m_levelContainer.Update(levelInputData, elapsedTicks);
+    m_levelContainer->Update(levelInputData, elapsedTicks);
+    if( m_levelContainer->HasTimedOut() ) m_continueRunning = false;
   }
 
   auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
 
-  if( m_levelContainer.GetObjectContainer().IsComplete() )
-    m_continueRunning = false;
+  if( m_levelContainer->GetObjectContainer().IsComplete() ) m_continueRunning = false;
 }
 
 auto play_screen::Render() const -> void
@@ -76,7 +72,7 @@ auto play_screen::Render() const -> void
   auto viewRect = m_levelView.GetViewRect();
 
   m_renderTarget->SetTransform(viewTransform);
-  m_levelContainer.GetObjectContainer().Render(viewRect);
+  m_levelContainer->GetObjectContainer().Render(viewRect);
 
   const auto& overlayTransform = m_overlayView.GetTransform();
   auto overlayViewRect = m_levelView.GetViewRect();
@@ -97,18 +93,18 @@ auto play_screen::PlaySoundEffects() const -> void
   {
     PlaySoundBuffer(soundBuffers[menu_theme], true);
 
-    if( m_playerHasThrusterOn )
+    if( m_levelContainer->PlayerHasThrusterOn() )
       PlaySoundBuffer(soundBuffers[thrust], true);
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
 
-    if( m_playerShot )
+    if( m_levelContainer->PlayerShot() )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[shoot]);
     }
 
-    if( m_targetActivated )
+    if( m_levelContainer->TargetActivated() )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[target_activated]);
@@ -143,34 +139,6 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
   }
   else
   {
-    m_gameLevelDataLoader.SetPlayerPositionUpdate([this](float x, float y, bool thrusterOn) -> void
-    {
-      m_levelViewCentreX = x;
-      m_levelViewCentreY = y;
-      m_playerHasThrusterOn = thrusterOn;
-    });
-    
-    m_gameLevelDataLoader.SetPlayerShot([this](float x, float y, float angle) -> void
-    {
-      m_levelContainer.GetObjectContainer().AppendActiveObject(bullet { x, y, angle });
-      m_playerShot = true;
-    });
-
-    m_gameLevelDataLoader.SetPlayerDied([this](float x, float y) -> void
-    {
-      m_continueRunning = false;
-    });
-
-    m_gameLevelDataLoader.SetTargetActivated([this]() -> void
-    {
-      m_targetActivated = true;
-    });
-
-    m_gameLevelDataLoader.SetTimeout([this]() -> void
-    {
-      m_continueRunning = false;
-    });
-
     LoadCurrentLevel();
     return true;
   }

@@ -51,22 +51,15 @@ private:
   bool m_gameComplete = false;
   bool m_continueRunning = true;
 
-  float m_levelViewCentreX = 0;
-  float m_levelViewCentreY = 0;
-
   object_container_view m_levelView;
-  level_container m_levelContainer;
+  std::unique_ptr<level_container> m_levelContainer;
 
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;
 
-  std::vector<float> levelTimes;
-
   game_level_data_loader m_gameLevelDataLoader;
 
-  bool m_playerHasThrusterOn = false;
-  bool m_playerShot = false;
-  bool m_targetActivated = false;
+  std::vector<float> levelTimes;
 };
 
 #endif

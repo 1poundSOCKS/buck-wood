@@ -18,6 +18,7 @@ public:
 
   player_ship();
   player_ship(float x, float y);
+
   auto SetPositionUpdate(position_update positionUpdate) -> void;
   auto SetEventShot(event_shot eventShot) -> void;
   auto SetEventDied(event_died eventDied) -> void;

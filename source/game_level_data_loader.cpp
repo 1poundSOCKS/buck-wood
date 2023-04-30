@@ -6,55 +6,31 @@ game_level_data_loader::game_level_data_loader() : m_currentLevelDataIterator(gl
 {
 }
 
-auto game_level_data_loader::SetPlayerPositionUpdate(player_ship::position_update playerPositionUpdate) -> void
+auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) const -> std::unique_ptr<level_container>
 {
-  m_playerPositionUpdate = playerPositionUpdate;
-}
-
-auto game_level_data_loader::SetPlayerShot(player_ship::event_shot playerShot) -> void
-{
-  m_playerShot = playerShot;
-}
-
-auto game_level_data_loader::SetPlayerDied(player_ship::event_died playerDied) -> void
-{
-  m_playerDied = playerDied;
-}
-
-auto game_level_data_loader::SetTargetActivated(level_target::event_activated targetActivated) -> void
-{
-  m_targetActivated = targetActivated;
-}
-
-auto game_level_data_loader::SetTimeout(level_container::timeout timeoutEvent) -> void
-{
-  m_timeoutEvent = timeoutEvent;
-}
-
-auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) const -> level_container
-{
-  level_container levelContainer;
-  levelContainer.GetObjectContainer().Initialize(renderTarget);
-  LoadIslands(levelContainer.GetObjectContainer());
-  LoadTargets(levelContainer.GetObjectContainer());
-  LoadPlayer(levelContainer.GetObjectContainer());
-  levelContainer.SetTimeout(GetTimeLimit(), m_timeoutEvent);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
+  levelContainer->GetObjectContainer().Initialize(renderTarget);
+  LoadIslands(*levelContainer);
+  LoadTargets(*levelContainer);
+  LoadPlayer(*levelContainer);
+  levelContainer->SetTimeout(GetTimeLimit());
+  levelContainer->GetObjectContainer().Initialize(renderTarget);
   return levelContainer;
 }
 
-auto game_level_data_loader::LoadIslands(active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadIslands(level_container& levelContainer) const -> void
 {
-  LoadIslands(**m_currentLevelDataIterator, levelObjectContainer);
+  LoadIslands(**m_currentLevelDataIterator, levelContainer);
 }
 
-auto game_level_data_loader::LoadTargets(active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(level_container& levelContainer) const -> void
 {
-  LoadTargets(**m_currentLevelDataIterator, levelObjectContainer);
+  LoadTargets(**m_currentLevelDataIterator, levelContainer);
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer(active_object_container& levelObjectContainer) const -> void
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(level_container& levelContainer) const -> void
 {
-  LoadPlayer(**m_currentLevelDataIterator, levelObjectContainer);
+  LoadPlayer(**m_currentLevelDataIterator, levelContainer);
 }
 
 [[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int
@@ -71,34 +47,28 @@ auto game_level_data_loader::NextLevel() -> void
   return m_currentLevelDataIterator == global_state::endLevelData();
 }
 
-auto game_level_data_loader::LoadIslands(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadIslands(const game_level_data& levelData, level_container& levelContainer) const -> void
 {
   std::vector<game_closed_object> levelObjects;
   LoadLevelObjects(levelData, std::back_inserter(levelObjects));
 
   std::vector<level_island> islands;
-  std::for_each(levelObjects.cbegin(), levelObjects.cend(), [this, &levelObjectContainer](const auto& object) -> void
+  std::for_each(levelObjects.cbegin(), levelObjects.cend(), [this, &levelContainer](const auto& object) -> void
   {
-    levelObjectContainer.AppendActiveObject(level_island { object });
+    levelContainer.GetObjectContainer().AppendActiveObject(level_island { object });
   });
 }
 
-auto game_level_data_loader::LoadTargets(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
+auto game_level_data_loader::LoadTargets(const game_level_data& levelData, level_container& levelContainer) const -> void
 {
   std::vector<level_target> targets;
-  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [this, &levelObjectContainer](const auto& position) -> void
+  std::for_each(levelData.targets.cbegin(), levelData.targets.cend(), [this, &levelContainer](const auto& position) -> void
   {
-    levelObjectContainer.AppendActiveObject(level_target { position.x, position.y, m_targetActivated });
+    levelContainer.AddTarget(level_target { position.x, position.y });
   });
 }
 
-[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void
+[[nodiscard]] auto game_level_data_loader::LoadPlayer(const game_level_data& levelData, level_container& levelContainer) const -> void
 {
-  player_ship playerShip { levelData.playerStartPosX, levelData.playerStartPosY };
-
-  if( m_playerPositionUpdate ) playerShip.SetPositionUpdate(m_playerPositionUpdate);
-  if( m_playerShot ) playerShip.SetEventShot(m_playerShot);
-  if( m_playerDied ) playerShip.SetEventDied(m_playerDied);
-  
-  levelObjectContainer.AppendActiveObject(playerShip);
+  levelContainer.AddPlayer(player_ship { levelData.playerStartPosX, levelData.playerStartPosY });
 }
