@@ -19,7 +19,6 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_dwriteFactory.attach(dwriteFactory);
   m_dwriteFactory->AddRef();
 
-  // m_levelContainer.Initialize(renderTarget);
   m_levelContainer.GetObjectContainer().Initialize(renderTarget);
   m_overlayContainer.Initialize(renderTarget);
 
@@ -36,7 +35,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   });
   
   m_overlayContainer.AppendOverlayObject(menu);
-
+  m_overlayContainer.AppendOverlayObject(level_timer { 0 });
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 }
 
@@ -54,12 +53,16 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   if( elapsedTicks > 0 )
   {
-    UpdateLevelState(inputState, elapsedTicks);
+    auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.5f, 
+      inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
+    
+    m_levelView.SetTransform(viewTransform);
+    auto levelInputData = m_levelView.GetObjectInputData(inputState);
+    m_levelContainer.Update(levelInputData, elapsedTicks);
   }
 
-  // m_overlayView.Update(m_overlayContainer, inputState, elapsedTicks);
-  auto inputData = m_overlayView.GetObjectInputData(inputState);
-  m_overlayContainer.Update(inputData, elapsedTicks);
+  auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
+  m_overlayContainer.Update(overlayInputData, elapsedTicks);
 
   if( m_levelContainer.GetObjectContainer().IsComplete() )
     m_continueRunning = false;
@@ -75,7 +78,6 @@ auto play_screen::Render() const -> void
   m_renderTarget->SetTransform(viewTransform);
   m_levelContainer.GetObjectContainer().Render(viewRect);
 
-  // m_levelView.Render(m_levelContainer);
   const auto& overlayTransform = m_overlayView.GetTransform();
   auto overlayViewRect = m_levelView.GetViewRect();
   m_renderTarget->SetTransform(overlayTransform);
@@ -121,15 +123,6 @@ auto play_screen::PlaySoundEffects() const -> void
 
 auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
 {
-}
-
-auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void
-{
-  auto viewTransform = CreateGameLevelTransform(m_levelViewCentreX, m_levelViewCentreY, 1.5f, inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
-  m_levelView.SetTransform(viewTransform);
-  auto inputData = m_levelView.GetObjectInputData(inputState);
-  m_levelContainer.GetObjectContainer().Update(inputData, elapsedTicks);
-  // m_levelView.Update(m_levelContainer, inputState, elapsedTicks);
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
@@ -199,7 +192,7 @@ auto play_screen::UpdateLevelState(const screen_input_state& inputState, int64_t
 
 auto play_screen::LoadCurrentLevel() -> void
 {
-  m_levelContainer = m_gameLevelDataLoader.LoadLevel(/*m_levelContainer, m_overlayContainer*/m_renderTarget.get());
+  m_levelContainer = m_gameLevelDataLoader.LoadLevel(m_renderTarget.get());
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

@@ -42,7 +42,6 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_objectContainer.Initialize(renderTarget);
 
   m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
-
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
 
@@ -99,7 +98,7 @@ auto main_menu_screen::OnViewDefault(const screen_input_state& inputState) -> vo
   m_renderTargetMouseData = inputState.renderTargetMouseData;
 
   if( m_startPlay )
-  {    
+  {
     play_screen playScreen;
     framework::openScreen(playScreen);
     m_startPlay = false;

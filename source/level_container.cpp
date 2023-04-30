@@ -11,9 +11,10 @@
   return m_objectContainer;
 }
 
-auto level_container::SetTimeout(int time) -> void
+auto level_container::SetTimeout(int time, timeout timeoutEvent) -> void
 {
   m_timeoutTicks = performance_counter::QueryFrequency() * time;
+  m_timeoutEvent = timeoutEvent;
 }
 
 auto level_container::Update(const object_input_data& inputData, int64_t ticks) -> void

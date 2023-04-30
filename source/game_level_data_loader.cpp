@@ -26,11 +26,6 @@ auto game_level_data_loader::SetTargetActivated(level_target::event_activated ta
   m_targetActivated = targetActivated;
 }
 
-// auto game_level_data_loader::SetTimerUpdate(level_timer::timer_update timerUpdate) -> void
-// {
-//   m_timerUpdate = timerUpdate;
-// }
-
 auto game_level_data_loader::SetTimeout(level_container::timeout timeoutEvent) -> void
 {
   m_timeoutEvent = timeoutEvent;
@@ -43,7 +38,7 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) const ->
   LoadIslands(levelContainer.GetObjectContainer());
   LoadTargets(levelContainer.GetObjectContainer());
   LoadPlayer(levelContainer.GetObjectContainer());
-  levelContainer.SetTimeout(GetTimeLimit());
+  levelContainer.SetTimeout(GetTimeLimit(), m_timeoutEvent);
   return levelContainer;
 }
 
@@ -61,11 +56,6 @@ auto game_level_data_loader::LoadTargets(active_object_container& levelObjectCon
 {
   LoadPlayer(**m_currentLevelDataIterator, levelObjectContainer);
 }
-
-// [[nodiscard]] auto game_level_data_loader::LoadTimer(passive_object_container& levelObjectContainer) const -> void
-// {
-//   LoadTimer(**m_currentLevelDataIterator, levelObjectContainer);
-// }
 
 [[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int
 {
@@ -112,12 +102,3 @@ auto game_level_data_loader::LoadTargets(const game_level_data& levelData, activ
   
   levelObjectContainer.AppendActiveObject(playerShip);
 }
-
-// [[nodiscard]] auto game_level_data_loader::LoadTimer(const game_level_data& levelData, passive_object_container& levelObjectContainer) const -> void
-// {
-//   level_timer levelTimer { levelData.timeLimitInSeconds * performance_counter::QueryFrequency() };
-
-//   if( m_timerUpdate ) levelTimer.SetTimerUpdate(m_timerUpdate);
-
-//   levelObjectContainer.AppendOverlayObject(levelTimer);
-// }

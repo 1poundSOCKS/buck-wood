@@ -35,8 +35,6 @@ public:
 
 private:
 
-  auto UpdateLevelState(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
-  
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto QuitPressed(const screen_input_state& inputState) -> bool;
 
@@ -56,9 +54,6 @@ private:
   float m_levelViewCentreX = 0;
   float m_levelViewCentreY = 0;
 
-  bool m_playerHasThrusterOn = false;
-
-  // active_object_container m_levelContainer;
   object_container_view m_levelView;
   level_container m_levelContainer;
 
@@ -69,6 +64,7 @@ private:
 
   game_level_data_loader m_gameLevelDataLoader;
 
+  bool m_playerHasThrusterOn = false;
   bool m_playerShot = false;
   bool m_targetActivated = false;
 };

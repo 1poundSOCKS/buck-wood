@@ -9,7 +9,7 @@ public:
 
   using timeout = std::function<void()>;
 
-  auto SetTimeout(int time) -> void;
+  auto SetTimeout(int time, timeout timeoutEvent = []()->void{}) -> void;
 
   [[nodiscard]] auto GetObjectContainer() const -> const active_object_container&;
   [[nodiscard]] auto GetObjectContainer() -> active_object_container&;
