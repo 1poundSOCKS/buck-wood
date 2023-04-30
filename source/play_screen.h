@@ -2,6 +2,7 @@
 #define _play_screen_
 
 #include "framework.h"
+#include "passive_object_container.h"
 #include "object_container_view.h"
 #include "stopwatch.h"
 #include "sound_data.h"
@@ -57,8 +58,9 @@ private:
 
   bool m_playerHasThrusterOn = false;
 
-  active_object_container m_levelContainer;
+  // active_object_container m_levelContainer;
   object_container_view m_levelView;
+  level_container m_levelContainer;
 
   passive_object_container m_overlayContainer;
   object_container_view m_overlayView;

@@ -18,31 +18,36 @@ auto object_container_view::SetTransform(const D2D1::Matrix3x2F& transform) -> b
   return m_invertedTransform.Invert();
 }
 
-auto object_container_view::Update(active_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
+[[nodiscard]] auto object_container_view::GetTransform() const -> const D2D1::Matrix3x2F&
 {
-  auto inputData = GetObjectInputData(inputState);
-  objectContainer.Update(inputData, elapsedTicks);
+  return m_transform;
 }
 
-auto object_container_view::Update(passive_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
-{
-  auto inputData = GetObjectInputData(inputState);
-  objectContainer.Update(inputData, elapsedTicks);
-}
+// auto object_container_view::Update(active_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
+// {
+//   auto inputData = GetObjectInputData(inputState);
+//   objectContainer.Update(inputData, elapsedTicks);
+// }
 
-auto object_container_view::Render(const active_object_container& objectContainer) const -> void
-{
-  auto viewRect = GetViewRect();
-  m_renderTarget->SetTransform(m_transform);
-  objectContainer.Render(viewRect);
-}
+// auto object_container_view::Update(passive_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
+// {
+//   auto inputData = GetObjectInputData(inputState);
+//   objectContainer.Update(inputData, elapsedTicks);
+// }
 
-auto object_container_view::Render(const passive_object_container& objectContainer) const -> void
-{
-  auto viewRect = GetViewRect();
-  m_renderTarget->SetTransform(m_transform);
-  objectContainer.Render(viewRect);
-}
+// auto object_container_view::Render(const active_object_container& objectContainer) const -> void
+// {
+//   auto viewRect = GetViewRect();
+//   m_renderTarget->SetTransform(m_transform);
+//   objectContainer.Render(viewRect);
+// }
+
+// auto object_container_view::Render(const passive_object_container& objectContainer) const -> void
+// {
+//   auto viewRect = GetViewRect();
+//   m_renderTarget->SetTransform(m_transform);
+//   objectContainer.Render(viewRect);
+// }
 
 [[nodiscard]] auto object_container_view::GetViewRect() const -> D2D1_RECT_F
 {

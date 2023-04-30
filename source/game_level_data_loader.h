@@ -6,8 +6,9 @@
 #include "player_ship.h"
 #include "level_timer.h"
 #include "level_state.h"
-#include "active_object_container.h"
-#include "passive_object_container.h"
+#include "level_container.h"
+// #include "active_object_container.h"
+// #include "passive_object_container.h"
 
 class game_level_data_loader
 {
@@ -19,32 +20,35 @@ public:
   auto SetPlayerShot(player_ship::event_shot playerShot) -> void;
   auto SetPlayerDied(player_ship::event_died playerDied) -> void;
   auto SetTargetActivated(level_target::event_activated targetActivated) -> void;
-  auto SetTimerUpdate(level_timer::timer_update timerUpdate) -> void;
+  // auto SetTimerUpdate(level_timer::timer_update timerUpdate) -> void;
+  auto SetTimeout(level_container::timeout timeoutEvent) -> void;
 
-  auto LoadLevel(active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer) const -> void;
+  auto LoadLevel(/*active_object_container& levelObjectContainer, passive_object_container& overlayObjectContainer*/ID2D1RenderTarget* renderTarget) const -> level_container;
 
-  auto LoadIslands(active_object_container& levelObjectContainer) const -> void;
-  auto LoadTargets(active_object_container& levelObjectContainer) const -> void;
-
-  [[nodiscard]] auto LoadPlayer(active_object_container& levelObjectContainer) const -> void;
-  [[nodiscard]] auto LoadTimer(passive_object_container& levelObjectContainer) const -> void;
+  // [[nodiscard]] auto LoadTimer(passive_object_container& levelObjectContainer) const -> void;
 
   auto NextLevel() -> void;
   [[nodiscard]] auto EndOfLevels() const -> bool;
 
 private:
 
-  [[nodiscard]] auto GetTimeLimit() const -> int64_t;
+  [[nodiscard]] auto GetTimeLimit() const -> int;
+
+  auto LoadIslands(active_object_container& levelObjectContainer) const -> void;
+  auto LoadTargets(active_object_container& levelObjectContainer) const -> void;
+
+  [[nodiscard]] auto LoadPlayer(active_object_container& levelObjectContainer) const -> void;
   auto LoadIslands(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void;
   auto LoadTargets(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void;
   [[nodiscard]] auto LoadPlayer(const game_level_data& levelData, active_object_container& levelObjectContainer) const -> void;
-  [[nodiscard]] auto LoadTimer(const game_level_data& levelData, passive_object_container& levelObjectContainer) const -> void;
+  // [[nodiscard]] auto LoadTimer(const game_level_data& levelData, passive_object_container& levelObjectContainer) const -> void;
 
   player_ship::position_update m_playerPositionUpdate;
   player_ship::event_shot m_playerShot;
   player_ship::event_died m_playerDied;
   level_target::event_activated m_targetActivated;
-  level_timer::timer_update m_timerUpdate;
+  level_container::timeout m_timeoutEvent;
+  // level_timer::timer_update m_timerUpdate;
 
   game_level_data_index::const_iterator m_currentLevelDataIterator;
 };

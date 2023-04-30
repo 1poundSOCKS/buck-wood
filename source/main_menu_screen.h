@@ -1,6 +1,7 @@
 #pragma once
 
 #include "diagnostics.h"
+#include "passive_object_container.h"
 #include "object_container_view.h"
 #include "button_def.h"
 #include "menu_def.h"

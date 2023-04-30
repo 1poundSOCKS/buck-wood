@@ -48,7 +48,8 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 {
-  m_containerView.Update(m_objectContainer, inputState, 0);
+  auto inputData = m_containerView.GetObjectInputData(inputState);
+  m_objectContainer.Update(inputData, 0);
 
   switch( m_view )
   {
@@ -64,7 +65,12 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_containerView.Render(m_objectContainer);
+
+  auto viewTransform = m_containerView.GetTransform();
+  auto viewRect = m_containerView.GetViewRect();
+
+  m_renderTarget->SetTransform(viewTransform);
+  m_objectContainer.Render(viewRect);
 
   if( m_view == view_exit )
   {
