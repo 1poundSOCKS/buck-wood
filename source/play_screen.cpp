@@ -5,6 +5,7 @@
 #include "screen_view.h"
 #include "global_state.h"
 #include "render_target_area.h"
+#include "text_box.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -34,11 +35,12 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     return !m_paused;
   });
 
-  level_timer levelTimer;
+  text_box levelTimer({ renderTarget, 0.3f, 0.1f });
 
-  levelTimer.SetTimeGetter([this]() -> int64_t
+  levelTimer.SetTextGetter([this]() -> std::wstring
   {
-    return m_levelContainer->TicksRemaining();
+    auto value = static_cast<float>(m_levelContainer->TicksRemaining()) / static_cast<float>(performance_counter::QueryFrequency());
+    return std::format(L"{:.1f}", value);
   });
   
   m_overlayContainer.AppendOverlayObject(menu);
