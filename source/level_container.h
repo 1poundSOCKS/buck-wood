@@ -28,13 +28,14 @@ public:
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerShot() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
-  [[nodiscard]] auto TargetActivated() const -> bool;  
+  [[nodiscard]] auto TargetActivated() const -> bool;
+  [[nodiscard]] auto TicksRemaining() const -> int64_t;
 
 private:
 
   active_object_container m_objectContainer;
 
-  int64_t m_timeoutTicks = 0;
+  int64_t m_ticksRemaining = 0;
 
   float m_playerX = 0;
   float m_playerY = 0;

@@ -23,7 +23,7 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
 
   playerShip.SetEventDied([this](float x, float y) -> void
   {
-    m_playerDied = false;
+    m_playerDied = true;
     m_playerX = x;
     m_playerY = y;
   });
@@ -53,12 +53,12 @@ auto level_container::AddTarget(level_target levelTarget) -> void
 
 auto level_container::SetTimeout(int time) -> void
 {
-  m_timeoutTicks = performance_counter::QueryFrequency() * time;
+  m_ticksRemaining = performance_counter::QueryFrequency() * time;
 }
 
 auto level_container::HasTimedOut() const -> bool
 {
-  return m_timeoutTicks == 0;
+  return m_ticksRemaining == 0;
 }
 
 auto level_container::Update(const object_input_data& inputData, int64_t ticks) -> void
@@ -70,8 +70,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_objectContainer.DoCollisions();
   m_objectContainer.ClearDestroyedObjects();
 
-  m_timeoutTicks -= ticks;
-  m_timeoutTicks = max(0, m_timeoutTicks);
+  m_ticksRemaining -= ticks;
+  m_ticksRemaining = max(0, m_ticksRemaining);
 }
 
 [[nodiscard]] auto level_container::PlayerX() const -> float
@@ -102,4 +102,9 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 [[nodiscard]] auto level_container::TargetActivated() const -> bool
 {
   return m_targetActivated;
+}
+
+[[nodiscard]] auto level_container::TicksRemaining() const -> int64_t
+{
+  return m_ticksRemaining;
 }

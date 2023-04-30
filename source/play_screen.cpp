@@ -33,9 +33,16 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   {
     return !m_paused;
   });
+
+  level_timer levelTimer;
+
+  levelTimer.SetTimeGetter([this]() -> int64_t
+  {
+    return m_levelContainer->TicksRemaining();
+  });
   
   m_overlayContainer.AppendOverlayObject(menu);
-  m_overlayContainer.AppendOverlayObject(level_timer { 0 });
+  m_overlayContainer.AppendOverlayObject(levelTimer);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 }
 
@@ -55,13 +62,19 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_levelView.SetTransform(viewTransform);
     auto levelInputData = m_levelView.GetObjectInputData(inputState);
     m_levelContainer->Update(levelInputData, elapsedTicks);
-    if( m_levelContainer->HasTimedOut() ) m_continueRunning = false;
+    
+    if( m_levelContainer->HasTimedOut() )
+      m_continueRunning = false;
+    
+    if( m_levelContainer->PlayerDied() )
+      m_continueRunning = false;
   }
 
   auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
 
-  if( m_levelContainer->GetObjectContainer().IsComplete() ) m_continueRunning = false;
+  if( m_levelContainer->GetObjectContainer().IsComplete() )
+    m_continueRunning = false;
 }
 
 auto play_screen::Render() const -> void
