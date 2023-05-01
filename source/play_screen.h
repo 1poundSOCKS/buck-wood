@@ -46,6 +46,10 @@ private:
 
   bool m_starting = true;
   int64_t m_startingTicks = 0;
+
+  bool m_ending = false;
+  int64_t m_endingTicks = 0;
+
   bool m_paused = false;
   bool m_gameComplete = false;
   bool m_continueRunning = true;

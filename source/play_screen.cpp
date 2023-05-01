@@ -28,7 +28,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   menu.SetCallbackForHiddenFlag([this]() -> bool
   {
-    return m_starting || !m_paused;
+    return m_starting || m_ending || !m_paused;
   });
 
   text_box levelTimer({ renderTarget->GetSize(), 0.2f, 0.1f, render_target_area::vertical_bottom, render_target_area::horizontal_left });
@@ -45,6 +45,8 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   m_starting = true;
   m_startingTicks = performance_counter::QueryFrequency() * 5;
+  
+  m_ending = false;
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
@@ -63,6 +65,13 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_paused = true;
   }
 
+  if( m_ending )
+  {
+    m_endingTicks -= frameTicks;
+    m_endingTicks = max(0, m_endingTicks);
+    m_paused = true;
+  }
+
   auto elapsedTicks = m_paused ? 0 : frameTicks;
 
   if( QuitPressed(inputState) )
@@ -70,7 +79,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_continueRunning = false;
   }
 
-  if( m_starting )
+  if( m_starting || m_ending )
   {
     auto pauseTransform = CreateGameLevelTransform(0.0f, 0.0f, 0.3f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
@@ -92,18 +101,21 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     
     if( m_levelContainer->HasTimedOut() )
     {
-      m_continueRunning = false;
+      m_ending = true;
+      m_endingTicks = performance_counter::QueryFrequency() * 5;
     }
     
     if( m_levelContainer->PlayerDied() )
     {
-      m_continueRunning = false;
+      m_ending = true;
+      m_endingTicks = performance_counter::QueryFrequency() * 5;
     }
 
     if( m_levelContainer->IsComplete() )
     {
       m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-      m_continueRunning = false;
+      m_ending = true;
+      m_endingTicks = performance_counter::QueryFrequency() * 5;
     }
   }
 
@@ -114,6 +126,11 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   {
     m_starting = false;
     m_paused = false;
+  }
+
+  if( m_ending && m_endingTicks == 0 )
+  {
+    m_continueRunning = false;
   }
 }
 
