@@ -23,32 +23,6 @@ auto object_container_view::SetTransform(const D2D1::Matrix3x2F& transform) -> b
   return m_transform;
 }
 
-// auto object_container_view::Update(active_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
-// {
-//   auto inputData = GetObjectInputData(inputState);
-//   objectContainer.Update(inputData, elapsedTicks);
-// }
-
-// auto object_container_view::Update(passive_object_container& objectContainer, const screen_input_state& inputState, int64_t elapsedTicks) -> void
-// {
-//   auto inputData = GetObjectInputData(inputState);
-//   objectContainer.Update(inputData, elapsedTicks);
-// }
-
-// auto object_container_view::Render(const active_object_container& objectContainer) const -> void
-// {
-//   auto viewRect = GetViewRect();
-//   m_renderTarget->SetTransform(m_transform);
-//   objectContainer.Render(viewRect);
-// }
-
-// auto object_container_view::Render(const passive_object_container& objectContainer) const -> void
-// {
-//   auto viewRect = GetViewRect();
-//   m_renderTarget->SetTransform(m_transform);
-//   objectContainer.Render(viewRect);
-// }
-
 [[nodiscard]] auto object_container_view::GetViewRect() const -> D2D1_RECT_F
 {
   auto renderTargetSize = m_renderTarget->GetSize();
@@ -62,11 +36,8 @@ auto object_container_view::SetTransform(const D2D1::Matrix3x2F& transform) -> b
 
 [[nodiscard]] auto object_container_view::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
 {
-  auto mousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.windowData.mouse.x), 
-    static_cast<float>(screenInputState.windowData.mouse.y) });
-
-  auto previousMousePosition = m_invertedTransform.TransformPoint({ static_cast<float>(screenInputState.previousWindowData.mouse.x), 
-    static_cast<float>(screenInputState.previousWindowData.mouse.y) });
+  auto mousePosition = m_invertedTransform.TransformPoint({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = m_invertedTransform.TransformPoint({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
 
   object_input_data objectInputData;
   objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
