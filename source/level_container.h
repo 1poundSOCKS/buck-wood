@@ -30,6 +30,7 @@ public:
   [[nodiscard]] auto PlayerDied() const -> bool;
   [[nodiscard]] auto TargetActivated() const -> bool;
   [[nodiscard]] auto TicksRemaining() const -> int64_t;
+  [[nodiscard]] auto IsComplete() const -> bool;
 
 private:
 
@@ -43,4 +44,6 @@ private:
   bool m_playerShot = false;
   bool m_playerDied = false;
   bool m_targetActivated = false;
+  int m_targetCount = 0;
+  int m_activatedTargetCount = 0;
 };

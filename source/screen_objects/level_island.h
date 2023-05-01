@@ -14,10 +14,9 @@ public:
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto HasCollided(float x, float y) const -> bool;
   auto HitByBullet() -> void;
-  [[nodiscard]] auto LevelIsComplete() const -> bool;
-  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() -> collision_data;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;

@@ -9,10 +9,10 @@ class global_state
 {
 public:
 
-  static auto create(const std::wstring& dataPath) -> void;
+  static auto load(const std::wstring& dataPath) -> void;
   static auto save() -> void;
-  [[nodiscard]] static auto firstLevelData() -> game_level_data_index::const_iterator;
-  [[nodiscard]] static auto endLevelData() -> game_level_data_index::const_iterator;
+  // [[nodiscard]] static auto firstLevelData() -> game_level_data_index::const_iterator;
+  // [[nodiscard]] static auto endLevelData() -> game_level_data_index::const_iterator;
 
 private:
 
@@ -21,12 +21,12 @@ private:
   global_state(const std::wstring& dataPath);
 
   std::wstring dataPath;
-  std::unique_ptr<game_level_data_index> gameLevelDataIndex;
+  // std::unique_ptr<game_level_data_index> gameLevelDataIndex;
 
-  screen_id currentScreenId = screen_main_menu;
+  // screen_id currentScreenId = screen_main_menu;
 
-  bool m_saveGameLevelData = false;
-  bool m_gameLevelDataIndexUpdated = false;
+  // bool m_saveGameLevelData = false;
+  // bool m_gameLevelDataIndexUpdated = false;
 };
 
 #endif

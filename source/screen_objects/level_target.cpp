@@ -50,11 +50,6 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 {
 }
 
-[[nodiscard]] auto level_target::LevelIsComplete() const -> bool
-{
-  return m_activated;
-}
-
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
   std::vector<render_line> renderLines;

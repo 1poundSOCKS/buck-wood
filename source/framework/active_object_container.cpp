@@ -22,16 +22,6 @@ auto active_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> voi
   return std::back_inserter(m_activeObjects);
 }
 
-[[nodiscard]] auto active_object_container::IsComplete() -> bool
-{
-  int total = std::reduce(m_activeObjects.cbegin(), m_activeObjects.cend(), 0, [](auto count, const active_object& object)
-  {
-    return object.LevelIsComplete() ? count + 1 : count;
-  });
-
-  return total == m_activeObjects.size();
-}
-
 auto active_object_container::Update(const object_input_data& inputData, int64_t elapsedTicks) -> void
 {
   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks](auto& object)

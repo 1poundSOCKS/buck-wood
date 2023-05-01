@@ -21,5 +21,5 @@ private:
 
   [[nodiscard]] auto GetTimeLimit() const -> int;
 
-  game_level_data_index::const_iterator m_currentLevelDataIterator;
+  int m_levelIndex = 0;
 };

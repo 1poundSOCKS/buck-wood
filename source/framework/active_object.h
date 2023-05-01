@@ -15,7 +15,6 @@ private:
     [[nodiscard]] virtual auto clone() -> std::unique_ptr<object_concept> = 0;
     virtual auto Initialize(ID2D1RenderTarget* renderTarget) -> void = 0;
     virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
-    [[nodiscard]] virtual auto LevelIsComplete() const -> bool = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
     [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
@@ -42,11 +41,6 @@ private:
     auto Update(const object_input_data& inputData, int64_t clockCount) -> void override
     {
       object.Update(inputData, clockCount);
-    }
-
-    [[nodiscard]] auto LevelIsComplete() const -> bool override
-    {
-      return object.LevelIsComplete();
     }
 
     auto Render(D2D1_RECT_F viewRect) const -> void override
@@ -110,11 +104,6 @@ public:
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void
   {
     objectConcept->Update(inputData, clockCount);
-  }
-
-  [[nodiscard]] auto LevelIsComplete() const -> bool
-  {
-    return objectConcept->LevelIsComplete();
   }
 
   auto Render(D2D1_RECT_F viewRect) const -> void

@@ -28,11 +28,6 @@ auto level_island::HitByBullet() -> void
 {
 }
 
-[[nodiscard]] auto level_island::LevelIsComplete() const -> bool
-{
-  return true;
-}
-
 auto level_island::Render(D2D1_RECT_F) const -> void
 {
   std::vector<render_line> renderLines;

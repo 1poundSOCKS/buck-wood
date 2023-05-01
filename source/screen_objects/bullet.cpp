@@ -37,11 +37,6 @@ auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> vo
   destroyed = HasExpired();
 }
 
-[[nodiscard]] auto bullet::LevelIsComplete() const -> bool
-{
-  return true;
-}
-
 auto bullet::Render(D2D1_RECT_F viewRect) const -> void
 {
   const D2D1_RECT_F rect = GetBulletRect();

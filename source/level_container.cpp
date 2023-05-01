@@ -36,9 +36,11 @@ auto level_container::AddTarget(level_target levelTarget) -> void
   levelTarget.SetActivated([this]()->void
   {
     m_targetActivated = true;
+    ++m_activatedTargetCount;
   });
 
   m_objectContainer.AppendActiveObject(levelTarget);
+  ++m_targetCount;
 }
 
 [[nodiscard]] auto level_container::GetObjectContainer() const -> const active_object_container&
@@ -59,6 +61,11 @@ auto level_container::SetTimeout(int time) -> void
 auto level_container::HasTimedOut() const -> bool
 {
   return m_ticksRemaining == 0;
+}
+
+[[nodiscard]] auto level_container::IsComplete() const -> bool
+{
+  return m_activatedTargetCount == m_targetCount;
 }
 
 auto level_container::Update(const object_input_data& inputData, int64_t ticks) -> void

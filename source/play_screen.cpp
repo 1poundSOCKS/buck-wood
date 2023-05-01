@@ -46,36 +46,57 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  if( PausePressed(inputState) ) m_paused = !m_paused;
+  if( PausePressed(inputState) )
+  {
+    m_paused = !m_paused;
+  }
 
   auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
 
-  if( QuitPressed(inputState) ) m_continueRunning = false;
+  if( QuitPressed(inputState) )
+  {
+    m_continueRunning = false;
+  }
 
-  if( elapsedTicks > 0 )
+  if( m_paused )
+  {
+    auto pauseTransform = CreateGameLevelTransform(0.0f, 0.0f, 0.3f, 
+      inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
+
+    m_levelView.SetTransform(pauseTransform);
+  }
+  else
   {
     auto viewTransform = CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.6f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
     
     m_levelView.SetTransform(viewTransform);
+  }
+
+  if( elapsedTicks > 0 )
+  {
     auto levelInputData = m_levelView.GetObjectInputData(inputState);
     m_levelContainer->Update(levelInputData, elapsedTicks);
     
     if( m_levelContainer->HasTimedOut() )
+    {
       m_continueRunning = false;
+    }
     
     if( m_levelContainer->PlayerDied() )
+    {
       m_continueRunning = false;
+    }
+
+    if( m_levelContainer->IsComplete() )
+    {
+      m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
+      m_continueRunning = false;
+    }
   }
 
   auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
-
-  if( m_levelContainer->GetObjectContainer().IsComplete() )
-  {
-    m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-    m_continueRunning = false;
-  }
 }
 
 auto play_screen::Render() const -> void

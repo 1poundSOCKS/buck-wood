@@ -3,8 +3,7 @@
 #include "global_state.h"
 #include "asteroid_generator.h"
 
-game_level_data_loader::game_level_data_loader() : 
-  m_currentLevelDataIterator(global_state::firstLevelData())
+game_level_data_loader::game_level_data_loader()
 {
 }
 
@@ -41,14 +40,15 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
 
 [[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int
 {
-  return (*m_currentLevelDataIterator)->timeLimitInSeconds;
+  return 20;
 }
 
 auto game_level_data_loader::NextLevel() -> void
 {
+  ++m_levelIndex;
 }
 
 [[nodiscard]] auto game_level_data_loader::EndOfLevels() const -> bool
 {
-  return m_currentLevelDataIterator == global_state::endLevelData();
+  return m_levelIndex > 0;
 }

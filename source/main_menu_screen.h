@@ -28,7 +28,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
 
-  render_target_mouse_data m_renderTargetMouseData;
   render_target_view m_view;
   passive_object_container m_objectContainer;
   

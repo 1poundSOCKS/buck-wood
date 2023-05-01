@@ -89,11 +89,6 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int6
   }
 }
 
-[[nodiscard]] auto player_ship::LevelIsComplete() const -> bool
-{
-  return true;
-}
-
 auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( m_state != player_ship::alive ) return;

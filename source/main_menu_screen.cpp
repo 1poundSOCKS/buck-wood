@@ -17,18 +17,21 @@ main_menu_screen::main_menu_screen()
 
 auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  auto dwriteFactory = dwrite_factory::get().get();
-
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 
   m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
+
+  auto dwriteFactory = dwrite_factory::get().get();
   m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
   
   config_file::create(L"config.txt");
+
   const auto& dataPath = config_file::getSetting(L"data_path");
-  global_state::create(dataPath);
+
+  global_state::load(dataPath);
+
   sound_data::create(framework::directSound().get(), dataPath);
 
   // play sound now to ensure no sound glitch on first real play
