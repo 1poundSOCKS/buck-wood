@@ -2,7 +2,7 @@
 
 #include "diagnostics.h"
 #include "passive_object_container.h"
-#include "object_container_view.h"
+#include "render_target_view.h"
 #include "button_def.h"
 #include "menu_def.h"
 
@@ -21,13 +21,7 @@ public:
 
 private:
 
-  auto OnViewDefault(const screen_input_state& inputState) -> void;
-  auto UpdateScreenExitState(const screen_input_state& screenInputState) -> void;
-
   [[nodiscard]] auto GetMenuDef() -> menu_def;
-
-  enum view_type { view_default, view_exit };
-  view_type m_view = view_default;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
@@ -35,11 +29,9 @@ private:
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
 
   render_target_mouse_data m_renderTargetMouseData;
-  object_container_view m_containerView;
+  render_target_view m_view;
   passive_object_container m_objectContainer;
   
   bool m_continueRunning = true;
   bool m_startPlay = false;
-  bool m_saveGameLevelData = false;
-  bool m_checkSaveOnExit = false;
 };

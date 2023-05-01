@@ -38,7 +38,7 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     dummyPlayer.Play();
   }
 
-  m_containerView.Initialize(renderTarget);
+  m_view.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
 
   m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
@@ -47,34 +47,24 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 {
-  auto inputData = m_containerView.GetObjectInputData(inputState);
-  m_objectContainer.Update(inputData, 0);
-
-  switch( m_view )
+  if( m_startPlay )
   {
-    case view_exit:
-      UpdateScreenExitState(inputState);
-      break;
-    default:
-      OnViewDefault(inputState);
-      break;
+    m_startPlay = false;
+
+    play_screen playScreen;
+    framework::openScreen(playScreen);
   }
+
+  auto inputData = m_view.GetObjectInputData(inputState);
+  m_objectContainer.Update(inputData, 0);
 }
 
 auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  m_renderTarget->SetTransform(m_view.GetTransform());
 
-  auto viewTransform = m_containerView.GetTransform();
-  auto viewRect = m_containerView.GetViewRect();
-
-  m_renderTarget->SetTransform(viewTransform);
-  m_objectContainer.Render(viewRect);
-
-  if( m_view == view_exit )
-  {
-    RenderText(m_renderTarget.get(), m_menuTextBrush.get(), m_menuTextFormat.get(), L"save changes (y/n)", DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-  }
+  m_objectContainer.Render(m_view.GetViewRect());
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void
@@ -83,9 +73,6 @@ auto main_menu_screen::PlaySoundEffects() const -> void
 
 [[nodiscard]] auto main_menu_screen::ContinueRunning() const -> bool
 {
-  if( !m_continueRunning && m_saveGameLevelData )
-    global_state::save();
-
   return m_continueRunning;
 }
 
@@ -93,39 +80,9 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
 {
 }
 
-auto main_menu_screen::OnViewDefault(const screen_input_state& inputState) -> void
-{
-  m_renderTargetMouseData = inputState.renderTargetMouseData;
-
-  if( m_startPlay )
-  {
-    play_screen playScreen;
-    framework::openScreen(playScreen);
-    m_startPlay = false;
-  }
-}
-
-auto main_menu_screen::UpdateScreenExitState(const screen_input_state& screenInputState) -> void
-{
-  if( KeyPressed(screenInputState, DIK_ESCAPE) )
-  {
-    m_view = view_default;
-  }
-  else if( KeyPressed(screenInputState, DIK_N) )
-  {
-    m_saveGameLevelData = false;
-    m_continueRunning = false;
-  }
-  else if( KeyPressed(screenInputState, DIK_Y) )
-  {
-    m_saveGameLevelData = true;
-    m_continueRunning = true;
-  }
-}
-
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget.get(), 0.5f, 0.5f);
+  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.5f, 0.5f);
 
   menu_def menuDef(menuArea.GetRect());
 

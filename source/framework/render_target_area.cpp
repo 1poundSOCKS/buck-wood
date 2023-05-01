@@ -1,9 +1,15 @@
 #include "pch.h"
 #include "render_target_area.h"
 
-render_target_area::render_target_area(ID2D1RenderTarget* renderTarget, float width, float height)
+render_target_area::render_target_area(D2D1_SIZE_F renderTargetSize, float width, float height, align_vertical alignVertical, align_horizontal alignHorizontal)
 {
-  m_rect = GetRenderTargetRect(renderTarget, width, height);
+  auto realWidth = renderTargetSize.width * width;
+  auto realHeight = renderTargetSize.height * height;
+
+  auto topBorder = GetTopBorder(renderTargetSize.height, realHeight, alignVertical);
+  auto leftBorder = GetLeftBorder(renderTargetSize.width, realWidth, alignHorizontal);
+
+  m_rect = { leftBorder, topBorder, leftBorder + realWidth, topBorder + realHeight };
 }
 
 [[nodiscard]] auto render_target_area::GetRect() const -> D2D1_RECT_F
@@ -11,10 +17,32 @@ render_target_area::render_target_area(ID2D1RenderTarget* renderTarget, float wi
   return m_rect;
 }
 
-[[nodiscard]] auto render_target_area::GetRenderTargetRect(ID2D1RenderTarget* renderTarget, float width, float height) -> D2D1_RECT_F
+auto render_target_area::GetTopBorder(float totalHeight, float areaHeight, align_vertical alignVertical) -> float
 {
-  auto renderTargetSize = renderTarget->GetSize();
-  auto borderWidth = renderTargetSize.width * (1.0f - width) / 2.0f;
-  auto borderHeight = renderTargetSize.height * (1.0f - height) / 2.0f;
-  return { borderWidth, borderHeight, renderTargetSize.width - borderWidth - 1, renderTargetSize.height - borderHeight - 1 };
+  switch( alignVertical )
+  {
+    case vertical_centre:
+      return ( totalHeight - areaHeight ) / 2.0f;
+    case vertical_top:
+      return 0.0f;
+    case vertical_bottom:
+      return totalHeight - areaHeight;
+    default:
+      return 0;
+  }
+}
+
+auto render_target_area::GetLeftBorder(float totalWidth, float areaWidth, align_horizontal alignHorizontal) -> float
+{
+  switch( alignHorizontal )
+  {
+    case horizontal_centre:
+      return ( totalWidth - areaWidth ) / 2.0f;
+    case horizontal_left:
+      return 0.0f;
+    case horizontal_right:
+      return totalWidth - areaWidth;
+    default:
+      return 0;
+  }
 }

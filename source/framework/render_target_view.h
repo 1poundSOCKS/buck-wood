@@ -3,12 +3,12 @@
 #include "object_input_data.h"
 #include "screen_input_state.h"
 
-class object_container_view
+class render_target_view
 {
 
 public:
 
-  object_container_view();
+  render_target_view();
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto SetTransform(const D2D1::Matrix3x2F& transform) -> bool;

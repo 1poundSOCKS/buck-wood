@@ -3,7 +3,7 @@
 
 #include "framework.h"
 #include "passive_object_container.h"
-#include "object_container_view.h"
+#include "render_target_view.h"
 #include "sound_data.h"
 #include "screen_input_state.h"
 #include "level_control_state.h"
@@ -49,11 +49,11 @@ private:
   bool m_gameComplete = false;
   bool m_continueRunning = true;
 
+  render_target_view m_levelView;
   std::unique_ptr<level_container> m_levelContainer;
-  object_container_view m_levelView;
 
+  render_target_view m_overlayView;
   passive_object_container m_overlayContainer;
-  object_container_view m_overlayView;
 
   game_level_data_loader m_gameLevelDataLoader;
 

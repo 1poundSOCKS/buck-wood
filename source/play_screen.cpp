@@ -35,7 +35,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     return !m_paused;
   });
 
-  text_box levelTimer({ renderTarget, 0.3f, 0.1f });
+  text_box levelTimer({ renderTarget->GetSize(), 0.2f, 0.1f, render_target_area::vertical_bottom, render_target_area::horizontal_left });
 
   levelTimer.SetTextGetter([this]() -> std::wstring
   {
@@ -183,7 +183,7 @@ auto play_screen::LoadCurrentLevel() -> void
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget.get(), 0.3f, 0.3f);
+  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.3f, 0.3f);
 
   menu_def menuDef(menuArea.GetRect());
 
