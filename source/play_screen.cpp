@@ -13,12 +13,8 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  auto dwriteFactory = dwrite_factory::get().get();
-
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
-  m_dwriteFactory.attach(dwriteFactory);
-  m_dwriteFactory->AddRef();
 
   m_levelContainer->GetObjectContainer().Initialize(renderTarget);
   m_overlayContainer.Initialize(renderTarget);

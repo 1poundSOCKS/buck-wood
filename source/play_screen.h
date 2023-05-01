@@ -43,7 +43,6 @@ private:
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<IDWriteFactory> m_dwriteFactory;
 
   bool m_paused = false;
   bool m_gameComplete = false;
