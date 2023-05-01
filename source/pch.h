@@ -27,6 +27,7 @@
 #include <cmath>
 #include <execution>
 #include <functional>
+#include <set>
 
 #include <windows.h>
 #include <windowsx.h>

@@ -37,6 +37,8 @@ private:
   auto Init() -> void;
   static framework* m_framework;
 
+  static inline std::mt19937 m_rng; // pseudo-random generator
+
   HINSTANCE m_instance = nullptr;
   int m_cmdShow = 0;
   HWND m_window = nullptr;

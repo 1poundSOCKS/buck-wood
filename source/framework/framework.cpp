@@ -2,14 +2,13 @@
 #include "framework.h"
 
 framework* framework::m_framework = nullptr;
-std::mt19937 g_rng; // pseudo-random generator
 
 auto framework::create(HINSTANCE instance, int cmdShow) -> void
 {
   m_framework = new framework(instance, cmdShow);
   m_framework->Init();
   dwrite_factory::create();
-  g_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
+  m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 }
 
 auto framework:: get() -> framework&
@@ -31,11 +30,6 @@ auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
   return get().m_renderTarget;
 }
-
-// auto framework::dwriteFactory() -> winrt::com_ptr<IDWriteFactory>&
-// {
-//   return get().m_dwriteFactory;
-// }
 
 auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
 {
@@ -59,7 +53,7 @@ auto framework::fps() -> int
 
 auto framework::rng() -> std::mt19937&
 {
-  return g_rng;
+  return m_rng;
 }
 
 framework::framework(HINSTANCE instance, int cmdShow) : m_instance(instance), m_cmdShow(cmdShow)
