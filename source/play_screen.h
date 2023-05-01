@@ -44,6 +44,8 @@ private:
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
 
+  bool m_starting = true;
+  int64_t m_startingTicks = 0;
   bool m_paused = false;
   bool m_gameComplete = false;
   bool m_continueRunning = true;

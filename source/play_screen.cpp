@@ -28,7 +28,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   menu.SetCallbackForHiddenFlag([this]() -> bool
   {
-    return !m_paused;
+    return m_starting || !m_paused;
   });
 
   text_box levelTimer({ renderTarget->GetSize(), 0.2f, 0.1f, render_target_area::vertical_bottom, render_target_area::horizontal_left });
@@ -42,6 +42,9 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_overlayContainer.AppendOverlayObject(menu);
   m_overlayContainer.AppendOverlayObject(levelTimer);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
+
+  m_starting = true;
+  m_startingTicks = performance_counter::QueryFrequency() * 5;
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
@@ -51,14 +54,23 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_paused = !m_paused;
   }
 
-  auto elapsedTicks = m_paused ? 0 : performance_counter::QueryFrequency() / framework::fps();
+  auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
+
+  if( m_starting )
+  {
+    m_startingTicks -= frameTicks;
+    m_startingTicks = max(0, m_startingTicks);
+    m_paused = true;
+  }
+
+  auto elapsedTicks = m_paused ? 0 : frameTicks;
 
   if( QuitPressed(inputState) )
   {
     m_continueRunning = false;
   }
 
-  if( m_paused )
+  if( m_starting )
   {
     auto pauseTransform = CreateGameLevelTransform(0.0f, 0.0f, 0.3f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
@@ -97,6 +109,12 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
+
+  if( m_starting && m_startingTicks == 0 )
+  {
+    m_starting = false;
+    m_paused = false;
+  }
 }
 
 auto play_screen::Render() const -> void
