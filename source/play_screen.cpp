@@ -38,7 +38,12 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     auto value = static_cast<float>(m_levelContainer->TicksRemaining()) / static_cast<float>(performance_counter::QueryFrequency());
     return std::format(L"{:.1f}", value);
   });
-  
+
+  levelTimer.SetCallbackForHiddenFlag([this]() -> bool
+  {
+    return m_starting;
+  });
+
   m_overlayContainer.AppendOverlayObject(menu);
   m_overlayContainer.AppendOverlayObject(levelTimer);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
@@ -51,12 +56,12 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
+  auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
+
   if( PausePressed(inputState) )
   {
     m_paused = !m_paused;
   }
-
-  auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
   if( m_starting )
   {

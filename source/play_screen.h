@@ -1,16 +1,10 @@
-#ifndef _play_screen_
-#define _play_screen_
+#pragma once
 
 #include "framework.h"
 #include "passive_object_container.h"
 #include "render_target_view.h"
 #include "sound_data.h"
 #include "screen_input_state.h"
-#include "level_control_state.h"
-#include "player_ship.h"
-#include "bullet.h"
-#include "level_target.h"
-#include "level_island.h"
 #include "sound_data.h"
 #include "level_state.h"
 #include "mouse_cursor.h"
@@ -64,5 +58,3 @@ private:
 
   std::vector<int64_t> m_levelTimes;
 };
-
-#endif
