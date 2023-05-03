@@ -45,7 +45,7 @@ auto player_ship::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
-  if( m_state == player_ship::alive && tickCount > 0 )
+  if( m_state == player_ship::alive )
   {
     auto thrusterOn = inputData.GetMouseData().rightButtonDown;
     auto triggerPressed = inputData.GetMouseData().leftButtonDown;

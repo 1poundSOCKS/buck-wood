@@ -6,6 +6,7 @@
 #include "global_state.h"
 #include "render_target_area.h"
 #include "text_box.h"
+#include "level_transform_transition.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -49,7 +50,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 
   m_starting = true;
-  m_startingTicks = performance_counter::QueryFrequency() * 5;
+  m_startingTicks = performance_counter::QueryFrequency() * 3;
   
   m_ending = false;
 }
@@ -84,7 +85,18 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_continueRunning = false;
   }
 
-  if( m_starting || m_ending )
+  if( m_starting )
+  {
+    auto totalStartingTicks = performance_counter::QueryFrequency() * 3;
+
+    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.3f, m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f);
+    
+    auto transform = levelTransformTransiton.Get(inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height, 
+      totalStartingTicks, m_startingTicks);
+
+    m_levelView.SetTransform(transform);
+  }
+  else if( m_ending )
   {
     auto pauseTransform = CreateGameLevelTransform(0.0f, 0.0f, 0.3f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
@@ -93,35 +105,32 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   }
   else
   {
-    auto viewTransform = CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.6f, 
+    auto viewTransform = CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f, 
       inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
     
     m_levelView.SetTransform(viewTransform);
   }
 
-  if( elapsedTicks > 0 )
+  auto levelInputData = m_levelView.GetObjectInputData(inputState);
+  m_levelContainer->Update(levelInputData, elapsedTicks);
+  
+  if( m_levelContainer->HasTimedOut() )
   {
-    auto levelInputData = m_levelView.GetObjectInputData(inputState);
-    m_levelContainer->Update(levelInputData, elapsedTicks);
-    
-    if( m_levelContainer->HasTimedOut() )
-    {
-      m_ending = true;
-      m_endingTicks = performance_counter::QueryFrequency() * 5;
-    }
-    
-    if( m_levelContainer->PlayerDied() )
-    {
-      m_ending = true;
-      m_endingTicks = performance_counter::QueryFrequency() * 5;
-    }
+    m_ending = true;
+    m_endingTicks = performance_counter::QueryFrequency() * 5;
+  }
+  
+  if( m_levelContainer->PlayerDied() )
+  {
+    m_ending = true;
+    m_endingTicks = performance_counter::QueryFrequency() * 5;
+  }
 
-    if( m_levelContainer->IsComplete() )
-    {
-      m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-      m_ending = true;
-      m_endingTicks = performance_counter::QueryFrequency() * 5;
-    }
+  if( m_levelContainer->IsComplete() )
+  {
+    m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
+    m_ending = true;
+    m_endingTicks = performance_counter::QueryFrequency() * 5;
   }
 
   auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
