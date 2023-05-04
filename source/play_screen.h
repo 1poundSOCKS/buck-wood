@@ -27,8 +27,9 @@ public:
 
 private:
 
+  enum view_type { view_starting, view_playing, view_ending };
+
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
-  [[nodiscard]] auto QuitPressed(const screen_input_state& inputState) -> bool;
 
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
@@ -36,12 +37,16 @@ private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
+  [[nodiscard]] auto GetViewTransform() const -> D2D1::Matrix3x2F;
+
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
 
-  bool m_starting = true;
+  view_type m_view = view_starting;
+
+  int64_t m_totalStartingTicks = 0;
   int64_t m_startingTicks = 0;
 
-  bool m_ending = false;
+  int64_t m_totalEndingTicks = 0;
   int64_t m_endingTicks = 0;
 
   bool m_paused = false;

@@ -14,10 +14,10 @@ auto level_transform_transition::Get(float renderTargetWidth, float renderTarget
   auto cy = m_endY - m_startY;
   auto cZoom = m_endZoom - m_startZoom;
 
-  auto elapsedTicks = totalTicks - currentTicks;
-  auto x = cx * elapsedTicks / totalTicks + m_startX;
-  auto y = cy * elapsedTicks / totalTicks + m_startY;
-  auto zoom = cZoom * elapsedTicks / totalTicks + m_startZoom;
+  // auto elapsedTicks = totalTicks - currentTicks;
+  auto x = cx * currentTicks / totalTicks + m_startX;
+  auto y = cy * currentTicks / totalTicks + m_startY;
+  auto zoom = cZoom * currentTicks / totalTicks + m_startZoom;
 
   return CreateGameLevelTransform(x, y, zoom, renderTargetWidth, renderTargetHeight);
 }

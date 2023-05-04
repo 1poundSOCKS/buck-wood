@@ -29,7 +29,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   menu.SetCallbackForHiddenFlag([this]() -> bool
   {
-    return m_starting || m_ending || !m_paused;
+    return !m_paused || m_view == view_ending;
   });
 
   text_box levelTimer({ renderTarget->GetSize(), 0.2f, 0.1f, render_target_area::vertical_bottom, render_target_area::horizontal_left });
@@ -42,109 +42,73 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   levelTimer.SetCallbackForHiddenFlag([this]() -> bool
   {
-    return m_starting;
+    return m_view == view_starting;
   });
 
   m_overlayContainer.AppendOverlayObject(menu);
   m_overlayContainer.AppendOverlayObject(levelTimer);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 
-  m_starting = true;
-  m_startingTicks = performance_counter::QueryFrequency() * 3;
-  
-  m_ending = false;
+  m_view = view_starting;
+  m_totalStartingTicks = performance_counter::QueryFrequency() * 3;  
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
   auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
-  if( PausePressed(inputState) )
+  if( PausePressed(inputState) && m_view != view_ending )
   {
     m_paused = !m_paused;
   }
 
-  if( m_starting )
+  if( m_view == view_starting && !m_paused )
   {
-    m_startingTicks -= frameTicks;
-    m_startingTicks = max(0, m_startingTicks);
-    m_paused = true;
+    m_startingTicks += frameTicks;
   }
 
-  if( m_ending )
+  if( m_view == view_ending )
   {
-    m_endingTicks -= frameTicks;
-    m_endingTicks = max(0, m_endingTicks);
-    m_paused = true;
+    m_endingTicks += frameTicks;
   }
 
-  auto elapsedTicks = m_paused ? 0 : frameTicks;
+  auto elapsedTicks = ( m_view == view_starting || m_view == view_ending || m_paused ) ? 0 : frameTicks;
 
-  if( QuitPressed(inputState) )
-  {
-    m_continueRunning = false;
-  }
-
-  if( m_starting )
-  {
-    auto totalStartingTicks = performance_counter::QueryFrequency() * 3;
-
-    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.3f, m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f);
-    
-    auto transform = levelTransformTransiton.Get(inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height, 
-      totalStartingTicks, m_startingTicks);
-
-    m_levelView.SetTransform(transform);
-  }
-  else if( m_ending )
-  {
-    auto pauseTransform = CreateGameLevelTransform(0.0f, 0.0f, 0.3f, 
-      inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
-
-    m_levelView.SetTransform(pauseTransform);
-  }
-  else
-  {
-    auto viewTransform = CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f, 
-      inputState.renderTargetMouseData.size.width, inputState.renderTargetMouseData.size.height);
-    
-    m_levelView.SetTransform(viewTransform);
-  }
+  auto viewTransform = GetViewTransform();
+  m_levelView.SetTransform(viewTransform);
 
   auto levelInputData = m_levelView.GetObjectInputData(inputState);
   m_levelContainer->Update(levelInputData, elapsedTicks);
   
-  if( m_levelContainer->HasTimedOut() )
+  auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
+  m_overlayContainer.Update(overlayInputData, elapsedTicks);
+
+  if( m_levelContainer->HasTimedOut() || m_levelContainer->PlayerDied() || m_levelContainer->IsComplete() )
   {
-    m_ending = true;
-    m_endingTicks = performance_counter::QueryFrequency() * 5;
-  }
-  
-  if( m_levelContainer->PlayerDied() )
-  {
-    m_ending = true;
-    m_endingTicks = performance_counter::QueryFrequency() * 5;
+    m_view = view_ending;
+    m_totalEndingTicks = performance_counter::QueryFrequency() * 5;
   }
 
   if( m_levelContainer->IsComplete() )
   {
     m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-    m_ending = true;
-    m_endingTicks = performance_counter::QueryFrequency() * 5;
   }
 
-  auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
-  m_overlayContainer.Update(overlayInputData, elapsedTicks);
-
-  if( m_starting && m_startingTicks == 0 )
+  switch( m_view )
   {
-    m_starting = false;
-    m_paused = false;
-  }
+    case view_starting:
+      if( m_startingTicks >= m_totalStartingTicks )
+      {
+        m_view = view_playing;
+      }
+      break;
 
-  if( m_ending && m_endingTicks == 0 )
-  {
-    m_continueRunning = false;
+    case view_ending:
+      if( m_endingTicks >= m_totalEndingTicks )
+      {
+        m_continueRunning = false;
+      }
+      break;
   }
 }
 
@@ -210,11 +174,6 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
   return KeyPressed(inputState, DIK_ESCAPE);
 }
 
-[[nodiscard]] auto play_screen::QuitPressed(const screen_input_state& inputState) -> bool
-{
-  return KeyPressed(inputState, DIK_Q);
-}
-
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
 {
   if( m_gameLevelDataLoader.EndOfLevels() )
@@ -266,4 +225,23 @@ auto play_screen::LoadCurrentLevel() -> void
   menuDef.UpdateButtons();
 
   return menuDef;
+}
+
+[[nodiscard]] auto play_screen::GetViewTransform() const -> D2D1::Matrix3x2F
+{
+  auto renderTargetSize = m_renderTarget->GetSize();
+
+  if( m_view == view_starting )
+  {
+    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.3f, m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f);
+    return levelTransformTransiton.Get(renderTargetSize.width, renderTargetSize.height, m_totalStartingTicks, m_startingTicks);
+  }
+  else if( m_view == view_ending )
+  {
+    return CreateGameLevelTransform(0.0f, 0.0f, 0.3f, renderTargetSize.width, renderTargetSize.height);
+  }
+  else
+  {
+    return CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f, renderTargetSize.width, renderTargetSize.height);
+  }
 }
