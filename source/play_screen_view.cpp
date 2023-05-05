@@ -47,12 +47,13 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
 {
   if( m_view == view_starting )
   {
-    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.3f, m_playerX, m_playerY, 1.4f);
+    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.1f, m_playerX, m_playerY, 1.4f);
     return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalStartingTicks, m_startingTicks);
   }
   else if( m_view == view_ending )
   {
-    return CreateGameLevelTransform(0.0f, 0.0f, 0.3f, m_renderTargetSize.width, m_renderTargetSize.height);
+    level_transform_transition levelTransformTransiton(m_playerX, m_playerY, 1.4f, 0.0f, 0.0f, 0.1f);
+    return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalEndingTicks, m_endingTicks);
   }
   else
   {

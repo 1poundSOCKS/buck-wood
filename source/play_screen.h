@@ -36,22 +36,11 @@ private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  // [[nodiscard]] auto GetViewTransform() const -> D2D1::Matrix3x2F;
-
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
 
   play_screen_view m_screenView;
 
-  // view_type m_view = view_starting;
-
-  // int64_t m_totalStartingTicks = 0;
-  // int64_t m_startingTicks = 0;
-
-  // int64_t m_totalEndingTicks = 0;
-  // int64_t m_endingTicks = 0;
-
   bool m_paused = false;
-  bool m_gameComplete = false;
   bool m_continueRunning = true;
 
   render_target_view m_levelView;

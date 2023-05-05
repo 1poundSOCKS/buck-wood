@@ -213,22 +213,3 @@ auto play_screen::LoadCurrentLevel() -> void
 
   return menuDef;
 }
-
-// [[nodiscard]] auto play_screen::GetViewTransform() const -> D2D1::Matrix3x2F
-// {
-//   auto renderTargetSize = m_renderTarget->GetSize();
-
-//   if( m_view == view_starting )
-//   {
-//     level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.3f, m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f);
-//     return levelTransformTransiton.Get(renderTargetSize.width, renderTargetSize.height, m_totalStartingTicks, m_startingTicks);
-//   }
-//   else if( m_view == view_ending )
-//   {
-//     return CreateGameLevelTransform(0.0f, 0.0f, 0.3f, renderTargetSize.width, renderTargetSize.height);
-//   }
-//   else
-//   {
-//     return CreateGameLevelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.4f, renderTargetSize.width, renderTargetSize.height);
-//   }
-// }
