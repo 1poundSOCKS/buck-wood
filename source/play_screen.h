@@ -11,6 +11,7 @@
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
 #include "menu_def.h"
+#include "play_screen_view.h"
 
 class play_screen
 {
@@ -27,8 +28,6 @@ public:
 
 private:
 
-  enum view_type { view_starting, view_playing, view_ending };
-
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
 
   [[nodiscard]] auto LoadFirstLevel() -> bool;
@@ -37,17 +36,19 @@ private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  [[nodiscard]] auto GetViewTransform() const -> D2D1::Matrix3x2F;
+  // [[nodiscard]] auto GetViewTransform() const -> D2D1::Matrix3x2F;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
 
-  view_type m_view = view_starting;
+  play_screen_view m_screenView;
 
-  int64_t m_totalStartingTicks = 0;
-  int64_t m_startingTicks = 0;
+  // view_type m_view = view_starting;
 
-  int64_t m_totalEndingTicks = 0;
-  int64_t m_endingTicks = 0;
+  // int64_t m_totalStartingTicks = 0;
+  // int64_t m_startingTicks = 0;
+
+  // int64_t m_totalEndingTicks = 0;
+  // int64_t m_endingTicks = 0;
 
   bool m_paused = false;
   bool m_gameComplete = false;
