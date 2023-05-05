@@ -2,7 +2,7 @@
 
 #include "diagnostics.h"
 #include "passive_object_container.h"
-#include "render_target_view.h"
+#include "screen_transform.h"
 #include "button_def.h"
 #include "menu_def.h"
 
@@ -28,7 +28,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
 
-  render_target_view m_view;
+  screen_transform m_screenTransform;
   passive_object_container m_objectContainer;
   
   bool m_continueRunning = true;

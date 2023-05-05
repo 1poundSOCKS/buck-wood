@@ -41,9 +41,7 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     dummyPlayer.Play();
   }
 
-  m_view.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
-
   m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
@@ -58,16 +56,16 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
     framework::openScreen(playScreen);
   }
 
-  auto inputData = m_view.GetObjectInputData(inputState);
+  auto inputData = m_screenTransform.GetObjectInputData(inputState);
   m_objectContainer.Update(inputData, 0);
 }
 
 auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_renderTarget->SetTransform(m_view.GetTransform());
+  m_renderTarget->SetTransform(m_screenTransform.Get());
 
-  m_objectContainer.Render(m_view.GetViewRect());
+  m_objectContainer.Render(m_screenTransform.GetViewRect(m_renderTarget.get()));
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void

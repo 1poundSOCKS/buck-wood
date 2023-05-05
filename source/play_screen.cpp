@@ -20,9 +20,6 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_levelContainer->GetObjectContainer().Initialize(renderTarget);
   m_overlayContainer.Initialize(renderTarget);
 
-  m_levelView.Initialize(renderTarget);
-  m_overlayView.Initialize(renderTarget);
-
   m_continueRunning = LoadFirstLevel();
 
   auto menu = GetMenuDef().CreateMenu();
@@ -70,9 +67,9 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
   m_screenView.SetPlayerPosition(m_levelContainer->PlayerX(), m_levelContainer->PlayerY());
 
   auto viewTransform = m_screenView.GetTransform();
-  m_levelView.SetTransform(viewTransform);
+  m_levelTransform.Set(viewTransform);
 
-  auto levelInputData = m_levelView.GetObjectInputData(inputState);
+  auto levelInputData = m_levelTransform.GetObjectInputData(inputState);
   m_levelContainer->Update(levelInputData, elapsedTicks);
   
   if( m_levelContainer->IsComplete() )
@@ -85,7 +82,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
     m_screenView.SwitchToEnding();
   }
 
-  auto overlayInputData = m_overlayView.GetObjectInputData(inputState);
+  auto overlayInputData = m_overlayTransform.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, elapsedTicks);
 
   if( m_screenView.TimeToSwitch() )
@@ -103,16 +100,11 @@ auto play_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  const auto& viewTransform = m_levelView.GetTransform();
-  auto viewRect = m_levelView.GetViewRect();
+  m_renderTarget->SetTransform(m_levelTransform.Get());
+  m_levelContainer->GetObjectContainer().Render(m_levelTransform.GetViewRect(m_renderTarget.get()));
 
-  m_renderTarget->SetTransform(viewTransform);
-  m_levelContainer->GetObjectContainer().Render(viewRect);
-
-  const auto& overlayTransform = m_overlayView.GetTransform();
-  auto overlayViewRect = m_levelView.GetViewRect();
-  m_renderTarget->SetTransform(overlayTransform);
-  m_overlayContainer.Render(overlayViewRect);
+  m_renderTarget->SetTransform(m_overlayTransform.Get());
+  m_overlayContainer.Render(m_overlayTransform.GetViewRect(m_renderTarget.get()));
 }
 
 auto play_screen::PlaySoundEffects() const -> void
