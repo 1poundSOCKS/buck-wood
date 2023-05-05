@@ -29,11 +29,9 @@ public:
 private:
 
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
-
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
   auto LoadCurrentLevel() -> void;
-
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
@@ -43,11 +41,9 @@ private:
   bool m_paused = false;
   bool m_continueRunning = true;
 
-  // render_target_view m_levelView;
   screen_transform m_levelTransform;
   std::unique_ptr<level_container> m_levelContainer;
 
-  // render_target_view m_overlayView;
   screen_transform m_overlayTransform;
   passive_object_container m_overlayContainer;
 

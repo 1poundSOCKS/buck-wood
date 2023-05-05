@@ -7,7 +7,7 @@ public:
 
   play_screen_view();
   auto SetRenderTargetSize(D2D1_SIZE_F renderTargetSize) -> void;
-  [[nodiscard]] auto CanPauseScreen(bool pausePressed) const -> bool;
+  [[nodiscard]] auto CanPauseScreen() const -> bool;
   auto Update(int64_t elapsedTicks) -> void;
   [[nodiscard]] auto GetElapsedTicks(int64_t frameTicks) const -> int64_t;
   auto SetPlayerPosition(float x, float y) -> void;

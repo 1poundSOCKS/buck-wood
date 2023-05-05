@@ -53,9 +53,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 {
   auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
-  auto pausePressed = PausePressed(inputState);
-
-  if( m_screenView.CanPauseScreen(pausePressed) )
+  if( PausePressed(inputState) && m_screenView.CanPauseScreen() )
   {
     m_paused = !m_paused;
   }
@@ -66,8 +64,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   m_screenView.SetPlayerPosition(m_levelContainer->PlayerX(), m_levelContainer->PlayerY());
 
-  auto viewTransform = m_screenView.GetTransform();
-  m_levelTransform.Set(viewTransform);
+  m_levelTransform.Set(m_screenView.GetTransform());
 
   auto levelInputData = m_levelTransform.GetObjectInputData(inputState);
   m_levelContainer->Update(levelInputData, elapsedTicks);

@@ -13,9 +13,9 @@ auto play_screen_view::SetRenderTargetSize(D2D1_SIZE_F renderTargetSize) -> void
   m_renderTargetSize = renderTargetSize;
 }
 
-[[nodiscard]] auto play_screen_view::CanPauseScreen(bool pausePressed) const -> bool
+[[nodiscard]] auto play_screen_view::CanPauseScreen() const -> bool
 {
-  return pausePressed && m_view != view_ending;
+  return m_view != view_ending;
 }
 
 auto play_screen_view::Update(int64_t elapsedTicks) -> void
