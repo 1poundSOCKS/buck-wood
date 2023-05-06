@@ -64,9 +64,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   m_screenView.SetPlayerPosition(m_levelContainer->PlayerX(), m_levelContainer->PlayerY());
 
-  m_levelTransform.Set(m_screenView.GetTransform());
-
-  auto levelInputData = m_levelTransform.GetObjectInputData(inputState);
+  auto levelInputData = m_screenView.GetObjectInputData(inputState);
   m_levelContainer->Update(levelInputData, elapsedTicks);
   
   if( m_levelContainer->IsComplete() )
@@ -97,8 +95,8 @@ auto play_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  m_renderTarget->SetTransform(m_levelTransform.Get());
-  m_levelContainer->GetObjectContainer().Render(m_levelTransform.GetViewRect(m_renderTarget.get()));
+  m_renderTarget->SetTransform(m_screenView.GetTransform());
+  m_levelContainer->Render(m_renderTarget.get(), m_screenView.GetViewRect());
 
   m_renderTarget->SetTransform(m_overlayTransform.Get());
   m_overlayContainer.Render(m_overlayTransform.GetViewRect(m_renderTarget.get()));

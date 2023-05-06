@@ -29,7 +29,7 @@ public:
   static auto fps() -> int;
   static auto rng() -> std::mt19937&;
 
-  template <typename screen_state> static auto openScreen(screen_state& screenState) -> void;
+  template <typename screen_state> static auto openScreen() -> void;
 
 private:
 
@@ -50,8 +50,10 @@ private:
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
 };
 
-template <typename screen_state> static auto framework::openScreen(screen_state& screenState) -> void
+template <typename screen_state> static auto framework::openScreen() -> void
 {
+  screen_state screenState;
+
   screen_runner_data screenRunnerData
   {
     swapChain(),

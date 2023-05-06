@@ -42,8 +42,6 @@
 #include <dinput.h>
 #include <dsound.h>
 
+#if 0
 #include "json.h"
-
-namespace fs = std::filesystem;
-
-#define ENABLE_MUSIC
+#endif

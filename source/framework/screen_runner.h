@@ -8,7 +8,7 @@
 #include "screen_input_state.h"
 #include "render_guard.h"
 
-bool ProcessMessage();
+inline bool g_closeAllScreens = false;
 
 inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
 {
@@ -31,6 +31,27 @@ struct screen_diagnostics_render_data
   winrt::com_ptr<IDWriteTextFormat> textFormat;
 };
 
+template <typename screen_state_type> auto KeepScreenOpen(const screen_state_type& screenState) -> bool
+{
+  MSG msg;
+
+  if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+  {
+    if (!TranslateAccelerator(msg.hwnd, NULL, &msg))
+    {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
+  
+    if( msg.message == WM_QUIT )
+    {
+      g_closeAllScreens = true;
+    }
+  }
+
+  return !g_closeAllScreens && screenState.ContinueRunning();
+}
+
 void OpenScreen(screen_runner_data data, auto& screenState)
 {
   screen_diagnostics_render_data diagnosticsRenderData
@@ -50,7 +71,7 @@ void OpenScreen(screen_runner_data data, auto& screenState)
 
   screenState.Initialize(data.renderTarget.get());
   
-  while( ProcessMessage() && screenState.ContinueRunning() )
+  while( KeepScreenOpen(screenState) )
   {
     performance::UpdateFrameData(frameData);
 

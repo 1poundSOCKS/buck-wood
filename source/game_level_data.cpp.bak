@@ -19,7 +19,7 @@ game_level_data_index::game_level_data_index(const game_level_data_index& index)
 game_level_data_file_info::game_level_data_file_info(const std::wstring& path, const std::wstring& name)
 : path(path), name(name)
 {
-  fs::path tmpName = path;
+  std::filesystem::path tmpName = path;
   tmpName /= name;
   fullName = tmpName;
 }
@@ -34,7 +34,7 @@ game_level_data_files::game_level_data_files(const std::wstring path)
   {
     std::wstring name = filenames.GetNext();
     game_level_data_file_info info(path, name);
-    fileExists = fs::exists(info.fullName);
+    fileExists = std::filesystem::exists(info.fullName);
     if( fileExists ) fileInfo.push_back(info);
   }
 }

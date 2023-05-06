@@ -1,5 +1,8 @@
 #pragma once
 
+#include "screen_input_state.h"
+#include "object_input_data.h"
+
 class play_screen_view
 {
 
@@ -19,6 +22,8 @@ public:
   auto Switch() -> void;
   auto SwitchToEnding() -> void;
   [[nodiscard]] auto ScreenCanClose() const -> bool;
+  [[nodiscard]] auto GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data;
+  [[nodiscard]] auto GetViewRect() const -> D2D1_RECT_F;
 
 private:
 
@@ -26,7 +31,7 @@ private:
 
   [[nodiscard]] auto GetNextView() const -> view_type;
   
-  [[nodiscard]] static auto CreateGameLevelTransform(float centerPosX, float centerPosY, float scale, 
+  [[nodiscard]] static auto CreateTransform(float centerPosX, float centerPosY, float scale, 
     float renderTargetWidth, float renderTargetHeight) -> D2D1::Matrix3x2F;
 
   view_type m_view = view_starting;

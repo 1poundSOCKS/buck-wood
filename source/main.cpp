@@ -11,17 +11,17 @@
 #pragma comment(lib,"Dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dsound.lib")
+#pragma comment(lib,"RuntimeObject.lib")
+
+#if 0
+#pragma comment(lib,"jsoncpp.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
-#pragma comment(lib,"RuntimeObject.lib")
-#pragma comment(lib,"jsoncpp.lib")
+#endif
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
   framework::create(instance, cmdShow);
-
-  main_menu_screen mainMenuScreen;
-  framework::openScreen(mainMenuScreen);
-
+  framework::openScreen<main_menu_screen>();
   return 0;
 }

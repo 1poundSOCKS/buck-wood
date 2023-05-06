@@ -51,9 +51,7 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
   if( m_startPlay )
   {
     m_startPlay = false;
-
-    play_screen playScreen;
-    framework::openScreen(playScreen);
+    framework::openScreen<play_screen>();
   }
 
   auto inputData = m_screenTransform.GetObjectInputData(inputState);

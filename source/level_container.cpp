@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "level_container.h"
 #include "bullet.h"
+#include "level_island.h"
 
 level_container::level_container()
 {
@@ -43,6 +44,11 @@ auto level_container::AddTarget(level_target levelTarget) -> void
   ++m_targetCount;
 }
 
+auto level_container::AddAsteroid(game_closed_object asteroid) -> void
+{
+  m_objectContainer.AppendActiveObject(level_island { asteroid });
+}
+
 [[nodiscard]] auto level_container::GetObjectContainer() const -> const active_object_container&
 {
   return m_objectContainer;
@@ -79,6 +85,11 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
+}
+
+auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+{
+  m_objectContainer.Render(viewRect);
 }
 
 [[nodiscard]] auto level_container::PlayerX() const -> float

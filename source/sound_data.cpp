@@ -15,7 +15,7 @@ auto LoadSoundBuffers(IDirectSound8* directSound, const std::wstring& path, std:
 {
   auto wavFiles = GetWavFilenames();
 
-  fs::path soundFilePath = path;
+  std::filesystem::path soundFilePath = path;
   soundFilePath /= L"sound";
 
   sound_buffers soundBuffers;

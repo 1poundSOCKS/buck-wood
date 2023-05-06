@@ -41,7 +41,7 @@ private:
   bool m_paused = false;
   bool m_continueRunning = true;
 
-  screen_transform m_levelTransform;
+  // screen_transform m_levelTransform;
   std::unique_ptr<level_container> m_levelContainer;
 
   screen_transform m_overlayTransform;

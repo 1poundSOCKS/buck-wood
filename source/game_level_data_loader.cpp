@@ -14,22 +14,23 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
   level_grid_cell_generator gridCellGenerator;
-  const auto cellSize = 300;
 
-  for( int targetIndex = 0; targetIndex < 5; ++targetIndex )
+  asteroid_generator asteroidGenerator(50, 40, 40);
+  
+  asteroid_generator::asteroid_collection asteroids;
+  asteroidGenerator.InsertInto(std::back_inserter(asteroids));
+
+  for( const auto& asteroid : asteroids )
   {
-    auto gridCell = gridCellGenerator.Create();
-    auto levelTarget = level_target { static_cast<float>(gridCell.x * cellSize), static_cast<float>(gridCell.y * cellSize) };
-    levelContainer->AddTarget(levelTarget);
+    levelContainer->AddAsteroid(asteroid);
   }
 
-  asteroid_generator asteroidGenerator(cellSize);
+  asteroid_generator::target_collection targets;
+  asteroidGenerator.InsertInto(std::back_inserter(targets));
 
-  for( int asteroidIndex = 0; asteroidIndex < 20; ++asteroidIndex )
+  for( const auto& target : targets )
   {
-    auto gridCell = gridCellGenerator.Create();
-    auto asteroid = asteroidGenerator.Create(gridCell.x, gridCell.y);
-    levelContainer->GetObjectContainer().AppendActiveObject(level_island { asteroid });
+    levelContainer->AddTarget(target);
   }
 
   levelContainer->SetTimeout(GetTimeLimit());
@@ -40,7 +41,7 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
 
 [[nodiscard]] auto game_level_data_loader::GetTimeLimit() const -> int
 {
-  return 20;
+  return 60;
 }
 
 auto game_level_data_loader::NextLevel() -> void
