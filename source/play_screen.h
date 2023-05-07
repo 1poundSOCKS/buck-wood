@@ -35,19 +35,12 @@ private:
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-
-  play_screen_view m_screenView;
-
   bool m_paused = false;
   bool m_continueRunning = true;
-
-  // screen_transform m_levelTransform;
+  play_screen_view m_screenView;
   std::unique_ptr<level_container> m_levelContainer;
-
   screen_transform m_overlayTransform;
   passive_object_container m_overlayContainer;
-
   game_level_data_loader m_gameLevelDataLoader;
-
   std::vector<int64_t> m_levelTimes;
 };

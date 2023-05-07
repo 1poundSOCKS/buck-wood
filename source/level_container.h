@@ -10,7 +10,10 @@ class level_container
 public:
 
   level_container();
+  level_container(ID2D1RenderTarget* renderTarget);
   level_container(const level_container& levelContainer) = delete;
+
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   auto SetTimeout(int time) -> void;
   auto HasTimedOut() const -> bool;
@@ -18,9 +21,6 @@ public:
   auto AddPlayer(player_ship playerShip) -> void;
   auto AddTarget(level_target levelTarget) -> void;
   auto AddAsteroid(game_closed_object asteroid) -> void;
-
-  [[nodiscard]] auto GetObjectContainer() const -> const active_object_container&;
-  [[nodiscard]] auto GetObjectContainer() -> active_object_container&;
 
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;

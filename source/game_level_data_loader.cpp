@@ -9,8 +9,8 @@ game_level_data_loader::game_level_data_loader()
 
 auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
-  levelContainer->GetObjectContainer().Initialize(renderTarget);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(renderTarget);
+  // levelContainer->GetObjectContainer().Initialize(renderTarget);
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
   level_grid_cell_generator gridCellGenerator;
@@ -34,7 +34,7 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   }
 
   levelContainer->SetTimeout(GetTimeLimit());
-  levelContainer->GetObjectContainer().Initialize(renderTarget);
+  // levelContainer->GetObjectContainer().Initialize(renderTarget);
 
   return levelContainer;
 }

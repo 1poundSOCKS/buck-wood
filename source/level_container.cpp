@@ -7,6 +7,16 @@ level_container::level_container()
 {
 }
 
+level_container::level_container(ID2D1RenderTarget* renderTarget)
+{
+  m_objectContainer.Initialize(renderTarget);
+}
+
+auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
+{
+  m_objectContainer.Initialize(renderTarget);
+}
+
 auto level_container::AddPlayer(player_ship playerShip) -> void
 {
   playerShip.SetPositionUpdate([this](float x, float y, bool thrusterOn) -> void
@@ -49,15 +59,15 @@ auto level_container::AddAsteroid(game_closed_object asteroid) -> void
   m_objectContainer.AppendActiveObject(level_island { asteroid });
 }
 
-[[nodiscard]] auto level_container::GetObjectContainer() const -> const active_object_container&
-{
-  return m_objectContainer;
-}
+// [[nodiscard]] auto level_container::GetObjectContainer() const -> const active_object_container&
+// {
+//   return m_objectContainer;
+// }
 
-[[nodiscard]] auto level_container::GetObjectContainer() -> active_object_container&
-{
-  return m_objectContainer;
-}
+// [[nodiscard]] auto level_container::GetObjectContainer() -> active_object_container&
+// {
+//   return m_objectContainer;
+// }
 
 auto level_container::SetTimeout(int time) -> void
 {
