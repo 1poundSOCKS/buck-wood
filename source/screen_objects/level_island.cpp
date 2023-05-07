@@ -19,15 +19,6 @@ auto level_island::Update(const object_input_data& inputData, int64_t tickCount)
 {
 }
 
-[[nodiscard]] auto level_island::HasCollided(float x, float y) const -> bool
-{
-  return PointInside(x, y, object);
-}
-
-auto level_island::HitByBullet() -> void
-{
-}
-
 auto level_island::Render(D2D1_RECT_F) const -> void
 {
   std::vector<render_line> renderLines;
