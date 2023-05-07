@@ -59,16 +59,6 @@ auto level_container::AddAsteroid(game_closed_object asteroid) -> void
   m_objectContainer.AppendActiveObject(level_island { asteroid });
 }
 
-// [[nodiscard]] auto level_container::GetObjectContainer() const -> const active_object_container&
-// {
-//   return m_objectContainer;
-// }
-
-// [[nodiscard]] auto level_container::GetObjectContainer() -> active_object_container&
-// {
-//   return m_objectContainer;
-// }
-
 auto level_container::SetTimeout(int time) -> void
 {
   m_ticksRemaining = performance_counter::QueryFrequency() * time;

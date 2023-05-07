@@ -1,5 +1,6 @@
-#ifndef _game_level_data_
-#define _game_level_data_
+#pragma once
+
+#ifdef INCLUDE_JSON
 
 #include "geometry.h"
 #include "render.h"

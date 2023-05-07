@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "game_level_data.h"
 
+#ifdef INCLUDE_JSON
+
 #pragma comment(lib,"jsoncpp.lib")
 
 Json::Value FormatAsJson(const game_level_object_data& object);
@@ -267,3 +269,5 @@ std::wstring game_level_data_filenames::GetNext()
     }
   );
 }
+
+#endif

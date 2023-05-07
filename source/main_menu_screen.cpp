@@ -90,10 +90,6 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
     m_startPlay = true;
   }});
 
-  menuDef.AddButtonDef({ L"Options", [this]() -> void
-  {
-  }});
-
   menuDef.AddButtonDef({ L"Exit", [this]() -> void
   {
     m_continueRunning = false;

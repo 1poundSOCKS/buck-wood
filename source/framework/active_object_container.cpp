@@ -32,17 +32,35 @@ auto active_object_container::Update(const object_input_data& inputData, int64_t
 
 auto active_object_container::DoCollisions() -> void
 {
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this](auto& mainObject)
+  std::vector<active_object_collection_type::iterator> objectIterators;
+  
+  for( auto objectIterator = m_activeObjects.begin(); objectIterator != m_activeObjects.end(); ++objectIterator )
   {
-    std::for_each(m_activeObjects.begin(), m_activeObjects.end(), [&mainObject](auto& collisionObject)
+    objectIterators.emplace_back(objectIterator);
+  }
+
+  std::for_each(std::execution::par, objectIterators.begin(), objectIterators.end(), [this](auto objectIterator)
+  {
+    for( auto secondObjectIterator = std::next(objectIterator); secondObjectIterator != m_activeObjects.end(); ++secondObjectIterator)
     {
-      auto collisionData = collisionObject.GetCollisionData();
-      if( mainObject.HasCollidedWith(collisionData) )
+      auto& mainObject = *objectIterator;
+      auto& collisionObject = *secondObjectIterator;
+
+      auto collisionData1 = mainObject.GetCollisionData();
+      auto collisionData2 = collisionObject.GetCollisionData();
+
+      if( mainObject.HasCollidedWith(collisionData2) )
       {
-        auto effect = collisionObject.GetCollisionEffect();
+        const auto& effect = collisionObject.GetCollisionEffect();
         mainObject.ApplyCollisionEffect(effect);
       }
-    });
+
+      if( collisionObject.HasCollidedWith(collisionData1) )
+      {
+        const auto& effect = mainObject.GetCollisionEffect();
+        collisionObject.ApplyCollisionEffect(effect);
+      }
+    }
   });
 }
 
