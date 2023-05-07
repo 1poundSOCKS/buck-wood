@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "game_level_data.h"
 
+#pragma comment(lib,"jsoncpp.lib")
+
 Json::Value FormatAsJson(const game_level_object_data& object);
 template<class T> Json::Value FormatAsJson(const std::vector<T>& items);
 
@@ -118,7 +120,7 @@ std::unique_ptr<game_level_object_data> LoadObjectDataFromJSON(const Json::Value
 
 std::unique_ptr<game_level_data> LoadGameLevelData(const std::wstring& dataPath, const std::wstring& file)
 {
-  fs::path fullFilename = dataPath;
+  std::filesystem::path fullFilename = dataPath;
   fullFilename /= L"levels";
   fullFilename /= file;
 
@@ -188,8 +190,8 @@ bool SaveGameLevelData(const game_level_data& gameLevelData)
 
   std::string jsonData = SaveJsonDataToString(root);
 
-  fs::path saveFilename = gameLevelData.filename;
-  fs::path backupFilename = saveFilename.parent_path();
+  std::filesystem::path saveFilename = gameLevelData.filename;
+  std::filesystem::path backupFilename = saveFilename.parent_path();
   backupFilename /= "bak";
   backupFilename /= saveFilename.filename();
 
@@ -211,7 +213,7 @@ std::string SaveJsonDataToString(Json::Value& root)
 std::unique_ptr<game_level_data_index> LoadAllGameLevelData(const std::wstring& dataPath)
 {
   auto gameLevelDataIndex = std::make_unique<game_level_data_index>();
-  fs::path path = dataPath;
+  std::filesystem::path path = dataPath;
   path /= L"levels";
 
   game_level_data_files files(path);

@@ -14,7 +14,6 @@
 #pragma comment(lib,"RuntimeObject.lib")
 
 #if 0
-#pragma comment(lib,"jsoncpp.lib")
 #pragma comment(lib,"gtest.lib")
 #pragma comment(lib,"gtest_main.lib")
 #endif
