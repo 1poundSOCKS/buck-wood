@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "world.h"
+#include "perlin_simplex_noise.h"
 
 static const uint8_t perm[256] = {
 	151, 160, 137, 91, 90, 15,
@@ -60,7 +60,7 @@ float grad(int32_t hash, float x, float y, float z) {
  * @return Noise value in the range[-1; 1], value of 0 on all integer coordinates.
  */
 
-float world::GetNoise(float x, float y)
+float psn::GetNoise(float x, float y)
 {
 	float n0, n1, n2;   // Noise contributions from the three corners
 
@@ -141,9 +141,4 @@ float world::GetNoise(float x, float y)
 	// Add contributions from each corner to get the final noise value.
 	// The result is scaled to return values in the interval [-1,1].
 	return 45.23065f * (n0 + n1 + n2);
-}
-
-int world::GetAltitude(int x, int y)
-{
-	return static_cast<int>(GetNoise(static_cast<float>(x)/50, static_cast<float>(y)/50) * 100);
 }

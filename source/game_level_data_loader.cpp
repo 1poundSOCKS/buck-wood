@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "global_state.h"
-#include "asteroid_generator.h"
+#include "game_level_object_generator.h"
 
 game_level_data_loader::game_level_data_loader()
 {
@@ -10,23 +10,21 @@ game_level_data_loader::game_level_data_loader()
 auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(renderTarget);
-  // levelContainer->GetObjectContainer().Initialize(renderTarget);
+  
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
-  level_grid_cell_generator gridCellGenerator;
-
-  asteroid_generator asteroidGenerator(50, 40, 40);
+  game_level_object_generator objectGenerator(50, 40, 40);
   
-  asteroid_generator::asteroid_collection asteroids;
-  asteroidGenerator.InsertInto(std::back_inserter(asteroids));
+  game_level_object_generator::asteroid_collection asteroids;
+  objectGenerator.InsertInto(std::back_inserter(asteroids));
 
   for( const auto& asteroid : asteroids )
   {
     levelContainer->AddAsteroid(asteroid);
   }
 
-  asteroid_generator::target_collection targets;
-  asteroidGenerator.InsertInto(std::back_inserter(targets));
+  game_level_object_generator::target_collection targets;
+  objectGenerator.InsertInto(std::back_inserter(targets));
 
   for( const auto& target : targets )
   {
@@ -34,7 +32,6 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   }
 
   levelContainer->SetTimeout(GetTimeLimit());
-  // levelContainer->GetObjectContainer().Initialize(renderTarget);
 
   return levelContainer;
 }

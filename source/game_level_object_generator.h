@@ -4,7 +4,7 @@
 #include "level_grid_cell_generator.h"
 #include "level_target.h"
 
-class asteroid_generator
+class game_level_object_generator
 {
 
 public:
@@ -12,7 +12,7 @@ public:
   using asteroid_collection = std::list<game_closed_object>;
   using target_collection = std::list<level_target>;
 
-  asteroid_generator(int cellSize, int columnCount, int rowCount);
+  game_level_object_generator(int cellSize, int columnCount, int rowCount);
   auto InsertInto(std::back_insert_iterator<asteroid_collection> inserter) const -> void;
   auto InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void;
 

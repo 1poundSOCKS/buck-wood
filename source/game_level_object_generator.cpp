@@ -1,14 +1,14 @@
 #include "pch.h"
-#include "asteroid_generator.h"
+#include "game_level_object_generator.h"
 #include "framework.h"
-#include "world.h"
+#include "perlin_simplex_noise.h"
 
-asteroid_generator::asteroid_generator(int cellSize, int columnCount, int rowCount) : 
+game_level_object_generator::game_level_object_generator(int cellSize, int columnCount, int rowCount) : 
   m_cellSize(cellSize), m_columnCount(columnCount), m_rowCount(rowCount)
 {
 }
 
-auto asteroid_generator::InsertInto(std::back_insert_iterator<asteroid_collection> inserter) const -> void
+auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> inserter) const -> void
 {
   cell_id_collection cells;
   GetCellsLessThan(-0.9f, std::inserter(cells, cells.end()));
@@ -19,7 +19,7 @@ auto asteroid_generator::InsertInto(std::back_insert_iterator<asteroid_collectio
   }
 }
 
-auto asteroid_generator::InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void
+auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void
 {
   cell_id_collection cells;
   GetCellsGreaterThan(0.965f, std::inserter(cells, cells.end()));
@@ -33,7 +33,7 @@ auto asteroid_generator::InsertInto(std::back_insert_iterator<target_collection>
   }
 }
 
-auto asteroid_generator::Create(int gridX, int gridY) const -> game_closed_object
+auto game_level_object_generator::Create(int gridX, int gridY) const -> game_closed_object
 {
   auto cellOffset = static_cast<float>(m_cellSize / 2);
 
@@ -58,17 +58,17 @@ auto asteroid_generator::Create(int gridX, int gridY) const -> game_closed_objec
   return asteroid;
 }
 
-auto asteroid_generator::GetCellsGreaterThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
+auto game_level_object_generator::GetCellsGreaterThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
 {
   GetCells(inserter, [noiseValue](float noise) -> bool { return noise > noiseValue; });
 }
 
-auto asteroid_generator::GetCellsLessThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
+auto game_level_object_generator::GetCellsLessThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
 {
   GetCells(inserter, [noiseValue](float noise) -> bool { return noise < noiseValue; });
 }
 
-auto asteroid_generator::GetCells(std::insert_iterator<cell_id_collection> inserter, std::function<bool(float)> noiseValueCheck) const -> void
+auto game_level_object_generator::GetCells(std::insert_iterator<cell_id_collection> inserter, std::function<bool(float)> noiseValueCheck) const -> void
 {
   for( int column = 0; column < m_columnCount; ++column )
   {
@@ -76,7 +76,7 @@ auto asteroid_generator::GetCells(std::insert_iterator<cell_id_collection> inser
     {
       if( column != 0 && row != 0)
       {
-        auto noise = world::GetNoise(static_cast<float>(column), static_cast<float>(row));
+        auto noise = psn::GetNoise(static_cast<float>(column), static_cast<float>(row));
 
         if( noiseValueCheck(noise) )
         {

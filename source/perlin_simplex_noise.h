@@ -1,7 +1,6 @@
 #pragma once
 
-namespace world
+namespace psn
 {
 	float GetNoise(float x, float y);
-	int GetAltitude(int x, int y);
 }
