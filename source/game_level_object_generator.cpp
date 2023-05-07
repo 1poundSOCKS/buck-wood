@@ -15,7 +15,7 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_
 
   for( auto cell : cells )
   {
-    inserter = Create(m_columnCount / 2 - cell.column, m_rowCount / 2 - cell.row);
+    inserter = CreateAsteroid(m_columnCount / 2 - cell.column, m_rowCount / 2 - cell.row);
   }
 }
 
@@ -33,28 +33,30 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_co
   }
 }
 
-auto game_level_object_generator::Create(int gridX, int gridY) const -> game_closed_object
+auto game_level_object_generator::CreateAsteroid(int gridX, int gridY) const -> game_closed_object
 {
-  auto cellOffset = static_cast<float>(m_cellSize / 2);
-
-  std::array<game_point, 4> shape =
-  {
-    game_point { -cellOffset, -cellOffset, },
-    game_point { cellOffset, -cellOffset, },
-    game_point { cellOffset, cellOffset, },
-    game_point { -cellOffset, cellOffset, }
-  };
-
+  auto radius = static_cast<float>(m_cellSize / 2);
   auto x = static_cast<float>(gridX) * static_cast<float>(m_cellSize);
   auto y = static_cast<float>(gridY) * static_cast<float>(m_cellSize);
 
-  auto translationXform = D2D1::Matrix3x2F::Translation(x, y);
+  std::vector<game_point> points;
 
-  std::vector<game_point> transformedShape;
-  TransformPoints(shape.cbegin(), shape.cend(), std::back_inserter(transformedShape), translationXform);
+  for( int angle = 0; angle < 360; angle += 40 )
+  {
+    auto angleInRadians = DEGTORAD(angle);
+
+    auto cx = radius * sin(angleInRadians);
+    auto cy = radius * cos(angleInRadians);
+
+    auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
+    noise = ( noise + 5.0f ) / 6.0f;
+
+    points.emplace_back( game_point {x + cx * noise, y + cy * noise} );
+  }
 
   game_closed_object asteroid;
-  asteroid.Load(transformedShape.cbegin(), transformedShape.cend());
+  asteroid.Load(points.cbegin(), points.cend());
+
   return asteroid;
 }
 

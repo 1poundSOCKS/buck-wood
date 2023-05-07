@@ -28,8 +28,7 @@ private:
 
   using cell_id_collection = std::set<cell_id>;
 
-  [[nodiscard]] auto Create(int gridX, int gridY) const -> game_closed_object;
-
+  [[nodiscard]] auto CreateAsteroid(int gridX, int gridY) const -> game_closed_object;
   auto GetCellsGreaterThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void;
   auto GetCellsLessThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void;
   auto GetCells(std::insert_iterator<cell_id_collection> inserter, std::function<bool(float)> noiseValueCheck) const -> void;

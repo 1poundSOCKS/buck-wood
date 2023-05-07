@@ -13,7 +13,7 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
-  game_level_object_generator objectGenerator(50, 40, 40);
+  game_level_object_generator objectGenerator(100, 40, 40);
   
   game_level_object_generator::asteroid_collection asteroids;
   objectGenerator.InsertInto(std::back_inserter(asteroids));
