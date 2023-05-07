@@ -28,10 +28,14 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   
   config_file::create(L"config.txt");
 
+  const auto& fullScreen = config_file::getSetting(L"full_screen");
+  if( fullScreen == L"true" )
+  {
+    framework::fullScreen();
+  }
+
   const auto& dataPath = config_file::getSetting(L"data_path");
-
   global_state::load(dataPath);
-
   sound_data::create(framework::directSound().get(), dataPath);
 
   // play sound now to ensure no sound glitch on first real play

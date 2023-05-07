@@ -120,7 +120,7 @@ void UpdateScreen(
   {
     BOOL fullScreen = FALSE;
     data.swapChain->GetFullscreenState(&fullScreen, nullptr);
-    data.swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, NULL);
+    data.swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
   }
 
   {

@@ -3,6 +3,11 @@
 
 framework* framework::m_framework = nullptr;
 
+auto framework::fullScreen() -> void
+{
+  m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
+}
+
 auto framework::create(HINSTANCE instance, int cmdShow) -> void
 {
   m_framework = new framework(instance, cmdShow);

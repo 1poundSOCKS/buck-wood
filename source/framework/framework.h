@@ -30,6 +30,7 @@ public:
   static auto rng() -> std::mt19937&;
 
   template <typename screen_state> static auto openScreen() -> void;
+  static auto fullScreen() -> void;
 
 private:
 
