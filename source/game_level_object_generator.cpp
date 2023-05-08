@@ -45,15 +45,15 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_
     rect_generator smallRectGenerator(rect, GetSmallGridColumnCount(), GetSmallGridRowCount());
 
     rect_generator::collection smallAsteroidRects;
-    rect_generator::collection targetRects;
-
-    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.93f; });
-    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.93f; });
+    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.80f; });
 
     std::transform(smallAsteroidRects.cbegin(), smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
     {
       return CreateAsteroid(rect);
     });
+
+    rect_generator::collection targetRects;
+    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.967f; });
 
     std::transform(targetRects.cbegin(), targetRects.cend(), targetInserter, [](auto rect)
     {
