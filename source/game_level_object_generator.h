@@ -13,8 +13,8 @@ public:
   using asteroid_collection = std::list<game_closed_object>;
   using target_collection = std::list<level_target>;
 
-  game_level_object_generator(game_rect rect, std::function<bool(float)> generateObject);
-  auto InsertInto(std::back_insert_iterator<asteroid_collection> inserter) const -> void;
+  game_level_object_generator(game_rect rect);
+  auto InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter, std::back_insert_iterator<target_collection> targetInserter) const -> void;
   auto InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void;
 
 private:
@@ -22,6 +22,5 @@ private:
   [[nodiscard]] auto CreateAsteroid(game_rect rect) const -> game_closed_object;
 
   rect_generator m_rectGenerator;
-  std::function<bool(float)> m_generateObject;
 
 };

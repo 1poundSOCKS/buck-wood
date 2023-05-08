@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "rect_generator.h"
+#include "perlin_simplex_noise.h"
 
 rect_generator::rect_generator(game_rect rect, int columnCount, int rowCount) : m_rect(rect), m_cellGenerator(columnCount, rowCount)
 {
@@ -11,29 +12,46 @@ auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std
 {
   cell_generator::collection cells;
 
-  m_cellGenerator.Get(std::back_inserter(cells), noiseValueCheck);
+  m_cellGenerator.Get(std::back_inserter(cells));
 
-  std::transform(cells.cbegin(), cells.cend(), trueInserter, [this](auto cellID) -> game_rect
+  std::vector<game_rect> cellRects;
+  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(cellRects), [this](auto cellID) -> game_rect
   {
     return GetRect(cellID);
+  });
+
+  std::copy_if(cellRects.cbegin(), cellRects.cend(), trueInserter, [noiseValueCheck](auto cellRect) -> bool
+  {
+    auto rectCentre = cellRect.CentrePoint();
+    auto noiseValue = psn::GetNoise(rectCentre.x, rectCentre.y);
+    return noiseValueCheck(noiseValue);
   });
 }
 
 auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std::back_insert_iterator<collection> falseInserter, std::function<bool(float)> noiseValueCheck) const -> void
 {
-  cell_generator::collection trueCells;
-  cell_generator::collection falseCells;
+  cell_generator::collection cells;
 
-  m_cellGenerator.Get(std::back_inserter(trueCells), std::back_inserter(falseCells), noiseValueCheck);
+  m_cellGenerator.Get(std::back_inserter(cells));
 
-  std::transform(trueCells.cbegin(), trueCells.cend(), trueInserter, [this](auto cellID) -> game_rect
+  std::vector<game_rect> cellRects;
+  std::transform(cells.cbegin(), cells.cend(), std::back_inserter(cellRects), [this](auto cellID) -> game_rect
   {
     return GetRect(cellID);
   });
 
-  std::transform(falseCells.cbegin(), falseCells.cend(), falseInserter, [this](auto cellID) -> game_rect
+  std::copy_if(cellRects.cbegin(), cellRects.cend(), trueInserter, [noiseValueCheck](auto cellRect) -> bool
   {
-    return GetRect(cellID);
+    auto rectCentre = cellRect.CentrePoint();
+    auto noiseValue = psn::GetNoise(rectCentre.x, rectCentre.y);
+    return noiseValueCheck(noiseValue);
+  });
+
+  std::copy_if(cellRects.cbegin(), cellRects.cend(), falseInserter, [noiseValueCheck](auto cellRect) -> bool
+  {
+    auto rectCentre = cellRect.CentrePoint();
+    auto noiseValue = psn::GetNoise(rectCentre.x, rectCentre.y);
+    return !noiseValueCheck(noiseValue);
   });
 }
 
