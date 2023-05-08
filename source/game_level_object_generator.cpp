@@ -3,41 +3,40 @@
 #include "framework.h"
 #include "perlin_simplex_noise.h"
 
-game_level_object_generator::game_level_object_generator(int cellSize, int columnCount, int rowCount) : 
-  m_cellSize(cellSize), m_columnCount(columnCount), m_rowCount(rowCount)
+game_level_object_generator::game_level_object_generator(game_rect rect, int columnCount, int rowCount, std::function<bool(float)> generateObject) : 
+  m_generateObject(generateObject), m_rectGenerator(rect, columnCount, rowCount)
 {
 }
 
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> inserter) const -> void
 {
-  cell_id_collection cells;
-  GetCellsLessThan(-0.9f, std::inserter(cells, cells.end()));
-
-  for( auto cell : cells )
+  rect_generator::collection rects;
+  m_rectGenerator.Get(std::back_inserter(rects), m_generateObject);
+  std::transform(rects.cbegin(), rects.cend(), inserter, [this](auto rect)
   {
-    inserter = CreateAsteroid(m_columnCount / 2 - cell.column, m_rowCount / 2 - cell.row);
-  }
+    return CreateAsteroid(rect);
+  });
 }
 
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void
 {
-  cell_id_collection cells;
-  GetCellsGreaterThan(0.965f, std::inserter(cells, cells.end()));
-
-  for( auto cell : cells )
+  rect_generator::collection rects;
+  m_rectGenerator.Get(std::back_inserter(rects), m_generateObject);
+  std::transform(rects.cbegin(), rects.cend(), inserter, [](auto rect)
   {
-    auto x = static_cast<float>(m_columnCount / 2 - cell.column) * static_cast<float>(m_cellSize);
-    auto y = static_cast<float>(m_rowCount / 2 - cell.row) * static_cast<float>(m_cellSize);
-
-    inserter = level_target { x, y };
-  }
+    auto centrePoint = rect.CentrePoint();
+    return level_target { centrePoint.x, centrePoint.y };
+  });
 }
 
-auto game_level_object_generator::CreateAsteroid(int gridX, int gridY) const -> game_closed_object
+auto game_level_object_generator::CreateAsteroid(game_rect rect) const -> game_closed_object
 {
-  auto radius = static_cast<float>(m_cellSize / 2);
-  auto x = static_cast<float>(gridX) * static_cast<float>(m_cellSize);
-  auto y = static_cast<float>(gridY) * static_cast<float>(m_cellSize);
+  auto radiusX = ( rect.bottomRight.x - rect.topLeft.x ) / 2.0f;
+  auto radiusY = ( rect.bottomRight.y - rect.topLeft.y ) / 2.0f;
+
+  auto centrePoint = rect.CentrePoint();
+  auto x = centrePoint.x;
+  auto y = centrePoint.y;
 
   std::vector<game_point> points;
 
@@ -45,8 +44,8 @@ auto game_level_object_generator::CreateAsteroid(int gridX, int gridY) const -> 
   {
     auto angleInRadians = DEGTORAD(angle);
 
-    auto cx = radius * sin(angleInRadians);
-    auto cy = radius * cos(angleInRadians);
+    auto cx = radiusX * sin(angleInRadians);
+    auto cy = radiusY * cos(angleInRadians);
 
     auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
     noise = ( noise + 5.0f ) / 6.0f;
@@ -58,33 +57,4 @@ auto game_level_object_generator::CreateAsteroid(int gridX, int gridY) const -> 
   asteroid.Load(points.cbegin(), points.cend());
 
   return asteroid;
-}
-
-auto game_level_object_generator::GetCellsGreaterThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
-{
-  GetCells(inserter, [noiseValue](float noise) -> bool { return noise > noiseValue; });
-}
-
-auto game_level_object_generator::GetCellsLessThan(float noiseValue, std::insert_iterator<cell_id_collection> inserter) const -> void
-{
-  GetCells(inserter, [noiseValue](float noise) -> bool { return noise < noiseValue; });
-}
-
-auto game_level_object_generator::GetCells(std::insert_iterator<cell_id_collection> inserter, std::function<bool(float)> noiseValueCheck) const -> void
-{
-  for( int column = 0; column < m_columnCount; ++column )
-  {
-    for( int row = 0; row < m_rowCount; ++row )
-    {
-      if( column != 0 && row != 0)
-      {
-        auto noise = psn::GetNoise(static_cast<float>(column), static_cast<float>(row));
-
-        if( noiseValueCheck(noise) )
-        {
-          inserter = { column, row };
-        }
-      }
-    }
-  }
 }

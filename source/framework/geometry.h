@@ -29,8 +29,10 @@ struct game_line
 
 struct game_rect
 {
-  auto GetCentrePoint() const -> game_point;
-  
+  [[nodiscard]] auto Width() const -> float;
+  [[nodiscard]] auto Height() const -> float;
+  [[nodiscard]] auto CentrePoint() const -> game_point;
+
   game_point topLeft;
   game_point bottomRight;
 };

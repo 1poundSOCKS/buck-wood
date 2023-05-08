@@ -2,11 +2,10 @@
 #include "level_target.h"
 #include "render_brush_defs.h"
 
-static const float defaultTargetSize = 40;
-
 constexpr std::array<game_point, 4> GetTargetGeometryData(float size)
 {
   float halfSize = size / 2;
+  
   return {
     game_point { 0, -halfSize },
     game_point { halfSize, 0 },
@@ -17,7 +16,7 @@ constexpr std::array<game_point, 4> GetTargetGeometryData(float size)
 
 consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
 {
-  return GetTargetGeometryData(40);
+  return GetTargetGeometryData(30);
 }
 
 level_target::level_target(float x, float y)
@@ -54,7 +53,7 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
-  m_renderTarget->FillGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get());
+  m_renderTarget->DrawGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 5.0f);
 }
 
 [[nodiscard]] auto level_target::GetCollisionData() -> collision_data

@@ -35,7 +35,17 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
-auto game_rect::GetCentrePoint() const -> game_point
+[[nodiscard]] auto game_rect::Width() const -> float
+{
+  return bottomRight.x - topLeft.x;
+}
+
+[[nodiscard]] auto game_rect::Height() const -> float
+{
+  return bottomRight.y - topLeft.y;
+}
+
+[[nodiscard]] auto game_rect::CentrePoint() const -> game_point
 {
   return { ( bottomRight.x + topLeft.x ) / 2, ( bottomRight.y + topLeft.y ) / 2 };
 }

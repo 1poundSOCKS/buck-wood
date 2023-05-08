@@ -13,18 +13,20 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
-  game_level_object_generator objectGenerator(100, 40, 40);
-  
+  game_rect levelRect( { -2000, -2000 } , { 2000, 2000 } );
+
+  game_level_object_generator asteroidGenerator(levelRect, 30, 30, [](float noise) -> bool { return noise < -0.93f; });
   game_level_object_generator::asteroid_collection asteroids;
-  objectGenerator.InsertInto(std::back_inserter(asteroids));
+  asteroidGenerator.InsertInto(std::back_inserter(asteroids));
 
   for( const auto& asteroid : asteroids )
   {
     levelContainer->AddAsteroid(asteroid);
   }
 
+  game_level_object_generator targetGenerator(levelRect, 30, 30, [](float noise) -> bool { return noise > 0.96f; });
   game_level_object_generator::target_collection targets;
-  objectGenerator.InsertInto(std::back_inserter(targets));
+  targetGenerator.InsertInto(std::back_inserter(targets));
 
   for( const auto& target : targets )
   {
