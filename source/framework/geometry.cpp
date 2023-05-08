@@ -35,11 +35,16 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
-[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect
+auto game_rect::GetCentrePoint() const -> game_point
 {
-  auto firstPoint = object.points.cbegin();
+  return { ( bottomRight.x + topLeft.x ) / 2, ( bottomRight.y + topLeft.y ) / 2 };
+}
+
+[[nodiscard]] auto game_closed_object::GetBoundingRect() const -> game_rect
+{
+  auto firstPoint = points.cbegin();
   return std::reduce(
-    std::next(firstPoint), object.points.cend(), 
+    std::next(firstPoint), points.cend(), 
     game_rect {firstPoint->x , firstPoint->y, firstPoint->x, firstPoint->y},
     [](game_rect rect, game_point point) -> game_rect
     {

@@ -6,6 +6,9 @@ level_island::level_island(const game_closed_object& object) : object(object), m
 {
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
+
+  auto boundary = object.GetBoundingRect();
+  auto centrePoint = boundary.GetCentrePoint();
 }
 
 auto level_island::Initialize(ID2D1RenderTarget* renderTarget) -> void

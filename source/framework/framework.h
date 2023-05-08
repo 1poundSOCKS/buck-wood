@@ -23,6 +23,7 @@ public:
   static auto windowData() -> window_data&;
   static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
   static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
+  static auto pathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
   static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
   static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
@@ -45,7 +46,9 @@ private:
   HWND m_window = nullptr;
   window_data m_windowData;
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
+  winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  winrt::com_ptr<ID2D1PathGeometry> m_pathGeometry;
   winrt::com_ptr<IDirectSound8> m_directSound;
   winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;

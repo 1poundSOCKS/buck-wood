@@ -29,6 +29,8 @@ struct game_line
 
 struct game_rect
 {
+  auto GetCentrePoint() const -> game_point;
+  
   game_point topLeft;
   game_point bottomRight;
 };
@@ -88,6 +90,8 @@ struct game_closed_object
     lines.clear();
   }
 
+  auto GetBoundingRect() const -> game_rect;
+
   std::vector<game_point> points;
   std::vector<game_line> lines;
 };
@@ -104,7 +108,7 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2);
 
 [[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect ;
 [[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect;
-[[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
+// [[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
 [[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool;
 [[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point;
 

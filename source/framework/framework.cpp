@@ -36,6 +36,11 @@ auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
   return get().m_renderTarget;
 }
 
+auto framework::pathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+{
+  return get().m_pathGeometry;  
+}
+
 auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
 {
   return get().m_directSound;
@@ -70,8 +75,9 @@ auto framework::Init() -> void
   RegisterMainWindowClass(m_instance);
   m_window = CreateMainWindow(m_instance, m_cmdShow, m_windowData);
   m_swapChain = CreateSwapChain(m_window, framework::fps(), 1);
-  m_renderTarget = CreateRenderTarget(m_swapChain.get());
-  // m_dwriteFactory = CreateDWriteFactory();
+  m_d2dFactory = CreateD2DFactory();
+  m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
+  m_pathGeometry = CreatePathGeometry(m_d2dFactory.get());
   m_directSound = CreateDirectSound(m_window);
   m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
   m_keyboard = CreateKeyboard(m_instance, m_window);

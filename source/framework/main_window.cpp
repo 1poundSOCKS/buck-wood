@@ -73,7 +73,17 @@ winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNume
   return swapChain;
 }
 
-winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain)
+winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
+{
+  winrt::com_ptr<ID2D1Factory> d2dFactory;
+	
+  HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
+  if( FAILED(hr) ) throw L"error";
+  
+  return d2dFactory;
+}
+
+winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory)
 {
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
 
@@ -86,14 +96,20 @@ winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain)
     D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)
   );
   
-  winrt::com_ptr<ID2D1Factory> d2dFactory;
-	hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
-  if( FAILED(hr) ) throw L"error";
-
   hr = d2dFactory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, renderTarget.put());
   if( FAILED(hr) ) throw L"error";
 
   return renderTarget;
+}
+
+winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory)
+{
+  winrt::com_ptr<ID2D1PathGeometry> pathGeometry;
+
+  HRESULT hr = d2dFactory->CreatePathGeometry(pathGeometry.put());
+  if( FAILED(hr) ) throw L"error";
+
+  return pathGeometry;
 }
 
 render_target_mouse_data GetRenderTargetMouseData(const window_data& windowData, ID2D1RenderTarget* renderTarget)
