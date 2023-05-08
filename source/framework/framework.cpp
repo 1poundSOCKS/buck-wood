@@ -31,14 +31,19 @@ auto framework::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
   return get().m_swapChain;
 }
 
+auto framework::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
+{
+  return get().m_d2dFactory;  
+}
+
 auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
   return get().m_renderTarget;
 }
 
-auto framework::pathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+auto framework::CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
-  return get().m_pathGeometry;  
+  return ::CreatePathGeometry(get().m_d2dFactory.get());
 }
 
 auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
@@ -77,7 +82,6 @@ auto framework::Init() -> void
   m_swapChain = CreateSwapChain(m_window, framework::fps(), 1);
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
-  m_pathGeometry = CreatePathGeometry(m_d2dFactory.get());
   m_directSound = CreateDirectSound(m_window);
   m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
   m_keyboard = CreateKeyboard(m_instance, m_window);

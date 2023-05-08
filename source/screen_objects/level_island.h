@@ -1,5 +1,4 @@
-#ifndef _level_island_
-#define _level_island_
+#pragma once
 
 #include "play_event.h"
 #include "collision_data.h"
@@ -23,11 +22,11 @@ public:
 
 private:
 
-  game_closed_object object;
+  game_closed_object m_object;
   collision_effect m_collisionEffect;
   collision_data m_collisionData;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<ID2D1SolidColorBrush> brush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_fillBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_borderBrush;
+  winrt::com_ptr<ID2D1PathGeometry> m_geometry;
 };
-
-#endif

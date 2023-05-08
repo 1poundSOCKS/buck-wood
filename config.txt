@@ -1,2 +1,2 @@
 data_path=data
-full_screen=true
+full_screen=false
