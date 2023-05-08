@@ -7,13 +7,31 @@ rect_generator::rect_generator(game_rect rect, int columnCount, int rowCount) : 
   m_cellHeight = m_rect.Height() / rowCount;
 }
 
-auto rect_generator::Get(std::back_insert_iterator<collection> inserter, std::function<bool(float)> noiseValueCheck) const -> void
+auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std::function<bool(float)> noiseValueCheck) const -> void
 {
+  cell_generator::collection cells;
 
-  cell_generator::collection cells; 
   m_cellGenerator.Get(std::back_inserter(cells), noiseValueCheck);
 
-  std::transform(cells.cbegin(), cells.cend(), inserter, [this](auto cellID) -> game_rect
+  std::transform(cells.cbegin(), cells.cend(), trueInserter, [this](auto cellID) -> game_rect
+  {
+    return GetRect(cellID);
+  });
+}
+
+auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std::back_insert_iterator<collection> falseInserter, std::function<bool(float)> noiseValueCheck) const -> void
+{
+  cell_generator::collection trueCells;
+  cell_generator::collection falseCells;
+
+  m_cellGenerator.Get(std::back_inserter(trueCells), std::back_inserter(falseCells), noiseValueCheck);
+
+  std::transform(trueCells.cbegin(), trueCells.cend(), trueInserter, [this](auto cellID) -> game_rect
+  {
+    return GetRect(cellID);
+  });
+
+  std::transform(falseCells.cbegin(), falseCells.cend(), falseInserter, [this](auto cellID) -> game_rect
   {
     return GetRect(cellID);
   });

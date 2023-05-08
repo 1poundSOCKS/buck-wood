@@ -3,8 +3,28 @@
 #include "framework.h"
 #include "perlin_simplex_noise.h"
 
-game_level_object_generator::game_level_object_generator(game_rect rect, int columnCount, int rowCount, std::function<bool(float)> generateObject) : 
-  m_generateObject(generateObject), m_rectGenerator(rect, columnCount, rowCount)
+constexpr auto GetLargeGridColumnCount() -> int
+{
+  return 10;
+}
+
+constexpr auto GetLargeGridRowCount() -> int
+{
+  return 10;
+}
+
+constexpr auto GetSmallGridColumnCount() -> int
+{
+  return 4;
+}
+
+constexpr auto GetSmallGridRowCount() -> int
+{
+  return 4;
+}
+
+game_level_object_generator::game_level_object_generator(game_rect rect, std::function<bool(float)> generateObject) : 
+  m_generateObject(generateObject), m_rectGenerator(rect, GetLargeGridColumnCount(), GetLargeGridRowCount())
 {
 }
 
