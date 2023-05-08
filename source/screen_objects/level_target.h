@@ -5,6 +5,7 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 #include "object_input_data.h"
+#include "path_geometry.h"
 
 class level_target
 {
@@ -26,15 +27,14 @@ public:
 
 private:
 
-  std::vector<game_point> m_points;
-  std::vector<game_line> m_shape;
   bool m_activated = false;
-  event_activated m_eventActivated = []()->void{};
+  event_activated m_eventActivated = []() -> void {};
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;
   collision_data m_collisionData;
   collision_effect m_collisionEffect;
+  path_geometry m_geometry;
 };
 
 #endif

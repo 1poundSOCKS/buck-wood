@@ -4,6 +4,7 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 #include "object_input_data.h"
+#include "path_geometry.h"
 
 class level_island
 {
@@ -28,5 +29,5 @@ private:
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_fillBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_borderBrush;
-  winrt::com_ptr<ID2D1PathGeometry> m_geometry;
+  path_geometry m_geometry;
 };

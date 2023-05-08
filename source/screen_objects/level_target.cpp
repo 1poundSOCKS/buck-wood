@@ -26,7 +26,9 @@ level_target::level_target(float x, float y)
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(x, y));
 
-  CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(m_shape));
+  game_closed_object object;
+  object.Load(points.cbegin(), points.cend());
+  m_geometry.Load(object);
 
   m_collisionData = collision_data { points.cbegin(), points.cend() };
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
@@ -52,9 +54,7 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
-  std::vector<render_line> renderLines;
-  CreateRenderLines(m_shape.cbegin(), m_shape.cend(), std::back_inserter(renderLines), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 6);
-  RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
+  m_renderTarget->FillGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get());
 }
 
 [[nodiscard]] auto level_target::GetCollisionData() -> collision_data
