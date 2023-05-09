@@ -5,7 +5,7 @@
 
 play_screen_view::play_screen_view()
 {
-  m_totalStartingTicks = performance_counter::QueryFrequency() * 3;
+  m_totalTicks = performance_counter::QueryFrequency() * 3;
 }
 
 auto play_screen_view::SetRenderTargetSize(D2D1_SIZE_F renderTargetSize) -> void
@@ -23,18 +23,16 @@ auto play_screen_view::Update(int64_t elapsedTicks) -> void
   switch( m_view )
   {
   case view_starting:
-    m_startingTicks += elapsedTicks;
-    break;
-
+  case view_player_dead:
   case view_ending:
-    m_endingTicks += elapsedTicks;
+    m_ticks += elapsedTicks;
     break;
   }
 }
 
 [[nodiscard]] auto play_screen_view::GetElapsedTicks(int64_t frameTicks) const -> int64_t
 {
-  return ( m_view == view_starting ) ? 0 : frameTicks;
+  return ( m_view == view_starting || m_view == view_ending ) ? 0 : frameTicks;
 }
 
 auto play_screen_view::SetPlayerPosition(float x, float y) -> void
@@ -50,12 +48,12 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
   if( m_view == view_starting )
   {
     level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.01f, m_playerX, m_playerY, playZoom);
-    return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalStartingTicks, m_startingTicks);
+    return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalTicks, m_ticks);
   }
   else if( m_view == view_ending )
   {
     level_transform_transition levelTransformTransiton(m_playerX, m_playerY, playZoom, m_playerX, m_playerY, 0.01f);
-    return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalEndingTicks, m_endingTicks);
+    return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalTicks, m_ticks);
   }
   else
   {
@@ -68,14 +66,12 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
   return m_view == view_starting;
 }
 
-[[nodiscard]] auto play_screen_view::IsPlaying() const -> bool
+auto play_screen_view::EndPlay() -> void
 {
-  return m_view == view_playing;
-}
-
-[[nodiscard]] auto play_screen_view::IsEnding() const -> bool
-{
-  return m_view == view_ending;
+  if( m_view == view_playing )
+  {
+    Switch();
+  }
 }
 
 [[nodiscard]] auto play_screen_view::TimeToSwitch() const -> bool
@@ -83,10 +79,9 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
   switch( m_view )
   {
     case view_starting:
-      return m_startingTicks >= m_totalStartingTicks;
-
+    case view_player_dead:
     case view_ending:
-      return m_endingTicks >= m_totalEndingTicks;
+      return m_ticks >= m_totalTicks;
 
     default:
       return false;
@@ -95,18 +90,23 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
 
 auto play_screen_view::Switch() -> void
 {
-  m_view = GetNextView();
+  auto view = GetNextView();
+  if( view != m_view )
+  {
+    m_view = view;
+    m_ticks = 0;
+  }
 }
 
-auto play_screen_view::SwitchToEnding() -> void
-{
-  m_view = view_ending;
-  m_totalEndingTicks = performance_counter::QueryFrequency() * 5;
-}
+// auto play_screen_view::SwitchToEnding() -> void
+// {
+//   m_view = view_ending;
+//   m_totalTicks = performance_counter::QueryFrequency() * 5;
+// }
 
 auto play_screen_view::ScreenCanClose() const -> bool
 {
-  return m_view == view_ending && m_endingTicks >= m_totalEndingTicks;
+  return m_view == view_ending && m_ticks >= m_totalTicks;
 }
 
 [[nodiscard]] auto play_screen_view::GetNextView() const -> view_type
@@ -117,6 +117,9 @@ auto play_screen_view::ScreenCanClose() const -> bool
       return view_playing;
 
     case view_playing:
+      return view_player_dead;
+
+    case view_player_dead:
       return view_ending;
 
     default:

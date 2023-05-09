@@ -16,18 +16,16 @@ public:
   auto SetPlayerPosition(float x, float y) -> void;
   [[nodiscard]] auto GetTransform() const -> D2D1::Matrix3x2F;
   [[nodiscard]] auto IsStarting() const -> bool;
-  [[nodiscard]] auto IsPlaying() const -> bool;
-  [[nodiscard]] auto IsEnding() const -> bool;
+  auto EndPlay() -> void;
   [[nodiscard]] auto TimeToSwitch() const -> bool;
   auto Switch() -> void;
-  auto SwitchToEnding() -> void;
   [[nodiscard]] auto ScreenCanClose() const -> bool;
   [[nodiscard]] auto GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data;
   [[nodiscard]] auto GetViewRect() const -> D2D1_RECT_F;
 
 private:
 
-  enum view_type { view_starting, view_playing, view_ending };
+  enum view_type { view_starting, view_playing, view_player_dead, view_ending };
 
   [[nodiscard]] auto GetNextView() const -> view_type;
   
@@ -38,11 +36,8 @@ private:
 
   D2D1_SIZE_F m_renderTargetSize;
 
-  int64_t m_totalStartingTicks = 0;
-  int64_t m_startingTicks = 0;
-
-  int64_t m_totalEndingTicks = 0;
-  int64_t m_endingTicks = 0;
+  int64_t m_totalTicks = 0;
+  int64_t m_ticks = 0;
 
   float m_playerX = 0;
   float m_playerY = 0;

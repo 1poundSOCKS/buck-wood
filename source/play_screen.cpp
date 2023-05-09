@@ -17,7 +17,6 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 
-  // m_levelContainer->GetObjectContainer().Initialize(renderTarget);
   m_levelContainer->Initialize(renderTarget);
   m_overlayContainer.Initialize(renderTarget);
 
@@ -75,7 +74,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
 
   if( m_levelContainer->HasTimedOut() || m_levelContainer->PlayerDied() || m_levelContainer->IsComplete() )
   {
-    m_screenView.SwitchToEnding();
+    m_screenView.EndPlay();
   }
 
   auto overlayInputData = m_overlayTransform.GetObjectInputData(inputState);
