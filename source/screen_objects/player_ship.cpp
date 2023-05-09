@@ -108,7 +108,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
   RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
 }
 
-[[nodiscard]] auto player_ship::GetCollisionData() -> collision_data
+[[nodiscard]] auto player_ship::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;
 }

@@ -16,7 +16,7 @@ private:
     virtual auto Initialize(ID2D1RenderTarget* renderTarget) -> void = 0;
     virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
-    [[nodiscard]] virtual auto GetCollisionData() -> collision_data = 0;
+    [[nodiscard]] virtual auto GetCollisionData() const -> const collision_data& = 0;
     [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
     [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
     virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
@@ -48,7 +48,7 @@ private:
       object.Render(viewRect);
     }
 
-    [[nodiscard]] auto GetCollisionData() -> collision_data override
+    [[nodiscard]] auto GetCollisionData() const -> const collision_data& override
     {
       return object.GetCollisionData();
     }
@@ -111,7 +111,7 @@ public:
     objectConcept->Render(viewRect);
   }
 
-  [[nodiscard]] auto GetCollisionData() -> collision_data
+  [[nodiscard]] auto GetCollisionData() const -> const collision_data&
   {
     return objectConcept->GetCollisionData();
   }

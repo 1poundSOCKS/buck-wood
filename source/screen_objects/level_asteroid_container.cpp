@@ -8,6 +8,7 @@ level_asteroid_container::level_asteroid_container()
 auto level_asteroid_container::AddAsteroid(const level_asteroid&& asteroid) -> void
 {
   m_asteroids.emplace_back(asteroid);
+  m_collisionData.Add(asteroid.GetCollisionData());
 }
 
 auto level_asteroid_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -34,9 +35,9 @@ auto level_asteroid_container::Render(D2D1_RECT_F viewRect) const -> void
   }
 }
 
-[[nodiscard]] auto level_asteroid_container::GetCollisionData() -> collision_data
+[[nodiscard]] auto level_asteroid_container::GetCollisionData() const -> const collision_data&
 {
-  return collision_data {};
+  return m_collisionData;
 }
 
 [[nodiscard]] auto level_asteroid_container::HasCollidedWith(const collision_data& collisionData) const -> bool

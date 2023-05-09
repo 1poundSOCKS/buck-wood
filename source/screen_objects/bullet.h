@@ -15,7 +15,7 @@ public:
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
-  [[nodiscard]] auto GetCollisionData() -> collision_data;
+  [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
@@ -32,8 +32,8 @@ private:
   float range = 1000;  
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  collision_effect m_collisionEffect;
   collision_data m_collisionData;
+  collision_effect m_collisionEffect;
   bool destroyed = false;
 };
 

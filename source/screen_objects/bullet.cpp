@@ -34,6 +34,8 @@ auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> vo
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
 
+  m_collisionData = { xPos, yPos };
+
   destroyed = HasExpired();
 }
 
@@ -43,9 +45,9 @@ auto bullet::Render(D2D1_RECT_F viewRect) const -> void
   m_renderTarget->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
 }
 
-[[nodiscard]] auto bullet::GetCollisionData() -> collision_data
+[[nodiscard]] auto bullet::GetCollisionData() const -> const collision_data&
 {
-  return { xPos, yPos };
+  return m_collisionData;
 }
 
 [[nodiscard]] auto bullet::HasCollidedWith(const collision_data& collisionData) const -> bool

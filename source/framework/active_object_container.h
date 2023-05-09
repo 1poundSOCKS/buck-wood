@@ -17,6 +17,7 @@ public:
 
   auto Update(const object_input_data& inputData, int64_t elapsedTicks) -> void;
   auto DoCollisions() -> void;
+  auto DoCollisionsWith(active_object_container& objects) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   auto ClearDestroyedObjects() -> void;
   auto ClearAll() -> void;

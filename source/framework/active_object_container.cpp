@@ -46,8 +46,8 @@ auto active_object_container::DoCollisions() -> void
       auto& mainObject = *objectIterator;
       auto& collisionObject = *secondObjectIterator;
 
-      auto collisionData1 = mainObject.GetCollisionData();
-      auto collisionData2 = collisionObject.GetCollisionData();
+      const auto& collisionData1 = mainObject.GetCollisionData();
+      const auto& collisionData2 = collisionObject.GetCollisionData();
 
       if( mainObject.HasCollidedWith(collisionData2) )
       {
@@ -59,6 +59,35 @@ auto active_object_container::DoCollisions() -> void
       {
         const auto& effect = mainObject.GetCollisionEffect();
         collisionObject.ApplyCollisionEffect(effect);
+      }
+    }
+  });
+}
+
+auto active_object_container::DoCollisionsWith(active_object_container& objects) -> void
+{
+  std::for_each(std::execution::par, m_activeObjects.begin(), m_activeObjects.end(), [&objects](auto& dynamicObject)
+  {
+    for( auto& staticObject : objects.m_activeObjects )
+    {
+      {
+        const auto& collisionData = staticObject.GetCollisionData();
+
+        if( dynamicObject.HasCollidedWith(collisionData) )
+        {
+          const auto& effect = staticObject.GetCollisionEffect();
+          dynamicObject.ApplyCollisionEffect(effect);
+        }
+      }
+
+      {
+        const auto& collisionData = dynamicObject.GetCollisionData();
+
+        if( staticObject.HasCollidedWith(collisionData) )
+        {
+          const auto& effect = dynamicObject.GetCollisionEffect();
+          staticObject.ApplyCollisionEffect(effect);
+        }
       }
     }
   });

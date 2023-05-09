@@ -6,7 +6,7 @@ class collision_data
 {
 public:
 
-  enum type { undefined, point, closed_object };
+  enum type { undefined, point, closed_object, complex };
 
   collision_data()
   {
@@ -25,12 +25,24 @@ public:
   {
   }
 
+  operator game_closed_object() const
+  {
+    return m_closedObject;
+  }
+
+  auto Add(const game_closed_object&& closedObject) -> void
+  {
+    m_objectCollection.emplace_back(closedObject);
+    m_type = complex;
+  }
+
   auto operator=(const collision_data& collisionData) -> const collision_data&
   {
     m_type = collisionData.m_type;
     m_x = collisionData.m_x;
     m_y = collisionData.m_y;
     m_closedObject = collisionData.m_closedObject;
+    m_objectCollection = collisionData.m_objectCollection;
     return *this;
   }
 
@@ -60,6 +72,17 @@ public:
           return false;
       }
     }
+    else if( m_type == complex )
+    {
+      bool collided = false;
+
+      for( auto object = m_objectCollection.cbegin(); !collided && object != m_objectCollection.cend(); ++object )
+      {
+        collided = ::PointInside(collisionData.m_x, collisionData.m_y, *object);
+      }
+
+      return collided;
+    }
     else
       return false;
   }
@@ -71,8 +94,11 @@ public:
 
 private:
 
+  using object_collection = std::vector<game_closed_object>;
+
   type m_type = undefined;
   float m_x = 0;
   float m_y = 0;
   game_closed_object m_closedObject;
+  object_collection m_objectCollection;
 };

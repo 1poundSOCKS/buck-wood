@@ -26,7 +26,7 @@ auto level_asteroid::Render(D2D1_RECT_F) const -> void
   m_renderTarget->DrawGeometry(m_geometry.Get(), m_borderBrush.get(), 6.0f);
 }
 
-[[nodiscard]] auto level_asteroid::GetCollisionData() -> collision_data
+[[nodiscard]] auto level_asteroid::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;
 }

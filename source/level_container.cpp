@@ -11,11 +11,15 @@ level_container::level_container()
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
   m_objectContainer.Initialize(renderTarget);
+  m_asteroidContainer.Initialize(renderTarget);
+  m_targetContainer.Initialize(renderTarget);
 }
 
 auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_objectContainer.Initialize(renderTarget);
+  m_asteroidContainer.Initialize(renderTarget);
+  m_targetContainer.Initialize(renderTarget);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -56,18 +60,18 @@ auto level_container::AddTarget(level_target levelTarget) -> void
     ++m_activatedTargetCount;
   });
 
-  m_objectContainer.AppendActiveObject(levelTarget);
+  m_targetContainer.AppendActiveObject(levelTarget);
   ++m_targetCount;
 }
 
 auto level_container::AddAsteroid(level_asteroid asteroid) -> void
 {
-  m_objectContainer.AppendActiveObject(asteroid);
+  m_asteroidContainer.AppendActiveObject(asteroid);
 }
 
 auto level_container::AddAsteroids(level_asteroid_container& asteroids) -> void
 {
-  m_objectContainer.AppendActiveObject(asteroids);
+  m_asteroidContainer.AppendActiveObject(asteroids);
 }
 
 auto level_container::SetTimeout(int time) -> void
@@ -91,7 +95,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_targetActivated = false;
 
   m_objectContainer.Update(inputData, ticks);
-  m_objectContainer.DoCollisions();
+  m_objectContainer.DoCollisionsWith(m_asteroidContainer);
+  m_objectContainer.DoCollisionsWith(m_targetContainer);
   m_objectContainer.ClearDestroyedObjects();
 
   m_ticksRemaining -= ticks;
@@ -101,6 +106,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   m_objectContainer.Render(viewRect);
+  m_asteroidContainer.Render(viewRect);
+  m_targetContainer.Render(viewRect);
 }
 
 [[nodiscard]] auto level_container::PlayerX() const -> float

@@ -56,7 +56,7 @@ auto level_target::Render(D2D1_RECT_F viewRect) const -> void
   m_renderTarget->DrawGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 5.0f);
 }
 
-[[nodiscard]] auto level_target::GetCollisionData() -> collision_data
+[[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;
 }

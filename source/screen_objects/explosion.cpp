@@ -79,7 +79,7 @@ auto explosion_state::Render(D2D1_RECT_F viewRect) const -> void
   RenderPoints(m_renderTarget.get(), renderParticles.cbegin(), renderParticles.cend());
 }
 
-[[nodiscard]] auto explosion_state::GetCollisionData() -> collision_data
+[[nodiscard]] auto explosion_state::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;
 }

@@ -39,6 +39,8 @@ public:
 private:
 
   active_object_container m_objectContainer;
+  active_object_container m_asteroidContainer;
+  active_object_container m_targetContainer;
 
   int64_t m_ticksRemaining = 0;
 
