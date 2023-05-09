@@ -2,6 +2,7 @@
 #include "game_level_data_loader.h"
 #include "global_state.h"
 #include "game_level_object_generator.h"
+#include "level_asteroid_container.h"
 
 game_level_data_loader::game_level_data_loader()
 {
@@ -21,10 +22,14 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   
   asteroidGenerator.InsertInto(std::back_inserter(asteroids), std::back_inserter(targets));
 
+  level_asteroid_container asteroidContainer;
+
   for( const auto& asteroid : asteroids )
   {
-    levelContainer->AddAsteroid(asteroid);
+    asteroidContainer.AddAsteroid(asteroid);
   }
+  
+  levelContainer->AddAsteroids(asteroidContainer);
 
   for( const auto& target : targets )
   {

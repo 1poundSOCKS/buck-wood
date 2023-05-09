@@ -60,9 +60,14 @@ auto level_container::AddTarget(level_target levelTarget) -> void
   ++m_targetCount;
 }
 
-auto level_container::AddAsteroid(game_closed_object asteroid) -> void
+auto level_container::AddAsteroid(level_asteroid asteroid) -> void
 {
-  m_objectContainer.AppendActiveObject(level_asteroid { asteroid });
+  m_objectContainer.AppendActiveObject(asteroid);
+}
+
+auto level_container::AddAsteroids(level_asteroid_container& asteroids) -> void
+{
+  m_objectContainer.AppendActiveObject(asteroids);
 }
 
 auto level_container::SetTimeout(int time) -> void

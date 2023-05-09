@@ -21,6 +21,7 @@ private:
 
   [[nodiscard]] auto CreateAsteroid(game_rect rect) const -> game_closed_object;
 
-  rect_generator m_rectGenerator;
-
+  rect_generator::collection m_largeAsteroidRects;
+  rect_generator::collection m_smallAsteroidRects;
+  rect_generator::collection m_targetRects;
 };

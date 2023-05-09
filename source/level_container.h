@@ -4,6 +4,7 @@
 #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
+#include "level_asteroid_container.h"
 
 class level_container
 {
@@ -20,7 +21,8 @@ public:
 
   auto AddPlayer(player_ship playerShip) -> void;
   auto AddTarget(level_target levelTarget) -> void;
-  auto AddAsteroid(game_closed_object asteroid) -> void;
+  auto AddAsteroid(level_asteroid asteroid) -> void;
+  auto AddAsteroids(level_asteroid_container& asteroids) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;

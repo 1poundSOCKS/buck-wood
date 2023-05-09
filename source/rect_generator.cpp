@@ -2,17 +2,16 @@
 #include "rect_generator.h"
 #include "perlin_simplex_noise.h"
 
-rect_generator::rect_generator(game_rect rect, int columnCount, int rowCount) : m_rect(rect), m_cellGenerator(columnCount, rowCount)
+rect_generator::rect_generator(game_rect rect, float cellDiameter) : m_rect(rect), m_cellDiameter(cellDiameter)
 {
-  m_cellWidth = m_rect.Width() / columnCount;
-  m_cellHeight = m_rect.Height() / rowCount;
 }
 
 auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std::function<bool(float)> noiseValueCheck) const -> void
 {
   cell_generator::collection cells;
 
-  m_cellGenerator.Get(std::back_inserter(cells));
+  cell_generator cellGenerator(m_rect, m_cellDiameter, m_cellDiameter);
+  cellGenerator.Get(std::back_inserter(cells));
 
   std::vector<game_rect> cellRects;
   std::transform(cells.cbegin(), cells.cend(), std::back_inserter(cellRects), [this](auto cellID) -> game_rect
@@ -32,7 +31,8 @@ auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std
 {
   cell_generator::collection cells;
 
-  m_cellGenerator.Get(std::back_inserter(cells));
+  cell_generator cellGenerator(m_rect, m_cellDiameter, m_cellDiameter);
+  cellGenerator.Get(std::back_inserter(cells));
 
   std::vector<game_rect> cellRects;
   std::transform(cells.cbegin(), cells.cend(), std::back_inserter(cellRects), [this](auto cellID) -> game_rect
@@ -57,7 +57,7 @@ auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std
 
 auto rect_generator::GetRect(cell_generator::cell_id cellID) const -> game_rect
 {
-  auto topLeft = game_point { m_cellWidth * cellID.column + m_rect.topLeft.x, m_cellHeight * cellID.row + m_rect.topLeft.y };
-  auto bottomRight = game_point { topLeft.x + m_cellWidth, topLeft.y + m_cellHeight };
+  auto topLeft = game_point { m_cellDiameter * cellID.column, m_cellDiameter * cellID.row };
+  auto bottomRight = game_point { topLeft.x + m_cellDiameter, topLeft.y + m_cellDiameter };
   return { topLeft, bottomRight };
 }

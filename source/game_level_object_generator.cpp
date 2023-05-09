@@ -3,64 +3,38 @@
 #include "framework.h"
 #include "perlin_simplex_noise.h"
 
-constexpr auto GetLargeGridColumnCount() -> int
+game_level_object_generator::game_level_object_generator(game_rect levelRect)
 {
-  return 10;
-}
+  rect_generator::collection emptyLargeRects;
 
-constexpr auto GetLargeGridRowCount() -> int
-{
-  return 10;
-}
+  rect_generator largeRectGenerator(levelRect, 400.0f);
+  largeRectGenerator.Get(std::back_inserter(m_largeAsteroidRects), std::back_inserter(emptyLargeRects), [](float noise) -> bool { return noise < -0.80f; });
 
-constexpr auto GetSmallGridColumnCount() -> int
-{
-  return 4;
-}
-
-constexpr auto GetSmallGridRowCount() -> int
-{
-  return 4;
-}
-
-game_level_object_generator::game_level_object_generator(game_rect rect) : 
-  m_rectGenerator(rect, GetLargeGridColumnCount(), GetLargeGridRowCount())
-{
+  for( auto largeRect : emptyLargeRects )
+  {
+    rect_generator smallRectGenerator(largeRect, 100.0f);
+    smallRectGenerator.Get(std::back_inserter(m_smallAsteroidRects), [](float noise) -> bool { return noise < -0.86f; });
+    smallRectGenerator.Get(std::back_inserter(m_targetRects), [](float noise) -> bool { return noise > 0.967f; });
+  }
 }
 
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter, std::back_insert_iterator<target_collection> targetInserter) const -> void
 {
-  rect_generator::collection largeAsteroidRects;
-  rect_generator::collection emptyRects;
-  
-  m_rectGenerator.Get(std::back_inserter(largeAsteroidRects), std::back_inserter(emptyRects), [](float noise) -> bool { return noise < -0.80f; });
-  
-  std::transform(largeAsteroidRects.cbegin(), largeAsteroidRects.cend(), asteroidInserter, [this](auto rect)
+  std::transform(m_largeAsteroidRects.cbegin(), m_largeAsteroidRects.cend(), asteroidInserter, [this](auto rect)
   {
     return CreateAsteroid(rect);
   });
 
-  for( auto rect : emptyRects )
+  std::transform(m_smallAsteroidRects.cbegin(), m_smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
   {
-    rect_generator smallRectGenerator(rect, GetSmallGridColumnCount(), GetSmallGridRowCount());
+    return CreateAsteroid(rect);
+  });
 
-    rect_generator::collection smallAsteroidRects;
-    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.84f; });
-
-    std::transform(smallAsteroidRects.cbegin(), smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
-    {
-      return CreateAsteroid(rect);
-    });
-
-    rect_generator::collection targetRects;
-    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.967f; });
-
-    std::transform(targetRects.cbegin(), targetRects.cend(), targetInserter, [](auto rect)
-    {
-      auto centrePoint = rect.CentrePoint();
-      return level_target { centrePoint.x, centrePoint.y };
-    });
-  }
+  std::transform(m_targetRects.cbegin(), m_targetRects.cend(), targetInserter, [](auto rect)
+  {
+    auto centrePoint = rect.CentrePoint();
+    return level_target { centrePoint.x, centrePoint.y };
+  });
 }
 
 auto game_level_object_generator::CreateAsteroid(game_rect rect) const -> game_closed_object
