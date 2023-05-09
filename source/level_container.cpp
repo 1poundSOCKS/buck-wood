@@ -2,6 +2,7 @@
 #include "level_container.h"
 #include "bullet.h"
 #include "level_island.h"
+#include "explosion.h"
 
 level_container::level_container()
 {
@@ -34,6 +35,11 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
 
   playerShip.SetEventDied([this](float x, float y) -> void
   {
+    if( !m_playerDied )
+    {
+      m_objectContainer.AppendActiveObject( explosion_state { x, y} );
+    }
+    
     m_playerDied = true;
     m_playerX = x;
     m_playerY = y;

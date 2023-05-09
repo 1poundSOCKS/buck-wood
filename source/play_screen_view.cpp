@@ -34,7 +34,7 @@ auto play_screen_view::Update(int64_t elapsedTicks) -> void
 
 [[nodiscard]] auto play_screen_view::GetElapsedTicks(int64_t frameTicks) const -> int64_t
 {
-  return ( m_view == view_starting || m_view == view_ending ) ? 0 : frameTicks;
+  return ( m_view == view_starting ) ? 0 : frameTicks;
 }
 
 auto play_screen_view::SetPlayerPosition(float x, float y) -> void
