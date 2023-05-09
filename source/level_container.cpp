@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "level_container.h"
 #include "bullet.h"
-#include "level_island.h"
+#include "level_asteroid.h"
 #include "explosion.h"
 
 level_container::level_container()
@@ -39,7 +39,7 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
     {
       m_objectContainer.AppendActiveObject( explosion_state { x, y} );
     }
-    
+
     m_playerDied = true;
     m_playerX = x;
     m_playerY = y;
@@ -62,7 +62,7 @@ auto level_container::AddTarget(level_target levelTarget) -> void
 
 auto level_container::AddAsteroid(game_closed_object asteroid) -> void
 {
-  m_objectContainer.AppendActiveObject(level_island { asteroid });
+  m_objectContainer.AppendActiveObject(level_asteroid { asteroid });
 }
 
 auto level_container::SetTimeout(int time) -> void

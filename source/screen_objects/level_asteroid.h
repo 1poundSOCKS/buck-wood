@@ -5,11 +5,11 @@
 #include "object_input_data.h"
 #include "path_geometry.h"
 
-class level_island
+class level_asteroid
 {
 public:
 
-  level_island(const game_closed_object& object);
+  level_asteroid(const game_closed_object& object);
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
