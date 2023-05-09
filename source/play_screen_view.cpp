@@ -98,12 +98,6 @@ auto play_screen_view::Switch() -> void
   }
 }
 
-// auto play_screen_view::SwitchToEnding() -> void
-// {
-//   m_view = view_ending;
-//   m_totalTicks = performance_counter::QueryFrequency() * 5;
-// }
-
 auto play_screen_view::ScreenCanClose() const -> bool
 {
   return m_view == view_ending && m_ticks >= m_totalTicks;
