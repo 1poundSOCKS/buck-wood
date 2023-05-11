@@ -52,7 +52,7 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
   }
   else if( m_view == view_ending )
   {
-    level_transform_transition levelTransformTransiton(m_playerX, m_playerY, playZoom, m_playerX, m_playerY, 0.01f);
+    level_transform_transition levelTransformTransiton(m_playerX, m_playerY, playZoom, 0.0f, 0.0f, 0.01f);
     return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalTicks, m_ticks);
   }
   else
