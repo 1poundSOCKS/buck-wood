@@ -22,7 +22,7 @@ auto rect_generator::Get(std::back_insert_iterator<collection> trueInserter, std
   std::copy_if(cellRects.cbegin(), cellRects.cend(), trueInserter, [noiseValueCheck](auto cellRect) -> bool
   {
     auto rectCentre = cellRect.CentrePoint();
-    auto noiseValue = psn::GetNoise(rectCentre.x, rectCentre.y);
+    auto noiseValue = psn::GetNoise(rectCentre.x / 13, rectCentre.y / 13);
     return noiseValueCheck(noiseValue);
   });
 }
