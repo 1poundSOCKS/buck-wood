@@ -79,22 +79,7 @@ auto play_screen::Render() const -> void
 
   auto renderTargetSize = m_renderTarget->GetSize();
 
-  camera_sequence::camera_position cameraPosition = { 0, 0, 1.0f };
-
-  switch( m_stage )
-  {
-    case stage::pre_play:
-      cameraPosition = m_startSequence.GetPosition(m_stageTicks);
-      break;
-
-    case stage::playing:
-      cameraPosition = { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f };
-      break;
-
-    case stage::post_play:
-      cameraPosition = { 0, 0, 0.2f };
-      break;
-  }
+  auto cameraPosition = GetCameraPosition(renderTargetSize);
 
   play_screen_transform levelTransform(cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize);
 
@@ -150,6 +135,8 @@ auto play_screen::PrePlay(const screen_input_state& inputState) -> void
 {
   m_stageTicks += m_frameTicks;
 
+  UpdateLevel(inputState, 0);
+
   if( m_stageTicks > m_startSequence.GetTotalTicks() )
   {
     m_stage = stage::playing;
@@ -195,9 +182,27 @@ auto play_screen::PostPlay(const screen_input_state& inputState) -> void
 auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
   auto renderTargetSize = m_renderTarget->GetSize();
-  play_screen_transform levelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f, renderTargetSize);
+  auto cameraPosition = GetCameraPosition(renderTargetSize);
+  play_screen_transform levelTransform(cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize);
   auto objectInputData = levelTransform.GetObjectInputData(inputState);
   m_levelContainer->Update(objectInputData, elapsedTicks);
+}
+
+auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position
+{
+  camera_sequence::camera_position cameraPosition = { 0, 0, 1.0f };
+
+  switch( m_stage )
+  {
+    case stage::pre_play:
+      return m_startSequence.GetPosition(m_stageTicks);
+
+    case stage::post_play:
+      return { 0, 0, 0.2f };
+
+    default:
+      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f };
+  }
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool

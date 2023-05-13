@@ -35,6 +35,7 @@ private:
   auto PostPlay(const screen_input_state& inputState) -> void;
 
   auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
+  auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
