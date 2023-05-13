@@ -7,6 +7,7 @@
 #include "render_target_area.h"
 #include "text_box.h"
 #include "level_transform_transition.h"
+#include "play_screen_transform.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -39,74 +40,76 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
   levelTimer.SetCallbackForHiddenFlag([this]() -> bool
   {
-    return m_screenView.IsStarting();
+    return m_stage == stage::pre_play;
   });
 
   m_overlayContainer.AppendOverlayObject(menu);
   m_overlayContainer.AppendOverlayObject(levelTimer);
   m_overlayContainer.AppendOverlayObject(mouse_cursor {});
 
-  m_screenView.SetRenderTargetSize(renderTarget->GetSize());
+  m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
+
+  m_startSequence.AddPause(performance_counter::CalculateTicks(5.0f));
+  m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f }, performance_counter::CalculateTicks(3.0f) );
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
 {
-  auto frameTicks = performance_counter::QueryFrequency() / framework::fps();
-
-  if( PausePressed(inputState) && m_screenView.CanPauseScreen() )
+  switch( m_stage )
   {
-    m_paused = !m_paused;
+    case stage::pre_play:
+      PrePlay(inputState);
+      break;
+    case stage::playing:
+      Playing(inputState);
+      break;
+    case stage::post_play:
+      PostPlay(inputState);
+      break;
   }
 
-  m_screenView.Update(frameTicks);
-
-  auto elapsedTicks = m_paused ? 0 : m_screenView.GetElapsedTicks(frameTicks);
-
-  m_screenView.SetPlayerPosition(m_levelContainer->PlayerX(), m_levelContainer->PlayerY());
-
-  auto levelInputData = m_screenView.GetObjectInputData(inputState);
-  m_levelContainer->Update(levelInputData, elapsedTicks);
-  
-  if( m_levelContainer->IsComplete() )
-  {
-    m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-  }
-
-  if( m_levelContainer->HasTimedOut() || m_levelContainer->PlayerDied() || m_levelContainer->IsComplete() )
-  {
-    m_screenView.EndPlay();
-  }
-
-  auto overlayInputData = m_overlayTransform.GetObjectInputData(inputState);
-  m_overlayContainer.Update(overlayInputData, elapsedTicks);
-
-  if( m_screenView.TimeToSwitch() )
-  {
-    m_screenView.Switch();
-  }
-
-  if( m_screenView.ScreenCanClose() )
-  {
-    m_continueRunning = false;
-  }
+  screen_transform overlayTransform;
+  auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
+  m_overlayContainer.Update(overlayInputData, m_frameTicks);
 }
 
 auto play_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  m_renderTarget->SetTransform(m_screenView.GetTransform());
-  m_levelContainer->Render(m_renderTarget.get(), m_screenView.GetViewRect());
+  auto renderTargetSize = m_renderTarget->GetSize();
 
-  m_renderTarget->SetTransform(m_overlayTransform.Get());
-  m_overlayContainer.Render(m_overlayTransform.GetViewRect(m_renderTarget.get()));
+  camera_sequence::camera_position cameraPosition = { 0, 0, 1.0f };
+
+  switch( m_stage )
+  {
+    case stage::pre_play:
+      cameraPosition = m_startSequence.GetPosition(m_stageTicks);
+      break;
+
+    case stage::playing:
+      cameraPosition = { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f };
+      break;
+
+    case stage::post_play:
+      cameraPosition = { 0, 0, 0.2f };
+      break;
+  }
+
+  play_screen_transform levelTransform(cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize);
+
+  m_renderTarget->SetTransform(levelTransform.Get());
+  m_levelContainer->Render(m_renderTarget.get(), levelTransform.GetViewRect(renderTargetSize));
+
+  m_renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+  m_overlayContainer.Render(D2D1_RECT_F { 0.0f, 0.0f, renderTargetSize.width - 1, renderTargetSize.height - 1 });
 }
 
 auto play_screen::PlaySoundEffects() const -> void
 {
   const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
 
-  if( m_paused || !m_continueRunning )
+  if( m_stage != stage::playing || m_paused || !m_continueRunning )
   {
     StopSoundBufferPlay(soundBuffers[menu_theme]);
     StopSoundBufferPlay(soundBuffers[thrust]);
@@ -141,6 +144,60 @@ auto play_screen::PlaySoundEffects() const -> void
 
 auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
 {
+}
+
+auto play_screen::PrePlay(const screen_input_state& inputState) -> void
+{
+  m_stageTicks += m_frameTicks;
+
+  if( m_stageTicks > m_startSequence.GetTotalTicks() )
+  {
+    m_stage = stage::playing;
+    m_stageTicks = 0;
+  }
+}
+
+auto play_screen::Playing(const screen_input_state& inputState) -> void
+{
+  if( PausePressed(inputState) )
+  {
+    m_paused = !m_paused;
+  }
+
+  auto elapsedTicks = m_paused ? 0 : m_frameTicks;
+
+  UpdateLevel(inputState, elapsedTicks);
+
+  if( m_levelContainer->IsComplete() )
+  {
+    m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
+  }
+
+  if( m_levelContainer->HasFinished() )
+  {
+    m_stage = stage::post_play;
+    m_stageTicks = 0;
+  }
+}
+
+auto play_screen::PostPlay(const screen_input_state& inputState) -> void
+{
+  m_stageTicks += m_frameTicks;
+
+  UpdateLevel(inputState, m_frameTicks);
+
+  if( m_stageTicks > performance_counter::QueryFrequency() * 3 )
+  {
+    m_continueRunning = false;
+  }
+}
+
+auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void
+{
+  auto renderTargetSize = m_renderTarget->GetSize();
+  play_screen_transform levelTransform(m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f, renderTargetSize);
+  auto objectInputData = levelTransform.GetObjectInputData(inputState);
+  m_levelContainer->Update(objectInputData, elapsedTicks);
 }
 
 [[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool

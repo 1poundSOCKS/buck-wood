@@ -35,6 +35,7 @@ public:
   [[nodiscard]] auto TargetActivated() const -> bool;
   [[nodiscard]] auto TicksRemaining() const -> int64_t;
   [[nodiscard]] auto IsComplete() const -> bool;
+  [[nodiscard]] auto HasFinished() const -> bool;
 
 private:
 

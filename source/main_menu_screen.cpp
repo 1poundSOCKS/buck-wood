@@ -58,16 +58,18 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
     framework::openScreen<play_screen>();
   }
 
-  auto inputData = m_screenTransform.GetObjectInputData(inputState);
+  screen_transform screenTransform;
+  auto inputData = screenTransform.GetObjectInputData(inputState);
   m_objectContainer.Update(inputData, 0);
 }
 
 auto main_menu_screen::Render() const -> void
 {
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-  m_renderTarget->SetTransform(m_screenTransform.Get());
 
-  m_objectContainer.Render(m_screenTransform.GetViewRect(m_renderTarget.get()));
+  screen_transform screenTransform;
+  m_renderTarget->SetTransform(screenTransform.Get());
+  m_objectContainer.Render(screenTransform.GetViewRect(m_renderTarget->GetSize()));
 }
 
 auto main_menu_screen::PlaySoundEffects() const -> void

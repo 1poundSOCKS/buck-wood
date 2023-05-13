@@ -28,7 +28,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
 
-  screen_transform m_screenTransform;
   passive_object_container m_objectContainer;
   
   bool m_continueRunning = true;

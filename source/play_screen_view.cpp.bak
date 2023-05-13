@@ -2,6 +2,7 @@
 #include "play_screen_view.h"
 #include "level_transform_transition.h"
 #include "performance_counter.h"
+#include "screen_transform.h"
 
 play_screen_view::play_screen_view()
 {
@@ -15,16 +16,17 @@ auto play_screen_view::SetRenderTargetSize(D2D1_SIZE_F renderTargetSize) -> void
 
 [[nodiscard]] auto play_screen_view::CanPauseScreen() const -> bool
 {
-  return m_view != view_ending;
+  return m_view != view_zoom_out;
 }
 
 auto play_screen_view::Update(int64_t elapsedTicks) -> void
 {
   switch( m_view )
   {
-  case view_starting:
+  case view_start:
+  case view_zoom_in:
   case view_player_dead:
-  case view_ending:
+  case view_zoom_out:
     m_ticks += elapsedTicks;
     break;
   }
@@ -32,7 +34,15 @@ auto play_screen_view::Update(int64_t elapsedTicks) -> void
 
 [[nodiscard]] auto play_screen_view::GetElapsedTicks(int64_t frameTicks) const -> int64_t
 {
-  return ( m_view == view_starting || m_view == view_ending ) ? 0 : frameTicks;
+  switch( m_view )
+  {
+  case view_start:
+  case view_zoom_in:
+  case view_zoom_out:
+    return 0;
+  default:
+    return frameTicks;
+  }
 }
 
 auto play_screen_view::SetPlayerPosition(float x, float y) -> void
@@ -45,12 +55,16 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
 {
   static const float playZoom = 1.0f;
 
-  if( m_view == view_starting )
+  if( m_view == view_start )
   {
-    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.01f, m_playerX, m_playerY, playZoom);
+    return CreateTransform(0.0f, 0.0f, 0.2f, m_renderTargetSize.width, m_renderTargetSize.height);
+  }
+  if( m_view == view_zoom_in )
+  {
+    level_transform_transition levelTransformTransiton(0.0f, 0.0f, 0.2f, m_playerX, m_playerY, playZoom);
     return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalTicks, m_ticks);
   }
-  else if( m_view == view_ending )
+  else if( m_view == view_zoom_out )
   {
     level_transform_transition levelTransformTransiton(m_playerX, m_playerY, playZoom, 0.0f, 0.0f, 0.01f);
     return levelTransformTransiton.Get(m_renderTargetSize.width, m_renderTargetSize.height, m_totalTicks, m_ticks);
@@ -63,7 +77,7 @@ auto play_screen_view::SetPlayerPosition(float x, float y) -> void
 
 [[nodiscard]] auto play_screen_view::IsStarting() const -> bool
 {
-  return m_view == view_starting;
+  return m_view == view_start;
 }
 
 auto play_screen_view::EndPlay() -> void
@@ -78,13 +92,14 @@ auto play_screen_view::EndPlay() -> void
 {
   switch( m_view )
   {
-    case view_starting:
-    case view_player_dead:
-    case view_ending:
-      return m_ticks >= m_totalTicks;
+  case view_start:
+  case view_zoom_in:
+  case view_player_dead:
+  case view_zoom_out:
+    return m_ticks >= m_totalTicks;
 
-    default:
-      return false;
+  default:
+    return false;
   }
 }
 
@@ -100,24 +115,27 @@ auto play_screen_view::Switch() -> void
 
 auto play_screen_view::ScreenCanClose() const -> bool
 {
-  return m_view == view_ending && m_ticks >= m_totalTicks;
+  return m_view == view_zoom_out && m_ticks >= m_totalTicks;
 }
 
 [[nodiscard]] auto play_screen_view::GetNextView() const -> view_type
 {
   switch( m_view )
   {
-    case view_starting:
-      return view_playing;
+  case view_start:
+    return view_zoom_in;
 
-    case view_playing:
-      return view_player_dead;
+  case view_zoom_in:
+    return view_playing;
 
-    case view_player_dead:
-      return view_ending;
+  case view_playing:
+    return view_player_dead;
 
-    default:
-      return view_ending;
+  case view_player_dead:
+    return view_zoom_out;
+
+  default:
+    return view_zoom_out;
   }
 }
 
@@ -151,6 +169,10 @@ auto play_screen_view::ScreenCanClose() const -> bool
 
 [[nodiscard]] auto play_screen_view::GetViewRect() const -> D2D1_RECT_F
 {
+  screen_transform transform(m_transform);
+
+
+
   auto transform = GetTransform();
 
   if( transform.Invert() )

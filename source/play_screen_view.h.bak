@@ -25,14 +25,14 @@ public:
 
 private:
 
-  enum view_type { view_starting, view_playing, view_player_dead, view_ending };
+  enum view_type { view_start, view_zoom_in, view_playing, view_player_dead, view_zoom_out };
 
   [[nodiscard]] auto GetNextView() const -> view_type;
   
   [[nodiscard]] static auto CreateTransform(float centerPosX, float centerPosY, float scale, 
     float renderTargetWidth, float renderTargetHeight) -> D2D1::Matrix3x2F;
 
-  view_type m_view = view_starting;
+  view_type m_view = view_start;
 
   D2D1_SIZE_F m_renderTargetSize;
 

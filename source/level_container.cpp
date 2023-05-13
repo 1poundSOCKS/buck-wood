@@ -89,6 +89,11 @@ auto level_container::HasTimedOut() const -> bool
   return m_activatedTargetCount == m_targetCount;
 }
 
+[[nodiscard]] auto level_container::HasFinished() const -> bool
+{
+  return HasTimedOut() || PlayerDied() || IsComplete();
+}
+
 auto level_container::Update(const object_input_data& inputData, int64_t ticks) -> void
 {
   m_playerShot = false;

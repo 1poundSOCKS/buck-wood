@@ -29,3 +29,8 @@ int64_t performance_counter::QueryValue()
   QueryPerformanceCounter(&count);
   return count.QuadPart;
 }
+
+int64_t performance_counter::CalculateTicks(float timespan)
+{
+  return static_cast<int64_t>(static_cast<float>(QueryFrequency()) * timespan);
+}

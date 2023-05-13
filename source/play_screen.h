@@ -11,7 +11,7 @@
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
 #include "menu_def.h"
-#include "play_screen_view.h"
+#include "camera_sequence.h"
 
 class play_screen
 {
@@ -28,6 +28,13 @@ public:
 
 private:
 
+  enum class stage { pre_play, playing, post_play };
+
+  auto PrePlay(const screen_input_state& inputState) -> void;
+  auto Playing(const screen_input_state& inputState) -> void;
+  auto PostPlay(const screen_input_state& inputState) -> void;
+
+  auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
@@ -35,12 +42,14 @@ private:
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  int64_t m_frameTicks = 0;
+  stage m_stage = stage::pre_play;
   bool m_paused = false;
   bool m_continueRunning = true;
-  play_screen_view m_screenView;
+  int64_t m_stageTicks = 0;
   std::unique_ptr<level_container> m_levelContainer;
-  screen_transform m_overlayTransform;
   passive_object_container m_overlayContainer;
   game_level_data_loader m_gameLevelDataLoader;
   std::vector<int64_t> m_levelTimes;
+  camera_sequence m_startSequence = camera_sequence::camera_position { 0.0f, 0.0f, 0.2f };
 };

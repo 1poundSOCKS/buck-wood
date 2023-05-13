@@ -8,6 +8,7 @@ namespace performance_counter
 {
   int64_t QueryFrequency();
   int64_t QueryValue();
+  int64_t CalculateTicks(float timespan);
 
   struct data
   {

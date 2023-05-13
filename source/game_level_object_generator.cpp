@@ -10,36 +10,36 @@ game_level_object_generator::game_level_object_generator(game_rect rect) : m_rec
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter, std::back_insert_iterator<target_collection> targetInserter) const -> void
 {
   rect_generator::collection largeAsteroidRects;
-  rect_generator::collection smallAsteroidRects;
-  rect_generator::collection targetRects;
-
   rect_generator::collection emptyLargeRects;
 
   rect_generator largeRectGenerator(m_rect, 400.0f);
   largeRectGenerator.Get(std::back_inserter(largeAsteroidRects), std::back_inserter(emptyLargeRects), [](float noise) -> bool { return noise < -0.80f; });
-
-  for( auto largeRect : emptyLargeRects )
-  {
-    rect_generator smallRectGenerator(largeRect, 100.0f);
-    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.86f; });
-    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.967f; });
-  }
 
   std::transform(largeAsteroidRects.cbegin(), largeAsteroidRects.cend(), asteroidInserter, [this](auto rect)
   {
     return CreateAsteroid(rect);
   });
 
-  std::transform(smallAsteroidRects.cbegin(), smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
+  for( auto largeRect : emptyLargeRects )
   {
-    return CreateAsteroid(rect);
-  });
+    rect_generator::collection smallAsteroidRects;
+    rect_generator::collection targetRects;
 
-  std::transform(targetRects.cbegin(), targetRects.cend(), targetInserter, [](auto rect)
-  {
-    auto centrePoint = rect.CentrePoint();
-    return level_target { centrePoint.x, centrePoint.y };
-  });
+    rect_generator smallRectGenerator(largeRect, 100.0f);
+    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.86f; });
+    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.967f; });
+
+    std::transform(smallAsteroidRects.cbegin(), smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
+    {
+      return CreateAsteroid(rect);
+    });
+
+    std::transform(targetRects.cbegin(), targetRects.cend(), targetInserter, [](auto rect)
+    {
+      auto centrePoint = rect.CentrePoint();
+      return level_target { centrePoint.x, centrePoint.y };
+    });
+  }
 }
 
 auto game_level_object_generator::CreateAsteroid(game_rect rect) const -> game_closed_object

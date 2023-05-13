@@ -6,6 +6,11 @@ screen_transform::screen_transform()
   Set(D2D1::Matrix3x2F::Identity());
 }
 
+screen_transform::screen_transform(D2D1::Matrix3x2F transform)
+{
+  Set(transform);
+}
+
 auto screen_transform::Set(const D2D1::Matrix3x2F& transform) -> bool
 {
   m_invertedTransform = m_transform = transform;
@@ -17,9 +22,8 @@ auto screen_transform::Set(const D2D1::Matrix3x2F& transform) -> bool
   return m_transform;
 }
 
-[[nodiscard]] auto screen_transform::GetViewRect(ID2D1RenderTarget* renderTarget) const -> D2D1_RECT_F
+[[nodiscard]] auto screen_transform::GetViewRect(D2D1_SIZE_F renderTargetSize) const -> D2D1_RECT_F
 {
-  auto renderTargetSize = renderTarget->GetSize();
   auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };
   auto renderTargetBottomRight  = D2D1_POINT_2F { renderTargetSize.width - 1.0f, renderTargetSize.height - 1.0f };
 
