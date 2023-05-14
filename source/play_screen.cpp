@@ -66,7 +66,7 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
       break;
   }
 
-  auto overlayTransform = GetOverlayTransform();
+  auto overlayTransform = GetOverlayRenderTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, m_frameTicks);
 }
@@ -77,14 +77,14 @@ auto play_screen::Render() const -> void
 
   m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  auto levelTransform = GetLevelTransform();
-  auto screenTransform = screen_transform { levelTransform.Get() };
-  m_renderTarget->SetTransform(levelTransform.Get());
+  auto levelRenderTransform = GetLevelRenderTransform();
+  auto screenTransform = screen_transform { levelRenderTransform.Get() };
+  m_renderTarget->SetTransform(levelRenderTransform.Get());
   m_levelContainer->Render(m_renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
 
-  auto overlayTransform = GetOverlayTransform();
-  m_renderTarget->SetTransform(overlayTransform.Get());
-  m_overlayContainer.Render(overlayTransform.GetViewRect(renderTargetSize));
+  auto overlayRenderTransform = GetOverlayRenderTransform();
+  m_renderTarget->SetTransform(overlayRenderTransform.Get());
+  m_overlayContainer.Render(overlayRenderTransform.GetViewRect(renderTargetSize));
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -178,20 +178,21 @@ auto play_screen::PostPlay(const screen_input_state& inputState) -> void
 
 auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
-  auto levelTransform = GetLevelTransform();
-  auto screenTransform = screen_transform { levelTransform.Get() };
+  auto renderTransform = GetLevelRenderTransform();
+  auto screenTransform = screen_transform { renderTransform.Get() };
   auto objectInputData = screenTransform.GetObjectInputData(inputState);
   m_levelContainer->Update(objectInputData, elapsedTicks);
 }
 
-auto play_screen::GetLevelTransform() const -> play_screen_transform
+auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
   auto renderTargetSize = m_renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
-  return { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
+  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
+  return { cameraTransform.Get() };
 }
 
-auto play_screen::GetOverlayTransform() const -> screen_transform
+auto play_screen::GetOverlayRenderTransform() const -> screen_transform
 {
   return {};
 }
