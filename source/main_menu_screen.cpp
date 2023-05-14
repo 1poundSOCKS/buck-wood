@@ -87,7 +87,7 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.5f, 0.5f);
+  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.4f, 0.4f);
 
   menu_def menuDef(menuArea.GetRect());
 
