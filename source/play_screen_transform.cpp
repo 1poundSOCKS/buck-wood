@@ -12,14 +12,14 @@ play_screen_transform::play_screen_transform(float centreX, float centreY, float
   return m_transform;  
 }
 
-[[nodiscard]] auto play_screen_transform::GetViewRect(D2D1_SIZE_F renderTargetSize) const -> D2D1_RECT_F
-{
-  screen_transform screenTransform(m_transform);
-  return screenTransform.GetViewRect(renderTargetSize);
-}
+// [[nodiscard]] auto play_screen_transform::GetViewRect(D2D1_SIZE_F renderTargetSize) const -> D2D1_RECT_F
+// {
+//   screen_transform screenTransform(m_transform);
+//   return screenTransform.GetViewRect(renderTargetSize);
+// }
 
-[[nodiscard]] auto play_screen_transform::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
-{
-  screen_transform screenTransform(m_transform);
-  return screenTransform.GetObjectInputData(screenInputState);
-}
+// [[nodiscard]] auto play_screen_transform::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
+// {
+//   screen_transform screenTransform(m_transform);
+//   return screenTransform.GetObjectInputData(screenInputState);
+// }

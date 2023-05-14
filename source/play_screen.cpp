@@ -6,8 +6,6 @@
 #include "global_state.h"
 #include "render_target_area.h"
 #include "text_box.h"
-#include "level_transform_transition.h"
-#include "play_screen_transform.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -68,26 +66,25 @@ auto play_screen::Update(const screen_input_state& inputState) -> void
       break;
   }
 
-  screen_transform overlayTransform;
+  auto overlayTransform = GetOverlayTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
   m_overlayContainer.Update(overlayInputData, m_frameTicks);
 }
 
 auto play_screen::Render() const -> void
 {
-  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
   auto renderTargetSize = m_renderTarget->GetSize();
 
-  auto cameraPosition = GetCameraPosition(renderTargetSize);
+  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  play_screen_transform levelTransform(cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize);
-
+  auto levelTransform = GetLevelTransform();
+  auto screenTransform = screen_transform { levelTransform.Get() };
   m_renderTarget->SetTransform(levelTransform.Get());
-  m_levelContainer->Render(m_renderTarget.get(), levelTransform.GetViewRect(renderTargetSize));
+  m_levelContainer->Render(m_renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
 
-  m_renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-  m_overlayContainer.Render(D2D1_RECT_F { 0.0f, 0.0f, renderTargetSize.width - 1, renderTargetSize.height - 1 });
+  auto overlayTransform = GetOverlayTransform();
+  m_renderTarget->SetTransform(overlayTransform.Get());
+  m_overlayContainer.Render(overlayTransform.GetViewRect(renderTargetSize));
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -181,11 +178,22 @@ auto play_screen::PostPlay(const screen_input_state& inputState) -> void
 
 auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void
 {
+  auto levelTransform = GetLevelTransform();
+  auto screenTransform = screen_transform { levelTransform.Get() };
+  auto objectInputData = screenTransform.GetObjectInputData(inputState);
+  m_levelContainer->Update(objectInputData, elapsedTicks);
+}
+
+auto play_screen::GetLevelTransform() const -> play_screen_transform
+{
   auto renderTargetSize = m_renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
-  play_screen_transform levelTransform(cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize);
-  auto objectInputData = levelTransform.GetObjectInputData(inputState);
-  m_levelContainer->Update(objectInputData, elapsedTicks);
+  return { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
+}
+
+auto play_screen::GetOverlayTransform() const -> screen_transform
+{
+  return {};
 }
 
 auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position

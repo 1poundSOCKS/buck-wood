@@ -12,6 +12,7 @@
 #include "game_level_data_loader.h"
 #include "menu_def.h"
 #include "camera_sequence.h"
+#include "play_screen_transform.h"
 
 class play_screen
 {
@@ -35,7 +36,10 @@ private:
   auto PostPlay(const screen_input_state& inputState) -> void;
 
   auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
+  auto GetLevelTransform() const -> play_screen_transform;
+  auto GetOverlayTransform() const -> screen_transform;
   auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
+
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
