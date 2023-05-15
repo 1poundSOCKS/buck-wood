@@ -3,42 +3,33 @@
 #include "framework.h"
 #include "perlin_simplex_noise.h"
 
-game_level_object_generator::game_level_object_generator(game_rect rect) : m_rect(rect)
+game_level_object_generator::game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight) :
+  m_minColumn(minColumn), m_maxColumn(maxColumn), m_columnWidth(columnWidth), m_minRow(minRow), m_maxRow(maxRow), m_rowHeight(rowHeight)
 {
 }
 
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter, std::back_insert_iterator<target_collection> targetInserter) const -> void
 {
-  rect_generator::collection largeAsteroidRects;
-  rect_generator::collection emptyLargeRects;
-
-  rect_generator largeRectGenerator(m_rect, 400.0f);
-  largeRectGenerator.Get(std::back_inserter(largeAsteroidRects), std::back_inserter(emptyLargeRects), [](float noise) -> bool { return noise < -0.80f; });
-
-  std::transform(largeAsteroidRects.cbegin(), largeAsteroidRects.cend(), asteroidInserter, [this](auto rect)
+  for( auto row = m_minRow; row <= m_maxRow; ++row )
   {
-    return CreateAsteroid(rect);
-  });
-
-  for( auto largeRect : emptyLargeRects )
-  {
-    rect_generator::collection smallAsteroidRects;
-    rect_generator::collection targetRects;
-
-    rect_generator smallRectGenerator(largeRect, 100.0f);
-    smallRectGenerator.Get(std::back_inserter(smallAsteroidRects), [](float noise) -> bool { return noise < -0.86f; });
-    smallRectGenerator.Get(std::back_inserter(targetRects), [](float noise) -> bool { return noise > 0.967f; });
-
-    std::transform(smallAsteroidRects.cbegin(), smallAsteroidRects.cend(), asteroidInserter, [this](auto rect)
+    for( auto column = m_minColumn; column <= m_maxColumn; ++ column )
     {
-      return CreateAsteroid(rect);
-    });
+      auto x = static_cast<float>(column * m_columnWidth);
+      auto y = static_cast<float>(row * m_rowHeight);
 
-    std::transform(targetRects.cbegin(), targetRects.cend(), targetInserter, [](auto rect)
-    {
-      auto centrePoint = rect.CentrePoint();
-      return level_target { centrePoint.x, centrePoint.y };
-    });
+      auto noiseValue = psn::GetNoise(x, y);
+      
+      if( noiseValue > 0.967f )
+      {
+        targetInserter = level_target { x, y };
+      }
+      else if( noiseValue < -0.86f )
+      {
+        auto rowRadius = m_rowHeight / 2;
+        auto columnRadius = m_columnWidth / 2;
+        asteroidInserter = CreateAsteroid( { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } } );
+      }
+    }
   }
 }
 

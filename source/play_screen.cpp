@@ -207,10 +207,10 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return m_startSequence.GetPosition(m_stageTicks);
 
     case stage::post_play:
-      return { 0, 0, 0.2f };
+      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.4f };
 
     default:
-      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 1.0f };
+      return { m_levelContainer->PlayerX() + renderTargetSize.width / 3.0f, 0.0f, 1.0f };
   }
 }
 
