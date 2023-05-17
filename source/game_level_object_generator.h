@@ -16,8 +16,8 @@ public:
 
   game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight);
   auto InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void;
-  auto InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter, std::back_insert_iterator<target_collection> targetInserter) const -> void;
-  auto InsertInto(std::back_insert_iterator<target_collection> inserter) const -> void;
+  auto InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter) const -> void;
+  auto InsertInto(std::back_insert_iterator<target_collection> targetInserter) const -> void;
 
 private:
 
