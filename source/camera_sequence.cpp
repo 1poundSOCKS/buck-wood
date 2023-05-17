@@ -2,6 +2,10 @@
 #include "camera_sequence.h"
 #include "performance_counter.h"
 
+camera_sequence::camera_sequence()
+{
+}
+
 camera_sequence::camera_sequence(camera_position position)
 {
   m_moves.emplace_back(position);

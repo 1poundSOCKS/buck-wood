@@ -56,5 +56,7 @@ private:
   passive_object_container m_overlayContainer;
   game_level_data_loader m_gameLevelDataLoader;
   std::vector<int64_t> m_levelTimes;
-  camera_sequence m_startSequence = camera_sequence::camera_position { 0.0f, 0.0f, 0.2f };
+  camera_sequence m_startSequence;
+
+  static inline float m_playZoom = 0.6f;
 };

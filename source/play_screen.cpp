@@ -48,8 +48,8 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
   auto renderTargetSize = renderTarget->GetSize();
-  m_startSequence.AddPause(performance_counter::CalculateTicks(5.0f));
-  m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.6f }, performance_counter::CalculateTicks(3.0f) );
+  m_startSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 10.0f };
+  m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
 auto play_screen::Update(const screen_input_state& inputState) -> void
@@ -211,7 +211,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.4f };
 
     default:
-      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.6f };
+      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
   }
 }
 

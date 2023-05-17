@@ -57,7 +57,7 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
 
 auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void
 {
-  const auto playerThrust = 200.0f;
+  const auto playerThrust = 400.0f;
 
   m_thrusterOn = thrusterOn;
   m_angle = angle;
@@ -66,6 +66,9 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int6
 
   float forceX = 0.0f;
   float forceY = 0.0f;
+
+  m_velocityX -= ( m_velocityX / 80.0f );
+  m_velocityY -= ( m_velocityY / 80.0f );
 
   if( m_thrusterOn )
   {

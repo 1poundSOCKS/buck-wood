@@ -3,6 +3,7 @@
 #include "bullet.h"
 #include "level_asteroid.h"
 #include "explosion.h"
+#include "game_level_object_generator.h"
 
 level_container::level_container()
 {
@@ -10,7 +11,7 @@ level_container::level_container()
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
-  m_passiveObjects.Initialize(renderTarget);
+  // m_passiveObjects.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
   m_asteroidContainer.Initialize(renderTarget);
   m_targetContainer.Initialize(renderTarget);
@@ -18,7 +19,7 @@ level_container::level_container(ID2D1RenderTarget* renderTarget)
 
 auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_passiveObjects.Initialize(renderTarget);
+  // m_passiveObjects.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
   m_asteroidContainer.Initialize(renderTarget);
   m_targetContainer.Initialize(renderTarget);
@@ -26,7 +27,7 @@ auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto level_container::AddBackground(level_background background) -> void
 {
-  m_passiveObjects.AppendOverlayObject(background);
+  // m_passiveObjects.AppendOverlayObject(background);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -106,7 +107,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_playerShot = false;
   m_targetActivated = false;
 
-  m_passiveObjects.Update(inputData, ticks);
+  // m_passiveObjects.Update(inputData, ticks);
 
   m_objectContainer.Update(inputData, ticks);
   m_objectContainer.DoCollisionsWith(m_asteroidContainer);
@@ -119,7 +120,27 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
+  auto left = static_cast<int>(viewRect.left);
+  auto right = static_cast<int>(viewRect.right);
+  auto top = static_cast<int>(viewRect.top);
+  auto bottom = static_cast<int>(viewRect.bottom);
+  
   m_passiveObjects.Render(viewRect);
+  game_level_object_generator backgroundGenerator(left / 20, right / 20, 20, top / 20, bottom / 20, 20);
+
+  game_level_object_generator::star_collection stars;
+  backgroundGenerator.InsertInto(std::back_inserter(stars));
+
+  level_background background;
+  background.Initialize(renderTarget);
+  
+  for( const auto& star : stars )
+  {
+    background.AddStar(star);
+  }
+
+  background.Render(viewRect);
+
   m_objectContainer.Render(viewRect);
   m_asteroidContainer.Render(viewRect);
   m_targetContainer.Render(viewRect);

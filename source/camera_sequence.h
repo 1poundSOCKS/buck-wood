@@ -12,6 +12,7 @@ public:
     float scale;
   };
 
+  camera_sequence();
   camera_sequence(camera_position position);
   auto AddPause(int64_t ticks) -> void;
   auto AddMove(camera_position position, int64_t ticks) -> void;

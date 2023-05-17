@@ -17,14 +17,14 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<star_coll
       auto x = static_cast<float>(column * m_columnWidth);
       auto y = static_cast<float>(row * m_rowHeight);
 
-      auto noiseValue = psn::GetNoise(x, y);
+      auto noiseValue = psn::GetNoise(x / 7, y / 7);
 
       auto rowRadius = m_rowHeight / 2;
       auto columnRadius = m_columnWidth / 2;
 
       auto rect = game_rect { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } };
       
-      if( noiseValue > 0.95f )
+      if( noiseValue > 0.97f )
       {
         starInserter = game_point { x, y };
       }
