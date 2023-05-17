@@ -1,0 +1,25 @@
+#pragma once
+
+#include "object_input_data.h"
+#include "geometry.h"
+
+class level_background
+{
+
+public:
+
+  auto AddStar(game_point position) -> void;
+
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
+
+private:
+
+  using star_collection = std::vector<game_point>;
+
+  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
+  std::vector<game_point> m_stars;
+
+};

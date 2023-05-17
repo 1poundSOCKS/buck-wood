@@ -14,11 +14,24 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   
   levelContainer->AddPlayer(player_ship { 0, 0 });
 
-  game_level_object_generator objectGenerator(0, 400, 200, -5, 5, 200);
+  game_level_object_generator backgroundGenerator(-100, 100, 20, -100, 100, 20);
+
+  game_level_object_generator::star_collection stars;
+  backgroundGenerator.InsertInto(std::back_inserter(stars));
+
+  level_background background;
+  
+  for( const auto& star : stars )
+  {
+    background.AddStar(star);
+  }
+
+  levelContainer->AddBackground(background);
+
+  game_level_object_generator objectGenerator(-20, 20, 100, -20, 20, 100);
 
   game_level_object_generator::asteroid_collection asteroids;
-  game_level_object_generator::target_collection targets;
-  
+  game_level_object_generator::target_collection targets;  
   objectGenerator.InsertInto(std::back_inserter(asteroids), std::back_inserter(targets));
 
   for( const auto& asteroid : asteroids )

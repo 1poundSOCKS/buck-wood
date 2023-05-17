@@ -14,6 +14,7 @@ public:
   using event_activated = std::function<void()>;
 
   level_target(float x, float y);
+  level_target(const game_closed_object& object);
   auto SetActivated(event_activated eventTargetActivated) -> void;
   
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
@@ -32,6 +33,7 @@ private:
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_brushCentre;
   collision_data m_collisionData;
   collision_effect m_collisionEffect;
   path_geometry m_geometry;

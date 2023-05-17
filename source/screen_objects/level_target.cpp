@@ -34,6 +34,15 @@ level_target::level_target(float x, float y)
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 }
 
+level_target::level_target(const game_closed_object& object)
+{
+  m_geometry.Load(object);
+
+  m_collisionData = collision_data { object.points.cbegin(), object.points.cend() };
+  m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
+  m_collisionEffect.SetProperty(collision_effect::kills_player, true);
+}
+
 auto level_target::SetActivated(event_activated eventActivated) -> void
 {
   m_eventActivated = eventActivated;
@@ -45,6 +54,7 @@ auto level_target::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_renderTarget->AddRef();
   m_brushNotActivated = screen_render_brush_green.CreateBrush(renderTarget);
   m_brushActivated =  screen_render_brush_red.CreateBrush(renderTarget);
+  m_brushCentre =  screen_render_brush_dark_grey.CreateBrush(renderTarget);
 }
 
 auto level_target::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -53,7 +63,8 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
-  m_renderTarget->DrawGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 5.0f);
+  m_renderTarget->FillGeometry(m_geometry.Get(), m_brushCentre.get());
+  m_renderTarget->DrawGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 8.0f);
 }
 
 [[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&

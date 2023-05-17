@@ -49,10 +49,7 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
   {
     auto thrusterOn = inputData.GetMouseData().rightButtonDown;
     auto triggerPressed = inputData.GetMouseData().leftButtonDown;
-    auto angle = 90.0f;//CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-
-    auto diffY = ( inputData.GetMouseData().y - m_y ) / 10;
-    m_y += diffY;
+    auto angle = CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
 
     Update(thrusterOn, triggerPressed, angle, tickCount);
   }
@@ -60,7 +57,6 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
 
 auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void
 {
-  // const auto forceOfGravity = 0.0f;
   const auto playerThrust = 200.0f;
 
   m_thrusterOn = thrusterOn;
@@ -69,18 +65,18 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int6
   auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
 
   float forceX = 0.0f;
-  // float forceY = forceOfGravity;
+  float forceY = 0.0f;
 
   if( m_thrusterOn )
   {
     forceX += playerThrust * sin(DEGTORAD(m_angle));
-    // forceY -= playerThrust * cos(DEGTORAD(m_angle));
+    forceY -= playerThrust * cos(DEGTORAD(m_angle));
   }
   
   m_velocityX += forceX * gameUpdateInterval;
-  // m_velocityY += forceY * gameUpdateInterval;
+  m_velocityY += forceY * gameUpdateInterval;
   m_x += m_velocityX * gameUpdateInterval;
-  // m_y += m_velocityY * gameUpdateInterval;
+  m_y += m_velocityY * gameUpdateInterval;
 
   m_positionUpdate(m_x, m_y, m_thrusterOn);
 

@@ -10,6 +10,7 @@ level_container::level_container()
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
+  m_passiveObjects.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
   m_asteroidContainer.Initialize(renderTarget);
   m_targetContainer.Initialize(renderTarget);
@@ -17,9 +18,15 @@ level_container::level_container(ID2D1RenderTarget* renderTarget)
 
 auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
+  m_passiveObjects.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
   m_asteroidContainer.Initialize(renderTarget);
   m_targetContainer.Initialize(renderTarget);
+}
+
+auto level_container::AddBackground(level_background background) -> void
+{
+  m_passiveObjects.AppendOverlayObject(background);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -99,6 +106,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_playerShot = false;
   m_targetActivated = false;
 
+  m_passiveObjects.Update(inputData, ticks);
+
   m_objectContainer.Update(inputData, ticks);
   m_objectContainer.DoCollisionsWith(m_asteroidContainer);
   m_objectContainer.DoCollisionsWith(m_targetContainer);
@@ -110,6 +119,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
+  m_passiveObjects.Render(viewRect);
   m_objectContainer.Render(viewRect);
   m_asteroidContainer.Render(viewRect);
   m_targetContainer.Render(viewRect);
