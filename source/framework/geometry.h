@@ -29,12 +29,17 @@ struct game_line
 
 struct game_rect
 {
+  game_rect();
+  game_rect(float left, float top, float right, float bottom);
+  game_rect(game_point topLeft, game_point bottomRight);
+  game_rect(D2D1_RECT_F rect);
+
   [[nodiscard]] auto Width() const -> float;
   [[nodiscard]] auto Height() const -> float;
   [[nodiscard]] auto CentrePoint() const -> game_point;
 
-  game_point topLeft;
-  game_point bottomRight;
+  game_point topLeft = { 0, 0 };
+  game_point bottomRight = { 0, 0 };
 };
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)

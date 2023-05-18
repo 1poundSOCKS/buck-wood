@@ -35,6 +35,22 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
+game_rect::game_rect()
+{
+}
+
+game_rect::game_rect(float left, float top, float right, float bottom) : topLeft { left, top}, bottomRight { right, bottom }
+{
+}
+
+game_rect::game_rect(game_point topLeft, game_point bottomRight) : topLeft { topLeft }, bottomRight { bottomRight }
+{
+}
+
+game_rect::game_rect(D2D1_RECT_F rect) : topLeft { rect.left, rect.top }, bottomRight { rect.right, rect.bottom }
+{
+}
+
 [[nodiscard]] auto game_rect::Width() const -> float
 {
   return bottomRight.x - topLeft.x;

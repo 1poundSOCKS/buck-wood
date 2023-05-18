@@ -120,16 +120,24 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
-  auto left = static_cast<int>(viewRect.left);
-  auto right = static_cast<int>(viewRect.right);
-  auto top = static_cast<int>(viewRect.top);
-  auto bottom = static_cast<int>(viewRect.bottom);
+  game_rect gameRect { viewRect };
+  auto rectCentre = gameRect.CentrePoint();
+  
+  auto left = static_cast<int>(viewRect.left) + 500;
+  auto right = static_cast<int>(viewRect.right) - 500;
+  auto top = static_cast<int>(viewRect.top) +500;
+  auto bottom = static_cast<int>(viewRect.bottom) - 500;
   
   m_passiveObjects.Render(viewRect);
-  game_level_object_generator backgroundGenerator(left / 20, right / 20, 20, top / 20, bottom / 20, 20);
+  game_level_object_generator backgroundGenerator(left / 20, right / 20, 20, top / 20, bottom / 20, 20, 0.98f, 1.0f, 3.0f);
 
   game_level_object_generator::star_collection stars;
-  backgroundGenerator.InsertInto(std::back_inserter(stars));
+  // stars.clear();
+  // stars.reserve(5000);
+  // if( stars.size() == 0 )
+  // {
+    backgroundGenerator.InsertInto(std::back_inserter(stars));
+  // }
 
   level_background background;
   background.Initialize(renderTarget);
