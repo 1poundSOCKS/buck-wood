@@ -23,12 +23,20 @@ auto level_background::Update(const object_input_data& inputData, int64_t tickCo
 {
   m_stars.clear();
 
-  auto left = static_cast<int>(m_x) - 500;
-  auto right = static_cast<int>(m_x) + 500;
-  auto top = static_cast<int>(m_y) - 500;
-  auto bottom = static_cast<int>(m_y) + 500;
+  const int viewLeft = 1000 / 2;
+  const int viewRight = viewLeft;
+  const int viewTop = 1000 / 2;
+  const int viewBottom = viewTop;
 
-  game_level_object_generator backgroundGenerator(left / 20, right / 20, 20, top / 20, bottom / 20, 20, 0.98f, 1.0f, 3.0f);
+  const int columnWidth = 20;
+  const int rowHeight = 20;
+
+  auto leftColumn = ( static_cast<int>(m_x) - viewLeft ) / columnWidth;
+  auto rightColumn = ( static_cast<int>(m_x) + viewRight ) / columnWidth;
+  auto topRow = ( static_cast<int>(m_y) - viewTop ) / rowHeight;
+  auto bottomRow = ( static_cast<int>(m_y) + viewBottom ) / rowHeight;
+
+  game_level_object_generator backgroundGenerator(leftColumn, rightColumn, columnWidth, topRow, bottomRow, rowHeight, 0.98f, 1.0f, 3.0f);
 
   backgroundGenerator.InsertInto(std::back_inserter(m_stars));
 }

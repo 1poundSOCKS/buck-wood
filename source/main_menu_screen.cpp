@@ -50,7 +50,7 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
 
-auto main_menu_screen::Update(const screen_input_state& inputState) -> void
+auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
@@ -60,7 +60,7 @@ auto main_menu_screen::Update(const screen_input_state& inputState) -> void
 
   screen_transform screenTransform;
   auto inputData = screenTransform.GetObjectInputData(inputState);
-  m_objectContainer.Update(inputData, 0);
+  m_objectContainer.Update(inputData, frameInterval);
 }
 
 auto main_menu_screen::Render() const -> void

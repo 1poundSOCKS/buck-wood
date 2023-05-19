@@ -37,7 +37,7 @@ private:
   using points_collection = std::vector<game_point>;
   using lines_collection = std::vector<game_line>;
 
-  auto Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void;
+  auto Update(bool thrusterOn, bool triggerPressed, float angle, float gameUpdateInterval) -> void;
   void UpdateShipGeometryData();
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;

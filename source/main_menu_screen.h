@@ -13,7 +13,7 @@ public:
   main_menu_screen();
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
-  auto Update(const screen_input_state& inputState) -> void;
+  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
   auto PlaySoundEffects() const -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;

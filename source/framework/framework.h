@@ -29,6 +29,8 @@ public:
   static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
   static auto fps() -> int;
+  static auto isFrameRateUnlocked() -> bool;
+  static auto unlockedFrameRate() -> void;
   static auto rng() -> std::mt19937&;
 
   template <typename screen_state> static auto openScreen() -> void;
@@ -53,6 +55,7 @@ private:
   winrt::com_ptr<IDirectSound8> m_directSound;
   winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
+  bool m_unlockFrameRate = false;
 };
 
 template <typename screen_state> static auto framework::openScreen() -> void
@@ -69,5 +72,5 @@ template <typename screen_state> static auto framework::openScreen() -> void
     fps()
   };
 
-  OpenScreen(screenRunnerData, screenState);
+  OpenScreen(screenRunnerData, screenState, isFrameRateUnlocked());
 }

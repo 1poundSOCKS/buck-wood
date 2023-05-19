@@ -21,7 +21,7 @@ public:
   play_screen();
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
-  auto Update(const screen_input_state& inputState) -> void;
+  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
   auto PlaySoundEffects() const -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;
@@ -31,9 +31,9 @@ private:
 
   enum class stage { pre_play, playing, post_play };
 
-  auto PrePlay(const screen_input_state& inputState) -> void;
-  auto Playing(const screen_input_state& inputState) -> void;
-  auto PostPlay(const screen_input_state& inputState) -> void;
+  auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
 
   auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
   auto GetLevelRenderTransform() const -> screen_transform;

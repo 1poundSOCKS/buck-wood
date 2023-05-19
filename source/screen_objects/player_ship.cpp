@@ -51,44 +51,39 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
     auto triggerPressed = inputData.GetMouseData().leftButtonDown;
     auto angle = CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
 
-    Update(thrusterOn, triggerPressed, angle, tickCount);
+    auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
+
+    Update(thrusterOn, triggerPressed, angle, gameUpdateInterval);
+
+    if( triggerPressed && PlayerCanShoot(tickCount) &&  m_eventShot )
+    {
+      m_eventShot(m_x, m_y, m_angle);
+    }
   }
 }
 
-auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, int64_t tickCount) -> void
+auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, float gameUpdateInterval) -> void
 {
   const auto playerThrust = 400.0f;
-
+  
   m_thrusterOn = thrusterOn;
   m_angle = angle;
 
-  auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
+  m_velocityX -= ( ( m_velocityX * 0.3f ) * gameUpdateInterval );
+  m_velocityY -= ( ( m_velocityY * 0.3f ) * gameUpdateInterval );
 
-  float forceX = 0.0f;
-  float forceY = 0.0f;
+  float forceX = m_thrusterOn ? playerThrust * sin(DEGTORAD(m_angle)) : 0.0f;
+  float forceY = m_thrusterOn ? -playerThrust * cos(DEGTORAD(m_angle)) : 0.0f;
 
-  m_velocityX -= ( m_velocityX / 80.0f );
-  m_velocityY -= ( m_velocityY / 80.0f );
-
-  if( m_thrusterOn )
-  {
-    forceX += playerThrust * sin(DEGTORAD(m_angle));
-    forceY -= playerThrust * cos(DEGTORAD(m_angle));
-  }
-  
   m_velocityX += forceX * gameUpdateInterval;
   m_velocityY += forceY * gameUpdateInterval;
+
   m_x += m_velocityX * gameUpdateInterval;
   m_y += m_velocityY * gameUpdateInterval;
 
   m_positionUpdate(m_x, m_y, m_thrusterOn);
 
   UpdateShipGeometryData();
-
-  if( triggerPressed && PlayerCanShoot(tickCount) &&  m_eventShot )
-  {
-    m_eventShot(m_x, m_y, m_angle);
-  }
 }
 
 auto player_ship::Render(D2D1_RECT_F viewRect) const -> void

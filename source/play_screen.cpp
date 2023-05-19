@@ -52,24 +52,24 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
-auto play_screen::Update(const screen_input_state& inputState) -> void
+auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   switch( m_stage )
   {
     case stage::pre_play:
-      PrePlay(inputState);
+      PrePlay(inputState, frameInterval);
       break;
     case stage::playing:
-      Playing(inputState);
+      Playing(inputState, frameInterval);
       break;
     case stage::post_play:
-      PostPlay(inputState);
+      PostPlay(inputState, frameInterval);
       break;
   }
 
   auto overlayTransform = GetOverlayRenderTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
-  m_overlayContainer.Update(overlayInputData, m_frameTicks);
+  m_overlayContainer.Update(overlayInputData, frameInterval);
 }
 
 auto play_screen::Render() const -> void
@@ -129,9 +129,9 @@ auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDa
 {
 }
 
-auto play_screen::PrePlay(const screen_input_state& inputState) -> void
+auto play_screen::PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
-  m_stageTicks += m_frameTicks;
+  m_stageTicks += frameInterval;
 
   UpdateLevel(inputState, 0);
 
@@ -142,14 +142,14 @@ auto play_screen::PrePlay(const screen_input_state& inputState) -> void
   }
 }
 
-auto play_screen::Playing(const screen_input_state& inputState) -> void
+auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   if( PausePressed(inputState) )
   {
     m_paused = !m_paused;
   }
 
-  auto elapsedTicks = m_paused ? 0 : m_frameTicks;
+  auto elapsedTicks = m_paused ? 0 : frameInterval;
 
   UpdateLevel(inputState, elapsedTicks);
 
@@ -165,11 +165,11 @@ auto play_screen::Playing(const screen_input_state& inputState) -> void
   }
 }
 
-auto play_screen::PostPlay(const screen_input_state& inputState) -> void
+auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
-  m_stageTicks += m_frameTicks;
+  m_stageTicks += frameInterval;
 
-  UpdateLevel(inputState, m_frameTicks);
+  UpdateLevel(inputState, frameInterval);
 
   if( m_stageTicks > performance_counter::QueryFrequency() * 3 )
   {

@@ -66,6 +66,16 @@ auto framework::fps() -> int
   return 60;
 }
 
+auto framework::isFrameRateUnlocked() -> bool
+{
+  return get().m_unlockFrameRate;
+}
+
+auto framework::unlockedFrameRate() -> void
+{
+  get().m_unlockFrameRate = true;
+}
+
 auto framework::rng() -> std::mt19937&
 {
   return m_rng;

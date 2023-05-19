@@ -52,24 +52,21 @@ template <typename screen_state_type> auto KeepScreenOpen(const screen_state_typ
   return !g_closeAllScreens && screenState.ContinueRunning();
 }
 
-void OpenScreen(screen_runner_data data, auto& screenState)
+void OpenScreen(screen_runner_data data, auto& screenState, bool unlockFrameRate)
 {
   screen_diagnostics_render_data diagnosticsRenderData
   {
-    CreateScreenRenderBrush(data.renderTarget.get(), D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),
-    CreateScreenRenderTextFormat(
-        data.dwriteFactory.get(), 
-        L"Verdana", 
-        DWRITE_FONT_WEIGHT_LIGHT, 
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        20)
+    CreateScreenRenderBrush(data.renderTarget.get(), D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),    
+    CreateScreenRenderTextFormat(data.dwriteFactory.get(), L"Verdana", DWRITE_FONT_WEIGHT_LIGHT, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20)
   };
 
   screen_input_state inputState;
   performance::frame_data frameData;
 
   screenState.Initialize(data.renderTarget.get());
+
+  auto previousTime = performance_counter::QueryValue();
+  auto currentTime = previousTime;
   
   while( KeepScreenOpen(screenState) )
   {
@@ -80,12 +77,10 @@ void OpenScreen(screen_runner_data data, auto& screenState)
 
     ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
-    UpdateScreen(
-      data, 
-      screenState, 
-      inputState, 
-      frameData,
-      diagnosticsRenderData);
+    UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, unlockFrameRate);
+
+    previousTime = currentTime;
+    currentTime = performance_counter::QueryValue();
 
     inputState.previousWindowData = inputState.windowData;
     inputState.previousKeyboardState = inputState.keyboardState;
@@ -93,12 +88,8 @@ void OpenScreen(screen_runner_data data, auto& screenState)
   }
 }
 
-void UpdateScreen(
-  screen_runner_data& data,
-  auto& screenState,
-  const screen_input_state& inputState,
-  const performance::frame_data& frameData,
-  screen_diagnostics_render_data& diagnosticsRenderData)
+void UpdateScreen(screen_runner_data& data, auto& screenState, const screen_input_state& inputState, int64_t frameInterval, 
+  const performance::frame_data& frameData, screen_diagnostics_render_data& diagnosticsRenderData, bool unlockFrameRate)
 {
   std::vector<std::wstring> diagnosticsData;
   diagnosticsData.reserve(50);
@@ -107,7 +98,7 @@ void UpdateScreen(
   auto frameTime = timerFrequency / data.fps;
   
   auto startUpdateTime = performance_counter::QueryValue();
-  screenState.Update(inputState);
+  screenState.Update(inputState, frameInterval);
   auto endUpdateTime = performance_counter::QueryValue();
 
   diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
@@ -138,7 +129,7 @@ void UpdateScreen(
       GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
   }
 
-  data.swapChain->Present(1, 0);
+  data.swapChain->Present(unlockFrameRate ? 0 : 1, 0);
 
   screenState.PlaySoundEffects();
 }
