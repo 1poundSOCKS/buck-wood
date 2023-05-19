@@ -6,6 +6,7 @@
 #include "collision_effect.h"
 #include "object_input_data.h"
 
+template <typename collision_data_type, typename collision_effect_type>
 class active_object
 {
 private:
@@ -16,10 +17,10 @@ private:
     virtual auto Initialize(ID2D1RenderTarget* renderTarget) -> void = 0;
     virtual auto Update(const object_input_data& inputData, int64_t clockCount) -> void = 0;
     virtual auto Render(D2D1_RECT_F viewRect) const -> void = 0;
-    [[nodiscard]] virtual auto GetCollisionData() const -> const collision_data& = 0;
-    [[nodiscard]] virtual auto HasCollidedWith(const collision_data& collisionData) const -> bool = 0;
-    [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect = 0;
-    virtual auto ApplyCollisionEffect(const collision_effect& effect) -> void = 0;
+    [[nodiscard]] virtual auto GetCollisionData() const -> const collision_data_type& = 0;
+    [[nodiscard]] virtual auto HasCollidedWith(const collision_data_type& collisionData) const -> bool = 0;
+    [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect_type = 0;
+    virtual auto ApplyCollisionEffect(const collision_effect_type& effect) -> void = 0;
     [[nodiscard]] virtual auto Destroyed() const -> bool = 0;
   };
 
@@ -48,22 +49,22 @@ private:
       object.Render(viewRect);
     }
 
-    [[nodiscard]] auto GetCollisionData() const -> const collision_data& override
+    [[nodiscard]] auto GetCollisionData() const -> const collision_data_type& override
     {
       return object.GetCollisionData();
     }
 
-    [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool override
+    [[nodiscard]] auto HasCollidedWith(const collision_data_type& collisionData) const -> bool override
     {
       return object.HasCollidedWith(collisionData);
     }
 
-    [[nodiscard]] auto GetCollisionEffect() const -> collision_effect override
+    [[nodiscard]] auto GetCollisionEffect() const -> collision_effect_type override
     {
       return object.GetCollisionEffect();
     }
 
-    auto ApplyCollisionEffect(const collision_effect& effect) -> void override
+    auto ApplyCollisionEffect(const collision_effect_type& effect) -> void override
     {
       object.ApplyCollisionEffect(effect);
     }
@@ -111,22 +112,22 @@ public:
     objectConcept->Render(viewRect);
   }
 
-  [[nodiscard]] auto GetCollisionData() const -> const collision_data&
+  [[nodiscard]] auto GetCollisionData() const -> const collision_data_type&
   {
     return objectConcept->GetCollisionData();
   }
 
-  [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool
+  [[nodiscard]] auto HasCollidedWith(const collision_data_type& collisionData) const -> bool
   {
     return objectConcept->HasCollidedWith(collisionData);
   }
 
-  [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect
+  [[nodiscard]] virtual auto GetCollisionEffect() const -> collision_effect_type
   {
     return objectConcept->GetCollisionEffect();
   }
 
-  auto ApplyCollisionEffect(const collision_effect& effect) -> void
+  auto ApplyCollisionEffect(const collision_effect_type& effect) -> void
   {
     objectConcept->ApplyCollisionEffect(effect);
   }

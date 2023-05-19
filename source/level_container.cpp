@@ -11,23 +11,15 @@ level_container::level_container()
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
-  // m_passiveObjects.Initialize(renderTarget);
-  m_objectContainer.Initialize(renderTarget);
-  m_asteroidContainer.Initialize(renderTarget);
-  m_targetContainer.Initialize(renderTarget);
+  Initialize(renderTarget);
 }
 
 auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  // m_passiveObjects.Initialize(renderTarget);
+  m_background.Initialize(renderTarget);
   m_objectContainer.Initialize(renderTarget);
   m_asteroidContainer.Initialize(renderTarget);
   m_targetContainer.Initialize(renderTarget);
-}
-
-auto level_container::AddBackground(level_background background) -> void
-{
-  // m_passiveObjects.AppendOverlayObject(background);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -107,8 +99,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_playerShot = false;
   m_targetActivated = false;
 
-  // m_passiveObjects.Update(inputData, ticks);
-
+  m_background.SetCentre(m_playerX, m_playerY);
+  m_background.Update(inputData, ticks);
   m_objectContainer.Update(inputData, ticks);
   m_objectContainer.DoCollisionsWith(m_asteroidContainer);
   m_objectContainer.DoCollisionsWith(m_targetContainer);
@@ -120,35 +112,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
-  game_rect gameRect { viewRect };
-  auto rectCentre = gameRect.CentrePoint();
-  
-  auto left = static_cast<int>(viewRect.left) + 500;
-  auto right = static_cast<int>(viewRect.right) - 500;
-  auto top = static_cast<int>(viewRect.top) +500;
-  auto bottom = static_cast<int>(viewRect.bottom) - 500;
-  
-  m_passiveObjects.Render(viewRect);
-  game_level_object_generator backgroundGenerator(left / 20, right / 20, 20, top / 20, bottom / 20, 20, 0.98f, 1.0f, 3.0f);
-
-  game_level_object_generator::star_collection stars;
-  // stars.clear();
-  // stars.reserve(5000);
-  // if( stars.size() == 0 )
-  // {
-    backgroundGenerator.InsertInto(std::back_inserter(stars));
-  // }
-
-  level_background background;
-  background.Initialize(renderTarget);
-  
-  for( const auto& star : stars )
-  {
-    background.AddStar(star);
-  }
-
-  background.Render(viewRect);
-
+  m_background.Render(viewRect);
   m_objectContainer.Render(viewRect);
   m_asteroidContainer.Render(viewRect);
   m_targetContainer.Render(viewRect);

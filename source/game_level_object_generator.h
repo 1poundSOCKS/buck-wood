@@ -1,9 +1,9 @@
 #pragma once
 
 #include "geometry.h"
-#include "level_grid_cell_generator.h"
+// #include "level_grid_cell_generator.h"
 #include "level_target.h"
-#include "rect_generator.h"
+// #include "rect_generator.h"
 
 class game_level_object_generator
 {
