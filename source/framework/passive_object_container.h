@@ -10,7 +10,6 @@ public:
   using passive_object_collection_type = std::vector<passive_object>;
 
   passive_object_container();
-  // auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   template <typename object_type> auto AppendOverlayObject(object_type& object) -> void;
   template <typename object_type> auto AppendOverlayObject(object_type&& object) -> void;
@@ -29,12 +28,10 @@ private:
 
 template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type& object) -> void
 {
-  // object.Initialize(m_renderTarget.get());
   m_overlayObjects.emplace_back(object);
 }
 
 template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type&& object) -> void
 {
-  // object.Initialize(m_renderTarget.get());
   m_overlayObjects.emplace_back(object);
 }
