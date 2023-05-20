@@ -25,7 +25,7 @@ public:
 
   auto AddPlayer(player_ship playerShip) -> void;
   auto AddTarget(level_target levelTarget) -> void;
-  auto AddAsteroid(level_asteroid asteroid) -> void;
+  // auto AddAsteroid(level_asteroid asteroid) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;

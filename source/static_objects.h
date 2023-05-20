@@ -3,6 +3,7 @@
 #include "active_object_container.h"
 #include "level_target.h"
 #include "level_asteroid.h"
+#include "game_level_object_generator.h"
 
 class static_objects
 {
@@ -14,12 +15,12 @@ public:
 
   static_objects();
 
-  auto GetObjectContainers() -> active_object_container_collection&;
+  [[nodiscard]] auto GetObjectContainers() -> active_object_container_collection&;
 
-  auto AddTarget(level_target target) -> void;
-  auto AddAsteroid(level_asteroid asteroid) -> void;
+  [[nodiscard]] auto GetTargets() -> active_object_container_type&;
+  [[nodiscard]] auto GetAsteroids() -> active_object_container_type&;
 
-  auto SetCentre(float x, float y) -> void;
+  auto SetCentre(int x, int y) -> void;
 
   auto Initialize() -> void;
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
@@ -30,7 +31,9 @@ private:
 
   active_object_container_collection m_objectContainers;
 
-  float m_x;
-  float m_y;
+  static auto GenerateAsteroids(const game_level_object_generator& generator, active_object_container_type& objects) -> void;
+
+  int m_x;
+  int m_y;
 
 };

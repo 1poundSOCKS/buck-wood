@@ -59,14 +59,14 @@ auto level_container::AddTarget(level_target levelTarget) -> void
     ++m_activatedTargetCount;
   });
 
-  m_staticObjects.AddTarget(levelTarget);
+  m_staticObjects.GetTargets().AppendActiveObject(levelTarget);
   ++m_targetCount;
 }
 
-auto level_container::AddAsteroid(level_asteroid asteroid) -> void
-{
-  m_staticObjects.AddAsteroid(asteroid);
-}
+// auto level_container::AddAsteroid(level_asteroid asteroid) -> void
+// {
+//   m_staticObjects.AddAsteroid(asteroid);
+// }
 
 auto level_container::SetTimeout(int time) -> void
 {
@@ -95,7 +95,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
   m_background.SetCentre(m_playerX, m_playerY);
   m_background.Update(inputData, ticks);
-  m_staticObjects.SetCentre(m_playerX, m_playerY);
+  m_staticObjects.SetCentre(static_cast<int>(m_playerX), static_cast<int>(m_playerY));
   m_staticObjects.Update(inputData, ticks);
   m_objectContainer.Update(inputData, ticks);
 
