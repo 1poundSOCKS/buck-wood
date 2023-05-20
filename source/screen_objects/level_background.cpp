@@ -10,12 +10,11 @@ constexpr D2D1_RECT_F GetStarRect()
 
 level_background::level_background()
 {
+  Initialize(framework::renderTarget().get());
 }
 
 auto level_background::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
   m_starBrush =  screen_render_brush_white.CreateBrush(renderTarget);
 }
 
@@ -47,7 +46,7 @@ auto level_background::Render(D2D1_RECT_F viewRect) const -> void
 
   for( const auto& star : m_stars )
   {
-    m_renderTarget->FillRectangle(D2D1_RECT_F { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y }, m_starBrush.get());
+    framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y }, m_starBrush.get());
   }
 }
 

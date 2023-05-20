@@ -48,12 +48,12 @@ explosion_state::explosion_state(float x, float y)
   {
     particle.Initialize(x, y);
   }
+
+  Initialize(framework::renderTarget().get());
 }
 
 auto explosion_state::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
   m_brush = screen_render_brush_white.CreateBrush(renderTarget);
 }
 
@@ -76,7 +76,7 @@ auto explosion_state::Render(D2D1_RECT_F viewRect) const -> void
     return particle.GetRenderRect(this->m_brush.get());
   });
 
-  RenderPoints(m_renderTarget.get(), renderParticles.cbegin(), renderParticles.cend());
+  RenderPoints(framework::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());
 }
 
 [[nodiscard]] auto explosion_state::GetCollisionData() const -> const collision_data&

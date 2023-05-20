@@ -17,7 +17,6 @@ public:
   level_target(const game_closed_object& object);
   auto SetActivated(event_activated eventTargetActivated) -> void;
   
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -28,15 +27,17 @@ public:
 
 private:
 
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+
   bool m_activated = false;
   event_activated m_eventActivated = []() -> void {};
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushCentre;
   collision_data m_collisionData;
   collision_effect m_collisionEffect;
   path_geometry m_geometry;
+  
 };
 
 #endif

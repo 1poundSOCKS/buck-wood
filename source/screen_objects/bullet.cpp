@@ -19,13 +19,13 @@ bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), y
   xVelocity = bulletSpeed * sin(DEGTORAD(angle));
 
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
+
+  Initialize(framework::renderTarget().get());
 }
 
 auto bullet::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
-  brush = screen_render_brush_yellow.CreateBrush(renderTarget);
+  brush = screen_render_brush_yellow.CreateBrush(framework::renderTarget().get());
 }
 
 auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -42,7 +42,7 @@ auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> vo
 auto bullet::Render(D2D1_RECT_F viewRect) const -> void
 {
   const D2D1_RECT_F rect = GetBulletRect();
-  m_renderTarget->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
+  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
 }
 
 [[nodiscard]] auto bullet::GetCollisionData() const -> const collision_data&

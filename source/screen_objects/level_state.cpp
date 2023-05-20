@@ -4,6 +4,7 @@
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "dwrite_factory.h"
+#include "framework.h"
 
 inline auto render_text_format_level_state = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 80);
 
@@ -27,6 +28,7 @@ auto level_state::control::GetText() const -> LPCWSTR
 
 level_state::level_state() : m_controlData(std::make_shared<control>())
 {
+  Initialize(framework::renderTarget().get());
 }
 
 auto level_state::GetControlData() const -> control_data
@@ -36,11 +38,9 @@ auto level_state::GetControlData() const -> control_data
 
 auto level_state::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
   m_brush = screen_render_brush_cyan.CreateBrush(renderTarget);
-  auto dwriteFactory = dwrite_factory::get().get();
-  m_textFormat = render_text_format_level_state.CreateTextFormat(dwriteFactory);
+  const auto& dwriteFactory = dwrite_factory::get();
+  m_textFormat = render_text_format_level_state.CreateTextFormat(dwriteFactory.get());
 }
 
 auto level_state::Update(const object_input_data& inputData, int64_t clockCount) -> void
@@ -53,7 +53,7 @@ auto level_state::Render(D2D1_RECT_F viewRect) const -> void
 
   if( renderText )
   {
-    RenderText(m_renderTarget.get(), m_brush.get(), m_textFormat.get(), renderText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(framework::renderTarget().get(), m_brush.get(), m_textFormat.get(), renderText, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
 }
 

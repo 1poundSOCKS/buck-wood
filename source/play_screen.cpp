@@ -16,8 +16,8 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_renderTarget.attach(renderTarget);
   m_renderTarget->AddRef();
 
-  m_levelContainer->Initialize(renderTarget);
-  m_overlayContainer.Initialize(renderTarget);
+  // m_levelContainer->Initialize(renderTarget);
+  // m_overlayContainer.Initialize(renderTarget);
 
   m_continueRunning = LoadFirstLevel();
 

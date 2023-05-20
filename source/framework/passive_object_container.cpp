@@ -6,16 +6,16 @@ passive_object_container::passive_object_container()
 {
 }
 
-auto passive_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
-{
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
+// auto passive_object_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
+// {
+//   m_renderTarget.attach(renderTarget);
+//   m_renderTarget->AddRef();
 
-  std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
-  {
-    object.Initialize(m_renderTarget.get());
-  });
-}
+//   std::for_each(std::execution::seq, m_overlayObjects.begin(), m_overlayObjects.end(), [this](auto& object)
+//   {
+//     object.Initialize(m_renderTarget.get());
+//   });
+// }
 
 [[nodiscard]] auto passive_object_container::GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>
 {

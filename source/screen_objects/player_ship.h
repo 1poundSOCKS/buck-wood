@@ -23,7 +23,6 @@ public:
   auto SetEventShot(event_shot eventShot) -> void;
   auto SetEventDied(event_died eventDied) -> void;
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -37,6 +36,7 @@ private:
   using points_collection = std::vector<game_point>;
   using lines_collection = std::vector<game_line>;
 
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(bool thrusterOn, bool triggerPressed, float angle, float gameUpdateInterval) -> void;
   void UpdateShipGeometryData();
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
@@ -65,7 +65,6 @@ private:
   event_shot m_eventShot;
   event_died m_eventDied;
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_shipBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_thrusterBrush;
 

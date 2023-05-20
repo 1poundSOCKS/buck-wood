@@ -12,7 +12,6 @@ public:
 
   level_background();
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
@@ -20,7 +19,8 @@ public:
 
 private:
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+  
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
   std::vector<game_point> m_stars;
   float m_x = 0;

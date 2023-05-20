@@ -14,12 +14,12 @@ public:
   auto SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void;
   auto GetHoverState() const -> bool;
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
 
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
 
   std::wstring m_text = L"";
@@ -36,7 +36,6 @@ private:
   render_text_format_def m_textFormatDef;
   render_text_format_def m_hoverTextFormatDef;
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBorderBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_buttonHoverBrush;

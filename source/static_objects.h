@@ -22,7 +22,7 @@ public:
 
   auto SetCentre(int x, int y) -> void;
 
-  auto Initialize() -> void;
+  // auto Initialize() -> void;
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
   auto DoCollisionsWith(active_object_container_type& objectContainer) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;

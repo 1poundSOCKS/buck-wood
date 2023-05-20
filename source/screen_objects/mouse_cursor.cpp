@@ -2,6 +2,7 @@
 #include "mouse_cursor.h"
 #include "screen_render.h"
 #include "render_brush_defs.h"
+#include "framework.h"
 
 consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
 {
@@ -22,12 +23,11 @@ consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
 
 mouse_cursor::mouse_cursor()
 {
+  Initialize(framework::renderTarget().get());
 }
 
 auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
   m_brush = screen_render_brush_white.CreateBrush(renderTarget);
 }
 
@@ -52,5 +52,5 @@ auto mouse_cursor::Render(D2D1_RECT_F viewRect) const -> void
     std::back_inserter(renderLines), 
     m_brush.get(), 5, m_x, m_y);
   
-  RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
+  RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }

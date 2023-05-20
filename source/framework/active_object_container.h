@@ -12,7 +12,7 @@ public:
   using active_object_collection_type = std::list<active_object_type>;
 
   active_object_container();
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+  // auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   template <typename object_type> auto AppendActiveObject(object_type& object) -> void;
   template <typename object_type> auto AppendActiveObject(object_type&& object) -> void;
@@ -35,14 +35,14 @@ private:
 template <typename collision_data_type, typename collision_effect_type>
 template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type& object) -> void
 {
-  object.Initialize(m_renderTarget.get());
+  // object.Initialize(m_renderTarget.get());
   m_activeObjects.emplace_back(object);
 }
 
 template <typename collision_data_type, typename collision_effect_type>
 template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type&& object) -> void
 {
-  object.Initialize(m_renderTarget.get());
+  // object.Initialize(m_renderTarget.get());
   m_activeObjects.emplace_back(object);
 }
 
@@ -51,17 +51,17 @@ active_object_container<collision_data_type, collision_effect_type>::active_obje
 {
 }
 
-template <typename collision_data_type, typename collision_effect_type>
-auto active_object_container<collision_data_type, collision_effect_type>::Initialize(ID2D1RenderTarget* renderTarget) -> void
-{
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
+// template <typename collision_data_type, typename collision_effect_type>
+// auto active_object_container<collision_data_type, collision_effect_type>::Initialize(ID2D1RenderTarget* renderTarget) -> void
+// {
+//   m_renderTarget.attach(renderTarget);
+//   m_renderTarget->AddRef();
 
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this](auto& object)
-  {
-    object.Initialize(m_renderTarget.get());
-  });
-}
+//   std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [this](auto& object)
+//   {
+//     object.Initialize(m_renderTarget.get());
+//   });
+// }
 
 template <typename collision_data_type, typename collision_effect_type>
 [[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>

@@ -11,12 +11,14 @@ player_ship::player_ship()
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
+  Initialize(framework::renderTarget().get());
 }
 
 player_ship::player_ship(float x, float y) : m_x(x), m_y(y)
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
+  Initialize(framework::renderTarget().get());
 }
 
 auto player_ship::SetPositionUpdate(position_update positionUpdate) -> void
@@ -37,8 +39,6 @@ auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> vo
 
 auto player_ship::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
   m_shipBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
 }
@@ -102,7 +102,7 @@ auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
     CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_thrusterBrush.get(), 5);
   }
 
-  RenderLines(m_renderTarget.get(), renderLines.cbegin(), renderLines.cend());
+  RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }
 
 [[nodiscard]] auto player_ship::GetCollisionData() const -> const collision_data&

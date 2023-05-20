@@ -27,13 +27,13 @@ auto static_objects::SetCentre(int x, int y) -> void
   m_y = y;
 }
 
-auto static_objects::Initialize() -> void
-{
-  for( auto& objectContainer : m_objectContainers )
-  {
-    objectContainer.Initialize(framework::renderTarget().get());
-  }
-}
+// auto static_objects::Initialize() -> void
+// {
+//   for( auto& objectContainer : m_objectContainers )
+//   {
+//     objectContainer.Initialize(framework::renderTarget().get());
+//   }
+// }
 
 auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -> void
 {

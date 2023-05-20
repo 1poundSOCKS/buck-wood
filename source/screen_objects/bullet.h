@@ -12,7 +12,6 @@ public:
 
   bullet(float x, float y, float angle);
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -25,12 +24,13 @@ public:
 
 private:
 
+  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;
   float xVelocity = 0, yVelocity = 0;
   float angle = 0;
-  float range = 1000;  
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
+  float range = 1000;
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
   collision_data m_collisionData;
   collision_effect m_collisionEffect;

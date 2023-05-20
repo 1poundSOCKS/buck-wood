@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "level_container.h"
 #include "bullet.h"
-#include "level_asteroid.h"
 #include "explosion.h"
-#include "game_level_object_generator.h"
 
 level_container::level_container()
 {
@@ -11,14 +9,6 @@ level_container::level_container()
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
-  Initialize(renderTarget);
-}
-
-auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
-{
-  m_background.Initialize(renderTarget);
-  m_staticObjects.Initialize();
-  m_objectContainer.Initialize(renderTarget);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -63,11 +53,6 @@ auto level_container::AddTarget(level_target levelTarget) -> void
   ++m_targetCount;
 }
 
-// auto level_container::AddAsteroid(level_asteroid asteroid) -> void
-// {
-//   m_staticObjects.AddAsteroid(asteroid);
-// }
-
 auto level_container::SetTimeout(int time) -> void
 {
   m_ticksRemaining = performance_counter::QueryFrequency() * time;
@@ -95,16 +80,13 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
   m_background.SetCentre(m_playerX, m_playerY);
   m_background.Update(inputData, ticks);
+
   m_staticObjects.SetCentre(static_cast<int>(m_playerX), static_cast<int>(m_playerY));
   m_staticObjects.Update(inputData, ticks);
+  
   m_objectContainer.Update(inputData, ticks);
 
   m_staticObjects.DoCollisionsWith(m_objectContainer);
-
-  // for( auto& staticObjectContainer : m_staticObjects.GetObjectContainers() )
-  // {
-  //   m_objectContainer.DoCollisionsWith(staticObjectContainer);
-  // }
 
   m_objectContainer.ClearDestroyedObjects();
 
