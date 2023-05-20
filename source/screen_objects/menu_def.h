@@ -18,7 +18,7 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetButtonRect(int buttonIndex) const -> D2D1_RECT_F;
+  [[nodiscard]] auto GetButtonRect(int buttonIndex, int buttonCount) const -> D2D1_RECT_F;
 
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
   button_defs_collection m_buttonDefs;

@@ -30,7 +30,7 @@ public:
   static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
   static auto fps() -> int;
   static auto isFrameRateUnlocked() -> bool;
-  static auto unlockedFrameRate() -> void;
+  static auto unlockFrameRate() -> void;
   static auto rng() -> std::mt19937&;
 
   template <typename screen_state> static auto openScreen() -> void;

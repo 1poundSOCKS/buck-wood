@@ -71,7 +71,7 @@ auto framework::isFrameRateUnlocked() -> bool
   return get().m_unlockFrameRate;
 }
 
-auto framework::unlockedFrameRate() -> void
+auto framework::unlockFrameRate() -> void
 {
   get().m_unlockFrameRate = true;
 }

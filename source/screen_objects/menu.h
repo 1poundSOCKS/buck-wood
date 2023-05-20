@@ -11,7 +11,7 @@ public:
   using callback_for_hidden_flag = std::function<bool()>;
 
   menu();
-  menu(const menu& sourceMenu);
+  menu(const menu& menuToCopy);
 
   auto SetCallbackForHiddenFlag(callback_for_hidden_flag callbackForHidden) -> void;
   auto AddButton(button&& menuButton) -> void;

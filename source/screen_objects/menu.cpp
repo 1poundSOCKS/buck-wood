@@ -5,11 +5,11 @@ menu::menu()
 {
 }
 
-menu::menu(const menu& sourceMenu)
+menu::menu(const menu& menuToCopy)
 {
-  m_callbackForHiddenFlag = sourceMenu.m_callbackForHiddenFlag;
-  m_hidden = sourceMenu.m_hidden;
-  m_buttons = sourceMenu.m_buttons;
+  m_callbackForHiddenFlag = menuToCopy.m_callbackForHiddenFlag;
+  m_hidden = menuToCopy.m_hidden;
+  m_buttons = menuToCopy.m_buttons;
   UpdateAllButtonCallbacks();
 }
 
