@@ -8,6 +8,7 @@
 #include "button.h"
 #include "dwrite_factory.h"
 #include "render_target_area.h"
+#include "screen_runner.h"
 
 inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
 
@@ -55,7 +56,8 @@ auto main_menu_screen::Update(const screen_input_state& inputState, int64_t fram
   if( m_startPlay )
   {
     m_startPlay = false;
-    framework::openScreen<play_screen>();
+    OpenScreen<play_screen>();
+    //framework::openScreen<play_screen>();
   }
 
   screen_transform screenTransform;

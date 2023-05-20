@@ -11,7 +11,7 @@
 #include "sound_buffer_player.h"
 #include "data_files.h"
 #include "collisions.h"
-#include "screen_runner.h"
+// #include "screen_runner.h"
 #include "dwrite_factory.h"
 
 class framework
@@ -33,7 +33,7 @@ public:
   static auto unlockFrameRate() -> void;
   static auto rng() -> std::mt19937&;
 
-  template <typename screen_state> static auto openScreen() -> void;
+  // template <typename screen_state> static auto openScreen() -> void;
   static auto fullScreen() -> void;
 
 private:
@@ -58,19 +58,19 @@ private:
   bool m_unlockFrameRate = false;
 };
 
-template <typename screen_state> static auto framework::openScreen() -> void
-{
-  screen_state screenState;
+// template <typename screen_state> static auto framework::openScreen() -> void
+// {
+//   screen_state screenState;
 
-  screen_runner_data screenRunnerData
-  {
-    swapChain(),
-    renderTarget(), 
-    dwrite_factory::get(),
-    keyboard(), 
-    windowData(),
-    fps()
-  };
+//   screen_runner_data screenRunnerData
+//   {
+//     swapChain(),
+//     renderTarget(), 
+//     dwrite_factory::get(),
+//     keyboard(), 
+//     windowData(),
+//     fps()
+//   };
 
-  OpenScreen(screenRunnerData, screenState, isFrameRateUnlocked());
-}
+//   OpenScreen(screenRunnerData, screenState, isFrameRateUnlocked());
+// }

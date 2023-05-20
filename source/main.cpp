@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "framework.h"
-#include "dwrite_factory.h"
+#include "screen_runner.h"
 #include "main_menu_screen.h"
 
 #pragma comment(lib,"user32.lib")
@@ -26,7 +26,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
   framework::unlockFrameRate();
 #endif
 
-  framework::openScreen<main_menu_screen>();
+  OpenScreen<main_menu_screen>();
 
   return 0;
 }

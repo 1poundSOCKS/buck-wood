@@ -5,8 +5,10 @@
 #include "perf_data.h"
 #include "diagnostics.h"
 #include "main_window.h"
+#include "dwrite_factory.h"
 #include "screen_input_state.h"
 #include "render_guard.h"
+#include "framework.h"
 
 inline bool g_closeAllScreens = false;
 
@@ -52,14 +54,25 @@ template <typename screen_state_type> auto KeepScreenOpen(const screen_state_typ
   return !g_closeAllScreens && screenState.ContinueRunning();
 }
 
-void OpenScreen(screen_runner_data data, auto& screenState, bool unlockFrameRate)
+template <typename screen_state_type> void OpenScreen(/*screen_runner_data data,screen_state_type& screenState*/)
 {
+  screen_runner_data data
+  {
+    framework::swapChain(),
+    framework::renderTarget(), 
+    dwrite_factory::get(),
+    framework::keyboard(), 
+    framework::windowData(),
+    framework::fps()
+  };
+
   screen_diagnostics_render_data diagnosticsRenderData
   {
     CreateScreenRenderBrush(data.renderTarget.get(), D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f)),    
     CreateScreenRenderTextFormat(data.dwriteFactory.get(), L"Verdana", DWRITE_FONT_WEIGHT_LIGHT, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20)
   };
 
+  screen_state_type screenState;
   screen_input_state inputState;
   performance::frame_data frameData;
 
@@ -77,7 +90,7 @@ void OpenScreen(screen_runner_data data, auto& screenState, bool unlockFrameRate
 
     ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
-    UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, unlockFrameRate);
+    UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, framework::isFrameRateUnlocked());
 
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
