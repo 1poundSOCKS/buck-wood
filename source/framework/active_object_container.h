@@ -8,13 +8,14 @@ class active_object_container
 {
 public:
 
-  using active_object_type = active_object<collision_data_type, collision_effect_type>;
-  using active_object_collection_type = std::list<active_object_type>;
+  using object_type = active_object<collision_data_type, collision_effect_type>;
+  using collection_type = std::list<object_type>;
+  using inserter = std::back_insert_iterator<collection_type>;
 
   active_object_container();
 
-  template <typename object_type> auto AppendActiveObject(object_type& object) -> void;
-  template <typename object_type> auto AppendActiveObject(object_type&& object) -> void;
+  [[nodiscard]] auto GetInserter() -> std::back_insert_iterator<collection_type>;
+  [[nodiscard]] auto ObjectCount() -> size_t;
 
   auto Update(const object_input_data& inputData, int64_t elapsedTicks) -> void;
   auto DoCollisions() -> void;
@@ -25,23 +26,21 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>;
-
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  active_object_collection_type m_activeObjects;
+  collection_type m_activeObjects;
 };
 
-template <typename collision_data_type, typename collision_effect_type>
-template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type& object) -> void
-{
-  m_activeObjects.emplace_back(object);
-}
+// template <typename collision_data_type, typename collision_effect_type>
+// template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type& object) -> void
+// {
+//   m_activeObjects.emplace_back(object);
+// }
 
-template <typename collision_data_type, typename collision_effect_type>
-template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type&& object) -> void
-{
-  m_activeObjects.emplace_back(object);
-}
+// template <typename collision_data_type, typename collision_effect_type>
+// template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type&& object) -> void
+// {
+//   m_activeObjects.emplace_back(object);
+// }
 
 template <typename collision_data_type, typename collision_effect_type>
 active_object_container<collision_data_type, collision_effect_type>::active_object_container()
@@ -49,15 +48,21 @@ active_object_container<collision_data_type, collision_effect_type>::active_obje
 }
 
 template <typename collision_data_type, typename collision_effect_type>
-[[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::GetActiveObjectInserter() -> std::back_insert_iterator<active_object_collection_type>
+[[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::GetInserter() -> std::back_insert_iterator<collection_type>
 {
   return std::back_inserter(m_activeObjects);
 }
 
 template <typename collision_data_type, typename collision_effect_type>
+[[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::ObjectCount() -> size_t
+{
+  return m_activeObjects.size();
+}
+
+template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::Update(const object_input_data& inputData, int64_t elapsedTicks) -> void
 {
-  std::for_each(std::execution::seq, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks](auto& object)
+  std::for_each(std::execution::par, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks](auto& object)
   {
     object.Update(inputData, elapsedTicks);
   });
@@ -66,7 +71,7 @@ auto active_object_container<collision_data_type, collision_effect_type>::Update
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::DoCollisions() -> void
 {
-  std::vector<active_object_collection_type::iterator> objectIterators;
+  std::vector<collection_type::iterator> objectIterators;
   
   for( auto objectIterator = m_activeObjects.begin(); objectIterator != m_activeObjects.end(); ++objectIterator )
   {

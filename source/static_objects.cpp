@@ -27,14 +27,6 @@ auto static_objects::SetCentre(int x, int y) -> void
   m_y = y;
 }
 
-// auto static_objects::Initialize() -> void
-// {
-//   for( auto& objectContainer : m_objectContainers )
-//   {
-//     objectContainer.Initialize(framework::renderTarget().get());
-//   }
-// }
-
 auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -> void
 {
   GetAsteroids().ClearAll();
@@ -46,7 +38,7 @@ auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -
   auto smallCentreRow = m_y / smallRowHeight;
 
   game_level_object_generator smallAsteroidGenerator(smallCentreColumn - 17, smallCentreColumn + 16, smallColumnWidth, smallCentreRow - 10, smallCentreRow + 10, smallRowHeight, 0.85f, 0.89f, 13.0f);
-  GenerateAsteroids(smallAsteroidGenerator, GetAsteroids());
+  smallAsteroidGenerator.InsertAsteroidsInto(GetAsteroids().GetInserter());
 
   auto largeColumnWidth = 400;
   auto largeRowHeight = 400;
@@ -55,7 +47,7 @@ auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -
   auto largeCentreRow = m_y / largeRowHeight;
 
   game_level_object_generator largeAsteroidGenerator(largeCentreColumn - 5, largeCentreColumn + 5, largeColumnWidth, largeCentreRow - 4, largeCentreRow + 4, largeRowHeight, 0.90f, 1.0f, 7.0f);
-  GenerateAsteroids(largeAsteroidGenerator, GetAsteroids());
+  largeAsteroidGenerator.InsertAsteroidsInto(GetAsteroids().GetInserter());
 
   for( auto& objectContainer : m_objectContainers )
   {
@@ -81,11 +73,5 @@ auto static_objects::Render(D2D1_RECT_F viewRect) const -> void
 
 auto static_objects::GenerateAsteroids(const game_level_object_generator& generator, active_object_container_type& objects) -> void
 {
-  std::vector<game_closed_object> asteroids;
-  generator.InsertInto(std::back_inserter(asteroids));
-
-  for( const auto& asteroid : asteroids )
-  {
-    objects.AppendActiveObject( level_asteroid { asteroid } );
-  }
+  // std::vector<game_closed_object> asteroids;
 }

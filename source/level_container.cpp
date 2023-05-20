@@ -23,14 +23,14 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
   playerShip.SetEventShot([this](float x, float y, float angle) -> void
   {
     m_playerShot = true;
-    m_objectContainer.AppendActiveObject(bullet { x, y, angle });
+    m_objectContainer.GetInserter() = bullet { x, y, angle };
   });
 
   playerShip.SetEventDied([this](float x, float y) -> void
   {
     if( !m_playerDied )
     {
-      m_objectContainer.AppendActiveObject( explosion_state { x, y} );
+      m_objectContainer.GetInserter() = { explosion_state { x, y} };
     }
 
     m_playerDied = true;
@@ -38,7 +38,7 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
     m_playerY = y;
   });
 
-  m_objectContainer.AppendActiveObject(playerShip);
+  m_objectContainer.GetInserter() = playerShip;
 }
 
 auto level_container::AddTarget(level_target levelTarget) -> void
@@ -49,7 +49,7 @@ auto level_container::AddTarget(level_target levelTarget) -> void
     ++m_activatedTargetCount;
   });
 
-  m_staticObjects.GetTargets().AppendActiveObject(levelTarget);
+  m_staticObjects.GetTargets().GetInserter() = levelTarget;
   ++m_targetCount;
 }
 
@@ -83,7 +83,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
   m_staticObjects.SetCentre(static_cast<int>(m_playerX), static_cast<int>(m_playerY));
   m_staticObjects.Update(inputData, ticks);
-  
+
   m_objectContainer.Update(inputData, ticks);
 
   m_staticObjects.DoCollisionsWith(m_objectContainer);
