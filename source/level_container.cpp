@@ -17,9 +17,8 @@ level_container::level_container(ID2D1RenderTarget* renderTarget)
 auto level_container::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   m_background.Initialize(renderTarget);
+  m_staticObjects.Initialize();
   m_objectContainer.Initialize(renderTarget);
-  m_asteroidContainer.Initialize(renderTarget);
-  m_targetContainer.Initialize(renderTarget);
 }
 
 auto level_container::AddPlayer(player_ship playerShip) -> void
@@ -60,18 +59,13 @@ auto level_container::AddTarget(level_target levelTarget) -> void
     ++m_activatedTargetCount;
   });
 
-  m_targetContainer.AppendActiveObject(levelTarget);
+  m_staticObjects.AddTarget(levelTarget);
   ++m_targetCount;
 }
 
 auto level_container::AddAsteroid(level_asteroid asteroid) -> void
 {
-  m_asteroidContainer.AppendActiveObject(asteroid);
-}
-
-auto level_container::AddAsteroids(level_asteroid_container& asteroids) -> void
-{
-  m_asteroidContainer.AppendActiveObject(asteroids);
+  m_staticObjects.AddAsteroid(asteroid);
 }
 
 auto level_container::SetTimeout(int time) -> void
@@ -101,9 +95,17 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 
   m_background.SetCentre(m_playerX, m_playerY);
   m_background.Update(inputData, ticks);
+  m_staticObjects.SetCentre(m_playerX, m_playerY);
+  m_staticObjects.Update(inputData, ticks);
   m_objectContainer.Update(inputData, ticks);
-  m_objectContainer.DoCollisionsWith(m_asteroidContainer);
-  m_objectContainer.DoCollisionsWith(m_targetContainer);
+
+  m_staticObjects.DoCollisionsWith(m_objectContainer);
+
+  // for( auto& staticObjectContainer : m_staticObjects.GetObjectContainers() )
+  // {
+  //   m_objectContainer.DoCollisionsWith(staticObjectContainer);
+  // }
+
   m_objectContainer.ClearDestroyedObjects();
 
   m_ticksRemaining -= ticks;
@@ -113,9 +115,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   m_background.Render(viewRect);
+  m_staticObjects.Render(viewRect);
   m_objectContainer.Render(viewRect);
-  m_asteroidContainer.Render(viewRect);
-  m_targetContainer.Render(viewRect);
 }
 
 [[nodiscard]] auto level_container::PlayerX() const -> float

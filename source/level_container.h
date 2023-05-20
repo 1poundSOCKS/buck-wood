@@ -8,6 +8,7 @@
 #include "level_asteroid_container.h"
 #include "level_background.h"
 #include "active_object_container.h"
+#include "static_objects.h"
 
 class level_container
 {
@@ -25,7 +26,6 @@ public:
   auto AddPlayer(player_ship playerShip) -> void;
   auto AddTarget(level_target levelTarget) -> void;
   auto AddAsteroid(level_asteroid asteroid) -> void;
-  auto AddAsteroids(level_asteroid_container& asteroids) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
@@ -42,10 +42,13 @@ public:
 
 private:
 
+  using active_object_container_type = active_object_container<collision_data, collision_effect>;
+
   level_background m_background;
-  active_object_container<collision_data, collision_effect> m_objectContainer;
-  active_object_container<collision_data, collision_effect> m_asteroidContainer;
-  active_object_container<collision_data, collision_effect> m_targetContainer;
+  static_objects m_staticObjects;
+  active_object_container_type m_objectContainer;
+  // active_object_container<collision_data, collision_effect> m_asteroidContainer;
+  // active_object_container<collision_data, collision_effect> m_targetContainer;
 
   int64_t m_ticksRemaining = 0;
 
