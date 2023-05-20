@@ -45,7 +45,7 @@ auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -
   auto smallCentreColumn = m_x / smallColumnWidth;
   auto smallCentreRow = m_y / smallRowHeight;
 
-  game_level_object_generator smallAsteroidGenerator(smallCentreColumn - 17, smallCentreColumn + 16, smallColumnWidth, smallCentreRow - 10, smallCentreRow + 10, smallRowHeight, 0.88f, 0.94f, 13.0f);
+  game_level_object_generator smallAsteroidGenerator(smallCentreColumn - 17, smallCentreColumn + 16, smallColumnWidth, smallCentreRow - 10, smallCentreRow + 10, smallRowHeight, 0.85f, 0.89f, 13.0f);
   GenerateAsteroids(smallAsteroidGenerator, GetAsteroids());
 
   auto largeColumnWidth = 400;
@@ -54,7 +54,7 @@ auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -
   auto largeCentreColumn = m_x / largeColumnWidth;
   auto largeCentreRow = m_y / largeRowHeight;
 
-  game_level_object_generator largeAsteroidGenerator(largeCentreColumn - 4, largeCentreColumn + 5, largeColumnWidth, largeCentreRow - 4, largeCentreRow + 4, largeRowHeight, 0.94f, 1.0f, 7.0f);
+  game_level_object_generator largeAsteroidGenerator(largeCentreColumn - 5, largeCentreColumn + 5, largeColumnWidth, largeCentreRow - 4, largeCentreRow + 4, largeRowHeight, 0.90f, 1.0f, 7.0f);
   GenerateAsteroids(largeAsteroidGenerator, GetAsteroids());
 
   for( auto& objectContainer : m_objectContainers )
