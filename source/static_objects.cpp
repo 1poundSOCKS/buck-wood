@@ -48,11 +48,6 @@ auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -
 
   game_level_object_generator largeAsteroidGenerator(largeCentreColumn - 5, largeCentreColumn + 5, largeColumnWidth, largeCentreRow - 4, largeCentreRow + 4, largeRowHeight, 0.90f, 1.0f, 7.0f);
   largeAsteroidGenerator.InsertAsteroidsInto(GetAsteroids().GetInserter());
-
-  for( auto& objectContainer : m_objectContainers )
-  {
-    objectContainer.Update(inputData, ticks);
-  }
 }
 
 auto static_objects::DoCollisionsWith(active_object_container_type& objectContainer) -> void
@@ -69,9 +64,4 @@ auto static_objects::Render(D2D1_RECT_F viewRect) const -> void
   {
     objectContainer.Render(viewRect);
   }
-}
-
-auto static_objects::GenerateAsteroids(const game_level_object_generator& generator, active_object_container_type& objects) -> void
-{
-  // std::vector<game_closed_object> asteroids;
 }

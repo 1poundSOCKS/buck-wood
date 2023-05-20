@@ -30,8 +30,6 @@ private:
 
   active_object_container_collection m_objectContainers;
 
-  static auto GenerateAsteroids(const game_level_object_generator& generator, active_object_container_type& objects) -> void;
-
   int m_x;
   int m_y;
 
