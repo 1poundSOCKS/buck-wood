@@ -9,11 +9,6 @@
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
-  Initialize();
-}
-
-auto play_screen::Initialize() -> void
-{
   const auto& renderTarget = framework::renderTarget();
 
   m_continueRunning = LoadFirstLevel();
@@ -38,9 +33,9 @@ auto play_screen::Initialize() -> void
     return m_stage == stage::pre_play;
   });
 
-  m_overlayContainer.AppendOverlayObject(menu);
-  m_overlayContainer.AppendOverlayObject(levelTimer);
-  m_overlayContainer.AppendOverlayObject(mouse_cursor {});
+  m_overlayContainer += menu;
+  m_overlayContainer += levelTimer;
+  m_overlayContainer += mouse_cursor {};
 
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
@@ -162,7 +157,8 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
     m_stage = stage::post_play;
     m_endSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
     m_endSequence.AddPause(performance_counter::CalculateTicks(2.0f));
-    m_endSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.01f }, performance_counter::CalculateTicks(5.0f) );
+    m_endSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.1f }, performance_counter::CalculateTicks(5.0f) );
+    m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
     m_stageTicks = 0;
   }
 }
@@ -184,7 +180,9 @@ auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elap
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
   auto objectInputData = screenTransform.GetObjectInputData(inputState);
-  m_levelContainer->Update(objectInputData, elapsedTicks);
+  const auto& renderTarget = framework::renderTarget();
+  auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
+  m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
@@ -193,7 +191,6 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
-  
   return { cameraTransform.Get() };
 }
 

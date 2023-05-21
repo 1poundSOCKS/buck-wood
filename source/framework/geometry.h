@@ -97,7 +97,23 @@ struct game_closed_object
     lines.clear();
   }
 
+  auto Reserve(size_t size) -> void
+  {
+    points.reserve(size);
+    lines.reserve(size);
+  }
+
   auto GetBoundingRect() const -> game_rect;
+
+  auto operator+=(game_point&& point) -> void
+  {
+    points.emplace_back(point);
+  }
+
+  auto Finalize() -> void
+  {
+    CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(lines));
+  }
 
   std::vector<game_point> points;
   std::vector<game_line> lines;

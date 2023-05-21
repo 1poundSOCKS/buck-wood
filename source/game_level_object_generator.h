@@ -14,7 +14,7 @@ public:
   using star_collection = std::vector<game_point>;
   using asteroid_collection = std::vector<game_closed_object>;
   using target_collection = std::vector<level_target>;
-  using asteroid_inserter = active_object_container<collision_data, collision_effect>::inserter;
+  using asteroid_inserter = active_object_container<collision_data, collision_effect>::inserter_type;
 
   game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight, float noiseLower, float noiseUpper, float noiseDial);
   auto InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void;

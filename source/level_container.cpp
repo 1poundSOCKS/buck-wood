@@ -73,7 +73,7 @@ auto level_container::HasTimedOut() const -> bool
   return HasTimedOut() || PlayerDied() || IsComplete();
 }
 
-auto level_container::Update(const object_input_data& inputData, int64_t ticks) -> void
+auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
   m_playerShot = false;
   m_targetActivated = false;
@@ -82,7 +82,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks) 
   m_background.Update(inputData, ticks);
 
   m_staticObjects.SetCentre(static_cast<int>(m_playerX), static_cast<int>(m_playerY));
-  m_staticObjects.Update(inputData, ticks);
+  m_staticObjects.Update(inputData, ticks, viewRect);
 
   m_objectContainer.Update(inputData, ticks);
 

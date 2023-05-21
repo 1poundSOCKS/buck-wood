@@ -27,26 +27,30 @@ auto static_objects::SetCentre(int x, int y) -> void
   m_y = y;
 }
 
-auto static_objects::Update(const object_input_data& inputData, int64_t ticks) -> void
+auto static_objects::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
   GetAsteroids().ClearAll();
 
   auto smallColumnWidth = 100;
   auto smallRowHeight = 100;
 
-  auto smallCentreColumn = m_x / smallColumnWidth;
-  auto smallCentreRow = m_y / smallRowHeight;
+  auto smallLeftColumn = static_cast<int>(viewRect.left) / smallColumnWidth - 1;
+  auto smallRightColumn = static_cast<int>(viewRect.right) / smallColumnWidth + 1;
+  auto smallTopRow = static_cast<int>(viewRect.top) / smallRowHeight - 1;
+  auto smallBottomRow = static_cast<int>(viewRect.bottom) / smallRowHeight + 1;
 
-  game_level_object_generator smallAsteroidGenerator(smallCentreColumn - 17, smallCentreColumn + 16, smallColumnWidth, smallCentreRow - 10, smallCentreRow + 10, smallRowHeight, 0.85f, 0.89f, 13.0f);
+  game_level_object_generator smallAsteroidGenerator(smallLeftColumn, smallRightColumn, smallColumnWidth, smallTopRow, smallBottomRow, smallRowHeight, 0.85f, 0.89f, 13.0f);
   smallAsteroidGenerator.InsertAsteroidsInto(GetAsteroids().GetInserter());
 
   auto largeColumnWidth = 400;
   auto largeRowHeight = 400;
 
-  auto largeCentreColumn = m_x / largeColumnWidth;
-  auto largeCentreRow = m_y / largeRowHeight;
+  auto largeLeftColumn = static_cast<int>(viewRect.left) / largeColumnWidth - 1;
+  auto largeRightColumn = static_cast<int>(viewRect.right) / largeColumnWidth + 1;
+  auto largeTopRow = static_cast<int>(viewRect.top) / largeRowHeight - 1;
+  auto largeBottomRow = static_cast<int>(viewRect.bottom) / largeRowHeight + 1;
 
-  game_level_object_generator largeAsteroidGenerator(largeCentreColumn - 5, largeCentreColumn + 5, largeColumnWidth, largeCentreRow - 4, largeCentreRow + 4, largeRowHeight, 0.90f, 1.0f, 7.0f);
+  game_level_object_generator largeAsteroidGenerator(largeLeftColumn, largeRightColumn, largeColumnWidth, largeTopRow, largeBottomRow, largeRowHeight, 0.90f, 1.0f, 7.0f);
   largeAsteroidGenerator.InsertAsteroidsInto(GetAsteroids().GetInserter());
 }
 

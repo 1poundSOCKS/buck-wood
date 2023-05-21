@@ -10,12 +10,14 @@ public:
 
   using object_type = active_object<collision_data_type, collision_effect_type>;
   using collection_type = std::list<object_type>;
-  using inserter = std::back_insert_iterator<collection_type>;
+  using inserter_type = std::back_insert_iterator<collection_type>;
 
   active_object_container();
 
-  [[nodiscard]] auto GetInserter() -> std::back_insert_iterator<collection_type>;
+  [[nodiscard]] auto GetInserter() -> inserter_type;
   [[nodiscard]] auto ObjectCount() -> size_t;
+
+  template <typename insert_object_type> auto operator+=(insert_object_type&& object) -> void;
 
   auto Update(const object_input_data& inputData, int64_t elapsedTicks) -> void;
   auto DoCollisions() -> void;
@@ -26,8 +28,7 @@ public:
 
 private:
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  collection_type m_activeObjects;
+  collection_type m_objects;
 };
 
 template <typename collision_data_type, typename collision_effect_type>
@@ -38,19 +39,25 @@ active_object_container<collision_data_type, collision_effect_type>::active_obje
 template <typename collision_data_type, typename collision_effect_type>
 [[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::GetInserter() -> std::back_insert_iterator<collection_type>
 {
-  return std::back_inserter(m_activeObjects);
+  return std::back_inserter(m_objects);
 }
 
 template <typename collision_data_type, typename collision_effect_type>
 [[nodiscard]] auto active_object_container<collision_data_type, collision_effect_type>::ObjectCount() -> size_t
 {
-  return m_activeObjects.size();
+  return m_objects.size();
+}
+
+template <typename collision_data_type, typename collision_effect_type>
+template <typename insert_object_type> auto active_object_container<collision_data_type, collision_effect_type>::operator+=(insert_object_type&& object) -> void
+{
+  m_objects.emplace_back(object);
 }
 
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::Update(const object_input_data& inputData, int64_t elapsedTicks) -> void
 {
-  std::for_each(std::execution::par, m_activeObjects.begin(), m_activeObjects.end(), [&inputData, elapsedTicks](auto& object)
+  std::for_each(std::execution::par, m_objects.begin(), m_objects.end(), [&inputData, elapsedTicks](auto& object)
   {
     object.Update(inputData, elapsedTicks);
   });
@@ -61,14 +68,14 @@ auto active_object_container<collision_data_type, collision_effect_type>::DoColl
 {
   std::vector<collection_type::iterator> objectIterators;
   
-  for( auto objectIterator = m_activeObjects.begin(); objectIterator != m_activeObjects.end(); ++objectIterator )
+  for( auto objectIterator = m_objects.begin(); objectIterator != m_objects.end(); ++objectIterator )
   {
     objectIterators.emplace_back(objectIterator);
   }
 
   std::for_each(std::execution::par, objectIterators.begin(), objectIterators.end(), [this](auto objectIterator)
   {
-    for( auto secondObjectIterator = std::next(objectIterator); secondObjectIterator != m_activeObjects.end(); ++secondObjectIterator)
+    for( auto secondObjectIterator = std::next(objectIterator); secondObjectIterator != m_objects.end(); ++secondObjectIterator)
     {
       auto& mainObject = *objectIterator;
       auto& collisionObject = *secondObjectIterator;
@@ -94,9 +101,9 @@ auto active_object_container<collision_data_type, collision_effect_type>::DoColl
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::DoCollisionsWith(active_object_container<collision_data_type, collision_effect_type>& objects) -> void
 {
-  std::for_each(std::execution::par, m_activeObjects.begin(), m_activeObjects.end(), [&objects](auto& dynamicObject)
+  std::for_each(std::execution::par, m_objects.begin(), m_objects.end(), [&objects](auto& dynamicObject)
   {
-    for( auto& staticObject : objects.m_activeObjects )
+    for( auto& staticObject : objects.m_objects )
     {
       {
         const auto& collisionData = staticObject.GetCollisionData();
@@ -124,7 +131,7 @@ auto active_object_container<collision_data_type, collision_effect_type>::DoColl
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::Render(D2D1_RECT_F viewRect) const -> void
 {
-  std::for_each(std::execution::seq, m_activeObjects.cbegin(), m_activeObjects.cend(), [viewRect](const auto& object)
+  std::for_each(std::execution::seq, m_objects.cbegin(), m_objects.cend(), [viewRect](const auto& object)
   {
     object.Render(viewRect);
   });
@@ -133,15 +140,15 @@ auto active_object_container<collision_data_type, collision_effect_type>::Render
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::ClearAll() -> void
 {
-  m_activeObjects.clear();
+  m_objects.clear();
 }
 
 template <typename collision_data_type, typename collision_effect_type>
 auto active_object_container<collision_data_type, collision_effect_type>::ClearDestroyedObjects() -> void
 {
-  auto object = m_activeObjects.begin();
-  while( object != m_activeObjects.end() )
+  auto object = m_objects.begin();
+  while( object != m_objects.end() )
   {
-    object = object->Destroyed() ? m_activeObjects.erase(object) : ++object;
+    object = object->Destroyed() ? m_objects.erase(object) : ++object;
   }
 }

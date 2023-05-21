@@ -14,11 +14,6 @@ inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DW
 
 main_menu_screen::main_menu_screen()
 {
-  Initialize();
-}
-
-auto main_menu_screen::Initialize() -> void
-{
   const auto& renderTarget = framework::renderTarget();
 
   m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
@@ -46,8 +41,8 @@ auto main_menu_screen::Initialize() -> void
     dummyPlayer.Play();
   }
 
-  m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
-  m_objectContainer.AppendOverlayObject(mouse_cursor{});
+  m_objectContainer += GetMenuDef().CreateMenu();
+  m_objectContainer += mouse_cursor {};
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void

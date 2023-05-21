@@ -7,12 +7,15 @@ class passive_object_container
 {
 public:
 
-  using passive_object_collection_type = std::vector<passive_object>;
+  using collection_type = std::vector<passive_object>;
+  using inserter_type = std::back_insert_iterator<collection_type>;
 
   passive_object_container();
 
-  template <typename object_type> auto AppendOverlayObject(object_type& object) -> void;
-  template <typename object_type> auto AppendOverlayObject(object_type&& object) -> void;
+  [[nodiscard]] auto GetInserter() -> inserter_type;
+  [[nodiscard]] auto ObjectCount() -> size_t;
+
+  template <typename object_type> auto operator+=(object_type&& object) -> void;
 
   auto Update(const object_input_data& inputData, int64_t elapsedTicks) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -20,18 +23,10 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetOverlayObjectInserter() -> std::back_insert_iterator<passive_object_collection_type>;
-
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  passive_object_collection_type m_overlayObjects;
+  collection_type m_objects;
 };
 
-template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type& object) -> void
+template <typename object_type> auto passive_object_container::operator+=(object_type&& object) -> void
 {
-  m_overlayObjects.emplace_back(object);
-}
-
-template <typename object_type> auto passive_object_container::AppendOverlayObject(object_type&& object) -> void
-{
-  m_overlayObjects.emplace_back(object);
+  m_objects.emplace_back(object);
 }

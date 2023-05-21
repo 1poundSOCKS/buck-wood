@@ -19,7 +19,6 @@ class play_screen
 public:
 
   play_screen();
-
   auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
   auto PostPresent() const -> void;
@@ -29,8 +28,6 @@ public:
 private:
 
   enum class stage { pre_play, playing, post_play };
-
-  auto Initialize() -> void;
 
   auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;

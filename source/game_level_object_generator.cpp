@@ -114,7 +114,8 @@ auto game_level_object_generator::CreateAsteroid(game_rect rect, asteroid_insert
   auto x = centrePoint.x;
   auto y = centrePoint.y;
 
-  std::vector<game_point> points;
+  game_closed_object object;
+  object.Reserve(360 / 30);
 
   for( int angle = 0; angle < 360; angle += 30 )
   {
@@ -126,11 +127,11 @@ auto game_level_object_generator::CreateAsteroid(game_rect rect, asteroid_insert
     auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
     noise = ( noise + 5.0f ) / 6.0f;
 
-    points.emplace_back( game_point {x + cx * noise, y + cy * noise} );
+    object += game_point {x + cx * noise, y + cy * noise};
   }
 
-  game_closed_object object;
-  object.Load(points.cbegin(), points.cend());
+  object.Finalize();
+
   inserter = level_asteroid { object };
 }
 
