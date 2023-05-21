@@ -22,7 +22,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
 {
   framework::create(instance, cmdShow);
 
-#if 0
+#if 1
   framework::unlockFrameRate();
 #endif
 

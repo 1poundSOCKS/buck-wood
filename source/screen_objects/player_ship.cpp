@@ -69,8 +69,8 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, floa
   m_thrusterOn = thrusterOn;
   m_angle = angle;
 
-  m_velocityX -= ( ( m_velocityX * 0.3f ) * gameUpdateInterval );
-  m_velocityY -= ( ( m_velocityY * 0.3f ) * gameUpdateInterval );
+  m_velocityX -= ( ( m_velocityX * 0.4f ) * gameUpdateInterval );
+  m_velocityY -= ( ( m_velocityY * 0.4f ) * gameUpdateInterval );
 
   float forceX = m_thrusterOn ? playerThrust * sin(DEGTORAD(m_angle)) : 0.0f;
   float forceY = m_thrusterOn ? -playerThrust * cos(DEGTORAD(m_angle)) : 0.0f;

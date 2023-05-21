@@ -109,7 +109,7 @@ void UpdateScreen(screen_runner_data& data, auto& screenState, const screen_inpu
   auto frameTime = timerFrequency / data.fps;
   
   auto startUpdateTime = performance_counter::QueryValue();
-  screenState.Update(inputState, frameInterval);
+  screenState.Update(inputState, unlockFrameRate ? frameInterval : frameTime);
   auto endUpdateTime = performance_counter::QueryValue();
 
   diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
