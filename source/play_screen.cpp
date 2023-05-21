@@ -9,15 +9,12 @@
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
+  Initialize();
 }
 
-auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
+auto play_screen::Initialize() -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
-
-  // m_levelContainer->Initialize(renderTarget);
-  // m_overlayContainer.Initialize(renderTarget);
+  const auto& renderTarget = framework::renderTarget();
 
   m_continueRunning = LoadFirstLevel();
 
@@ -48,7 +45,7 @@ auto play_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
   auto renderTargetSize = renderTarget->GetSize();
-  m_startSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 10.0f };
+  m_startSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 5.0f };
   m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
@@ -74,21 +71,23 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
 
 auto play_screen::Render() const -> void
 {
-  auto renderTargetSize = m_renderTarget->GetSize();
+  const auto& renderTarget = framework::renderTarget();
 
-  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  auto renderTargetSize = renderTarget->GetSize();
+
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   auto levelRenderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { levelRenderTransform.Get() };
-  m_renderTarget->SetTransform(levelRenderTransform.Get());
-  m_levelContainer->Render(m_renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
+  renderTarget->SetTransform(levelRenderTransform.Get());
+  m_levelContainer->Render(renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
 
   auto overlayRenderTransform = GetOverlayRenderTransform();
-  m_renderTarget->SetTransform(overlayRenderTransform.Get());
+  renderTarget->SetTransform(overlayRenderTransform.Get());
   m_overlayContainer.Render(overlayRenderTransform.GetViewRect(renderTargetSize));
 }
 
-auto play_screen::PlaySoundEffects() const -> void
+auto play_screen::PostPresent() const -> void
 {
   const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
 
@@ -161,6 +160,9 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
   if( m_levelContainer->HasFinished() )
   {
     m_stage = stage::post_play;
+    m_endSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
+    m_endSequence.AddPause(performance_counter::CalculateTicks(2.0f));
+    m_endSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.01f }, performance_counter::CalculateTicks(5.0f) );
     m_stageTicks = 0;
   }
 }
@@ -171,7 +173,7 @@ auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameIn
 
   UpdateLevel(inputState, frameInterval);
 
-  if( m_stageTicks > performance_counter::QueryFrequency() * 3 )
+  if( m_stageTicks > m_endSequence.GetTotalTicks() )
   {
     m_continueRunning = false;
   }
@@ -187,9 +189,11 @@ auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elap
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
-  auto renderTargetSize = m_renderTarget->GetSize();
+  const auto& renderTarget = framework::renderTarget();
+  auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
+  
   return { cameraTransform.Get() };
 }
 
@@ -208,7 +212,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return m_startSequence.GetPosition(m_stageTicks);
 
     case stage::post_play:
-      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.4f };
+      return m_endSequence.GetPosition(m_stageTicks);
 
     default:
       return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
@@ -249,12 +253,16 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 auto play_screen::LoadCurrentLevel() -> void
 {
-  m_levelContainer = m_gameLevelDataLoader.LoadLevel(m_renderTarget.get());
+  const auto& renderTarget = framework::renderTarget();
+
+  m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.3f, 0.3f);
+  const auto& renderTarget = framework::renderTarget();
+
+  auto menuArea = render_target_area(renderTarget->GetSize(), 0.3f, 0.3f);
 
   menu_def menuDef(menuArea.GetRect());
 

@@ -12,18 +12,17 @@ public:
 
   main_menu_screen();
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
-  auto PlaySoundEffects() const -> void;
+  auto PostPresent() const -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
 private:
 
+  auto Initialize() -> void;
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;

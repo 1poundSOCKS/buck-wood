@@ -76,8 +76,6 @@ template <typename screen_state_type> void OpenScreen(/*screen_runner_data data,
   screen_input_state inputState;
   performance::frame_data frameData;
 
-  screenState.Initialize(data.renderTarget.get());
-
   auto previousTime = performance_counter::QueryValue();
   auto currentTime = previousTime;
   
@@ -144,7 +142,7 @@ void UpdateScreen(screen_runner_data& data, auto& screenState, const screen_inpu
 
   data.swapChain->Present(unlockFrameRate ? 0 : 1, 0);
 
-  screenState.PlaySoundEffects();
+  screenState.PostPresent();
 }
 
 #endif

@@ -30,18 +30,6 @@ private:
   collection_type m_activeObjects;
 };
 
-// template <typename collision_data_type, typename collision_effect_type>
-// template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type& object) -> void
-// {
-//   m_activeObjects.emplace_back(object);
-// }
-
-// template <typename collision_data_type, typename collision_effect_type>
-// template <typename object_type> auto active_object_container<collision_data_type, collision_effect_type>::AppendActiveObject(object_type&& object) -> void
-// {
-//   m_activeObjects.emplace_back(object);
-// }
-
 template <typename collision_data_type, typename collision_effect_type>
 active_object_container<collision_data_type, collision_effect_type>::active_object_container()
 {

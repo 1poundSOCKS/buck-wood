@@ -20,16 +20,17 @@ public:
 
   play_screen();
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
-  auto PlaySoundEffects() const -> void;
+  auto PostPresent() const -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
 private:
 
   enum class stage { pre_play, playing, post_play };
+
+  auto Initialize() -> void;
 
   auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;
@@ -46,7 +47,6 @@ private:
   auto LoadCurrentLevel() -> void;
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   int64_t m_frameTicks = 0;
   stage m_stage = stage::pre_play;
   bool m_paused = false;
@@ -57,6 +57,7 @@ private:
   game_level_data_loader m_gameLevelDataLoader;
   std::vector<int64_t> m_levelTimes;
   camera_sequence m_startSequence;
+  camera_sequence m_endSequence;
 
   static inline float m_playZoom = 0.6f;
 };

@@ -14,15 +14,15 @@ inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DW
 
 main_menu_screen::main_menu_screen()
 {
+  Initialize();
 }
 
-auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
+auto main_menu_screen::Initialize() -> void
 {
-  m_renderTarget.attach(renderTarget);
-  m_renderTarget->AddRef();
+  const auto& renderTarget = framework::renderTarget();
 
-  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget);
-  m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget);
+  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
+  m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget.get());
 
   auto dwriteFactory = dwrite_factory::get().get();
   m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
@@ -46,7 +46,6 @@ auto main_menu_screen::Initialize(ID2D1RenderTarget* renderTarget) -> void
     dummyPlayer.Play();
   }
 
-  // m_objectContainer.Initialize(renderTarget);
   m_objectContainer.AppendOverlayObject(GetMenuDef().CreateMenu());
   m_objectContainer.AppendOverlayObject(mouse_cursor{});
 }
@@ -57,7 +56,6 @@ auto main_menu_screen::Update(const screen_input_state& inputState, int64_t fram
   {
     m_startPlay = false;
     OpenScreen<play_screen>();
-    //framework::openScreen<play_screen>();
   }
 
   screen_transform screenTransform;
@@ -67,14 +65,16 @@ auto main_menu_screen::Update(const screen_input_state& inputState, int64_t fram
 
 auto main_menu_screen::Render() const -> void
 {
-  m_renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  const auto& renderTarget = framework::renderTarget();
+
+  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   screen_transform screenTransform;
-  m_renderTarget->SetTransform(screenTransform.Get());
-  m_objectContainer.Render(screenTransform.GetViewRect(m_renderTarget->GetSize()));
+  renderTarget->SetTransform(screenTransform.Get());
+  m_objectContainer.Render(screenTransform.GetViewRect(renderTarget->GetSize()));
 }
 
-auto main_menu_screen::PlaySoundEffects() const -> void
+auto main_menu_screen::PostPresent() const -> void
 {
 }
 
@@ -89,7 +89,9 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
 {
-  auto menuArea = render_target_area(m_renderTarget->GetSize(), 0.4f, 0.4f);
+  const auto& renderTarget = framework::renderTarget();
+
+  auto menuArea = render_target_area(renderTarget->GetSize(), 0.4f, 0.4f);
 
   menu_def menuDef(menuArea.GetRect());
 
