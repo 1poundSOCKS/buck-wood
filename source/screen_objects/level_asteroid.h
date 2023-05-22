@@ -10,6 +10,7 @@ class level_asteroid
 public:
 
   level_asteroid(const game_closed_object& object);
+  level_asteroid(game_rect rect);
 
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;

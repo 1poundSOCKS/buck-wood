@@ -27,7 +27,7 @@ auto  game_level_object_generator::InsertAsteroidsInto(asteroid_inserter inserte
       
       if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
       {
-        CreateAsteroid(rect, inserter);
+        inserter = level_asteroid { rect };
       }
     }
   }
