@@ -7,12 +7,12 @@
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
-  return { -4, -4, 4, 4 };
+  return { -5, -5, 5, 5 };
 }
 
 bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
 {
-  static const float bulletSpeed = 300.0f;
+  static const float bulletSpeed = 500.0f;
   static const float bulletRange = 2000.0f;
   
   yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
