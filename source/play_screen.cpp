@@ -21,7 +21,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return !m_paused;
   });
 
-  text_box levelTimer({ renderTargetSize, 0.2f, 0.1f, render_target_area::align_vertical::bottom, render_target_area::align_horizontal::left });
+  text_box levelTimer( { renderTargetSize, render_target_area::contraint_bottom_centre(0.3f, 0.1f) } );
 
   levelTimer.SetTextGetter([this]() -> std::wstring
   {
@@ -34,7 +34,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return m_stage == stage::pre_play;
   });
 
-  render_target_area levelMapArea(renderTargetSize, 0.1, 0.2, render_target_area::align_vertical::bottom, render_target_area::align_horizontal::right);
+  render_target_area levelMapArea(renderTargetSize, render_target_area::contraint_bottom_right(0.1f, 0.1f));
   m_levelMap.SetRect(levelMapArea.GetRect());
 
   m_overlayContainer += menu;
@@ -73,14 +73,12 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
 auto play_screen::Render() const -> void
 {
   const auto& renderTarget = framework::renderTarget();
-
   auto renderTargetSize = renderTarget->GetSize();
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-  auto levelRenderTransform = GetLevelRenderTransform();
-  auto screenTransform = screen_transform { levelRenderTransform.Get() };
-  renderTarget->SetTransform(levelRenderTransform.Get());
+  auto screenTransform = GetLevelRenderTransform();
+  renderTarget->SetTransform(screenTransform.Get());
   m_levelContainer->Render(renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
 
   auto overlayRenderTransform = GetOverlayRenderTransform();
@@ -274,8 +272,7 @@ auto play_screen::LoadCurrentLevel() -> void
 {
   const auto& renderTarget = framework::renderTarget();
 
-  auto menuArea = render_target_area(renderTarget->GetSize(), 0.3f, 0.3f);
-
+  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.3f, 0.3f));
   menu_def menuDef(menuArea.GetRect());
 
   menuDef.AddButtonDef({ L"Resume", [this]() -> void

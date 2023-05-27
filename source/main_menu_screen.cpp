@@ -86,7 +86,7 @@ auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnost
 {
   const auto& renderTarget = framework::renderTarget();
 
-  auto menuArea = render_target_area(renderTarget->GetSize(), 0.4f, 0.4f);
+  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.3f, 0.3f));
 
   menu_def menuDef(menuArea.GetRect());
 
