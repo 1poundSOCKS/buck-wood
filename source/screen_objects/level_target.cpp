@@ -19,7 +19,7 @@ consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
   return GetTargetGeometryData(30);
 }
 
-level_target::level_target(float x, float y)
+level_target::level_target(float x, float y) : m_position { x, y }
 {
   std::vector<game_point> points;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
@@ -45,6 +45,11 @@ level_target::level_target(const game_closed_object& object)
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 
   Initialize(framework::renderTarget().get());
+}
+
+[[nodiscard]] auto level_target::Position() const -> game_point
+{
+  return m_position;  
 }
 
 auto level_target::SetActivated(event_activated eventActivated) -> void

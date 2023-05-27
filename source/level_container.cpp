@@ -43,6 +43,8 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
 
 auto level_container::AddTarget(level_target levelTarget) -> void
 {
+  m_targets.emplace_back(levelTarget);
+
   levelTarget.SetActivated([this]()->void
   {
     m_targetActivated = true;
@@ -99,6 +101,11 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
   m_background.Render(viewRect);
   m_staticObjects.Render(viewRect);
   m_objectContainer.Render(viewRect);
+}
+
+[[nodiscard]] auto level_container::Targets() const -> const target_collection&
+{
+  return m_targets;
 }
 
 [[nodiscard]] auto level_container::PlayerX() const -> float

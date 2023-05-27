@@ -30,7 +30,7 @@ level_asteroid::level_asteroid(game_rect rect)
     auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
     noise = ( noise + 5.0f ) / 6.0f;
 
-    m_object += game_point {x + cx * noise, y + cy * noise};
+    m_object += {x + cx * noise, y + cy * noise};
   }
 
   m_object.Finalize();

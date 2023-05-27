@@ -4,10 +4,10 @@ class render_target_area
 {
 public:
 
-  enum align_vertical { vertical_centre, vertical_top, vertical_bottom };
-  enum align_horizontal { horizontal_centre, horizontal_left, horizontal_right };
+  enum class align_vertical { centre, top, bottom };
+  enum class align_horizontal { centre, left, right };
 
-  render_target_area(D2D1_SIZE_F renderTargetSize, float width, float height, align_vertical alignVertical = vertical_centre, align_horizontal alignHorizontal = horizontal_centre);
+  render_target_area(D2D1_SIZE_F renderTargetSize, float width, float height, align_vertical alignVertical = align_vertical::centre, align_horizontal alignHorizontal = align_horizontal::centre);
   [[nodiscard]] auto GetRect() const -> D2D1_RECT_F;
 
 private:

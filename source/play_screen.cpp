@@ -10,6 +10,7 @@
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
   const auto& renderTarget = framework::renderTarget();
+  auto renderTargetSize = renderTarget->GetSize();
 
   m_continueRunning = LoadFirstLevel();
 
@@ -20,7 +21,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return !m_paused;
   });
 
-  text_box levelTimer({ renderTarget->GetSize(), 0.2f, 0.1f, render_target_area::vertical_bottom, render_target_area::horizontal_left });
+  text_box levelTimer({ renderTargetSize, 0.2f, 0.1f, render_target_area::align_vertical::bottom, render_target_area::align_horizontal::left });
 
   levelTimer.SetTextGetter([this]() -> std::wstring
   {
@@ -33,13 +34,16 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return m_stage == stage::pre_play;
   });
 
+  render_target_area levelMapArea(renderTargetSize, 0.1, 0.2, render_target_area::align_vertical::bottom, render_target_area::align_horizontal::right);
+  m_levelMap.SetRect(levelMapArea.GetRect());
+
   m_overlayContainer += menu;
   m_overlayContainer += levelTimer;
   m_overlayContainer += mouse_cursor {};
+  m_overlayContainer += m_levelMap;
 
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
-  auto renderTargetSize = renderTarget->GetSize();
   m_startSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 5.0f };
   m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
@@ -58,6 +62,8 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
       PostPlay(inputState, frameInterval);
       break;
   }
+
+  m_levelMap.SetPlayer( m_levelContainer->PlayerX(), m_levelContainer->PlayerY() );
 
   auto overlayTransform = GetOverlayRenderTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
@@ -253,6 +259,15 @@ auto play_screen::LoadCurrentLevel() -> void
   const auto& renderTarget = framework::renderTarget();
 
   m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
+
+  m_levelMap.SetPlayer( m_levelContainer->PlayerX(), m_levelContainer->PlayerY() );
+
+  auto targetPositions = m_levelContainer->Targets() | std::ranges::views::transform([](const auto& target) -> game_point
+  {
+    return target.Position();
+  });
+
+  m_levelMap.SetTargets(targetPositions);
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

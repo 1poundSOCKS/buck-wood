@@ -13,6 +13,7 @@
 #include "menu_def.h"
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
+#include "level_map.h"
 
 class play_screen
 {
@@ -52,6 +53,7 @@ private:
   std::unique_ptr<level_container> m_levelContainer;
   passive_object_container m_overlayContainer;
   game_level_data_loader m_gameLevelDataLoader;
+  level_map m_levelMap;
   std::vector<int64_t> m_levelTimes;
   camera_sequence m_startSequence;
   camera_sequence m_endSequence;

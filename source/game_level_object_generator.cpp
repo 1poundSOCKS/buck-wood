@@ -99,7 +99,7 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_co
       
       if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
       {
-        targetInserter = level_target { CreateTarget( { rect } ) };
+        targetInserter = level_target { x, y };
       }
     }
   }

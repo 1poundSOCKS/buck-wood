@@ -27,7 +27,6 @@ auto menu::Initialize(ID2D1RenderTarget* renderTarget) -> void
 {
   for( auto& button : m_buttons )
   {
-    // button.Initialize(renderTarget);
     UpdateButtonCallbacks(button);
   }
 }

@@ -13,6 +13,8 @@ class level_container
 {
 public:
 
+  using target_collection = std::vector<level_target>;
+
   level_container();
   level_container(ID2D1RenderTarget* renderTarget);
   level_container(const level_container& levelContainer) = delete;
@@ -26,6 +28,7 @@ public:
   auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
 
+  [[nodiscard]] auto Targets() const -> const target_collection&;
   [[nodiscard]] auto PlayerX() const -> float;
   [[nodiscard]] auto PlayerY() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
@@ -41,6 +44,7 @@ private:
   using active_object_container_type = active_object_container<collision_data, collision_effect>;
 
   level_background m_background;
+  target_collection m_targets;
   static_objects m_staticObjects;
   active_object_container_type m_objectContainer;
 

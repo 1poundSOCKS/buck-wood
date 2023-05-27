@@ -21,11 +21,11 @@ auto render_target_area::GetTopBorder(float totalHeight, float areaHeight, align
 {
   switch( alignVertical )
   {
-    case vertical_centre:
+    case align_vertical::centre:
       return ( totalHeight - areaHeight ) / 2.0f;
-    case vertical_top:
+    case align_vertical::top:
       return 0.0f;
-    case vertical_bottom:
+    case align_vertical::bottom:
       return totalHeight - areaHeight;
     default:
       return 0;
@@ -36,11 +36,11 @@ auto render_target_area::GetLeftBorder(float totalWidth, float areaWidth, align_
 {
   switch( alignHorizontal )
   {
-    case horizontal_centre:
+    case align_horizontal::centre:
       return ( totalWidth - areaWidth ) / 2.0f;
-    case horizontal_left:
+    case align_horizontal::left:
       return 0.0f;
-    case horizontal_right:
+    case align_horizontal::right:
       return totalWidth - areaWidth;
     default:
       return 0;

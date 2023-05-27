@@ -28,6 +28,7 @@
 #include <execution>
 #include <functional>
 #include <set>
+#include <ranges>
 
 #include <windows.h>
 #include <windowsx.h>
