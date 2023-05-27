@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "framework.h"
+#include "clock_frequency.h"
 
 framework* framework::m_framework = nullptr;
 
@@ -16,57 +17,57 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 }
 
-auto framework:: get() -> framework&
+[[nodiscard]] auto framework:: get() -> framework&
 {
   return *m_framework;
 }
 
-auto framework::windowData() -> window_data&
+[[nodiscard]] auto framework::windowData() -> window_data&
 {
   return get().m_windowData;
 }
 
-auto framework::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
+[[nodiscard]] auto framework::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
 {
   return get().m_swapChain;
 }
 
-auto framework::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
+[[nodiscard]] auto framework::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
 {
   return get().m_d2dFactory;  
 }
 
-auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
+[[nodiscard]] auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
   return get().m_renderTarget;
 }
 
-auto framework::CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+[[nodiscard]] auto framework::CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
   return ::CreatePathGeometry(get().m_d2dFactory.get());
 }
 
-auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
+[[nodiscard]] auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
 {
   return get().m_directSound;
 }
 
-auto framework::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
+[[nodiscard]] auto framework::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
 {
   return get().m_primarySoundBuffer;
 }
 
-auto framework::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
+[[nodiscard]] auto framework::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
 {
   return get().m_keyboard;
 }
 
-auto framework::fps() -> int
+[[nodiscard]] auto framework::fps() -> int
 {
   return 60;
 }
 
-auto framework::isFrameRateUnlocked() -> bool
+[[nodiscard]] auto framework::isFrameRateUnlocked() -> bool
 {
   return get().m_unlockFrameRate;
 }
@@ -76,7 +77,22 @@ auto framework::unlockFrameRate() -> void
   get().m_unlockFrameRate = true;
 }
 
-auto framework::rng() -> std::mt19937&
+[[nodiscard]] auto framework::gameSpeedMultiplier() -> float
+{
+  return get().m_gameSpeedMultiplier;
+}
+
+auto framework::setGameSpeedMultiplier(float value) -> void
+{
+  get().m_gameSpeedMultiplier = value;
+}
+
+[[nodiscard]] auto framework::gameUpdateInterval(int64_t ticks) -> float
+{
+  return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * get().m_gameSpeedMultiplier;
+}
+
+[[nodiscard]] auto framework::rng() -> std::mt19937&
 {
   return m_rng;
 }

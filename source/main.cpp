@@ -21,10 +21,8 @@
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
   framework::create(instance, cmdShow);
-
-#if 1
   framework::unlockFrameRate();
-#endif
+  framework::setGameSpeedMultiplier(2.0f);
 
   OpenScreen<main_menu_screen>();
 

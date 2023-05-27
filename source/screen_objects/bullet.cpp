@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "bullet.h"
-#include "game_constants.h"
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
@@ -30,7 +29,8 @@ auto bullet::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
-  auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(clock_frequency::get()) * gameSpeedMultiplier;
+  auto updateInterval = framework::gameUpdateInterval(tickCount);
+  
   xPos += ( xVelocity * updateInterval );
   yPos += ( yVelocity * updateInterval );
 

@@ -18,19 +18,22 @@ class framework
 public:
 
   static auto create(HINSTANCE instance, int cmdShow) -> void;
-  static auto get() -> framework&;
-  static auto windowData() -> window_data&;
-  static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
-  static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
-  static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  static auto CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
-  static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
-  static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
-  static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
-  static auto fps() -> int;
-  static auto isFrameRateUnlocked() -> bool;
+  [[nodiscard]] static auto get() -> framework&;
+  [[nodiscard]] static auto windowData() -> window_data&;
+  [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
+  [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
+  [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
+  [[nodiscard]] static auto CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
+  [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
+  [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
+  [[nodiscard]] static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
+  [[nodiscard]] static auto fps() -> int;
+  [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
   static auto unlockFrameRate() -> void;
-  static auto rng() -> std::mt19937&;
+  [[nodiscard]] static auto gameSpeedMultiplier() -> float;
+  static auto setGameSpeedMultiplier(float value) -> void;
+  [[nodiscard]] static auto gameUpdateInterval(int64_t ticks) -> float;
+  [[nodiscard]] static auto rng() -> std::mt19937&;
 
   static auto fullScreen() -> void;
 
@@ -43,7 +46,7 @@ private:
   static inline std::mt19937 m_rng; // pseudo-random generator
 
   HINSTANCE m_instance = nullptr;
-  int m_cmdShow = 0;
+  int m_cmdShow { 0 };
   HWND m_window = nullptr;
   window_data m_windowData;
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
@@ -53,5 +56,6 @@ private:
   winrt::com_ptr<IDirectSound8> m_directSound;
   winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
-  bool m_unlockFrameRate = false;
+  bool m_unlockFrameRate { false };
+  float m_gameSpeedMultiplier { 1.0f };
 };

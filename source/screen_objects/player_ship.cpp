@@ -3,7 +3,6 @@
 #include "math.h"
 #include "event_player_shot.h"
 #include "event_player_dead.h"
-#include "game_constants.h"
 #include "render_brush_defs.h"
 #include "perf_data.h"
 
@@ -50,10 +49,9 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
     auto thrusterOn = inputData.GetMouseData().rightButtonDown;
     auto triggerPressed = inputData.GetMouseData().leftButtonDown;
     auto angle = CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+    auto updateInterval = framework::gameUpdateInterval(tickCount);
 
-    auto gameUpdateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
-
-    Update(thrusterOn, triggerPressed, angle, gameUpdateInterval);
+    Update(thrusterOn, triggerPressed, angle, updateInterval);
 
     if( triggerPressed && PlayerCanShoot(tickCount) &&  m_eventShot )
     {

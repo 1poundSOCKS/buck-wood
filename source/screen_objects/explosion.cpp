@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "explosion.h"
 #include "render_brush_defs.h"
-#include "game_constants.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);
@@ -59,7 +58,7 @@ auto explosion_state::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto explosion_state::Update(const object_input_data& inputData, int64_t tickCount) -> void
 {
-  auto updateInterval = static_cast<float>(tickCount) / static_cast<float>(performance_counter::QueryFrequency()) * gameSpeedMultiplier;
+  auto updateInterval = framework::gameUpdateInterval(tickCount);
 
   for( auto& particle : m_particles )
   {

@@ -18,7 +18,10 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
-  
+
+  static constexpr auto GetPlayerRect() -> D2D1_RECT_F;
+  static constexpr auto GetTargetRect() -> D2D1_RECT_F;
+
   struct data
   {
     game_rect rect { { 0, 0 }, { 0, 0 } };
@@ -30,6 +33,7 @@ private:
   std::shared_ptr<data> m_data;
 
   winrt::com_ptr<ID2D1SolidColorBrush> m_brush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_targetBrush;
 
 };
 
