@@ -20,11 +20,11 @@ public:
     float m_height { 0 };
   };
 
-  class contraint_bottom_centre
+  class constraint_bottom_centre
   {
   public:
 
-    contraint_bottom_centre(float width, float height);
+    constraint_bottom_centre(float width, float height);
 
     [[nodiscard]] auto GetLeftBorder(float width) const -> float;
     [[nodiscard]] auto GetTopBorder(float height) const -> float;

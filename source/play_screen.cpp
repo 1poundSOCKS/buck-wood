@@ -21,7 +21,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return !m_paused;
   });
 
-  text_box levelTimer( { renderTargetSize, render_target_area::contraint_bottom_centre(0.3f, 0.1f) } );
+  text_box levelTimer( { renderTargetSize, render_target_area::constraint_bottom_centre(0.3f, 0.1f) } );
 
   levelTimer.SetTextGetter([this]() -> std::wstring
   {
@@ -34,7 +34,8 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return m_stage == stage::pre_play;
   });
 
-  render_target_area levelMapArea(renderTargetSize, render_target_area::contraint_bottom_right(0.1f, 0.1f));
+  auto mainArea = render_target_area(renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f));
+  render_target_area levelMapArea(mainArea.GetRect(), render_target_area::contraint_bottom_right(0.2f, 0.3f));
   m_levelMap.SetRect(levelMapArea.GetRect());
 
   m_overlayContainer += menu;
