@@ -80,7 +80,9 @@
     "random": "cpp",
     "execution": "cpp",
     "functional": "cpp",
-    "queue": "cpp"
+    "queue": "cpp",
+    "ranges": "cpp",
+    "span": "cpp"
   },
   "cmake.configureOnOpen": false
 }

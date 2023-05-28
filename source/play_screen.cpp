@@ -34,9 +34,9 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     return m_stage == stage::pre_play;
   });
 
-  auto mainArea = render_target_area(renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f));
-  render_target_area levelMapArea(mainArea.GetRect(), render_target_area::contraint_bottom_right(0.2f, 0.3f));
-  m_levelMap.SetRect(levelMapArea.GetRect());
+  auto mainArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f) }.GetRect();
+  auto levelMapArea = render_target_area { mainArea, render_target_area::contraint_bottom_right(0.2f, 0.3f) }.GetRect();
+  m_levelMap.SetRect(levelMapArea);
 
   m_overlayContainer += menu;
   m_overlayContainer += levelTimer;
@@ -188,6 +188,7 @@ auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elap
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
+  m_levelMap.Set(m_levelContainer->Targets());
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
@@ -256,17 +257,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 auto play_screen::LoadCurrentLevel() -> void
 {
   const auto& renderTarget = framework::renderTarget();
-
   m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
-
   m_levelMap.SetPlayer( m_levelContainer->PlayerX(), m_levelContainer->PlayerY() );
-
-  auto targetPositions = m_levelContainer->Targets() | std::ranges::views::transform([](const auto& target) -> game_point
-  {
-    return target.Position();
-  });
-
-  m_levelMap.SetTargets(targetPositions);
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

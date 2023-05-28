@@ -19,8 +19,10 @@ consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
   return GetTargetGeometryData(30);
 }
 
-level_target::level_target(float x, float y) : m_position { x, y }
+level_target::level_target(float x, float y) : m_data { std::make_shared<data>() }
 {
+  m_data->position = { x, y };
+
   std::vector<game_point> points;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
   TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(x, y));
@@ -49,12 +51,17 @@ level_target::level_target(const game_closed_object& object)
 
 [[nodiscard]] auto level_target::Position() const -> game_point
 {
-  return m_position;  
+  return m_data->position;
 }
 
 auto level_target::SetActivated(event_activated eventActivated) -> void
 {
   m_eventActivated = eventActivated;
+}
+
+[[nodiscard]] auto level_target::IsActivated() const -> bool
+{
+  return m_data->activated;
 }
 
 auto level_target::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -71,7 +78,8 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
   framework::renderTarget()->FillGeometry(m_geometry.Get(), m_brushCentre.get());
-  framework::renderTarget()->DrawGeometry(m_geometry.Get(), m_activated ? m_brushActivated.get() : m_brushNotActivated.get(), 8.0f);
+  const auto& targetBrush = m_data->activated ? m_brushActivated : m_brushNotActivated;
+  framework::renderTarget()->DrawGeometry(m_geometry.Get(), targetBrush.get(), 8.0f);
 }
 
 [[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&
@@ -91,9 +99,9 @@ auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_target::ApplyCollisionEffect(const collision_effect& effect) -> void
 {
-  if( effect.GetProperty(collision_effect::activates_target) && !m_activated )
+  if( effect.GetProperty(collision_effect::activates_target) && !m_data->activated )
   {
-    m_activated = true;
+    m_data->activated = true;
     m_eventActivated();
   }
 }

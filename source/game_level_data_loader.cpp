@@ -17,10 +17,7 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
   game_level_object_generator::target_collection targets;
   targetGenerator.InsertInto(std::back_inserter(targets));
 
-  for( const auto& target : targets )
-  {
-    levelContainer->AddTarget(target);
-  }
+  levelContainer->AddTargets(targets);
 
   levelContainer->SetTimeout(GetTimeLimit());
 

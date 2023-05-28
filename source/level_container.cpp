@@ -41,20 +41,6 @@ auto level_container::AddPlayer(player_ship playerShip) -> void
   m_objectContainer.GetInserter() = playerShip;
 }
 
-auto level_container::AddTarget(level_target levelTarget) -> void
-{
-  m_targets.emplace_back(levelTarget);
-
-  levelTarget.SetActivated([this]()->void
-  {
-    m_targetActivated = true;
-    ++m_activatedTargetCount;
-  });
-
-  m_staticObjects.GetTargets().GetInserter() = levelTarget;
-  ++m_targetCount;
-}
-
 auto level_container::SetTimeout(int time) -> void
 {
   m_ticksRemaining = performance_counter::QueryFrequency() * time;

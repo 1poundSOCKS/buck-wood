@@ -17,6 +17,7 @@ public:
   level_target(const game_closed_object& object);
   [[nodiscard]] auto Position() const -> game_point;
   auto SetActivated(event_activated eventTargetActivated) -> void;
+  [[nodiscard]] auto IsActivated() const -> bool;
   
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -30,8 +31,13 @@ private:
 
   auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
-  game_point m_position { 0, 0 };
-  bool m_activated = false;
+  struct data
+  {
+    game_point position { 0, 0 };
+    bool activated = false;
+  };
+
+  std::shared_ptr<data> m_data;
   event_activated m_eventActivated = []() -> void {};
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;

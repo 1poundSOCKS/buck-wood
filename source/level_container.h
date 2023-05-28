@@ -23,7 +23,7 @@ public:
   auto HasTimedOut() const -> bool;
 
   auto AddPlayer(player_ship playerShip) -> void;
-  auto AddTarget(level_target levelTarget) -> void;
+  auto AddTargets(std::ranges::input_range auto&& targets) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
@@ -43,8 +43,8 @@ private:
 
   using active_object_container_type = active_object_container<collision_data, collision_effect>;
 
-  level_background m_background;
   target_collection m_targets;
+  level_background m_background;
   static_objects m_staticObjects;
   active_object_container_type m_objectContainer;
 
@@ -59,3 +59,20 @@ private:
   int m_targetCount = 0;
   int m_activatedTargetCount = 0;
 };
+
+auto level_container::AddTargets(std::ranges::input_range auto&& targets) -> void
+{
+  for( auto& target : targets )
+  {
+    m_targets.emplace_back(target);
+
+    target.SetActivated([this]()->void
+    {
+      m_targetActivated = true;
+      ++m_activatedTargetCount;
+    });
+
+    m_staticObjects.GetTargets().GetInserter() = target;
+    ++m_targetCount;
+  }
+}
