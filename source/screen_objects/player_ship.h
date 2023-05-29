@@ -31,7 +31,6 @@ public:
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
 
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
-  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;

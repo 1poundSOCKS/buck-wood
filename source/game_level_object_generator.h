@@ -1,10 +1,9 @@
 #pragma once
 
 #include "geometry.h"
-// #include "level_grid_cell_generator.h"
 #include "level_target.h"
-// #include "rect_generator.h"
 #include "active_object_container.h"
+#include "renderers.h"
 
 class game_level_object_generator
 {
@@ -14,7 +13,7 @@ public:
   using star_collection = std::vector<game_point>;
   using asteroid_collection = std::vector<game_closed_object>;
   using target_collection = std::vector<level_target>;
-  using asteroid_inserter = active_object_container<collision_data, collision_effect>::inserter_type;
+  using asteroid_inserter = active_object_container<collision_data, collision_effect, renderer>::inserter_type;
 
   game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight, float noiseLower, float noiseUpper, float noiseDial);
   auto InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void;

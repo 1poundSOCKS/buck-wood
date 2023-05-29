@@ -29,10 +29,13 @@ public:
     float m_yVelocity = 0;
   };
 
+  using particle_collection = std::list<particle_state>;
+  
   explosion_state(float x, float y);
+
+  [[nodiscard]] auto Particles() const -> const particle_collection&;
   
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
-  auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
@@ -41,10 +44,6 @@ public:
 
 private:
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_brush;
-  using particle_collection = std::list<particle_state>;
   particle_collection m_particles;
   collision_data m_collisionData;
 };

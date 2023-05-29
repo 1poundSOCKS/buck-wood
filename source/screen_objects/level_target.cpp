@@ -70,11 +70,6 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 {
 }
 
-auto level_target::Render(D2D1_RECT_F viewRect) const -> void
-{
-  renderer::render(*this);
-}
-
 [[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;

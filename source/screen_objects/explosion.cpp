@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "explosion.h"
 #include "render_brush_defs.h"
+#include "renderers.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);
@@ -47,13 +48,11 @@ explosion_state::explosion_state(float x, float y)
   {
     particle.Initialize(x, y);
   }
-
-  Initialize(framework::renderTarget().get());
 }
 
-auto explosion_state::Initialize(ID2D1RenderTarget* renderTarget) -> void
+[[nodiscard]] auto explosion_state::Particles() const -> const particle_collection&
 {
-  m_brush = screen_render_brush_white.CreateBrush(renderTarget);
+  return m_particles;
 }
 
 auto explosion_state::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -64,18 +63,6 @@ auto explosion_state::Update(const object_input_data& inputData, int64_t tickCou
   {
     particle.Update(updateInterval);
   }
-}
-
-auto explosion_state::Render(D2D1_RECT_F viewRect) const -> void
-{
-  std::vector<render_point> renderParticles;
-
-  std::transform(m_particles.cbegin(), m_particles.cend(), std::back_inserter(renderParticles), [this](auto particle) -> render_rect
-  {
-    return particle.GetRenderRect(this->m_brush.get());
-  });
-
-  RenderPoints(framework::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());
 }
 
 [[nodiscard]] auto explosion_state::GetCollisionData() const -> const collision_data&

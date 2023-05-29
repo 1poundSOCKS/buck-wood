@@ -51,11 +51,6 @@ auto level_asteroid::Update(const object_input_data& inputData, int64_t tickCoun
 {
 }
 
-auto level_asteroid::Render(D2D1_RECT_F) const -> void
-{
-  renderer::render(*this);
-}
-
 [[nodiscard]] auto level_asteroid::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;

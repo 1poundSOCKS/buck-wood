@@ -4,13 +4,14 @@
 #include "level_target.h"
 #include "level_asteroid.h"
 #include "game_level_object_generator.h"
+#include "renderers.h"
 
 class static_objects
 {
 
 public:
 
-  using active_object_container_type = active_object_container<collision_data, collision_effect>;
+  using active_object_container_type = active_object_container<collision_data, collision_effect, renderer>;
   using active_object_container_collection = std::list<active_object_container_type>;
 
   static_objects();

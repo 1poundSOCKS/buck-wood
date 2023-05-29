@@ -33,11 +33,6 @@ auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> vo
   destroyed = HasExpired();
 }
 
-auto bullet::Render(D2D1_RECT_F viewRect) const -> void
-{
-  renderer::render(*this);
-}
-
 [[nodiscard]] auto bullet::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;

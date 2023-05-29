@@ -6,7 +6,7 @@
 #include "collision_effect.h"
 #include "object_input_data.h"
 
-template <typename collision_data_type, typename collision_effect_type>
+template <typename collision_data_type, typename collision_effect_type, typename renderer_type>
 class active_object
 {
 private:
@@ -40,7 +40,7 @@ private:
 
     auto Render(D2D1_RECT_F viewRect) const -> void override
     {
-      object.Render(viewRect);
+      renderer_type::render(object);
     }
 
     [[nodiscard]] auto GetCollisionData() const -> const collision_data_type& override

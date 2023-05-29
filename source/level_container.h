@@ -8,6 +8,7 @@
 #include "level_background.h"
 #include "active_object_container.h"
 #include "static_objects.h"
+#include "renderers.h"
 
 class level_container
 {
@@ -41,7 +42,7 @@ public:
 
 private:
 
-  using active_object_container_type = active_object_container<collision_data, collision_effect>;
+  using active_object_container_type = active_object_container<collision_data, collision_effect, renderer>;
 
   target_collection m_targets;
   level_background m_background;

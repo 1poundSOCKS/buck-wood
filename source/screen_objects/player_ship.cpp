@@ -91,11 +91,6 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, floa
   UpdateShipGeometryData();
 }
 
-auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
-{
-  renderer::render(*this);
-}
-
 [[nodiscard]] auto player_ship::GetCollisionData() const -> const collision_data&
 {
   return m_collisionData;
