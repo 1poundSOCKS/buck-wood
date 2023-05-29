@@ -5,6 +5,8 @@
 #include "collision_data.h"
 #include "collision_effect.h"
 #include "object_input_data.h"
+#include "path_geometry.h"
+#include "transformed_path_geometry.h"
 
 class player_ship
 {
@@ -29,6 +31,7 @@ public:
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto Points() const -> const points_collection&;
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
+  [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
 
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -46,6 +49,8 @@ private:
   auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
+
+  static game_closed_object GetPlayerObject();
 
   static constexpr std::array<game_point, 3> GetPlayerGeometryData();
   static constexpr std::array<game_point, 2> GetPlayerThrusterGeometryData();
@@ -76,6 +81,9 @@ private:
 
   points_collection m_points;
   lines_collection m_lines;
+
+  path_geometry m_geometry;
+  transformed_path_geometry m_transformedGeometry;
 };
 
 #endif

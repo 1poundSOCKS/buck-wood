@@ -54,13 +54,24 @@ asteroid_brushes::asteroid_brushes()
 player_ship_brushes::player_ship_brushes()
 {
   const auto& renderTarget = framework::renderTarget();
-  m_ship = screen_render_brush_white.CreateBrush(renderTarget.get());
+  m_fill = screen_render_brush_dark_grey.CreateBrush(renderTarget.get());
+  m_draw = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_thruster = screen_render_brush_red.CreateBrush(renderTarget.get());
 }
 
-[[nodiscard]] auto player_ship_brushes::Ship() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+[[nodiscard]] auto player_ship_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
 {
-  return m_ship;
+  return m_fill;
+}
+
+[[nodiscard]] auto player_ship_brushes::Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  return m_draw;
+}
+
+[[nodiscard]] auto player_ship_brushes::StrokeWidth() const -> float
+{
+  return 2.0f;
 }
 
 [[nodiscard]] auto player_ship_brushes::Thruster() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
@@ -115,18 +126,17 @@ auto renderer::Render(const player_ship& playerShip) const -> void
 {
   if( playerShip.State() == player_ship::alive )
   {
-    std::vector<render_line> renderLines;
-    auto renderLinesInserter = std::back_inserter(renderLines);
-    CreateConnectedRenderLines(std::cbegin(playerShip.Points()), std::cend(playerShip.Points()), renderLinesInserter, m_playerShipBrushes.Ship().get(), 3);
+    Render(playerShip.Geometry(), simple_brush_selector { m_playerShipBrushes });
 
     if( playerShip.ThrusterOn() )
     {
+      std::vector<render_line> renderLines;
+      auto renderLinesInserter = std::back_inserter(renderLines);
       std::vector<game_point> thrusterPoints;
       playerShip.GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
       CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_playerShipBrushes.Thruster().get(), 5);
+      RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
     }
-
-    RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
   }
 }
 
@@ -151,6 +161,13 @@ auto renderer::Render(const explosion_state& playerExplosion) const -> void
 
 template <typename brush_selector>
 auto renderer::Render(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
+{
+  framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
+  framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
+}
+
+template <typename brush_selector>
+auto renderer::Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
   framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
   framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());

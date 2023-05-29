@@ -6,13 +6,13 @@
 #include "perf_data.h"
 #include "renderers.h"
 
-player_ship::player_ship()
+player_ship::player_ship() : m_geometry(GetPlayerObject()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
 }
 
-player_ship::player_ship(float x, float y) : m_x(x), m_y(y)
+player_ship::player_ship(float x, float y) : m_x(x), m_y(y), m_geometry(GetPlayerObject()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
@@ -127,6 +127,9 @@ auto player_ship::UpdateShipGeometryData() -> void
   m_lines.clear();
   GetTransformedShipPointsGeometry(std::back_inserter(m_points));
   CreateConnectedLines(m_points.cbegin(), m_points.cend(), std::back_inserter(m_lines));
+
+  auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_x, m_y);
+  m_transformedGeometry = { m_geometry, rotateAndMove };
 }
 
 auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
@@ -135,6 +138,11 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
 
   TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
     D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_x, m_y));
+}
+
+[[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
+{
+  return m_transformedGeometry;
 }
 
 auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
@@ -173,6 +181,12 @@ constexpr auto player_ship::GetShotTimeNumerator() -> int64_t
 constexpr auto player_ship::GetShotTimeDenominator() -> int64_t
 {
   return 20;
+}
+
+game_closed_object player_ship::GetPlayerObject()
+{
+  const auto& geometryData = GetPlayerGeometryData();
+  return { std::cbegin(geometryData), std::cend(geometryData) };
 }
 
 constexpr std::array<game_point, 3> player_ship::GetPlayerGeometryData()
