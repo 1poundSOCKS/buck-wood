@@ -3,21 +3,19 @@
 #include "math.h"
 #include "event_player_shot.h"
 #include "event_player_dead.h"
-#include "render_brush_defs.h"
 #include "perf_data.h"
+#include "renderers.h"
 
 player_ship::player_ship()
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
-  Initialize(framework::renderTarget().get());
 }
 
 player_ship::player_ship(float x, float y) : m_x(x), m_y(y)
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
-  Initialize(framework::renderTarget().get());
 }
 
 auto player_ship::SetPositionUpdate(position_update positionUpdate) -> void
@@ -36,10 +34,19 @@ auto player_ship::SetEventDied(std::function<void(float,float)> eventDied) -> vo
   m_eventDied = eventDied;
 }
 
-auto player_ship::Initialize(ID2D1RenderTarget* renderTarget) -> void
+[[nodiscard]] auto player_ship::State() const -> state_type
 {
-  m_shipBrush = screen_render_brush_white.CreateBrush(renderTarget);
-  m_thrusterBrush = screen_render_brush_red.CreateBrush(renderTarget);
+  return m_state;
+}
+
+[[nodiscard]] auto player_ship::ThrusterOn() const -> bool
+{
+  return m_thrusterOn;
+}
+
+[[nodiscard]] auto player_ship::Points() const -> const points_collection&
+{
+  return m_points;
 }
 
 auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -86,21 +93,7 @@ auto player_ship::Update(bool thrusterOn, bool triggerPressed, float angle, floa
 
 auto player_ship::Render(D2D1_RECT_F viewRect) const -> void
 {
-  if( m_state != player_ship::alive ) return;
-
-  std::vector<render_line> renderLines;
-  auto renderLinesInserter = std::back_inserter(renderLines);
-
-  CreateConnectedRenderLines(m_points.cbegin(), m_points.cend(), renderLinesInserter, m_shipBrush.get(), 3);
-
-  if( m_thrusterOn )
-  {
-    std::vector<game_point> thrusterPoints;
-    GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
-    CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_thrusterBrush.get(), 5);
-  }
-
-  RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
+  renderer::render(*this);
 }
 
 [[nodiscard]] auto player_ship::GetCollisionData() const -> const collision_data&

@@ -12,6 +12,8 @@ public:
 
   enum state_type { alive, dead };
 
+  using points_collection = std::vector<game_point>;
+
   using position_update = std::function<void(float, float, bool)>;
   using event_shot = std::function<void(float,float,float)>;
   using event_died = std::function<void(float,float)>;
@@ -23,6 +25,11 @@ public:
   auto SetEventShot(event_shot eventShot) -> void;
   auto SetEventDied(event_died eventDied) -> void;
 
+  [[nodiscard]] auto State() const -> state_type;
+  [[nodiscard]] auto ThrusterOn() const -> bool;
+  [[nodiscard]] auto Points() const -> const points_collection&;
+  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
+
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -33,13 +40,10 @@ public:
 
 private:
 
-  using points_collection = std::vector<game_point>;
   using lines_collection = std::vector<game_line>;
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
   auto Update(bool thrusterOn, bool triggerPressed, float angle, float gameUpdateInterval) -> void;
   void UpdateShipGeometryData();
-  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
 
   [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
@@ -64,9 +68,6 @@ private:
   position_update m_positionUpdate = [](float,float,bool)->void{};
   event_shot m_eventShot;
   event_died m_eventDied;
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_shipBrush;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_thrusterBrush;
 
   collision_data m_collisionData;
 

@@ -46,6 +46,23 @@ asteroid_brushes::asteroid_brushes()
   return 6.0f;
 }
 
+player_ship_brushes::player_ship_brushes()
+{
+  const auto& renderTarget = framework::renderTarget();
+  m_ship = screen_render_brush_white.CreateBrush(renderTarget.get());
+  m_thruster = screen_render_brush_red.CreateBrush(renderTarget.get());
+}
+
+[[nodiscard]] auto player_ship_brushes::Ship() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  return m_ship;
+}
+
+[[nodiscard]] auto player_ship_brushes::Thruster() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  return m_thruster;
+}
+
 target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
 {
 }
@@ -84,6 +101,25 @@ auto renderer::Render(const level_target& target) const -> void
 auto renderer::Render(const level_asteroid& asteroid) const -> void
 {
   Render(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
+}
+
+auto renderer::Render(const player_ship& playerShip) const -> void
+{
+  if( playerShip.State() == player_ship::alive )
+  {
+    std::vector<render_line> renderLines;
+    auto renderLinesInserter = std::back_inserter(renderLines);
+    CreateConnectedRenderLines(std::cbegin(playerShip.Points()), std::cend(playerShip.Points()), renderLinesInserter, m_playerShipBrushes.Ship().get(), 3);
+
+    if( playerShip.ThrusterOn() )
+    {
+      std::vector<game_point> thrusterPoints;
+      playerShip.GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
+      CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_playerShipBrushes.Thruster().get(), 5);
+    }
+
+    RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
+  }
 }
 
 template <typename brush_selector>
