@@ -12,6 +12,8 @@ public:
 
   bullet(float x, float y, float angle);
 
+  [[nodiscard]] auto Position() const -> game_point;
+
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
@@ -23,8 +25,6 @@ public:
   [[nodiscard]] auto HasExpired() -> bool;
 
 private:
-
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
 
   float startX = 0, startY = 0;
   float xPos = 0, yPos = 0;

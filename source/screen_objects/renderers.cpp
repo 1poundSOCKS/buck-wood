@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "renderers.h"
 
+constexpr D2D1_RECT_F GetBulletRect()
+{
+  return { -5, -5, 5, 5 };
+}
+
 target_brushes::target_brushes()
 {
   const auto& renderTarget = framework::renderTarget();
@@ -91,6 +96,8 @@ auto renderer::create() -> void
 
 renderer::renderer()
 {
+  const auto& renderTarget = framework::renderTarget();
+  m_playerBulletBrush = screen_render_brush_yellow.CreateBrush(renderTarget.get());
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -120,6 +127,13 @@ auto renderer::Render(const player_ship& playerShip) const -> void
 
     RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
   }
+}
+
+auto renderer::Render(const bullet& playerBullet) const -> void
+{
+  const D2D1_RECT_F rect = GetBulletRect();
+  auto position = playerBullet.Position();
+  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, m_playerBulletBrush.get());
 }
 
 template <typename brush_selector>

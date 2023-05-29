@@ -3,11 +3,7 @@
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
-
-constexpr D2D1_RECT_F GetBulletRect()
-{
-  return { -5, -5, 5, 5 };
-}
+#include "renderers.h"
 
 bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
 {
@@ -18,13 +14,11 @@ bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), y
   xVelocity = bulletSpeed * sin(DEGTORAD(angle));
 
   m_collisionEffect.SetProperty(collision_effect::activates_target, true);
-
-  Initialize(framework::renderTarget().get());
 }
 
-auto bullet::Initialize(ID2D1RenderTarget* renderTarget) -> void
+[[nodiscard]] auto bullet::Position() const -> game_point
 {
-  brush = screen_render_brush_yellow.CreateBrush(framework::renderTarget().get());
+  return { xPos, yPos };
 }
 
 auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -41,8 +35,7 @@ auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> vo
 
 auto bullet::Render(D2D1_RECT_F viewRect) const -> void
 {
-  const D2D1_RECT_F rect = GetBulletRect();
-  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + xPos, rect.top + yPos, rect.right + xPos, rect.bottom + yPos }, brush.get());
+  renderer::render(*this);
 }
 
 [[nodiscard]] auto bullet::GetCollisionData() const -> const collision_data&
