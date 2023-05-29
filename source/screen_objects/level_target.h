@@ -18,6 +18,7 @@ public:
   [[nodiscard]] auto Position() const -> game_point;
   auto SetActivated(event_activated eventTargetActivated) -> void;
   [[nodiscard]] auto IsActivated() const -> bool;
+  [[nodiscard]] auto Geometry() const -> const path_geometry&;
   
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -29,8 +30,6 @@ public:
 
 private:
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
-
   struct data
   {
     game_point position { 0, 0 };
@@ -39,13 +38,10 @@ private:
 
   std::shared_ptr<data> m_data;
   event_activated m_eventActivated = []() -> void {};
-  winrt::com_ptr<ID2D1SolidColorBrush> m_brushNotActivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_brushActivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_brushCentre;
+
   collision_data m_collisionData;
   collision_effect m_collisionEffect;
   path_geometry m_geometry;
-  
 };
 
 #endif

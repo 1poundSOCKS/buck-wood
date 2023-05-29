@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "level_target.h"
 #include "render_brush_defs.h"
+#include "renderers.h"
 
 constexpr std::array<game_point, 4> GetTargetGeometryData(float size)
 {
@@ -34,8 +35,6 @@ level_target::level_target(float x, float y) : m_data { std::make_shared<data>()
   m_collisionData = collision_data { points.cbegin(), points.cend() };
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
-
-  Initialize(framework::renderTarget().get());
 }
 
 level_target::level_target(const game_closed_object& object)
@@ -45,8 +44,6 @@ level_target::level_target(const game_closed_object& object)
   m_collisionData = collision_data { object.points.cbegin(), object.points.cend() };
   m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
   m_collisionEffect.SetProperty(collision_effect::kills_player, true);
-
-  Initialize(framework::renderTarget().get());
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point
@@ -64,11 +61,9 @@ auto level_target::SetActivated(event_activated eventActivated) -> void
   return m_data->activated;
 }
 
-auto level_target::Initialize(ID2D1RenderTarget* renderTarget) -> void
+[[nodiscard]] auto level_target::Geometry() const -> const path_geometry&
 {
-  m_brushNotActivated = screen_render_brush_green.CreateBrush(renderTarget);
-  m_brushActivated =  screen_render_brush_red.CreateBrush(renderTarget);
-  m_brushCentre =  screen_render_brush_dark_grey.CreateBrush(renderTarget);
+  return m_geometry;
 }
 
 auto level_target::Update(const object_input_data& inputData, int64_t tickCount) -> void
@@ -77,9 +72,7 @@ auto level_target::Update(const object_input_data& inputData, int64_t tickCount)
 
 auto level_target::Render(D2D1_RECT_F viewRect) const -> void
 {
-  framework::renderTarget()->FillGeometry(m_geometry.Get(), m_brushCentre.get());
-  const auto& targetBrush = m_data->activated ? m_brushActivated : m_brushNotActivated;
-  framework::renderTarget()->DrawGeometry(m_geometry.Get(), targetBrush.get(), 8.0f);
+  renderer::render(*this);
 }
 
 [[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&

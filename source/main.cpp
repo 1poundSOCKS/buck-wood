@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "screen_runner.h"
 #include "main_menu_screen.h"
+#include "renderers.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -23,6 +24,8 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
   framework::create(instance, cmdShow);
   framework::unlockFrameRate();
   framework::setGameSpeedMultiplier(2.0f);
+
+  renderer::create();
 
   OpenScreen<main_menu_screen>();
 

@@ -11,6 +11,7 @@ public:
 
   level_asteroid(const game_closed_object& object);
   level_asteroid(game_rect rect);
+  [[nodiscard]] auto Geometry() const -> const path_geometry&;
 
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -22,12 +23,8 @@ public:
 
 private:
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
-
   game_closed_object m_object;
   collision_effect m_collisionEffect;
   collision_data m_collisionData;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fillBrush;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_borderBrush;
   path_geometry m_geometry;
 };
