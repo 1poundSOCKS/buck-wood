@@ -11,8 +11,6 @@ auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(renderTarget);
   
-  levelContainer->AddPlayer( player_ship { 0, 0 } );
-
   game_level_object_generator targetGenerator(-20, 20, 100, -20, 20, 100, -1.0f, -0.97f, 17.0f);
   game_level_object_generator::target_collection targets;
   targetGenerator.InsertInto(std::back_inserter(targets));

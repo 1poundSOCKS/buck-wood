@@ -29,3 +29,8 @@ auto object_input_data::GetPreviousMouseData() const -> const mouse_data&
 {
   return m_previousMouseData.leftButtonDown && !m_mouseData.leftButtonDown;
 }
+
+[[nodiscard]] auto object_input_data::RightMouseButtonClicked() const -> bool
+{
+  return m_previousMouseData.rightButtonDown && !m_mouseData.rightButtonDown;
+}

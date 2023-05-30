@@ -16,24 +16,22 @@ public:
 
   using points_collection = std::vector<game_point>;
 
-  using position_update = std::function<void(float, float, bool)>;
-  using event_shot = std::function<void(float,float,float)>;
-  using event_died = std::function<void(float,float)>;
-
   player_ship();
   player_ship(float x, float y);
 
-  auto SetPositionUpdate(position_update positionUpdate) -> void;
-  auto SetEventShot(event_shot eventShot) -> void;
-  auto SetEventDied(event_died eventDied) -> void;
+  auto SetThrusterOn(bool on) -> void;
 
+  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto State() const -> state_type;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto Points() const -> const points_collection&;
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
+  [[nodiscard]] auto CanShoot() -> bool;
 
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
@@ -44,11 +42,8 @@ private:
 
   using lines_collection = std::vector<game_line>;
 
-  auto Update(bool thrusterOn, bool triggerPressed, float angle, float gameUpdateInterval) -> void;
   void UpdateShipGeometryData();
   auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
-
-  [[nodiscard]] auto PlayerCanShoot(int64_t tickCount) -> bool;
 
   static game_closed_object GetPlayerObject();
 
@@ -69,9 +64,6 @@ private:
   float m_y = 0;
   float m_angle = 0;
   bool m_thrusterOn = false;
-  position_update m_positionUpdate = [](float,float,bool)->void{};
-  event_shot m_eventShot;
-  event_died m_eventDied;
 
   collision_data m_collisionData;
 

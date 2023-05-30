@@ -23,6 +23,7 @@ public:
   auto GetPreviousMouseData() const -> const mouse_data&;
 
   [[nodiscard]] auto LeftMouseButtonClicked() const -> bool;
+  [[nodiscard]] auto RightMouseButtonClicked() const -> bool;
 
 private:
 

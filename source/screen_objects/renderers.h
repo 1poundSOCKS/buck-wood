@@ -119,6 +119,7 @@ public:
 
   static auto create() -> void;
   static auto render(const auto& object) -> void;
+  static auto render_all(std::ranges::input_range auto&& objects) -> void;
 
 private:
 
@@ -144,4 +145,12 @@ private:
 auto renderer::render(const auto& object) -> void
 {
   m_instance->Render(object);
+}
+
+auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
+{
+  for( const auto& object : objects )
+  {
+    m_instance->Render(object);
+  }
 }

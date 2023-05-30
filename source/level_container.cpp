@@ -3,42 +3,30 @@
 #include "bullet.h"
 #include "explosion.h"
 
+auto update_all(std::ranges::input_range auto&& objects, const object_input_data& inputData, int64_t ticks)
+{
+  for( auto& object : objects )
+  {
+    object.Update(inputData, ticks);
+  }
+}
+
+auto erase_destroyed(std::ranges::input_range auto&& objects)
+{
+  auto object = std::begin(objects);
+
+  while( object != std::end(objects) )
+  {
+    object = object->Destroyed() ? objects.erase(object) : ++object;
+  }
+}
+
 level_container::level_container()
 {
 }
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
-}
-
-auto level_container::AddPlayer(player_ship playerShip) -> void
-{
-  playerShip.SetPositionUpdate([this](float x, float y, bool thrusterOn) -> void
-  {
-    m_playerX = x;
-    m_playerY = y;
-    m_playerHasThrusterOn = thrusterOn;
-  });
-  
-  playerShip.SetEventShot([this](float x, float y, float angle) -> void
-  {
-    m_playerShot = true;
-    m_objectContainer.GetInserter() = bullet { x, y, angle };
-  });
-
-  playerShip.SetEventDied([this](float x, float y) -> void
-  {
-    if( !m_playerDied )
-    {
-      m_objectContainer.GetInserter() = { explosion_state { x, y} };
-    }
-
-    m_playerDied = true;
-    m_playerX = x;
-    m_playerY = y;
-  });
-
-  m_objectContainer.GetInserter() = playerShip;
 }
 
 auto level_container::SetTimeout(int time) -> void
@@ -63,20 +51,30 @@ auto level_container::HasTimedOut() const -> bool
 
 auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
+  erase_destroyed(m_bullets);
+
   m_playerShot = false;
   m_targetActivated = false;
 
-  m_background.SetCentre(m_playerX, m_playerY);
+  m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
+  m_playerShip.Update(inputData, ticks);
+
+  update_all(m_bullets, inputData, ticks);
+
+  const auto playerPosition = m_playerShip.Position();
+  auto triggerPressed = inputData.GetMouseData().leftButtonDown;
+
+  if( triggerPressed && m_playerShip.CanShoot() )
+  {
+    m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, m_playerShip.Angle() } );
+  }
+
+  m_background.SetCentre(playerPosition.x, playerPosition.y);
   m_background.Update(inputData, ticks);
 
-  m_staticObjects.SetCentre(static_cast<int>(m_playerX), static_cast<int>(m_playerY));
-  m_staticObjects.Update(inputData, ticks, viewRect);
+  m_asteroids.clear();
 
-  m_objectContainer.Update(inputData, ticks);
-
-  m_staticObjects.DoCollisionsWith(m_objectContainer);
-
-  m_objectContainer.ClearDestroyedObjects();
+  CreateAsteroids(viewRect, std::back_inserter(m_asteroids));
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
@@ -85,8 +83,10 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   m_background.Render(viewRect);
-  m_staticObjects.Render(viewRect);
-  m_objectContainer.Render(viewRect);
+  renderer::render_all(m_targets);
+  renderer::render_all(m_asteroids);
+  renderer::render_all(m_bullets);
+  renderer::render(m_playerShip);
 }
 
 [[nodiscard]] auto level_container::Targets() const -> const target_collection&
@@ -96,12 +96,12 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
 
 [[nodiscard]] auto level_container::PlayerX() const -> float
 {
-  return m_playerX;
+  return m_playerShip.Position().x;
 }
 
 [[nodiscard]] auto level_container::PlayerY() const -> float
 {
-  return m_playerY;
+  return m_playerShip.Position().y;
 }
 
 [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
