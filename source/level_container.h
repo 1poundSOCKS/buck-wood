@@ -8,7 +8,6 @@
 #include "level_background.h"
 #include "active_object_container.h"
 #include "game_level_object_generator.h"
-// #include "static_objects.h"
 #include "renderers.h"
 
 class level_container
@@ -68,18 +67,7 @@ private:
 
 auto level_container::AddTargets(std::ranges::input_range auto&& targets) -> void
 {
-  for( auto& target : targets )
-  {
-    m_targets.emplace_back(target);
-
-    // target.SetActivated([this]()->void
-    // {
-    //   m_targetActivated = true;
-    //   ++m_activatedTargetCount;
-    // });
-
-    ++m_targetCount;
-  }
+  std::ranges::copy(targets, std::back_inserter(m_targets));
 }
 
 auto level_container::CreateAsteroids(D2D1_RECT_F viewRect, auto inserter) -> void

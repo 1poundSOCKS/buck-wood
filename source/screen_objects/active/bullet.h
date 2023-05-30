@@ -15,6 +15,7 @@ public:
   auto Update(int64_t tickCount) -> void;
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto HasExpired() -> bool;
+  auto Destroy() -> void;
 
 private:
 

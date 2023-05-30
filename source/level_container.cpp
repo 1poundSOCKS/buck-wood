@@ -21,6 +21,44 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
   }
 }
 
+[[nodiscard]] auto have_collided(auto& geometryObject, auto& pointObject) -> bool
+{
+  const auto& geometry = geometryObject.Geometry();
+  const auto& point = pointObject.Position();
+
+  BOOL collision = FALSE;
+  HRESULT hr = geometry.Get()->FillContainsPoint({point.x, point.y}, D2D1::Matrix3x2F::Identity(), &collision);
+
+  return SUCCEEDED(hr) && collision ? true : false;
+}
+
+auto do_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects) -> void
+{
+  std::for_each(std::execution::par, std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects](auto& geometryObject)
+  {
+    for( auto& pointObject : pointObjects )
+    {
+      {
+        if( have_collided(geometryObject, pointObject) )
+        {
+          on_collided(geometryObject, pointObject);
+        }
+      }
+    }
+  });
+}
+
+auto on_collided(level_asteroid& asteroid, bullet& bullet)
+{
+  bullet.Destroy();
+}
+
+auto on_collided(level_target& target, bullet& bullet)
+{
+  target.Activate();
+  bullet.Destroy();
+}
+
 level_container::level_container()
 {
 }
@@ -41,7 +79,7 @@ auto level_container::HasTimedOut() const -> bool
 
 [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return m_activatedTargetCount == m_targetCount;
+  return m_activatedTargetCount == m_targets.size();
 }
 
 [[nodiscard]] auto level_container::HasFinished() const -> bool
@@ -78,6 +116,9 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   m_asteroids.clear();
 
   CreateAsteroids(viewRect, std::back_inserter(m_asteroids));
+
+  do_collisions(m_asteroids, m_bullets);
+  do_collisions(m_targets, m_bullets);
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);

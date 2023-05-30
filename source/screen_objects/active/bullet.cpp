@@ -41,3 +41,8 @@ auto bullet::Update(int64_t tickCount) -> void
   float distance = sqrt(cx * cx + cy * cy);
   return distance > m_range;
 }
+
+auto bullet::Destroy() -> void
+{
+  m_destroyed = true;
+}
