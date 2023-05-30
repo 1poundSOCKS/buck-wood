@@ -18,7 +18,7 @@ auto level_background::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_starBrush =  screen_render_brush_white.CreateBrush(renderTarget);
 }
 
-auto level_background::Update(const object_input_data& inputData, int64_t tickCount) -> void
+auto level_background::Update(int64_t tickCount) -> void
 {
   m_stars.clear();
 

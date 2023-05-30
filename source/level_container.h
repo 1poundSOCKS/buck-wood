@@ -7,7 +7,8 @@
 #include "level_target.h"
 #include "level_background.h"
 #include "active_object_container.h"
-#include "static_objects.h"
+#include "game_level_object_generator.h"
+// #include "static_objects.h"
 #include "renderers.h"
 
 class level_container
@@ -71,11 +72,11 @@ auto level_container::AddTargets(std::ranges::input_range auto&& targets) -> voi
   {
     m_targets.emplace_back(target);
 
-    target.SetActivated([this]()->void
-    {
-      m_targetActivated = true;
-      ++m_activatedTargetCount;
-    });
+    // target.SetActivated([this]()->void
+    // {
+    //   m_targetActivated = true;
+    //   ++m_activatedTargetCount;
+    // });
 
     ++m_targetCount;
   }

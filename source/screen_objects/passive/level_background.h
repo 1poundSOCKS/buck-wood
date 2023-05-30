@@ -12,7 +12,7 @@ public:
 
   level_background();
 
-  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+  auto Update(int64_t tickCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   auto SetCentre(float x, float y) -> void;
@@ -23,6 +23,7 @@ private:
   
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
   std::vector<game_point> m_stars;
+  
   float m_x = 0;
   float m_y = 0;
 };

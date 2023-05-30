@@ -12,31 +12,26 @@ class player_ship
 {
 public:
 
-  enum state_type { alive, dead };
-
+  enum class state { alive, dead };
   using points_collection = std::vector<game_point>;
 
   player_ship();
   player_ship(float x, float y);
 
+  auto SetAngle(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
 
   [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto State() const -> state_type;
+  [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
+
   [[nodiscard]] auto Points() const -> const points_collection&;
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   [[nodiscard]] auto CanShoot() -> bool;
 
-  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
-
-  [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
-  [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
-  [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
-  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
-  [[nodiscard]] auto Destroyed() const -> bool;
+  auto Update(int64_t tickCount) -> void;
 
 private:
 
@@ -60,14 +55,11 @@ private:
   int64_t m_shotTimerInterval = 0;
   int64_t m_shotTimer = 0;
 
+  state m_state = state::alive;  
   float m_x = 0;
   float m_y = 0;
   float m_angle = 0;
   bool m_thrusterOn = false;
-
-  collision_data m_collisionData;
-
-  state_type m_state = alive;
   float m_velocityX = 0;
   float m_velocityY = 0;
 

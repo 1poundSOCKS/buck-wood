@@ -124,7 +124,7 @@ auto renderer::Render(const level_asteroid& asteroid) const -> void
 
 auto renderer::Render(const player_ship& playerShip) const -> void
 {
-  if( playerShip.State() == player_ship::alive )
+  if( playerShip.State() == player_ship::state::alive )
   {
     Render(playerShip.Geometry(), simple_brush_selector { m_playerShipBrushes });
 

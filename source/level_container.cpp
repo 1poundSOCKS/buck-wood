@@ -3,11 +3,11 @@
 #include "bullet.h"
 #include "explosion.h"
 
-auto update_all(std::ranges::input_range auto&& objects, const object_input_data& inputData, int64_t ticks)
+auto update_all(std::ranges::input_range auto&& objects, int64_t ticks)
 {
   for( auto& object : objects )
   {
-    object.Update(inputData, ticks);
+    object.Update(ticks);
   }
 }
 
@@ -56,12 +56,15 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   m_playerShot = false;
   m_targetActivated = false;
 
+  auto playerPosition = m_playerShip.Position();
+  auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+  m_playerShip.SetAngle(playerToMouseAngle);
+
   m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
-  m_playerShip.Update(inputData, ticks);
+  m_playerShip.Update(ticks);
 
-  update_all(m_bullets, inputData, ticks);
+  update_all(m_bullets, ticks);
 
-  const auto playerPosition = m_playerShip.Position();
   auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
   if( triggerPressed && m_playerShip.CanShoot() )
@@ -70,7 +73,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   }
 
   m_background.SetCentre(playerPosition.x, playerPosition.y);
-  m_background.Update(inputData, ticks);
+  m_background.Update(ticks);
 
   m_asteroids.clear();
 

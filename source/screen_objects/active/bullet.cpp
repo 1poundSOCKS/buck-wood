@@ -5,63 +5,39 @@
 #include "clock_frequency.h"
 #include "renderers.h"
 
-bullet::bullet(float x, float y, float angle) : startX(x), startY(y), xPos(x), yPos(y), angle(angle)
+bullet::bullet(float x, float y, float angle) : m_startPosition { x, y }, m_position { x, y }, m_angle(angle)
 {
   static const float bulletSpeed = 500.0f;
   static const float bulletRange = 2000.0f;
   
-  yVelocity = -bulletSpeed * cos(DEGTORAD(angle));
-  xVelocity = bulletSpeed * sin(DEGTORAD(angle));
-
-  m_collisionEffect.SetProperty(collision_effect::activates_target, true);
+  m_xVelocity = bulletSpeed * sin(DEGTORAD(m_angle));
+  m_yVelocity = -bulletSpeed * cos(DEGTORAD(m_angle));
 }
 
 [[nodiscard]] auto bullet::Position() const -> game_point
 {
-  return { xPos, yPos };
+  return m_position;
 }
 
-auto bullet::Update(const object_input_data& inputData, int64_t tickCount) -> void
+auto bullet::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
   
-  xPos += ( xVelocity * updateInterval );
-  yPos += ( yVelocity * updateInterval );
+  m_position.x += ( m_xVelocity * updateInterval );
+  m_position.y += ( m_yVelocity * updateInterval );
 
-  m_collisionData = { xPos, yPos };
-
-  destroyed = HasExpired();
-}
-
-[[nodiscard]] auto bullet::GetCollisionData() const -> const collision_data&
-{
-  return m_collisionData;
-}
-
-[[nodiscard]] auto bullet::HasCollidedWith(const collision_data& collisionData) const -> bool
-{
-  return collisionData.PointInside(xPos, yPos);
-}
-
-[[nodiscard]] auto bullet::GetCollisionEffect() const -> collision_effect
-{
-  return m_collisionEffect;
-}
-
-auto bullet::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
-{
-  destroyed = collisionEffect.GetProperty(collision_effect::stops_bullets);
+  m_destroyed = HasExpired();
 }
 
 [[nodiscard]] auto bullet::Destroyed() const -> bool
 {
-  return destroyed;
+  return m_destroyed;
 }
 
 [[nodiscard]] auto bullet::HasExpired() -> bool
 {
-  float cx = xPos - startX;
-  float cy = yPos - startY;
+  float cx = m_position.x - m_startPosition.x;
+  float cy = m_position.y - m_startPosition.y;
   float distance = sqrt(cx * cx + cy * cy);
-  return distance > range;
+  return distance > m_range;
 }

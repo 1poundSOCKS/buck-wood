@@ -20,9 +20,9 @@ consteval std::array<game_point, 4> GetDefaultTargetGeometryData()
   return GetTargetGeometryData(30);
 }
 
-level_target::level_target(float x, float y) : m_data { std::make_shared<data>() }
+level_target::level_target(float x, float y)
 {
-  m_data->position = { x, y };
+  m_position = { x, y };
 
   std::vector<game_point> points;
   const auto& targetGeometryData = GetDefaultTargetGeometryData();
@@ -31,34 +31,21 @@ level_target::level_target(float x, float y) : m_data { std::make_shared<data>()
   game_closed_object object;
   object.Load(points.cbegin(), points.cend());
   m_geometry.Load(object);
-
-  m_collisionData = collision_data { points.cbegin(), points.cend() };
-  m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
-  m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 }
 
 level_target::level_target(const game_closed_object& object)
 {
   m_geometry.Load(object);
-
-  m_collisionData = collision_data { object.points.cbegin(), object.points.cend() };
-  m_collisionEffect.SetProperty(collision_effect::stops_bullets, true);
-  m_collisionEffect.SetProperty(collision_effect::kills_player, true);
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point
 {
-  return m_data->position;
-}
-
-auto level_target::SetActivated(event_activated eventActivated) -> void
-{
-  m_eventActivated = eventActivated;
+  return m_position;
 }
 
 [[nodiscard]] auto level_target::IsActivated() const -> bool
 {
-  return m_data->activated;
+  return m_activated;
 }
 
 [[nodiscard]] auto level_target::Geometry() const -> const path_geometry&
@@ -66,35 +53,7 @@ auto level_target::SetActivated(event_activated eventActivated) -> void
   return m_geometry;
 }
 
-auto level_target::Update(const object_input_data& inputData, int64_t tickCount) -> void
+auto level_target::Activate() -> void
 {
-}
-
-[[nodiscard]] auto level_target::GetCollisionData() const -> const collision_data&
-{
-  return m_collisionData;
-}
-
-[[nodiscard]] auto level_target::HasCollidedWith(const collision_data& collisionData) const -> bool
-{
-  return m_collisionData.HasCollidedWith(collisionData);
-}
-
-[[nodiscard]] auto level_target::GetCollisionEffect() const -> collision_effect
-{
-  return m_collisionEffect;
-}
-
-auto level_target::ApplyCollisionEffect(const collision_effect& effect) -> void
-{
-  if( effect.GetProperty(collision_effect::activates_target) && !m_data->activated )
-  {
-    m_data->activated = true;
-    m_eventActivated();
-  }
-}
-
-[[nodiscard]] auto level_target::Destroyed() const -> bool
-{
-  return false;
+  m_activated = true;
 }

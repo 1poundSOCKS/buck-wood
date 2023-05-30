@@ -13,19 +13,16 @@ public:
   using star_collection = std::vector<game_point>;
   using asteroid_collection = std::vector<game_closed_object>;
   using target_collection = std::vector<level_target>;
-  using asteroid_inserter = active_object_container<collision_data, collision_effect, renderer>::inserter_type;
 
   game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight, float noiseLower, float noiseUpper, float noiseDial);
   auto InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void;
   auto InsertInto(std::back_insert_iterator<std::list<level_asteroid>> inserter) const -> void;
   auto InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter) const -> void;
   auto InsertInto(std::back_insert_iterator<target_collection> targetInserter) const -> void;
-  auto InsertAsteroidsInto(asteroid_inserter inserter) const -> void;
 
 private:
 
   [[nodiscard]] auto CreateAsteroid(game_rect rect) const -> game_closed_object;
-  auto CreateAsteroid(game_rect rect, asteroid_inserter inserter) const -> void;
   [[nodiscard]] auto CreateTarget(game_rect rect) const -> game_closed_object;
 
   int m_minColumn = 0;

@@ -9,30 +9,6 @@ game_level_object_generator::game_level_object_generator(int minColumn, int maxC
 {
 }
 
-auto  game_level_object_generator::InsertAsteroidsInto(asteroid_inserter inserter) const -> void
-{
-  for( auto row = m_minRow; row <= m_maxRow; ++row )
-  {
-    for( auto column = m_minColumn; column <= m_maxColumn; ++ column )
-    {
-      auto x = static_cast<float>(column * m_columnWidth);
-      auto y = static_cast<float>(row * m_rowHeight);
-
-      auto noiseValue = psn::GetNoise(x / m_noiseDial, y / m_noiseDial);
-
-      auto rowRadius = m_rowHeight / 2;
-      auto columnRadius = m_columnWidth / 2;
-
-      auto rect = game_rect { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } };
-      
-      if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
-      {
-        inserter = level_asteroid { rect };
-      }
-    }
-  }
-}
-
 auto game_level_object_generator::InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void
 {
   for( auto row = m_minRow; row <= m_maxRow; ++row )
@@ -127,36 +103,6 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_co
       }
     }
   }
-}
-
-auto game_level_object_generator::CreateAsteroid(game_rect rect, asteroid_inserter inserter) const -> void
-{
-  auto width = ( rect.bottomRight.x - rect.topLeft.x ) / 2.0f;
-  auto height = ( rect.bottomRight.y - rect.topLeft.y ) / 2.0f;
-
-  auto centrePoint = rect.CentrePoint();
-  auto x = centrePoint.x;
-  auto y = centrePoint.y;
-
-  game_closed_object object;
-  object.Reserve(360 / 30);
-
-  for( int angle = 0; angle < 360; angle += 30 )
-  {
-    auto angleInRadians = DEGTORAD(angle);
-
-    auto cx = width * sin(angleInRadians);
-    auto cy = height * cos(angleInRadians);
-
-    auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
-    noise = ( noise + 5.0f ) / 6.0f;
-
-    object += game_point {x + cx * noise, y + cy * noise};
-  }
-
-  object.Finalize();
-
-  inserter = level_asteroid { object };
 }
 
 [[nodiscard]] auto game_level_object_generator::CreateAsteroid(game_rect rect) const -> game_closed_object

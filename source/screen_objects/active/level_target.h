@@ -11,36 +11,20 @@ class level_target
 {
 public:
 
-  using event_activated = std::function<void()>;
-
   level_target(float x, float y);
   level_target(const game_closed_object& object);
+
   [[nodiscard]] auto Position() const -> game_point;
-  auto SetActivated(event_activated eventTargetActivated) -> void;
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto Geometry() const -> const path_geometry&;
+  auto Activate() -> void;
   
-  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
-  [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
-  [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
-  [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
-  auto ApplyCollisionEffect(const collision_effect& effect) -> void;
-  [[nodiscard]] auto Destroyed() const -> bool;
-
 private:
 
-  struct data
-  {
-    game_point position { 0, 0 };
-    bool activated = false;
-  };
-
-  std::shared_ptr<data> m_data;
-  event_activated m_eventActivated = []() -> void {};
-
-  collision_data m_collisionData;
-  collision_effect m_collisionEffect;
+  game_point m_position { 0, 0 };
+  bool m_activated = false;
   path_geometry m_geometry;
+
 };
 
 #endif

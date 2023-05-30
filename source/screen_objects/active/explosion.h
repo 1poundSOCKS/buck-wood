@@ -36,10 +36,12 @@ public:
   [[nodiscard]] auto Particles() const -> const particle_collection&;
   
   auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+
   [[nodiscard]] auto GetCollisionData() const -> const collision_data&;
   [[nodiscard]] auto HasCollidedWith(const collision_data& collisionData) const -> bool;
   [[nodiscard]] auto GetCollisionEffect() const -> collision_effect;
   auto ApplyCollisionEffect(const collision_effect& effect) -> void;
+  
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:

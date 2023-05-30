@@ -18,6 +18,11 @@ player_ship::player_ship(float x, float y) : m_x(x), m_y(y), m_geometry(GetPlaye
   UpdateShipGeometryData();
 }
 
+auto player_ship::SetAngle(float angle) -> void
+{
+  m_angle = angle;
+}
+
 auto player_ship::SetThrusterOn(bool on) -> void
 {
   m_thrusterOn = on;
@@ -33,7 +38,7 @@ auto player_ship::SetThrusterOn(bool on) -> void
   return m_angle;
 }
 
-[[nodiscard]] auto player_ship::State() const -> state_type
+[[nodiscard]] auto player_ship::State() const -> state
 {
   return m_state;
 }
@@ -48,15 +53,13 @@ auto player_ship::SetThrusterOn(bool on) -> void
   return m_points;
 }
 
-auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) -> void
+auto player_ship::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
   m_shotTimer += tickCount;
 
-  if( m_state == player_ship::alive )
+  if( m_state == state::alive )
   {
-    m_angle = CalculateAngle(m_x, m_y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-
     const auto playerThrust = 400.0f;
     
     m_velocityX -= ( ( m_velocityX * 0.4f ) * updateInterval );
@@ -73,31 +76,6 @@ auto player_ship::Update(const object_input_data& inputData, int64_t tickCount) 
 
     UpdateShipGeometryData();
   }
-}
-
-[[nodiscard]] auto player_ship::GetCollisionData() const -> const collision_data&
-{
-  return m_collisionData;
-}
-
-[[nodiscard]] auto player_ship::HasCollidedWith(const collision_data& collisionData) const -> bool
-{
-  return collisionData.PointInside(m_x, m_y);
-}
-
-[[nodiscard]] auto player_ship::GetCollisionEffect() const -> collision_effect
-{
-  return {};
-}
-
-auto player_ship::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
-{
-  m_state = collisionEffect.GetProperty(collision_effect::kills_player) ? dead : alive;
-}
-
-[[nodiscard]] auto player_ship::Destroyed() const -> bool
-{
-  return false;
 }
 
 auto player_ship::UpdateShipGeometryData() -> void
