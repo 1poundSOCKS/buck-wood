@@ -3,7 +3,7 @@
 #include "object_input_data.h"
 #include "geometry.h"
 
-class explosion_state
+class explosion
 {
 public:
 
@@ -27,11 +27,11 @@ public:
 
   using particle_collection = std::list<particle_state>;
   
-  explosion_state(float x, float y);
+  explosion(float x, float y);
 
   [[nodiscard]] auto Particles() const -> const particle_collection&;
   
-  auto Update(const object_input_data& inputData, int64_t tickCount) -> void;
+  auto Update(int64_t tickCount) -> void;
 
   [[nodiscard]] auto Destroyed() const -> bool;
 

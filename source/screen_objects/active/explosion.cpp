@@ -6,11 +6,11 @@
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);
 
-explosion_state::particle_state::particle_state()
+explosion::particle_state::particle_state()
 {
 }
 
-auto explosion_state::particle_state::Initialize(float x, float y) -> void
+auto explosion::particle_state::Initialize(float x, float y) -> void
 {
   m_x = x;
   m_y = y;
@@ -22,19 +22,19 @@ auto explosion_state::particle_state::Initialize(float x, float y) -> void
   m_yVelocity = CalculateVectorY(velocity, angle);
 }
 
-auto explosion_state::particle_state::Update(float interval) -> void
+auto explosion::particle_state::Update(float interval) -> void
 {
   m_x += m_xVelocity * interval;
   m_y += m_yVelocity * interval;
 }
 
-auto explosion_state::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect
+auto explosion::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect
 {
   const auto particleSize = 6.0f;
   return { m_x - particleSize, m_y - particleSize, m_x + particleSize, m_y + particleSize, brush };
 }
 
-explosion_state::explosion_state(float x, float y)
+explosion::explosion(float x, float y)
 {
   const int particleCount = 50;
   m_particles.resize(particleCount);
@@ -45,12 +45,12 @@ explosion_state::explosion_state(float x, float y)
   }
 }
 
-[[nodiscard]] auto explosion_state::Particles() const -> const particle_collection&
+[[nodiscard]] auto explosion::Particles() const -> const particle_collection&
 {
   return m_particles;
 }
 
-auto explosion_state::Update(const object_input_data& inputData, int64_t tickCount) -> void
+auto explosion::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
 
@@ -60,7 +60,7 @@ auto explosion_state::Update(const object_input_data& inputData, int64_t tickCou
   }
 }
 
-[[nodiscard]] auto explosion_state::Destroyed() const -> bool
+[[nodiscard]] auto explosion::Destroyed() const -> bool
 {
   return m_particles.size() == 0;
 }

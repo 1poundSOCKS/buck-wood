@@ -9,11 +9,6 @@ level_container::level_container()
   m_playerShips.emplace_back( player_ship {} );
 }
 
-level_container::level_container(ID2D1RenderTarget* renderTarget)
-{
-  m_playerShips.emplace_back( player_ship {} );
-}
-
 auto level_container::SetTimeout(int time) -> void
 {
   m_ticksRemaining = performance_counter::QueryFrequency() * time;
@@ -49,6 +44,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   update_all(m_playerShips, ticks);
   update_all(m_bullets, ticks);
+  update_all(m_explosions, ticks);
 
   auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
@@ -70,14 +66,18 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   CreateAsteroids(viewRect, std::back_inserter(m_asteroids));
 
-  do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [](auto& asteroid, auto& playerShip)
+  do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [this](auto& asteroid, auto& playerShip)
   {
     playerShip.Destroy();
+    auto position = playerShip.Position();
+    m_explosions.emplace_back( explosion { position.x, position.y } );
   });
 
-  do_geometry_to_geometry_collisions(m_targets, m_playerShips, [](auto& target, auto& playerShip)
+  do_geometry_to_geometry_collisions(m_targets, m_playerShips, [this](auto& target, auto& playerShip)
   {
     playerShip.Destroy();
+    auto position = playerShip.Position();
+    m_explosions.emplace_back( explosion { position.x, position.y } );
   });
 
   do_geometry_to_point_collisions(m_asteroids, m_bullets, [](auto& asteroid, auto& bullet)
@@ -97,6 +97,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   });
 
   erase_destroyed(m_playerShips);
+  erase_destroyed(m_explosions);
   erase_destroyed(m_bullets);
 
   m_ticksRemaining -= ticks;
@@ -106,6 +107,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   m_background.Render(viewRect);
+  renderer::render_all(m_explosions);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
   renderer::render_all(m_bullets);

@@ -228,7 +228,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   }
   else
   {
-    LoadCurrentLevel();
+    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     return true;
   }
 }
@@ -242,15 +242,9 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   else
   {
     m_gameLevelDataLoader.NextLevel();
-    LoadCurrentLevel();
+    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     return true;
   }
-}
-
-auto play_screen::LoadCurrentLevel() -> void
-{
-  const auto& renderTarget = framework::renderTarget();
-  m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

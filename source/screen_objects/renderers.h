@@ -130,7 +130,7 @@ private:
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
-  auto Render(const explosion_state& playerExplosion) const -> void;
+  auto Render(const explosion& playerExplosion) const -> void;
 
   template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;
   template <typename brush_selector> auto Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;

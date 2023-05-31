@@ -7,9 +7,9 @@ game_level_data_loader::game_level_data_loader()
 {
 }
 
-auto game_level_data_loader::LoadLevel(ID2D1RenderTarget* renderTarget) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(renderTarget);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
   
   game_level_object_generator targetGenerator(-20, 20, 100, -20, 20, 100, -1.0f, -0.97f, 17.0f);
   game_level_object_generator::target_collection targets;

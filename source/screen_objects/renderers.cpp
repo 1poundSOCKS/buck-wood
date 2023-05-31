@@ -147,7 +147,7 @@ auto renderer::Render(const bullet& playerBullet) const -> void
   framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, m_playerBulletBrush.get());
 }
 
-auto renderer::Render(const explosion_state& playerExplosion) const -> void
+auto renderer::Render(const explosion& playerExplosion) const -> void
 {
   std::vector<render_point> renderParticles;
 

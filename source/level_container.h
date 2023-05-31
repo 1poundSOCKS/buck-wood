@@ -4,6 +4,7 @@
 #include "player_ship.h"
 #include "level_target.h"
 #include "level_background.h"
+#include "explosion.h"
 #include "game_level_object_generator.h"
 #include "renderers.h"
 
@@ -15,9 +16,9 @@ public:
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
   using asteroid_collection = std::list<level_asteroid>;
+  using explosion_collection = std::list<explosion>;
 
   level_container();
-  level_container(ID2D1RenderTarget* renderTarget);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetTimeout(int time) -> void;
@@ -47,6 +48,7 @@ private:
   target_collection m_targets;
   asteroid_collection m_asteroids;
   level_background m_background;
+  explosion_collection m_explosions;
 
   int64_t m_ticksRemaining = 0;
 

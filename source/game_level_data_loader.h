@@ -8,7 +8,7 @@ public:
 
   game_level_data_loader();
 
-  auto LoadLevel(ID2D1RenderTarget* renderTarget) -> std::unique_ptr<level_container>;
+  auto LoadLevel() -> std::unique_ptr<level_container>;
   auto NextLevel() -> void;
   [[nodiscard]] auto EndOfLevels() const -> bool;
 

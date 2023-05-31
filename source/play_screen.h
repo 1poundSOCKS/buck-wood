@@ -43,7 +43,6 @@ private:
   [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
-  auto LoadCurrentLevel() -> void;
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   int64_t m_frameTicks = 0;
