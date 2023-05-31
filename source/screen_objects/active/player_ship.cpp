@@ -28,6 +28,11 @@ auto player_ship::SetThrusterOn(bool on) -> void
   m_thrusterOn = on;
 }
 
+auto player_ship::Destroy() -> void
+{
+  m_destroyed = true;
+}
+
 [[nodiscard]] auto player_ship::Position() const -> game_point
 {
   return { m_x, m_y };
@@ -46,6 +51,11 @@ auto player_ship::SetThrusterOn(bool on) -> void
 [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
   return m_thrusterOn;
+}
+
+[[nodiscard]] auto player_ship::Destroyed() const -> bool
+{
+  return m_destroyed;
 }
 
 [[nodiscard]] auto player_ship::Points() const -> const points_collection&

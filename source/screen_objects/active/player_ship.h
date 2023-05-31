@@ -20,11 +20,13 @@ public:
 
   auto SetAngle(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
+  auto Destroy() -> void;
 
   [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
+  [[nodiscard]] auto Destroyed() const -> bool;
 
   [[nodiscard]] auto Points() const -> const points_collection&;
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
@@ -55,13 +57,14 @@ private:
   int64_t m_shotTimerInterval = 0;
   int64_t m_shotTimer = 0;
 
-  state m_state = state::alive;  
+  state m_state { state::alive };
   float m_x = 0;
   float m_y = 0;
   float m_angle = 0;
   bool m_thrusterOn = false;
   float m_velocityX = 0;
   float m_velocityY = 0;
+  bool m_destroyed { false };
 
   points_collection m_points;
   lines_collection m_lines;

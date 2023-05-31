@@ -45,8 +45,9 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
-  m_startSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 5.0f };
-  m_startSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom }, performance_counter::CalculateTicks(3.0f) );
+  auto playerPosition = m_levelContainer->PlayerPosition();
+  m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 5.0f };
+  m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
 auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
@@ -64,7 +65,8 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
       break;
   }
 
-  m_levelMap.SetPlayer( m_levelContainer->PlayerX(), m_levelContainer->PlayerY() );
+  auto playerPosition = m_levelContainer->PlayerPosition();
+  m_levelMap.SetPlayer( playerPosition.x, playerPosition.y );
 
   auto overlayTransform = GetOverlayRenderTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
@@ -160,9 +162,10 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
   if( m_levelContainer->HasFinished() )
   {
     m_stage = stage::post_play;
-    m_endSequence = camera_sequence::camera_position { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
+    auto playerPosition = m_levelContainer->PlayerPosition();
+    m_endSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_playZoom };
     m_endSequence.AddPause(performance_counter::CalculateTicks(2.0f));
-    m_endSequence.AddMove( { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), 0.1f }, performance_counter::CalculateTicks(5.0f) );
+    m_endSequence.AddMove( { playerPosition.x, playerPosition.y, 0.1f }, performance_counter::CalculateTicks(5.0f) );
     m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
     m_stageTicks = 0;
   }
@@ -209,6 +212,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 {
   camera_sequence::camera_position cameraPosition = { 0, 0, 1.0f };
 
+  auto playerPosition = m_levelContainer->PlayerPosition();
+
   switch( m_stage )
   {
     case stage::pre_play:
@@ -218,7 +223,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return m_endSequence.GetPosition(m_stageTicks);
 
     default:
-      return { m_levelContainer->PlayerX(), m_levelContainer->PlayerY(), m_playZoom };
+      return { playerPosition.x, playerPosition.y, m_playZoom };
   }
 }
 
@@ -258,7 +263,8 @@ auto play_screen::LoadCurrentLevel() -> void
 {
   const auto& renderTarget = framework::renderTarget();
   m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
-  m_levelMap.SetPlayer( m_levelContainer->PlayerX(), m_levelContainer->PlayerY() );
+  auto playerPosition = m_levelContainer->PlayerPosition();
+  m_levelMap.SetPlayer( playerPosition.x, playerPosition.y );
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def

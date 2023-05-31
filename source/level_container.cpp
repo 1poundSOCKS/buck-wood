@@ -21,7 +21,7 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
   }
 }
 
-[[nodiscard]] auto have_collided(auto& geometryObject, auto& pointObject) -> bool
+[[nodiscard]] auto have_geometry_and_point_collided(auto& geometryObject, auto& pointObject) -> bool
 {
   const auto& geometry = geometryObject.Geometry();
   const auto& point = pointObject.Position();
@@ -32,39 +32,71 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
   return SUCCEEDED(hr) && collision ? true : false;
 }
 
-auto do_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects) -> void
+[[nodiscard]] auto have_geometries_collided(auto& geometryObject1, auto& geometryObject2) -> bool
 {
-  std::for_each(std::execution::par, std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects](auto& geometryObject)
+  const auto& geometry1 = geometryObject1.Geometry();
+  const auto& geometry2 = geometryObject2.Geometry();
+
+  D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
+  HRESULT hr = geometry1.Get()->CompareWithGeometry(geometry2.Get(), D2D1::Matrix3x2F::Identity(), &relation);
+
+  bool collided = false;
+
+  if( SUCCEEDED(hr) )
+  {
+    switch( relation )
+    {
+      case D2D1_GEOMETRY_RELATION_IS_CONTAINED:
+      case D2D1_GEOMETRY_RELATION_CONTAINS:
+      case D2D1_GEOMETRY_RELATION_OVERLAP:
+        collided = true;
+        break;
+    }
+  }
+
+  return collided;
+}
+
+auto do_geometry_to_point_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects, auto OnCollision) -> void
+{
+  std::for_each(std::execution::par, std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects, OnCollision](auto& geometryObject)
   {
     for( auto& pointObject : pointObjects )
     {
       {
-        if( have_collided(geometryObject, pointObject) )
+        if( have_geometry_and_point_collided(geometryObject, pointObject) )
         {
-          on_collided(geometryObject, pointObject);
+          OnCollision(geometryObject, pointObject);
         }
       }
     }
   });
 }
 
-auto on_collided(level_asteroid& asteroid, bullet& bullet)
+auto do_geometry_to_geometry_collisions(std::ranges::input_range auto&& geometryObjects1, std::ranges::input_range auto&& geometryObjects2, auto OnCollision) -> void
 {
-  bullet.Destroy();
-}
-
-auto on_collided(level_target& target, bullet& bullet)
-{
-  target.Activate();
-  bullet.Destroy();
+  std::for_each(std::execution::par, std::begin(geometryObjects1), std::end(geometryObjects1), [&geometryObjects2, OnCollision](auto& geometryObject1)
+  {
+    for( auto& geometryObject2 : geometryObjects2 )
+    {
+      {
+        if( have_geometries_collided(geometryObject1, geometryObject2) )
+        {
+          OnCollision(geometryObject1, geometryObject2);
+        }
+      }
+    }
+  });
 }
 
 level_container::level_container()
 {
+  m_playerShips.emplace_back( player_ship {} );
 }
 
 level_container::level_container(ID2D1RenderTarget* renderTarget)
 {
+  m_playerShips.emplace_back( player_ship {} );
 }
 
 auto level_container::SetTimeout(int time) -> void
@@ -89,36 +121,59 @@ auto level_container::HasTimedOut() const -> bool
 
 auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
-  erase_destroyed(m_bullets);
-
   m_playerShot = false;
   m_targetActivated = false;
 
-  auto playerPosition = m_playerShip.Position();
-  auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-  m_playerShip.SetAngle(playerToMouseAngle);
+  for( auto& playerShip : m_playerShips )
+  {
+    auto playerPosition = playerShip.Position();
+    auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+    playerShip.SetAngle(playerToMouseAngle);
+    playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
+  }
 
-  m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
-  m_playerShip.Update(ticks);
-
+  update_all(m_playerShips, ticks);
   update_all(m_bullets, ticks);
 
   auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
-  if( triggerPressed && m_playerShip.CanShoot() )
+  for( auto& playerShip : m_playerShips )
   {
-    m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, m_playerShip.Angle() } );
+    auto playerPosition = playerShip.Position();
+    
+    if( triggerPressed && playerShip.CanShoot() )
+    {
+      m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, playerShip.Angle() } );
+    }
+
+    m_background.SetCentre(playerPosition.x, playerPosition.y);
   }
 
-  m_background.SetCentre(playerPosition.x, playerPosition.y);
   m_background.Update(ticks);
 
   m_asteroids.clear();
 
   CreateAsteroids(viewRect, std::back_inserter(m_asteroids));
 
-  do_collisions(m_asteroids, m_bullets);
-  do_collisions(m_targets, m_bullets);
+  do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [](level_asteroid& asteroid, player_ship& playerShip)
+  {
+    playerShip.Destroy();
+  });
+
+  do_geometry_to_point_collisions(m_asteroids, m_bullets, [](level_asteroid& asteroid, bullet& bullet)
+  {
+    bullet.Destroy();
+  });
+
+  do_geometry_to_point_collisions(m_targets, m_bullets, [this](level_target& target, bullet& bullet)
+  {
+    target.Activate();
+    ++m_activatedTargetCount;
+    bullet.Destroy();
+  });
+
+  erase_destroyed(m_playerShips);
+  erase_destroyed(m_bullets);
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
@@ -130,7 +185,7 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
   renderer::render_all(m_targets);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_bullets);
-  renderer::render(m_playerShip);
+  renderer::render_all(m_playerShips);
 }
 
 [[nodiscard]] auto level_container::Targets() const -> const target_collection&
@@ -138,19 +193,14 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
   return m_targets;
 }
 
-[[nodiscard]] auto level_container::PlayerX() const -> float
+[[nodiscard]] auto level_container::PlayerPosition() const -> game_point
 {
-  return m_playerShip.Position().x;
-}
-
-[[nodiscard]] auto level_container::PlayerY() const -> float
-{
-  return m_playerShip.Position().y;
+  return std::reduce(std::cbegin(m_playerShips), std::end(m_playerShips), game_point { 0, 0 }, [](auto postion, const auto& playerShip) { return playerShip.Position(); });
 }
 
 [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
 {
-  return m_playerHasThrusterOn;
+  return std::reduce(std::cbegin(m_playerShips), std::end(m_playerShips), false, [](auto thrusterOn, const auto& playerShip) { return playerShip.ThrusterOn(); });
 }
 
 [[nodiscard]] auto level_container::PlayerShot() const -> bool
@@ -160,7 +210,7 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
 
 [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
-  return m_playerDied;
+  return m_playerShips.size() == 0;
 }
 
 [[nodiscard]] auto level_container::TargetActivated() const -> bool

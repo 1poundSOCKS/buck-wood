@@ -14,6 +14,7 @@ class level_container
 {
 public:
 
+  using player_ship_collection = std::vector<player_ship>;
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
   using asteroid_collection = std::list<level_asteroid>;
@@ -31,8 +32,7 @@ public:
   auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
-  [[nodiscard]] auto PlayerX() const -> float;
-  [[nodiscard]] auto PlayerY() const -> float;
+  [[nodiscard]] auto PlayerPosition() const -> game_point;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerShot() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
@@ -47,7 +47,7 @@ private:
 
   auto CreateAsteroids(D2D1_RECT_F viewRect, auto inserter) -> void;
 
-  player_ship m_playerShip;
+  player_ship_collection m_playerShips;
   bullet_collection m_bullets;
   target_collection m_targets;
   asteroid_collection m_asteroids;
@@ -55,11 +55,8 @@ private:
 
   int64_t m_ticksRemaining = 0;
 
-  float m_playerX = 0;
-  float m_playerY = 0;
   bool m_playerHasThrusterOn = false;
   bool m_playerShot = false;
-  bool m_playerDied = false;
   bool m_targetActivated = false;
   int m_targetCount = 0;
   int m_activatedTargetCount = 0;
