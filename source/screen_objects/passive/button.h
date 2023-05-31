@@ -14,7 +14,7 @@ public:
   auto SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void;
   auto GetHoverState() const -> bool;
 
-  auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
+  auto Update(const object_input_data& inputData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

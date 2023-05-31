@@ -42,7 +42,7 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
 }
 
-auto button::Update(const object_input_data& inputData, int64_t clockCount) -> void
+auto button::Update(const object_input_data& inputData) -> void
 {
   m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
   m_hidden = m_callbackForHiddenFlag();

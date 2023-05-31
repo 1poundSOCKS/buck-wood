@@ -31,7 +31,7 @@ auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_brush = screen_render_brush_white.CreateBrush(renderTarget);
 }
 
-auto mouse_cursor::Update(const object_input_data& inputData, int64_t clockCount) -> void
+auto mouse_cursor::Update(const object_input_data& inputData) -> void
 {
   m_x = inputData.GetMouseData().x;
   m_y = inputData.GetMouseData().y;

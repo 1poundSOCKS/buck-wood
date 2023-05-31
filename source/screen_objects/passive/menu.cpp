@@ -31,13 +31,13 @@ auto menu::Initialize(ID2D1RenderTarget* renderTarget) -> void
   }
 }
 
-auto menu::Update(const object_input_data& inputData, int64_t clockCount) -> void
+auto menu::Update(const object_input_data& inputData) -> void
 {
   m_hidden = m_callbackForHiddenFlag();
 
   for( auto& button : m_buttons )
   {
-    button.Update(inputData, clockCount);
+    button.Update(inputData);
   }
 }
 

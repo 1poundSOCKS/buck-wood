@@ -8,7 +8,7 @@ public:
 
   mouse_cursor();
 
-  auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
+  auto Update(const object_input_data& inputData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

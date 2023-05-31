@@ -1,10 +1,10 @@
 #pragma once
 
 #include "diagnostics.h"
-#include "passive_object_container.h"
 #include "screen_transform.h"
 #include "button_def.h"
 #include "menu_def.h"
+#include "mouse_cursor.h"
 
 class main_menu_screen
 {
@@ -25,7 +25,8 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
   winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
 
-  passive_object_container m_objectContainer;
+  mouse_cursor m_cursor;
+  menu m_menu;
   
   bool m_continueRunning = true;
   bool m_startPlay = false;

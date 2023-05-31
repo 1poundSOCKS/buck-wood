@@ -41,8 +41,7 @@ main_menu_screen::main_menu_screen()
     dummyPlayer.Play();
   }
 
-  m_objectContainer += GetMenuDef().CreateMenu();
-  m_objectContainer += mouse_cursor {};
+  m_menu = GetMenuDef().CreateMenu();
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
@@ -55,7 +54,9 @@ auto main_menu_screen::Update(const screen_input_state& inputState, int64_t fram
 
   screen_transform screenTransform;
   auto inputData = screenTransform.GetObjectInputData(inputState);
-  m_objectContainer.Update(inputData, frameInterval);
+
+  m_menu.Update(inputData);
+  m_cursor.Update(inputData);
 }
 
 auto main_menu_screen::Render() const -> void
@@ -66,7 +67,10 @@ auto main_menu_screen::Render() const -> void
 
   screen_transform screenTransform;
   renderTarget->SetTransform(screenTransform.Get());
-  m_objectContainer.Render(screenTransform.GetViewRect(renderTarget->GetSize()));
+  auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
+
+  m_menu.Render(viewRect);
+  m_cursor.Render(viewRect);
 }
 
 auto main_menu_screen::PostPresent() const -> void
