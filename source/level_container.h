@@ -1,6 +1,5 @@
 #pragma once
 
-#include "passive_object_container.h"
 #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
@@ -54,7 +53,6 @@ private:
   bool m_playerHasThrusterOn = false;
   bool m_playerShot = false;
   bool m_targetActivated = false;
-  int m_targetCount = 0;
   int m_activatedTargetCount = 0;
 };
 
