@@ -54,9 +54,9 @@ private:
   std::unique_ptr<level_container> m_levelContainer;
   mouse_cursor m_cursor;
   menu m_menu;
-  text_box m_levelTimer;
+  // text_box m_levelTimer;
   game_level_data_loader m_gameLevelDataLoader;
-  level_map<level_target> m_levelMap;
+  level_map m_levelMap;
   std::vector<int64_t> m_levelTimes;
   camera_sequence m_startSequence;
   camera_sequence m_endSequence;
