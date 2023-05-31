@@ -10,6 +10,7 @@ public:
   using text_getter = std::function<std::wstring()>;
   using callback_for_flag = std::function<bool()>;
 
+  text_box();
   text_box(render_target_area renderTargetArea);
   auto SetTextGetter(text_getter textGetter) -> void;
   auto SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void;
@@ -19,7 +20,7 @@ public:
 
 private:
 
-  auto Initialize(ID2D1RenderTarget* renderTarget) -> void;
+  auto Initialize() -> void;
 
   render_target_area m_renderTargetArea;
   winrt::com_ptr<ID2D1SolidColorBrush> m_brush;

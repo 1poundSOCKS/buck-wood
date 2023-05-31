@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "passive_object_container.h"
 #include "screen_transform.h"
 #include "sound_data.h"
 #include "screen_input_state.h"
@@ -15,6 +14,7 @@
 #include "play_camera_transform.h"
 #include "level_map.h"
 #include "target_container.h"
+#include "text_box.h"
 
 class play_screen
 {
@@ -52,7 +52,9 @@ private:
   bool m_continueRunning = true;
   int64_t m_stageTicks = 0;
   std::unique_ptr<level_container> m_levelContainer;
-  passive_object_container m_overlayContainer;
+  mouse_cursor m_cursor;
+  menu m_menu;
+  text_box m_levelTimer;
   game_level_data_loader m_gameLevelDataLoader;
   level_map<level_target> m_levelMap;
   std::vector<int64_t> m_levelTimes;

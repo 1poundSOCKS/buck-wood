@@ -8,9 +8,14 @@
 
 inline auto render_text_format_text_box = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100);
 
+text_box::text_box() : m_renderTargetArea(framework::renderTarget()->GetSize())
+{
+  Initialize();
+}
+
 text_box::text_box(render_target_area renderTargetArea) : m_renderTargetArea(renderTargetArea)
 {
-  Initialize(framework::renderTarget().get());
+  Initialize();
 }
 
 auto text_box::SetTextGetter(text_getter textGetter) -> void
@@ -23,9 +28,10 @@ auto text_box::SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag)
   m_callbackForHiddenFlag = callbackForHiddenFlag;
 }
 
-auto text_box::Initialize(ID2D1RenderTarget* renderTarget) -> void
+auto text_box::Initialize() -> void
 {
-  m_brush = screen_render_brush_yellow.CreateBrush(renderTarget);
+  const auto& renderTarget = framework::renderTarget();
+  m_brush = screen_render_brush_yellow.CreateBrush(renderTarget.get());
   const auto& dwriteFactory = dwrite_factory::get();
   m_textFormat = render_text_format_text_box.CreateTextFormat(dwriteFactory.get());
 }

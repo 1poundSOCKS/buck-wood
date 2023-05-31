@@ -14,10 +14,8 @@ public:
   level_map();
 
   auto SetRect(game_rect rect) -> void;
-  auto SetPlayer(float x, float y) -> void;
-  auto Set(std::ranges::input_range auto&& items) -> void;
 
-  auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
+  auto Update(game_point centrePoint, std::ranges::input_range auto&& items) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
@@ -25,15 +23,10 @@ private:
   static constexpr auto GetPlayerRect() -> D2D1_RECT_F;
   static constexpr auto GetTargetRect() -> D2D1_RECT_F;
 
-  struct data
-  {
-    game_rect rect { { 0, 0 }, { 0, 0 } };
-    float playerX { 0 };
-    float playerY { 0 };
-    std::vector<item_type> items;
-  };
-
-  std::shared_ptr<data> m_data;
+  game_rect m_rect { { 0, 0 }, { 0, 0 } };
+  float m_playerX { 0 };
+  float m_playerY { 0 };
+  std::vector<item_type> m_items;
 
   winrt::com_ptr<ID2D1SolidColorBrush> m_borderBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerBrush;
@@ -43,7 +36,7 @@ private:
 };
 
 template <typename item_type>
-level_map<item_type>::level_map() : m_data { std::make_shared<data>() }
+level_map<item_type>::level_map()
 {
   const auto& renderTarget = framework::renderTarget();
   m_borderBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
@@ -55,26 +48,17 @@ level_map<item_type>::level_map() : m_data { std::make_shared<data>() }
 template <typename item_type>
 auto level_map<item_type>::SetRect(game_rect rect) -> void
 {
-  m_data->rect = rect;
+  m_rect = rect;
 }
 
 template <typename item_type>
-auto level_map<item_type>::SetPlayer(float x, float y) -> void
+auto level_map<item_type>::Update(game_point centrePoint, std::ranges::input_range auto&& items) -> void
 {
-  m_data->playerX = x;
-  m_data->playerY = y;
-}
+  m_playerX = centrePoint.x;
+  m_playerY = centrePoint.y;
 
-template <typename item_type>
-auto level_map<item_type>::Set(std::ranges::input_range auto&& items) -> void
-{
-  m_data->items.clear();
-  std::ranges::copy(items, std::back_inserter(m_data->items));
-}
-
-template <typename item_type>
-auto level_map<item_type>::Update(const object_input_data& inputData, int64_t clockCount) -> void
-{
+  m_items.clear();
+  std::ranges::copy(items, std::back_inserter(m_items));
 }
 
 template <typename item_type>
@@ -83,16 +67,16 @@ auto level_map<item_type>::Render(D2D1_RECT_F viewRect) const -> void
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
 
-  auto rect = D2D1_RECT_F { m_data->rect.topLeft.x, m_data->rect.topLeft.y, m_data->rect.bottomRight.x, m_data->rect.bottomRight.y };
+  auto rect = D2D1_RECT_F { m_rect.topLeft.x, m_rect.topLeft.y, m_rect.bottomRight.x, m_rect.bottomRight.y };
   renderTarget->DrawRectangle( rect, m_borderBrush.get(), 3.0f );
 
-  auto mapCentre = m_data->rect.CentrePoint();
+  auto mapCentre = m_rect.CentrePoint();
   auto playerRect = D2D1_RECT_F { GetPlayerRect().left + mapCentre.x,  GetPlayerRect().top + mapCentre.y, GetPlayerRect().right + mapCentre.x, GetPlayerRect().bottom + mapCentre.y };
   renderTarget->FillRectangle(playerRect, m_playerBrush.get());
 
-  auto transform = D2D1::Matrix3x2F::Translation(-m_data->playerX, -m_data->playerY) * D2D1::Matrix3x2F::Scale(0.02f, 0.02f) * D2D1::Matrix3x2F::Translation(mapCentre.x, mapCentre.y);
+  auto transform = D2D1::Matrix3x2F::Translation(-m_playerX, -m_playerY) * D2D1::Matrix3x2F::Scale(0.02f, 0.02f) * D2D1::Matrix3x2F::Translation(mapCentre.x, mapCentre.y);
 
-  for( const auto& item : m_data->items )
+  for( const auto& item : m_items )
   {
     auto position = item.Position();
     auto point = transform.TransformPoint({position.x, position.y});

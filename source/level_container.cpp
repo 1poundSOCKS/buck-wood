@@ -106,8 +106,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
 {
   m_background.Render(viewRect);
-  renderer::render_all(m_targets);
   renderer::render_all(m_asteroids);
+  renderer::render_all(m_targets);
   renderer::render_all(m_bullets);
   renderer::render_all(m_playerShips);
 }

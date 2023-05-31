@@ -5,7 +5,6 @@
 #include "screen_view.h"
 #include "global_state.h"
 #include "render_target_area.h"
-#include "text_box.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -14,34 +13,13 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
   m_continueRunning = LoadFirstLevel();
 
-  auto menu = GetMenuDef().CreateMenu();
+  m_menu = GetMenuDef().CreateMenu();
 
-  menu.SetCallbackForHiddenFlag([this]() -> bool
-  {
-    return !m_paused;
-  });
-
-  text_box levelTimer( { renderTargetSize, render_target_area::constraint_bottom_centre(0.3f, 0.1f) } );
-
-  levelTimer.SetTextGetter([this]() -> std::wstring
-  {
-    auto value = static_cast<float>(m_levelContainer->TicksRemaining()) / static_cast<float>(performance_counter::QueryFrequency());
-    return std::format(L"{:.1f}", value);
-  });
-
-  levelTimer.SetCallbackForHiddenFlag([this]() -> bool
-  {
-    return m_stage == stage::pre_play;
-  });
+  m_levelTimer = text_box { render_target_area { renderTargetSize, render_target_area::constraint_bottom_centre(0.3f, 0.1f) } };
 
   auto mainArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f) }.GetRect();
   auto levelMapArea = render_target_area { mainArea, render_target_area::contraint_bottom_right(0.15f, 0.2f) }.GetRect();
   m_levelMap.SetRect(levelMapArea);
-
-  m_overlayContainer += menu;
-  m_overlayContainer += levelTimer;
-  m_overlayContainer += mouse_cursor {};
-  m_overlayContainer += m_levelMap;
 
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
@@ -65,12 +43,17 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
       break;
   }
 
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  m_levelMap.SetPlayer( playerPosition.x, playerPosition.y );
-
   auto overlayTransform = GetOverlayRenderTransform();
   auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
-  m_overlayContainer.Update(overlayInputData, frameInterval);
+
+  m_cursor.Update(overlayInputData, frameInterval);
+  m_levelMap.Update(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
+  m_levelTimer.Update(overlayInputData, frameInterval);
+
+  if( m_paused )
+  {
+    m_menu.Update(overlayInputData, frameInterval);
+  }
 }
 
 auto play_screen::Render() const -> void
@@ -86,7 +69,16 @@ auto play_screen::Render() const -> void
 
   auto overlayRenderTransform = GetOverlayRenderTransform();
   renderTarget->SetTransform(overlayRenderTransform.Get());
-  m_overlayContainer.Render(overlayRenderTransform.GetViewRect(renderTargetSize));
+
+  auto overlayViewRect = overlayRenderTransform.GetViewRect(renderTargetSize);
+
+  if( m_paused )
+  {
+    m_menu.Render(overlayViewRect);
+  }
+
+  m_levelMap.Render(overlayViewRect);
+  m_cursor.Render(overlayViewRect);
 }
 
 auto play_screen::PostPresent() const -> void
@@ -191,7 +183,6 @@ auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elap
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
-  m_levelMap.Set(m_levelContainer->Targets());
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
@@ -263,8 +254,6 @@ auto play_screen::LoadCurrentLevel() -> void
 {
   const auto& renderTarget = framework::renderTarget();
   m_levelContainer = m_gameLevelDataLoader.LoadLevel(renderTarget.get());
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  m_levelMap.SetPlayer( playerPosition.x, playerPosition.y );
 }
 
 [[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
