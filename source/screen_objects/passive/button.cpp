@@ -15,8 +15,8 @@ button::button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> eventClicke
   m_textFormat = m_textFormatDef.CreateTextFormat(dwriteFactory.get());
   m_hoverTextFormat = m_hoverTextFormatDef.CreateTextFormat(dwriteFactory.get());
 
-  auto renderTarget = framework::renderTarget().get();
-  Initialize(renderTarget);
+  const auto& renderTarget = framework::renderTarget();
+  Initialize(renderTarget.get());
 }
 
 auto button::SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void
