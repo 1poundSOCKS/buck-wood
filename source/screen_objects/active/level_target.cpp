@@ -30,12 +30,7 @@ level_target::level_target(float x, float y)
 
   game_closed_object object;
   object.Load(points.cbegin(), points.cend());
-  m_geometry.Load(object);
-}
-
-level_target::level_target(const game_closed_object& object)
-{
-  m_geometry.Load(object);
+  m_geometry.Load(object.points);
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point

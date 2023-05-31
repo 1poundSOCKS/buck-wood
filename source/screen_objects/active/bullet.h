@@ -2,8 +2,6 @@
 #define _bullet_
 
 #include "play_event.h"
-#include "collision_data.h"
-#include "collision_effect.h"
 #include "object_input_data.h"
 
 class bullet

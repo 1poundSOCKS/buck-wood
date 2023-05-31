@@ -2,8 +2,6 @@
 #define _player_ship_
 
 #include "play_event.h"
-#include "collision_data.h"
-#include "collision_effect.h"
 #include "object_input_data.h"
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
@@ -28,24 +26,15 @@ public:
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  [[nodiscard]] auto Points() const -> const points_collection&;
-  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
+  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto CanShoot() -> bool;
 
   auto Update(int64_t tickCount) -> void;
 
 private:
 
-  using lines_collection = std::vector<game_line>;
-
   void UpdateShipGeometryData();
-  auto GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> linesInserter) const -> void;
-
-  static game_closed_object GetPlayerObject();
-
-  static constexpr std::array<game_point, 3> GetPlayerGeometryData();
-  static constexpr std::array<game_point, 2> GetPlayerThrusterGeometryData();
 
   static auto GetShotTimeInterval() -> int64_t;
   static constexpr auto GetShotTimeNumerator() -> int64_t;
@@ -65,9 +54,6 @@ private:
   float m_velocityX = 0;
   float m_velocityY = 0;
   bool m_destroyed { false };
-
-  points_collection m_points;
-  lines_collection m_lines;
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;

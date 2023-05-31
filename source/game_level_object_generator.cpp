@@ -2,7 +2,6 @@
 #include "game_level_object_generator.h"
 #include "framework.h"
 #include "level_asteroid.h"
-#include "perlin_simplex_noise.h"
 
 game_level_object_generator::game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight, float noiseLower, float noiseUpper, float noiseDial) :
   m_minColumn(minColumn), m_maxColumn(maxColumn), m_columnWidth(columnWidth), m_minRow(minRow), m_maxRow(maxRow), m_rowHeight(rowHeight), m_noiseLower(noiseLower), m_noiseUpper(noiseUpper), m_noiseDial(noiseDial)
@@ -28,54 +27,6 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<star_coll
       if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
       {
         starInserter = game_point { x, y };
-      }
-    }
-  }
-}
-
-auto game_level_object_generator::InsertInto(std::back_insert_iterator<std::list<level_asteroid>> inserter) const -> void
-{
-  for( auto row = m_minRow; row <= m_maxRow; ++row )
-  {
-    for( auto column = m_minColumn; column <= m_maxColumn; ++ column )
-    {
-      auto x = static_cast<float>(column * m_columnWidth);
-      auto y = static_cast<float>(row * m_rowHeight);
-
-      auto noiseValue = psn::GetNoise(x / m_noiseDial, y / m_noiseDial);
-
-      auto rowRadius = m_rowHeight / 2;
-      auto columnRadius = m_columnWidth / 2;
-
-      auto rect = game_rect { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } };
-      
-      if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
-      {
-        inserter = CreateAsteroid(rect);
-      }
-    }
-  }
-}
-
-auto game_level_object_generator::InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter) const -> void
-{
-  for( auto row = m_minRow; row <= m_maxRow; ++row )
-  {
-    for( auto column = m_minColumn; column <= m_maxColumn; ++ column )
-    {
-      auto x = static_cast<float>(column * m_columnWidth);
-      auto y = static_cast<float>(row * m_rowHeight);
-
-      auto noiseValue = psn::GetNoise(x / m_noiseDial, y / m_noiseDial);
-
-      auto rowRadius = m_rowHeight / 2;
-      auto columnRadius = m_columnWidth / 2;
-
-      auto rect = game_rect { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } };
-      
-      if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
-      {
-        asteroidInserter = CreateAsteroid(rect);
       }
     }
   }

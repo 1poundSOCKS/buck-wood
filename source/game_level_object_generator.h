@@ -2,8 +2,8 @@
 
 #include "geometry.h"
 #include "level_target.h"
-#include "active_object_container.h"
 #include "renderers.h"
+#include "perlin_simplex_noise.h"
 
 class game_level_object_generator
 {
@@ -16,8 +16,7 @@ public:
 
   game_level_object_generator(int minColumn, int maxColumn, int columnWidth, int minRow, int maxRow, int rowHeight, float noiseLower, float noiseUpper, float noiseDial);
   auto InsertInto(std::back_insert_iterator<star_collection> starInserter) const -> void;
-  auto InsertInto(std::back_insert_iterator<std::list<level_asteroid>> inserter) const -> void;
-  auto InsertInto(std::back_insert_iterator<asteroid_collection> asteroidInserter) const -> void;
+  auto InsertInto(auto inserter) const -> void;
   auto InsertInto(std::back_insert_iterator<target_collection> targetInserter) const -> void;
 
 private:
@@ -35,3 +34,27 @@ private:
   float m_noiseUpper = 1.0f;
   float m_noiseDial = 1.0f;
 };
+
+auto game_level_object_generator::InsertInto(auto inserter) const -> void
+{
+  for( auto row = m_minRow; row <= m_maxRow; ++row )
+  {
+    for( auto column = m_minColumn; column <= m_maxColumn; ++ column )
+    {
+      auto x = static_cast<float>(column * m_columnWidth);
+      auto y = static_cast<float>(row * m_rowHeight);
+
+      auto noiseValue = psn::GetNoise(x / m_noiseDial, y / m_noiseDial);
+
+      auto rowRadius = m_rowHeight / 2;
+      auto columnRadius = m_columnWidth / 2;
+
+      auto rect = game_rect { { x - columnRadius, y - rowRadius }, { x + columnRadius, y + rowRadius } };
+      
+      if( noiseValue >= m_noiseLower && noiseValue < m_noiseUpper )
+      {
+        inserter = level_asteroid { rect };
+      }
+    }
+  }
+}

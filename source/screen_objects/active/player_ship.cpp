@@ -1,18 +1,33 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "math.h"
-#include "event_player_shot.h"
-#include "event_player_dead.h"
 #include "perf_data.h"
 #include "renderers.h"
 
-player_ship::player_ship() : m_geometry(GetPlayerObject()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+constexpr std::array<game_point, 3> GetPlayerGeometryData()
+{
+  return {
+    game_point { 0, -10 },
+    game_point { 7, 10 },
+    game_point { -7, 10 }
+  };
+}
+
+constexpr std::array<game_point, 2> GetPlayerThrusterGeometryData()
+{
+  return {
+    game_point { 5, 14 },
+    game_point { -5, 14 }
+  };
+}
+
+player_ship::player_ship() : m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
 }
 
-player_ship::player_ship(float x, float y) : m_x(x), m_y(y), m_geometry(GetPlayerObject()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+player_ship::player_ship(float x, float y) : m_x(x), m_y(y), m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   m_shotTimerInterval = GetShotTimeInterval();
   UpdateShipGeometryData();
@@ -58,11 +73,6 @@ auto player_ship::Destroy() -> void
   return m_destroyed;
 }
 
-[[nodiscard]] auto player_ship::Points() const -> const points_collection&
-{
-  return m_points;
-}
-
 auto player_ship::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
@@ -90,11 +100,6 @@ auto player_ship::Update(int64_t tickCount) -> void
 
 auto player_ship::UpdateShipGeometryData() -> void
 {
-  m_points.clear();
-  m_lines.clear();
-  GetTransformedShipPointsGeometry(std::back_inserter(m_points));
-  CreateConnectedLines(m_points.cbegin(), m_points.cend(), std::back_inserter(m_lines));
-
   auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_x, m_y);
   m_transformedGeometry = { m_geometry, rotateAndMove };
 }
@@ -110,14 +115,6 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
 [[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
 {
   return m_transformedGeometry;
-}
-
-auto player_ship::GetTransformedShipPointsGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
-{
-  const auto& shipGeometryData = GetPlayerGeometryData();
-
-  TransformPoints(shipGeometryData.cbegin(), shipGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_x, m_y));
 }
 
 [[nodiscard]] auto player_ship::CanShoot() -> bool
@@ -146,27 +143,4 @@ constexpr auto player_ship::GetShotTimeNumerator() -> int64_t
 constexpr auto player_ship::GetShotTimeDenominator() -> int64_t
 {
   return 20;
-}
-
-game_closed_object player_ship::GetPlayerObject()
-{
-  const auto& geometryData = GetPlayerGeometryData();
-  return { std::cbegin(geometryData), std::cend(geometryData) };
-}
-
-constexpr std::array<game_point, 3> player_ship::GetPlayerGeometryData()
-{
-  return {
-    game_point { 0, -10 },
-    game_point { 7, 10 },
-    game_point { -7, 10 }
-  };
-}
-
-constexpr std::array<game_point, 2> player_ship::GetPlayerThrusterGeometryData()
-{
-  return {
-    game_point { 5, 14 },
-    game_point { -5, 14 }
-  };
 }

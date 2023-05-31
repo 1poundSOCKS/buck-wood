@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
-#include "global_state.h"
+// #include "global_state.h"
 #include "game_level_object_generator.h"
 
 game_level_data_loader::game_level_data_loader()

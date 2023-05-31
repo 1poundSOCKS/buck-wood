@@ -1,12 +1,10 @@
 #pragma once
 
-#include "active_object_container.h"
 #include "passive_object_container.h"
 #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
 #include "level_background.h"
-#include "active_object_container.h"
 #include "game_level_object_generator.h"
 #include "renderers.h"
 
@@ -42,8 +40,6 @@ public:
   [[nodiscard]] auto HasFinished() const -> bool;
 
 private:
-
-  using active_object_container_type = active_object_container<collision_data, collision_effect, renderer>;
 
   auto CreateAsteroids(D2D1_RECT_F viewRect, auto inserter) -> void;
 

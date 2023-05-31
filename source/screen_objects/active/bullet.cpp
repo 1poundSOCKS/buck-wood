@@ -3,7 +3,6 @@
 #include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
-#include "renderers.h"
 
 bullet::bullet(float x, float y, float angle) : m_startPosition { x, y }, m_position { x, y }, m_angle(angle)
 {

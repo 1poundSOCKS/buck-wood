@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "explosion.h"
 #include "render_brush_defs.h"
-#include "renderers.h"
+#include "framework.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);
@@ -26,11 +26,6 @@ auto explosion_state::particle_state::Update(float interval) -> void
 {
   m_x += m_xVelocity * interval;
   m_y += m_yVelocity * interval;
-}
-
-auto explosion_state::particle_state::HasCollidedWith(const collision_data& collisionData) const -> bool
-{
-  return collisionData.PointInside(m_x, m_y);
 }
 
 auto explosion_state::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect
@@ -63,25 +58,6 @@ auto explosion_state::Update(const object_input_data& inputData, int64_t tickCou
   {
     particle.Update(updateInterval);
   }
-}
-
-[[nodiscard]] auto explosion_state::GetCollisionData() const -> const collision_data&
-{
-  return m_collisionData;
-}
-
-[[nodiscard]] auto explosion_state::HasCollidedWith(const collision_data& collisionData) const -> bool
-{
-  return false;
-}
-
-[[nodiscard]] auto explosion_state::GetCollisionEffect() const -> collision_effect
-{
-  return {};
-}
-
-auto explosion_state::ApplyCollisionEffect(const collision_effect& collisionEffect) -> void
-{
 }
 
 [[nodiscard]] auto explosion_state::Destroyed() const -> bool

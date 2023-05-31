@@ -4,10 +4,6 @@
 #include "perlin_simplex_noise.h"
 #include "renderers.h"
 
-level_asteroid::level_asteroid(const game_closed_object& object) : m_object(object), m_geometry(object)
-{
-}
-
 level_asteroid::level_asteroid(game_rect rect)
 {
   auto width = ( rect.bottomRight.x - rect.topLeft.x ) / 2.0f;
@@ -33,7 +29,7 @@ level_asteroid::level_asteroid(game_rect rect)
   }
 
   m_object.Finalize();
-  m_geometry.Load(m_object);
+  m_geometry.Load(m_object.points);
 }
 
 [[nodiscard]] auto level_asteroid::Geometry() const -> const path_geometry&
