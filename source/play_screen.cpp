@@ -6,7 +6,7 @@
 #include "global_state.h"
 #include "render_target_area.h"
 
-play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
+play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>()), m_playEvents(std::make_unique<level_container::events>())
 {
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
@@ -96,13 +96,13 @@ auto play_screen::PostPresent() const -> void
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
 
-    if( m_levelContainer->PlayerShot() )
+    if( m_playEvents->playerShot )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[shoot]);
     }
 
-    if( m_levelContainer->TargetActivated() )
+    if( m_playEvents->targetActivated )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[target_activated]);
@@ -179,7 +179,7 @@ auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elap
   auto objectInputData = screenTransform.GetObjectInputData(inputState);
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
-  m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
+  m_playEvents = m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform

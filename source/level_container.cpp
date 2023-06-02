@@ -29,10 +29,9 @@ auto level_container::HasTimedOut() const -> bool
   return HasTimedOut() || PlayerDied() || IsComplete();
 }
 
-auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> events_ptr
 {
-  m_playerShot = false;
-  m_targetActivated = false;
+  auto updateEvents = std::make_unique<events>();
 
   for( auto& playerShip : m_playerShips )
   {
@@ -55,6 +54,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     if( triggerPressed && playerShip.CanShoot() )
     {
       m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, playerShip.Angle() } );
+      updateEvents->playerShot = true;
     }
 
     m_background.SetCentre(playerPosition.x, playerPosition.y);
@@ -62,9 +62,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   m_background.Update(ticks);
 
-  m_asteroids.clear();
-
-  CreateAsteroids(viewRect, std::back_inserter(m_asteroids));
+  m_asteroids.Update(viewRect);
 
   do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [this](auto& asteroid, auto& playerShip)
   {
@@ -85,12 +83,13 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     bullet.Destroy();
   });
 
-  do_geometry_to_point_collisions(m_targets, m_bullets, [this](auto& target, auto& bullet)
+  do_geometry_to_point_collisions(m_targets, m_bullets, [this, &updateEvents](auto& target, auto& bullet)
   {
     if( !target.IsActivated() )
     {
       target.Activate();
       ++m_activatedTargetCount;
+      updateEvents->targetActivated = true;
     }
 
     bullet.Destroy();
@@ -102,6 +101,8 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
+
+  return updateEvents;
 }
 
 auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
@@ -129,19 +130,9 @@ auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRe
   return std::reduce(std::cbegin(m_playerShips), std::end(m_playerShips), false, [](auto thrusterOn, const auto& playerShip) { return playerShip.ThrusterOn(); });
 }
 
-[[nodiscard]] auto level_container::PlayerShot() const -> bool
-{
-  return m_playerShot;
-}
-
 [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
   return m_playerShips.size() == 0;
-}
-
-[[nodiscard]] auto level_container::TargetActivated() const -> bool
-{
-  return m_targetActivated;
 }
 
 [[nodiscard]] auto level_container::TicksRemaining() const -> int64_t

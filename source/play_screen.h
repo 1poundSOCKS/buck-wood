@@ -50,6 +50,7 @@ private:
   bool m_continueRunning = true;
   int64_t m_stageTicks = 0;
   std::unique_ptr<level_container> m_levelContainer;
+  std::unique_ptr<level_container::events> m_playEvents;
   mouse_cursor m_cursor;
   menu m_menu;
   game_level_data_loader m_gameLevelDataLoader;
