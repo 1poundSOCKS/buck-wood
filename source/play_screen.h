@@ -13,7 +13,6 @@
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
 #include "level_map.h"
-#include "target_container.h"
 #include "text_box.h"
 
 class play_screen

@@ -110,6 +110,11 @@ struct game_closed_object
     points.emplace_back(point);
   }
 
+  auto operator+=(game_point point) -> void
+  {
+    points.push_back(point);
+  }
+
   auto Finalize() -> void
   {
     CreateConnectedLines(points.cbegin(), points.cend(), std::back_inserter(lines));

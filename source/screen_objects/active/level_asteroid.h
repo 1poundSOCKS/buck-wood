@@ -12,6 +12,5 @@ public:
 
 private:
 
-  game_closed_object m_object;
   path_geometry m_geometry;
 };

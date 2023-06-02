@@ -9,7 +9,6 @@ class path_geometry
 public:
 
   path_geometry();
-  // path_geometry(const game_closed_object& object);
   path_geometry(std::ranges::input_range auto&& points);
   auto Get() const -> ID2D1PathGeometry*;
   auto Load(std::ranges::input_range auto&& points) -> void;
