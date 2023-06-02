@@ -1,6 +1,5 @@
 #pragma once
 
-// #include "geometry.h"
 #include "framework.h"
 
 class path_geometry
@@ -31,11 +30,15 @@ auto path_geometry::Load(std::ranges::input_range auto&& points) -> void
 
   auto begin = std::cbegin(points);
 
-  sink->BeginFigure({ begin->x, begin->y }, D2D1_FIGURE_BEGIN_FILLED);
+  auto firstPoint = *begin;
 
-  for( auto point = std::next(begin); point != std::cend(points); ++point )
+  sink->BeginFigure({ firstPoint.x, firstPoint.y }, D2D1_FIGURE_BEGIN_FILLED);
+
+  for( auto next = std::next(begin); next != std::cend(points); ++next )
   {
-    sink->AddLine({ point->x, point->y });
+    auto nextPoint = *next;
+    
+    sink->AddLine({ nextPoint.x, nextPoint.y });
   }
 
   sink->EndFigure(D2D1_FIGURE_END_CLOSED);

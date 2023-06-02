@@ -21,7 +21,6 @@ public:
 
 private:
 
-  [[nodiscard]] auto CreateAsteroid(game_rect rect) const -> game_closed_object;
   [[nodiscard]] auto CreateTarget(game_rect rect) const -> game_closed_object;
 
   int m_minColumn = 0;

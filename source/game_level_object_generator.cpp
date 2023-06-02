@@ -56,36 +56,6 @@ auto game_level_object_generator::InsertInto(std::back_insert_iterator<target_co
   }
 }
 
-[[nodiscard]] auto game_level_object_generator::CreateAsteroid(game_rect rect) const -> game_closed_object
-{
-  auto width = ( rect.bottomRight.x - rect.topLeft.x ) / 2.0f;
-  auto height = ( rect.bottomRight.y - rect.topLeft.y ) / 2.0f;
-
-  auto centrePoint = rect.CentrePoint();
-  auto x = centrePoint.x;
-  auto y = centrePoint.y;
-
-  std::vector<game_point> points;
-
-  for( int angle = 0; angle < 360; angle += 30 )
-  {
-    auto angleInRadians = DEGTORAD(angle);
-
-    auto cx = width * sin(angleInRadians);
-    auto cy = height * cos(angleInRadians);
-
-    auto noise = psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy));
-    noise = ( noise + 5.0f ) / 6.0f;
-
-    points.emplace_back( game_point {x + cx * noise, y + cy * noise} );
-  }
-
-  game_closed_object object;
-  object.Load(points.cbegin(), points.cend());
-
-  return object;
-}
-
 [[nodiscard]] auto game_level_object_generator::CreateTarget(game_rect rect) const -> game_closed_object
 {
   auto width = ( rect.bottomRight.x - rect.topLeft.x ) / 8.0f;

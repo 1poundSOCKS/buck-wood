@@ -24,13 +24,12 @@ level_target::level_target(float x, float y)
 {
   m_position = { x, y };
 
-  std::vector<game_point> points;
-  const auto& targetGeometryData = GetDefaultTargetGeometryData();
-  TransformPoints(targetGeometryData.cbegin(), targetGeometryData.cend(), std::back_inserter(points), D2D1::Matrix3x2F::Translation(x, y));
+  auto v = std::ranges::views::transform(GetDefaultTargetGeometryData(), [x, y](const auto& point)
+  {
+    return game_point { point.x + x, point.y + y };
+  });
 
-  game_closed_object object;
-  object.Load(points.cbegin(), points.cend());
-  m_geometry.Load(object.points);
+  m_geometry.Load(v);
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point
