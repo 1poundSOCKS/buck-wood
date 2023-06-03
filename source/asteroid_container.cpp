@@ -4,12 +4,12 @@
 
 asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type iteratorType) : m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {
-  m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
-
   switch( iteratorType )
   {
     case type::begin:
-      m_currentColumn = std::begin(asteroidContainer->m_asteroidGrid.front());
+      m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
+      m_currentColumn = m_currentRow->begin();
+      if( m_currentColumn == m_currentRow->end() ) m_type = type::end;
       break;
   }
 }
@@ -18,9 +18,18 @@ auto asteroid_iterator::operator++() -> asteroid_iterator&
 {
   ++m_currentColumn;
 
-  if( m_currentColumn == std::end(*m_currentRow) )
+  while( m_type != type::end && m_currentColumn == m_currentRow->end() )
   {
-    m_type = type::end;
+    ++m_currentRow;
+
+    if( m_currentRow == std::end(m_asteroidContainer->m_asteroidGrid) )
+    {
+      m_type = type::end;
+    }
+    else
+    {
+      m_currentColumn = m_currentRow->begin();
+    }
   }
 
   return *this;
@@ -29,11 +38,21 @@ auto asteroid_iterator::operator++() -> asteroid_iterator&
 auto asteroid_iterator::operator++(int) -> asteroid_iterator
 {
   asteroid_iterator tmp = *this;
+  
   m_currentColumn++;
 
-  if( m_currentColumn == std::end(*m_currentRow) )
+  while( m_type != type::end && m_currentColumn == m_currentRow->end() )
   {
-    m_type = type::end;
+    m_currentRow++;
+
+    if( m_currentRow == std::end(m_asteroidContainer->m_asteroidGrid) )
+    {
+      m_type = type::end;
+    }
+    else
+    {
+      m_currentColumn = m_currentRow->begin();
+    }
   }
 
   return tmp;
@@ -46,32 +65,29 @@ auto asteroid_iterator::operator*() const -> level_asteroid&
 
 auto asteroid_iterator::operator==(const asteroid_iterator& i) const -> bool
 {
-  auto thisEnd = m_type == type::end || m_currentColumn == m_asteroidContainer->m_asteroidGrid.front().end();
-  auto thatEnd = i.m_type == type::end || i.m_currentColumn == i.m_asteroidContainer->m_asteroidGrid.front().end();
-
-  if( thisEnd && thatEnd )
+  if( m_type == type::end && i.m_type == type::end )
   {
     return true;
   }
-  else if( m_currentRow != i.m_currentRow )
+  else if( m_type == type::end || i.m_type == type::end )
   {
     return false;
   }
   else
   {
-    return m_currentColumn == i.m_currentColumn;
+    return m_currentRow == i.m_currentRow && m_currentColumn == i.m_currentColumn;
   }
 }
 
 const_asteroid_iterator::const_asteroid_iterator(const asteroid_container* asteroidContainer, type iteratorType) : 
   m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {
-  m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
-
   switch( iteratorType )
   {
     case type::begin:
-      m_currentColumn = std::begin(asteroidContainer->m_asteroidGrid.front());
+      m_currentRow = std::cbegin(asteroidContainer->m_asteroidGrid);
+      m_currentColumn = m_currentRow->cbegin();
+      if( m_currentColumn == m_currentRow->cend() ) m_type = type::end;
       break;
   }
 }
@@ -80,9 +96,18 @@ auto const_asteroid_iterator::operator++() -> const_asteroid_iterator&
 {
   ++m_currentColumn;
 
-  if( m_currentColumn == std::end(*m_currentRow) )
+  while( m_type != type::end && m_currentColumn == m_currentRow->cend() )
   {
-    m_type = type::end;
+    ++m_currentRow;
+
+    if( m_currentRow == std::end(m_asteroidContainer->m_asteroidGrid) )
+    {
+      m_type = type::end;
+    }
+    else
+    {
+      m_currentColumn = m_currentRow->cbegin();
+    }
   }
 
   return *this;
@@ -91,11 +116,21 @@ auto const_asteroid_iterator::operator++() -> const_asteroid_iterator&
 auto const_asteroid_iterator::operator++(int) -> const_asteroid_iterator
 {
   const_asteroid_iterator tmp = *this;
+
   m_currentColumn++;
 
-  if( m_currentColumn == std::end(*m_currentRow) )
+  while( m_type != type::end && m_currentColumn == m_currentRow->cend() )
   {
-    m_type = type::end;
+    m_currentRow++;
+
+    if( m_currentRow == std::end(m_asteroidContainer->m_asteroidGrid) )
+    {
+      m_type = type::end;
+    }
+    else
+    {
+      m_currentColumn = m_currentRow->cbegin();
+    }
   }
 
   return tmp;
@@ -108,20 +143,17 @@ auto const_asteroid_iterator::operator*() const -> const level_asteroid&
 
 auto const_asteroid_iterator::operator==(const const_asteroid_iterator& i) const -> bool
 {
-  auto thisEnd = m_type == type::end || m_currentColumn == m_asteroidContainer->m_asteroidGrid.front().end();
-  auto thatEnd = i.m_type == type::end || i.m_currentColumn == i.m_asteroidContainer->m_asteroidGrid.front().end();
-
-  if( thisEnd && thatEnd )
+  if( m_type == type::end && i.m_type == type::end )
   {
     return true;
   }
-  else if( m_currentRow != i.m_currentRow )
+  else if( m_type == type::end || i.m_type == type::end )
   {
     return false;
   }
   else
   {
-    return m_currentColumn == i.m_currentColumn;
+    return m_currentRow == i.m_currentRow && m_currentColumn == i.m_currentColumn;
   }
 }
 
@@ -154,10 +186,12 @@ auto asteroid_container::Update(const D2D1_RECT_F& rect) -> void
 {
   auto smallColumnWidth = 100;
   auto smallRowHeight = 100;
+  
   auto smallGrid = level_grid { smallColumnWidth, smallRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
 
   auto largeColumnWidth = 400;
   auto largeRowHeight = 400;
+
   auto largeGrid = level_grid { largeColumnWidth, largeRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
 
   if( m_smallGrid != smallGrid )
@@ -169,7 +203,7 @@ auto asteroid_container::Update(const D2D1_RECT_F& rect) -> void
   if( m_largeGrid != largeGrid )
   {
     m_asteroidGrid.back().clear();
-    CreateLargeAsteroids(m_largeGrid, std::back_inserter(m_asteroidGrid.back()));
+    CreateLargeAsteroids(largeGrid, std::back_inserter(m_asteroidGrid.back()));
   }
 }
 
