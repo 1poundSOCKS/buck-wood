@@ -105,7 +105,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   return updateEvents;
 }
 
-auto level_container::Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void
+auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
   m_background.Render(viewRect);
   renderer::render_all(m_explosions);

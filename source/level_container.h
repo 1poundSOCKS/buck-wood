@@ -35,7 +35,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& targets) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> events_ptr;
-  auto Render(ID2D1RenderTarget* renderTarget, D2D1_RECT_F viewRect) const -> void;
+  auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
   [[nodiscard]] auto PlayerPosition() const -> game_point;

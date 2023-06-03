@@ -56,7 +56,7 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
 
 auto do_geometry_to_point_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects, auto OnCollision) -> void
 {
-  std::for_each(std::execution::par, std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects, OnCollision](auto& geometryObject)
+  std::for_each(std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects, OnCollision](auto& geometryObject)
   {
     for( auto& pointObject : pointObjects )
     {
@@ -72,7 +72,7 @@ auto do_geometry_to_point_collisions(std::ranges::input_range auto&& geometryObj
 
 auto do_geometry_to_geometry_collisions(std::ranges::input_range auto&& geometryObjects1, std::ranges::input_range auto&& geometryObjects2, auto OnCollision) -> void
 {
-  std::for_each(std::execution::par, std::begin(geometryObjects1), std::end(geometryObjects1), [&geometryObjects2, OnCollision](auto& geometryObject1)
+  std::for_each(std::begin(geometryObjects1), std::end(geometryObjects1), [&geometryObjects2, OnCollision](auto& geometryObject1)
   {
     for( auto& geometryObject2 : geometryObjects2 )
     {

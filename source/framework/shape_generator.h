@@ -77,11 +77,6 @@ private:
 
 };
 
-
-// static_assert(std::ranges::input_range<shape_generator<clean>>);
-
-// static_assert(std::input_iterator<shape_iterator<clean>>);
-
 template <typename noise>
 shape_iterator<typename noise>::shape_iterator(const shape_generator<noise>* shapeGenerator, int initialAngle) : 
   m_shapeGenerator(shapeGenerator), m_currentAngle(initialAngle)
@@ -150,7 +145,6 @@ auto shape_iterator<typename noise>::GetCurrentPoint() const -> game_point
   auto x = m_shapeGenerator->m_rect.topLeft.x + radiusX;
   auto y = m_shapeGenerator->m_rect.bottomRight.y + radiusY;
 
-  // auto noise = ( psn::GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy)) + 5 ) / 6;
   auto noise = ( m_shapeGenerator->m_noise.GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy)) + 5 ) / 6;
   
   return {x + cx * noise, y + cy * noise};

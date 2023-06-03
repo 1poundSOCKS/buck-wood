@@ -61,7 +61,7 @@ auto play_screen::Render() const -> void
 
   auto screenTransform = GetLevelRenderTransform();
   renderTarget->SetTransform(screenTransform.Get());
-  m_levelContainer->Render(renderTarget.get(), screenTransform.GetViewRect(renderTargetSize));
+  m_levelContainer->Render(screenTransform.GetViewRect(renderTargetSize));
 
   auto overlayRenderTransform = GetOverlayRenderTransform();
   renderTarget->SetTransform(overlayRenderTransform.Get());
