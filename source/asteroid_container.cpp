@@ -4,86 +4,99 @@
 
 asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type iteratorType) : m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {
+  m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
+
   switch( iteratorType )
   {
     case type::begin:
-      m_currentAsteroid = std::begin(asteroidContainer->m_smallAsteroids);
-      break;
-    case type::end:
-      m_currentAsteroid = std::end(asteroidContainer->m_smallAsteroids);
+      m_currentColumn = std::begin(asteroidContainer->m_asteroidGrid.front());
       break;
   }
 }
 
 auto asteroid_iterator::operator++() -> asteroid_iterator&
 {
-  ++m_currentAsteroid;
+  ++m_currentColumn;
   return *this;
 }
 
 auto asteroid_iterator::operator++(int) -> asteroid_iterator
 {
   asteroid_iterator tmp = *this;
-  m_currentAsteroid++;
+  m_currentColumn++;
   return tmp;
 }
 
 auto asteroid_iterator::operator*() const -> level_asteroid&
 {
-  return *m_currentAsteroid;
+  return *m_currentColumn;
 }
 
 auto asteroid_iterator::operator==(const asteroid_iterator& i) const -> bool
 {
-  return m_currentAsteroid == i.m_currentAsteroid;
-}
+  auto thisEnd = m_type == type::end || m_currentColumn == m_asteroidContainer->m_asteroidGrid.front().end();
+  auto thatEnd = i.m_type == type::end || i.m_currentColumn == i.m_asteroidContainer->m_asteroidGrid.front().end();
 
-// auto asteroid_iterator::operator<=>(const asteroid_iterator& i) const -> std::strong_ordering
-// {
-//   return std::strong_ordering::equal;
-// }
+  if( thisEnd && thatEnd )
+  {
+    return true;
+  }
+  else
+  {
+    return m_currentColumn == i.m_currentColumn;
+  }
+}
 
 const_asteroid_iterator::const_asteroid_iterator(const asteroid_container* asteroidContainer, type iteratorType) : 
   m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {
+  m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
+
   switch( iteratorType )
   {
     case type::begin:
-      m_currentAsteroid = std::begin(asteroidContainer->m_smallAsteroids);
-      break;
-    case type::end:
-      m_currentAsteroid = std::end(asteroidContainer->m_smallAsteroids);
+      m_currentColumn = std::begin(asteroidContainer->m_asteroidGrid.front());
       break;
   }
 }
 
 auto const_asteroid_iterator::operator++() -> const_asteroid_iterator&
 {
-  ++m_currentAsteroid;
+  ++m_currentColumn;
   return *this;
 }
 
 auto const_asteroid_iterator::operator++(int) -> const_asteroid_iterator
 {
   const_asteroid_iterator tmp = *this;
-  m_currentAsteroid++;
+  m_currentColumn++;
   return tmp;
 }
 
 auto const_asteroid_iterator::operator*() const -> const level_asteroid&
 {
-  return *m_currentAsteroid;
+  return *m_currentColumn;
 }
 
 auto const_asteroid_iterator::operator==(const const_asteroid_iterator& i) const -> bool
 {
-  return m_currentAsteroid == i.m_currentAsteroid;
+  auto thisEnd = m_type == type::end || m_currentColumn == m_asteroidContainer->m_asteroidGrid.front().end();
+  auto thatEnd = i.m_type == type::end || i.m_currentColumn == i.m_asteroidContainer->m_asteroidGrid.front().end();
+
+  if( thisEnd && thatEnd )
+  {
+    return true;
+  }
+  else
+  {
+    return m_currentColumn == i.m_currentColumn;
+  }
 }
 
-// auto const_asteroid_iterator::operator<=>(const const_asteroid_iterator& i) const -> std::strong_ordering
-// {
-//   return std::strong_ordering::equal;
-// }
+asteroid_container::asteroid_container()
+{
+  m_asteroidGrid.resize(2);
+}
 
 auto asteroid_container::begin() const -> const_asteroid_iterator
 {
@@ -117,14 +130,14 @@ auto asteroid_container::Update(const D2D1_RECT_F& rect) -> void
 
   if( m_smallGrid != smallGrid )
   {
-    m_smallAsteroids.clear();
-    CreateSmallAsteroids(smallGrid, std::back_inserter(m_smallAsteroids));
+    m_asteroidGrid.front().clear();
+    CreateSmallAsteroids(smallGrid, std::back_inserter(m_asteroidGrid.front()));
   }
 
   if( m_largeGrid != largeGrid )
   {
-    m_largeAsteroids.clear();
-    CreateLargeAsteroids(largeGrid, std::back_inserter(m_largeAsteroids));
+    m_asteroidGrid.back().clear();
+    CreateLargeAsteroids(m_largeGrid, std::back_inserter(m_asteroidGrid.back()));
   }
 }
 
