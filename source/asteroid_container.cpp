@@ -17,6 +17,12 @@ asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type
 auto asteroid_iterator::operator++() -> asteroid_iterator&
 {
   ++m_currentColumn;
+
+  if( m_currentColumn == std::end(*m_currentRow) )
+  {
+    m_type = type::end;
+  }
+
   return *this;
 }
 
@@ -24,6 +30,12 @@ auto asteroid_iterator::operator++(int) -> asteroid_iterator
 {
   asteroid_iterator tmp = *this;
   m_currentColumn++;
+
+  if( m_currentColumn == std::end(*m_currentRow) )
+  {
+    m_type = type::end;
+  }
+
   return tmp;
 }
 
@@ -40,6 +52,10 @@ auto asteroid_iterator::operator==(const asteroid_iterator& i) const -> bool
   if( thisEnd && thatEnd )
   {
     return true;
+  }
+  else if( m_currentRow != i.m_currentRow )
+  {
+    return false;
   }
   else
   {
@@ -63,6 +79,12 @@ const_asteroid_iterator::const_asteroid_iterator(const asteroid_container* aster
 auto const_asteroid_iterator::operator++() -> const_asteroid_iterator&
 {
   ++m_currentColumn;
+
+  if( m_currentColumn == std::end(*m_currentRow) )
+  {
+    m_type = type::end;
+  }
+
   return *this;
 }
 
@@ -70,6 +92,12 @@ auto const_asteroid_iterator::operator++(int) -> const_asteroid_iterator
 {
   const_asteroid_iterator tmp = *this;
   m_currentColumn++;
+
+  if( m_currentColumn == std::end(*m_currentRow) )
+  {
+    m_type = type::end;
+  }
+
   return tmp;
 }
 
@@ -86,6 +114,10 @@ auto const_asteroid_iterator::operator==(const const_asteroid_iterator& i) const
   if( thisEnd && thatEnd )
   {
     return true;
+  }
+  else if( m_currentRow != i.m_currentRow )
+  {
+    return false;
   }
   else
   {
