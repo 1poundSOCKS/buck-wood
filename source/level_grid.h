@@ -2,6 +2,8 @@
 
 struct level_grid_cell
 {
+  int x { 0 };
+  int y { 0 };
   int left { 0 };
   int top { 0 };
   int right { 0 };

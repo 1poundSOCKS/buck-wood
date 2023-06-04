@@ -94,8 +94,7 @@ public:
 
 private:
 
-  auto CreateSmallAsteroids(const level_grid& grid, auto inserter) -> void;
-  auto CreateLargeAsteroids(const level_grid& grid, auto inserter) -> void;
+  auto CreateAsteroids(const level_grid& grid) -> void;
 
   level_grid m_smallGrid;
   level_grid m_largeGrid;

@@ -194,39 +194,30 @@ auto asteroid_container::end() -> asteroid_iterator
 
 auto asteroid_container::Update(const D2D1_RECT_F& rect) -> void
 {
-  auto smallColumnWidth = 100;
-  auto smallRowHeight = 100;
+  auto smallColumnWidth = 200;
+  auto smallRowHeight = 200;
   
-  auto smallGrid = level_grid { smallColumnWidth, smallRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
+  auto grid = level_grid { smallColumnWidth, smallRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
 
-  auto largeColumnWidth = 400;
-  auto largeRowHeight = 400;
-
-  auto largeGrid = level_grid { largeColumnWidth, largeRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
-
-  if( m_smallGrid != smallGrid )
-  {
-    m_asteroidGrid.front().clear();
-    CreateSmallAsteroids(smallGrid, std::back_inserter(m_asteroidGrid.front()));
-  }
-
-  if( m_largeGrid != largeGrid )
-  {
-    m_asteroidGrid.back().clear();
-    CreateLargeAsteroids(largeGrid, std::back_inserter(m_asteroidGrid.back()));
-  }
+  m_asteroidGrid.front().clear();
+  CreateAsteroids(grid);
 }
 
-auto asteroid_container::CreateSmallAsteroids(const level_grid& grid, auto inserter) -> void
+auto asteroid_container::CreateAsteroids(const level_grid& grid) -> void
 {
-  game_level_object_generator smallAsteroidGenerator(grid.LeftColumn(), grid.RightColumn(), grid.ColumnWidth(), grid.TopRow(), grid.BottomRow(), grid.RowHeight(), 0.85f, 0.89f, 13.0f);
-  smallAsteroidGenerator.InsertInto(inserter);
+  auto view = grid | std::ranges::views::filter([](const auto& cell)
+  {
+    auto noise = psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y));
+    return noise > 0.9;
+  });
+
+  std::ranges::for_each(view, [this](const auto& cell){
+    m_asteroidGrid.front().emplace_back(level_asteroid { game_rect
+    { 
+      { static_cast<float>(cell.left), static_cast<float>(cell.top) } , 
+      { static_cast<float>(cell.right), static_cast<float>(cell.bottom) }
+    }});
+  });
+
   m_smallGrid = grid;
-}
-
-auto asteroid_container::CreateLargeAsteroids(const level_grid& grid, auto inserter) -> void
-{
-  game_level_object_generator largeAsteroidGenerator(grid.LeftColumn(), grid.RightColumn(), grid.ColumnWidth(), grid.TopRow(), grid.BottomRow(), grid.RowHeight(), 0.90f, 1.0f, 7.0f);
-  largeAsteroidGenerator.InsertInto(inserter);
-  m_largeGrid = grid;
 }

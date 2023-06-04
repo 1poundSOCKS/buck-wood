@@ -115,7 +115,7 @@ auto level_grid::GetCell(int column, int row) const -> level_grid_cell
     auto centreX = column * m_columnWidth;
     auto centreY = row * m_rowHeight;
 
-    return { centreX - cx + 1, centreY - cy + 1, centreX + cx, centreY + cy };
+    return { centreX, centreY, centreX - cx + 1, centreY - cy + 1, centreX + cx, centreY + cy };
   }
 }
 
