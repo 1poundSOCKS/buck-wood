@@ -25,26 +25,25 @@ public:
 };
 
 template <typename noise>
-class shape_iterator
+class const_shape_iterator
 {
 
 public:
 
   friend class shape_generator<noise>;
 
-  shape_iterator() = default;
+  const_shape_iterator() = default;
   using difference_type = std::ptrdiff_t;
   using value_type = game_point;
 
-  auto operator++() -> shape_iterator&;
-  auto operator++(int) -> shape_iterator;
-  auto operator*() const -> game_point;
-  auto operator==(const shape_iterator&) const -> bool;
-  auto operator<=>(const shape_iterator&) const -> std::strong_ordering;
+  auto operator++() -> const_shape_iterator&;
+  auto operator++(int) -> const_shape_iterator;
+  auto operator*() const -> const game_point&;
+  auto operator==(const const_shape_iterator&) const -> bool;
 
 private:
   
-  shape_iterator(const shape_generator<noise>* shapeGenerator, int initialAngle);
+  const_shape_iterator(const shape_generator<noise>* shapeGenerator, int initialAngle);
   auto GetCurrentPoint() const -> game_point;
 
   const shape_generator<noise>* m_shapeGenerator { nullptr };
@@ -58,15 +57,15 @@ class shape_generator
 
 public:
 
-  friend class shape_iterator<noise>;
+  friend class const_shape_iterator<noise>;
 
   shape_generator() = default;
   shape_generator(const shape_generator<noise>&) = default;
   shape_generator(shape_generator<noise>&&) = default;
   shape_generator(game_rect rect, int sides);
 
-  auto begin() const -> shape_iterator<noise>;
-  auto end() const -> shape_iterator<noise>;
+  auto begin() const -> const_shape_iterator<noise>;
+  auto end() const -> const_shape_iterator<noise>;
 
 private:
 
@@ -78,14 +77,14 @@ private:
 };
 
 template <typename noise>
-shape_iterator<typename noise>::shape_iterator(const shape_generator<noise>* shapeGenerator, int initialAngle) : 
+const_shape_iterator<typename noise>::const_shape_iterator(const shape_generator<noise>* shapeGenerator, int initialAngle) : 
   m_shapeGenerator(shapeGenerator), m_currentAngle(initialAngle)
 {
   if( m_currentAngle < 360 ) m_point = GetCurrentPoint();
 }
 
 template <typename noise>
-auto shape_iterator<typename noise>::operator++() -> shape_iterator&
+auto const_shape_iterator<typename noise>::operator++() -> const_shape_iterator&
 {
   m_currentAngle += m_shapeGenerator->m_angleIncrement;
   m_currentAngle = min(m_currentAngle, 360);
@@ -94,9 +93,9 @@ auto shape_iterator<typename noise>::operator++() -> shape_iterator&
 }
 
 template <typename noise>
-auto shape_iterator<typename noise>::operator++(int) -> shape_iterator
+auto const_shape_iterator<typename noise>::operator++(int) -> const_shape_iterator
 {
-  shape_iterator tmp = *this;
+  const_shape_iterator tmp = *this;
   m_currentAngle += m_shapeGenerator->m_angleIncrement;
   m_currentAngle = min(m_currentAngle, 360);
   if( m_currentAngle < 360 ) m_point = GetCurrentPoint();
@@ -104,36 +103,19 @@ auto shape_iterator<typename noise>::operator++(int) -> shape_iterator
 }
 
 template <typename noise>
-auto shape_iterator<typename noise>::operator==(const shape_iterator& i) const -> bool
+auto const_shape_iterator<typename noise>::operator==(const const_shape_iterator& i) const -> bool
 {
   return m_currentAngle == i.m_currentAngle;
 }
 
 template <typename noise>
-auto shape_iterator<typename noise>::operator<=>(const shape_iterator &i) const -> std::strong_ordering
-{
-  if( m_currentAngle < i.m_currentAngle )
-  {
-      return std::strong_ordering::less;
-  }
-  else if( m_currentAngle > i.m_currentAngle )
-  {
-    return std::strong_ordering::greater;
-  }
-  else
-  {
-    return std::strong_ordering::equal;
-  }
-}
-
-template <typename noise>
-auto shape_iterator<typename noise>::operator*() const -> game_point
+auto const_shape_iterator<typename noise>::operator*() const -> const game_point&
 {
   return m_point;
 }
 
 template <typename noise>
-auto shape_iterator<typename noise>::GetCurrentPoint() const -> game_point
+auto const_shape_iterator<typename noise>::GetCurrentPoint() const -> game_point
 {
   auto radiusX = ( m_shapeGenerator->m_rect.bottomRight.x - m_shapeGenerator->m_rect.topLeft.x ) / 2;
   auto radiusY = ( m_shapeGenerator->m_rect.bottomRight.y - m_shapeGenerator->m_rect.topLeft.y ) / 2;
@@ -156,13 +138,13 @@ shape_generator<typename noise>::shape_generator(game_rect rect, int sides) : m_
 }
 
 template <typename noise>
-auto shape_generator<typename noise>::begin() const -> shape_iterator<noise>
+auto shape_generator<typename noise>::begin() const -> const_shape_iterator<noise>
 {
-  return shape_iterator(this, 0);
+  return const_shape_iterator(this, 0);
 }
 
 template <typename noise>
-auto shape_generator<typename noise>::end() const -> shape_iterator<noise>
+auto shape_generator<typename noise>::end() const -> const_shape_iterator<noise>
 {
-  return shape_iterator(this, 360);
+  return const_shape_iterator(this, 360);
 }

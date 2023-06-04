@@ -33,7 +33,7 @@ public:
 private:
   
   asteroid_iterator(asteroid_container* asteroidContainer, type iteratorType);
-  auto EnsureCurrentColumnIsValid() -> void;
+  auto EnsureIteratorIsValid() -> void;
 
   asteroid_container* m_asteroidContainer { nullptr };
   type m_type { type::none };
@@ -65,7 +65,7 @@ public:
 private:
   
   const_asteroid_iterator(const asteroid_container* asteroidContainer, type iteratorType);
-  auto EnsureCurrentColumnIsValid() -> void;
+  auto EnsureIteratorIsValid() -> void;
 
   const asteroid_container* m_asteroidContainer { nullptr };
   type m_type { type::none };

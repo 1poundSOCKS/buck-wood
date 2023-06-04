@@ -9,7 +9,7 @@ asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type
     case type::begin:
       m_currentRow = std::begin(asteroidContainer->m_asteroidGrid);
       m_currentColumn = m_currentRow->begin();
-      EnsureCurrentColumnIsValid();
+      EnsureIteratorIsValid();
       break;
   }
 }
@@ -41,7 +41,7 @@ auto asteroid_iterator::operator++(int) -> asteroid_iterator
   
   m_currentColumn++;
 
-  EnsureCurrentColumnIsValid();
+  EnsureIteratorIsValid();
 
   return tmp;
 }
@@ -67,7 +67,7 @@ auto asteroid_iterator::operator==(const asteroid_iterator& i) const -> bool
   }
 }
 
-auto asteroid_iterator::EnsureCurrentColumnIsValid() -> void
+auto asteroid_iterator::EnsureIteratorIsValid() -> void
 {
   while( m_type != type::end && m_currentColumn == m_currentRow->end() )
   {
@@ -92,7 +92,7 @@ const_asteroid_iterator::const_asteroid_iterator(const asteroid_container* aster
     case type::begin:
       m_currentRow = std::cbegin(asteroidContainer->m_asteroidGrid);
       m_currentColumn = m_currentRow->cbegin();
-      EnsureCurrentColumnIsValid();
+      EnsureIteratorIsValid();
       break;
   }
 }
@@ -124,7 +124,7 @@ auto const_asteroid_iterator::operator++(int) -> const_asteroid_iterator
 
   m_currentColumn++;
 
-  EnsureCurrentColumnIsValid();
+  EnsureIteratorIsValid();
 
   return tmp;
 }
@@ -150,7 +150,7 @@ auto const_asteroid_iterator::operator==(const const_asteroid_iterator& i) const
   }
 }
 
-auto const_asteroid_iterator::EnsureCurrentColumnIsValid() -> void
+auto const_asteroid_iterator::EnsureIteratorIsValid() -> void
 {
   while( m_type != type::end && m_currentColumn == m_currentRow->cend() )
   {

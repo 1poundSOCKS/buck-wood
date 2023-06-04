@@ -1,7 +1,47 @@
 #pragma once
 
+struct level_grid_cell
+{
+  int left { 0 };
+  int top { 0 };
+  int right { 0 };
+  int bottom { 0 };
+};
+
+class const_level_grid_iterator
+{
+
+  friend class level_grid;
+
+public:
+
+  enum class type { none, begin, end };
+
+  const_level_grid_iterator() = default;
+  using difference_type = std::ptrdiff_t;
+  using value_type = level_grid_cell;
+
+  auto operator++() -> const_level_grid_iterator&;
+  auto operator++(int) -> const_level_grid_iterator;
+  auto operator*() const -> const level_grid_cell&;
+  auto operator==(const const_level_grid_iterator& i) const -> bool;
+
+private:
+  
+  const_level_grid_iterator(const level_grid* levelGrid, type iteratorType);
+
+  const level_grid* m_levelGrid { nullptr };
+  type m_type { type::none };
+  int m_currentRow { 0 };
+  int m_currentColumn { 0 };
+  level_grid_cell m_currentCell;
+
+};
+
 class level_grid
 {
+
+  friend class const_level_grid_iterator;
 
 public:
 
@@ -15,6 +55,10 @@ public:
   auto TopRow() const -> int;
   auto RightColumn() const -> int;
   auto BottomRow() const -> int;
+  auto GetCell(int column, int row) const -> level_grid_cell;
+
+  auto begin() const -> const_level_grid_iterator;
+  auto end() const -> const_level_grid_iterator;
 
 private:
 
