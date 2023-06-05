@@ -3,9 +3,7 @@
 #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
-#include "level_background.h"
 #include "explosion.h"
-#include "game_level_object_generator.h"
 #include "renderers.h"
 #include "asteroid_container.h"
 
@@ -29,6 +27,9 @@ public:
   level_container();
   level_container(const level_container& levelContainer) = delete;
 
+  [[nodiscard]] static auto CellWidth() -> int;
+  [[nodiscard]] static auto CellHeight() -> int;
+
   auto SetTimeout(int time) -> void;
   auto HasTimedOut() const -> bool;
 
@@ -47,11 +48,13 @@ public:
 
 private:
 
+  inline static const int m_cellWidth { 400 };
+  inline static const int m_cellHeight { 400 };
+
   player_ship_collection m_playerShips;
   bullet_collection m_bullets;
   target_collection m_targets;
   asteroid_container m_asteroids;
-  level_background m_background;
   explosion_collection m_explosions;
 
   int64_t m_ticksRemaining = 0;
@@ -60,7 +63,10 @@ private:
   int m_activatedTargetCount = 0;
 };
 
-auto level_container::AddTargets(std::ranges::input_range auto&& targets) -> void
+auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
 {
-  std::ranges::copy(targets, std::back_inserter(m_targets));
+  std::ranges::for_each(positions, [this](const auto& position)
+  {
+    m_targets.emplace_back( level_target { static_cast<float>(position.x), static_cast<float>(position.y) } );
+  });
 }

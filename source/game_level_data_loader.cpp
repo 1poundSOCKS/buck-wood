@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
-#include "game_level_object_generator.h"
+#include "perlin_simplex_noise.h"
 
 game_level_data_loader::game_level_data_loader()
 {
@@ -10,11 +10,15 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
   
-  game_level_object_generator targetGenerator(-20, 20, 100, -20, 20, 100, -1.0f, -0.97f, 17.0f);
-  game_level_object_generator::target_collection targets;
-  targetGenerator.InsertInto(std::back_inserter(targets));
+  level_grid targetGrid { level_container::CellWidth(), level_container::CellHeight(), -4000, -4000, 4000, 4000 };
+  
+  auto view = targetGrid | std::ranges::views::filter([](const auto& cell)
+  {
+    auto noise = psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y));
+    return noise < -0.9;
+  });
 
-  levelContainer->AddTargets(targets);
+  levelContainer->AddTargets(view);
 
   levelContainer->SetTimeout(GetTimeLimit());
 

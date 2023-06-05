@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "asteroid_container.h"
-#include "game_level_object_generator.h"
+#include "perlin_simplex_noise.h"
 
 asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type iteratorType) : m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {

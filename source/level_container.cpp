@@ -3,6 +3,8 @@
 #include "bullet.h"
 #include "explosion.h"
 #include "level_object.h"
+#include "level_star.h"
+#include "perlin_simplex_noise.h"
 
 level_container::level_container()
 {
@@ -12,6 +14,16 @@ level_container::level_container()
 auto level_container::SetTimeout(int time) -> void
 {
   m_ticksRemaining = performance_counter::QueryFrequency() * time;
+}
+
+[[nodiscard]] auto level_container::CellWidth() -> int
+{
+  return m_cellWidth;
+}
+
+[[nodiscard]] auto level_container::CellHeight() -> int
+{
+  return m_cellHeight;
 }
 
 auto level_container::HasTimedOut() const -> bool
@@ -56,11 +68,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
       m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, playerShip.Angle() } );
       updateEvents->playerShot = true;
     }
-
-    m_background.SetCentre(playerPosition.x, playerPosition.y);
   }
-
-  m_background.Update(ticks);
 
   m_asteroids.Update(viewRect);
 
@@ -107,7 +115,13 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
-  m_background.Render(viewRect);
+  auto starGrid = level_grid { 100, 100,  viewRect.left, viewRect.top, viewRect.right, viewRect.bottom };
+  auto starView = starGrid | std::ranges::views::filter([](const auto& cell)
+  { return psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y)) > 0.90f; })
+  | std::ranges::views::transform([](const auto& cell)
+  { return level_star { static_cast<float>(cell.x), static_cast<float>(cell.y) }; });
+
+  renderer::render_all(starView);
   renderer::render_all(m_explosions);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);

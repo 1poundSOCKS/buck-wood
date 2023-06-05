@@ -6,6 +6,7 @@
 #include "player_ship.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "level_star.h"
 
 class target_brushes
 {
@@ -131,6 +132,7 @@ private:
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
+  auto Render(const level_star& star) const -> void;
 
   template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;
   template <typename brush_selector> auto Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
@@ -140,6 +142,7 @@ private:
   player_ship_brushes m_playerShipBrushes;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerBulletBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };
 
 auto renderer::render(const auto& object) -> void

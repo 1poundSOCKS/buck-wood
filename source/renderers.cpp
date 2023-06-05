@@ -110,6 +110,7 @@ renderer::renderer()
   const auto& renderTarget = framework::renderTarget();
   m_playerBulletBrush = screen_render_brush_yellow.CreateBrush(renderTarget.get());
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
+  m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -157,6 +158,12 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
   });
 
   RenderPoints(framework::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());  
+}
+
+auto renderer::Render(const level_star& star) const -> void
+{
+  static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
+  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y }, m_starBrush.get());
 }
 
 template <typename brush_selector>

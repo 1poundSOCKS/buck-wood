@@ -72,6 +72,15 @@ level_grid::level_grid(int columnWidth, int rowHeight, int left, int top, int ri
   m_bottomRow = bottom / rowHeight + 1;
 }
 
+level_grid::level_grid(int columnWidth, int rowHeight, float left, float top, float right, float bottom) : 
+  m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
+{
+  m_leftColumn = static_cast<int>(left) / columnWidth - 2;
+  m_rightColumn = static_cast<int>(right) / columnWidth + 1;
+  m_topRow = static_cast<int>(top) / rowHeight - 2;
+  m_bottomRow = static_cast<int>(bottom) / rowHeight + 1;
+}
+
 auto level_grid::ColumnWidth() const -> int
 {
   return m_columnWidth;
