@@ -116,10 +116,11 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
   auto starGrid = level_grid { 100, 100,  viewRect.left, viewRect.top, viewRect.right, viewRect.bottom };
+  
   auto starView = starGrid | std::ranges::views::filter([](const auto& cell)
-  { return psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y)) > 0.90f; })
-  | std::ranges::views::transform([](const auto& cell)
-  { return level_star { static_cast<float>(cell.x), static_cast<float>(cell.y) }; });
+    { return psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y)) > 0.90f; })
+    | std::ranges::views::transform([](const auto& cell)
+    { return level_star { static_cast<float>(cell.x), static_cast<float>(cell.y) }; });
 
   renderer::render_all(starView);
   renderer::render_all(m_explosions);

@@ -211,7 +211,8 @@ auto asteroid_container::CreateAsteroids(const level_grid& grid) -> void
     return noise > 0.9;
   });
 
-  std::ranges::for_each(view, [this](const auto& cell){
+  std::ranges::for_each(view, [this](const auto& cell)
+  {
     m_asteroidGrid.front().emplace_back(level_asteroid { game_rect
     { 
       { static_cast<float>(cell.left), static_cast<float>(cell.top) } , 

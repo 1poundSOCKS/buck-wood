@@ -65,6 +65,8 @@ public:
 
 private:
 
+  auto Initialize(int left, int top, int right, int bottom) -> void;
+
   int m_columnWidth { 0 };
   int m_rowHeight { 0 };
   int m_leftColumn { 0 };

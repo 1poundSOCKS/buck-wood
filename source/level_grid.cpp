@@ -66,19 +66,21 @@ const_level_grid_iterator::const_level_grid_iterator(const level_grid* levelGrid
 
 level_grid::level_grid(int columnWidth, int rowHeight, int left, int top, int right, int bottom) : m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
 {
-  m_leftColumn = left / columnWidth - 2;
-  m_rightColumn = right / columnWidth + 1;
-  m_topRow = top / rowHeight - 2;
-  m_bottomRow = bottom / rowHeight + 1;
+  Initialize(left, top, right, bottom);
 }
 
 level_grid::level_grid(int columnWidth, int rowHeight, float left, float top, float right, float bottom) : 
   m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
 {
-  m_leftColumn = static_cast<int>(left) / columnWidth - 2;
-  m_rightColumn = static_cast<int>(right) / columnWidth + 1;
-  m_topRow = static_cast<int>(top) / rowHeight - 2;
-  m_bottomRow = static_cast<int>(bottom) / rowHeight + 1;
+  Initialize(static_cast<int>(left), static_cast<int>(top), static_cast<int>(right), static_cast<int>(bottom));
+}
+
+auto level_grid::Initialize(int left, int top, int right, int bottom) -> void
+{
+  m_leftColumn = left / m_columnWidth - 2;
+  m_topRow = top / m_rowHeight - 2;
+  m_rightColumn = right / m_columnWidth + 1;
+  m_bottomRow = bottom / m_rowHeight + 1;
 }
 
 auto level_grid::ColumnWidth() const -> int
