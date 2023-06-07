@@ -6,6 +6,7 @@
 #include "explosion.h"
 #include "renderers.h"
 #include "asteroid_container.h"
+#include "mine.h"
 
 class level_container
 {
@@ -22,6 +23,7 @@ public:
   using player_ship_collection = std::vector<player_ship>;
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
+  using mine_collection = std::vector<mine>;
   using explosion_collection = std::list<explosion>;
 
   level_container();
@@ -33,7 +35,10 @@ public:
   auto SetTimeout(int time) -> void;
   auto HasTimedOut() const -> bool;
 
+  [[nodiscard]] auto GetGrid(float left, float top, float right, float bottom) -> level_grid;
+
   auto AddTargets(std::ranges::input_range auto&& targets) -> void;
+  auto AddMines(std::ranges::input_range auto&& mines) -> void;
 
   auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> events_ptr;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -54,6 +59,7 @@ private:
   player_ship_collection m_playerShips;
   bullet_collection m_bullets;
   target_collection m_targets;
+  mine_collection m_mines;
   asteroid_container m_asteroids;
   explosion_collection m_explosions;
 
@@ -68,5 +74,13 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   std::ranges::for_each(positions, [this](const auto& position)
   {
     m_targets.emplace_back( level_target { static_cast<float>(position.x), static_cast<float>(position.y) } );
+  });
+}
+
+auto level_container::AddMines(std::ranges::input_range auto&& positions) -> void
+{
+  std::ranges::for_each(positions, [this](const auto& position)
+  {
+    m_mines.emplace_back( mine { static_cast<float>(position.x), static_cast<float>(position.y) } );
   });
 }

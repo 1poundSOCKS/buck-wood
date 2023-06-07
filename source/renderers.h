@@ -7,6 +7,7 @@
 #include "bullet.h"
 #include "explosion.h"
 #include "level_star.h"
+#include "mine.h"
 
 class target_brushes
 {
@@ -23,6 +24,22 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
   winrt::com_ptr<ID2D1SolidColorBrush> m_notActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
+};
+
+class mine_brushes
+{
+public:
+
+  mine_brushes();
+
+  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+  [[nodiscard]] auto StrokeWidth() const -> float;
+
+private:
+
+  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
 };
 
 class asteroid_brushes
@@ -128,6 +145,7 @@ private:
   renderer();
 
   auto Render(const level_target& target) const -> void;
+  auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
@@ -138,6 +156,7 @@ private:
   template <typename brush_selector> auto Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
 
   target_brushes m_targetBrushes;
+  mine_brushes m_mineBrushes;
   asteroid_brushes m_asteroidBrushes;
   player_ship_brushes m_playerShipBrushes;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerBulletBrush;

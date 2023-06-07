@@ -41,6 +41,11 @@ auto level_container::HasTimedOut() const -> bool
   return PlayerDied() || IsComplete();
 }
 
+[[nodiscard]] auto level_container::GetGrid(float left, float top, float right, float bottom) -> level_grid
+{
+  return { m_cellWidth, m_cellHeight, left, top, right, bottom };
+}
+
 auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> events_ptr
 {
   auto updateEvents = std::make_unique<events>();
@@ -70,10 +75,19 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     }
   }
 
-  m_asteroids.Update(viewRect);
+  auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
+  m_asteroids.Update(grid);
 
   do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [this](auto& asteroid, auto& playerShip)
   {
+    playerShip.Destroy();
+    auto position = playerShip.Position();
+    m_explosions.emplace_back( explosion { position.x, position.y } );
+  });
+
+  do_geometry_to_geometry_collisions(m_mines, m_playerShips, [this](auto& mine, auto& playerShip)
+  {
+    mine.Destroy();
     playerShip.Destroy();
     auto position = playerShip.Position();
     m_explosions.emplace_back( explosion { position.x, position.y } );
@@ -103,8 +117,15 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     bullet.Destroy();
   });
 
+  do_geometry_to_point_collisions(m_mines, m_bullets, [](auto& mine, auto& bullet)
+  {
+    mine.Destroy();
+    bullet.Destroy();
+  });
+
   erase_destroyed(m_playerShips);
   erase_destroyed(m_explosions);
+  erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
 
   m_ticksRemaining -= ticks;
@@ -118,14 +139,20 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   auto starGrid = level_grid { 100, 100,  viewRect.left, viewRect.top, viewRect.right, viewRect.bottom };
   
   auto starView = starGrid | std::ranges::views::filter([](const auto& cell)
-    { return psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y)) > 0.90f; })
-    | std::ranges::views::transform([](const auto& cell)
-    { return level_star { static_cast<float>(cell.x), static_cast<float>(cell.y) }; });
+  {
+    
+    return psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y)) > 0.90f;
+  })
+  | std::ranges::views::transform([](const auto& cell)
+  {
+    return level_star { static_cast<float>(cell.x), static_cast<float>(cell.y) };
+  });
 
   renderer::render_all(starView);
   renderer::render_all(m_explosions);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
+  renderer::render_all(m_mines);
   renderer::render_all(m_bullets);
   renderer::render_all(m_playerShips);
 }

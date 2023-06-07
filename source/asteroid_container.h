@@ -84,7 +84,7 @@ public:
   asteroid_container(const asteroid_container&) = default;
   asteroid_container(asteroid_container&&) = default;
 
-  auto Update(const D2D1_RECT_F& rect) -> void;
+  auto Update(const level_grid& grid) -> void;
 
   auto begin() const -> const_asteroid_iterator;
   auto end() const -> const_asteroid_iterator;

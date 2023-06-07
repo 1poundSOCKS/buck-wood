@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "asteroid_container.h"
-#include "perlin_simplex_noise.h"
+#include "level_grid_cell_type.h"
 
 asteroid_iterator::asteroid_iterator(asteroid_container* asteroidContainer, type iteratorType) : m_asteroidContainer { asteroidContainer }, m_type { iteratorType }
 {
@@ -192,26 +192,21 @@ auto asteroid_container::end() -> asteroid_iterator
   return asteroid_iterator { this, asteroid_iterator::type::end };
 }
 
-auto asteroid_container::Update(const D2D1_RECT_F& rect) -> void
+auto asteroid_container::Update(const level_grid& grid) -> void
 {
-  auto smallColumnWidth = 200;
-  auto smallRowHeight = 200;
-  
-  auto grid = level_grid { smallColumnWidth, smallRowHeight, static_cast<int>(rect.left), static_cast<int>(rect.top), static_cast<int>(rect.right), static_cast<int>(rect.bottom) };
-
   m_asteroidGrid.front().clear();
   CreateAsteroids(grid);
 }
 
 auto asteroid_container::CreateAsteroids(const level_grid& grid) -> void
 {
-  auto view = grid | std::ranges::views::filter([](const auto& cell)
+  auto asteroidView = grid | std::ranges::views::filter([](const auto& cell)
   {
-    auto noise = psn::GetNoise(static_cast<float>(cell.x), static_cast<float>(cell.y));
-    return noise > 0.9;
+    auto cellType = level_grid_cell_type { cell };
+    return cellType.IsAsteroid();
   });
 
-  std::ranges::for_each(view, [this](const auto& cell)
+  std::ranges::for_each(asteroidView, [this](const auto& cell)
   {
     m_asteroidGrid.front().emplace_back(level_asteroid { game_rect
     { 
