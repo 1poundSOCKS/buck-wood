@@ -62,6 +62,11 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   update_all(m_bullets, ticks);
   update_all(m_explosions, ticks);
 
+  for( auto& mine : m_mines )
+  {
+    mine.Update(ticks, m_playerShips);
+  }
+
   auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
   for( auto& playerShip : m_playerShips )
