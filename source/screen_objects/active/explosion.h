@@ -16,9 +16,12 @@ public:
     auto Initialize(float x, float y) -> void;
     auto Update(float interval) -> void;
     auto GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect;
+    [[nodiscard]] auto HasExpired() -> bool;
 
   private:
 
+    float m_startX { 0 };
+    float m_startY { 0 };
     float m_x = 0;
     float m_y = 0;
     float m_xVelocity = 0;

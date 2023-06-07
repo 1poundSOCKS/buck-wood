@@ -98,6 +98,13 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     m_explosions.emplace_back( explosion { position.x, position.y } );
   });
 
+  do_geometry_to_geometry_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
+  {
+    mine.Destroy();
+    auto position = mine.Position();
+    m_explosions.emplace_back( explosion { position.x, position.y } );
+  });
+
   do_geometry_to_geometry_collisions(m_targets, m_playerShips, [this](auto& target, auto& playerShip)
   {
     playerShip.Destroy();
@@ -122,8 +129,10 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
     bullet.Destroy();
   });
 
-  do_geometry_to_point_collisions(m_mines, m_bullets, [](auto& mine, auto& bullet)
+  do_geometry_to_point_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {
+    auto position = mine.Position();
+    m_explosions.emplace_back( explosion { position.x, position.y } );
     mine.Destroy();
     bullet.Destroy();
   });

@@ -12,8 +12,8 @@ explosion::particle_state::particle_state()
 
 auto explosion::particle_state::Initialize(float x, float y) -> void
 {
-  m_x = x;
-  m_y = y;
+  m_startX = m_x = x;
+  m_startY = m_y = y;
 
   auto angle = static_cast<float>(particleAngleDist(framework::rng()));
   const auto velocity = static_cast<float>(particleSpeedDist(framework::rng()));
@@ -32,6 +32,14 @@ auto explosion::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const
 {
   const auto particleSize = 6.0f;
   return { m_x - particleSize, m_y - particleSize, m_x + particleSize, m_y + particleSize, brush };
+}
+
+[[nodiscard]] auto explosion::particle_state::HasExpired() -> bool
+{
+  float cx = m_x - m_startX;
+  float cy = m_y - m_startY;
+  float distance = sqrt(cx * cx + cy * cy);
+  return distance > 500;
 }
 
 explosion::explosion(float x, float y)
@@ -54,9 +62,17 @@ auto explosion::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
 
-  for( auto& particle : m_particles )
+  // for( auto& particle : m_particles )
+  // {
+  //   particle.Update(updateInterval);
+  // }
+
+  auto particle = std::begin(m_particles);
+
+  while( particle != std::end(m_particles) )
   {
-    particle.Update(updateInterval);
+    particle->Update(updateInterval);
+    particle = particle->HasExpired() ? m_particles.erase(particle) : ++particle;
   }
 }
 
