@@ -5,6 +5,7 @@
 #include "object_input_data.h"
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
+#include "reload_timer.h"
 
 class player_ship
 {
@@ -43,9 +44,6 @@ private:
   static inline int m_shotTimeNumerator = 1;
   static inline int m_shotTimeDenominator = 20;
 
-  int64_t m_shotTimerInterval = 0;
-  int64_t m_shotTimer = 0;
-
   state m_state { state::alive };
   float m_x = 0;
   float m_y = 0;
@@ -54,6 +52,9 @@ private:
   float m_velocityX = 0;
   float m_velocityY = 0;
   bool m_destroyed { false };
+
+  reload_timer m_reloadTimer;
+  bool m_reloaded { false };
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;

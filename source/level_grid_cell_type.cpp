@@ -6,15 +6,15 @@ level_grid_cell_type::level_grid_cell_type(const level_grid_cell& cell)
 {
   auto noise = psn::GetNoise(static_cast<float>(cell.x) / 13, static_cast<float>(cell.y) / 13);
 
-  if( noise > 0.96 )
-  {
-    m_type = type::target;
-  }
-  else if( noise > 0.87 )
+  if( noise > 0.87 )
   {
     m_type = type::asteroid;
   }
-  else if( noise < -0.95 )
+  else if( noise < -0.96 )
+  {
+    m_type = type::target;
+  }
+  else if( noise < -0.85 )
   {
     m_type = type::mine;
   }
