@@ -174,7 +174,7 @@ auto level_container::UpdateTargets(int64_t ticks, update_events* updateEvents) 
     {
       auto targetPosition = target.Position();
       
-      if( target.Reloaded() && targetPosition.DistanceTo(playerShip.Position()) < 1200 )
+      if( !target.IsActivated() && target.Reloaded() && targetPosition.DistanceTo(playerShip.Position()) < 1200 )
       {
         m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
       }
