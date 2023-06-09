@@ -35,6 +35,11 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
   };
 }
 
+auto game_point::DistanceTo(game_point p) const -> float
+{
+  return GetDistanceBetweenPoints(x, y, p.x, p.y);
+}
+
 game_rect::game_rect()
 {
 }

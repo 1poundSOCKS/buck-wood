@@ -34,7 +34,7 @@ private:
   auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
 
-  auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void;
+  auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> level_container::update_events_ptr;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
   auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
@@ -50,7 +50,7 @@ private:
   bool m_continueRunning = true;
   int64_t m_stageTicks = 0;
   std::unique_ptr<level_container> m_levelContainer;
-  std::unique_ptr<level_container::events> m_playEvents;
+  level_container::update_events_ptr m_levelUpdateEvents;
   mouse_cursor m_cursor;
   menu m_menu;
   game_level_data_loader m_gameLevelDataLoader;

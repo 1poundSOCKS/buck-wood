@@ -20,14 +20,6 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddTargets(targetView);
 
-  auto mineView = levelGrid | std::ranges::views::filter([](const auto& cell)
-  {
-    auto cellType = level_grid_cell_type { cell };
-    return cellType.IsMine();
-  });
-
-  levelContainer->AddMines(mineView);
-
   levelContainer->SetTimeout(GetTimeLimit());
 
   return levelContainer;

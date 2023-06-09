@@ -12,13 +12,13 @@ class level_container
 {
 public:
 
-  struct events
+  struct update_events
   {
     bool playerShot { false };
     bool targetActivated { false };
   };
 
-  using events_ptr = std::unique_ptr<events>;
+  using update_events_ptr = std::unique_ptr<update_events>;
 
   using player_ship_collection = std::vector<player_ship>;
   using bullet_collection = std::list<bullet>;
@@ -40,7 +40,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& targets) -> void;
   auto AddMines(std::ranges::input_range auto&& mines) -> void;
 
-  auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> events_ptr;
+  auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
@@ -52,6 +52,10 @@ public:
   [[nodiscard]] auto HasFinished() const -> bool;
 
 private:
+
+  auto UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void;
+  auto UpdateTargets(int64_t ticks, update_events* updateEvents) -> void;
+  auto DoCollisions(update_events* updateEvents) -> void;
 
   inline static const int m_cellWidth { 400 };
   inline static const int m_cellHeight { 400 };

@@ -21,6 +21,20 @@ mine::mine(float x, float y) : m_transformedGeometry(m_geometry, D2D1::Matrix3x2
   return m_transformedGeometry;
 }
 
+auto mine::Update(int64_t tickCount, float x, float y) -> void
+{
+  auto position = m_body.Position();
+  auto angle = CalculateAngle(position.x, position.y, x, y);
+  m_body.SetAngle(angle);
+  Update(tickCount);
+}
+
+auto mine::Update(int64_t tickCount) -> void
+{
+  m_body.Update(tickCount);
+  UpdateGeometry();
+}
+
 auto mine::UpdateGeometry() -> void
 {
   auto position = m_body.Position();

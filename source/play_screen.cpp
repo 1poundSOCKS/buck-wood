@@ -6,7 +6,7 @@
 #include "global_state.h"
 #include "render_target_area.h"
 
-play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>()), m_playEvents(std::make_unique<level_container::events>())
+play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>()), m_levelUpdateEvents(std::make_unique<level_container::update_events>())
 {
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
@@ -96,13 +96,13 @@ auto play_screen::PostPresent() const -> void
     else
       StopSoundBufferPlay(soundBuffers[thrust]);
 
-    if( m_playEvents->playerShot )
+    if( m_levelUpdateEvents->playerShot )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[shoot]);
     }
 
-    if( m_playEvents->targetActivated )
+    if( m_levelUpdateEvents->targetActivated )
     {
       ResetSoundBuffer(soundBuffers[shoot]);
       PlaySoundBuffer(soundBuffers[target_activated]);
@@ -141,7 +141,7 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
 
   auto elapsedTicks = m_paused ? 0 : frameInterval;
 
-  UpdateLevel(inputState, elapsedTicks);
+  m_levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
 
   if( m_levelContainer->IsComplete() )
   {
@@ -172,14 +172,14 @@ auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameIn
   }
 }
 
-auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> void
+auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> level_container::update_events_ptr
 {
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
   auto objectInputData = screenTransform.GetObjectInputData(inputState);
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
-  m_playEvents = m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
+  return m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform

@@ -19,6 +19,8 @@ struct game_point
 {
   float x = 0;
   float y = 0;
+
+  auto DistanceTo(game_point p) const -> float;
 };
 
 struct game_line
