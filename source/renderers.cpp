@@ -33,8 +33,8 @@ target_brushes::target_brushes()
 mine_brushes::mine_brushes()
 {
   const auto& renderTarget = framework::renderTarget();
-  m_fill =  screen_render_brush_blue.CreateBrush(renderTarget.get());
-  m_draw = screen_render_brush_red.CreateBrush(renderTarget.get());
+  m_fill =  screen_render_brush_red.CreateBrush(renderTarget.get());
+  m_draw = screen_render_brush_grey.CreateBrush(renderTarget.get());
 }
 
 [[nodiscard]] auto mine_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
@@ -49,7 +49,7 @@ mine_brushes::mine_brushes()
 
 [[nodiscard]] auto mine_brushes::StrokeWidth() const -> float
 {
-  return 5.0f;
+  return 3.0f;
 }
 
 asteroid_brushes::asteroid_brushes()
