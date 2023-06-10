@@ -74,7 +74,7 @@
 				"/I%cpp_packages%/Windows Kits/10.0.22621.0/Include/shared",
 				"/I%cpp_packages%/Windows Kits/10.0.22621.0/Include/cppwinrt",
 				"/I${workspaceFolder}/packages/gtest/include",
-				"/IC:/Users/mathe/source/repos/vcpkg/vcpkg/packages/jsoncpp_x64-windows/include/json",
+				"/I${workspaceFolder}/packages/jsoncpp_x64-windows/include/json",
 				"/I${workspaceFolder}/source/"
 			],
 			"options": {
