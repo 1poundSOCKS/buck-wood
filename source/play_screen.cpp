@@ -22,7 +22,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
 
   auto playerPosition = m_levelContainer->PlayerPosition();
-  m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 5.0f };
+  m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
@@ -205,10 +205,11 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   switch( m_stage )
   {
     case stage::pre_play:
-      return m_startSequence.GetPosition(m_stageTicks);
+      return { playerPosition.x, playerPosition.y, m_startSequence.GetScale(m_stageTicks) };
 
     case stage::post_play:
-      return m_endSequence.GetPosition(m_stageTicks);
+      // return m_endSequence.GetPosition(m_stageTicks);
+      return { playerPosition.x, playerPosition.y, m_endSequence.GetScale(m_stageTicks) };
 
     default:
       return { playerPosition.x, playerPosition.y, m_playZoom };

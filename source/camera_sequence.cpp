@@ -56,6 +56,12 @@ auto camera_sequence::AddMove(camera_position position, int64_t ticks) -> void
   }
 }
 
+[[nodiscard]] auto camera_sequence::GetScale(int64_t ticks) const -> float
+{
+  auto position = GetPosition(ticks);
+  return position.scale;
+}
+
 [[nodiscard]] auto camera_sequence::GetTotalTicks() const -> int64_t
 {
   return std::accumulate(m_moves.cbegin(), m_moves.cend(), 0i64, [](int64_t total, const camera_move& move) -> int64_t { return total + move.ticks; });

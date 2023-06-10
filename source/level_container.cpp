@@ -8,7 +8,6 @@
 
 level_container::level_container()
 {
-  m_playerShips.emplace_back( player_ship {} );
 }
 
 auto level_container::SetTimeout(int time) -> void
@@ -50,28 +49,17 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 {
   auto updateEvents = std::make_unique<update_events>();
 
-  UpdatePlayer(inputData, ticks, updateEvents.get());
+  if( !m_playerShip.Destroyed() )
+  {
+    UpdatePlayer(inputData, ticks, updateEvents.get());
+  }
   
   UpdateTargets(ticks, updateEvents.get());
 
   update_all(m_bullets, ticks);
   update_all(m_explosions, ticks);
 
-  if( m_playerShips.size() )
-  {
-    for( auto& mine : m_mines )
-    {
-      auto playerPosition = m_playerShips.front().Position();
-      mine.Update(ticks, playerPosition.x, playerPosition.y);
-    }
-  }
-  else
-  {
-    for( auto& mine : m_mines )
-    {
-      mine.Update(ticks);
-    }
-  }
+  UpdateMines(ticks);
 
   auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
   
@@ -79,7 +67,6 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   DoCollisions(updateEvents.get());
 
-  erase_destroyed(m_playerShips);
   erase_destroyed(m_explosions);
   erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
@@ -110,7 +97,11 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_targets);
   renderer::render_all(m_mines);
   renderer::render_all(m_bullets);
-  renderer::render_all(m_playerShips);
+
+  if( !m_playerShip.Destroyed() )
+  {
+    renderer::render(m_playerShip);
+  }
 }
 
 [[nodiscard]] auto level_container::Targets() const -> const target_collection&
@@ -120,17 +111,17 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 [[nodiscard]] auto level_container::PlayerPosition() const -> game_point
 {
-  return std::reduce(std::cbegin(m_playerShips), std::end(m_playerShips), game_point { 0, 0 }, [](auto postion, const auto& playerShip) { return playerShip.Position(); });
+  return m_playerShip.Position();
 }
 
 [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
 {
-  return std::reduce(std::cbegin(m_playerShips), std::end(m_playerShips), false, [](auto thrusterOn, const auto& playerShip) { return playerShip.ThrusterOn(); });
+  return m_playerShip.ThrusterOn();
 }
 
 [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
-  return m_playerShips.size() == 0;
+  return m_playerShip.Destroyed();
 }
 
 [[nodiscard]] auto level_container::TicksRemaining() const -> int64_t
@@ -140,87 +131,100 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void
 {
-  for( auto& playerShip : m_playerShips )
-  {
-    auto playerPosition = playerShip.Position();
-    auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-    playerShip.SetAngle(playerToMouseAngle);
-    playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
-  }
+  auto playerPosition = m_playerShip.Position();
+  auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+
+  m_playerShip.SetAngle(playerToMouseAngle);
+  m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
 
   auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
-  for( auto& playerShip : m_playerShips )
+  if( triggerPressed && m_playerShip.CanShoot() )
   {
-    auto playerPosition = playerShip.Position();
-    
-    if( triggerPressed && playerShip.CanShoot() )
-    {
-      m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, playerShip.Angle() } );
-      updateEvents->playerShot = true;
-    }
+    m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, m_playerShip.Angle() } );
+    updateEvents->playerShot = true;
   }
 
-  update_all(m_playerShips, ticks);
+  m_playerShip.Update(ticks);
 }
 
 auto level_container::UpdateTargets(int64_t ticks, update_events* updateEvents) -> void
 {
-  if( m_playerShips.size() )
-  {
-    auto& playerShip = m_playerShips.front();
+  auto playerPosition = m_playerShip.Position();
 
-    for( auto& target : m_targets )
+  for( auto& target : m_targets )
+  {
+    auto targetPosition = target.Position();
+    
+    if( target.ShootAt(playerPosition) )
     {
-      auto targetPosition = target.Position();
-      
-      if( !target.IsActivated() && target.Reloaded() && targetPosition.DistanceTo(playerShip.Position()) < 1200 )
-      {
-        m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
-      }
+      m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
     }
   }
 
   update_all(m_targets, ticks);
 }
 
+auto level_container::UpdateMines(int64_t ticks) -> void
+{
+  auto playerPosition = m_playerShip.Position();
+
+  if( !m_playerShip.Destroyed() )
+  {
+    for( auto& mine : m_mines )
+    {
+      mine.Update(ticks, playerPosition.x, playerPosition.y);
+    }
+  }
+  else
+  {
+    for( auto& mine : m_mines )
+    {
+      mine.Update(ticks);
+    }
+  }
+}
+
 auto level_container::DoCollisions(update_events* updateEvents) -> void
 {
-  do_geometry_to_geometry_collisions(m_asteroids, m_playerShips, [this](auto& asteroid, auto& playerShip)
+  if( !m_playerShip.Destroyed() )
   {
-    playerShip.Destroy();
-    auto position = playerShip.Position();
-    m_explosions.emplace_back( explosion { position.x, position.y } );
-  });
+    do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
+    {
+      playerShip.Destroy();
+      auto position = playerShip.Position();
+      m_explosions.emplace_back( explosion { position.x, position.y } );
+    });
 
-  do_geometry_to_geometry_collisions(m_mines, m_playerShips, [this](auto& mine, auto& playerShip)
-  {
-    mine.Destroy();
-    playerShip.Destroy();
-    auto position = playerShip.Position();
-    m_explosions.emplace_back( explosion { position.x, position.y } );
-  });
+    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this](auto& mine, auto& playerShip)
+    {
+      mine.Destroy();
+      playerShip.Destroy();
+      auto position = playerShip.Position();
+      m_explosions.emplace_back( explosion { position.x, position.y } );
+    });
 
-  do_geometry_to_geometry_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
+    do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
+    {
+      playerShip.Destroy();
+      auto position = playerShip.Position();
+      m_explosions.emplace_back( explosion { position.x, position.y } );
+    });
+  }
+
+  do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
   {
     mine.Destroy();
     auto position = mine.Position();
     m_explosions.emplace_back( explosion { position.x, position.y } );
   });
 
-  do_geometry_to_geometry_collisions(m_targets, m_playerShips, [this](auto& target, auto& playerShip)
-  {
-    playerShip.Destroy();
-    auto position = playerShip.Position();
-    m_explosions.emplace_back( explosion { position.x, position.y } );
-  });
-
-  do_geometry_to_point_collisions(m_asteroids, m_bullets, [](auto& asteroid, auto& bullet)
+  do_geometries_to_points_collisions(m_asteroids, m_bullets, [](auto& asteroid, auto& bullet)
   {
     bullet.Destroy();
   });
 
-  do_geometry_to_point_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
+  do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
   {
     if( !target.IsActivated() )
     {
@@ -232,7 +236,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     bullet.Destroy();
   });
 
-  do_geometry_to_point_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
+  do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {
     auto position = mine.Position();
     m_explosions.emplace_back( explosion { position.x, position.y } );

@@ -15,6 +15,8 @@ public:
   [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto Geometry() const -> const path_geometry&;
+  [[nodiscard]] auto ShootAt(game_point position) const -> bool;
+
   auto Activate() -> void;
   auto SetPlayerPosition(float x, float y) -> void;
   auto Update(int64_t ticks) -> void;

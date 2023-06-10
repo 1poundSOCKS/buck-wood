@@ -14,9 +14,9 @@ level_grid_cell_type::level_grid_cell_type(const level_grid_cell& cell)
   {
     m_type = type::target;
   }
-  else if( noise < -0.85 )
+  else
   {
-    m_type = type::mine;
+    m_type = type::empty;
   }
 }
 
@@ -33,9 +33,4 @@ level_grid_cell_type::level_grid_cell_type(const level_grid_cell& cell)
 [[nodiscard]] auto level_grid_cell_type::IsTarget() const -> bool
 {
   return m_type == type::target;
-}
-
-[[nodiscard]] auto level_grid_cell_type::IsMine() const -> bool
-{
-  return m_type == type::mine;
 }

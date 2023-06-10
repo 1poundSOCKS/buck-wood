@@ -17,6 +17,7 @@ public:
   auto AddPause(int64_t ticks) -> void;
   auto AddMove(camera_position position, int64_t ticks) -> void;
   [[nodiscard]] auto GetPosition(int64_t ticks) const -> camera_position;
+  [[nodiscard]] auto GetScale(int64_t ticks) const -> float;
   [[nodiscard]] auto GetTotalTicks() const -> int64_t;
 
 private:

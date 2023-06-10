@@ -20,7 +20,6 @@ public:
 
   using update_events_ptr = std::unique_ptr<update_events>;
 
-  using player_ship_collection = std::vector<player_ship>;
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
@@ -55,12 +54,14 @@ private:
 
   auto UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void;
   auto UpdateTargets(int64_t ticks, update_events* updateEvents) -> void;
+  auto UpdateMines(int64_t ticks) -> void;
   auto DoCollisions(update_events* updateEvents) -> void;
 
   inline static const int m_cellWidth { 400 };
   inline static const int m_cellHeight { 400 };
 
-  player_ship_collection m_playerShips;
+  player_ship m_playerShip;
+
   bullet_collection m_bullets;
   target_collection m_targets;
   mine_collection m_mines;
