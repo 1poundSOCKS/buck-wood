@@ -3,7 +3,7 @@
 #include "object_input_data.h"
 #include "geometry.h"
 #include "framework.h"
-#include "render_brush_defs.h"
+#include "screen_render_brush_defs.h"
 
 class level_map
 {

@@ -5,7 +5,6 @@
 #include "sound_data.h"
 #include "screen_input_state.h"
 #include "sound_data.h"
-#include "level_state.h"
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"

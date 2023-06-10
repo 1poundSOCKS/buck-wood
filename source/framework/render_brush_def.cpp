@@ -2,7 +2,11 @@
 #include "render_brush_def.h"
 #include "screen_render.h"
 
-render_brush_def::render_brush_def(D2D1::ColorF color) : m_color(color)
+render_brush_def::render_brush_def(D2D_COLOR_F color) : m_color { color.r, color.g, color.b, color.a }
+{
+}
+
+render_brush_def::render_brush_def(D2D1::ColorF color) : m_color { color }
 {
 }
 

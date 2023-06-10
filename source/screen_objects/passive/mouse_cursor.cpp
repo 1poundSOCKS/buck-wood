@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mouse_cursor.h"
 #include "screen_render.h"
-#include "render_brush_defs.h"
+#include "screen_render_brush_defs.h"
 #include "framework.h"
 
 consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()

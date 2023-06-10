@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "main_menu_screen.h"
 #include "screen_render.h"
-#include "render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "play_screen.h"
 #include "global_state.h"

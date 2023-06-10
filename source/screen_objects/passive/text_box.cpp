@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "text_box.h"
 #include "render.h"
-#include "render_brush_defs.h"
+#include "screen_render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "dwrite_factory.h"
 #include "framework.h"

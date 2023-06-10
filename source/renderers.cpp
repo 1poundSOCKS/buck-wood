@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "renderers.h"
+#include "color_scale.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -32,8 +33,8 @@ target_brushes::target_brushes()
 mine_brushes::mine_brushes()
 {
   const auto& renderTarget = framework::renderTarget();
-  m_fill =  screen_render_brush_green.CreateBrush(renderTarget.get());
-  m_draw = screen_render_brush_blue.CreateBrush(renderTarget.get());
+  m_fill =  screen_render_brush_blue.CreateBrush(renderTarget.get());
+  m_draw = screen_render_brush_red.CreateBrush(renderTarget.get());
 }
 
 [[nodiscard]] auto mine_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
@@ -101,6 +102,33 @@ player_ship_brushes::player_ship_brushes()
   return m_thruster;
 }
 
+bullet_brushes::bullet_brushes()
+{
+  const auto& renderTarget = framework::renderTarget();
+
+  color_scale colorScale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 };
+
+  for( auto color : colorScale )
+  {
+    render_brush_def brushDef { color };
+    m_brushes.emplace_back( brushDef.CreateBrush(renderTarget.get()) );
+  }
+  // m_brushes.emplace_back( screen_render_brush_grey.CreateBrush(renderTarget.get()) );
+  // m_brushes.emplace_back( screen_render_brush_dark_grey.CreateBrush(renderTarget.get()) );
+}
+
+[[nodiscard]] auto bullet_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  auto brushIndex = GetBrushIndex(fadeRatio);
+  assert(brushIndex >=0 && brushIndex < m_brushes.size());
+  return m_brushes[brushIndex];
+}
+
+[[nodiscard]] auto bullet_brushes::GetBrushIndex(float fadeRatio) const -> int
+{
+  return static_cast<int>(static_cast<float>(m_brushes.size() - 1) * fadeRatio + 0.5f);
+}
+
 target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
 {
 }
@@ -120,6 +148,15 @@ target_brush_selector::target_brush_selector(const target_brushes& brushes, cons
   return 8.0f;
 }
 
+bullet_brush_selector::bullet_brush_selector(const bullet_brushes& brushes, const bullet& playerBullet) : m_brushes { brushes }, m_bullet { playerBullet }
+{
+}
+
+[[nodiscard]] auto bullet_brush_selector::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  return m_brushes.Fill(m_bullet.DistanceTravelled() / m_bullet.Range());
+}
+
 renderer* renderer::m_instance = nullptr;
 
 auto renderer::create() -> void
@@ -130,7 +167,6 @@ auto renderer::create() -> void
 renderer::renderer()
 {
   const auto& renderTarget = framework::renderTarget();
-  m_playerBulletBrush = screen_render_brush_yellow.CreateBrush(renderTarget.get());
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
 }
@@ -172,7 +208,9 @@ auto renderer::Render(const bullet& playerBullet) const -> void
 {
   const D2D1_RECT_F rect = GetBulletRect();
   auto position = playerBullet.Position();
-  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, m_playerBulletBrush.get());
+  bullet_brush_selector brushSelector { m_bulletBrushes, playerBullet };
+  auto brush = brushSelector.Fill();
+  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, brush.get());
 }
 
 auto renderer::Render(const explosion& playerExplosion) const -> void

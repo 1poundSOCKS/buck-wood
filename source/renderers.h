@@ -1,6 +1,6 @@
 #pragma once
 
-#include "render_brush_defs.h"
+#include "screen_render_brush_defs.h"
 #include "level_target.h"
 #include "level_asteroid.h"
 #include "player_ship.h"
@@ -76,6 +76,23 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_thruster;
 };
 
+class bullet_brushes
+{
+public:
+
+  bullet_brushes();
+  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+
+private:
+
+  [[nodiscard]] auto GetBrushIndex(float fadeRatio) const -> int;
+
+  using brush_ptr = winrt::com_ptr<ID2D1SolidColorBrush>;
+  using brush_collection = std::vector<brush_ptr>;
+
+  brush_collection m_brushes;
+};
+
 class target_brush_selector
 {
 public:
@@ -89,6 +106,19 @@ public:
 private:
   const target_brushes& m_brushes;
   const level_target& m_target;
+
+};
+
+class bullet_brush_selector
+{
+public:
+
+  bullet_brush_selector(const bullet_brushes& brushes, const bullet& playerBullet);
+  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+
+private:
+  const bullet_brushes& m_brushes;
+  const bullet& m_bullet;
 
 };
 
@@ -159,7 +189,7 @@ private:
   mine_brushes m_mineBrushes;
   asteroid_brushes m_asteroidBrushes;
   player_ship_brushes m_playerShipBrushes;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_playerBulletBrush;
+  bullet_brushes m_bulletBrushes;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };

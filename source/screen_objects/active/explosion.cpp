@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "explosion.h"
-#include "render_brush_defs.h"
 #include "framework.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
@@ -61,11 +60,6 @@ explosion::explosion(float x, float y)
 auto explosion::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
-
-  // for( auto& particle : m_particles )
-  // {
-  //   particle.Update(updateInterval);
-  // }
 
   auto particle = std::begin(m_particles);
 

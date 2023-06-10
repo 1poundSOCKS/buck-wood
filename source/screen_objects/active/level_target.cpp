@@ -1,12 +1,11 @@
 #include "pch.h"
 #include "level_target.h"
-#include "render_brush_defs.h"
 #include "renderers.h"
 #include "shape_generator.h"
 
 level_target::level_target(float x, float y) : m_position { x, y }
 {
-  game_rect rect = { { x - 20, y - 20 }, { x + 20, y + 20} };
+  game_rect rect = { { x - 50, y - 50 }, { x + 50, y + 50} };
   m_geometry.Load( shape_generator<clean_shape> { rect, 6 } );
   m_reloadTimer = reload_timer { performance_counter::QueryFrequency() };
 }
