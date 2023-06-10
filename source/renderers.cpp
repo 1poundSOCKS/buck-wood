@@ -113,8 +113,6 @@ bullet_brushes::bullet_brushes()
     render_brush_def brushDef { color };
     m_brushes.emplace_back( brushDef.CreateBrush(renderTarget.get()) );
   }
-  // m_brushes.emplace_back( screen_render_brush_grey.CreateBrush(renderTarget.get()) );
-  // m_brushes.emplace_back( screen_render_brush_dark_grey.CreateBrush(renderTarget.get()) );
 }
 
 [[nodiscard]] auto bullet_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
