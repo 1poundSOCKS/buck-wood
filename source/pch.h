@@ -35,6 +35,7 @@
 #include <winrt/base.h>
 #include <mmsystem.h>
 #include <codecvt>
+#include <shellapi.h>
 
 #include <dxgi.h>
 #include <d3d11.h>

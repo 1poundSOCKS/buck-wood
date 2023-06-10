@@ -4,6 +4,7 @@
 #include "screen_runner.h"
 #include "main_menu_screen.h"
 #include "renderers.h"
+#include "command_line.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -13,6 +14,7 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dsound.lib")
 #pragma comment(lib,"RuntimeObject.lib")
+#pragma comment(lib,"Shell32.lib")
 
 #if 0
 #pragma comment(lib,"gtest.lib")
@@ -21,8 +23,20 @@
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
+  command_line commandLine { cmdLine };
+
   framework::create(instance, cmdShow);
-  framework::unlockFrameRate();
+
+  if( commandLine.Contains(L"-u") )
+  {
+    framework::unlockFrameRate();
+  }
+
+  if( !commandLine.Contains(L"-w") )
+  {
+    framework::fullScreen();
+  }
+
   framework::setGameSpeedMultiplier(2.0f);
 
   renderer::create();
