@@ -13,12 +13,18 @@ public:
   public:
 
     particle_state();
+
     auto Initialize(float x, float y) -> void;
     auto Update(float interval) -> void;
     auto GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect;
-    [[nodiscard]] auto HasExpired() -> bool;
+
+    [[nodiscard]] auto DistanceTravelled() const -> float;
+    [[nodiscard]] auto Range() const -> float;
+    [[nodiscard]] auto HasExpired() const -> bool;
 
   private:
+
+    static inline const float m_range { 500 };
 
     float m_startX { 0 };
     float m_startY { 0 };

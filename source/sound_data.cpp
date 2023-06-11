@@ -8,7 +8,7 @@ constexpr [[nodiscard]] auto GetWavFilenames() -> std::array<LPCWSTR, 4>
     L"shoot_effect.wav", 
     L"thrust_effect.wav", 
     L"target_activated.wav"
-  };  
+  };
 }
 
 auto LoadSoundBuffers(IDirectSound8* directSound, const std::wstring& path, std::back_insert_iterator<sound_buffers> soundBufferInserter) -> void

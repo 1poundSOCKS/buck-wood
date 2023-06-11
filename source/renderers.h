@@ -93,6 +93,23 @@ private:
   brush_collection m_brushes;
 };
 
+class explosion_brushes
+{
+public:
+
+  explosion_brushes();
+  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+
+private:
+
+  [[nodiscard]] auto GetBrushIndex(float fadeRatio) const -> int;
+
+  using brush_ptr = winrt::com_ptr<ID2D1SolidColorBrush>;
+  using brush_collection = std::vector<brush_ptr>;
+
+  brush_collection m_brushes;
+};
+
 class target_brush_selector
 {
 public:
@@ -190,6 +207,7 @@ private:
   asteroid_brushes m_asteroidBrushes;
   player_ship_brushes m_playerShipBrushes;
   bullet_brushes m_bulletBrushes;
+  explosion_brushes m_explosionBrushes;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };

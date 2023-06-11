@@ -33,12 +33,21 @@ auto explosion::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const
   return { m_x - particleSize, m_y - particleSize, m_x + particleSize, m_y + particleSize, brush };
 }
 
-[[nodiscard]] auto explosion::particle_state::HasExpired() -> bool
+[[nodiscard]] auto explosion::particle_state::DistanceTravelled() const -> float
 {
   float cx = m_x - m_startX;
   float cy = m_y - m_startY;
-  float distance = sqrt(cx * cx + cy * cy);
-  return distance > 500;
+  return sqrt(cx * cx + cy * cy);
+}
+
+[[nodiscard]] auto explosion::particle_state::Range() const -> float
+{
+  return m_range;
+}
+
+[[nodiscard]] auto explosion::particle_state::HasExpired() const -> bool
+{
+  return DistanceTravelled() > m_range;
 }
 
 explosion::explosion(float x, float y)
