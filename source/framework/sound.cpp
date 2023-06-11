@@ -5,10 +5,12 @@ winrt::com_ptr<IDirectSound8> CreateDirectSound(HWND window)
   winrt::com_ptr<IDirectSound8> directSound;
 
   HRESULT hr = DirectSoundCreate8(NULL, directSound.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
 
-  hr = directSound->SetCooperativeLevel(window, DSSCL_PRIORITY);
-  if( FAILED(hr) ) throw L"error";
+  if( SUCCEEDED(hr) && directSound )
+  {
+    hr = directSound->SetCooperativeLevel(window, DSSCL_PRIORITY);
+    if( FAILED(hr) ) throw std::exception();
+  }
 
   return directSound;
 }
@@ -25,7 +27,7 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(IDirectSound8* direc
 
   winrt::com_ptr<IDirectSoundBuffer> primaryBuffer;
   HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
+  if( FAILED(hr) ) throw std::exception();
 
   WAVEFORMATEX waveFormat;
 	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
@@ -37,7 +39,7 @@ winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(IDirectSound8* direc
 	waveFormat.cbSize = 0;
 
 	hr = primaryBuffer->SetFormat(&waveFormat);
-  if( FAILED(hr) ) throw L"error";
+  if( FAILED(hr) ) throw std::exception();
   
   return primaryBuffer;
 }

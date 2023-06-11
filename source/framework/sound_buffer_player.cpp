@@ -7,39 +7,57 @@ sound_buffer_player::sound_buffer_player(IDirectSoundBuffer8* soundBuffer) : sou
 
 sound_buffer_player::~sound_buffer_player()
 {
-  StopSoundBufferPlay(soundBuffer);
-  ResetSoundBuffer(soundBuffer);
+  if( soundBuffer )
+  {
+    StopSoundBufferPlay(soundBuffer);
+    ResetSoundBuffer(soundBuffer);
+  }
 }
 
 void sound_buffer_player::Play() const
 {
-  ResetSoundBuffer(soundBuffer);
-  PlaySoundBuffer(soundBuffer);
+  if( soundBuffer )
+  {
+    ResetSoundBuffer(soundBuffer);
+    PlaySoundBuffer(soundBuffer);
+  }
 }
 
 void sound_buffer_player::PlayOnLoop() const
 {
-  ResetSoundBuffer(soundBuffer);
-  PlaySoundBuffer(soundBuffer, true);
+  if( soundBuffer )
+  {
+    ResetSoundBuffer(soundBuffer);
+    PlaySoundBuffer(soundBuffer, true);
+  }
 }
 
 void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop)
 {
-  DWORD bufferStatus = S_OK;
+  if( soundBuffer )
+  {
+    DWORD bufferStatus = S_OK;
 
-  if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
-    soundBuffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
+      soundBuffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+  }
 }
 
 void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer)
 {
-  DWORD bufferStatus = S_OK;
+  if( soundBuffer )
+  {
+    DWORD bufferStatus = S_OK;
 
-  if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
-    soundBuffer->Stop();
+    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
+      soundBuffer->Stop();
+  }
 }
 
 void ResetSoundBuffer(IDirectSoundBuffer8* soundBuffer)
 {
-  soundBuffer->SetCurrentPosition(0);
+  if( soundBuffer )
+  {
+    soundBuffer->SetCurrentPosition(0);
+  }
 }

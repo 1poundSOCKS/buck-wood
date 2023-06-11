@@ -31,10 +31,11 @@ main_menu_screen::main_menu_screen()
 
   const auto& dataPath = config_file::getSetting(L"data_path");
   global_state::load(dataPath);
-  sound_data::create(framework::directSound().get(), dataPath);
 
-  // play sound now to ensure no sound glitch on first real play
+  sound_data::create(framework::directSound().get(), dataPath);
+  
   {
+    // play sound now to ensure no sound glitch on first real play
     global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
     sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
     dummyPlayer.Play();

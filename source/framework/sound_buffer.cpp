@@ -31,20 +31,24 @@ winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound
 	bufferDesc.guid3DAlgorithm = GUID_NULL;
 
   winrt::com_ptr<IDirectSoundBuffer> tmpBuffer;
-  HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, tmpBuffer.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
 
-  hr = tmpBuffer->QueryInterface(IID_IDirectSoundBuffer8, soundBuffer.put_void());
-  if( FAILED(hr) ) throw L"error";
+  if( directSound )
+  {
+    HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, tmpBuffer.put(), NULL);
+    if( FAILED(hr) ) throw std::exception();
 
-  LPVOID bufferPtr;
-  DWORD bufferSize;
-  hr = soundBuffer->Lock(0, data.data->size, &bufferPtr, &bufferSize, NULL, 0, 0);
-  if( FAILED(hr) ) throw L"error";
+    hr = tmpBuffer->QueryInterface(IID_IDirectSoundBuffer8, soundBuffer.put_void());
+    if( FAILED(hr) ) throw std::exception();
 
-  memcpy(bufferPtr, data.data->data.get(), bufferSize);
-  hr = soundBuffer->Unlock(bufferPtr, bufferSize, NULL, 0);
-  if( FAILED(hr) ) throw L"error";
+    LPVOID bufferPtr;
+    DWORD bufferSize;
+    hr = soundBuffer->Lock(0, data.data->size, &bufferPtr, &bufferSize, NULL, 0, 0);
+    if( FAILED(hr) ) throw std::exception();
+
+    memcpy(bufferPtr, data.data->data.get(), bufferSize);
+    hr = soundBuffer->Unlock(bufferPtr, bufferSize, NULL, 0);
+    if( FAILED(hr) ) throw std::exception();
+  }
 
   return soundBuffer;
 }

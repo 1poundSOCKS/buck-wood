@@ -108,8 +108,14 @@ auto framework::Init() -> void
   m_swapChain = CreateSwapChain(m_window, framework::fps(), 1);
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
+
   m_directSound = CreateDirectSound(m_window);
-  m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
+
+  if( m_directSound )
+  {
+    m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
+  }
+  
   m_keyboard = CreateKeyboard(m_instance, m_window);
 
   HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
