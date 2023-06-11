@@ -150,15 +150,18 @@ auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t t
 
 auto level_container::UpdateTargets(int64_t ticks, update_events* updateEvents) -> void
 {
-  auto playerPosition = m_playerShip.Position();
-
-  for( auto& target : m_targets )
+  if( !m_playerShip.Destroyed() )
   {
-    auto targetPosition = target.Position();
-    
-    if( target.ShootAt(playerPosition) )
+    auto playerPosition = m_playerShip.Position();
+
+    for( auto& target : m_targets )
     {
-      m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
+      auto targetPosition = target.Position();
+      
+      if( target.ShootAt(playerPosition) )
+      {
+        m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
+      }
     }
   }
 

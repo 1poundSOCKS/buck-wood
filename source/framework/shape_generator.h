@@ -117,19 +117,22 @@ auto const_shape_iterator<typename noise>::operator*() const -> const game_point
 template <typename noise>
 auto const_shape_iterator<typename noise>::GetCurrentPoint() const -> game_point
 {
-  auto radiusX = ( m_shapeGenerator->m_rect.bottomRight.x - m_shapeGenerator->m_rect.topLeft.x ) / 2;
-  auto radiusY = ( m_shapeGenerator->m_rect.bottomRight.y - m_shapeGenerator->m_rect.topLeft.y ) / 2;
+  auto centrePoint = m_shapeGenerator->m_rect.CentrePoint();
+
+  auto radiusX = centrePoint.x - m_shapeGenerator->m_rect.topLeft.x;
+  auto radiusY = centrePoint.y - m_shapeGenerator->m_rect.topLeft.y;
 
   auto angleInRadians = DEGTORAD(m_currentAngle);
+
   auto cx = radiusX * sin(angleInRadians);
   auto cy = radiusY * cos(angleInRadians);
 
-  auto x = m_shapeGenerator->m_rect.topLeft.x + radiusX;
-  auto y = m_shapeGenerator->m_rect.bottomRight.y + radiusY;
+  auto x = centrePoint.x + cx;
+  auto y = centrePoint.y - cy;
 
-  auto noise = ( m_shapeGenerator->m_noise.GetNoise(static_cast<float>(x + cx), static_cast<float>(y + cy)) + 5 ) / 6;
+  auto noise = ( m_shapeGenerator->m_noise.GetNoise(static_cast<float>(x), static_cast<float>(y)) + 5 ) / 6;
   
-  return {x + cx * noise, y + cy * noise};
+  return { x + noise, y + noise };
 }
 
 template <typename noise>

@@ -7,14 +7,19 @@ class active_body
 
 public:
 
+  enum class rotation_direction { none, clockwise, anticlockwise };
+
   active_body(float thrust);
 
   auto SetPosition(float x, float y) -> void;
-  auto SetAngle(float angle) -> void;
+  auto SetDirection(float angle) -> void;
   auto SetThrust(bool enabled) -> void;
-  [[nodiscard]] auto Position() const -> game_point;
+  auto Rotate(rotation_direction rotationDirection, float angle) -> void;
+  auto Update(float updateInterval) -> void;
 
-  auto Update(int64_t ticks) -> void;
+  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Direction() const -> float;
+  [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
 
 private:
 
@@ -22,6 +27,7 @@ private:
   float m_y { 0 };
   float m_velocityX { 0 };
   float m_velocityY { 0 };
+  float m_direction { 0 };
   float m_angle { 0 };
   float m_thrust { 0 };
   bool m_thrustEnabled { false };

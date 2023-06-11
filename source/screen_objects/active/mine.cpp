@@ -25,21 +25,22 @@ auto mine::Update(int64_t tickCount, float x, float y) -> void
 {
   auto position = m_body.Position();
   auto angle = CalculateAngle(position.x, position.y, x, y);
-  m_body.SetAngle(angle);
+  m_body.SetDirection(angle);
   Update(tickCount);
 }
 
 auto mine::Update(int64_t tickCount) -> void
 {
-  m_body.Update(tickCount);
+  auto updateInterval = framework::gameUpdateInterval(tickCount);
+  m_body.Rotate(active_body::rotation_direction::clockwise, updateInterval * 400);
+  m_body.Update(updateInterval);
   UpdateGeometry();
 }
 
 auto mine::UpdateGeometry() -> void
 {
-  auto position = m_body.Position();
-  auto moveTransform = D2D1::Matrix3x2F::Translation(position.x, position.y);
-  m_transformedGeometry = { m_geometry, moveTransform };
+  auto transform = m_body.Transform();
+  m_transformedGeometry = { m_geometry, transform };
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool
