@@ -198,12 +198,13 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
       m_explosions.emplace_back( explosion { position.x, position.y } );
     });
 
-    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this](auto& mine, auto& playerShip)
+    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this, updateEvents](auto& mine, auto& playerShip)
     {
       mine.Destroy();
       playerShip.Destroy();
       auto position = playerShip.Position();
       m_explosions.emplace_back( explosion { position.x, position.y } );
+      updateEvents->mineExploded = true;
     });
 
     do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
@@ -214,11 +215,12 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     });
   }
 
-  do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
+  do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this, updateEvents](auto& mine, auto& asteroid)
   {
     mine.Destroy();
     auto position = mine.Position();
     m_explosions.emplace_back( explosion { position.x, position.y } );
+    updateEvents->mineExploded = true;
   });
 
   do_geometries_to_points_collisions(m_asteroids, m_bullets, [](auto& asteroid, auto& bullet)
@@ -238,11 +240,12 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     bullet.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
+  do_geometries_to_points_collisions(m_mines, m_bullets, [this, updateEvents](auto& mine, auto& bullet)
   {
     auto position = mine.Position();
     m_explosions.emplace_back( explosion { position.x, position.y } );
     mine.Destroy();
     bullet.Destroy();
+    updateEvents->mineExploded = true;
   });
 }

@@ -9,7 +9,7 @@ template <typename selector_name_type>
 struct sound_buffer_selector
 {
   const sound_buffers& buffers;
-  IDirectSoundBuffer8* operator[](typename selector_name_type name) const
+  IDirectSoundBuffer8* operator[](selector_name_type name) const
   {
     return buffers[name].get();
   }

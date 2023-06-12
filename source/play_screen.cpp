@@ -84,28 +84,34 @@ auto play_screen::PostPresent() const -> void
 
   if( m_stage != stage::playing || m_paused || !m_continueRunning )
   {
-    StopSoundBufferPlay(soundBuffers[menu_theme]);
-    StopSoundBufferPlay(soundBuffers[thrust]);
+    StopSoundBufferPlay(soundBuffers[sound_buffer_name::menu_theme]);
+    StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
   }
   else
   {
-    PlaySoundBuffer(soundBuffers[menu_theme], true);
+    PlaySoundBuffer(soundBuffers[sound_buffer_name::menu_theme], true);
 
     if( m_levelContainer->PlayerHasThrusterOn() )
-      PlaySoundBuffer(soundBuffers[thrust], true);
+      PlaySoundBuffer(soundBuffers[sound_buffer_name::thrust], true);
     else
-      StopSoundBufferPlay(soundBuffers[thrust]);
+      StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
 
     if( m_levelUpdateEvents->playerShot )
     {
-      ResetSoundBuffer(soundBuffers[shoot]);
-      PlaySoundBuffer(soundBuffers[shoot]);
+      ResetSoundBuffer(soundBuffers[sound_buffer_name::shoot]);
+      PlaySoundBuffer(soundBuffers[sound_buffer_name::shoot]);
     }
 
     if( m_levelUpdateEvents->targetActivated )
     {
-      ResetSoundBuffer(soundBuffers[shoot]);
-      PlaySoundBuffer(soundBuffers[target_activated]);
+      ResetSoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
+      PlaySoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
+    }
+
+    if( m_levelUpdateEvents->mineExploded )
+    {
+      ResetSoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
+      PlaySoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
     }
   }
 }
@@ -141,7 +147,10 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
 
   auto elapsedTicks = m_paused ? 0 : frameInterval;
 
-  m_levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
+  if( !m_paused )
+  {
+    m_levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
+  }
 
   if( m_levelContainer->IsComplete() )
   {

@@ -21,10 +21,6 @@ private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_menuTextBrush;
-  winrt::com_ptr<IDWriteTextFormat> m_menuTextFormat;
-
   mouse_cursor m_cursor;
   menu m_menu;
   

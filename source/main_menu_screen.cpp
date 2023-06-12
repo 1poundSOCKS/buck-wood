@@ -13,31 +13,12 @@ inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DW
 
 main_menu_screen::main_menu_screen()
 {
-  const auto& renderTarget = framework::renderTarget();
-
-  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
-  m_menuTextBrush = screen_render_brush_cyan.CreateBrush(renderTarget.get());
-
-  auto dwriteFactory = dwrite_factory::get().get();
-  m_menuTextFormat = render_text_format_main_menu.CreateTextFormat(dwriteFactory);
-  
-  config_file::create(L"config.txt");
-
-  const auto& fullScreen = config_file::getSetting(L"full_screen");
-  if( fullScreen == L"true" )
-  {
-    framework::fullScreen();
-  }
-
-  const auto& dataPath = config_file::getSetting(L"data_path");
-  global_state::load(dataPath);
-
-  sound_data::create(framework::directSound().get(), dataPath);
+  sound_data::create(framework::directSound().get(), L"data");
   
   {
     // play sound now to ensure no sound glitch on first real play
     global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
-    sound_buffer_player dummyPlayer(dummySelector[menu_theme]);
+    sound_buffer_player dummyPlayer(dummySelector[sound_buffer_name::menu_theme]);
     dummyPlayer.Play();
   }
 

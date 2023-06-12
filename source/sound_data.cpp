@@ -1,13 +1,14 @@
 #include "pch.h"
 #include "sound_data.h"
 
-constexpr [[nodiscard]] auto GetWavFilenames() -> std::array<LPCWSTR, 4>
+constexpr [[nodiscard]] auto GetWavFilenames()
 {
-  return   {
+  return std::array {
     L"main_theme.wav", 
     L"shoot_effect.wav", 
     L"thrust_effect.wav", 
-    L"target_activated.wav"
+    L"target_activated.wav",
+    L"mine_exploded.wav"
   };
 }
 

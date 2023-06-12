@@ -16,6 +16,7 @@ public:
   {
     bool playerShot { false };
     bool targetActivated { false };
+    bool mineExploded { false };
   };
 
   using update_events_ptr = std::unique_ptr<update_events>;
