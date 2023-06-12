@@ -6,7 +6,7 @@
 
 level_asteroid::level_asteroid(game_rect rect)
 {
-  m_geometry.Load( shape_generator<noisy_shape> { rect, 12 } );
+  m_geometry.Load( shape_generator { rect, 12 } );
 }
 
 [[nodiscard]] auto level_asteroid::Geometry() const -> const path_geometry&
