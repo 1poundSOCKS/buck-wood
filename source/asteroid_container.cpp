@@ -208,7 +208,7 @@ auto asteroid_container::CreateAsteroids(const level_grid& grid) -> void
 
   std::ranges::for_each(asteroidView, [this](auto cell)
   {
-    cell.Resize(0.8f, 0.8f);
+    cell.Resize(0.6f, 0.6f);
 
     m_asteroidGrid.front().emplace_back(level_asteroid { game_rect
     { 
