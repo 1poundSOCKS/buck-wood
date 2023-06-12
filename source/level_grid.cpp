@@ -1,6 +1,41 @@
 #include "pch.h"
 #include "level_grid.h"
 
+level_grid_cell::level_grid_cell(float x, float y, float width, float height) : m_position { x, y }, m_width { width }, m_height { height }
+{
+}
+
+auto level_grid_cell::Position() const -> const game_point&
+{
+  return m_position;
+}
+
+auto level_grid_cell::Left() const -> float
+{
+  return m_position.x - m_width / 2;
+}
+
+auto level_grid_cell::Top() const -> float
+{
+  return m_position.y - m_height / 2;
+}
+
+auto level_grid_cell::Right() const -> float
+{
+  return m_position.x + m_width / 2;
+}
+
+auto level_grid_cell::Bottom() const -> float
+{
+  return m_position.y + m_height / 2;
+}
+
+auto level_grid_cell::Resize(float xRatio, float yRatio) -> void
+{
+  m_width *= xRatio;
+  m_height *= yRatio;
+}
+
 auto const_level_grid_iterator::operator++() -> const_level_grid_iterator&
 {
   if( ++m_currentColumn > m_levelGrid->m_rightColumn )
@@ -121,12 +156,7 @@ auto level_grid::GetCell(int column, int row) const -> level_grid_cell
   }
   else
   {
-    auto cx = m_columnWidth / 2;
-    auto cy = m_rowHeight / 2;
-    auto centreX = column * m_columnWidth;
-    auto centreY = row * m_rowHeight;
-
-    return { centreX, centreY, centreX - cx + 1, centreY - cy + 1, centreX + cx, centreY + cy };
+    return { static_cast<float>(column * m_columnWidth), static_cast<float>(row * m_rowHeight), static_cast<float>(m_columnWidth), static_cast<float>(m_rowHeight) };
   }
 }
 

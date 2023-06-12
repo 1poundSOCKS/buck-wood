@@ -74,11 +74,11 @@ private:
   int m_activatedTargetCount = 0;
 };
 
-auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
+auto level_container::AddTargets(std::ranges::input_range auto&& cells) -> void
 {
-  std::ranges::for_each(positions, [this](const auto& position)
+  std::ranges::for_each(cells, [this](const auto& cell)
   {
-    m_targets.emplace_back( level_target { static_cast<float>(position.x), static_cast<float>(position.y) } );
+    m_targets.emplace_back( level_target { cell.Position().x, cell.Position().y } );
   });
 }
 

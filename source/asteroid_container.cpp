@@ -206,12 +206,14 @@ auto asteroid_container::CreateAsteroids(const level_grid& grid) -> void
     return cellType.IsAsteroid();
   });
 
-  std::ranges::for_each(asteroidView, [this](const auto& cell)
+  std::ranges::for_each(asteroidView, [this](auto cell)
   {
+    cell.Resize(0.8f, 0.8f);
+
     m_asteroidGrid.front().emplace_back(level_asteroid { game_rect
     { 
-      { static_cast<float>(cell.left), static_cast<float>(cell.top) } , 
-      { static_cast<float>(cell.right), static_cast<float>(cell.bottom) }
+      { cell.Left(), cell.Top() } , 
+      { cell.Right(), cell.Bottom() }
     }});
   });
 

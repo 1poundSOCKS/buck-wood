@@ -1,13 +1,29 @@
 #pragma once
 
+#include "geometry.h"
+
 struct level_grid_cell
 {
-  int x { 0 };
-  int y { 0 };
-  int left { 0 };
-  int top { 0 };
-  int right { 0 };
-  int bottom { 0 };
+public:
+
+  level_grid_cell() = default;
+  level_grid_cell(const level_grid_cell&) = default;
+  level_grid_cell(float x, float y, float width, float height);
+
+  auto Position() const -> const game_point&;
+  auto Left() const -> float;
+  auto Top() const -> float;
+  auto Right() const -> float;
+  auto Bottom() const -> float;
+
+  auto Resize(float xRatio, float yRatio) -> void;
+
+private:
+
+  game_point m_position { 0, 0 };
+  float m_width { 0 };
+  float m_height { 0 };
+
 };
 
 class const_level_grid_iterator
