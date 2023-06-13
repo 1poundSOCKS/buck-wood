@@ -54,7 +54,7 @@ template <typename screen_state_type> auto KeepScreenOpen(const screen_state_typ
   return !g_closeAllScreens && screenState.ContinueRunning();
 }
 
-template <typename screen_state_type> void OpenScreen(/*screen_runner_data data,screen_state_type& screenState*/)
+template <typename screen_state_type> void OpenScreen()
 {
   screen_runner_data data
   {
