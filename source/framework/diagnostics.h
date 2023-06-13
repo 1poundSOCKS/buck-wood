@@ -1,7 +1,6 @@
 #ifndef _diagnostics_
 #define _diagnostics_
 
-// #include "framework.h"
 #include "screen_input_state.h"
 
 using diagnostics_data_collection = std::vector<std::wstring>;

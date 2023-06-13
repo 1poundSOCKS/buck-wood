@@ -12,10 +12,10 @@
 
 inline bool g_closeAllScreens = false;
 
-inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
-{
-  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
-}
+// inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
+// {
+//   return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
+// }
 
 struct screen_runner_data
 {
@@ -103,50 +103,50 @@ template <typename screen_state_type> void OpenScreen()
   }
 }
 
-void UpdateScreen(screen_runner_data& data, auto& screenState, const screen_input_state& inputState, int64_t frameInterval, 
-  const performance::frame_data& frameData, screen_diagnostics_render_data& diagnosticsRenderData, bool unlockFrameRate)
-{
-  std::vector<std::wstring> diagnosticsData;
-  diagnosticsData.reserve(50);
+// void UpdateScreen(screen_runner_data& data, auto& screenState, const screen_input_state& inputState, int64_t frameInterval, 
+//   const performance::frame_data& frameData, screen_diagnostics_render_data& diagnosticsRenderData, bool unlockFrameRate)
+// {
+//   std::vector<std::wstring> diagnosticsData;
+//   diagnosticsData.reserve(50);
 
-  auto timerFrequency = performance_counter::QueryFrequency();
-  auto frameTime = timerFrequency / data.fps;
+//   auto timerFrequency = performance_counter::QueryFrequency();
+//   auto frameTime = timerFrequency / data.fps;
   
-  auto startUpdateTime = performance_counter::QueryValue();
-  screenState.Update(inputState, unlockFrameRate ? frameInterval : frameTime);
-  auto endUpdateTime = performance_counter::QueryValue();
+//   auto startUpdateTime = performance_counter::QueryValue();
+//   screenState.Update(inputState, unlockFrameRate ? frameInterval : frameTime);
+//   auto endUpdateTime = performance_counter::QueryValue();
 
-  diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
+//   diagnosticsData.emplace_back(std::format(L"update state time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
 
-  FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
-  diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
-  screenState.FormatDiagnostics(std::back_inserter(diagnosticsData));
+//   FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
+//   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(frameData)));
+//   screenState.FormatDiagnostics(std::back_inserter(diagnosticsData));
 
-  if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
-  {
-    BOOL fullScreen = FALSE;
-    data.swapChain->GetFullscreenState(&fullScreen, nullptr);
-    data.swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
-  }
+//   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
+//   {
+//     BOOL fullScreen = FALSE;
+//     data.swapChain->GetFullscreenState(&fullScreen, nullptr);
+//     data.swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+//   }
 
-  {
-    render_guard renderGuard(data.renderTarget);
+//   {
+//     render_guard renderGuard(data.renderTarget);
 
-    auto startRenderTime = performance_counter::QueryValue();
-    screenState.Render();
-    auto endRenderTime = performance_counter::QueryValue();
+//     auto startRenderTime = performance_counter::QueryValue();
+//     screenState.Render();
+//     auto endRenderTime = performance_counter::QueryValue();
 
-    diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
+//     diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
     
-    data.renderTarget->SetTransform(D2D1::IdentityMatrix());
+//     data.renderTarget->SetTransform(D2D1::IdentityMatrix());
 
-    RenderText(data.renderTarget.get(), diagnosticsRenderData.brush.get(), diagnosticsRenderData.textFormat.get(), 
-      GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
-  }
+//     RenderText(data.renderTarget.get(), diagnosticsRenderData.brush.get(), diagnosticsRenderData.textFormat.get(), 
+//       GetDiagnosticsString(diagnosticsData.cbegin(), diagnosticsData.cend()));
+//   }
 
-  data.swapChain->Present(unlockFrameRate ? 0 : 1, 0);
+//   data.swapChain->Present(unlockFrameRate ? 0 : 1, 0);
 
-  screenState.PostPresent();
-}
+//   screenState.PostPresent();
+// }
 
 #endif

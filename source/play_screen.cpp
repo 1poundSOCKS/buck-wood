@@ -5,6 +5,12 @@
 #include "screen_view.h"
 #include "global_state.h"
 #include "render_target_area.h"
+#include "diagnostics.h"
+
+inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
+{
+  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
+}
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>()), m_levelUpdateEvents(std::make_unique<level_container::update_events>())
 {
@@ -28,20 +34,32 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
 {
+  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+
   performance::UpdateFrameData(m_frameData);
 
   std::vector<std::wstring> diagnosticsData;
   diagnosticsData.reserve(50);
 
-  // FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
+  ::FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(m_frameData)));
   FormatDiagnostics(std::back_inserter(diagnosticsData));
 
+  auto startUpdateTime = performance_counter::QueryValue();
   Update(inputState, ticks);
+  auto endUpdateTime = performance_counter::QueryValue();
+
+  diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
 
   {
     render_guard renderGuard { framework::renderTarget() };
+
+    auto startRenderTime = performance_counter::QueryValue();
     Render();
+    auto endRenderTime = performance_counter::QueryValue();
+
+    diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
+
     framework::renderDiagnostics(diagnosticsData);
   }
   

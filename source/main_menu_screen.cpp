@@ -31,6 +31,13 @@ main_menu_screen::main_menu_screen()
 
 auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
 {
+  if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
+  {
+    BOOL fullScreen = FALSE;
+    framework::swapChain()->GetFullscreenState(&fullScreen, nullptr);
+    framework::swapChain()->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+  }
+
   Update(inputState, ticks);
 
   {
