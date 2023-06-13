@@ -29,7 +29,7 @@ public:
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
   [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  [[nodiscard]] static auto CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
+  [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
   [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
   [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   [[nodiscard]] static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
@@ -43,6 +43,7 @@ public:
   [[nodiscard]] static auto rng() -> std::mt19937&;
 
   static auto fullScreen() -> void;
+  static auto toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void;
 
   static auto renderDiagnostics(std::ranges::input_range auto&& objects) -> void;
 

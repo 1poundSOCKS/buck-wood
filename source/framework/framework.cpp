@@ -9,6 +9,16 @@ auto framework::fullScreen() -> void
   m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
 }
 
+auto framework::toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void
+{
+  if( inputState.keyboardState.data[key] & 0x80 && !(inputState.previousKeyboardState.data[key] & 0x80) )
+  {
+    BOOL fullScreen = FALSE;
+    m_framework->m_swapChain->GetFullscreenState(&fullScreen, nullptr);
+    m_framework->m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+  }
+}
+
 auto framework::create(HINSTANCE instance, int cmdShow) -> void
 {
   m_framework = new framework(instance, cmdShow);
@@ -49,7 +59,7 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
   return get().m_renderTarget;
 }
 
-[[nodiscard]] auto framework::CreatePathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+[[nodiscard]] auto framework::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
   return ::CreatePathGeometry(get().m_d2dFactory.get());
 }

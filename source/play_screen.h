@@ -25,13 +25,13 @@ private:
 
   enum class stage { pre_play, playing, post_play };
 
-  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr;
   auto Render() const -> void;
-  auto PostPresent() const -> void;
+  auto PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
   auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
-  auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr;
   auto PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
 
   auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> level_container::update_events_ptr;
@@ -51,7 +51,6 @@ private:
   bool m_continueRunning = true;
   int64_t m_stageTicks = 0;
   std::unique_ptr<level_container> m_levelContainer;
-  level_container::update_events_ptr m_levelUpdateEvents;
   mouse_cursor m_cursor;
   menu m_menu;
   game_level_data_loader m_gameLevelDataLoader;

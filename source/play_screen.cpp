@@ -12,7 +12,7 @@ inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
   return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
 }
 
-play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>()), m_levelUpdateEvents(std::make_unique<level_container::update_events>())
+play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
@@ -34,6 +34,8 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
 {
+  framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
+
   auto frameTime = performance_counter::QueryFrequency() / framework::fps();
 
   performance::UpdateFrameData(m_frameData);
@@ -46,7 +48,7 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   FormatDiagnostics(std::back_inserter(diagnosticsData));
 
   auto startUpdateTime = performance_counter::QueryValue();
-  Update(inputState, ticks);
+  auto levelUpdateEvents = Update(inputState, ticks);
   auto endUpdateTime = performance_counter::QueryValue();
 
   diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
@@ -65,20 +67,22 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   
   framework::present();
   
-  PostPresent();
+  PostPresent(levelUpdateEvents);
 
   return m_continueRunning;
 }
 
-auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
+auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
 {
+  level_container::update_events_ptr levelUpdateEvents;
+  
   switch( m_stage )
   {
     case stage::pre_play:
       PrePlay(inputState, frameInterval);
       break;
     case stage::playing:
-      Playing(inputState, frameInterval);
+      levelUpdateEvents = Playing(inputState, frameInterval);
       break;
     case stage::post_play:
       PostPlay(inputState, frameInterval);
@@ -94,6 +98,8 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
   {
     m_menu.Update(overlayInputData);
   }
+
+  return levelUpdateEvents;
 }
 
 auto play_screen::Render() const -> void
@@ -122,7 +128,7 @@ auto play_screen::Render() const -> void
   m_cursor.Render(overlayViewRect);
 }
 
-auto play_screen::PostPresent() const -> void
+auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void
 {
   const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
 
@@ -140,19 +146,19 @@ auto play_screen::PostPresent() const -> void
     else
       StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
 
-    if( m_levelUpdateEvents->playerShot )
+    if( levelUpdateEvents.get() && levelUpdateEvents->playerShot )
     {
       ResetSoundBuffer(soundBuffers[sound_buffer_name::shoot]);
       PlaySoundBuffer(soundBuffers[sound_buffer_name::shoot]);
     }
 
-    if( m_levelUpdateEvents->targetActivated )
+    if( levelUpdateEvents.get() && levelUpdateEvents->targetActivated )
     {
       ResetSoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
       PlaySoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
     }
 
-    if( m_levelUpdateEvents->mineExploded )
+    if( levelUpdateEvents.get() && levelUpdateEvents->mineExploded )
     {
       ResetSoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
       PlaySoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
@@ -177,8 +183,10 @@ auto play_screen::PrePlay(const screen_input_state& inputState, int64_t frameInt
   }
 }
 
-auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInterval) -> void
+auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
 {
+  level_container::update_events_ptr levelUpdateEvents;
+
   if( PausePressed(inputState) )
   {
     m_paused = !m_paused;
@@ -188,7 +196,7 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
 
   if( !m_paused )
   {
-    m_levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
+    levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
   }
 
   if( m_levelContainer->IsComplete() )
@@ -206,6 +214,8 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
     m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
     m_stageTicks = 0;
   }
+
+  return levelUpdateEvents;
 }
 
 auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void
@@ -256,7 +266,6 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return { playerPosition.x, playerPosition.y, m_startSequence.GetScale(m_stageTicks) };
 
     case stage::post_play:
-      // return m_endSequence.GetPosition(m_stageTicks);
       return { playerPosition.x, playerPosition.y, m_endSequence.GetScale(m_stageTicks) };
 
     default:

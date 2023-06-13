@@ -18,7 +18,7 @@ private:
 
 };
 
-path_geometry::path_geometry(std::ranges::input_range auto&& points) : m_geometry(framework::CreatePathGeometry())
+path_geometry::path_geometry(std::ranges::input_range auto&& points) : m_geometry(framework::createPathGeometry())
 {
   Load(points);
 }
