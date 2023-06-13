@@ -24,7 +24,7 @@ winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound
 
   DSBUFFERDESC bufferDesc;
   bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = 0;
+	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
 	bufferDesc.dwBufferBytes = GetWavFileDataSize(data);
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = &waveFormat;

@@ -15,10 +15,16 @@ main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
   
+  global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
+  auto soundBuffer = dummySelector[sound_buffer_name::menu_theme];
+  auto volumeRange = float { DSBVOLUME_MAX - DSBVOLUME_MIN };
+  auto volume = static_cast<int>(DSBVOLUME_MIN + volumeRange * 0.8f);
+  HRESULT hr = soundBuffer->SetVolume(volume);
+  if( FAILED(hr) ) throw std::exception();
+  
+  // play sound now to ensure no sound glitch on first real play
   {
-    // play sound now to ensure no sound glitch on first real play
-    global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
-    sound_buffer_player dummyPlayer(dummySelector[sound_buffer_name::menu_theme]);
+    sound_buffer_player dummyPlayer(soundBuffer);
     dummyPlayer.Play();
   }
 
