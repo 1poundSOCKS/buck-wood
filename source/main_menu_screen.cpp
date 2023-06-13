@@ -9,8 +9,6 @@
 #include "render_target_area.h"
 #include "screen_runner.h"
 
-inline auto render_text_format_main_menu = render_text_format_def(L"Verdana", DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
-
 main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
