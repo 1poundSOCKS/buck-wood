@@ -19,15 +19,17 @@ class play_screen
 public:
 
   play_screen();
-  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
-  auto Render() const -> void;
-  auto PostPresent() const -> void;
+  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> void;
   [[nodiscard]] auto ContinueRunning() const -> bool;
-  auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
 private:
 
   enum class stage { pre_play, playing, post_play };
+
+  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto Render() const -> void;
+  auto PostPresent() const -> void;
+  auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
   auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> void;

@@ -62,6 +62,11 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
   return get().m_keyboard;
 }
 
+auto framework::present() -> void
+{
+  get().m_swapChain->Present(get().m_unlockFrameRate ? 0 : 1, 0);
+}
+
 [[nodiscard]] auto framework::fps() -> int
 {
   return 60;

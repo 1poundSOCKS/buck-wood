@@ -29,6 +29,19 @@ main_menu_screen::main_menu_screen()
   m_menu = GetMenuDef().CreateMenu();
 }
 
+auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
+{
+  Update(inputState, ticks);
+
+  {
+    render_guard renderGuard { framework::renderTarget() };
+    Render();
+  }
+
+  framework::present();
+  PostPresent();
+}
+
 auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   if( m_startPlay )

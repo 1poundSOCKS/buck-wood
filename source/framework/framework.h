@@ -27,6 +27,7 @@ public:
   [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
   [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   [[nodiscard]] static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
+  static auto present() -> void;
   [[nodiscard]] static auto fps() -> int;
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
   static auto unlockFrameRate() -> void;

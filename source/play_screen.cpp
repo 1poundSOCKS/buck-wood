@@ -26,6 +26,19 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
+auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
+{
+  Update(inputState, ticks);
+
+  {
+    render_guard renderGuard { framework::renderTarget() };
+    Render();
+  }
+  
+  framework::present();
+  PostPresent();
+}
+
 auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   switch( m_stage )

@@ -11,13 +11,15 @@ class main_menu_screen
 public:
 
   main_menu_screen();
+  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> void;
+  [[nodiscard]] auto ContinueRunning() const -> bool;
+
+private:
+
   auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
   auto PostPresent() const -> void;
-  [[nodiscard]] auto ContinueRunning() const -> bool;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
-
-private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 

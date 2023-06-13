@@ -88,7 +88,8 @@ template <typename screen_state_type> void OpenScreen()
 
     ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
-    UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, framework::isFrameRateUnlocked());
+    // UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, framework::isFrameRateUnlocked());
+    screenState.Refresh(inputState, currentTime - previousTime);
 
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
