@@ -28,11 +28,21 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
 {
+  performance::UpdateFrameData(m_frameData);
+
+  std::vector<std::wstring> diagnosticsData;
+  diagnosticsData.reserve(50);
+
+  // FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
+  diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(m_frameData)));
+  FormatDiagnostics(std::back_inserter(diagnosticsData));
+
   Update(inputState, ticks);
 
   {
     render_guard renderGuard { framework::renderTarget() };
     Render();
+    framework::renderDiagnostics(diagnosticsData);
   }
   
   framework::present();

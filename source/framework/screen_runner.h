@@ -27,11 +27,11 @@ struct screen_runner_data
   int fps;
 };
 
-struct screen_diagnostics_render_data
-{
-  winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  winrt::com_ptr<IDWriteTextFormat> textFormat;
-};
+// struct screen_diagnostics_render_data
+// {
+//   winrt::com_ptr<ID2D1SolidColorBrush> brush;
+//   winrt::com_ptr<IDWriteTextFormat> textFormat;
+// };
 
 template <typename screen_state_type> auto KeepScreenOpen(const screen_state_type& screenState) -> bool
 {
@@ -89,7 +89,10 @@ template <typename screen_state_type> void OpenScreen()
     ReadKeyboardState(data.keyboard.get(), inputState.keyboardState);
 
     // UpdateScreen(data, screenState, inputState, currentTime - previousTime, frameData, diagnosticsRenderData, framework::isFrameRateUnlocked());
-    screenState.Refresh(inputState, currentTime - previousTime);
+    auto timerFrequency = performance_counter::QueryFrequency();
+    auto frameTime = timerFrequency / data.fps;
+
+    screenState.Refresh(inputState, framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
 
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
