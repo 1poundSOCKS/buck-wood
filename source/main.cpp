@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "framework.h"
-#include "screen_runner.h"
 #include "main_menu_screen.h"
 #include "renderers.h"
 #include "command_line.h"
@@ -23,9 +22,10 @@
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
 {
-  command_line commandLine { cmdLine };
-
   framework::create(instance, cmdShow);
+  framework::setGameSpeedMultiplier(2.0f);
+
+  command_line commandLine { cmdLine };
 
   if( commandLine.Contains(L"-u") )
   {
@@ -37,11 +37,9 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
     framework::fullScreen();
   }
 
-  framework::setGameSpeedMultiplier(2.0f);
-
   renderer::create();
 
-  OpenScreen<main_menu_screen>();
+  framework::openScreen<main_menu_screen>();
 
   return 0;
 }

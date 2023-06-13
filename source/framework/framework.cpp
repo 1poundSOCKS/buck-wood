@@ -13,10 +13,12 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
 {
   m_framework = new framework(instance, cmdShow);
   m_framework->Init();
+
   dwrite_factory::create();
 
   auto diagnosticsBrush = CreateScreenRenderBrush(m_framework->m_renderTarget.get(), D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f));
   auto diagnosticsTextFormat = CreateScreenRenderTextFormat(dwrite_factory::get().get(), L"Verdana", DWRITE_FONT_WEIGHT_LIGHT, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20);
+  
   m_framework->m_diagnosticsRenderData = screen_diagnostics_render_data { diagnosticsBrush, diagnosticsTextFormat };
 
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
@@ -131,4 +133,25 @@ auto framework::Init() -> void
   HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) 
     throw std::exception();
+}
+
+auto framework::ProcessWindowMessages() -> bool
+{
+  MSG msg;
+
+  if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+  {
+    if (!TranslateAccelerator(msg.hwnd, NULL, &msg))
+    {
+      TranslateMessage(&msg);
+      DispatchMessage(&msg);
+    }
+  
+    if( msg.message == WM_QUIT )
+    {
+      m_closeApp = true;
+    }
+  }
+
+  return m_closeApp;
 }

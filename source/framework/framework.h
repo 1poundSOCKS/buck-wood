@@ -46,13 +46,19 @@ public:
 
   static auto renderDiagnostics(std::ranges::input_range auto&& objects) -> void;
 
+  template <typename screen_state_type> static auto openScreen() -> void;
+
 private:
 
   framework(HINSTANCE instance, int cmdShow);
   auto Init() -> void;
   static framework* m_framework;
 
+  static auto ProcessWindowMessages() -> bool;
+
   static inline std::mt19937 m_rng; // pseudo-random generator
+
+  inline static bool m_closeApp { false };
 
   HINSTANCE m_instance = nullptr;
   int m_cmdShow { 0 };
@@ -78,4 +84,35 @@ auto framework::renderDiagnostics(std::ranges::input_range auto&& objects) -> vo
   });
 
   RenderText(get().m_renderTarget.get(), get().m_diagnosticsRenderData.brush.get(), get().m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+}
+
+template <typename screen_state_type> static auto framework::openScreen() -> void
+{
+  screen_state_type screenState;
+  screen_input_state inputState;
+
+  auto previousTime = performance_counter::QueryValue();
+  auto currentTime = previousTime;
+
+  auto keepScreenOpen { true };
+  
+  while( !ProcessWindowMessages() && keepScreenOpen )
+  {
+    inputState.windowData = framework::windowData();
+    inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, framework::renderTarget().get());
+
+    ReadKeyboardState(framework::keyboard().get(), inputState.keyboardState);
+
+    auto timerFrequency = performance_counter::QueryFrequency();
+    auto frameTime = timerFrequency / framework::fps();
+
+    keepScreenOpen = screenState.Refresh(inputState, framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
+
+    previousTime = currentTime;
+    currentTime = performance_counter::QueryValue();
+
+    inputState.previousWindowData = inputState.windowData;
+    inputState.previousKeyboardState = inputState.keyboardState;
+    inputState.previousRenderTargetMouseData = inputState.renderTargetMouseData;
+  }
 }

@@ -32,7 +32,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
-auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
+auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
 {
   auto frameTime = performance_counter::QueryFrequency() / framework::fps();
 
@@ -64,7 +64,10 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   }
   
   framework::present();
+  
   PostPresent();
+
+  return m_continueRunning;
 }
 
 auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
@@ -155,11 +158,6 @@ auto play_screen::PostPresent() const -> void
       PlaySoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
     }
   }
-}
-
-[[nodiscard]] auto play_screen::ContinueRunning() const -> bool
-{
-  return m_continueRunning;
 }
 
 auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void

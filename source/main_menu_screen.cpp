@@ -7,7 +7,6 @@
 #include "button.h"
 #include "dwrite_factory.h"
 #include "render_target_area.h"
-#include "screen_runner.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -29,7 +28,7 @@ main_menu_screen::main_menu_screen()
   m_menu = GetMenuDef().CreateMenu();
 }
 
-auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> void
+auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
 {
   if( inputState.keyboardState.data[DIK_F12] & 0x80 && !(inputState.previousKeyboardState.data[DIK_F12] & 0x80) )
   {
@@ -46,15 +45,18 @@ auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t tic
   }
 
   framework::present();
+
   PostPresent();
+
+  return m_continueRunning;
 }
 
 auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
+    framework::openScreen<play_screen>();
     m_startPlay = false;
-    OpenScreen<play_screen>();
   }
 
   screen_transform screenTransform;
@@ -80,11 +82,6 @@ auto main_menu_screen::Render() const -> void
 
 auto main_menu_screen::PostPresent() const -> void
 {
-}
-
-[[nodiscard]] auto main_menu_screen::ContinueRunning() const -> bool
-{
-  return m_continueRunning;
 }
 
 auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void

@@ -19,8 +19,7 @@ class play_screen
 public:
 
   play_screen();
-  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> void;
-  [[nodiscard]] auto ContinueRunning() const -> bool;
+  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> bool;
 
 private:
 
