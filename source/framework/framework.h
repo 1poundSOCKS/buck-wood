@@ -45,7 +45,6 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void;
 
-  static auto updateFrameData() -> void;
   static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
   static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
   static auto renderDiagnostics() -> void;

@@ -30,7 +30,6 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
 {
   framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
-  framework::updateFrameData();
 
   auto levelUpdateEvents = Update(inputState, ticks);
 

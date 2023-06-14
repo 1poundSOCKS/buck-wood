@@ -12,17 +12,21 @@ main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
   
-  global_sound_buffer_selector dummySelector { sound_data::soundBuffers() };
-  auto soundBuffer = dummySelector[sound_buffer_name::menu_theme];
-  auto volumeRange = float { DSBVOLUME_MAX - DSBVOLUME_MIN };
-  auto volume = static_cast<int>(DSBVOLUME_MIN + volumeRange * 0.8f);
-  HRESULT hr = soundBuffer->SetVolume(volume);
-  if( FAILED(hr) ) throw std::exception();
+  global_sound_buffer_selector soundBufferSelector { sound_data::soundBuffers() };
+  auto soundBuffer = soundBufferSelector[sound_buffer_name::menu_theme];
+
+  if( soundBuffer )
+  {
+    auto volumeRange = float { DSBVOLUME_MAX - DSBVOLUME_MIN };
+    auto volume = static_cast<int>(DSBVOLUME_MIN + volumeRange * 0.8f);
+    HRESULT hr = soundBuffer->SetVolume(volume);
+    if( FAILED(hr) ) throw std::exception();
+  }
   
   // play sound now to ensure no sound glitch on first real play
   {
-    sound_buffer_player dummyPlayer(soundBuffer);
-    dummyPlayer.Play();
+    sound_buffer_player player(soundBuffer);
+    player.Play();
   }
 
   m_menu = GetMenuDef().CreateMenu();

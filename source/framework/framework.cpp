@@ -124,11 +124,6 @@ auto framework::setGameSpeedMultiplier(float value) -> void
   return m_rng;
 }
 
-auto framework::updateFrameData() -> void
-{
-  m_framework->m_frameData.Update();
-}
-
 auto framework::setDiagnosticsUpdateTime(int64_t ticks) -> void
 {
   m_framework->m_diagnosticsUpdateTime = ticks;
@@ -193,6 +188,8 @@ auto framework::ProcessWindowMessages() -> bool
 
 auto framework::RenderDiagnostics() -> void
 {
+  m_frameData.Update();
+
   // FormatDiagnostics(inputState, std::back_inserter(m_diagnosticsData));
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
   auto frameTime = performance_counter::QueryFrequency() / framework::fps();
