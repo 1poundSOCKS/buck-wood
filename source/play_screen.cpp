@@ -33,8 +33,14 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
   Render();
   
+  auto startTime = performance_counter::QueryValue();
+
   framework::present();
   
+  auto endTime = performance_counter::QueryValue();
+
+  framework::addDiagnosticsTime(L"Present time", endTime - startTime);
+
   PostPresent(levelUpdateEvents);
 
   return m_continueRunning;

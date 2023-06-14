@@ -10,16 +10,6 @@ inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
   return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
 }
 
-auto framework::fullScreen() -> void
-{
-  m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
-}
-
-auto framework::toggleFullscreenOnKeypress(int key) -> void
-{
-  m_framework->ToggleFullscreenOnKeypress(key);
-}
-
 auto framework::ToggleFullscreenOnKeypress(int key) -> void
 {
   if( m_inputState.keyboardState.data[key] & 0x80 && !(m_inputState.previousKeyboardState.data[key] & 0x80) )

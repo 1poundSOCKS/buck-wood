@@ -104,6 +104,16 @@ auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> vo
   RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
 }
 
+inline auto framework::fullScreen() -> void
+{
+  m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
+}
+
+inline auto framework::toggleFullscreenOnKeypress(int key) -> void
+{
+  m_framework->ToggleFullscreenOnKeypress(key);
+}
+
 template <typename screen_state_type> static auto framework::openScreen() -> void
 {
   m_framework->OpenScreen<screen_state_type>();
