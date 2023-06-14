@@ -38,8 +38,6 @@ auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t tic
 
   framework::present();
 
-  PostPresent();
-
   return m_continueRunning;
 }
 
@@ -72,14 +70,6 @@ auto main_menu_screen::Render() const -> void
 
   m_menu.Render(viewRect);
   m_cursor.Render(viewRect);
-}
-
-auto main_menu_screen::PostPresent() const -> void
-{
-}
-
-auto main_menu_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
-{
 }
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def

@@ -153,10 +153,6 @@ auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpd
   }
 }
 
-auto play_screen::FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void
-{
-}
-
 auto play_screen::PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void
 {
   m_stageTicks += frameInterval;

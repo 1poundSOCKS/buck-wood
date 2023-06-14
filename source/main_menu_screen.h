@@ -17,8 +17,6 @@ private:
 
   auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
   auto Render() const -> void;
-  auto PostPresent() const -> void;
-  auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
