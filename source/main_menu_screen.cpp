@@ -32,11 +32,11 @@ main_menu_screen::main_menu_screen()
   m_menu = GetMenuDef().CreateMenu();
 }
 
-auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
+auto main_menu_screen::Refresh(int64_t ticks) -> bool
 {
-  framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
+  framework::toggleFullscreenOnKeypress(DIK_F12);
 
-  Update(inputState, ticks);
+  Update(ticks);
 
   Render();
 
@@ -45,7 +45,7 @@ auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t tic
   return m_continueRunning;
 }
 
-auto main_menu_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> void
+auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
@@ -53,8 +53,9 @@ auto main_menu_screen::Update(const screen_input_state& inputState, int64_t fram
     m_startPlay = false;
   }
 
+  const auto& screenInputState = framework::screenInputState();
   screen_transform screenTransform;
-  auto inputData = screenTransform.GetObjectInputData(inputState);
+  auto inputData = screenTransform.GetObjectInputData(screenInputState);
 
   m_menu.Update(inputData);
   m_cursor.Update(inputData);

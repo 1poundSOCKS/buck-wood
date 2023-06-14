@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "framework.h"
 #include "clock_frequency.h"
+#include "diagnostics.h"
 
 framework* framework::m_framework = nullptr;
 
@@ -14,13 +15,18 @@ auto framework::fullScreen() -> void
   m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
 }
 
-auto framework::toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void
+auto framework::toggleFullscreenOnKeypress(int key) -> void
 {
-  if( inputState.keyboardState.data[key] & 0x80 && !(inputState.previousKeyboardState.data[key] & 0x80) )
+  m_framework->ToggleFullscreenOnKeypress(key);
+}
+
+auto framework::ToggleFullscreenOnKeypress(int key) -> void
+{
+  if( m_inputState.keyboardState.data[key] & 0x80 && !(m_inputState.previousKeyboardState.data[key] & 0x80) )
   {
     BOOL fullScreen = FALSE;
-    m_framework->m_swapChain->GetFullscreenState(&fullScreen, nullptr);
-    m_framework->m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+    m_swapChain->GetFullscreenState(&fullScreen, nullptr);
+    m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
   }
 }
 
@@ -190,7 +196,7 @@ auto framework::RenderDiagnostics() -> void
 {
   m_frameData.Update();
 
-  // FormatDiagnostics(inputState, std::back_inserter(m_diagnosticsData));
+  FormatDiagnostics(m_inputState, std::back_inserter(m_diagnosticsData));
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
   auto frameTime = performance_counter::QueryFrequency() / framework::fps();
   m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));

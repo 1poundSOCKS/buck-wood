@@ -11,11 +11,11 @@ class main_menu_screen
 public:
 
   main_menu_screen();
-  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> bool;
+  auto Refresh(int64_t ticks) -> bool;
 
 private:
 
-  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;

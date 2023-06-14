@@ -43,32 +43,36 @@ public:
   [[nodiscard]] static auto rng() -> std::mt19937&;
 
   static auto fullScreen() -> void;
-  static auto toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void;
+  static auto toggleFullscreenOnKeypress(int key) -> void;
 
   static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
   static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
   static auto renderDiagnostics() -> void;
 
   template <typename screen_state_type> static auto openScreen() -> void;
+  [[nodiscard]] inline static auto screenInputState() -> const screen_input_state&;
 
 private:
 
   framework(HINSTANCE instance, int cmdShow);
   auto Init() -> void;
+
   static framework* m_framework;
 
-  static auto ProcessWindowMessages() -> bool;
+  template <typename screen_state_type> auto OpenScreen() -> void;
   auto RenderDiagnostics() -> void;
   auto RenderDiagnostics(std::ranges::input_range auto&& objects) -> void;
+  auto ToggleFullscreenOnKeypress(int key) -> void;
+
+  auto ProcessWindowMessages() -> bool;
 
   static inline std::mt19937 m_rng; // pseudo-random generator
-
-  inline static bool m_closeApp { false };
 
   HINSTANCE m_instance = nullptr;
   int m_cmdShow { 0 };
   HWND m_window = nullptr;
   window_data m_windowData;
+  bool m_closeApp { false };
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
@@ -83,11 +87,12 @@ private:
   std::vector<std::wstring> m_diagnosticsData;
   int64_t m_diagnosticsUpdateTime { 0 };
   int64_t m_diagnosticsRenderTime { 0 };
+  screen_input_state m_inputState;
 
 };
 
 auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
-{  
+{
   auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
   {
     return complete + value + L'\n';
@@ -98,8 +103,12 @@ auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> vo
 
 template <typename screen_state_type> static auto framework::openScreen() -> void
 {
+  m_framework->OpenScreen<screen_state_type>();
+}
+
+template <typename screen_state_type> auto framework::OpenScreen() -> void
+{
   screen_state_type screenState;
-  screen_input_state inputState;
 
   auto previousTime = performance_counter::QueryValue();
   auto currentTime = previousTime;
@@ -108,21 +117,26 @@ template <typename screen_state_type> static auto framework::openScreen() -> voi
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    inputState.windowData = framework::windowData();
-    inputState.renderTargetMouseData = GetRenderTargetMouseData(inputState.windowData, framework::renderTarget().get());
+    m_inputState.windowData = framework::windowData();
+    m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, framework::renderTarget().get());
 
-    ReadKeyboardState(framework::keyboard().get(), inputState.keyboardState);
+    ReadKeyboardState(framework::keyboard().get(), m_inputState.keyboardState);
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / framework::fps();
 
-    keepScreenOpen = screenState.Refresh(inputState, framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
+    keepScreenOpen = screenState.Refresh(framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
 
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
 
-    inputState.previousWindowData = inputState.windowData;
-    inputState.previousKeyboardState = inputState.keyboardState;
-    inputState.previousRenderTargetMouseData = inputState.renderTargetMouseData;
+    m_inputState.previousWindowData = m_inputState.windowData;
+    m_inputState.previousKeyboardState = m_inputState.keyboardState;
+    m_inputState.previousRenderTargetMouseData = m_inputState.renderTargetMouseData;
   }
+}
+
+[[nodiscard]] inline auto framework::screenInputState() -> const screen_input_state&
+{
+  return m_framework->m_inputState;
 }

@@ -19,26 +19,26 @@ class play_screen
 public:
 
   play_screen();
-  auto Refresh(const screen_input_state& inputState, int64_t ticks) -> bool;
+  auto Refresh(int64_t ticks) -> bool;
 
 private:
 
   enum class stage { pre_play, playing, post_play };
 
-  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr;
+  auto Update(int64_t frameInterval) -> level_container::update_events_ptr;
   auto Render() const -> void;
   auto PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void;
 
-  auto PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
-  auto Playing(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr;
-  auto PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void;
+  auto PrePlay(int64_t frameInterval) -> void;
+  auto Playing(int64_t frameInterval) -> level_container::update_events_ptr;
+  auto PostPlay(int64_t frameInterval) -> void;
 
-  auto UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> level_container::update_events_ptr;
+  auto UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
   auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
 
-  [[nodiscard]] auto PausePressed(const screen_input_state& inputState) -> bool;
+  [[nodiscard]] auto PausePressed() -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
   [[nodiscard]] auto GetMenuDef() -> menu_def;

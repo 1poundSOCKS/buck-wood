@@ -27,11 +27,11 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
 }
 
-auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
+auto play_screen::Refresh(int64_t ticks) -> bool
 {
-  framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
+  framework::toggleFullscreenOnKeypress(DIK_F12);
 
-  auto levelUpdateEvents = Update(inputState, ticks);
+  auto levelUpdateEvents = Update(ticks);
 
   Render();
   
@@ -42,7 +42,7 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   return m_continueRunning;
 }
 
-auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
+auto play_screen::Update(int64_t frameInterval) -> level_container::update_events_ptr
 {
   auto startUpdateTime = performance_counter::QueryValue();
 
@@ -51,18 +51,19 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
   switch( m_stage )
   {
     case stage::pre_play:
-      PrePlay(inputState, frameInterval);
+      PrePlay(frameInterval);
       break;
     case stage::playing:
-      levelUpdateEvents = Playing(inputState, frameInterval);
+      levelUpdateEvents = Playing(frameInterval);
       break;
     case stage::post_play:
-      PostPlay(inputState, frameInterval);
+      PostPlay(frameInterval);
       break;
   }
 
   auto overlayTransform = GetOverlayRenderTransform();
-  auto overlayInputData = overlayTransform.GetObjectInputData(inputState);
+  const auto& screenInputState = framework::screenInputState();
+  auto overlayInputData = overlayTransform.GetObjectInputData(screenInputState);
 
   m_cursor.Update(overlayInputData);
 
@@ -152,11 +153,11 @@ auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpd
   }
 }
 
-auto play_screen::PrePlay(const screen_input_state& inputState, int64_t frameInterval) -> void
+auto play_screen::PrePlay(int64_t frameInterval) -> void
 {
   m_stageTicks += frameInterval;
 
-  UpdateLevel(inputState, 0);
+  UpdateLevel(0);
 
   if( m_stageTicks > m_startSequence.GetTotalTicks() )
   {
@@ -165,11 +166,11 @@ auto play_screen::PrePlay(const screen_input_state& inputState, int64_t frameInt
   }
 }
 
-auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
+auto play_screen::Playing(int64_t frameInterval) -> level_container::update_events_ptr
 {
   level_container::update_events_ptr levelUpdateEvents;
 
-  if( PausePressed(inputState) )
+  if( PausePressed() )
   {
     m_paused = !m_paused;
   }
@@ -178,7 +179,7 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
 
   if( !m_paused )
   {
-    levelUpdateEvents = UpdateLevel(inputState, elapsedTicks);
+    levelUpdateEvents = UpdateLevel(elapsedTicks);
   }
 
   if( m_levelContainer->IsComplete() )
@@ -200,11 +201,11 @@ auto play_screen::Playing(const screen_input_state& inputState, int64_t frameInt
   return levelUpdateEvents;
 }
 
-auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameInterval) -> void
+auto play_screen::PostPlay(int64_t frameInterval) -> void
 {
   m_stageTicks += frameInterval;
 
-  UpdateLevel(inputState, frameInterval);
+  UpdateLevel(frameInterval);
 
   if( m_stageTicks > m_endSequence.GetTotalTicks() )
   {
@@ -212,11 +213,12 @@ auto play_screen::PostPlay(const screen_input_state& inputState, int64_t frameIn
   }
 }
 
-auto play_screen::UpdateLevel(const screen_input_state& inputState, int64_t elapsedTicks) -> level_container::update_events_ptr
+auto play_screen::UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr
 {
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
-  auto objectInputData = screenTransform.GetObjectInputData(inputState);
+  const auto& screenInputState = framework::screenInputState();
+  auto objectInputData = screenTransform.GetObjectInputData(screenInputState);
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   return m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
@@ -255,9 +257,10 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   }
 }
 
-[[nodiscard]] auto play_screen::PausePressed(const screen_input_state& inputState) -> bool
+[[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  return KeyPressed(inputState, DIK_ESCAPE);
+  const auto& screenInputState = framework::screenInputState();
+  return KeyPressed(screenInputState, DIK_ESCAPE);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
