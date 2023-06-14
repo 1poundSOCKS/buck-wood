@@ -1,6 +1,5 @@
 #pragma once
 
-#include "screen_render.h"
 #include "screen_input_state.h"
 #include "performance_counter.h"
 #include "frame_data.h"
@@ -8,10 +7,8 @@
 #include "render.h"
 #include "sound.h"
 #include "sound_buffer.h"
-#include "sound_buffer_player.h"
-#include "data_files.h"
-#include "collisions.h"
 #include "dwrite_factory.h"
+#include "clock_frequency.h"
 
 struct screen_diagnostics_render_data
 {
@@ -102,6 +99,106 @@ auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> vo
   });
 
   RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+}
+
+[[nodiscard]] inline auto framework:: get() -> framework&
+{
+  return *m_framework;
+}
+
+[[nodiscard]] inline auto framework::windowData() -> window_data&
+{
+  return m_framework->m_windowData;
+}
+
+[[nodiscard]] inline auto framework::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
+{
+  return m_framework->m_swapChain;
+}
+
+[[nodiscard]] inline auto framework::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
+{
+  return m_framework->m_d2dFactory;  
+}
+
+[[nodiscard]] inline auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
+{
+  return m_framework->m_renderTarget;
+}
+
+[[nodiscard]] inline auto framework::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+{
+  return ::CreatePathGeometry(m_framework->m_d2dFactory.get());
+}
+
+[[nodiscard]] inline auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
+{
+  return m_framework->m_directSound;
+}
+
+[[nodiscard]] inline auto framework::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
+{
+  return m_framework->m_primarySoundBuffer;
+}
+
+[[nodiscard]] inline auto framework::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
+{
+  return m_framework->m_keyboard;
+}
+
+inline auto framework::present() -> void
+{
+  m_framework->m_swapChain->Present(m_framework->m_unlockFrameRate ? 0 : 1, 0);
+}
+
+[[nodiscard]] inline auto framework::fps() -> int
+{
+  return 60;
+}
+
+[[nodiscard]] inline auto framework::isFrameRateUnlocked() -> bool
+{
+  return m_framework->m_unlockFrameRate;
+}
+
+inline auto framework::unlockFrameRate() -> void
+{
+  m_framework->m_unlockFrameRate = true;
+}
+
+[[nodiscard]] inline auto framework::gameSpeedMultiplier() -> float
+{
+  return m_framework->m_gameSpeedMultiplier;
+}
+
+inline auto framework::setGameSpeedMultiplier(float value) -> void
+{
+  m_framework->m_gameSpeedMultiplier = value;
+}
+
+[[nodiscard]] inline auto framework::gameUpdateInterval(int64_t ticks) -> float
+{
+  return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_framework->m_gameSpeedMultiplier;
+}
+
+[[nodiscard]] inline auto framework::rng() -> std::mt19937&
+{
+  return m_rng;
+}
+
+inline auto framework::setDiagnosticsUpdateTime(int64_t ticks) -> void
+{
+  m_framework->m_diagnosticsUpdateTime = ticks;
+}
+
+inline auto framework::setDiagnosticsRenderTime(int64_t ticks) -> void
+{
+  m_framework->m_diagnosticsRenderTime = ticks;
+}
+
+inline auto framework::renderDiagnostics() -> void
+{
+  m_framework->RenderDiagnostics();
 }
 
 inline auto framework::fullScreen() -> void

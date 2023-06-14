@@ -6,6 +6,7 @@
 #include "global_state.h"
 #include "render_target_area.h"
 #include "diagnostics.h"
+#include "sound_buffer_player.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {

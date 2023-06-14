@@ -7,6 +7,7 @@
 #include "button.h"
 #include "dwrite_factory.h"
 #include "render_target_area.h"
+#include "sound_buffer_player.h"
 
 main_menu_screen::main_menu_screen()
 {

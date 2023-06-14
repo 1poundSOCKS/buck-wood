@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "dwrite_factory.h"
 #include "framework.h"
+#include "screen_render.h"
 
 dwrite_factory* dwrite_factory::m_instance = nullptr;
 

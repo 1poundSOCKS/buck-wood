@@ -3,6 +3,7 @@
 
 #include "play_event.h"
 #include "object_input_data.h"
+#include "geometry.h"
 
 class bullet
 {
