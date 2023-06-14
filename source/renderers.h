@@ -183,6 +183,7 @@ class renderer
 public:
 
   static auto create() -> void;
+  static auto destroy() -> void;
   static auto render(const auto& object) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
 

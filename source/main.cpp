@@ -41,5 +41,8 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine
 
   framework::openScreen<main_menu_screen>();
 
+  renderer::destroy();
+  framework::destroy();
+
   return 0;
 }

@@ -187,6 +187,15 @@ auto renderer::create() -> void
   m_instance = new renderer();
 }
 
+auto renderer::destroy() -> void
+{
+  if( m_instance )
+  {
+    delete m_instance;
+    m_instance = nullptr;
+  }
+}
+
 renderer::renderer()
 {
   const auto& renderTarget = framework::renderTarget();

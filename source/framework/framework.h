@@ -15,6 +15,7 @@ class framework
 public:
 
   static auto create(HINSTANCE instance, int cmdShow) -> void;
+  static auto destroy() -> void;
   [[nodiscard]] static auto get() -> framework&;
   [[nodiscard]] static auto windowData() -> window_data&;
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;

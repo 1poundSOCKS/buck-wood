@@ -35,6 +35,15 @@ auto framework::create(HINSTANCE instance, int cmdShow) -> void
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 }
 
+auto framework::destroy() -> void
+{
+  if( m_framework )
+  {
+    delete m_framework;
+    m_framework = nullptr;
+  }
+}
+
 framework::framework(HINSTANCE instance, int cmdShow) : m_instance(instance), m_cmdShow(cmdShow)
 {
 }
