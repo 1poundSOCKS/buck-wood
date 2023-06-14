@@ -20,8 +20,6 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   auto levelMapArea = render_target_area { mainArea, render_target_area::contraint_bottom_right(0.15f, 0.2f) }.GetRect();
   m_levelMap.SetRect(levelMapArea);
 
-  m_frameTicks = performance_counter::QueryFrequency() / framework::fps();
-
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );

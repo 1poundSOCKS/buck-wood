@@ -192,10 +192,15 @@ auto framework::ProcessWindowMessages() -> bool
   return m_closeApp;
 }
 
+auto framework::AddDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
+{
+  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+  m_diagnosticsData.emplace_back(std::format(L"{}: {:.1f}", label, GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
+}
+
 auto framework::RenderDiagnostics() -> void
 {
   m_frameData.Update();
-
   FormatDiagnostics(m_inputState, std::back_inserter(m_diagnosticsData));
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
   auto frameTime = performance_counter::QueryFrequency() / framework::fps();

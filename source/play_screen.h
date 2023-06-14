@@ -43,8 +43,6 @@ private:
   [[nodiscard]] auto LoadNextLevel() -> bool;
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  performance::frame_data m_frameData;
-  int64_t m_frameTicks = 0;
   stage m_stage = stage::pre_play;
   bool m_paused = false;
   bool m_continueRunning = true;

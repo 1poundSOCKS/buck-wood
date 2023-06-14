@@ -3,7 +3,7 @@
 #include "screen_render.h"
 #include "screen_input_state.h"
 #include "performance_counter.h"
-#include "perf_data.h"
+#include "frame_data.h"
 #include "render_guard.h"
 #include "render.h"
 #include "sound.h"
@@ -45,6 +45,7 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
+  static auto addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
   static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
   static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
   static auto renderDiagnostics() -> void;
@@ -66,6 +67,8 @@ private:
 
   auto ProcessWindowMessages() -> bool;
 
+  auto AddDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
+
   static inline std::mt19937 m_rng; // pseudo-random generator
 
   HINSTANCE m_instance = nullptr;
@@ -83,7 +86,7 @@ private:
   screen_diagnostics_render_data m_diagnosticsRenderData;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
-  performance::frame_data m_frameData;
+  frame_data m_frameData;
   std::vector<std::wstring> m_diagnosticsData;
   int64_t m_diagnosticsUpdateTime { 0 };
   int64_t m_diagnosticsRenderTime { 0 };
@@ -139,4 +142,9 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
 [[nodiscard]] inline auto framework::screenInputState() -> const screen_input_state&
 {
   return m_framework->m_inputState;
+}
+
+inline auto framework::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
+{
+  m_framework->AddDiagnosticsTime(label, ticks);
 }

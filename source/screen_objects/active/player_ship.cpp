@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "math.h"
-#include "perf_data.h"
 #include "renderers.h"
 
 constexpr std::array<game_point, 3> GetPlayerGeometryData()
