@@ -10,12 +10,6 @@
 #include "dwrite_factory.h"
 #include "clock_frequency.h"
 
-struct screen_diagnostics_render_data
-{
-  winrt::com_ptr<ID2D1SolidColorBrush> brush;
-  winrt::com_ptr<IDWriteTextFormat> textFormat;
-};
-
 class framework
 {
 public:
@@ -51,6 +45,12 @@ public:
   [[nodiscard]] inline static auto screenInputState() -> const screen_input_state&;
 
 private:
+
+  struct screen_diagnostics_render_data
+  {
+    winrt::com_ptr<ID2D1SolidColorBrush> brush;
+    winrt::com_ptr<IDWriteTextFormat> textFormat;
+  };
 
   framework(HINSTANCE instance, int cmdShow);
   auto Init() -> void;
