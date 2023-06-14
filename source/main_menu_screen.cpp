@@ -34,10 +34,7 @@ auto main_menu_screen::Refresh(const screen_input_state& inputState, int64_t tic
 
   Update(inputState, ticks);
 
-  {
-    render_guard renderGuard { framework::renderTarget() };
-    Render();
-  }
+  Render();
 
   framework::present();
 
@@ -65,6 +62,8 @@ auto main_menu_screen::Render() const -> void
 {
   const auto& renderTarget = framework::renderTarget();
 
+  render_guard renderGuard { renderTarget };
+  
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   screen_transform screenTransform;
