@@ -36,8 +36,6 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
 {
   framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
 
-  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
-
   performance::UpdateFrameData(m_frameData);
 
   std::vector<std::wstring> diagnosticsData;
@@ -47,23 +45,9 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(m_frameData)));
   FormatDiagnostics(std::back_inserter(diagnosticsData));
 
-  auto startUpdateTime = performance_counter::QueryValue();
-  auto levelUpdateEvents = Update(inputState, ticks);
-  auto endUpdateTime = performance_counter::QueryValue();
+  auto levelUpdateEvents = Update(inputState, ticks, diagnosticsData);
 
-  diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
-
-  {
-    render_guard renderGuard { framework::renderTarget() };
-
-    auto startRenderTime = performance_counter::QueryValue();
-    Render();
-    auto endRenderTime = performance_counter::QueryValue();
-
-    diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
-
-    framework::renderDiagnostics(diagnosticsData);
-  }
+  Render(diagnosticsData);
   
   framework::present();
   
@@ -72,8 +56,10 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   return m_continueRunning;
 }
 
-auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
+auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval, diagnostics_data_collection& diagnosticsData) -> level_container::update_events_ptr
 {
+  auto startUpdateTime = performance_counter::QueryValue();
+
   level_container::update_events_ptr levelUpdateEvents;
   
   switch( m_stage )
@@ -99,13 +85,23 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
     m_menu.Update(overlayInputData);
   }
 
+  auto endUpdateTime = performance_counter::QueryValue();
+
+  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+
+  diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
+
   return levelUpdateEvents;
 }
 
-auto play_screen::Render() const -> void
+auto play_screen::Render(diagnostics_data_collection& diagnosticsData) const -> void
 {
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
+
+  render_guard renderGuard { framework::renderTarget() };
+
+  auto startRenderTime = performance_counter::QueryValue();
 
   renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -126,6 +122,14 @@ auto play_screen::Render() const -> void
   m_levelMap.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets(), overlayViewRect);
 
   m_cursor.Render(overlayViewRect);
+
+  auto endRenderTime = performance_counter::QueryValue();
+
+  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+
+  diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
+
+  framework::renderDiagnostics(diagnosticsData);
 }
 
 auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void
