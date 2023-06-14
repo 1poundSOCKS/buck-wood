@@ -5,20 +5,24 @@
 
 namespace performance
 {
-  struct frame_data
+  class frame_data
   {
+  public:
+
     frame_data();
+    auto Update() -> void;
+    [[nodiscard]] auto GetFPS() const -> int64_t;
 
-    int64_t frequency;
-    int64_t lastValue;
-    int64_t value;
+  private:
 
-    std::array<int64_t, 20> intervalTimes;
-    int intervalIndex;
+    int64_t m_frequency;
+    int64_t m_lastValue;
+    int64_t m_value;
+
+    std::array<int64_t, 20> m_intervalTimes;
+    int m_intervalIndex;
   };
 
-  void UpdateFrameData(frame_data& frameData);
-  int64_t GetFPS(const frame_data& frameData);
 };
 
 #endif

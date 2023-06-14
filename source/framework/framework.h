@@ -45,7 +45,10 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullScreenOnKeyPress(const screen_input_state& inputState, int key) -> void;
 
-  static auto renderDiagnostics(std::ranges::input_range auto&& objects) -> void;
+  static auto updateFrameData() -> void;
+  static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
+  static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
+  static auto renderDiagnostics() -> void;
 
   template <typename screen_state_type> static auto openScreen() -> void;
 
@@ -56,6 +59,8 @@ private:
   static framework* m_framework;
 
   static auto ProcessWindowMessages() -> bool;
+  auto RenderDiagnostics() -> void;
+  auto RenderDiagnostics(std::ranges::input_range auto&& objects) -> void;
 
   static inline std::mt19937 m_rng; // pseudo-random generator
 
@@ -75,16 +80,21 @@ private:
   screen_diagnostics_render_data m_diagnosticsRenderData;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
+  performance::frame_data m_frameData;
+  std::vector<std::wstring> m_diagnosticsData;
+  int64_t m_diagnosticsUpdateTime { 0 };
+  int64_t m_diagnosticsRenderTime { 0 };
+
 };
 
-auto framework::renderDiagnostics(std::ranges::input_range auto&& objects) -> void
+auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
 {  
   auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
   {
     return complete + value + L'\n';
   });
 
-  RenderText(get().m_renderTarget.get(), get().m_diagnosticsRenderData.brush.get(), get().m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+  RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
 }
 
 template <typename screen_state_type> static auto framework::openScreen() -> void

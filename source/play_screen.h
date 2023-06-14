@@ -25,8 +25,8 @@ private:
 
   enum class stage { pre_play, playing, post_play };
 
-  auto Update(const screen_input_state& inputState, int64_t frameInterval, diagnostics_data_collection& diagnosticsData) -> level_container::update_events_ptr;
-  auto Render(diagnostics_data_collection& diagnosticsData) const -> void;
+  auto Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr;
+  auto Render() const -> void;
   auto PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void;
   auto FormatDiagnostics(diagnostics_data_inserter_type diagnosticsDataInserter) const -> void;
 

@@ -1,25 +1,29 @@
 #include "pch.h"
 #include "perf_data.h"
 
-performance::frame_data::frame_data() : intervalIndex(-1)
+performance::frame_data::frame_data() : m_intervalIndex(-1)
 {
-  for( auto& interval : intervalTimes ) { interval = 0; }
-  frequency = performance_counter::QueryFrequency();
-  value = lastValue = performance_counter::QueryValue();
+  for( auto& interval : m_intervalTimes )
+  {
+    interval = 0;
+  }
+
+  m_frequency = performance_counter::QueryFrequency();
+  m_value = m_lastValue = performance_counter::QueryValue();
 }
 
-void performance::UpdateFrameData(performance::frame_data& frameData)
+auto performance::frame_data::Update() -> void
 {
-  frameData.lastValue = frameData.value;
-  frameData.value = performance_counter::QueryValue();
-  auto intervalTime = frameData.value - frameData.lastValue;
-  frameData.intervalIndex = ++frameData.intervalIndex % frameData.intervalTimes.size();
-  frameData.intervalTimes[frameData.intervalIndex] = intervalTime;
+  m_lastValue = m_value;
+  m_value = performance_counter::QueryValue();
+  auto intervalTime = m_value - m_lastValue;
+  m_intervalIndex = ++m_intervalIndex % m_intervalTimes.size();
+  m_intervalTimes[m_intervalIndex] = intervalTime;
 }
 
-int64_t performance::GetFPS(const performance::frame_data& frameData)
+[[nodiscard]] auto performance::frame_data::GetFPS() const -> int64_t
 {
-  int64_t sumOfIntervalTimes = std::accumulate(frameData.intervalTimes.cbegin(), frameData.intervalTimes.cend(), static_cast<int64_t>(0));
-  int64_t averageIntervalTime = sumOfIntervalTimes / frameData.intervalTimes.size();
-  return averageIntervalTime ? frameData.frequency / averageIntervalTime : 0;
+  int64_t sumOfIntervalTimes = std::accumulate(m_intervalTimes.cbegin(), m_intervalTimes.cend(), static_cast<int64_t>(0));
+  int64_t averageIntervalTime = sumOfIntervalTimes / m_intervalTimes.size();
+  return averageIntervalTime ? m_frequency / averageIntervalTime : 0;
 }

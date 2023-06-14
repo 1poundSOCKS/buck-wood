@@ -7,11 +7,6 @@
 #include "render_target_area.h"
 #include "diagnostics.h"
 
-inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
-{
-  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
-}
-
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
   const auto& renderTarget = framework::renderTarget();
@@ -35,19 +30,11 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -> bool
 {
   framework::toggleFullScreenOnKeyPress(inputState, DIK_F12);
+  framework::updateFrameData();
 
-  performance::UpdateFrameData(m_frameData);
+  auto levelUpdateEvents = Update(inputState, ticks);
 
-  std::vector<std::wstring> diagnosticsData;
-  diagnosticsData.reserve(50);
-
-  ::FormatDiagnostics(inputState, std::back_inserter(diagnosticsData));
-  diagnosticsData.emplace_back(std::format(L"fps: {}", performance::GetFPS(m_frameData)));
-  FormatDiagnostics(std::back_inserter(diagnosticsData));
-
-  auto levelUpdateEvents = Update(inputState, ticks, diagnosticsData);
-
-  Render(diagnosticsData);
+  Render();
   
   framework::present();
   
@@ -56,7 +43,7 @@ auto play_screen::Refresh(const screen_input_state& inputState, int64_t ticks) -
   return m_continueRunning;
 }
 
-auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval, diagnostics_data_collection& diagnosticsData) -> level_container::update_events_ptr
+auto play_screen::Update(const screen_input_state& inputState, int64_t frameInterval) -> level_container::update_events_ptr
 {
   auto startUpdateTime = performance_counter::QueryValue();
 
@@ -87,14 +74,12 @@ auto play_screen::Update(const screen_input_state& inputState, int64_t frameInte
 
   auto endUpdateTime = performance_counter::QueryValue();
 
-  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
-
-  diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, endUpdateTime - startUpdateTime)));
+  framework::setDiagnosticsUpdateTime(endUpdateTime - startUpdateTime);
 
   return levelUpdateEvents;
 }
 
-auto play_screen::Render(diagnostics_data_collection& diagnosticsData) const -> void
+auto play_screen::Render() const -> void
 {
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
@@ -125,11 +110,9 @@ auto play_screen::Render(diagnostics_data_collection& diagnosticsData) const -> 
 
   auto endRenderTime = performance_counter::QueryValue();
 
-  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+  framework::setDiagnosticsRenderTime(endRenderTime - startRenderTime);
 
-  diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, endRenderTime - startRenderTime)));
-
-  framework::renderDiagnostics(diagnosticsData);
+  framework::renderDiagnostics();
 }
 
 auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void

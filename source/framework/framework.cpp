@@ -4,6 +4,11 @@
 
 framework* framework::m_framework = nullptr;
 
+inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
+{
+  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
+}
+
 auto framework::fullScreen() -> void
 {
   m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
@@ -119,6 +124,26 @@ auto framework::setGameSpeedMultiplier(float value) -> void
   return m_rng;
 }
 
+auto framework::updateFrameData() -> void
+{
+  m_framework->m_frameData.Update();
+}
+
+auto framework::setDiagnosticsUpdateTime(int64_t ticks) -> void
+{
+  m_framework->m_diagnosticsUpdateTime = ticks;
+}
+
+auto framework::setDiagnosticsRenderTime(int64_t ticks) -> void
+{
+  m_framework->m_diagnosticsRenderTime = ticks;
+}
+
+auto framework::renderDiagnostics() -> void
+{
+  m_framework->RenderDiagnostics();
+}
+
 framework::framework(HINSTANCE instance, int cmdShow) : m_instance(instance), m_cmdShow(cmdShow)
 {
 }
@@ -164,4 +189,15 @@ auto framework::ProcessWindowMessages() -> bool
   }
 
   return m_closeApp;
+}
+
+auto framework::RenderDiagnostics() -> void
+{
+  // FormatDiagnostics(inputState, std::back_inserter(m_diagnosticsData));
+  m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
+  auto frameTime = performance_counter::QueryFrequency() / framework::fps();
+  m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
+  m_diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsRenderTime)));
+  RenderDiagnostics(m_diagnosticsData);
+  m_diagnosticsData.clear();
 }
