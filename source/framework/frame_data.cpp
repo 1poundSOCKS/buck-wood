@@ -27,5 +27,5 @@ auto frame_data::Update() -> void
 {
   int64_t sumOfIntervalTimes = std::accumulate(m_intervalTimes.cbegin(), m_intervalTimes.cend(), static_cast<int64_t>(0));
   int64_t averageIntervalTime = sumOfIntervalTimes / m_intervalTimes.size();
-  return averageIntervalTime ? m_frequency / averageIntervalTime : 0;
+  return averageIntervalTime ? ( m_frequency + averageIntervalTime / 2 ) / averageIntervalTime : 0;
 }
