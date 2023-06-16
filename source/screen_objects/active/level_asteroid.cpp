@@ -6,7 +6,7 @@
 
 level_asteroid::level_asteroid(game_rect rect)
 {
-  auto shapeGenerator = shape_generator { rect, 12 };
+  auto shapeGenerator = shape_generator { rect, 16 };
 
   auto centrePoint = rect.CentrePoint();
 
