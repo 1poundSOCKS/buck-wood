@@ -71,6 +71,15 @@ game_rect::game_rect(D2D1_RECT_F rect) : topLeft { rect.left, rect.top }, bottom
   return { ( bottomRight.x + topLeft.x ) / 2, ( bottomRight.y + topLeft.y ) / 2 };
 }
 
+auto game_rect::Resize(float widthRatio, float heightRatio) -> void
+{
+  auto halfWidth = Width() * widthRatio / 2;
+  auto halfHeight = Height() * heightRatio / 2;
+  auto centrePoint = CentrePoint();
+  topLeft = { centrePoint.x - halfWidth, centrePoint.y - halfHeight  };
+  bottomRight = { centrePoint.x + halfWidth, centrePoint.y + halfHeight };
+}
+
 [[nodiscard]] auto game_closed_object::GetBoundingRect() const -> game_rect
 {
   auto firstPoint = points.cbegin();

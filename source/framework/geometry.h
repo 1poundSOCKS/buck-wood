@@ -40,6 +40,8 @@ struct game_rect
   [[nodiscard]] auto Height() const -> float;
   [[nodiscard]] auto CentrePoint() const -> game_point;
 
+  auto Resize(float widthRatio, float heightRation) -> void;
+
   game_point topLeft = { 0, 0 };
   game_point bottomRight = { 0, 0 };
 };

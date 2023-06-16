@@ -6,9 +6,13 @@
 
 level_asteroid::level_asteroid(game_rect rect)
 {
-  auto shapeGenerator = shape_generator { rect, 16 };
-
   auto centrePoint = rect.CentrePoint();
+  auto noise = psn::GetNoise(centrePoint.x, centrePoint.y);
+  auto xRatio = noise > 0 ? noise / 2 + 0.5f : 1;
+  auto yRatio = noise < 0 ? -noise / 2 + 0.5f : 1;
+  rect.Resize(xRatio, yRatio);
+
+  auto shapeGenerator = shape_generator { rect, 16 };
 
   auto view = shapeGenerator | std::ranges::views::transform([&centrePoint](auto point)
   {
