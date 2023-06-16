@@ -3,7 +3,7 @@
 
 frame_data::frame_data() : m_intervalIndex(-1)
 {
-  m_intervalTimes.resize(10);
+  m_intervalTimes.resize(30);
   
   for( auto& interval : m_intervalTimes )
   {
