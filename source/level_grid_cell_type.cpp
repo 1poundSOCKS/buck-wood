@@ -6,7 +6,7 @@ level_grid_cell_type::level_grid_cell_type(const level_grid_cell& cell)
 {
   auto noise = psn::GetNoise(cell.Position().x / 13, cell.Position().y / 13);
 
-  if( noise > 0.87 )
+  if( noise > 0.82 )
   {
     m_type = type::asteroid;
   }

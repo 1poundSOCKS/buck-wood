@@ -58,8 +58,8 @@ private:
   auto UpdateMines(int64_t ticks) -> void;
   auto DoCollisions(update_events* updateEvents) -> void;
 
-  inline static const int m_cellWidth { 400 };
-  inline static const int m_cellHeight { 400 };
+  inline static const int m_cellWidth { 800 };
+  inline static const int m_cellHeight { 800 };
 
   player_ship m_playerShip;
 
