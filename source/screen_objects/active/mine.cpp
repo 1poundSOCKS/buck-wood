@@ -6,8 +6,7 @@ mine::mine(float x, float y) : m_transformedGeometry(m_geometry, D2D1::Matrix3x2
 {
   m_body.SetPosition(x, y);
   m_body.SetThrust(true);
-  game_rect rect = { { - 20, - 20 }, { 20, 20} };
-  m_geometry.Load( shape_generator { rect, 4 } );
+  m_geometry.Load( shape_generator { 0, 0, 40, 40, 4 } );
   UpdateGeometry();
 }
 

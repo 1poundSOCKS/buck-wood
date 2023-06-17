@@ -36,20 +36,19 @@ auto const_shape_iterator::operator*() const -> const game_point&
 
 auto const_shape_iterator::GetCurrentPoint() const -> game_point
 {
-  auto centrePoint = m_shapeGenerator->m_rect.CentrePoint();
-
-  auto radiusX = centrePoint.x - m_shapeGenerator->m_rect.topLeft.x;
-  auto radiusY = centrePoint.y - m_shapeGenerator->m_rect.topLeft.y;
+  auto radiusX = m_shapeGenerator->m_width / 2;
+  auto radiusY = m_shapeGenerator->m_height / 2;
 
   auto angleInRadians = DEGTORAD(m_currentAngle);
 
   auto cx = radiusX * sin(angleInRadians);
   auto cy = radiusY * cos(angleInRadians);
 
-  return { centrePoint.x + cx, centrePoint.y - cy };
+  return { m_shapeGenerator->m_x + cx, m_shapeGenerator->m_y - cy };
 }
 
-shape_generator::shape_generator(game_rect rect, int sides) : m_rect(rect), m_sides(sides), m_angleIncrement(360 / sides)
+shape_generator::shape_generator(float x, float y, float width, float height, int sides) : 
+  m_x { x }, m_y { y }, m_width { width }, m_height { height }, m_sides(sides), m_angleIncrement(360 / sides)
 {
 }
 

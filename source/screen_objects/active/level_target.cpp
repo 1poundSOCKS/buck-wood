@@ -5,8 +5,7 @@
 
 level_target::level_target(float x, float y) : m_position { x, y }
 {
-  game_rect rect = { { x - 50, y - 50 }, { x + 50, y + 50} };
-  m_geometry.Load( shape_generator { rect, 6 } );
+  m_geometry.Load( shape_generator { x, y, 100, 100, 6 } );
   m_reloadTimer = reload_timer { performance_counter::QueryFrequency() };
 }
 

@@ -39,15 +39,43 @@ public:
   shape_generator() = default;
   shape_generator(const shape_generator&) = default;
   shape_generator(shape_generator&&) = default;
-  shape_generator(game_rect rect, int sides);
+  shape_generator(float x, float y, float width, float height, int sides);
+
+  auto Left() const -> float;
+  auto Top() const -> float;
+  auto Right() const -> float;
+  auto Bottom() const -> float;
 
   auto begin() const -> const_shape_iterator;
   auto end() const -> const_shape_iterator;
 
 private:
 
-  game_rect m_rect { { 0, 0 }, { 0, 0 } };
+  float m_x { 0 };
+  float m_y { 0 };
+  float m_width { 0 };
+  float m_height { 0 };
   int m_angleIncrement { 0 };
   int m_sides { 0 };
 
 };
+
+inline auto shape_generator::Left() const -> float
+{
+  return m_x - m_width / 2;
+}
+
+inline auto shape_generator::Top() const -> float
+{
+  return m_y - m_height / 2;
+}
+
+inline auto shape_generator::Right() const -> float
+{
+  return m_x + m_width / 2;
+}
+
+inline auto shape_generator::Bottom() const -> float
+{
+  return m_y + m_height / 2;
+}

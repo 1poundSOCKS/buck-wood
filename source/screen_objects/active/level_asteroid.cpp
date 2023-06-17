@@ -4,30 +4,34 @@
 #include "renderers.h"
 #include "shape_generator.h"
 
-level_asteroid::level_asteroid(game_rect rect)
+level_asteroid::level_asteroid(float x, float y, float maxWidth, float maxHeight)
 {
-  auto centrePoint = rect.CentrePoint();
-  auto noise = psn::GetNoise(centrePoint.x, centrePoint.y);
-  auto xRatio = noise > 0 ? noise / 2 + 0.5f : 1;
-  auto yRatio = noise < 0 ? -noise / 2 + 0.5f : 1;
-  rect.Resize(xRatio, yRatio);
+  auto xRatioNoise = psn::GetNoise(x / 7, y / 7);
+  auto yRatioNoise = psn::GetNoise(x / 13, y / 13);
+  auto angleNoise = psn::GetNoise(x / 17, y / 17);
 
-  auto shapeGenerator = shape_generator { rect, 16 };
+  auto xRatio = ( xRatioNoise + 1 ) / 4 + 0.5f;
+  auto yRatio = ( yRatioNoise + 1 ) / 4 + 0.5f;
+  auto angle = ( angleNoise + 1 ) / 2 * 360;
+  
+  auto width = maxWidth * xRatio;
+  auto height = maxHeight * yRatio;
 
-  auto view = shapeGenerator | std::ranges::views::transform([&centrePoint](auto point)
+  auto shapeGenerator = shape_generator { 0, 0, width, height, 10 };
+
+  auto irregularShape = shapeGenerator | std::ranges::views::transform([x, y](auto point)
   {
-    auto noise = 0.6f + ( psn::GetNoise(point.x, point.y) + 1 ) * 0.2f;
-
-    auto cx = point.x - centrePoint.x;
-    auto cy = point.y - centrePoint.y;
-
-    return game_point { centrePoint.x + cx * noise, centrePoint.y + cy * noise };
+    auto noise = 0.7f + ( psn::GetNoise(x + point.x, y + point.y) + 1 ) * 0.1f;
+    return game_point { point.x * noise, point.y * noise };
   });
   
-  m_geometry.Load(view);
+  m_geometry.Load(irregularShape);
+  
+  auto transform = D2D1::Matrix3x2F::Rotation(angle) * D2D1::Matrix3x2F::Translation(x, y);
+  m_transformedGeometry = transformed_path_geometry { m_geometry, transform };
 }
 
-[[nodiscard]] auto level_asteroid::Geometry() const -> const path_geometry&
+[[nodiscard]] auto level_asteroid::Geometry() const -> const transformed_path_geometry&
 {
-  return m_geometry;
+  return m_transformedGeometry;
 }
