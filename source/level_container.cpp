@@ -140,7 +140,7 @@ auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t t
 
   if( triggerPressed && m_playerShip.CanShoot() )
   {
-    m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, m_playerShip.Angle() } );
+    m_bullets.emplace_back( bullet { playerPosition.x, playerPosition.y, m_playerShip.Angle(), m_playerShip.Velocity() } );
     updateEvents->playerShot = true;
   }
 

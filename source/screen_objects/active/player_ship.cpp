@@ -32,46 +32,6 @@ player_ship::player_ship(float x, float y) : m_x(x), m_y(y), m_geometry(GetPlaye
   UpdateShipGeometryData();
 }
 
-auto player_ship::SetAngle(float angle) -> void
-{
-  m_angle = angle;
-}
-
-auto player_ship::SetThrusterOn(bool on) -> void
-{
-  m_thrusterOn = on;
-}
-
-auto player_ship::Destroy() -> void
-{
-  m_destroyed = true;
-}
-
-[[nodiscard]] auto player_ship::Position() const -> game_point
-{
-  return { m_x, m_y };
-}
-
-[[nodiscard]] auto player_ship::Angle() const -> float
-{
-  return m_angle;
-}
-
-[[nodiscard]] auto player_ship::State() const -> state
-{
-  return m_state;
-}
-
-[[nodiscard]] auto player_ship::ThrusterOn() const -> bool
-{
-  return m_thrusterOn;
-}
-
-[[nodiscard]] auto player_ship::Destroyed() const -> bool
-{
-  return m_destroyed;
-}
-
 auto player_ship::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
@@ -80,17 +40,17 @@ auto player_ship::Update(int64_t tickCount) -> void
   {
     const auto playerThrust = 400.0f;
     
-    m_velocityX -= ( ( m_velocityX * 0.4f ) * updateInterval );
-    m_velocityY -= ( ( m_velocityY * 0.4f ) * updateInterval );
+    m_velocity.x -= ( ( m_velocity.x * 0.4f ) * updateInterval );
+    m_velocity.y -= ( ( m_velocity.y * 0.4f ) * updateInterval );
 
     float forceX = m_thrusterOn ? playerThrust * sin(DEGTORAD(m_angle)) : 0.0f;
     float forceY = m_thrusterOn ? -playerThrust * cos(DEGTORAD(m_angle)) : 0.0f;
 
-    m_velocityX += forceX * updateInterval;
-    m_velocityY += forceY * updateInterval;
+    m_velocity.x += forceX * updateInterval;
+    m_velocity.y += forceY * updateInterval;
 
-    m_x += m_velocityX * updateInterval;
-    m_y += m_velocityY * updateInterval;
+    m_x += m_velocity.x * updateInterval;
+    m_y += m_velocity.y * updateInterval;
 
     UpdateShipGeometryData();
   }

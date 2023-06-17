@@ -24,6 +24,7 @@ public:
 
   [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto Destroyed() const -> bool;
@@ -50,8 +51,7 @@ private:
   float m_y = 0;
   float m_angle = 0;
   bool m_thrusterOn = false;
-  float m_velocityX = 0;
-  float m_velocityY = 0;
+  game_velocity m_velocity { 0, 0 };
   bool m_destroyed { false };
 
   reload_timer m_reloadTimer;
@@ -60,5 +60,50 @@ private:
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
 };
+
+inline auto player_ship::SetAngle(float angle) -> void
+{
+  m_angle = angle;
+}
+
+inline auto player_ship::SetThrusterOn(bool on) -> void
+{
+  m_thrusterOn = on;
+}
+
+inline auto player_ship::Destroy() -> void
+{
+  m_destroyed = true;
+}
+
+[[nodiscard]] inline auto player_ship::Position() const -> game_point
+{
+  return { m_x, m_y };
+}
+
+[[nodiscard]] inline auto player_ship::Angle() const -> float
+{
+  return m_angle;
+}
+
+[[nodiscard]] inline auto player_ship::Velocity() const -> const game_velocity&
+{
+  return m_velocity;
+}
+
+[[nodiscard]] inline auto player_ship::State() const -> state
+{
+  return m_state;
+}
+
+[[nodiscard]] inline auto player_ship::ThrusterOn() const -> bool
+{
+  return m_thrusterOn;
+}
+
+[[nodiscard]] inline auto player_ship::Destroyed() const -> bool
+{
+  return m_destroyed;
+}
 
 #endif

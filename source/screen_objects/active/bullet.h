@@ -9,7 +9,7 @@ class bullet
 {
 public:
 
-  bullet(float x, float y, float angle);
+  bullet(float x, float y, float angle, game_velocity velocity);
 
   [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Destroyed() const -> bool;
@@ -23,8 +23,7 @@ private:
 
   game_point m_startPosition = { 0, 0 };
   game_point m_position { 0, 0 };
-  float m_xVelocity = 0;
-  float m_yVelocity = 0;
+  game_velocity m_velocity { 0, 0 };
   float m_angle = 0;
   float m_range = 1000;
   float m_distanceTravelled { 0 };

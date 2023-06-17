@@ -3,13 +3,14 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(float x, float y, float angle) : m_startPosition { x, y }, m_position { x, y }, m_angle(angle)
+bullet::bullet(float x, float y, float angle, game_velocity velocity) : 
+  m_startPosition { x, y }, m_position { x, y }, m_angle(angle), m_velocity { velocity }
 {
   static const float bulletSpeed = 500.0f;
   static const float bulletRange = 2000.0f;
   
-  m_xVelocity = bulletSpeed * sin(DEGTORAD(m_angle));
-  m_yVelocity = -bulletSpeed * cos(DEGTORAD(m_angle));
+  m_velocity.x += bulletSpeed * sin(DEGTORAD(m_angle));
+  m_velocity.y += -bulletSpeed * cos(DEGTORAD(m_angle));
 }
 
 [[nodiscard]] auto bullet::Position() const -> game_point
@@ -35,8 +36,8 @@ bullet::bullet(float x, float y, float angle) : m_startPosition { x, y }, m_posi
 auto bullet::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
-  m_position.x += ( m_xVelocity * updateInterval );
-  m_position.y += ( m_yVelocity * updateInterval );
+  m_position.x += ( m_velocity.x * updateInterval );
+  m_position.y += ( m_velocity.y * updateInterval );
   m_distanceTravelled = m_startPosition.DistanceTo(m_position);
   m_destroyed = m_distanceTravelled > m_range;
 }

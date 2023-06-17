@@ -46,6 +46,12 @@ struct game_rect
   game_point bottomRight = { 0, 0 };
 };
 
+struct game_velocity
+{
+  float x { 0 };
+  float y { 0 };
+};
+
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
   if( std::distance(begin, end) > 0 )
