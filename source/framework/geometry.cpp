@@ -1,20 +1,6 @@
 #include "pch.h"
 #include "geometry.h"
 
-auto CalculateAngle(float x1, float y1, float x2, float y2) -> float
-{
-  float radians = atan2(y2 - y1, x2 - x1);
-  float degrees = RADTODEG(radians);
-  return degrees + 90.0f;
-}
-
-float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
-{
-  float cx = x2 - x1;
-  float cy = y2 - y1;
-  return sqrt( cx * cx + cy * cy );
-}
-
 [[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect
 {
   return {
@@ -33,11 +19,6 @@ float GetDistanceBetweenPoints(float x1, float y1, float x2, float y2)
     max(rect1.bottomRight.x, rect2.bottomRight.x),
     max(rect1.bottomRight.y, rect2.bottomRight.y)
   };
-}
-
-auto game_point::DistanceTo(game_point p) const -> float
-{
-  return GetDistanceBetweenPoints(x, y, p.x, p.y);
 }
 
 game_rect::game_rect()

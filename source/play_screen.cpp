@@ -17,9 +17,9 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
   m_menu = GetMenuDef().CreateMenu();
 
-  auto mainArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f) }.GetRect();
-  auto levelMapArea = render_target_area { mainArea, render_target_area::contraint_bottom_right(0.15f, 0.2f) }.GetRect();
-  m_levelMap.SetRect(levelMapArea);
+  // auto mainArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.95f, 0.95f) }.GetRect();
+  // auto levelMapArea = render_target_area { mainArea, render_target_area::contraint_bottom_right(0.15f, 0.2f) }.GetRect();
+  // m_levelMap.SetRect(levelMapArea);
 
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
@@ -109,7 +109,7 @@ auto play_screen::Render() const -> void
     m_menu.Render(overlayViewRect);
   }
 
-  m_levelMap.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets(), overlayViewRect);
+  m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
 
   m_cursor.Render(overlayViewRect);
 

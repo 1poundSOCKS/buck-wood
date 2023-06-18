@@ -13,6 +13,7 @@
 #include "play_camera_transform.h"
 #include "level_map.h"
 #include "text_box.h"
+#include "level_radar.h"
 
 class play_screen
 {
@@ -47,11 +48,15 @@ private:
   bool m_paused = false;
   bool m_continueRunning = true;
   int64_t m_stageTicks = 0;
+  
   std::unique_ptr<level_container> m_levelContainer;
+  
   mouse_cursor m_cursor;
   menu m_menu;
+  level_radar m_levelRadar;
+
   game_level_data_loader m_gameLevelDataLoader;
-  level_map m_levelMap;
+  
   std::vector<int64_t> m_levelTimes;
   camera_sequence m_startSequence;
   camera_sequence m_endSequence;
