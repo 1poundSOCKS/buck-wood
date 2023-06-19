@@ -33,7 +33,6 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
     return playerPosition.AngleTo(target.Position());
   });
 
-
   for( auto targetAngle : targetAngleView )
   {
     D2D1_POINT_2F targetPoint { 0, -50 };
