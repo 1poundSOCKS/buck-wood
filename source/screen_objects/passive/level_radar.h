@@ -23,11 +23,11 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
   auto centreX = renderTargetSize.width / 2;
   auto centreY = renderTargetSize.height / 2;
 
-  auto targetAngleView = targets | std::ranges::views::filter([](const auto& target)
+  auto targetAngleView = targets | 
+  std::ranges::views::filter([](const auto& target)
   {
     return !target.IsActivated();
-  })
-  |
+  }) | 
   std::ranges::views::transform([&playerPosition](const auto& target) -> float
   {
     return playerPosition.AngleTo(target.Position());
