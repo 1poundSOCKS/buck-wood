@@ -35,7 +35,7 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
 
   for( auto targetAngle : targetAngleView )
   {
-    D2D1_POINT_2F targetPoint { 0, -50 };
+    D2D1_POINT_2F targetPoint { 0, -250 };
     D2D1::Matrix3x2F transform = D2D1::Matrix3x2F::Rotation(targetAngle) * D2D1::Matrix3x2F::Translation(centreX, centreY);
     auto renderPoint = transform.TransformPoint(targetPoint);
     D2D1_RECT_F renderRect = { renderPoint.x - 5, renderPoint.y - 5, renderPoint.x + 5, renderPoint.y + 5 };
