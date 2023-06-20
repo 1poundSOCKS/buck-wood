@@ -86,12 +86,7 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetBrushIndex(float fadeRatio) const -> int;
-
-  using brush_ptr = winrt::com_ptr<ID2D1SolidColorBrush>;
-  using brush_collection = std::vector<brush_ptr>;
-
-  brush_collection m_brushes;
+  color_scale_brushes m_brushes;
 };
 
 class explosion_brushes

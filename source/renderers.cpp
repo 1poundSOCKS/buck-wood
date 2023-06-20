@@ -102,29 +102,13 @@ player_ship_brushes::player_ship_brushes()
   return m_thruster;
 }
 
-bullet_brushes::bullet_brushes()
+bullet_brushes::bullet_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
 {
-  const auto& renderTarget = framework::renderTarget();
-
-  color_scale colorScale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 };
-
-  for( auto color : colorScale )
-  {
-    render_brush_def brushDef { color };
-    m_brushes.emplace_back( brushDef.CreateBrush(renderTarget.get()) );
-  }
 }
 
 [[nodiscard]] auto bullet_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
 {
-  auto brushIndex = GetBrushIndex(fadeRatio);
-  assert(brushIndex >=0 && brushIndex < m_brushes.size());
-  return m_brushes[brushIndex];
-}
-
-[[nodiscard]] auto bullet_brushes::GetBrushIndex(float fadeRatio) const -> int
-{
-  return static_cast<int>(static_cast<float>(m_brushes.size() - 1) * fadeRatio + 0.5f);
+  return m_brushes[fadeRatio];
 }
 
 explosion_brushes::explosion_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
