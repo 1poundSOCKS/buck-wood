@@ -127,29 +127,13 @@ bullet_brushes::bullet_brushes()
   return static_cast<int>(static_cast<float>(m_brushes.size() - 1) * fadeRatio + 0.5f);
 }
 
-explosion_brushes::explosion_brushes()
+explosion_brushes::explosion_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
 {
-  const auto& renderTarget = framework::renderTarget();
-
-  color_scale colorScale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 };
-
-  for( auto color : colorScale )
-  {
-    render_brush_def brushDef { color };
-    m_brushes.emplace_back( brushDef.CreateBrush(renderTarget.get()) );
-  }
 }
 
 [[nodiscard]] auto explosion_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
 {
-  auto brushIndex = GetBrushIndex(fadeRatio);
-  assert(brushIndex >=0 && brushIndex < m_brushes.size());
-  return m_brushes[brushIndex];
-}
-
-[[nodiscard]] auto explosion_brushes::GetBrushIndex(float fadeRatio) const -> int
-{
-  return static_cast<int>(static_cast<float>(m_brushes.size() - 1) * fadeRatio + 0.5f);
+  return m_brushes[fadeRatio];
 }
 
 target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
