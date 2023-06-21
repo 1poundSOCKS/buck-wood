@@ -3,19 +3,15 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(float x, float y, float angle, game_velocity velocity) : 
-  m_startPosition { x, y }, m_position { x, y }, m_angle(angle), m_velocity { velocity }
+bullet::bullet(const game_point& position, const game_velocity& velocity, float angle) : 
+  m_startPosition { position }, m_movingBody { position, velocity }
 {
-  static const float bulletSpeed = 500.0f;
-  static const float bulletRange = 2000.0f;
-  
-  m_velocity.x += bulletSpeed * sin(DEGTORAD(m_angle));
-  m_velocity.y += -bulletSpeed * cos(DEGTORAD(m_angle));
+  m_movingBody.Accelerate(game_velocity { angle, bulletSpeed });
 }
 
-[[nodiscard]] auto bullet::Position() const -> game_point
+[[nodiscard]] auto bullet::Position() const -> const game_point&
 {
-  return m_position;
+  return m_movingBody.Position();
 }
 
 [[nodiscard]] auto bullet::Destroyed() const -> bool
@@ -35,10 +31,9 @@ bullet::bullet(float x, float y, float angle, game_velocity velocity) :
 
 auto bullet::Update(int64_t tickCount) -> void
 {
-  auto updateInterval = framework::gameUpdateInterval(tickCount);
-  m_position.x += ( m_velocity.x * updateInterval );
-  m_position.y += ( m_velocity.y * updateInterval );
-  m_distanceTravelled = m_startPosition.DistanceTo(m_position);
+  auto interval = framework::gameUpdateInterval(tickCount);
+  m_movingBody.Update(interval);
+  m_distanceTravelled = m_startPosition.DistanceTo(m_movingBody.Position());
   m_destroyed = m_distanceTravelled > m_range;
 }
 

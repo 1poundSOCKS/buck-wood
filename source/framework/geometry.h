@@ -73,9 +73,27 @@ struct game_rect
 
 struct game_velocity
 {
+  game_velocity() = default;
+  game_velocity(float angle, float speed);
+
+  auto operator+=(const game_velocity& increase) -> game_velocity&;
+
   float x { 0 };
   float y { 0 };
 };
+
+inline game_velocity::game_velocity(float angle, float speed)
+{
+  x += speed * sin(DEGTORAD(angle));
+  y += -speed * cos(DEGTORAD(angle));
+}
+
+inline auto game_velocity::operator+=(const game_velocity& increase) -> game_velocity&
+{
+  x += increase.x;
+  y += increase.y;
+  return *this;
+}
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
