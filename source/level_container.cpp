@@ -232,9 +232,13 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
   {
     if( !target.IsActivated() )
     {
-      target.Activate();
-      ++m_activatedTargetCount;
-      updateEvents->targetActivated = true;
+      target.HitByBullet();
+
+      if( target.IsActivated() )
+      {
+        ++m_activatedTargetCount;
+        updateEvents->targetActivated = true;
+      }
     }
 
     bullet.Destroy();

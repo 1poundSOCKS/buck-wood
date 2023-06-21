@@ -18,6 +18,7 @@ public:
   [[nodiscard]] auto Geometry() const -> const path_geometry&;
   [[nodiscard]] auto ShootAt(game_point position) const -> bool;
 
+  auto HitByBullet() -> void;
   auto Activate() -> void;
   auto SetPlayerPosition(float x, float y) -> void;
   auto Update(int64_t ticks) -> void;
@@ -30,6 +31,7 @@ private:
   path_geometry m_geometry;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
+  int m_hitPoints { 10 };
 
 };
 

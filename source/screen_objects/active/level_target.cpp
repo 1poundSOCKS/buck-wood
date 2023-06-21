@@ -29,6 +29,14 @@ level_target::level_target(float x, float y) : m_position { x, y }
   return !m_activated && m_reloaded && m_position.DistanceTo(position) < 1500;
 }
 
+auto level_target::HitByBullet() -> void
+{
+  if( --m_hitPoints <= 0 )
+  {
+    Activate();
+  }
+}
+
 auto level_target::Activate() -> void
 {
   m_activated = true;
