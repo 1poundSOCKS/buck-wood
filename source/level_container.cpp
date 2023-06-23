@@ -130,7 +130,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void
 {
-  auto playerPosition = m_playerShip.Position();
+  const auto& playerPosition = m_playerShip.Position();
   auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
 
   m_playerShip.SetAngle(playerToMouseAngle);

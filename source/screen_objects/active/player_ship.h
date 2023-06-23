@@ -7,6 +7,7 @@
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
 #include "reload_timer.h"
+#include "moving_body.h"
 
 class player_ship
 {
@@ -16,13 +17,13 @@ public:
   using points_collection = std::vector<game_point>;
 
   player_ship();
-  player_ship(float x, float y);
+  player_ship(const game_point& position);
 
   auto SetAngle(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
   auto Destroy() -> void;
 
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
@@ -37,6 +38,8 @@ public:
 
 private:
 
+  inline static const auto m_playerThrust { 400.0f };
+
   void UpdateShipGeometryData();
 
   static auto GetShotTimeInterval() -> int64_t;
@@ -47,11 +50,9 @@ private:
   static inline int m_shotTimeDenominator = 20;
 
   state m_state { state::alive };
-  float m_x = 0;
-  float m_y = 0;
+  moving_body m_movingBody;
   float m_angle = 0;
   bool m_thrusterOn = false;
-  game_velocity m_velocity { 0, 0 };
   bool m_destroyed { false };
 
   reload_timer m_reloadTimer;
@@ -76,9 +77,9 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-[[nodiscard]] inline auto player_ship::Position() const -> game_point
+[[nodiscard]] inline auto player_ship::Position() const -> const game_point&
 {
-  return { m_x, m_y };
+  return m_movingBody.Position();
 }
 
 [[nodiscard]] inline auto player_ship::Angle() const -> float
@@ -88,7 +89,7 @@ inline auto player_ship::Destroy() -> void
 
 [[nodiscard]] inline auto player_ship::Velocity() const -> const game_velocity&
 {
-  return m_velocity;
+  return m_movingBody.Velocity();
 }
 
 [[nodiscard]] inline auto player_ship::State() const -> state
