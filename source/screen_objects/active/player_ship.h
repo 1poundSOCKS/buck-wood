@@ -39,15 +39,12 @@ public:
 private:
 
   inline static const auto m_playerThrust { 400.0f };
+  inline static const auto m_shotTimeNumerator { 1 };
+  inline static const auto m_shotTimeDenominator { 20 };
 
   void UpdateShipGeometryData();
 
   static auto GetShotTimeInterval() -> int64_t;
-  static constexpr auto GetShotTimeNumerator() -> int64_t;
-  static constexpr auto GetShotTimeDenominator() -> int64_t;
-
-  static inline int m_shotTimeNumerator = 1;
-  static inline int m_shotTimeDenominator = 20;
 
   state m_state { state::alive };
   moving_body m_movingBody;

@@ -41,7 +41,6 @@ auto player_ship::Update(int64_t tickCount) -> void
     m_movingBody.Accelerate(-0.4f * updateInterval);
     m_movingBody.Accelerate(m_thrusterOn ? m_playerThrust * updateInterval : 0, m_angle);
     m_movingBody.Update(updateInterval);
-
     UpdateShipGeometryData();
   }
 
@@ -74,15 +73,5 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
 
 auto player_ship::GetShotTimeInterval() -> int64_t
 {
-  return performance_counter::QueryFrequency() * GetShotTimeNumerator() / GetShotTimeDenominator();
-}
-
-constexpr auto player_ship::GetShotTimeNumerator() -> int64_t
-{
-  return 1;
-}
-
-constexpr auto player_ship::GetShotTimeDenominator() -> int64_t
-{
-  return 20;
+  return performance_counter::QueryFrequency() * m_shotTimeNumerator / m_shotTimeDenominator;
 }
