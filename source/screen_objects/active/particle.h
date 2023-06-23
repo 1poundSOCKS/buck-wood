@@ -36,7 +36,7 @@ inline auto particle::Update(float interval) -> void
 
   m_age += interval;
 
-  m_destroyed = m_age >= m_lifespan ? true : false;
+  m_destroyed = m_age < m_lifespan ? false : true;
 }
 
 [[nodiscard]] inline auto particle::Age() const -> float
