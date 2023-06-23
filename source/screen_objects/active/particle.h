@@ -7,7 +7,6 @@ class particle
 
 public:
 
-  particle() = default;
   particle(const game_point& position, const game_velocity& velocity, float lifespan);
 
   auto Update(float interval) -> void;
