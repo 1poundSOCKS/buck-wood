@@ -9,6 +9,7 @@
 #include "level_star.h"
 #include "mine.h"
 #include "color_scale_brushes.h"
+#include "explosion_particle.h"
 
 class target_brushes
 {
@@ -189,6 +190,7 @@ private:
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
+  auto Render(const explosion_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
 
   template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;

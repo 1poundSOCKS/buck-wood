@@ -7,6 +7,7 @@
 #include "renderers.h"
 #include "asteroid_container.h"
 #include "mine.h"
+#include "explosion_particle.h"
 
 class level_container
 {
@@ -25,6 +26,7 @@ public:
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
   using explosion_collection = std::list<explosion>;
+  using explosion_particle_collection  = std::list<explosion_particle>;
 
   level_container();
   level_container(const level_container& levelContainer) = delete;
@@ -57,6 +59,7 @@ private:
   auto UpdateTargets(int64_t ticks, update_events* updateEvents) -> void;
   auto UpdateMines(int64_t ticks) -> void;
   auto DoCollisions(update_events* updateEvents) -> void;
+  auto CreateExplosion(const game_point& position) -> void;
 
   inline static const int m_cellWidth { 800 };
   inline static const int m_cellHeight { 800 };
@@ -68,6 +71,7 @@ private:
   mine_collection m_mines;
   asteroid_container m_asteroids;
   explosion_collection m_explosions;
+  explosion_particle_collection m_explosionParticles;
 
   int64_t m_ticksRemaining = 0;
 
