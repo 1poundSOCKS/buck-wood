@@ -21,8 +21,8 @@ public:
   
 private:
 
-  inline static const float bulletSpeed = 500.0f;
-  inline static const float bulletRange = 2000.0f;
+  inline static const float m_bulletSpeed = 500.0f;
+  inline static const float m_bulletRange = 2000.0f;
 
   game_point m_startPosition = { 0, 0 };
   moving_body m_movingBody;
