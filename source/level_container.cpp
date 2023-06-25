@@ -207,6 +207,11 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     bullet.Destroy();
   });
 
+  do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  });
+
   do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
   {
     if( !target.IsActivated() )

@@ -21,6 +21,7 @@ public:
 
   auto SetAngle(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
+  auto Update(float interval) -> void;
   auto Destroy() -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
@@ -33,8 +34,6 @@ public:
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto CanShoot() -> bool;
-
-  auto Update(float interval) -> void;
 
 private:
 

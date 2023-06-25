@@ -10,8 +10,8 @@ public:
   particle() = default;
   particle(const game_point& position, const game_velocity& velocity, float lifespan);
 
-  // auto Update(int64_t ticks) -> void;
   auto Update(float interval) -> void;
+  auto Destroy() -> void;
 
   [[nodiscard]] auto Age() const -> float;
   [[nodiscard]] auto Lifespan() const -> float;
@@ -40,6 +40,11 @@ inline auto particle::Update(float interval) -> void
   m_age += interval;
 
   m_destroyed = m_age < m_lifespan ? false : true;
+}
+
+inline auto particle::Destroy() -> void
+{
+  m_destroyed = true;
 }
 
 [[nodiscard]] inline auto particle::Age() const -> float
