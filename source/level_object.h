@@ -8,6 +8,14 @@ auto update_all(std::ranges::input_range auto&& objects, int64_t ticks)
   }
 }
 
+auto update_all(std::ranges::input_range auto&& objects, float interval)
+{
+  for( auto& object : objects )
+  {
+    object.Update(interval);
+  }
+}
+
 auto erase_destroyed(std::ranges::input_range auto&& objects)
 {
   auto object = std::begin(objects);

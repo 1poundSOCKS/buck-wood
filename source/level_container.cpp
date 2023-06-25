@@ -7,7 +7,7 @@
 #include "perlin_simplex_noise.h"
 #include "level_explosion.h"
 
-level_container::level_container()
+level_container::level_container() : m_reloadTimer { performance_counter::QueryFrequency() * m_shotTimeNumerator / m_shotTimeDenominator }
 {
 }
 
@@ -50,16 +50,26 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 {
   auto updateEvents = std::make_unique<update_events>();
 
+  auto interval = framework::gameUpdateInterval(ticks);
+
   if( !m_playerShip.Destroyed() )
   {
-    UpdatePlayer(inputData, ticks, updateEvents.get());
+    UpdatePlayer(inputData, interval);
+
+    auto reloaded = m_reloadTimer.Update(ticks);
+    auto triggerPressed = inputData.GetMouseData().leftButtonDown;
+
+    if( reloaded && triggerPressed )
+    {
+      m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), m_playerShip.Angle() } );
+      updateEvents->playerShot = true;
+    }
   }
   
   UpdateTargets(ticks, updateEvents.get());
 
-  update_all(m_bullets, ticks);
-  update_all(m_explosions, ticks);
-  update_all(m_explosionParticles, ticks);
+  update_all(m_bullets, interval);
+  update_all(m_explosionParticles, interval);
 
   UpdateMines(ticks);
 
@@ -69,7 +79,6 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   DoCollisions(updateEvents.get());
 
-  erase_destroyed(m_explosions);
   erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
   erase_destroyed(m_explosionParticles);
@@ -94,7 +103,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   });
 
   renderer::render_all(starView);
-  renderer::render_all(m_explosions);
   renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
@@ -132,7 +140,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   return m_ticksRemaining;
 }
 
-auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void
+auto level_container::UpdatePlayer(const object_input_data& inputData, float interval) -> void
 {
   const auto& playerPosition = m_playerShip.Position();
   auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
@@ -140,15 +148,7 @@ auto level_container::UpdatePlayer(const object_input_data& inputData, int64_t t
   m_playerShip.SetAngle(playerToMouseAngle);
   m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
 
-  auto triggerPressed = inputData.GetMouseData().leftButtonDown;
-
-  if( triggerPressed && m_playerShip.CanShoot() )
-  {
-    m_bullets.emplace_back( bullet { playerPosition, m_playerShip.Velocity(), m_playerShip.Angle() } );
-    updateEvents->playerShot = true;
-  }
-
-  m_playerShip.Update(ticks);
+  m_playerShip.Update(interval);
 }
 
 auto level_container::UpdateTargets(int64_t ticks, update_events* updateEvents) -> void
@@ -199,7 +199,6 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     {
       playerShip.Destroy();
       auto position = playerShip.Position();
-      // m_explosions.emplace_back( explosion { position.x, position.y } );
       CreateExplosion(position);
     });
 
@@ -208,7 +207,6 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
       mine.Destroy();
       playerShip.Destroy();
       auto position = playerShip.Position();
-      // m_explosions.emplace_back( explosion { position.x, position.y } );
       CreateExplosion(position);
       updateEvents->mineExploded = true;
     });
@@ -217,7 +215,6 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     {
       playerShip.Destroy();
       auto position = playerShip.Position();
-      // m_explosions.emplace_back( explosion { position.x, position.y } );
       CreateExplosion(position);
     });
   }
@@ -226,7 +223,6 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
   {
     mine.Destroy();
     auto position = mine.Position();
-    // m_explosions.emplace_back( explosion { position.x, position.y } );
     CreateExplosion(position);
     updateEvents->mineExploded = true;
   });
@@ -255,7 +251,6 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
   do_geometries_to_points_collisions(m_mines, m_bullets, [this, updateEvents](auto& mine, auto& bullet)
   {
     auto position = mine.Position();
-    // m_explosions.emplace_back( explosion { position.x, position.y } );
     CreateExplosion(position);
     mine.Destroy();
     bullet.Destroy();

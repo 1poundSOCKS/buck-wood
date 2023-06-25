@@ -22,29 +22,23 @@ constexpr auto GetPlayerThrusterGeometryData()
 
 player_ship::player_ship() : m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
-  m_reloadTimer = reload_timer { GetShotTimeInterval() };
   UpdateShipGeometryData();
 }
 
 player_ship::player_ship(const game_point& position) : m_movingBody { position }, m_geometry { GetPlayerGeometryData() }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
-  m_reloadTimer = reload_timer { GetShotTimeInterval() };
   UpdateShipGeometryData();
 }
 
-auto player_ship::Update(int64_t tickCount) -> void
+auto player_ship::Update(float interval) -> void
 {
-  auto updateInterval = framework::gameUpdateInterval(tickCount);
-
   if( m_state == state::alive )
   {
-    m_movingBody.Accelerate(-0.4f * updateInterval);
-    m_movingBody.Accelerate(m_thrusterOn ? m_playerThrust * updateInterval : 0, m_angle);
-    m_movingBody.Update(updateInterval);
+    m_movingBody.Accelerate(-0.4f * interval);
+    m_movingBody.Accelerate(m_thrusterOn ? m_playerThrust * interval : 0, m_angle);
+    m_movingBody.Update(interval);
     UpdateShipGeometryData();
   }
-
-  m_reloaded = m_reloadTimer.Update(tickCount);
 }
 
 auto player_ship::UpdateShipGeometryData() -> void
@@ -64,14 +58,4 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
 [[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
 {
   return m_transformedGeometry;
-}
-
-[[nodiscard]] auto player_ship::CanShoot() -> bool
-{
-  return m_reloaded;
-}
-
-auto player_ship::GetShotTimeInterval() -> int64_t
-{
-  return performance_counter::QueryFrequency() * m_shotTimeNumerator / m_shotTimeDenominator;
 }

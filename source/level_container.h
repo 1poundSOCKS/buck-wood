@@ -25,7 +25,6 @@ public:
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
-  using explosion_collection = std::list<explosion>;
   using explosion_particle_collection  = std::list<explosion_particle>;
 
   level_container();
@@ -55,22 +54,25 @@ public:
 
 private:
 
-  auto UpdatePlayer(const object_input_data& inputData, int64_t ticks, update_events* updateEvents) -> void;
+  inline static const int m_cellWidth { 800 };
+  inline static const int m_cellHeight { 800 };
+
+  inline static const auto m_shotTimeNumerator { 1 };
+  inline static const auto m_shotTimeDenominator { 20 };
+
+  auto UpdatePlayer(const object_input_data& inputData, float interval) -> void;
   auto UpdateTargets(int64_t ticks, update_events* updateEvents) -> void;
   auto UpdateMines(int64_t ticks) -> void;
   auto DoCollisions(update_events* updateEvents) -> void;
   auto CreateExplosion(const game_point& position) -> void;
 
-  inline static const int m_cellWidth { 800 };
-  inline static const int m_cellHeight { 800 };
-
   player_ship m_playerShip;
+  reload_timer m_reloadTimer;
 
   bullet_collection m_bullets;
   target_collection m_targets;
   mine_collection m_mines;
   asteroid_container m_asteroids;
-  explosion_collection m_explosions;
   explosion_particle_collection m_explosionParticles;
 
   int64_t m_ticksRemaining = 0;

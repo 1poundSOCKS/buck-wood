@@ -29,9 +29,8 @@ bullet::bullet(const game_point& position, const game_velocity& velocity, float 
   return m_range;
 }
 
-auto bullet::Update(int64_t tickCount) -> void
+auto bullet::Update(float interval) -> void
 {
-  auto interval = framework::gameUpdateInterval(tickCount);
   m_movingBody.Update(interval);
   m_distanceTravelled = m_startPosition.DistanceTo(m_movingBody.Position());
   m_destroyed = m_distanceTravelled > m_range;

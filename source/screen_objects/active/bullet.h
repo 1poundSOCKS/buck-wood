@@ -16,7 +16,7 @@ public:
   [[nodiscard]] auto DistanceTravelled() const -> float;
   [[nodiscard]] auto Range() const -> float;
 
-  auto Update(int64_t tickCount) -> void;
+  auto Update(float interval) -> void;
   auto Destroy() -> void;
   
 private:

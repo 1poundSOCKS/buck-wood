@@ -34,13 +34,11 @@ public:
   auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto CanShoot() -> bool;
 
-  auto Update(int64_t tickCount) -> void;
+  auto Update(float interval) -> void;
 
 private:
 
   inline static const auto m_playerThrust { 400.0f };
-  inline static const auto m_shotTimeNumerator { 1 };
-  inline static const auto m_shotTimeDenominator { 20 };
 
   void UpdateShipGeometryData();
 
@@ -51,9 +49,6 @@ private:
   float m_angle = 0;
   bool m_thrusterOn = false;
   bool m_destroyed { false };
-
-  reload_timer m_reloadTimer;
-  bool m_reloaded { false };
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
