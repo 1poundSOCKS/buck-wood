@@ -6,11 +6,11 @@ class reload_timer
 public:
 
   reload_timer() = default;
-  reload_timer(int64_t reloadTicks);
-  auto Update(int64_t ticks) -> bool;
+  reload_timer(float reloadTime);
+  auto Update(float interval) -> bool;
 
 private:
 
-  int64_t m_reloadTicks { 0 };
-  int64_t m_currentTicks { 0 };
+  float m_reloadTime { 0 };
+  float m_currentTime { 0 };
 };

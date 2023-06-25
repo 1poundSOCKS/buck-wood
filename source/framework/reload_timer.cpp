@@ -1,17 +1,17 @@
 #include "pch.h"
 #include "reload_timer.h"
 
-reload_timer::reload_timer(int64_t reloadTicks) : m_reloadTicks { reloadTicks }
+reload_timer::reload_timer(float reloadTime) : m_reloadTime { reloadTime }
 {
 }
 
-auto reload_timer::Update(int64_t ticks) -> bool
+auto reload_timer::Update(float interval) -> bool
 {
-  auto reloaded = ( m_currentTicks += ticks ) > m_reloadTicks;
+  auto reloaded = ( m_currentTime += interval ) > m_reloadTime;
 
   if( reloaded )
   {
-    m_currentTicks -= m_reloadTicks;
+    m_currentTime -= m_reloadTime;
   }
 
   return reloaded;

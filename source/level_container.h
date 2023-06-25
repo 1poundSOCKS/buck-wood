@@ -60,9 +60,6 @@ private:
   inline static const auto m_shotTimeNumerator { 1 };
   inline static const auto m_shotTimeDenominator { 20 };
 
-  auto UpdatePlayer(const object_input_data& inputData, float interval) -> void;
-  auto UpdateTargets(int64_t ticks, update_events* updateEvents) -> void;
-  auto UpdateMines(int64_t ticks) -> void;
   auto DoCollisions(update_events* updateEvents) -> void;
   auto CreateExplosion(const game_point& position) -> void;
 

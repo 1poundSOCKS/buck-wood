@@ -7,7 +7,7 @@
 #include "perlin_simplex_noise.h"
 #include "level_explosion.h"
 
-level_container::level_container() : m_reloadTimer { performance_counter::QueryFrequency() * m_shotTimeNumerator / m_shotTimeDenominator }
+level_container::level_container() : m_reloadTimer { static_cast<float>(m_shotTimeNumerator) / static_cast<float>(m_shotTimeDenominator) }
 {
 }
 
@@ -52,11 +52,25 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
 
   auto interval = framework::gameUpdateInterval(ticks);
 
-  if( !m_playerShip.Destroyed() )
+  if( m_playerShip.Destroyed() )
   {
-    UpdatePlayer(inputData, interval);
+    for( auto& mine : m_mines )
+    {
+      mine.Update(ticks);
+    }
+  }
+  else
+  {
+    const auto& playerPosition = m_playerShip.Position();
 
-    auto reloaded = m_reloadTimer.Update(ticks);
+    auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
+
+    m_playerShip.SetAngle(playerToMouseAngle);
+    m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
+
+    m_playerShip.Update(interval);
+
+    auto reloaded = m_reloadTimer.Update(interval);
     auto triggerPressed = inputData.GetMouseData().leftButtonDown;
 
     if( reloaded && triggerPressed )
@@ -64,14 +78,26 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
       m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), m_playerShip.Angle() } );
       updateEvents->playerShot = true;
     }
+
+    for( auto& target : m_targets )
+    {
+      auto targetPosition = target.Position();
+      
+      if( target.ShootAt(playerPosition) )
+      {
+        m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
+      }
+    }
+
+    for( auto& mine : m_mines )
+    {
+      mine.Update(ticks, playerPosition.x, playerPosition.y);
+    }
   }
   
-  UpdateTargets(ticks, updateEvents.get());
-
+  update_all(m_targets, interval);
   update_all(m_bullets, interval);
   update_all(m_explosionParticles, interval);
-
-  UpdateMines(ticks);
 
   auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
   
@@ -138,57 +164,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 [[nodiscard]] auto level_container::TicksRemaining() const -> int64_t
 {
   return m_ticksRemaining;
-}
-
-auto level_container::UpdatePlayer(const object_input_data& inputData, float interval) -> void
-{
-  const auto& playerPosition = m_playerShip.Position();
-  auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-
-  m_playerShip.SetAngle(playerToMouseAngle);
-  m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
-
-  m_playerShip.Update(interval);
-}
-
-auto level_container::UpdateTargets(int64_t ticks, update_events* updateEvents) -> void
-{
-  if( !m_playerShip.Destroyed() )
-  {
-    auto playerPosition = m_playerShip.Position();
-
-    for( auto& target : m_targets )
-    {
-      auto targetPosition = target.Position();
-      
-      if( target.ShootAt(playerPosition) )
-      {
-        m_mines.emplace_back( mine { targetPosition.x, targetPosition.y } );
-      }
-    }
-  }
-
-  update_all(m_targets, ticks);
-}
-
-auto level_container::UpdateMines(int64_t ticks) -> void
-{
-  auto playerPosition = m_playerShip.Position();
-
-  if( !m_playerShip.Destroyed() )
-  {
-    for( auto& mine : m_mines )
-    {
-      mine.Update(ticks, playerPosition.x, playerPosition.y);
-    }
-  }
-  else
-  {
-    for( auto& mine : m_mines )
-    {
-      mine.Update(ticks);
-    }
-  }
 }
 
 auto level_container::DoCollisions(update_events* updateEvents) -> void

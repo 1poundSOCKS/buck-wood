@@ -6,7 +6,7 @@
 level_target::level_target(float x, float y) : m_position { x, y }
 {
   m_geometry.Load( shape_generator { x, y, 100, 100, 6 } );
-  m_reloadTimer = reload_timer { performance_counter::QueryFrequency() };
+  m_reloadTimer = reload_timer { 1 };
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point
@@ -42,9 +42,9 @@ auto level_target::Activate() -> void
   m_activated = true;
 }
 
-auto level_target::Update(int64_t ticks) -> void
+auto level_target::Update(float interval) -> void
 {
-  m_reloaded = m_reloadTimer.Update(ticks);
+  m_reloaded = m_reloadTimer.Update(interval);
 }
 
 [[nodiscard]] auto level_target::Reloaded() const -> bool

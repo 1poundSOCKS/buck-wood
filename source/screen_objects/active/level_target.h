@@ -21,7 +21,7 @@ public:
   auto HitByBullet() -> void;
   auto Activate() -> void;
   auto SetPlayerPosition(float x, float y) -> void;
-  auto Update(int64_t ticks) -> void;
+  auto Update(float interval) -> void;
   [[nodiscard]] auto Reloaded() const -> bool;
   
 private:
