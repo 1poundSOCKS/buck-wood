@@ -98,6 +98,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   update_all(m_targets, interval);
   update_all(m_bullets, interval);
   update_all(m_explosionParticles, interval);
+  update_all(m_impactParticles, interval);
 
   auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
   
@@ -108,6 +109,7 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
   erase_destroyed(m_explosionParticles);
+  erase_destroyed(m_impactParticles);
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
@@ -133,6 +135,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
   renderer::render_all(m_mines);
+  renderer::render_all(m_impactParticles);
   renderer::render_all(m_bullets);
 
   if( !m_playerShip.Destroyed() )
@@ -202,18 +205,21 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     updateEvents->mineExploded = true;
   });
 
-  do_geometries_to_points_collisions(m_asteroids, m_bullets, [](auto& asteroid, auto& bullet)
+  do_geometries_to_points_collisions(m_asteroids, m_bullets, [this](auto& asteroid, auto& bullet)
   {
+    m_impactParticles.emplace_back( impact_particle { bullet.Position(), 1 } );
     bullet.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [](auto& asteroid, auto& particle)
+  do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
   });
 
   do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
   {
+    m_impactParticles.emplace_back( impact_particle { bullet.Position(), 1 } );
+
     if( !target.IsActivated() )
     {
       target.HitByBullet();

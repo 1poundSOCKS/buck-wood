@@ -10,6 +10,7 @@
 #include "mine.h"
 #include "color_scale_brushes.h"
 #include "explosion_particle.h"
+#include "impact_particle.h"
 
 class target_brushes
 {
@@ -95,6 +96,18 @@ class explosion_brushes
 public:
 
   explosion_brushes();
+  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+
+private:
+
+  color_scale_brushes m_brushes;
+};
+
+class impact_brushes
+{
+public:
+
+  impact_brushes();
   [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
 
 private:
@@ -191,6 +204,7 @@ private:
   auto Render(const bullet& playerBullet) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
+  auto Render(const impact_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
 
   template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;
@@ -202,6 +216,7 @@ private:
   player_ship_brushes m_playerShipBrushes;
   bullet_brushes m_bulletBrushes;
   explosion_brushes m_explosionBrushes;
+  impact_brushes m_impactBrushes;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };

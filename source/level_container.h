@@ -26,6 +26,7 @@ public:
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
   using explosion_particle_collection  = std::list<explosion_particle>;
+  using impact_particle_collection  = std::list<impact_particle>;
 
   level_container();
   level_container(const level_container& levelContainer) = delete;
@@ -71,6 +72,7 @@ private:
   mine_collection m_mines;
   asteroid_container m_asteroids;
   explosion_particle_collection m_explosionParticles;
+  impact_particle_collection m_impactParticles;
 
   int64_t m_ticksRemaining = 0;
 

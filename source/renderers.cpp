@@ -120,6 +120,16 @@ explosion_brushes::explosion_brushes() : m_brushes { color_scale { D2D1::ColorF(
   return m_brushes[fadeRatio];
 }
 
+impact_brushes::impact_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
+{
+}
+
+[[nodiscard]] auto impact_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  return m_brushes[fadeRatio];
+}
+
+
 target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
 {
 }
@@ -229,6 +239,16 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
 auto renderer::Render(const explosion_particle& particle) const -> void
 {
   auto brush = m_explosionBrushes.Fill(particle.Age() / particle.Lifespan());
+
+  static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
+  const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
+
+  framework::renderTarget()->FillRectangle(particleRect, brush.get());
+}
+
+auto renderer::Render(const impact_particle& particle) const -> void
+{
+  auto brush = m_impactBrushes.Fill(particle.Age() / particle.Lifespan());
 
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };

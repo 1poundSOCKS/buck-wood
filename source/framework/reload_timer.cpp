@@ -9,7 +9,7 @@ auto reload_timer::Update(float interval) -> bool
 {
   auto reloaded = ( m_currentTime += interval ) > m_reloadTime;
 
-  if( reloaded )
+  while( m_currentTime > m_reloadTime )
   {
     m_currentTime -= m_reloadTime;
   }
