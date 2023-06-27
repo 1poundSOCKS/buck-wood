@@ -207,7 +207,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
 
   do_geometries_to_points_collisions(m_asteroids, m_bullets, [this](auto& asteroid, auto& bullet)
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position(), 1 } );
+    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
     bullet.Destroy();
   });
 
@@ -218,7 +218,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
 
   do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position(), 1 } );
+    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
 
     if( !target.IsActivated() )
     {
