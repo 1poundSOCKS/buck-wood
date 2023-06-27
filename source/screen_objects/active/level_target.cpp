@@ -6,7 +6,7 @@
 level_target::level_target(float x, float y) : m_position { x, y }
 {
   m_geometry.Load( shape_generator { x, y, 100, 100, 6 } );
-  m_reloadTimer = reload_timer { 5 };
+  m_reloadTimer = reload_timer { m_defaultReloadTime };
 }
 
 [[nodiscard]] auto level_target::Position() const -> game_point
