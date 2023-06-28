@@ -10,7 +10,7 @@ level_grid_cell_type::level_grid_cell_type(const level_grid_cell& cell)
   {
     m_type = type::asteroid;
   }
-  else if( noise < -0.92 )
+  else if( noise < -0.87 )
   {
     m_type = type::target;
   }

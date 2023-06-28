@@ -120,7 +120,7 @@ explosion_brushes::explosion_brushes() : m_brushes { color_scale { D2D1::ColorF(
   return m_brushes[fadeRatio];
 }
 
-impact_brushes::impact_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
+impact_brushes::impact_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } }
 {
 }
 
