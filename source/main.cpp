@@ -20,7 +20,7 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
-int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow)
+auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   framework::create(instance, cmdShow);
   framework::setGameSpeedMultiplier(2.0f);
