@@ -180,11 +180,11 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
       CreateExplosion(position);
     });
 
-    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this, updateEvents](auto& mine, auto& playerShip)
+    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this, updateEvents](auto& playerShip, auto& mine)
     {
       mine.Destroy();
-      playerShip.Destroy();
-      auto position = playerShip.Position();
+      playerShip.ApplyDamage(2);
+      auto position = mine.Position();
       CreateExplosion(position);
       updateEvents->mineExploded = true;
     });

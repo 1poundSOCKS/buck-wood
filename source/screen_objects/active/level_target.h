@@ -26,7 +26,7 @@ public:
   
 private:
 
-  inline static const float m_defaultReloadTime { 1 };
+  inline static const float m_defaultReloadTime { 2 };
 
   game_point m_position { 0, 0 };
   bool m_activated = false;

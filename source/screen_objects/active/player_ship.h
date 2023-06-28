@@ -22,6 +22,7 @@ public:
   auto SetAngle(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
   auto Update(float interval) -> void;
+  auto ApplyDamage(int value) -> void;
   auto Destroy() -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
@@ -47,6 +48,7 @@ private:
   moving_body m_movingBody;
   float m_angle = 0;
   bool m_thrusterOn = false;
+  int m_hitPoints { 10 };
   bool m_destroyed { false };
 
   path_geometry m_geometry;
@@ -61,6 +63,16 @@ inline auto player_ship::SetAngle(float angle) -> void
 inline auto player_ship::SetThrusterOn(bool on) -> void
 {
   m_thrusterOn = on;
+}
+
+inline auto player_ship::ApplyDamage(int value) -> void
+{
+  m_hitPoints -= value;
+
+  if( m_hitPoints <= 0 )
+  {
+    Destroy();
+  }
 }
 
 inline auto player_ship::Destroy() -> void
