@@ -8,13 +8,16 @@
 #include "transformed_path_geometry.h"
 #include "reload_timer.h"
 #include "moving_body.h"
+#include "health_status.h"
 
 class player_ship
 {
 public:
 
   enum class state { alive, dead };
+
   using points_collection = std::vector<game_point>;
+  using shield_status = std::shared_ptr<health_status>;
 
   player_ship();
   player_ship(const game_point& position);
@@ -30,6 +33,7 @@ public:
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
+  [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto Destroyed() const -> bool;
 
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
@@ -48,7 +52,7 @@ private:
   moving_body m_movingBody;
   float m_angle = 0;
   bool m_thrusterOn = false;
-  int m_hitPoints { 10 };
+  shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 
   path_geometry m_geometry;
@@ -67,9 +71,7 @@ inline auto player_ship::SetThrusterOn(bool on) -> void
 
 inline auto player_ship::ApplyDamage(int value) -> void
 {
-  m_hitPoints -= value;
-
-  if( m_hitPoints <= 0 )
+  if( m_shieldStatus->ApplyDamage(value) == 0 )
   {
     Destroy();
   }
@@ -103,6 +105,11 @@ inline auto player_ship::Destroy() -> void
 [[nodiscard]] inline auto player_ship::ThrusterOn() const -> bool
 {
   return m_thrusterOn;
+}
+
+[[nodiscard]] inline auto player_ship::ShieldStatus() const -> const shield_status&
+{
+  return m_shieldStatus;
 }
 
 [[nodiscard]] inline auto player_ship::Destroyed() const -> bool

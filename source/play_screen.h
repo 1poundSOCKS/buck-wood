@@ -11,9 +11,9 @@
 #include "menu_def.h"
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
-#include "level_map.h"
 #include "text_box.h"
 #include "level_radar.h"
+#include "player_shields.h"
 
 class play_screen
 {
@@ -54,6 +54,7 @@ private:
   mouse_cursor m_cursor;
   menu m_menu;
   level_radar m_levelRadar;
+  player_shields m_playerShields;
 
   game_level_data_loader m_gameLevelDataLoader;
   

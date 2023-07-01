@@ -20,6 +20,8 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
   m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
+
+  m_playerShields.Attach(m_levelContainer->PlayerShields());
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool

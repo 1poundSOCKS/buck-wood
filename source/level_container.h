@@ -49,6 +49,7 @@ public:
   [[nodiscard]] auto PlayerPosition() const -> game_point;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
+  [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
   [[nodiscard]] auto TicksRemaining() const -> int64_t;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
@@ -94,4 +95,9 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
   {
     m_mines.emplace_back( mine { static_cast<float>(position.x), static_cast<float>(position.y) } );
   });
+}
+
+[[nodiscard]] inline auto level_container::PlayerShields() const -> const player_ship::shield_status&
+{
+  return m_playerShip.ShieldStatus();  
 }
