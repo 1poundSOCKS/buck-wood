@@ -11,6 +11,8 @@ public:
 
   auto Attach(const player_ship::shield_status& shieldStatus) -> void;
 
+  [[nodiscard]] auto GetDamagePercentage() const -> float;
+
 private:
 
   player_ship::shield_status m_shieldStatus;
@@ -20,4 +22,9 @@ private:
 inline auto player_shields::Attach(const player_ship::shield_status& shieldStatus) -> void
 {
   m_shieldStatus = shieldStatus;
+}
+
+[[nodiscard]] inline auto player_shields::GetDamagePercentage() const -> float
+{
+  return m_shieldStatus ? m_shieldStatus->GetDamagePercentage() : 0;
 }

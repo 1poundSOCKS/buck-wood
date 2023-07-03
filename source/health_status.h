@@ -9,7 +9,7 @@ public:
 
   auto ApplyDamage(int value) -> int;
 
-  [[nodiscard]] auto GetPercentageTaken() -> float;
+  [[nodiscard]] auto GetDamagePercentage() -> float;
 
 private:
 
@@ -29,7 +29,7 @@ inline auto health_status::ApplyDamage(int value) -> int
   return m_maxValue - m_value;
 }
 
-[[nodiscard]] inline auto health_status::GetPercentageTaken() -> float
+[[nodiscard]] inline auto health_status::GetDamagePercentage() -> float
 {
   return static_cast<float>(m_value) / static_cast<float>(m_maxValue) * 100.0f;
 }

@@ -112,6 +112,8 @@ auto play_screen::Render() const -> void
     m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
   }
 
+  renderer::render(m_playerShields);
+
   m_cursor.Render(overlayViewRect);
 
   auto endRenderTime = performance_counter::QueryValue();
