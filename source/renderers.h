@@ -41,8 +41,8 @@ private:
   template <typename brush_selector> auto Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
 
   target_brushes m_targetBrushes;
-  mine_brushes m_mineBrushes;
-  asteroid_brushes m_asteroidBrushes;
+  filled_geometry_brushes m_mineBrushes { screen_render_brush_red, screen_render_brush_grey, 3 };
+  filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
   player_ship_brushes m_playerShipBrushes;
   bullet_brushes m_bulletBrushes;
   explosion_brushes m_explosionBrushes;

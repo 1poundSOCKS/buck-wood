@@ -25,54 +25,10 @@ target_brushes::target_brushes()
   return m_activated;
 }
 
-mine_brushes::mine_brushes()
-{
-  const auto& renderTarget = framework::renderTarget();
-  m_fill =  screen_render_brush_red.CreateBrush(renderTarget.get());
-  m_draw = screen_render_brush_grey.CreateBrush(renderTarget.get());
-}
-
-[[nodiscard]] auto mine_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_fill;
-}
-
-[[nodiscard]] auto mine_brushes::Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_draw;
-}
-
-[[nodiscard]] auto mine_brushes::StrokeWidth() const -> float
-{
-  return 3.0f;
-}
-
-asteroid_brushes::asteroid_brushes()
-{
-  const auto& renderTarget = framework::renderTarget();
-  m_fill = screen_render_brush_grey.CreateBrush(renderTarget.get());
-  m_draw = screen_render_brush_dark_grey.CreateBrush(renderTarget.get());
-}
-
-[[nodiscard]] auto asteroid_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_fill;
-}
-
-[[nodiscard]] auto asteroid_brushes::Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_draw;
-}
-
-[[nodiscard]] auto asteroid_brushes::StrokeWidth() const -> float
-{
-  return 6.0f;
-}
-
 player_ship_brushes::player_ship_brushes()
 {
   const auto& renderTarget = framework::renderTarget();
-  m_fill = screen_render_brush_dark_grey.CreateBrush(renderTarget.get());
+  m_fill = screen_render_brush_grey.CreateBrush(renderTarget.get());
   m_draw = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_thruster = screen_render_brush_red.CreateBrush(renderTarget.get());
 }

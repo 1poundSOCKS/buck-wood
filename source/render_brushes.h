@@ -22,38 +22,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
 };
 
-class mine_brushes
-{
-public:
-
-  mine_brushes();
-
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto StrokeWidth() const -> float;
-
-private:
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
-};
-
-class asteroid_brushes
-{
-public:
-
-  asteroid_brushes();
-
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto StrokeWidth() const -> float;
-
-private:
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
-};
-
 class player_ship_brushes
 {
 public:
@@ -180,6 +148,7 @@ class filled_geometry_brushes
 public:
 
   filled_geometry_brushes(D2D_COLOR_F fillColor, D2D_COLOR_F drawColor, float strokeWidth);
+  filled_geometry_brushes(const render_brush_def& fillBrushDef, const render_brush_def& drawBrushDef, float strokeWidth);
 
   [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
   [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
@@ -198,6 +167,14 @@ inline filled_geometry_brushes::filled_geometry_brushes(D2D_COLOR_F fillColor, D
   const auto& renderTarget = framework::renderTarget();
   m_fill = render_brush_def { fillColor }.CreateBrush(renderTarget.get());
   m_draw = render_brush_def { drawColor }.CreateBrush(renderTarget.get());
+}
+
+inline filled_geometry_brushes::filled_geometry_brushes(const render_brush_def& fillBrushDef, const render_brush_def& drawBrushDef, float strokeWidth) : 
+  m_strokeWidth { strokeWidth }
+{
+  const auto& renderTarget = framework::renderTarget();
+  m_fill = fillBrushDef.CreateBrush(renderTarget.get());
+  m_draw = drawBrushDef.CreateBrush(renderTarget.get());
 }
 
 [[nodiscard]] inline auto filled_geometry_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
