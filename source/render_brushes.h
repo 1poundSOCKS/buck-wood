@@ -5,6 +5,24 @@
 #include "level_target.h"
 #include "bullet.h"
 
+class filled_geometry_brushes
+{
+public:
+
+  filled_geometry_brushes(D2D_COLOR_F fillColor, D2D_COLOR_F drawColor, float strokeWidth);
+  filled_geometry_brushes(const render_brush_def& fillBrushDef, const render_brush_def& drawBrushDef, float strokeWidth);
+
+  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
+  [[nodiscard]] auto StrokeWidth() const -> float;
+
+private:
+
+  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
+  float m_strokeWidth { 0 };
+};
+
 class target_brushes
 {
 public:
@@ -22,21 +40,16 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
 };
 
-class player_ship_brushes
+class player_ship_brushes : public filled_geometry_brushes
 {
 public:
 
   player_ship_brushes();
 
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto StrokeWidth() const -> float;
   [[nodiscard]] auto Thruster() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
 
 private:
 
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
   winrt::com_ptr<ID2D1SolidColorBrush> m_thruster;
 };
 
@@ -142,24 +155,6 @@ template <typename brushes_container>
 {
   return m_brushes.StrokeWidth();
 }
-
-class filled_geometry_brushes
-{
-public:
-
-  filled_geometry_brushes(D2D_COLOR_F fillColor, D2D_COLOR_F drawColor, float strokeWidth);
-  filled_geometry_brushes(const render_brush_def& fillBrushDef, const render_brush_def& drawBrushDef, float strokeWidth);
-
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto StrokeWidth() const -> float;
-
-private:
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_draw;
-  float m_strokeWidth { 0 };
-};
 
 inline filled_geometry_brushes::filled_geometry_brushes(D2D_COLOR_F fillColor, D2D_COLOR_F drawColor, float strokeWidth) : 
   m_strokeWidth { strokeWidth }

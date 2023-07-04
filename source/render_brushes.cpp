@@ -25,27 +25,10 @@ target_brushes::target_brushes()
   return m_activated;
 }
 
-player_ship_brushes::player_ship_brushes()
+player_ship_brushes::player_ship_brushes() : filled_geometry_brushes { screen_render_brush_grey, screen_render_brush_white, 2 }
 {
   const auto& renderTarget = framework::renderTarget();
-  m_fill = screen_render_brush_grey.CreateBrush(renderTarget.get());
-  m_draw = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_thruster = screen_render_brush_red.CreateBrush(renderTarget.get());
-}
-
-[[nodiscard]] auto player_ship_brushes::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_fill;
-}
-
-[[nodiscard]] auto player_ship_brushes::Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_draw;
-}
-
-[[nodiscard]] auto player_ship_brushes::StrokeWidth() const -> float
-{
-  return 2.0f;
 }
 
 [[nodiscard]] auto player_ship_brushes::Thruster() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
