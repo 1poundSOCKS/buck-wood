@@ -36,34 +36,6 @@ player_ship_brushes::player_ship_brushes() : filled_geometry_brushes { screen_re
   return m_thruster;
 }
 
-bullet_brushes::bullet_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
-{
-}
-
-[[nodiscard]] auto bullet_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_brushes[fadeRatio];
-}
-
-explosion_brushes::explosion_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } }
-{
-}
-
-[[nodiscard]] auto explosion_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_brushes[fadeRatio];
-}
-
-impact_brushes::impact_brushes() : m_brushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } }
-{
-}
-
-[[nodiscard]] auto impact_brushes::Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_brushes[fadeRatio];
-}
-
-
 target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
 {
 }
@@ -81,13 +53,4 @@ target_brush_selector::target_brush_selector(const target_brushes& brushes, cons
 [[nodiscard]] auto target_brush_selector::StrokeWidth() const -> float
 {
   return 8.0f;
-}
-
-bullet_brush_selector::bullet_brush_selector(const bullet_brushes& brushes, const bullet& playerBullet) : m_brushes { brushes }, m_bullet { playerBullet }
-{
-}
-
-[[nodiscard]] auto bullet_brush_selector::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_brushes.Fill(m_bullet.DistanceTravelled() / m_bullet.Range());
 }

@@ -53,42 +53,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_thruster;
 };
 
-class bullet_brushes
-{
-public:
-
-  bullet_brushes();
-  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-
-private:
-
-  color_scale_brushes m_brushes;
-};
-
-class explosion_brushes
-{
-public:
-
-  explosion_brushes();
-  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-
-private:
-
-  color_scale_brushes m_brushes;
-};
-
-class impact_brushes
-{
-public:
-
-  impact_brushes();
-  [[nodiscard]] auto Fill(float fadeRatio) const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-
-private:
-
-  color_scale_brushes m_brushes;
-};
-
 class target_brush_selector
 {
 public:
@@ -102,19 +66,6 @@ public:
 private:
   const target_brushes& m_brushes;
   const level_target& m_target;
-
-};
-
-class bullet_brush_selector
-{
-public:
-
-  bullet_brush_selector(const bullet_brushes& brushes, const bullet& playerBullet);
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-
-private:
-  const bullet_brushes& m_brushes;
-  const bullet& m_bullet;
 
 };
 
