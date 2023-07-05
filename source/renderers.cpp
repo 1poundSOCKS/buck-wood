@@ -68,8 +68,7 @@ auto renderer::Render(const bullet& playerBullet) const -> void
 {
   const D2D1_RECT_F rect = GetBulletRect();
   auto position = playerBullet.Position();
-  bullet_brush_selector brushSelector { m_bulletBrushes, playerBullet };
-  auto brush = brushSelector.Fill();
+  const auto& brush = m_bulletBrushes[playerBullet.DistanceTravelled() / playerBullet.Range()];
   framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, brush.get());
 }
 
@@ -79,7 +78,7 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
 
   std::transform(std::cbegin(playerExplosion.Particles()), std::cend(playerExplosion.Particles()), std::back_inserter(renderParticles), [this](auto particle) -> render_rect
   {
-    auto brush = m_explosionBrushes.Fill(particle.DistanceTravelled() / particle.Range());
+    const auto& brush = m_explosionBrushes[particle.DistanceTravelled() / particle.Range()];
     return particle.GetRenderRect(brush.get());
   });
 
@@ -88,7 +87,7 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
 
 auto renderer::Render(const explosion_particle& particle) const -> void
 {
-  auto brush = m_explosionBrushes.Fill(particle.Age() / particle.Lifespan());
+  const auto& brush = m_explosionBrushes[particle.Age() / particle.Lifespan()];
 
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
@@ -98,7 +97,7 @@ auto renderer::Render(const explosion_particle& particle) const -> void
 
 auto renderer::Render(const impact_particle& particle) const -> void
 {
-  auto brush = m_impactBrushes.Fill(particle.Age() / particle.Lifespan());
+  const auto& brush = m_impactBrushes[particle.Age() / particle.Lifespan()];
 
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
