@@ -5,8 +5,8 @@
 
 constexpr auto GetPlayerGeometryData()
 {
-  constexpr float width { 10 };
-  constexpr float height { 16 };
+  constexpr float width { 7 };
+  constexpr float height { 10 };
 
   return std::array {
     game_point { 0, -height },
@@ -18,7 +18,7 @@ constexpr auto GetPlayerGeometryData()
 constexpr auto GetPlayerThrusterGeometryData()
 {
   constexpr float width { 5 };
-  constexpr float yOffset { 18 };
+  constexpr float yOffset { 16 };
   
   return std::array {
     game_point { width, yOffset },
