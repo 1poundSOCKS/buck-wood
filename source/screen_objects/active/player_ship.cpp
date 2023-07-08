@@ -5,18 +5,24 @@
 
 constexpr auto GetPlayerGeometryData()
 {
+  constexpr float width { 10 };
+  constexpr float height { 16 };
+
   return std::array {
-    game_point { 0, -10 },
-    game_point { 7, 10 },
-    game_point { -7, 10 }
+    game_point { 0, -height },
+    game_point { width, height },
+    game_point { -width, height }
   };
 }
 
 constexpr auto GetPlayerThrusterGeometryData()
 {
+  constexpr float width { 5 };
+  constexpr float yOffset { 18 };
+  
   return std::array {
-    game_point { 5, 14 },
-    game_point { -5, 14 }
+    game_point { width, yOffset },
+    game_point { -width, yOffset }
   };
 }
 

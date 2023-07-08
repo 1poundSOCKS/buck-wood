@@ -26,6 +26,7 @@ public:
   auto SetThrusterOn(bool on) -> void;
   auto Update(float interval) -> void;
   auto ApplyDamage(int value) -> void;
+  auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
@@ -75,6 +76,12 @@ inline auto player_ship::ApplyDamage(int value) -> void
   {
     Destroy();
   }
+}
+
+inline auto player_ship::ApplyFatalDamage() -> void
+{
+  m_shieldStatus->ApplyFatalDamage();
+  Destroy();
 }
 
 inline auto player_ship::Destroy() -> void

@@ -115,7 +115,7 @@ auto renderer::Render(const player_shields& playerShields) const -> void
 {
   auto shieldRemaining = 100.0f - playerShields.GetDamagePercentage();
 
-  slider_control damageSlider = { D2D1_RECT_F { 0, 500, 100, 800 } };
+  slider_control damageSlider = { D2D1_RECT_F { 50, 500, 100, 800 } };
 
   framework::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_playerShieldsBrushes.Fill().get());
   framework::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());

@@ -8,6 +8,7 @@ public:
   health_status(int maxValue);
 
   auto ApplyDamage(int value) -> int;
+  auto ApplyFatalDamage() -> void;
 
   [[nodiscard]] auto GetDamagePercentage() -> float;
 
@@ -27,6 +28,11 @@ inline auto health_status::ApplyDamage(int value) -> int
   m_value += value;
   m_value = min(m_value, m_maxValue);
   return m_maxValue - m_value;
+}
+
+inline auto health_status::ApplyFatalDamage() -> void
+{
+  m_value = m_maxValue;
 }
 
 [[nodiscard]] inline auto health_status::GetDamagePercentage() -> float
