@@ -232,6 +232,7 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
     m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, framework::renderTarget().get());
 
     ReadKeyboardState(framework::keyboard().get(), m_inputState.keyboardState);
+    m_inputState.gamepadState.getState(0);
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / framework::fps();
@@ -244,6 +245,7 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
     m_inputState.previousWindowData = m_inputState.windowData;
     m_inputState.previousKeyboardState = m_inputState.keyboardState;
     m_inputState.previousRenderTargetMouseData = m_inputState.renderTargetMouseData;
+    m_inputState.previousGamepadState = m_inputState.gamepadState;
   }
 }
 
