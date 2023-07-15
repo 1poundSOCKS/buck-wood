@@ -232,7 +232,7 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
     m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, framework::renderTarget().get());
 
     ReadKeyboardState(framework::keyboard().get(), m_inputState.keyboardState);
-    m_inputState.gamepadState.getState(0);
+    m_inputState.gamepadState.Update();
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / framework::fps();

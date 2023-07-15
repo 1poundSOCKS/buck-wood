@@ -4,7 +4,6 @@
 #include "main_menu_screen.h"
 #include "renderers.h"
 #include "command_line.h"
-#include "gamepad.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
