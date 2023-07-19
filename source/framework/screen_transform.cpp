@@ -34,8 +34,8 @@ auto screen_transform::Set(const D2D1::Matrix3x2F& transform) -> bool
 
 [[nodiscard]] auto screen_transform::GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data
 {
-  auto mousePosition = m_invertedTransform.TransformPoint({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
-  auto previousMousePosition = m_invertedTransform.TransformPoint({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+  auto mousePosition = GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
 
   object_input_data objectInputData;
   objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
