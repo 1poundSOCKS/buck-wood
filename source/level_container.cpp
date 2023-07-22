@@ -46,7 +46,7 @@ auto level_container::HasTimedOut() const -> bool
   return { m_cellWidth, m_cellHeight, left, top, right, bottom };
 }
 
-auto level_container::Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr
+auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr
 {
   auto updateEvents = std::make_unique<update_events>();
 
@@ -63,15 +63,13 @@ auto level_container::Update(const object_input_data& inputData, int64_t ticks, 
   {
     const auto& playerPosition = m_playerShip.Position();
 
-    auto playerToMouseAngle = CalculateAngle(playerPosition.x, playerPosition.y, inputData.GetMouseData().x, inputData.GetMouseData().y);
-
-    m_playerShip.SetAngle(playerToMouseAngle);
-    m_playerShip.SetThrusterOn(inputData.GetMouseData().rightButtonDown);
+    m_playerShip.SetAngle(input.Angle());
+    m_playerShip.SetThrusterOn(input.Thrust() ? true : false);
 
     m_playerShip.Update(interval);
 
     auto reloaded = m_reloadTimer.Update(interval);
-    auto triggerPressed = inputData.GetMouseData().leftButtonDown;
+    auto triggerPressed = input.Shoot() ? true : false;
 
     if( reloaded && triggerPressed )
     {

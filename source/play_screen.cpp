@@ -236,13 +236,17 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> level_container::update_e
   auto mousePosition = screenTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
   auto previousMousePosition = screenTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
 
-  object_input_data objectInputData;
-  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
-  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
+  auto playerPosition = m_levelContainer->PlayerPosition();
+  auto playerAngle = playerPosition.AngleTo(mousePosition);
+
+  auto thrust = screenInputState.windowData.mouse.rightButtonDown ? 1.0f : 0;
+  auto shoot = screenInputState.windowData.mouse.leftButtonDown ? 1.0f : 0;
+
+  level_input levelInput { playerAngle, thrust, shoot };
   
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
-  return m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
+  return m_levelContainer->Update(levelInput, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform

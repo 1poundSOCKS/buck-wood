@@ -8,6 +8,7 @@
 #include "asteroid_container.h"
 #include "mine.h"
 #include "explosion_particle.h"
+#include "level_input.h"
 
 class level_container
 {
@@ -42,7 +43,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& targets) -> void;
   auto AddMines(std::ranges::input_range auto&& mines) -> void;
 
-  auto Update(const object_input_data& inputData, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr;
+  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
