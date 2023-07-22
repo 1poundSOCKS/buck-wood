@@ -14,7 +14,6 @@ public:
   auto Set(const D2D1::Matrix3x2F& transform) -> bool;
   [[nodiscard]] auto Get() const -> const D2D1::Matrix3x2F&;
   [[nodiscard]] auto GetViewRect(D2D1_SIZE_F renderTargetSize) const -> D2D1_RECT_F;
-  [[nodiscard]] auto GetObjectInputData(const screen_input_state& screenInputState) -> object_input_data;
   [[nodiscard]] auto GetScreenPosition(const game_point& windowPosition) -> game_point;
 
 private:

@@ -56,10 +56,16 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 
   const auto& screenInputState = framework::screenInputState();
   screen_transform screenTransform;
-  auto inputData = screenTransform.GetObjectInputData(screenInputState);
 
-  m_menu.Update(inputData);
-  m_cursor.Update(inputData);
+  auto mousePosition = screenTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = screenTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+
+  object_input_data objectInputData;
+  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
+
+  m_menu.Update(objectInputData);
+  m_cursor.Update(objectInputData);
 }
 
 auto main_menu_screen::Render() const -> void

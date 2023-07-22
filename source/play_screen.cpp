@@ -66,13 +66,19 @@ auto play_screen::Update(int64_t frameInterval) -> level_container::update_event
 
   auto overlayTransform = GetOverlayRenderTransform();
   const auto& screenInputState = framework::screenInputState();
-  auto overlayInputData = overlayTransform.GetObjectInputData(screenInputState);
 
-  m_cursor.Update(overlayInputData);
+  auto mousePosition = overlayTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = overlayTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+
+  object_input_data objectInputData;
+  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
+
+  m_cursor.Update(objectInputData);
 
   if( m_paused )
   {
-    m_menu.Update(overlayInputData);
+    m_menu.Update(objectInputData);
   }
 
   auto endUpdateTime = performance_counter::QueryValue();
@@ -226,7 +232,14 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> level_container::update_e
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
   const auto& screenInputState = framework::screenInputState();
-  auto objectInputData = screenTransform.GetObjectInputData(screenInputState);
+
+  auto mousePosition = screenTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = screenTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+
+  object_input_data objectInputData;
+  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
+  
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   return m_levelContainer->Update(objectInputData, elapsedTicks, viewRect);
