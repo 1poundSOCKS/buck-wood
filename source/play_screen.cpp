@@ -32,14 +32,8 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
   Render();
   
-  auto startTime = performance_counter::QueryValue();
-
   framework::present();
   
-  auto endTime = performance_counter::QueryValue();
-
-  framework::addDiagnosticsTime(L"Present time", endTime - startTime);
-
   PostPresent(levelUpdateEvents);
 
   return m_continueRunning;
@@ -106,16 +100,16 @@ auto play_screen::Render() const -> void
   auto overlayRenderTransform = GetOverlayRenderTransform();
   renderTarget->SetTransform(overlayRenderTransform.Get());
 
+  if( m_stage == stage::playing )
+  {
+    m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
+  }
+
   auto overlayViewRect = overlayRenderTransform.GetViewRect(renderTargetSize);
 
   if( m_paused )
   {
     m_menu.Render(overlayViewRect);
-  }
-
-  if( m_stage == stage::playing )
-  {
-    m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
   }
 
   renderer::render(m_playerShields);
@@ -231,19 +225,9 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> level_container::update_e
 {
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
-  const auto& screenInputState = framework::screenInputState();
 
-  auto mousePosition = screenTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
-  auto previousMousePosition = screenTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+  const auto levelInput = GetLevelInput(framework::screenInputState(), screenTransform);
 
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  auto playerAngle = playerPosition.AngleTo(mousePosition);
-
-  auto thrust = screenInputState.windowData.mouse.rightButtonDown ? 1.0f : 0;
-  auto shoot = screenInputState.windowData.mouse.leftButtonDown ? 1.0f : 0;
-
-  level_input levelInput { playerAngle, thrust, shoot };
-  
   const auto& renderTarget = framework::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   return m_levelContainer->Update(levelInput, elapsedTicks, viewRect);
@@ -256,6 +240,34 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
   return { cameraTransform.Get() };
+}
+
+[[nodiscard]] auto play_screen::GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input
+{
+  if( input.gamepadState.Connected() )
+  {
+    auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
+    auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
+    auto leftTrigger = static_cast<float>(input.gamepadState.LeftTrigger());
+    auto rightTrigger = static_cast<float>(input.gamepadState.RightTrigger());
+
+    auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
+
+    return { angle, rightTrigger, leftTrigger };
+  }
+  else
+  {
+    auto mousePosition = transform.GetScreenPosition({ input.renderTargetMouseData.x, input.renderTargetMouseData.y });
+    auto previousMousePosition = transform.GetScreenPosition({ input.previousRenderTargetMouseData.x, input.previousRenderTargetMouseData.y });
+
+    auto playerPosition = m_levelContainer->PlayerPosition();
+    auto playerAngle = playerPosition.AngleTo(mousePosition);
+
+    auto thrust = input.windowData.mouse.rightButtonDown ? 1.0f : 0;
+    auto shoot = input.windowData.mouse.leftButtonDown ? 1.0f : 0;
+
+    return { playerAngle, thrust, shoot };
+  }
 }
 
 auto play_screen::GetOverlayRenderTransform() const -> screen_transform

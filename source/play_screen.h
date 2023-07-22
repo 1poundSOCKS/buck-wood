@@ -34,6 +34,7 @@ private:
   auto Playing(int64_t frameInterval) -> level_container::update_events_ptr;
   auto PostPlay(int64_t frameInterval) -> void;
 
+  [[nodiscard]] auto GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input;
   auto UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
