@@ -248,12 +248,16 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   {
     auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
     auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
-    auto leftTrigger = static_cast<float>(input.gamepadState.LeftTrigger());
-    auto rightTrigger = static_cast<float>(input.gamepadState.RightTrigger());
-
+    
+    if( thumbLX > -1000 && thumbLX < 1000 ) thumbLX = 0;
+    if( thumbLY > -1000 && thumbLY < 1000 ) thumbLY = 0;
+    
     auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
+    auto thrust = sqrt(thumbLX * thumbLX + thumbLY * thumbLY);
 
-    return { angle, rightTrigger, leftTrigger };
+    auto shoot = input.gamepadState.Buttons() & XINPUT_GAMEPAD_A ? 1.0f : 0.0f;
+
+    return { angle, thrust, shoot };
   }
   else
   {
