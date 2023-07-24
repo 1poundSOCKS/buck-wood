@@ -63,7 +63,11 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   {
     const auto& playerPosition = m_playerShip.Position();
 
-    m_playerShip.SetAngle(input.Angle());
+    if( input.Angle() )
+    {
+      m_playerShip.SetAngle(*input.Angle());
+    }
+
     m_playerShip.SetThrusterOn(input.Thrust() ? true : false);
 
     m_playerShip.Update(interval);

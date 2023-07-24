@@ -246,18 +246,21 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
   if( input.gamepadState.Connected() )
   {
+    framework::addDiagnostics(L"thumbLX", input.gamepadState.ThumbLX());
+    framework::addDiagnostics(L"thumbLY", input.gamepadState.ThumbLY());
+    
     auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
     auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
-    
-    if( thumbLX > -1000 && thumbLX < 1000 ) thumbLX = 0;
-    if( thumbLY > -1000 && thumbLY < 1000 ) thumbLY = 0;
+
+    if( thumbLX > -5000 && thumbLX < 5000 ) thumbLX = 0;
+    if( thumbLY > -5000 && thumbLY < 5000 ) thumbLY = 0;
     
     auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
     auto thrust = sqrt(thumbLX * thumbLX + thumbLY * thumbLY);
 
     auto shoot = input.gamepadState.Buttons() & XINPUT_GAMEPAD_A ? 1.0f : 0.0f;
 
-    return { angle, thrust, shoot };
+    return thrust > 0 ? level_input { angle, thrust, shoot } : level_input { std::nullopt, thrust, shoot };
   }
   else
   {
