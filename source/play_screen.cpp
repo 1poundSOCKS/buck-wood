@@ -248,19 +248,22 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   {
     framework::addDiagnostics(L"thumbLX", input.gamepadState.ThumbLX());
     framework::addDiagnostics(L"thumbLY", input.gamepadState.ThumbLY());
+
+    auto leftThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY());
+    auto rightThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY());
+    // auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
+    // auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
+
+    // if( thumbLX > -5000 && thumbLX < 5000 ) thumbLX = 0;
+    // if( thumbLY > -5000 && thumbLY < 5000 ) thumbLY = 0;
     
-    auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
-    auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
+    // auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
+    // auto thrust = sqrt(thumbLX * thumbLX + thumbLY * thumbLY);
+    auto thrust = leftThumbStickAngle ? 1.0f : 0.0f;
 
-    if( thumbLX > -5000 && thumbLX < 5000 ) thumbLX = 0;
-    if( thumbLY > -5000 && thumbLY < 5000 ) thumbLY = 0;
-    
-    auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
-    auto thrust = sqrt(thumbLX * thumbLX + thumbLY * thumbLY);
+    // auto shoot = input.gamepadState.Buttons() & XINPUT_GAMEPAD_A ? 1.0f : 0.0f;
 
-    auto shoot = input.gamepadState.Buttons() & XINPUT_GAMEPAD_A ? 1.0f : 0.0f;
-
-    return thrust > 0 ? level_input { angle, thrust, shoot } : level_input { std::nullopt, thrust, shoot };
+    return { leftThumbStickAngle, thrust, rightThumbStickAngle };
   }
   else
   {
@@ -271,9 +274,9 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     auto playerAngle = playerPosition.AngleTo(mousePosition);
 
     auto thrust = input.windowData.mouse.rightButtonDown ? 1.0f : 0;
-    auto shoot = input.windowData.mouse.leftButtonDown ? 1.0f : 0;
+    auto shootAngle = input.windowData.mouse.leftButtonDown ? std::optional<float>(playerAngle) : std::nullopt;
 
-    return { playerAngle, thrust, shoot };
+    return { playerAngle, thrust, shootAngle };
   }
 }
 

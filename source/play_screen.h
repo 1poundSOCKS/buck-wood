@@ -35,6 +35,7 @@ private:
   auto PostPlay(int64_t frameInterval) -> void;
 
   [[nodiscard]] auto GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input;
+  [[nodiscard]] static auto GetThumbStickAngle(short lx, short ly) -> std::optional<float>;
   auto UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
@@ -65,3 +66,12 @@ private:
 
   static inline float m_playZoom = 0.6f;
 };
+
+[[nodiscard]] inline auto play_screen::GetThumbStickAngle(short lx, short ly) -> std::optional<float>
+{
+  if( lx > -5000 && lx < 5000 ) lx = 0;
+  if( ly > -5000 && ly < 5000 ) ly = 0;
+  
+  return ( lx == 0 && ly == 0 ) ? 
+    std::nullopt : std::optional<float> { game_point { 0, 0 }.AngleTo(game_point { static_cast<float>(lx), static_cast<float>(-ly) }) };
+}

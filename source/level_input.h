@@ -4,20 +4,20 @@ class level_input
 {
 public:
 
-  level_input(std::optional<float> angle, float thrust, float shoot);
+  level_input(std::optional<float> angle, float thrust, std::optional<float> shootAngle);
 
   [[nodiscard]] auto Angle() const -> const std::optional<float>&;
   [[nodiscard]] auto Thrust() const -> float;
-  [[nodiscard]] auto Shoot() const -> float;
+  [[nodiscard]] auto ShootAngle() const -> const std::optional<float>&;
 
 private:
 
   std::optional<float> m_angle;
   float m_thrust { 0 };
-  float m_shoot { 0 };
+  std::optional<float> m_shootAngle;
 };
 
-inline level_input::level_input(std::optional<float> angle, float thrust, float shoot) : m_angle { angle }, m_thrust { thrust }, m_shoot { shoot }
+inline level_input::level_input(std::optional<float> angle, float thrust, std::optional<float> shootAngle) : m_angle { angle }, m_thrust { thrust }, m_shootAngle { shootAngle }
 {
 }
 
@@ -31,7 +31,7 @@ inline level_input::level_input(std::optional<float> angle, float thrust, float 
   return m_thrust;
 }
 
-[[nodiscard]] inline auto level_input::Shoot() const -> float
+[[nodiscard]] inline auto level_input::ShootAngle() const -> const std::optional<float>&
 {
-  return m_shoot;
+  return m_shootAngle;
 }

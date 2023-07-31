@@ -73,11 +73,11 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
     m_playerShip.Update(interval);
 
     auto reloaded = m_reloadTimer.Update(interval);
-    auto triggerPressed = input.Shoot() ? true : false;
+    auto triggerPressed = input.ShootAngle() ? true : false;
 
     if( reloaded && triggerPressed )
     {
-      m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), m_playerShip.Angle() } );
+      m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), *input.ShootAngle() } );
       updateEvents->playerShot = true;
     }
 
