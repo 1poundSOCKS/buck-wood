@@ -69,9 +69,8 @@ private:
 
 [[nodiscard]] inline auto play_screen::GetThumbStickAngle(short lx, short ly) -> std::optional<float>
 {
-  if( lx > -5000 && lx < 5000 ) lx = 0;
-  if( ly > -5000 && ly < 5000 ) ly = 0;
-  
-  return ( lx == 0 && ly == 0 ) ? 
+  auto distance = sqrt(lx * lx + ly * ly);
+
+  return ( distance < 5000 ) ? 
     std::nullopt : std::optional<float> { game_point { 0, 0 }.AngleTo(game_point { static_cast<float>(lx), static_cast<float>(-ly) }) };
 }
