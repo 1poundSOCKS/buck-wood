@@ -251,17 +251,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 
     auto leftThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY());
     auto rightThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY());
-    // auto thumbLX = static_cast<float>(input.gamepadState.ThumbLX());
-    // auto thumbLY = -static_cast<float>(input.gamepadState.ThumbLY());
 
-    // if( thumbLX > -5000 && thumbLX < 5000 ) thumbLX = 0;
-    // if( thumbLY > -5000 && thumbLY < 5000 ) thumbLY = 0;
-    
-    // auto angle = game_point { 0, 0 }.AngleTo(game_point { thumbLX, thumbLY });
-    // auto thrust = sqrt(thumbLX * thumbLX + thumbLY * thumbLY);
     auto thrust = leftThumbStickAngle ? 1.0f : 0.0f;
-
-    // auto shoot = input.gamepadState.Buttons() & XINPUT_GAMEPAD_A ? 1.0f : 0.0f;
 
     return { leftThumbStickAngle, thrust, rightThumbStickAngle };
   }

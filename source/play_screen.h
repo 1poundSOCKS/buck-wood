@@ -14,6 +14,7 @@
 #include "text_box.h"
 #include "level_radar.h"
 #include "player_shields.h"
+#include "gamepad_thumbstick.h"
 
 class play_screen
 {
@@ -69,8 +70,8 @@ private:
 
 [[nodiscard]] inline auto play_screen::GetThumbStickAngle(short lx, short ly) -> std::optional<float>
 {
-  auto distance = sqrt(lx * lx + ly * ly);
+  gamepad_thumbstick thumbstick { lx, ly };
 
-  return ( distance < 5000 ) ? 
-    std::nullopt : std::optional<float> { game_point { 0, 0 }.AngleTo(game_point { static_cast<float>(lx), static_cast<float>(-ly) }) };
+  return ( thumbstick.Distance() < 5000 ) ? 
+    std::nullopt : std::optional<float> { thumbstick.Angle() };
 }
