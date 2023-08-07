@@ -37,7 +37,7 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
-  static auto addDiagnostics(std::wstring_view label, int value) -> void;
+  static auto addDiagnostics(std::wstring_view label, auto value) -> void;
   static auto addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
   static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
   static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
@@ -255,7 +255,7 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
   return m_framework->m_inputState;
 }
 
-inline auto framework::addDiagnostics(std::wstring_view label, int value) -> void
+inline auto framework::addDiagnostics(std::wstring_view label, auto value) -> void
 {
   m_framework->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
 }

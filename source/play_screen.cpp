@@ -248,6 +248,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   {
     framework::addDiagnostics(L"thumbLX", input.gamepadState.ThumbLX());
     framework::addDiagnostics(L"thumbLY", input.gamepadState.ThumbLY());
+    framework::addDiagnostics(L"thumbLX ratio", input.gamepadState.ThumbLXRatio());
+    framework::addDiagnostics(L"thumbLY ratio", input.gamepadState.ThumbLYRatio());
 
     auto leftThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY());
     auto rightThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY());
