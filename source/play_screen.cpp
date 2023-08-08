@@ -246,13 +246,16 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
   if( input.gamepadState.Connected() )
   {
-    framework::addDiagnostics(L"thumbLX", input.gamepadState.ThumbLX());
-    framework::addDiagnostics(L"thumbLY", input.gamepadState.ThumbLY());
-    framework::addDiagnostics(L"thumbLX ratio", input.gamepadState.ThumbLXRatio());
-    framework::addDiagnostics(L"thumbLY ratio", input.gamepadState.ThumbLYRatio());
+    gamepad_thumbstick leftThumbstick { input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY() };
+    gamepad_thumbstick rightThumbstick { input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY() };
+    
+    framework::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
+    framework::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
+    framework::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
+    framework::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
-    auto leftThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY());
-    auto rightThumbStickAngle = GetThumbStickAngle(input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY());
+    auto leftThumbStickAngle = GetThumbStickAngle(leftThumbstick.X(), leftThumbstick.Y());
+    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y());
 
     auto thrust = leftThumbStickAngle ? 1.0f : 0.0f;
 

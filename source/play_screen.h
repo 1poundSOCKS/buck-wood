@@ -68,9 +68,9 @@ private:
   static inline float m_playZoom = 0.6f;
 };
 
-[[nodiscard]] inline auto play_screen::GetThumbStickAngle(short lx, short ly) -> std::optional<float>
+[[nodiscard]] inline auto play_screen::GetThumbStickAngle(short x, short y) -> std::optional<float>
 {
-  gamepad_thumbstick thumbstick { lx, ly };
+  gamepad_thumbstick thumbstick { x, y };
 
   return ( thumbstick.Distance() < 5000 ) ? 
     std::nullopt : std::optional<float> { thumbstick.Angle() };

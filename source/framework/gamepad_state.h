@@ -22,14 +22,7 @@ public:
   [[nodiscard]] auto ThumbRX() const -> SHORT;
   [[nodiscard]] auto ThumbRY() const -> SHORT;
 
-  [[nodiscard]] auto ThumbLXRatio() const -> float;
-  [[nodiscard]] auto ThumbLYRatio() const -> float;
-  [[nodiscard]] auto ThumbRXRatio() const -> float;
-  [[nodiscard]] auto ThumbRYRatio() const -> float;
-
 private:
-
-  [[nodiscard]] static auto Ratio(SHORT value) -> float;
 
   DWORD m_userIndex { 0 };
   bool m_connected { false };
@@ -90,31 +83,4 @@ inline auto gamepad_state::Update() -> DWORD
 [[nodiscard]] inline auto gamepad_state::ThumbRY() const -> SHORT
 {
   return m_state.Gamepad.sThumbRY;
-}
-
-[[nodiscard]] inline auto gamepad_state::ThumbLXRatio() const -> float
-{
-  return Ratio(ThumbLX());
-}
-
-[[nodiscard]] inline auto gamepad_state::ThumbLYRatio() const -> float
-{
-  return Ratio(ThumbLY());
-}
-
-[[nodiscard]] inline auto gamepad_state::ThumbRXRatio() const -> float
-{
-  return Ratio(ThumbRX());
-}
-
-[[nodiscard]] inline auto gamepad_state::ThumbRYRatio() const -> float
-{
-  return Ratio(ThumbRY());
-}
-
-[[nodiscard]] inline auto gamepad_state::Ratio(SHORT value) -> float
-{
-  constexpr auto positiveShift = -SHRT_MIN;
-  auto positiveShiftedValue = static_cast<float>(value) + positiveShift;
-  return positiveShiftedValue / positiveShift - 1.0f;
 }
