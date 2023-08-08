@@ -23,6 +23,7 @@ public:
   player_ship(const game_point& position);
 
   auto SetAngle(float angle) -> void;
+  auto Rotate(float angle) -> void;
   auto SetThrusterOn(bool on) -> void;
   auto Update(float interval) -> void;
   auto ApplyDamage(int value) -> void;
@@ -63,6 +64,17 @@ private:
 inline auto player_ship::SetAngle(float angle) -> void
 {
   m_angle = angle;
+}
+
+inline auto player_ship::Rotate(float angle) -> void
+{
+  m_angle += angle;
+  m_angle += 360.0f;
+  
+  while( m_angle >= 360.0f )
+  {
+    m_angle -= 360.0f;
+  }
 }
 
 inline auto player_ship::SetThrusterOn(bool on) -> void
