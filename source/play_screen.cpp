@@ -259,7 +259,7 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 
     auto thrust = leftThumbStickAngle ? 1.0f : 0.0f;
 
-    return { leftThumbStickAngle, thrust, rightThumbStickAngle };
+    return { leftThumbStickAngle, leftThumbstick.XRatio(), thrust, rightThumbStickAngle };
   }
   else
   {
@@ -272,7 +272,7 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     auto thrust = input.windowData.mouse.rightButtonDown ? 1.0f : 0;
     auto shootAngle = input.windowData.mouse.leftButtonDown ? std::optional<float>(playerAngle) : std::nullopt;
 
-    return { playerAngle, thrust, shootAngle };
+    return { playerAngle, std::nullopt, thrust, shootAngle };
   }
 }
 
