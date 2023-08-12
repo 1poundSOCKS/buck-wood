@@ -7,7 +7,7 @@ class play_camera_transform
 {
 public:
   
-  play_camera_transform(float centreX, float centreY, float scale, D2D1_SIZE_F renderTargetSize);
+  play_camera_transform(float centreX, float centreY, float angle, float scale, D2D1_SIZE_F renderTargetSize);
   [[nodiscard]] auto Get() const -> D2D1::Matrix3x2F;
 
 private:

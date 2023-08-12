@@ -107,14 +107,13 @@ auto play_screen::Render() const -> void
 
   auto overlayViewRect = overlayRenderTransform.GetViewRect(renderTargetSize);
 
+  renderer::render(m_playerShields);
+
   if( m_paused )
   {
     m_menu.Render(overlayViewRect);
+    m_cursor.Render(overlayViewRect);
   }
-
-  renderer::render(m_playerShields);
-
-  m_cursor.Render(overlayViewRect);
 
   auto endRenderTime = performance_counter::QueryValue();
 
@@ -238,7 +237,9 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
-  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraPosition.scale, renderTargetSize };
+  auto cameraAngle = 360.0f - m_levelContainer->PlayerAngle();
+  // cameraAngle %= 360.0f;
+  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };
   return { cameraTransform.Get() };
 }
 
@@ -246,8 +247,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
   if( input.gamepadState.Connected() )
   {
-    gamepad_thumbstick leftThumbstick { input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY() };
-    gamepad_thumbstick rightThumbstick { input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY() };
+    gamepad_thumbstick leftThumbstick { input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY(), 5000 };
+    gamepad_thumbstick rightThumbstick { input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY(), 5000 };
     
     framework::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
     framework::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());

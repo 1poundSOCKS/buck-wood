@@ -7,7 +7,7 @@ class gamepad_thumbstick
 
 public:
 
-  gamepad_thumbstick(SHORT lx, SHORT ly);
+  gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone);
 
   [[nodiscard]] auto X() const -> SHORT;
   [[nodiscard]] auto Y() const -> SHORT;
@@ -20,15 +20,20 @@ public:
 
 private:
 
-  [[nodiscard]] static auto Ratio(SHORT value) -> float;
+  [[nodiscard]] auto GetDeadzoneAdjustedValue(SHORT value) const -> SHORT;
+  [[nodiscard]] auto Ratio(SHORT value) const -> float;
 
   SHORT m_x { 0 };
   SHORT m_y { 0 };
+  SHORT m_deadzoneMax { 0 };
+  SHORT m_deadzoneMin { 0 };
 
 };
 
-inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly) : m_x { lx }, m_y { ly }
+inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone) : m_x { lx }, m_y { ly }, m_deadzoneMax { deadzone }, m_deadzoneMin { -deadzone }
 {
+  m_x = GetDeadzoneAdjustedValue(m_x);
+  m_y = GetDeadzoneAdjustedValue(m_y);
 }
 
 [[nodiscard]] inline auto gamepad_thumbstick::X() const -> SHORT
@@ -51,7 +56,7 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly) : m_x { lx }, 
   return Ratio(m_y);
 }
 
-[[nodiscard]] inline auto gamepad_thumbstick::Ratio(SHORT value) -> float
+[[nodiscard]] inline auto gamepad_thumbstick::Ratio(SHORT value) const -> float
 {
   constexpr auto positiveShift = -SHRT_MIN;
   auto positiveShiftedValue = static_cast<float>(value) + positiveShift;
@@ -66,4 +71,22 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly) : m_x { lx }, 
 [[nodiscard]] inline auto gamepad_thumbstick::Distance() const -> float
 {
   return static_cast<float>(sqrt(m_x * m_x + m_y * m_y));
+}
+
+[[nodiscard]] inline auto gamepad_thumbstick::GetDeadzoneAdjustedValue(SHORT value) const -> SHORT
+{
+  if( value < m_deadzoneMin )
+  {
+    value -= m_deadzoneMin;
+  }
+  else if( value > m_deadzoneMax )
+  {
+    value -= m_deadzoneMax;
+  }
+  else
+  {
+    value = 0;
+  }
+
+  return value;
 }

@@ -48,6 +48,7 @@ public:
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
   [[nodiscard]] auto PlayerPosition() const -> game_point;
+  [[nodiscard]] auto PlayerAngle() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
@@ -96,6 +97,11 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
   {
     m_mines.emplace_back( mine { static_cast<float>(position.x), static_cast<float>(position.y) } );
   });
+}
+
+[[nodiscard]] inline auto level_container::PlayerAngle() const -> float
+{
+  return m_playerShip.Angle();
 }
 
 [[nodiscard]] inline auto level_container::PlayerShields() const -> const player_ship::shield_status&
