@@ -238,7 +238,6 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraAngle = 360.0f - m_levelContainer->PlayerAngle();
-  // cameraAngle %= 360.0f;
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };
   return { cameraTransform.Get() };
 }
