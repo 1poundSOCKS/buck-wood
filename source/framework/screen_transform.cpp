@@ -33,12 +33,12 @@ auto screen_transform::Set(const D2D1::Matrix3x2F& transform) -> bool
   auto renderTargetBottom = renderTargetTopLeft.y;
 
   auto topLeft = m_invertedTransform.TransformPoint(renderTargetTopLeft);
-  auto bottomRight = m_invertedTransform.TransformPoint(renderTargetTopLeft);
+  auto bottomRight = m_invertedTransform.TransformPoint(renderTargetBottomRight);
   auto bottomLeft = m_invertedTransform.TransformPoint({renderTargetLeft, renderTargetBottom});
   auto topRight = m_invertedTransform.TransformPoint({renderTargetRight, renderTargetTop});
 
-  auto [minX, minY] = std::minmax({topLeft.x, bottomRight.x, bottomLeft.x, topRight.x});
-  auto [maxX, maxY] = std::minmax({topLeft.y, bottomRight.y, bottomLeft.y, topRight.y});
+  auto [minX, maxX] = std::minmax({topLeft.x, bottomRight.x, bottomLeft.x, topRight.x});
+  auto [minY, maxY] = std::minmax({topLeft.y, bottomRight.y, bottomLeft.y, topRight.y});
 
   return { minX, minY, maxX, maxY };
 }
