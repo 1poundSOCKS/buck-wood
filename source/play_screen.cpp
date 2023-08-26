@@ -254,10 +254,9 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     framework::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
     framework::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
-    auto leftThumbStickAngle = GetThumbStickAngle(leftThumbstick.X(), leftThumbstick.Y());
-    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y());
+    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), m_levelContainer->PlayerAngle());
 
-    auto thrust = input.gamepadState.RightTrigger() ? 1.0f : 0.0f;
+    auto thrust = -leftThumbstick.YRatio();
 
     return { std::nullopt, leftThumbstick.XRatio() * 10.0f, thrust, rightThumbStickAngle };
   }

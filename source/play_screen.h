@@ -36,7 +36,7 @@ private:
   auto PostPlay(int64_t frameInterval) -> void;
 
   [[nodiscard]] auto GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input;
-  [[nodiscard]] static auto GetThumbStickAngle(short lx, short ly) -> std::optional<float>;
+  [[nodiscard]] static auto GetThumbStickAngle(short lx, short ly, float rotation = 0) -> std::optional<float>;
   auto UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
@@ -68,10 +68,10 @@ private:
   static inline float m_playZoom = 0.6f;
 };
 
-[[nodiscard]] inline auto play_screen::GetThumbStickAngle(short x, short y) -> std::optional<float>
+[[nodiscard]] inline auto play_screen::GetThumbStickAngle(short x, short y, float rotation) -> std::optional<float>
 {
   gamepad_thumbstick thumbstick { x, y, 5000 };
 
   return ( thumbstick.Distance() < 5000 ) ? 
-    std::nullopt : std::optional<float> { thumbstick.Angle() };
+    std::nullopt : std::optional<float> { thumbstick.Angle() + rotation };
 }
