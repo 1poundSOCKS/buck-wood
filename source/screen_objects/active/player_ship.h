@@ -54,7 +54,6 @@ private:
   state m_state { state::alive };
   moving_body m_movingBody;
   float m_angle = 0;
-  // bool m_thrusterOn = false;
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
