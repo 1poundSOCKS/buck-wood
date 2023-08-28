@@ -24,7 +24,7 @@ public:
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
-  auto SetThrusterOn(bool on) -> void;
+  // auto SetThrusterOn(bool on) -> void;
   auto SetThrust(float value) -> void;
   auto Update(float interval) -> void;
   auto ApplyDamage(int value) -> void;
@@ -54,7 +54,7 @@ private:
   state m_state { state::alive };
   moving_body m_movingBody;
   float m_angle = 0;
-  bool m_thrusterOn = false;
+  // bool m_thrusterOn = false;
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
@@ -77,11 +77,6 @@ inline auto player_ship::Rotate(float angle) -> void
   {
     m_angle -= 360.0f;
   }
-}
-
-inline auto player_ship::SetThrusterOn(bool on) -> void
-{
-  m_thrusterOn = on;
 }
 
 inline auto player_ship::SetThrust(float value) -> void
@@ -130,7 +125,7 @@ inline auto player_ship::Destroy() -> void
 
 [[nodiscard]] inline auto player_ship::ThrusterOn() const -> bool
 {
-  return m_thrusterOn;
+  return m_thrust > 0 ? true : false;
 }
 
 [[nodiscard]] inline auto player_ship::ShieldStatus() const -> const shield_status&
