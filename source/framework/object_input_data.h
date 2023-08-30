@@ -1,6 +1,7 @@
 #pragma once
 
 #include "main_window.h"
+#include "gamepad_thumbstick.h"
 
 class object_input_data
 {
@@ -22,11 +23,39 @@ public:
   auto SetPreviousMouseData(const mouse_data& mouseData) -> void;
   auto GetPreviousMouseData() const -> const mouse_data&;
 
+  auto SetGamepadData(const gamepad_thumbstick& leftThumbstick) -> void;
+  auto SetPreviousGamepadData(const gamepad_thumbstick& previousLeftThumbstick) -> void;
+
   [[nodiscard]] auto LeftMouseButtonClicked() const -> bool;
   [[nodiscard]] auto RightMouseButtonClicked() const -> bool;
+
+  [[nodiscard]] auto UpClicked() const -> bool;
+  [[nodiscard]] auto DownClicked() const -> bool;
 
 private:
 
   mouse_data m_mouseData;
   mouse_data m_previousMouseData;
+  gamepad_thumbstick m_leftThumbstick;
+  gamepad_thumbstick m_previousLeftThumbstick;
 };
+
+inline auto object_input_data::SetGamepadData(const gamepad_thumbstick& leftThumbstick) -> void
+{
+  m_leftThumbstick = leftThumbstick;
+}
+
+inline auto object_input_data::SetPreviousGamepadData(const gamepad_thumbstick& previousLeftThumbstick) -> void
+{
+  m_previousLeftThumbstick = previousLeftThumbstick;
+}
+
+[[nodiscard]] inline auto object_input_data::UpClicked() const -> bool
+{
+  return m_leftThumbstick.UpPressed() && !m_previousLeftThumbstick.UpPressed();
+}
+
+[[nodiscard]] inline auto object_input_data::DownClicked() const -> bool
+{
+  return m_leftThumbstick.DownPressed() && !m_previousLeftThumbstick.DownPressed();
+}

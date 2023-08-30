@@ -7,7 +7,8 @@ class gamepad_thumbstick
 
 public:
 
-  gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone);
+  gamepad_thumbstick() = default;
+  gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone=7000);
 
   [[nodiscard]] auto X() const -> SHORT;
   [[nodiscard]] auto Y() const -> SHORT;
@@ -17,6 +18,9 @@ public:
 
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Distance() const -> float;
+
+  [[nodiscard]] auto UpPressed() const -> bool;
+  [[nodiscard]] auto DownPressed() const -> bool;
 
 private:
 
@@ -89,4 +93,14 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone
   }
 
   return value;
+}
+
+[[nodiscard]] inline auto gamepad_thumbstick::UpPressed() const -> bool
+{
+  return m_y < 0 ? true : false;
+}
+
+[[nodiscard]] inline auto gamepad_thumbstick::DownPressed() const -> bool
+{
+  return m_y > 0 ? true : false;
 }
