@@ -29,6 +29,7 @@ public:
   [[nodiscard]] auto LeftMouseButtonClicked() const -> bool;
   [[nodiscard]] auto RightMouseButtonClicked() const -> bool;
 
+  [[nodiscard]] auto GamepadAttached() const -> bool;
   [[nodiscard]] auto UpClicked() const -> bool;
   [[nodiscard]] auto DownClicked() const -> bool;
 
@@ -36,18 +37,26 @@ private:
 
   mouse_data m_mouseData;
   mouse_data m_previousMouseData;
+  bool m_gamepadAttached { false };
   gamepad_thumbstick m_leftThumbstick;
   gamepad_thumbstick m_previousLeftThumbstick;
 };
 
 inline auto object_input_data::SetGamepadData(const gamepad_thumbstick& leftThumbstick) -> void
 {
+  m_gamepadAttached = true;
   m_leftThumbstick = leftThumbstick;
 }
 
 inline auto object_input_data::SetPreviousGamepadData(const gamepad_thumbstick& previousLeftThumbstick) -> void
 {
+  m_gamepadAttached = true;
   m_previousLeftThumbstick = previousLeftThumbstick;
+}
+
+[[nodiscard]] inline auto object_input_data::GamepadAttached() const -> bool
+{
+  return m_gamepadAttached;
 }
 
 [[nodiscard]] inline auto object_input_data::UpClicked() const -> bool

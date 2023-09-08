@@ -17,9 +17,25 @@ auto menu::AddButton(button&& menuButton) -> void
 
 auto menu::Update(const object_input_data& inputData) -> void
 {
-  for( auto& button : m_buttons )
+  if( inputData.GamepadAttached() && m_buttons.size() )
   {
-    button.Update(inputData);
+    auto selectedButton = GetSelectedButton();
+
+    if( inputData.DownClicked() )
+    {
+      SelectNextButton(selectedButton);
+    }
+    else if( inputData.UpClicked() )
+    {
+      SelectPreviousButton(selectedButton);
+    }
+  }
+  else
+  {
+    for( auto& button : m_buttons )
+    {
+      button.Update(inputData);
+    }
   }
 }
 

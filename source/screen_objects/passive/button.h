@@ -10,6 +10,7 @@ public:
   using callback_for_flag = std::function<bool()>;
 
   button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked);
+
   auto SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void;
   auto SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void;
   auto GetHoverState() const -> bool;
@@ -27,10 +28,10 @@ private:
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
   std::function<void()> m_eventClicked = [](){};
 
-  bool m_hidden = false;
+  bool m_hidden { false };
   callback_for_flag m_callbackForHiddenFlag = [](){ return false; };
 
-  bool m_enabled = true;
+  bool m_enabled { true };
   callback_for_flag m_callbackForEnabledFlag = [](){ return true; };  
 
   render_text_format_def m_textFormatDef;
@@ -43,5 +44,5 @@ private:
   winrt::com_ptr<IDWriteTextFormat> m_textFormat;
   winrt::com_ptr<IDWriteTextFormat> m_hoverTextFormat;
 
-  bool m_hover = false;
+  bool m_hover { false };
 };

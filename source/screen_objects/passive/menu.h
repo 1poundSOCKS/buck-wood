@@ -17,7 +17,33 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
+
+  [[nodiscard]] auto GetSelectedButton() const -> button_collection::size_type;
+  auto SelectNextButton(button_collection::size_type ) -> void;
+  auto SelectPreviousButton(button_collection::size_type ) -> void;
   
   button_collection m_buttons;
 
 };
+
+[[nodiscard]] inline auto menu::GetSelectedButton() const -> button_collection::size_type
+{
+  auto selectedButton = -1;
+
+  auto targetView = m_buttons | std::ranges::views::filter([](const auto& currentButton)
+  {
+    return currentButton.GetHoverState();
+  });
+
+  return selectedButton;
+}
+
+inline auto menu::SelectNextButton(button_collection::size_type selectedButton) -> void
+{
+
+}
+
+inline auto menu::SelectPreviousButton(button_collection::size_type selectedButton) -> void
+{
+
+}
