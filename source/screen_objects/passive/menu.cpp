@@ -30,12 +30,10 @@ auto menu::Update(const object_input_data& inputData) -> void
       SelectPreviousButton(selectedButton);
     }
   }
-  else
+
+  for( auto& button : m_buttons )
   {
-    for( auto& button : m_buttons )
-    {
-      button.Update(inputData);
-    }
+    button.Update(inputData);
   }
 }
 

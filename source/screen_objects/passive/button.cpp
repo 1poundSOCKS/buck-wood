@@ -44,11 +44,22 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto button::Update(const object_input_data& inputData) -> void
 {
-  m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
+  if( inputData.GamepadAttached() )
+  {
+    if( IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect) )
+    {
+      m_hover = true;
+    }
+  }
+  else
+  {
+    m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
+  }
+
   m_hidden = m_callbackForHiddenFlag();
   m_enabled = m_callbackForEnabledFlag();
 
-  if( !m_hidden && m_enabled && m_hover && inputData.LeftMouseButtonClicked() )
+  if( !m_hidden && m_enabled && m_hover && inputData.SelectPressed() )
   {
     m_eventClicked();
   }
