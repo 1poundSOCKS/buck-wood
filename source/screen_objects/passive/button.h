@@ -14,6 +14,7 @@ public:
   auto SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void;
   auto SetCallbackForEnabledFlag(callback_for_flag callbackForEnabledFlag) -> void;
   auto GetHoverState() const -> bool;
+  auto SetHoverState(bool value) -> void;
 
   auto Update(const object_input_data& inputData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -46,3 +47,8 @@ private:
 
   bool m_hover { false };
 };
+
+inline auto button::SetHoverState(bool value) -> void
+{
+  m_hover = value;
+}

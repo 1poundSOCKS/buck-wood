@@ -8,6 +8,7 @@ class menu
 public:
 
   using button_collection = std::vector<button>;
+  using button_selection_type = int;
 
   menu();
   menu(const menu& menuToCopy);
@@ -18,32 +19,61 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetSelectedButton() const -> button_collection::size_type;
-  auto SelectNextButton(button_collection::size_type ) -> void;
-  auto SelectPreviousButton(button_collection::size_type ) -> void;
+  [[nodiscard]] auto GetSelectedButton() const -> button_selection_type;
+  auto SelectNextButton(button_selection_type currentButton) -> void;
+  auto SelectPreviousButton(button_selection_type currentButton) -> void;
+  [[nodiscard]] auto ValidButton(button_selection_type selectedButton) const -> bool;
   
   button_collection m_buttons;
 
 };
 
-[[nodiscard]] inline auto menu::GetSelectedButton() const -> button_collection::size_type
+[[nodiscard]] inline auto menu::GetSelectedButton() const -> button_selection_type
 {
   auto selectedButton = -1;
 
-  auto targetView = m_buttons | std::ranges::views::filter([](const auto& currentButton)
+  for( auto currentButton = 0; selectedButton == - 1 && currentButton < m_buttons.size(); ++currentButton )
   {
-    return currentButton.GetHoverState();
-  });
+    if( m_buttons[currentButton].GetHoverState() )
+    {
+      selectedButton = currentButton;
+    }
+  }
 
   return selectedButton;
 }
 
-inline auto menu::SelectNextButton(button_collection::size_type selectedButton) -> void
+inline auto menu::SelectNextButton(button_selection_type currentButton) -> void
 {
+  auto selectedButton = currentButton + 1;
 
+  if( ValidButton(selectedButton) )
+  {
+    m_buttons[selectedButton].SetHoverState(true);
+
+    if( ValidButton(currentButton) )
+    {
+      m_buttons[currentButton].SetHoverState(false);
+    }
+  }
 }
 
-inline auto menu::SelectPreviousButton(button_collection::size_type selectedButton) -> void
+inline auto menu::SelectPreviousButton(button_selection_type currentButton) -> void
 {
+  auto selectedButton = currentButton - 1;
 
+  if( ValidButton(selectedButton) )
+  {
+    m_buttons[selectedButton].SetHoverState(true);
+
+    if( ValidButton(currentButton) )
+    {
+      m_buttons[currentButton].SetHoverState(false);
+    }
+  }
+}
+
+[[nodiscard]] inline auto menu::ValidButton(button_selection_type selectedButton) const -> bool
+{
+  return selectedButton > - 1 && selectedButton < m_buttons.size() ? true : false;
 }

@@ -97,10 +97,10 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone
 
 [[nodiscard]] inline auto gamepad_thumbstick::UpPressed() const -> bool
 {
-  return m_y < 0 ? true : false;
+  return m_y > 0 ? true : false;
 }
 
 [[nodiscard]] inline auto gamepad_thumbstick::DownPressed() const -> bool
 {
-  return m_y > 0 ? true : false;
+  return m_y < 0 ? true : false;
 }
