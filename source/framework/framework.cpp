@@ -108,3 +108,27 @@ auto framework::RenderDiagnostics() -> void
   RenderDiagnostics(m_diagnosticsData);
   m_diagnosticsData.clear();
 }
+
+[[nodiscard]] auto framework::FormatObjectInputData(const screen_transform& screenTransform) -> object_input_data
+{
+  const auto& screenInputState = framework::screenInputState();
+
+  auto mousePosition = screenTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
+  auto previousMousePosition = screenTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
+
+  auto leftThumbstick = gamepad_thumbstick { screenInputState.gamepadState.ThumbLX(), screenInputState.gamepadState.ThumbLY() };
+  auto previousLeftThumbstick = gamepad_thumbstick { screenInputState.previousGamepadState.ThumbLX(), screenInputState.previousGamepadState.ThumbLY() };
+
+  auto currentButtonState = gamepad_buttons { screenInputState.gamepadState.Buttons() };
+  auto previousButtonState = gamepad_buttons { screenInputState.previousGamepadState.Buttons() };
+
+  object_input_data objectInputData;
+  objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
+  objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
+  objectInputData.SetGamepadData(leftThumbstick);
+  objectInputData.SetPreviousGamepadData(previousLeftThumbstick);
+  objectInputData.SetCurrentButtonState(currentButtonState);
+  objectInputData.SetPreviousButtonState(previousButtonState);
+
+  return objectInputData;
+}
