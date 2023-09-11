@@ -60,14 +60,6 @@ auto play_screen::Update(int64_t frameInterval) -> level_container::update_event
   }
 
   auto overlayTransform = GetOverlayRenderTransform();
-  // const auto& screenInputState = framework::screenInputState();
-
-  // auto mousePosition = overlayTransform.GetScreenPosition({ screenInputState.renderTargetMouseData.x, screenInputState.renderTargetMouseData.y });
-  // auto previousMousePosition = overlayTransform.GetScreenPosition({ screenInputState.previousRenderTargetMouseData.x, screenInputState.previousRenderTargetMouseData.y });
-
-  // object_input_data objectInputData;
-  // objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
-  // objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
 
   auto objectInputData = framework::FormatObjectInputData(overlayTransform);
 
@@ -306,8 +298,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  const auto& screenInputState = framework::screenInputState();
-  return KeyPressed(screenInputState, DIK_ESCAPE);
+  const auto& objectInputState = framework::FormatObjectInputData();
+  return objectInputState.BackPressed();
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool

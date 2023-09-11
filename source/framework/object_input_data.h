@@ -37,7 +37,8 @@ public:
   [[nodiscard]] auto UpClicked() const -> bool;
   [[nodiscard]] auto DownClicked() const -> bool;
 
-  [[nodiscard ]] auto SelectPressed() const -> bool;
+  [[nodiscard]] auto SelectPressed() const -> bool;
+  [[nodiscard]] auto BackPressed() const -> bool;
 
 private:
 
@@ -91,4 +92,9 @@ inline auto object_input_data::SetPreviousButtonState(const gamepad_buttons& but
 {
   return LeftMouseButtonClicked() ||
     ( m_currentButtonState.APressed() && !m_previousButtonState.APressed() ) ? true : false;
+}
+
+[[nodiscard ]] inline auto object_input_data::BackPressed() const -> bool
+{
+  return m_currentButtonState.BackPressed() && !m_previousButtonState.BackPressed() ? true : false;
 }
