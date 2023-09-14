@@ -123,6 +123,12 @@ auto framework::RenderDiagnostics() -> void
   auto previousButtonState = gamepad_buttons { screenInputState.previousGamepadState.Buttons() };
 
   object_input_data objectInputData;
+
+  if( !MouseEnabled() )
+  {
+    objectInputData.DisableMouse();
+  }
+
   objectInputData.SetMouseData({mousePosition.x, mousePosition.y, screenInputState.windowData.mouse.leftButtonDown, screenInputState.windowData.mouse.rightButtonDown});
   objectInputData.SetPreviousMouseData({previousMousePosition.x, previousMousePosition.y, screenInputState.previousWindowData.mouse.leftButtonDown, screenInputState.previousWindowData.mouse.rightButtonDown});
   objectInputData.SetGamepadData(leftThumbstick);

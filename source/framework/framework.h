@@ -47,6 +47,8 @@ public:
 
   template <typename screen_state_type> static auto openScreen() -> void;
   [[nodiscard]] static auto screenInputState() -> const screen_input_state&;
+  static auto DisableMouse() -> void;
+  [[nodiscard]] static auto MouseEnabled() -> bool;
   [[nodiscard]] static auto FormatObjectInputData() -> object_input_data;
   [[nodiscard]] static auto FormatObjectInputData(const screen_transform& screenTransform) -> object_input_data;
 
@@ -94,6 +96,7 @@ private:
   int64_t m_diagnosticsUpdateTime { 0 };
   int64_t m_diagnosticsRenderTime { 0 };
   screen_input_state m_inputState;
+  bool m_mouseEnabled { true };
 
 };
 
@@ -257,6 +260,16 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
 [[nodiscard]] inline auto framework::screenInputState() -> const screen_input_state&
 {
   return m_framework->m_inputState;
+}
+
+inline auto framework::DisableMouse() -> void
+{
+  m_framework->m_mouseEnabled = false;
+}
+
+[[nodiscard]] inline auto framework::MouseEnabled() -> bool
+{
+  return m_framework->m_mouseEnabled;
 }
 
 inline auto framework::addDiagnostics(std::wstring_view label, auto value) -> void

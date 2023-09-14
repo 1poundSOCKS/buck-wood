@@ -73,7 +73,6 @@ auto main_menu_screen::Render() const -> void
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
 
   m_menu.Render(viewRect);
-  m_cursor.Render(viewRect);
 }
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def

@@ -107,7 +107,6 @@ auto play_screen::Render() const -> void
   if( m_paused )
   {
     m_menu.Render(overlayViewRect);
-    m_cursor.Render(overlayViewRect);
   }
 
   auto endRenderTime = performance_counter::QueryValue();

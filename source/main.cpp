@@ -24,6 +24,7 @@
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   framework::create(instance, cmdShow);
+  framework::DisableMouse();
   framework::setGameSpeedMultiplier(2.0f);
 
   command_line commandLine { cmdLine };

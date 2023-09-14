@@ -51,7 +51,7 @@ auto button::Update(const object_input_data& inputData) -> void
       m_hover = true;
     }
   }
-  else
+  else if( inputData.MouseEnabled() )
   {
     m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
   }

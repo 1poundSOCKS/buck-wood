@@ -18,6 +18,9 @@ public:
 
   object_input_data();
 
+  auto DisableMouse() -> void;
+  [[nodiscard]] auto MouseEnabled() const -> bool;
+
   auto SetMouseData(const mouse_data& mouseData) -> void;
   auto GetMouseData() const -> const mouse_data&;
 
@@ -42,6 +45,7 @@ public:
 
 private:
 
+  bool m_mouseEnabled { true };
   mouse_data m_mouseData;
   mouse_data m_previousMouseData;
   bool m_gamepadAttached { false };
@@ -50,6 +54,16 @@ private:
   gamepad_buttons m_currentButtonState;
   gamepad_buttons m_previousButtonState;
 };
+
+inline auto object_input_data::DisableMouse() -> void
+{
+  m_mouseEnabled = false;
+}
+
+[[nodiscard]] inline auto object_input_data::MouseEnabled() const -> bool
+{
+  return m_mouseEnabled;
+}
 
 inline auto object_input_data::SetGamepadData(const gamepad_thumbstick& leftThumbstick) -> void
 {
