@@ -112,10 +112,10 @@ level_grid::level_grid(int columnWidth, int rowHeight, float left, float top, fl
 
 auto level_grid::Initialize(int left, int top, int right, int bottom) -> void
 {
-  m_leftColumn = left / m_columnWidth - 2;
-  m_topRow = top / m_rowHeight - 2;
-  m_rightColumn = right / m_columnWidth + 1;
-  m_bottomRow = bottom / m_rowHeight + 1;
+  m_leftColumn = left / m_columnWidth - 3;
+  m_topRow = top / m_rowHeight - 3;
+  m_rightColumn = right / m_columnWidth + 3;
+  m_bottomRow = bottom / m_rowHeight + 3;
 }
 
 auto level_grid::ColumnWidth() const -> int
