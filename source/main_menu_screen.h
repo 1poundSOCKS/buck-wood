@@ -20,7 +20,6 @@ private:
 
   [[nodiscard]] auto GetMenuDef() -> menu_def;
 
-  mouse_cursor m_cursor;
   menu m_menu;
   
   bool m_continueRunning = true;

@@ -57,7 +57,6 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   auto objectInputData = framework::FormatObjectInputData();
 
   m_menu.Update(objectInputData);
-  m_cursor.Update(objectInputData);
 }
 
 auto main_menu_screen::Render() const -> void

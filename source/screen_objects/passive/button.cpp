@@ -44,14 +44,7 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
 
 auto button::Update(const object_input_data& inputData) -> void
 {
-  if( inputData.GamepadAttached() )
-  {
-    if( IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect) )
-    {
-      m_hover = true;
-    }
-  }
-  else if( inputData.MouseEnabled() )
+  if( inputData.MouseEnabled() )
   {
     m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
   }
