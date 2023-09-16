@@ -231,7 +231,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
-  auto cameraAngle = 360.0f - m_levelContainer->PlayerAngle();
+  // auto cameraAngle = 360.0f - m_levelContainer->PlayerAngle();
+  auto cameraAngle = 0.0f;
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };
   return { cameraTransform.Get() };
 }
@@ -250,7 +251,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     framework::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
     framework::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
-    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), m_levelContainer->PlayerAngle());
+    // auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), m_levelContainer->PlayerAngle());
+    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), 0.0f);
 
     auto thrust = rightTrigger.Ratio();
 
