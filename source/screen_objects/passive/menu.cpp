@@ -15,6 +15,11 @@ auto menu::AddButton(button&& menuButton) -> void
   m_buttons.emplace_back(menuButton);
 }
 
+auto menu::SelectFirstButton() -> void
+{
+  
+}
+
 auto menu::Update(const object_input_data& inputData) -> void
 {
   if( inputData.GamepadAttached() && m_buttons.size() )

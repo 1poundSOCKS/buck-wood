@@ -31,6 +31,7 @@ main_menu_screen::main_menu_screen()
   }
 
   m_menu = GetMenuDef().CreateMenu();
+  m_menu.SelectFirstButton();
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool

@@ -14,6 +14,7 @@ public:
   menu(const menu& menuToCopy);
 
   auto AddButton(button&& menuButton) -> void;
+  auto SelectFirstButton() -> void;
   auto Update(const object_input_data& inputData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
