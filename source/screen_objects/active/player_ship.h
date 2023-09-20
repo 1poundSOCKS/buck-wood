@@ -23,8 +23,8 @@ public:
   player_ship(const game_point& position);
 
   auto SetAngle(float angle) -> void;
+  auto SetDirection(float direction) -> void;
   auto Rotate(float angle) -> void;
-  // auto SetThrusterOn(bool on) -> void;
   auto SetThrust(float value) -> void;
   auto Update(float interval) -> void;
   auto ApplyDamage(int value) -> void;
@@ -45,7 +45,7 @@ public:
 
 private:
 
-  inline static const auto m_playerThrust { 400.0f };
+  inline static const auto m_playerThrust { 20.0f };
 
   void UpdateShipGeometryData();
 
@@ -57,7 +57,7 @@ private:
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
-  bool m_autoDecelerate { false };
+  bool m_autoDecelerate { true };
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
@@ -66,6 +66,11 @@ private:
 inline auto player_ship::SetAngle(float angle) -> void
 {
   m_angle = angle;
+}
+
+inline auto player_ship::SetDirection(float direction) -> void
+{
+  m_movingBody.SetDirection(direction);
 }
 
 inline auto player_ship::Rotate(float angle) -> void
@@ -81,7 +86,7 @@ inline auto player_ship::Rotate(float angle) -> void
 
 inline auto player_ship::SetThrust(float value) -> void
 {
-  m_thrust = value;
+  m_thrust = value * m_playerThrust;
 }
 
 inline auto player_ship::ApplyDamage(int value) -> void

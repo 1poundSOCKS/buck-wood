@@ -77,6 +77,7 @@ struct game_velocity
   game_velocity(float angle, float speed);
 
   auto operator+=(const game_velocity& increase) -> game_velocity&;
+  [[nodiscard]] auto Speed() const -> float;
 
   float x { 0 };
   float y { 0 };
@@ -93,6 +94,11 @@ inline auto game_velocity::operator+=(const game_velocity& increase) -> game_vel
   x += increase.x;
   y += increase.y;
   return *this;
+}
+
+[[nodiscard]] inline auto game_velocity::Speed() const -> float
+{
+  return sqrt(x * x + y * y);
 }
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)

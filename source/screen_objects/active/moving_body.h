@@ -12,9 +12,11 @@ class moving_body
 
     auto SetPosition(const game_point& position) -> void;
     auto SetVelocity(const game_velocity& velocity) -> void;
+    auto SetVelocity(float speed, float direction) -> void;
     auto Accelerate(const game_velocity& amount) -> void;
     auto Accelerate(float amount) -> void;
     auto Accelerate(float amount, float direction) -> void;
+    auto SetDirection(float direction) -> void;
 
     [[nodiscard]] auto Position() const -> const game_point&;
     [[nodiscard]] auto Velocity() const -> const game_velocity&;
@@ -46,6 +48,11 @@ inline auto moving_body::SetVelocity(const game_velocity& velocity) -> void
   m_velocity = velocity;
 }
 
+inline auto moving_body::SetVelocity(float speed, float direction) -> void
+{
+  m_velocity = game_velocity { direction, speed };
+}
+
 inline auto moving_body::Accelerate(const game_velocity& amount) -> void
 {
   m_velocity += amount;
@@ -55,6 +62,12 @@ inline auto moving_body::Accelerate(float amount) -> void
 {
   m_velocity.x += m_velocity.x * amount;
   m_velocity.y += m_velocity.y * amount;
+}
+
+inline auto moving_body::SetDirection(float direction) -> void
+{
+  auto speed = m_velocity.Speed();
+  SetVelocity(speed, direction);
 }
 
 inline auto moving_body::Accelerate(float amount, float direction) -> void

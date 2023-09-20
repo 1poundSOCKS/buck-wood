@@ -42,10 +42,11 @@ auto player_ship::Update(float interval) -> void
   {
     if( m_autoDecelerate )
     {
-      m_movingBody.Accelerate(-1 * interval);
+      m_movingBody.Accelerate(-0.5f * interval);
     }
 
-    m_movingBody.Accelerate(m_thrust * 10, m_angle);
+    m_movingBody.SetDirection(m_angle);
+    m_movingBody.Accelerate(m_thrust, m_angle);
     m_movingBody.Update(interval);
     UpdateShipGeometryData();
   }
