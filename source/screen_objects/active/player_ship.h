@@ -57,7 +57,7 @@ private:
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
-  bool m_autoDecelerate { true };
+  bool m_autoDecelerate { false };
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
