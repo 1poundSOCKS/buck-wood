@@ -244,8 +244,8 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   {
     gamepad_thumbstick leftThumbstick { input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY(), 8000 };
     gamepad_thumbstick rightThumbstick { input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY(), 5000 };
-
     gamepad_trigger rightTrigger { input.gamepadState.RightTrigger() };
+    gamepad_buttons buttons { input.gamepadState.Buttons() };
     
     framework::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
     framework::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
@@ -253,11 +253,17 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     framework::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
     // auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), m_levelContainer->PlayerAngle());
-    auto rightThumbStickAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), 0.0f);
+    // auto shootAngle = GetThumbStickAngle(rightThumbstick.X(), rightThumbstick.Y(), 0.0f);
+    std::optional<float> shootAngle;
+
+    if( buttons.APressed() )
+    {
+      shootAngle = m_levelContainer->PlayerAngle();
+    }
 
     auto thrust = rightTrigger.Ratio();
 
-    return { std::nullopt, leftThumbstick.XRatio() * 10.0f, thrust, rightThumbStickAngle };
+    return { std::nullopt, leftThumbstick.XRatio() * 10.0f, thrust, shootAngle };
   }
   else
   {
