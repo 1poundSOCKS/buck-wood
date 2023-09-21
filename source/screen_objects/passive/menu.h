@@ -29,6 +29,19 @@ private:
 
 };
 
+inline auto menu::SelectFirstButton() -> void
+{
+  for( auto& button : m_buttons )
+  {
+    button.SetHoverState(false);
+  }
+
+  if( m_buttons.size() > 0 )
+  {
+    m_buttons.front().SetHoverState(true);
+  }  
+}
+
 [[nodiscard]] inline auto menu::GetSelectedButton() const -> button_selection_type
 {
   auto selectedButton = -1;

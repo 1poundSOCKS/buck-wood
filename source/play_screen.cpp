@@ -17,6 +17,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
   m_continueRunning = LoadFirstLevel();
 
   m_menu = GetMenuDef().CreateMenu();
+  m_menu.SelectFirstButton();
 
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
