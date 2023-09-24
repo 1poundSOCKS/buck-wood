@@ -1,8 +1,5 @@
 #pragma once
 
-// #define XINPUT_GAMEPAD_BACK   0x0020
-// #define XINPUT_GAMEPAD_A      0x1000
-
 class gamepad_buttons
 {
 
