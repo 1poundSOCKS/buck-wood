@@ -74,7 +74,7 @@ struct game_rect
 struct game_velocity
 {
   game_velocity() = default;
-  game_velocity(float angle, float speed);
+  game_velocity(float angle, float amount);
 
   auto operator+=(const game_velocity& increase) -> game_velocity&;
   [[nodiscard]] auto Speed() const -> float;
@@ -83,10 +83,10 @@ struct game_velocity
   float y { 0 };
 };
 
-inline game_velocity::game_velocity(float angle, float speed)
+inline game_velocity::game_velocity(float angle, float amount)
 {
-  x += speed * sin(DEGTORAD(angle));
-  y += -speed * cos(DEGTORAD(angle));
+  x += amount * sin(DEGTORAD(angle));
+  y += -amount * cos(DEGTORAD(angle));
 }
 
 inline auto game_velocity::operator+=(const game_velocity& increase) -> game_velocity&

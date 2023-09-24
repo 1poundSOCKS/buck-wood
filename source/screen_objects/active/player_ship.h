@@ -7,7 +7,7 @@
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
 #include "reload_timer.h"
-#include "moving_body.h"
+#include "directional_body.h"
 #include "health_status.h"
 
 class player_ship
@@ -52,7 +52,7 @@ private:
   static auto GetShotTimeInterval() -> int64_t;
 
   state m_state { state::alive };
-  moving_body m_movingBody;
+  directional_body m_body;
   float m_angle = 0;
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
@@ -70,7 +70,7 @@ inline auto player_ship::SetAngle(float angle) -> void
 
 inline auto player_ship::SetDirection(float direction) -> void
 {
-  m_movingBody.SetDirection(direction);
+  m_body.SetDirection(direction);
 }
 
 inline auto player_ship::Rotate(float angle) -> void
@@ -110,7 +110,7 @@ inline auto player_ship::Destroy() -> void
 
 [[nodiscard]] inline auto player_ship::Position() const -> const game_point&
 {
-  return m_movingBody.Position();
+  return m_body.Position();
 }
 
 [[nodiscard]] inline auto player_ship::Angle() const -> float
@@ -120,7 +120,7 @@ inline auto player_ship::Destroy() -> void
 
 [[nodiscard]] inline auto player_ship::Velocity() const -> const game_velocity&
 {
-  return m_movingBody.Velocity();
+  return m_body.Velocity();
 }
 
 [[nodiscard]] inline auto player_ship::State() const -> state

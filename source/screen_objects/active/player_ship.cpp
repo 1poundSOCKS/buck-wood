@@ -31,7 +31,7 @@ player_ship::player_ship() : m_geometry(GetPlayerGeometryData()), m_transformedG
   UpdateShipGeometryData();
 }
 
-player_ship::player_ship(const game_point& position) : m_movingBody { position }, m_geometry { GetPlayerGeometryData() }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+player_ship::player_ship(const game_point& position) : m_body { position }, m_geometry { GetPlayerGeometryData() }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   UpdateShipGeometryData();
 }
@@ -42,19 +42,19 @@ auto player_ship::Update(float interval) -> void
   {
     if( m_autoDecelerate )
     {
-      m_movingBody.Accelerate(-0.5f * interval);
+      m_body.Accelerate(-0.5f * interval);
     }
 
-    // m_movingBody.SetDirection(m_angle);
-    m_movingBody.Accelerate(m_thrust, m_angle);
-    m_movingBody.Update(interval);
+    // m_body.SetDirection(m_angle);
+    m_body.Accelerate(m_thrust, m_angle);
+    m_body.Update(interval);
     UpdateShipGeometryData();
   }
 }
 
 auto player_ship::UpdateShipGeometryData() -> void
 {
-  auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_movingBody.Position().x, m_movingBody.Position().y);
+  auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y);
   m_transformedGeometry = { m_geometry, rotateAndMove };
 }
 
@@ -63,7 +63,7 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
   const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
 
   TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_movingBody.Position().x, m_movingBody.Position().y));
+    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y));
 }
 
 [[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
