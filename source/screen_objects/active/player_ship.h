@@ -23,7 +23,6 @@ public:
   player_ship(const game_point& position);
 
   auto SetAngle(float angle) -> void;
-  auto SetDirection(float direction) -> void;
   auto Rotate(float angle) -> void;
   auto SetThrust(float value) -> void;
   auto Update(float interval) -> void;
@@ -67,21 +66,9 @@ inline auto player_ship::SetAngle(float angle) -> void
   m_body.SetAngle(angle);
 }
 
-inline auto player_ship::SetDirection(float direction) -> void
-{
-  m_body.SetDirection(direction);
-}
-
 inline auto player_ship::Rotate(float angle) -> void
 {
   m_body.Rotate(angle);
-  // m_angle += angle;
-  // m_angle += 360.0f;
-  
-  // while( m_angle >= 360.0f )
-  // {
-  //   m_angle -= 360.0f;
-  // }
 }
 
 inline auto player_ship::SetThrust(float value) -> void
