@@ -45,8 +45,7 @@ auto player_ship::Update(float interval) -> void
       m_body.Accelerate(-0.5f * interval);
     }
 
-    // m_body.SetDirection(m_angle);
-    m_body.Accelerate(m_thrust, m_angle);
+    m_body.Accelerate(m_thrust);
     m_body.Update(interval);
     UpdateShipGeometryData();
   }
@@ -54,7 +53,7 @@ auto player_ship::Update(float interval) -> void
 
 auto player_ship::UpdateShipGeometryData() -> void
 {
-  auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y);
+  auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_body.Angle(), D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y);
   m_transformedGeometry = { m_geometry, rotateAndMove };
 }
 
@@ -63,7 +62,7 @@ auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<point
   const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
 
   TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_angle, D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y));
+    D2D1::Matrix3x2F::Rotation(m_body.Angle(), D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y));
 }
 
 [[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&

@@ -53,7 +53,6 @@ private:
 
   state m_state { state::alive };
   directional_body m_body;
-  float m_angle = 0;
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
@@ -65,7 +64,7 @@ private:
 
 inline auto player_ship::SetAngle(float angle) -> void
 {
-  m_angle = angle;
+  m_body.SetAngle(angle);
 }
 
 inline auto player_ship::SetDirection(float direction) -> void
@@ -75,13 +74,14 @@ inline auto player_ship::SetDirection(float direction) -> void
 
 inline auto player_ship::Rotate(float angle) -> void
 {
-  m_angle += angle;
-  m_angle += 360.0f;
+  m_body.Rotate(angle);
+  // m_angle += angle;
+  // m_angle += 360.0f;
   
-  while( m_angle >= 360.0f )
-  {
-    m_angle -= 360.0f;
-  }
+  // while( m_angle >= 360.0f )
+  // {
+  //   m_angle -= 360.0f;
+  // }
 }
 
 inline auto player_ship::SetThrust(float value) -> void
@@ -115,7 +115,7 @@ inline auto player_ship::Destroy() -> void
 
 [[nodiscard]] inline auto player_ship::Angle() const -> float
 {
-  return m_angle;
+  return m_body.Angle();
 }
 
 [[nodiscard]] inline auto player_ship::Velocity() const -> const game_velocity&
