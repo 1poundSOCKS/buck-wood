@@ -94,12 +94,16 @@ inline auto object_input_data::SetPreviousButtonState(const gamepad_buttons& but
 
 [[nodiscard]] inline auto object_input_data::UpClicked() const -> bool
 {
-  return m_leftThumbstick.UpPressed() && !m_previousLeftThumbstick.UpPressed();
+  auto buttonClicked = m_currentButtonState.UpPressed() && !m_previousButtonState.UpPressed();
+  auto thumbstickClicked = m_leftThumbstick.UpPressed() && !m_previousLeftThumbstick.UpPressed();
+  return buttonClicked || thumbstickClicked;
 }
 
 [[nodiscard]] inline auto object_input_data::DownClicked() const -> bool
 {
-  return m_leftThumbstick.DownPressed() && !m_previousLeftThumbstick.DownPressed();
+  auto buttonClicked = m_currentButtonState.DownPressed() && !m_previousButtonState.DownPressed();
+  auto thumbstickClicked = m_leftThumbstick.DownPressed() && !m_previousLeftThumbstick.DownPressed();
+  return buttonClicked || thumbstickClicked;
 }
 
 [[nodiscard ]] inline auto object_input_data::SelectPressed() const -> bool
