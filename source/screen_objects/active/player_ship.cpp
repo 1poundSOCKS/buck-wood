@@ -26,12 +26,14 @@ constexpr auto GetPlayerThrusterGeometryData()
   };
 }
 
-player_ship::player_ship() : m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+player_ship::player_ship() : 
+  m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   UpdateShipGeometryData();
 }
 
-player_ship::player_ship(const game_point& position) : m_body { position }, m_geometry { GetPlayerGeometryData() }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+player_ship::player_ship(const game_point& position) : 
+  m_body { position }, m_geometry { GetPlayerGeometryData() }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
   UpdateShipGeometryData();
 }
@@ -40,11 +42,6 @@ auto player_ship::Update(float interval) -> void
 {
   if( m_state == state::alive )
   {
-    if( m_autoDecelerate )
-    {
-      m_body.Accelerate(-0.5f * interval);
-    }
-
     m_body.Accelerate(m_thrust * interval);
     m_body.Update(interval);
     UpdateShipGeometryData();
