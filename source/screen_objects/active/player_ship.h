@@ -44,7 +44,7 @@ public:
 
 private:
 
-  inline static const auto m_playerThrust { 20.0f };
+  inline static const auto m_thrustPower { 400.0f };
 
   void UpdateShipGeometryData();
 
@@ -73,7 +73,7 @@ inline auto player_ship::Rotate(float angle) -> void
 
 inline auto player_ship::SetThrust(float value) -> void
 {
-  m_thrust = value * m_playerThrust;
+  m_thrust = value * m_thrustPower;
 }
 
 inline auto player_ship::ApplyDamage(int value) -> void
