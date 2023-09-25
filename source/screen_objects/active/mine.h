@@ -1,7 +1,7 @@
 #pragma once
 
 #include "transformed_path_geometry.h"
-#include "active_body.h"
+#include "directional_body.h"
 
 class mine
 {
@@ -21,9 +21,11 @@ public:
 
 private:
 
+  inline static const auto m_thrustPower { 40.0f };
+
   auto UpdateGeometry() -> void;
 
-  active_body m_body { 200 };
+  directional_body m_body;
   bool m_destroyed { false };
 
   path_geometry m_geometry;

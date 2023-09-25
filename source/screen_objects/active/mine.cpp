@@ -2,10 +2,8 @@
 #include "mine.h"
 #include "shape_generator.h"
 
-mine::mine(float x, float y) : m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+mine::mine(float x, float y) : m_body { game_point { x, y } }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
-  m_body.SetPosition(x, y);
-  m_body.SetThrust(true);
   m_geometry.Load( shape_generator { 0, 0, 40, 40, 3 } );
   UpdateGeometry();
 }
@@ -24,14 +22,15 @@ auto mine::Update(int64_t tickCount, float x, float y) -> void
 {
   auto position = m_body.Position();
   auto angle = CalculateAngle(position.x, position.y, x, y);
-  m_body.SetDirection(angle);
+  m_body.SetAngle(angle);
   Update(tickCount);
 }
 
 auto mine::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
-  m_body.Rotate(active_body::rotation_direction::clockwise, updateInterval * 400);
+  m_body.RotateClockwise(updateInterval * 400.0f);
+  m_body.Accelerate(m_thrustPower * updateInterval);
   m_body.Update(updateInterval);
   UpdateGeometry();
 }
