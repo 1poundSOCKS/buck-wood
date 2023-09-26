@@ -29,7 +29,7 @@ auto mine::Update(int64_t tickCount, float x, float y) -> void
 auto mine::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
-  m_body.RotateClockwise(updateInterval * 400.0f);
+  m_spin += updateInterval * 500.0f;
   m_body.Accelerate(m_thrustPower * updateInterval);
   m_body.Update(updateInterval);
   UpdateGeometry();
@@ -37,7 +37,7 @@ auto mine::Update(int64_t tickCount) -> void
 
 auto mine::UpdateGeometry() -> void
 {
-  auto transform = m_body.Transform();
+  auto transform = Transform();
   m_transformedGeometry = { m_geometry, transform };
 }
 

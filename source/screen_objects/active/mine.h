@@ -21,13 +21,20 @@ public:
 
 private:
 
-  inline static const auto m_thrustPower { 40.0f };
+  inline static const auto m_thrustPower { 100.0f };
 
   auto UpdateGeometry() -> void;
+  [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
 
   directional_body m_body;
+  game_angle m_spin;
   bool m_destroyed { false };
 
   path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
 };
+
+[[nodiscard]] inline auto mine::Transform() const -> D2D1::Matrix3x2F
+{
+  return D2D1::Matrix3x2F::Rotation(m_spin, { 0, 0 }) * m_body.Transform();
+}

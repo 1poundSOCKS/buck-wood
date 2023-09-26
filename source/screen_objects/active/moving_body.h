@@ -23,6 +23,8 @@ class moving_body
 
     auto Update(float interval) -> void;
 
+    [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
+
   private:
 
     game_point m_position { 0, 0 };
@@ -90,4 +92,9 @@ inline auto moving_body::Update(float interval) -> void
 {
   m_position.x += m_velocity.x * interval;
   m_position.y += m_velocity.y * interval;
+}
+
+[[nodiscard]] inline auto moving_body::Transform() const -> D2D1::Matrix3x2F
+{
+  return D2D1::Matrix3x2F::Translation(m_position.x, m_position.y);
 }

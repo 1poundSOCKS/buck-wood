@@ -18,8 +18,6 @@ public:
 
   [[nodiscard]] auto Angle() const -> float;
 
-  [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
-
 private:
 
   float m_angle { 0 };
@@ -78,10 +76,4 @@ inline auto directional_body::Accelerate(float amount) -> void
 [[nodiscard]] inline auto directional_body::Angle() const -> float
 {
   return m_angle;
-}
-
-[[nodiscard]] inline auto directional_body::Transform() const -> D2D1::Matrix3x2F
-{
-  const auto& position = moving_body::Position();
-  return D2D1::Matrix3x2F::Rotation(m_angle, { 0, 0 }) * D2D1::Matrix3x2F::Translation(position.x, position.y);
 }

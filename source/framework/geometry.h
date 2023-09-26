@@ -101,6 +101,40 @@ inline auto game_velocity::operator+=(const game_velocity& increase) -> game_vel
   return sqrt(x * x + y * y);
 }
 
+class game_angle
+{
+public:
+
+  game_angle() = default;
+
+  operator float() const
+  {
+    return m_value;
+  }
+
+  auto operator +=(float value) -> float
+  {
+    m_value += value;
+    
+    while( m_value < 0 )
+    {
+      m_value += 360;
+    }
+    
+    while( m_value >= 360 )
+    {
+      m_value -= 360;
+    }
+
+    return m_value;
+  }
+
+private:
+
+  float m_value { 0 };
+
+};
+
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
   if( std::distance(begin, end) > 0 )
