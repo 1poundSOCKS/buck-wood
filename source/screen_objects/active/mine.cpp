@@ -8,18 +8,9 @@ mine::mine(float x, float y) : m_body { game_point { x, y } }, m_transformedGeom
   UpdateGeometry();
 }
 
-[[nodiscard]] auto mine::Position() const -> game_point
-{
-  return m_body.Position();
-}
-
-[[nodiscard]] auto mine::Geometry() const -> const transformed_path_geometry&
-{
-  return m_transformedGeometry;
-}
-
 auto mine::Update(int64_t tickCount, float x, float y) -> void
 {
+  m_previousState = m_body;
   auto position = m_body.Position();
   auto angle = CalculateAngle(position.x, position.y, x, y);
   m_body.SetAngle(angle);
