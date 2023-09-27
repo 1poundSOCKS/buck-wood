@@ -31,6 +31,7 @@ public:
   auto Destroy() -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
@@ -52,6 +53,7 @@ private:
 
   state m_state { state::alive };
   directional_body m_body;
+  directional_body m_previousState;
   float m_thrust = 0;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
@@ -97,6 +99,11 @@ inline auto player_ship::Destroy() -> void
 [[nodiscard]] inline auto player_ship::Position() const -> const game_point&
 {
   return m_body.Position();
+}
+
+[[nodiscard]] inline auto player_ship::PreviousPosition() const -> const game_point&
+{
+  return m_previousState.Position();
 }
 
 [[nodiscard]] inline auto player_ship::Angle() const -> float

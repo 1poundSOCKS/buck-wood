@@ -42,6 +42,7 @@ auto player_ship::Update(float interval) -> void
 {
   if( m_state == state::alive )
   {
+    m_previousState = m_body;
     m_body.Accelerate(m_thrust * interval);
     m_body.Update(interval);
     UpdateShipGeometryData();

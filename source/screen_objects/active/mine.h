@@ -21,7 +21,8 @@ public:
 
 private:
 
-  inline static const auto m_thrustPower { 100.0f };
+  inline static const float m_spinRate { 500.0f };
+  inline static const float m_thrustPower { 100.0f };
 
   auto UpdateGeometry() -> void;
   [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
