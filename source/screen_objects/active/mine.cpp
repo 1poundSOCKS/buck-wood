@@ -21,7 +21,14 @@ auto mine::Update(int64_t tickCount) -> void
 {
   auto updateInterval = framework::gameUpdateInterval(tickCount);
   m_spin += m_spinRate * updateInterval;
+
+  auto velocity = m_body.Velocity();
+  float velocityChange = 1.0f - 0.05f * updateInterval;
+  velocity.Update(velocityChange, velocityChange);
+  m_body.SetVelocity(velocity);
+
   m_body.Accelerate(m_thrustPower * updateInterval);
+  
   m_body.Update(updateInterval);
   UpdateGeometry();
 }
