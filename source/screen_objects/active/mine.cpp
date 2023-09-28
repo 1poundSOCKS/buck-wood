@@ -23,7 +23,7 @@ auto mine::Update(int64_t tickCount) -> void
   m_spin += m_spinRate * updateInterval;
 
   auto velocity = m_body.Velocity();
-  float velocityChange = 1.0f - 0.05f * updateInterval;
+  float velocityChange = 1.0f - 0.1f * updateInterval;
   velocity.Update(velocityChange, velocityChange);
   m_body.SetVelocity(velocity);
 
