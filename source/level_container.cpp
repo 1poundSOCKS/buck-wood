@@ -243,7 +243,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
 
   do_geometries_to_points_collisions(m_mines, m_bullets, [this, updateEvents](auto& mine, auto& bullet)
   {
-    auto position = mine.Position();
+    auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
     bullet.Destroy();
