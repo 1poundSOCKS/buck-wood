@@ -37,11 +37,11 @@ public:
   [[nodiscard]] auto RightMouseButtonClicked() const -> bool;
 
   [[nodiscard]] auto GamepadAttached() const -> bool;
-  [[nodiscard]] auto UpClicked() const -> bool;
-  [[nodiscard]] auto DownClicked() const -> bool;
+  // [[nodiscard]] auto UpClicked() const -> bool;
+  // [[nodiscard]] auto DownClicked() const -> bool;
 
-  [[nodiscard]] auto SelectPressed() const -> bool;
-  [[nodiscard]] auto BackPressed() const -> bool;
+  // [[nodiscard]] auto SelectPressed() const -> bool;
+  // [[nodiscard]] auto BackPressed() const -> bool;
 
 private:
 
@@ -92,27 +92,27 @@ inline auto object_input_data::SetPreviousButtonState(const gamepad_buttons& but
   return m_gamepadAttached;
 }
 
-[[nodiscard]] inline auto object_input_data::UpClicked() const -> bool
-{
-  auto buttonClicked = m_currentButtonState.UpPressed() && !m_previousButtonState.UpPressed();
-  auto thumbstickClicked = m_leftThumbstick.UpPressed() && !m_previousLeftThumbstick.UpPressed();
-  return buttonClicked || thumbstickClicked;
-}
+// [[nodiscard]] inline auto object_input_data::UpClicked() const -> bool
+// {
+//   auto buttonClicked = m_currentButtonState.UpPressed() && !m_previousButtonState.UpPressed();
+//   auto thumbstickClicked = m_leftThumbstick.UpPressed() && !m_previousLeftThumbstick.UpPressed();
+//   return buttonClicked || thumbstickClicked;
+// }
 
-[[nodiscard]] inline auto object_input_data::DownClicked() const -> bool
-{
-  auto buttonClicked = m_currentButtonState.DownPressed() && !m_previousButtonState.DownPressed();
-  auto thumbstickClicked = m_leftThumbstick.DownPressed() && !m_previousLeftThumbstick.DownPressed();
-  return buttonClicked || thumbstickClicked;
-}
+// [[nodiscard]] inline auto object_input_data::DownClicked() const -> bool
+// {
+//   auto buttonClicked = m_currentButtonState.DownPressed() && !m_previousButtonState.DownPressed();
+//   auto thumbstickClicked = m_leftThumbstick.DownPressed() && !m_previousLeftThumbstick.DownPressed();
+//   return buttonClicked || thumbstickClicked;
+// }
 
-[[nodiscard ]] inline auto object_input_data::SelectPressed() const -> bool
-{
-  return LeftMouseButtonClicked() ||
-    ( m_currentButtonState.APressed() && !m_previousButtonState.APressed() ) ? true : false;
-}
+// [[nodiscard ]] inline auto object_input_data::SelectPressed() const -> bool
+// {
+//   return LeftMouseButtonClicked() ||
+//     ( m_currentButtonState.APressed() && !m_previousButtonState.APressed() ) ? true : false;
+// }
 
-[[nodiscard ]] inline auto object_input_data::BackPressed() const -> bool
-{
-  return m_currentButtonState.BackPressed() && !m_previousButtonState.BackPressed() ? true : false;
-}
+// [[nodiscard ]] inline auto object_input_data::BackPressed() const -> bool
+// {
+//   return m_currentButtonState.BackPressed() && !m_previousButtonState.BackPressed() ? true : false;
+// }

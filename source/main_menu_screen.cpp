@@ -55,9 +55,8 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
     m_startPlay = false;
   }
 
-  auto objectInputData = framework::FormatObjectInputData();
-
-  m_menu.Update(objectInputData);
+  menu_control_data menuControlData { framework::screenInputState() };
+  m_menu.Update(menuControlData);
 }
 
 auto main_menu_screen::Render() const -> void

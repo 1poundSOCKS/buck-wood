@@ -42,21 +42,21 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
 }
 
-auto button::Update(const object_input_data& inputData) -> void
-{
-  if( inputData.MouseEnabled() )
-  {
-    m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
-  }
+// auto button::Update(const object_input_data& inputData) -> void
+// {
+//   if( inputData.MouseEnabled() )
+//   {
+//     m_hover = IsInsideRect(inputData.GetMouseData().x, inputData.GetMouseData().y, m_rect);
+//   }
 
-  m_hidden = m_callbackForHiddenFlag();
-  m_enabled = m_callbackForEnabledFlag();
+//   m_hidden = m_callbackForHiddenFlag();
+//   m_enabled = m_callbackForEnabledFlag();
 
-  if( !m_hidden && m_enabled && m_hover && inputData.SelectPressed() )
-  {
-    m_eventClicked();
-  }
-}
+//   if( !m_hidden && m_enabled && m_hover && inputData.SelectPressed() )
+//   {
+//     m_eventClicked();
+//   }
+// }
 
 auto button::Render(D2D1_RECT_F viewRect) const -> void
 {

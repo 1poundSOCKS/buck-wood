@@ -15,25 +15,17 @@ auto menu::AddButton(button&& menuButton) -> void
   m_buttons.emplace_back(menuButton);
 }
 
-auto menu::Update(const object_input_data& inputData) -> void
+auto menu::Update(const menu_control_data& controlData) -> void
 {
-  if( inputData.GamepadAttached() && m_buttons.size() )
-  {
-    auto selectedButton = GetSelectedButton();
+  auto selectedButton = GetSelectedButton();
 
-    if( inputData.DownClicked() )
-    {
-      SelectNextButton(selectedButton);
-    }
-    else if( inputData.UpClicked() )
-    {
-      SelectPreviousButton(selectedButton);
-    }
+  if( controlData.Down() )
+  {
+    SelectNextButton(selectedButton);
   }
-
-  for( auto& button : m_buttons )
+  else if( controlData.Up() )
   {
-    button.Update(inputData);
+    SelectPreviousButton(selectedButton);
   }
 }
 

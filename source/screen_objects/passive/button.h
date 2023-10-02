@@ -16,7 +16,7 @@ public:
   auto GetHoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
 
-  auto Update(const object_input_data& inputData) -> void;
+  // auto Update(const object_input_data& inputData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

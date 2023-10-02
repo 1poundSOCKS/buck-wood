@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object_input_data.h"
+#include "menu_control_data.h"
 #include "button.h"
 
 class menu
@@ -15,7 +15,7 @@ public:
 
   auto AddButton(button&& menuButton) -> void;
   auto SelectFirstButton() -> void;
-  auto Update(const object_input_data& inputData) -> void;
+  auto Update(const menu_control_data& controlData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

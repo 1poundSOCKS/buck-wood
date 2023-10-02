@@ -68,7 +68,8 @@ auto play_screen::Update(int64_t frameInterval) -> level_container::update_event
 
   if( m_paused )
   {
-    m_menu.Update(objectInputData);
+    menu_control_data menuControlData { framework::screenInputState() };
+    m_menu.Update(menuControlData);
   }
 
   auto endUpdateTime = performance_counter::QueryValue();
@@ -302,8 +303,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  const auto& objectInputState = framework::FormatObjectInputData();
-  return objectInputState.BackPressed();
+  menu_control_data menuControlData { framework::screenInputState() };
+  return menuControlData.Back();
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
