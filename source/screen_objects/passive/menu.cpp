@@ -27,6 +27,11 @@ auto menu::Update(const menu_control_data& controlData) -> void
   {
     SelectPreviousButton(selectedButton);
   }
+
+  for( auto& button : m_buttons )
+  {
+    button.Update(controlData);
+  }
 }
 
 auto menu::Render(D2D1_RECT_F viewRect) const -> void

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object_input_data.h"
+#include "menu_control_data.h"
 #include "render_text_format_def.h"
 
 class button
@@ -16,7 +16,7 @@ public:
   auto GetHoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
 
-  // auto Update(const object_input_data& inputData) -> void;
+  auto Update(const menu_control_data& menuControlData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
