@@ -42,15 +42,10 @@ auto button::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
 }
 
-auto button::Update(const menu_control_data& menuControlData) -> void
+auto button::Update() -> void
 {
   m_hidden = m_callbackForHiddenFlag();
   m_enabled = m_callbackForEnabledFlag();
-
-  if( !m_hidden && m_enabled && m_hover && menuControlData.Select() )
-  {
-    m_eventClicked();
-  }
 }
 
 auto button::Render(D2D1_RECT_F viewRect) const -> void

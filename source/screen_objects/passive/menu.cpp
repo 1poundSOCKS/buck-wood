@@ -17,20 +17,27 @@ auto menu::AddButton(button&& menuButton) -> void
 
 auto menu::Update(const menu_control_data& controlData) -> void
 {
-  auto selectedButton = GetSelectedButton();
-
-  if( controlData.Down() )
-  {
-    SelectNextButton(selectedButton);
-  }
-  else if( controlData.Up() )
-  {
-    SelectPreviousButton(selectedButton);
-  }
-
   for( auto& button : m_buttons )
   {
-    button.Update(controlData);
+    button.Update();
+  }
+
+  auto selectedButton = GetSelectedButton();
+
+  if( ValidButton(selectedButton) )
+  {
+    if( controlData.Down() )
+    {
+      SelectNextButton(selectedButton);
+    }
+    else if( controlData.Up() )
+    {
+      SelectPreviousButton(selectedButton);
+    }
+    else if( controlData.Select() )
+    {
+      m_buttons[selectedButton].Click();
+    }
   }
 }
 
