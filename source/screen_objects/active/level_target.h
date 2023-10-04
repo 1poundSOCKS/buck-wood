@@ -1,8 +1,6 @@
-#ifndef _level_target_
-#define _level_target_
+#pragma once
 
 #include "play_event.h"
-#include "object_input_data.h"
 #include "geometry.h"
 #include "path_geometry.h"
 #include "reload_timer.h"
@@ -36,5 +34,3 @@ private:
   int m_hitPoints { 10 };
 
 };
-
-#endif

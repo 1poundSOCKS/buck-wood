@@ -1,6 +1,5 @@
 #pragma once
 
-#include "object_input_data.h"
 #include "render_target_area.h"
 
 class text_box
@@ -15,7 +14,7 @@ public:
   auto SetTextGetter(text_getter textGetter) -> void;
   auto SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag) -> void;
 
-  auto Update(const object_input_data& inputData, int64_t clockCount) -> void;
+  auto Update(int64_t clockCount) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "object_input_data.h"
 #include "screen_input_state.h"
 #include "geometry.h"
 

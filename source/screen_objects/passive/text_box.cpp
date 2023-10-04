@@ -36,7 +36,7 @@ auto text_box::Initialize() -> void
   m_textFormat = render_text_format_text_box.CreateTextFormat(dwriteFactory.get());
 }
 
-auto text_box::Update(const object_input_data& inputData, int64_t clockCount) -> void
+auto text_box::Update(int64_t clockCount) -> void
 {
   m_textValue = m_textGetter();
   m_hidden = m_callbackForHiddenFlag();

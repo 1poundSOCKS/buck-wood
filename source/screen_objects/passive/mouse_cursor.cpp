@@ -2,7 +2,6 @@
 #include "mouse_cursor.h"
 #include "screen_render.h"
 #include "screen_render_brush_defs.h"
-#include "framework.h"
 
 consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
 {
@@ -31,10 +30,10 @@ auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget) -> void
   m_brush = screen_render_brush_white.CreateBrush(renderTarget);
 }
 
-auto mouse_cursor::Update(const object_input_data& inputData) -> void
+auto mouse_cursor::Update(const screen_input_state& screenInputState) -> void
 {
-  m_x = inputData.GetMouseData().x;
-  m_y = inputData.GetMouseData().y;
+  m_x = screenInputState.renderTargetMouseData.x;
+  m_y = screenInputState.renderTargetMouseData.y;
 }
 
 auto mouse_cursor::Render(D2D1_RECT_F viewRect) const -> void

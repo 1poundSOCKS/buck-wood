@@ -1,5 +1,4 @@
-#ifndef _input_state_
-#define _input_state_
+#pragma once
 
 #include "main_window.h"
 #include "gamepad_state.h"
@@ -39,5 +38,3 @@ float GetRatioMouseX(const screen_input_state& screenInputState);
 float GetRatioMouseY(const screen_input_state& screenInputState);
 bool LeftMouseButtonDrag(const screen_input_state& screenInputState);
 bool LeftMouseButtonReleased(const screen_input_state& screenInputState);
-
-#endif

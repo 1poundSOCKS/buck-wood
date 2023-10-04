@@ -1,6 +1,5 @@
 #pragma once
 
-#include "object_input_data.h"
 #include "geometry.h"
 #include "transformed_path_geometry.h"
 

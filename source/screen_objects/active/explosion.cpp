@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "explosion.h"
-#include "framework.h"
 
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);

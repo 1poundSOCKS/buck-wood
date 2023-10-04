@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object_input_data.h"
+#include "framework.h"
 
 class mouse_cursor
 {
@@ -8,7 +8,7 @@ public:
 
   mouse_cursor();
 
-  auto Update(const object_input_data& inputData) -> void;
+  auto Update(const screen_input_state& screenInputState) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:

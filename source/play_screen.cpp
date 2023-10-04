@@ -62,9 +62,7 @@ auto play_screen::Update(int64_t frameInterval) -> level_container::update_event
 
   auto overlayTransform = GetOverlayRenderTransform();
 
-  auto objectInputData = framework::FormatObjectInputData(overlayTransform);
-
-  m_cursor.Update(objectInputData);
+  m_cursor.Update(framework::screenInputState());
 
   if( m_paused )
   {
@@ -233,7 +231,6 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
-  // auto cameraAngle = 360.0f - m_levelContainer->PlayerAngle();
   auto cameraAngle = 0.0f;
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };
   return { cameraTransform.Get() };

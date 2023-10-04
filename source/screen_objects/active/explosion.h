@@ -1,7 +1,6 @@
 #pragma once
 
-#include "object_input_data.h"
-#include "geometry.h"
+#include "framework.h"
 
 class explosion
 {

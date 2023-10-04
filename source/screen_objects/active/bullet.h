@@ -1,8 +1,6 @@
-#ifndef _bullet_
-#define _bullet_
+#pragma once
 
 #include "play_event.h"
-#include "object_input_data.h"
 #include "moving_body.h"
 
 class bullet
@@ -31,5 +29,3 @@ private:
   bool m_destroyed = false;
   
 };
-
-#endif

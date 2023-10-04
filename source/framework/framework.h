@@ -9,7 +9,6 @@
 #include "sound_buffer.h"
 #include "dwrite_factory.h"
 #include "clock_frequency.h"
-#include "object_input_data.h"
 #include "screen_transform.h"
 
 class framework
@@ -49,8 +48,6 @@ public:
   [[nodiscard]] static auto screenInputState() -> const screen_input_state&;
   static auto DisableMouse() -> void;
   [[nodiscard]] static auto MouseEnabled() -> bool;
-  [[nodiscard]] static auto FormatObjectInputData() -> object_input_data;
-  [[nodiscard]] static auto FormatObjectInputData(const screen_transform& screenTransform) -> object_input_data;
 
 private:
 
@@ -280,9 +277,4 @@ inline auto framework::addDiagnostics(std::wstring_view label, auto value) -> vo
 inline auto framework::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
 {
   m_framework->AddDiagnosticsTime(label, ticks);
-}
-
-[[nodiscard]] inline auto framework::FormatObjectInputData() -> object_input_data
-{
-  return FormatObjectInputData(screen_transform{});
 }

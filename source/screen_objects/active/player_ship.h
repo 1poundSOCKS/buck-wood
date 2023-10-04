@@ -1,8 +1,6 @@
-#ifndef _player_ship_
-#define _player_ship_
+#pragma once
 
 #include "play_event.h"
-#include "object_input_data.h"
 #include "geometry.h"
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
@@ -135,5 +133,3 @@ inline auto player_ship::Destroy() -> void
 {
   return m_destroyed;
 }
-
-#endif
