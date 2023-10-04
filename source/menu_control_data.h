@@ -38,15 +38,24 @@ inline menu_control_data::menu_control_data(const screen_input_state& screenInpu
   
   auto buttonUp = currentButtonState.UpPressed() && !previousButtonState.UpPressed();
   auto thumbstickUp = leftThumbstick.UpPressed() && !previousLeftThumbstick.UpPressed();
-  m_up = buttonUp || thumbstickUp;
+  auto arrowUp = screenInputState.keyboardState.data[DIK_UP] & 0x80 && !(screenInputState.previousKeyboardState.data[DIK_UP] & 0x80) ? true : false;
+  m_up = buttonUp || thumbstickUp | arrowUp;
 
   auto buttonDown = currentButtonState.DownPressed() && !previousButtonState.DownPressed();
   auto thumbstickDown = leftThumbstick.DownPressed() && !previousLeftThumbstick.DownPressed();
-  m_down = buttonDown || thumbstickDown;
+  auto arrowDown = screenInputState.keyboardState.data[DIK_DOWN] & 0x80 && !(screenInputState.previousKeyboardState.data[DIK_DOWN] & 0x80) ? true : false;
+  m_down = buttonDown || thumbstickDown || arrowDown;
 
-  m_select = currentButtonState.APressed() && !previousButtonState.APressed() ? true : false;
+  auto spacePressed = screenInputState.keyboardState.data[DIK_SPACE] & 0x80 && !(screenInputState.previousKeyboardState.data[DIK_SPACE] & 0x80) ? true : false;
+  auto enterPressed = screenInputState.keyboardState.data[DIK_RETURN] & 0x80 && !(screenInputState.previousKeyboardState.data[DIK_RETURN] & 0x80) ? true : false;
+  auto gamepadAPressed = currentButtonState.APressed() && !previousButtonState.APressed();
 
-  m_back = currentButtonState.BackPressed() && !previousButtonState.BackPressed() ? true : false;
+  m_select = spacePressed || enterPressed || gamepadAPressed;
+
+  auto escapePressed = screenInputState.keyboardState.data[DIK_ESCAPE] & 0x80 && !(screenInputState.previousKeyboardState.data[DIK_ESCAPE] & 0x80) ? true : false;
+  auto backPressed = currentButtonState.BackPressed() && !previousButtonState.BackPressed();
+
+  m_back = escapePressed || backPressed;
 }
 
 [[nodiscard]] inline auto menu_control_data::GamepadAttached() const -> bool
