@@ -19,12 +19,40 @@ struct keyboard_state
   unsigned char data[256];
 };
 
+class keyboard_reader
+{
+
+public:
+
+  [[nodiscard]] auto CurrentState() const -> const keyboard_state&;
+  [[nodiscard]] auto PreviousState() const -> const keyboard_state&;
+
+  auto Update(IDirectInputDevice8* keyboard) -> void;
+
+private:
+
+  keyboard_state m_currentState;
+  keyboard_state m_previousState;
+  
+};
+
+[[nodiscard]] inline auto keyboard_reader::CurrentState() const -> const keyboard_state&
+{
+  return m_currentState;
+}
+
+[[nodiscard]] inline auto keyboard_reader::PreviousState() const -> const keyboard_state&
+{
+  return m_previousState;
+}
+
 struct screen_input_state
 {
   window_data windowData;
   window_data previousWindowData;
   keyboard_state keyboardState;
   keyboard_state previousKeyboardState;
+  keyboard_reader keyboardReader;
   render_target_mouse_data renderTargetMouseData;
   render_target_mouse_data previousRenderTargetMouseData;
   gamepad_state gamepadState;
