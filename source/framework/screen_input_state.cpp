@@ -1,11 +1,20 @@
 #include "pch.h"
 #include "screen_input_state.h"
 
+auto keyboard_state::Update(IDirectInputDevice8* keyboard) -> void
+{
+  HRESULT hr = keyboard->GetDeviceState(sizeof(m_data), m_data);
+
+	if(FAILED(hr))
+	{
+		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
+	}
+}
+
 auto keyboard_reader::Update(IDirectInputDevice8* keyboard) -> void
 {
   m_previousState = m_currentState;
-
-  ReadKeyboardState(keyboard, m_currentState);
+  m_currentState.Update(keyboard);
 }
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window)
@@ -27,21 +36,6 @@ winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND wind
   keyboard->Acquire();
 
   return keyboard;
-}
-
-void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state)
-{
-  HRESULT hr = keyboard->GetDeviceState(sizeof(state.data), state.data);
-
-	if(FAILED(hr))
-	{
-		if((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED)) keyboard->Acquire();
-	}
-}
-
-bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode)
-{
-  return (screenInputState.keyboardState.data[keyCode] & 0x80) && !(screenInputState.previousKeyboardState.data[keyCode] & 0x80);
 }
 
 float GetRatioMouseX(const screen_input_state& screenInputState)

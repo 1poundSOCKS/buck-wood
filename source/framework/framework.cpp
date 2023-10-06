@@ -12,7 +12,7 @@ inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
 
 auto framework::ToggleFullscreenOnKeypress(int key) -> void
 {
-  if( m_inputState.keyboardState.data[key] & 0x80 && !(m_inputState.previousKeyboardState.data[key] & 0x80) )
+  if( m_inputState.keyboardReader.Pressed(key) )
   {
     BOOL fullScreen = FALSE;
     m_swapChain->GetFullscreenState(&fullScreen, nullptr);

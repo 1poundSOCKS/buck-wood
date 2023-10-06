@@ -9,15 +9,37 @@ struct client_mouse_data
   float x = 0, y = 0;
 };
 
-struct keyboard_state
+class keyboard_state
 {
-  keyboard_state()
-  {
-    ::ZeroMemory(data, sizeof(data));
-  }
+public:
 
-  unsigned char data[256];
+  keyboard_state();
+
+  auto Update(IDirectInputDevice8* keyboard) -> void;
+  auto operator=(const keyboard_state& state) -> const keyboard_state&;
+  [[nodiscard]] auto Down(int key) const -> bool;
+
+private:
+
+  unsigned char m_data[256];
+
 };
+
+inline keyboard_state::keyboard_state()
+{
+  ::ZeroMemory(m_data, sizeof(m_data));
+}
+
+inline auto keyboard_state::operator=(const keyboard_state& state) -> const keyboard_state&
+{
+  ::memcpy(m_data, state.m_data, sizeof(m_data));
+  return *this;
+}
+
+[[nodiscard]] inline auto keyboard_state::Down(int key) const -> bool
+{
+  return m_data[key] & 0x80 ? true : false;
+}
 
 class keyboard_reader
 {
@@ -28,6 +50,8 @@ public:
   [[nodiscard]] auto PreviousState() const -> const keyboard_state&;
 
   auto Update(IDirectInputDevice8* keyboard) -> void;
+
+  [[nodiscard]] auto Pressed(int key) const -> bool;
 
 private:
 
@@ -46,12 +70,15 @@ private:
   return m_previousState;
 }
 
+[[nodiscard]] inline auto keyboard_reader::Pressed(int key) const -> bool
+{
+  return m_currentState.Down(key) && !m_previousState.Down(key);
+}
+
 struct screen_input_state
 {
   window_data windowData;
   window_data previousWindowData;
-  keyboard_state keyboardState;
-  keyboard_state previousKeyboardState;
   keyboard_reader keyboardReader;
   render_target_mouse_data renderTargetMouseData;
   render_target_mouse_data previousRenderTargetMouseData;
@@ -60,8 +87,6 @@ struct screen_input_state
 };
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
-void ReadKeyboardState(IDirectInputDevice8* keyboard, keyboard_state& state);
-bool KeyPressed(const screen_input_state& screenInputState, uint8_t keyCode);
 float GetRatioMouseX(const screen_input_state& screenInputState);
 float GetRatioMouseY(const screen_input_state& screenInputState);
 bool LeftMouseButtonDrag(const screen_input_state& screenInputState);
