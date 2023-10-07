@@ -10,7 +10,6 @@ mine::mine(float x, float y) : m_body { game_point { x, y } }, m_transformedGeom
 
 auto mine::Update(int64_t tickCount, float x, float y) -> void
 {
-  m_previousState = m_body;
   auto position = m_body.Position();
   auto angle = CalculateAngle(position.x, position.y, x, y);
   m_body.SetAngle(angle);
@@ -19,6 +18,8 @@ auto mine::Update(int64_t tickCount, float x, float y) -> void
 
 auto mine::Update(int64_t tickCount) -> void
 {
+  m_previousState = m_body;
+
   auto updateInterval = framework::gameUpdateInterval(tickCount);
   m_spin += m_spinRate * updateInterval;
 
