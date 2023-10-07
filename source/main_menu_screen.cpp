@@ -54,9 +54,11 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
     framework::openScreen<play_screen>();
     m_startPlay = false;
   }
-
-  menu_control_data menuControlData { framework::screenInputState() };
-  m_menu.Update(menuControlData);
+  else
+  {
+    menu_control_data menuControlData { framework::screenInputState() };
+    m_menu.Update(menuControlData);
+  }
 }
 
 auto main_menu_screen::Render() const -> void
