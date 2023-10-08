@@ -30,11 +30,14 @@ private:
 
 inline menu_control_data::menu_control_data(const screen_input_state& screenInputState)
 {
-  gamepad_buttons currentButtonState { screenInputState.gamepadState.Buttons() };
-  gamepad_buttons previousButtonState { screenInputState.previousGamepadState.Buttons() };
+  const auto& currentGamepadState = screenInputState.gamepadReader.CurrentState();
+  const auto& previousGamepadState = screenInputState.gamepadReader.PreviousState();
 
-  gamepad_thumbstick leftThumbstick { screenInputState.gamepadState.ThumbLX(), screenInputState.gamepadState.ThumbLY() };
-  gamepad_thumbstick previousLeftThumbstick { screenInputState.previousGamepadState.ThumbLX(), screenInputState.previousGamepadState.ThumbLY() };
+  gamepad_buttons currentButtonState { currentGamepadState.Buttons() };
+  gamepad_buttons previousButtonState { previousGamepadState.Buttons() };
+
+  gamepad_thumbstick leftThumbstick { currentGamepadState.ThumbLX(), currentGamepadState.ThumbLY() };
+  gamepad_thumbstick previousLeftThumbstick { previousGamepadState.ThumbLX(), previousGamepadState.ThumbLY() };
   
   auto buttonUp = currentButtonState.UpPressed() && !previousButtonState.UpPressed();
   auto thumbstickUp = leftThumbstick.UpPressed() && !previousLeftThumbstick.UpPressed();

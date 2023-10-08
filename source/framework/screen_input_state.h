@@ -2,7 +2,7 @@
 
 #include "main_window.h"
 #include "keyboard_reader.h"
-#include "gamepad_state.h"
+#include "gamepad_reader.h"
 
 struct client_mouse_data
 {
@@ -17,8 +17,7 @@ struct screen_input_state
   keyboard_reader keyboardReader;
   render_target_mouse_data renderTargetMouseData;
   render_target_mouse_data previousRenderTargetMouseData;
-  gamepad_state gamepadState;
-  gamepad_state previousGamepadState;
+  gamepad_reader gamepadReader;
 };
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);

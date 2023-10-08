@@ -238,13 +238,15 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 
 [[nodiscard]] auto play_screen::GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input
 {
-  if( input.gamepadState.Connected() )
+  const auto& currentGamepadState = input.gamepadReader.CurrentState();
+
+  if( currentGamepadState.Connected() )
   {
-    gamepad_thumbstick leftThumbstick { input.gamepadState.ThumbLX(), input.gamepadState.ThumbLY(), 8000 };
-    gamepad_thumbstick rightThumbstick { input.gamepadState.ThumbRX(), input.gamepadState.ThumbRY(), 5000 };
-    gamepad_trigger leftTrigger { input.gamepadState.LeftTrigger() };
-    gamepad_trigger rightTrigger { input.gamepadState.RightTrigger() };
-    gamepad_buttons buttons { input.gamepadState.Buttons() };
+    gamepad_thumbstick leftThumbstick { currentGamepadState.ThumbLX(), currentGamepadState.ThumbLY(), 8000 };
+    gamepad_thumbstick rightThumbstick { currentGamepadState.ThumbRX(), currentGamepadState.ThumbRY(), 5000 };
+    gamepad_trigger leftTrigger { currentGamepadState.LeftTrigger() };
+    gamepad_trigger rightTrigger { currentGamepadState.RightTrigger() };
+    gamepad_buttons buttons { currentGamepadState.Buttons() };
     
     framework::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
     framework::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
