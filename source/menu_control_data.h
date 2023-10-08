@@ -1,8 +1,8 @@
 #pragma once
 
 #include "screen_input_state.h"
-#include "gamepad_buttons.h"
 #include "gamepad_thumbstick.h"
+#include "gamepad_button_reader.h"
 
 class menu_control_data
 {
@@ -33,32 +33,20 @@ inline menu_control_data::menu_control_data(const screen_input_state& screenInpu
   const auto& currentGamepadState = screenInputState.gamepadReader.CurrentState();
   const auto& previousGamepadState = screenInputState.gamepadReader.PreviousState();
 
-  gamepad_buttons currentButtonState { currentGamepadState.Buttons() };
-  gamepad_buttons previousButtonState { previousGamepadState.Buttons() };
+  gamepad_button_reader gamepadButtonReader { screenInputState.gamepadReader };
 
   gamepad_thumbstick leftThumbstick { currentGamepadState.ThumbLX(), currentGamepadState.ThumbLY() };
   gamepad_thumbstick previousLeftThumbstick { previousGamepadState.ThumbLX(), previousGamepadState.ThumbLY() };
   
-  auto buttonUp = currentButtonState.UpPressed() && !previousButtonState.UpPressed();
   auto thumbstickUp = leftThumbstick.UpPressed() && !previousLeftThumbstick.UpPressed();
-  auto arrowUp = screenInputState.keyboardReader.Pressed(DIK_UP);
-  m_up = buttonUp || thumbstickUp | arrowUp;
+  m_up = gamepadButtonReader.Pressed(XINPUT_GAMEPAD_DPAD_UP) || thumbstickUp || screenInputState.keyboardReader.Pressed(DIK_UP);
 
-  auto buttonDown = currentButtonState.DownPressed() && !previousButtonState.DownPressed();
   auto thumbstickDown = leftThumbstick.DownPressed() && !previousLeftThumbstick.DownPressed();
-  auto arrowDown = screenInputState.keyboardReader.Pressed(DIK_DOWN);
-  m_down = buttonDown || thumbstickDown || arrowDown;
+  m_down = gamepadButtonReader.Pressed(XINPUT_GAMEPAD_DPAD_DOWN) || thumbstickDown || screenInputState.keyboardReader.Pressed(DIK_DOWN);
 
-  auto spacePressed = screenInputState.keyboardReader.Pressed(DIK_SPACE);
-  auto enterPressed = screenInputState.keyboardReader.Pressed(DIK_RETURN);
-  auto gamepadAPressed = currentButtonState.APressed() && !previousButtonState.APressed();
+  m_select = screenInputState.keyboardReader.Pressed(DIK_SPACE) || screenInputState.keyboardReader.Pressed(DIK_RETURN) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_A);
 
-  m_select = spacePressed || enterPressed || gamepadAPressed;
-
-  auto escapePressed = screenInputState.keyboardReader.Pressed(DIK_ESCAPE);
-  auto backPressed = currentButtonState.BackPressed() && !previousButtonState.BackPressed();
-
-  m_back = escapePressed || backPressed;
+  m_back = screenInputState.keyboardReader.Pressed(DIK_ESCAPE) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] inline auto menu_control_data::GamepadAttached() const -> bool

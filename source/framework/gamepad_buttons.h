@@ -8,10 +8,7 @@ public:
   gamepad_buttons() = default;
   gamepad_buttons(WORD state);
 
-  [[nodiscard]] auto APressed() const -> bool;
-  [[nodiscard]] auto BackPressed() const -> bool;
-  [[nodiscard]] auto UpPressed() const -> bool;
-  [[nodiscard]] auto DownPressed() const -> bool;
+  [[nodiscard]] auto Down(int button) const -> bool;
 
 private:
 
@@ -23,23 +20,8 @@ inline gamepad_buttons::gamepad_buttons(WORD state) : m_state { state }
 {
 }
 
-[[nodiscard]] inline auto gamepad_buttons::APressed() const -> bool
-{
-  return m_state & XINPUT_GAMEPAD_A ? true : false;
-}
 
-[[nodiscard]] inline auto gamepad_buttons::BackPressed() const -> bool
+[[nodiscard]] inline auto gamepad_buttons::Down(int button) const -> bool
 {
-  return m_state & XINPUT_GAMEPAD_BACK ? true : false;
-}
-
-[[nodiscard]] inline auto gamepad_buttons::UpPressed() const -> bool
-{
-  return m_state & XINPUT_GAMEPAD_DPAD_UP ? true : false;
-  
-}
-
-[[nodiscard]] inline auto gamepad_buttons::DownPressed() const -> bool
-{
-  return m_state & XINPUT_GAMEPAD_DPAD_DOWN ? true : false;
+  return m_state & button ? true : false;
 }
