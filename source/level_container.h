@@ -9,6 +9,7 @@
 #include "mine.h"
 #include "explosion_particle.h"
 #include "level_input.h"
+#include "solid_objects.h"
 
 class level_container
 {
@@ -73,7 +74,8 @@ private:
   bullet_collection m_bullets;
   target_collection m_targets;
   mine_collection m_mines;
-  asteroid_container m_asteroids;
+  // asteroid_container m_asteroids;
+  solid_objects m_solidObjects;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
 

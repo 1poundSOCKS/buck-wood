@@ -46,6 +46,11 @@ auto renderer::Render(const level_asteroid& asteroid) const -> void
   Render(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
 }
 
+auto renderer::Render(const solid_object& solidObject) const -> void
+{
+  Render(solidObject.Geometry(), simple_brush_selector { m_asteroidBrushes });
+}
+
 auto renderer::Render(const player_ship& playerShip) const -> void
 {
   if( playerShip.State() == player_ship::state::alive )

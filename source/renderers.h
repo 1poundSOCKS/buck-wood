@@ -2,6 +2,7 @@
 
 #include "render_brushes.h"
 #include "level_asteroid.h"
+#include "solid_objects.h"
 #include "player_ship.h"
 #include "explosion.h"
 #include "level_star.h"
@@ -28,13 +29,13 @@ private:
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
+  auto Render(const solid_object& solidObject) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
-
   auto Render(const player_shields& playerShields) const -> void;
 
   template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;
