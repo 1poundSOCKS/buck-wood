@@ -9,7 +9,6 @@
 
 level_container::level_container() : m_reloadTimer { static_cast<float>(m_shotTimeNumerator) / static_cast<float>(m_shotTimeDenominator) }
 {
-  m_solidObjects.emplace_back(solid_object {});
 }
 
 auto level_container::SetTimeout(int time) -> void

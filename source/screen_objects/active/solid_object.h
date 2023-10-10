@@ -7,7 +7,7 @@ class solid_object
 
 public:
 
-  solid_object();
+  solid_object(float left, float top, float right, float bottom);
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
 
 private:
@@ -17,14 +17,14 @@ private:
 
 };
 
-inline solid_object::solid_object()
+inline solid_object::solid_object(float left, float top, float right, float bottom)
 {
-  constexpr auto points = std::array
+  auto points = std::array
   {
-    game_point { 1000, 1000 },
-    game_point { 2000, 1000 },
-    game_point { 2000, 2000 },
-    game_point { 1000, 2000 }
+    game_point { left, top },
+    game_point { right, top },
+    game_point { right, bottom },
+    game_point { left, bottom }
   };
 
   m_geometry.Load(points);

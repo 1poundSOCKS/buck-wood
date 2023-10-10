@@ -41,8 +41,9 @@ public:
 
   [[nodiscard]] auto GetGrid(float left, float top, float right, float bottom) -> level_grid;
 
-  auto AddTargets(std::ranges::input_range auto&& targets) -> void;
-  auto AddMines(std::ranges::input_range auto&& mines) -> void;
+  auto AddSolidObjects(std::ranges::input_range auto&& cells) -> void;
+  auto AddTargets(std::ranges::input_range auto&& cells) -> void;
+  auto AddMines(std::ranges::input_range auto&& cells) -> void;
 
   auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -84,6 +85,14 @@ private:
   bool m_playerHasThrusterOn = false;
   int m_activatedTargetCount = 0;
 };
+
+auto level_container::AddSolidObjects(std::ranges::input_range auto&& cells) -> void
+{
+  std::ranges::for_each(cells, [this](const auto& cell)
+  {
+    m_solidObjects.emplace_back( solid_object { cell.Left(), cell.Top(), cell.Right(), cell.Bottom() } );
+  });
+}
 
 auto level_container::AddTargets(std::ranges::input_range auto&& cells) -> void
 {
