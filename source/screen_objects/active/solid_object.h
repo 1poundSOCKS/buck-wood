@@ -22,9 +22,9 @@ inline solid_object::solid_object(float left, float top, float right, float bott
   auto points = std::array
   {
     game_point { left, top },
-    game_point { right, top },
-    game_point { right, bottom },
-    game_point { left, bottom }
+    game_point { right + 1, top },
+    game_point { right + 1, bottom + 1 },
+    game_point { left, bottom + 1 }
   };
 
   m_geometry.Load(points);

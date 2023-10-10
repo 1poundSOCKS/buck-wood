@@ -48,7 +48,7 @@ auto renderer::Render(const level_asteroid& asteroid) const -> void
 
 auto renderer::Render(const solid_object& solidObject) const -> void
 {
-  Render(solidObject.Geometry(), simple_brush_selector { m_asteroidBrushes });
+  RenderWithNoBorder(solidObject.Geometry(), m_asteroidBrushes.Fill().get());
 }
 
 auto renderer::Render(const player_ship& playerShip) const -> void
@@ -138,4 +138,14 @@ auto renderer::Render(const transformed_path_geometry& geometry, const brush_sel
 {
   framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
   framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
+}
+
+auto renderer::RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
+{
+  framework::renderTarget()->FillGeometry(geometry.Get(), brush);
+}
+
+auto renderer::RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
+{
+  framework::renderTarget()->FillGeometry(geometry.Get(), brush);
 }
