@@ -33,13 +33,8 @@ public:
   level_container();
   level_container(const level_container& levelContainer) = delete;
 
-  [[nodiscard]] static auto CellWidth() -> int;
-  [[nodiscard]] static auto CellHeight() -> int;
-
   auto SetTimeout(int time) -> void;
   auto HasTimedOut() const -> bool;
-
-  [[nodiscard]] auto GetGrid(float left, float top, float right, float bottom) -> level_grid;
 
   auto AddSolidObjects(std::ranges::input_range auto&& cells) -> void;
   auto AddTargets(std::ranges::input_range auto&& cells) -> void;
@@ -59,9 +54,6 @@ public:
   [[nodiscard]] auto HasFinished() const -> bool;
 
 private:
-
-  inline static const int m_cellWidth { 800 };
-  inline static const int m_cellHeight { 800 };
 
   inline static const auto m_shotTimeNumerator { 1 };
   inline static const auto m_shotTimeDenominator { 20 };

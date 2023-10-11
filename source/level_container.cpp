@@ -16,16 +16,6 @@ auto level_container::SetTimeout(int time) -> void
   m_ticksRemaining = performance_counter::QueryFrequency() * time;
 }
 
-[[nodiscard]] auto level_container::CellWidth() -> int
-{
-  return m_cellWidth;
-}
-
-[[nodiscard]] auto level_container::CellHeight() -> int
-{
-  return m_cellHeight;
-}
-
 auto level_container::HasTimedOut() const -> bool
 {
   return m_ticksRemaining == 0;
@@ -39,11 +29,6 @@ auto level_container::HasTimedOut() const -> bool
 [[nodiscard]] auto level_container::HasFinished() const -> bool
 {
   return PlayerDied() || IsComplete();
-}
-
-[[nodiscard]] auto level_container::GetGrid(float left, float top, float right, float bottom) -> level_grid
-{
-  return { m_cellWidth, m_cellHeight, left, top, right, bottom };
 }
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr
@@ -107,7 +92,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   update_all(m_explosionParticles, interval);
   update_all(m_impactParticles, interval);
 
-  auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
+  // auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
   
   // m_asteroids.Update(grid);
   // m_solidObjects.Update(grid);
