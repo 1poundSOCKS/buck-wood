@@ -20,10 +20,15 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddTargets(targetView);
 
-  auto solidObjectView = levelGrid | std::ranges::views::filter([](const auto& cell)
+  auto solidObjectView = levelGrid |
+  std::ranges::views::filter([](const auto& cell)
   {
     auto cellType = level_grid_cell_type { cell };
     return cellType.IsAsteroid();
+  }) |
+  std::ranges::views::transform([](const auto& cell)
+  {
+    return solid_object { cell.Left(), cell.Top(), cell.Right(), cell.Bottom() };
   });
 
   levelContainer->AddSolidObjects(solidObjectView);

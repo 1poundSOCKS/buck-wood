@@ -86,11 +86,11 @@ private:
   int m_activatedTargetCount = 0;
 };
 
-auto level_container::AddSolidObjects(std::ranges::input_range auto&& cells) -> void
+auto level_container::AddSolidObjects(std::ranges::input_range auto&& solidObjects) -> void
 {
-  std::ranges::for_each(cells, [this](const auto& cell)
+  std::ranges::for_each(solidObjects, [this](const auto& solidObject)
   {
-    m_solidObjects.emplace_back( solid_object { cell.Left(), cell.Top(), cell.Right(), cell.Bottom() } );
+    m_solidObjects.push_back(solidObject);
   });
 }
 
