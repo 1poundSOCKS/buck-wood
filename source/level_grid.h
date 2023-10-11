@@ -53,6 +53,11 @@ public:
   auto BottomRow() const -> int;
   auto GetCell(int column, int row) const -> level_grid_cell;
 
+  [[nodiscard]] auto LeftBorder() const -> int;
+  [[nodiscard]] auto TopBorder() const -> int;
+  [[nodiscard]] auto RightBorder() const -> int;
+  [[nodiscard]] auto BottomBorder() const -> int;
+
   auto begin() const -> const_level_grid_iterator;
   auto end() const -> const_level_grid_iterator;
 
