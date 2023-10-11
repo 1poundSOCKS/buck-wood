@@ -99,15 +99,21 @@ const_level_grid_iterator::const_level_grid_iterator(const level_grid* levelGrid
 {
 }
 
-level_grid::level_grid(int columnWidth, int rowHeight, int left, int top, int right, int bottom) : m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
-{
-  Initialize(left, top, right, bottom);
-}
+// level_grid::level_grid(int columnWidth, int rowHeight, int left, int top, int right, int bottom) : m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
+// {
+//   Initialize(left, top, right, bottom);
+// }
 
 level_grid::level_grid(int columnWidth, int rowHeight, float left, float top, float right, float bottom) : 
   m_columnWidth { columnWidth }, m_rowHeight { rowHeight }
 {
   Initialize(static_cast<int>(left), static_cast<int>(top), static_cast<int>(right), static_cast<int>(bottom));
+}
+
+level_grid::level_grid(int columnWidth, int leftColumn, int rightColumn, int rowHeight, int topRow, int bottomRow) :
+  m_columnWidth{ columnWidth }, m_leftColumn { leftColumn }, m_rightColumn { rightColumn },
+  m_rowHeight { rowHeight }, m_topRow { topRow }, m_bottomRow { bottomRow }
+{
 }
 
 auto level_grid::Initialize(int left, int top, int right, int bottom) -> void

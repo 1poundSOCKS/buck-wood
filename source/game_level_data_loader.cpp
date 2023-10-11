@@ -10,7 +10,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
 
-  auto levelGrid = level_grid { 800, 800, -2000, -2000, 2000, 2000 };
+  auto levelGrid = level_grid { 800, -4, 4, 800, -4, 4 };
   
   auto targetView = levelGrid | std::ranges::views::filter([](const auto& cell)
   {
