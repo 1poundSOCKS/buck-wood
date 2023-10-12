@@ -23,14 +23,19 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   auto leftBorder = static_cast<float>(levelGrid.LeftBorder());
   auto topBorder = static_cast<float>(levelGrid.TopBorder());
   // auto rightBorder = static_cast<float>(levelGrid.RightBorder());
-  auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
+  // auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
+  auto centre = levelGrid.Centre();
+
+  constexpr float borderSize = 500;
 
   auto leftBorderObjectPoints = std::array
   {
-    game_point { leftBorder - 500, topBorder },
+    game_point { leftBorder - borderSize, topBorder - borderSize},
+    game_point { centre.x, topBorder - borderSize },
+    game_point { centre.x, topBorder },
     game_point { leftBorder, topBorder },
-    game_point { leftBorder, bottomBorder },
-    game_point { leftBorder - 500, bottomBorder }
+    game_point { leftBorder, centre.y },
+    game_point { leftBorder - borderSize, centre.y }
   };
 
   auto leftBorderObject = solid_object { leftBorderObjectPoints };

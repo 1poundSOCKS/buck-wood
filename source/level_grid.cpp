@@ -131,26 +131,6 @@ auto level_grid::GetCell(int column, int row) const -> level_grid_cell
   }
 }
 
-[[nodiscard]] auto level_grid::LeftBorder() const -> int
-{
-  return m_leftColumn * m_columnWidth - m_columnWidth / 2;
-}
-
-[[nodiscard]] auto level_grid::TopBorder() const -> int
-{
-  return m_topRow * m_rowHeight - m_rowHeight / 2;
-}
-
-[[nodiscard]] auto level_grid::RightBorder() const -> int
-{
-  return m_rightColumn * m_columnWidth + m_columnWidth / 2;
-}
-
-[[nodiscard]] auto level_grid::BottomBorder() const -> int
-{
-  return m_bottomRow * m_rowHeight + m_rowHeight / 2;
-}
-
 auto level_grid::begin() const -> const_level_grid_iterator
 {
   return { this, const_level_grid_iterator::type::begin };

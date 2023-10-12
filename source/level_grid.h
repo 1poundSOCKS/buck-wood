@@ -57,6 +57,7 @@ public:
   [[nodiscard]] auto TopBorder() const -> int;
   [[nodiscard]] auto RightBorder() const -> int;
   [[nodiscard]] auto BottomBorder() const -> int;
+  [[nodiscard]] auto Centre() const -> game_point;
 
   auto begin() const -> const_level_grid_iterator;
   auto end() const -> const_level_grid_iterator;
@@ -73,3 +74,30 @@ private:
   int m_bottomRow { 0 };
 
 };
+
+[[nodiscard]] inline auto level_grid::LeftBorder() const -> int
+{
+  return m_leftColumn * m_columnWidth - m_columnWidth / 2;
+}
+
+[[nodiscard]] inline auto level_grid::TopBorder() const -> int
+{
+  return m_topRow * m_rowHeight - m_rowHeight / 2;
+}
+
+[[nodiscard]] inline auto level_grid::RightBorder() const -> int
+{
+  return m_rightColumn * m_columnWidth + m_columnWidth / 2;
+}
+
+[[nodiscard]] inline auto level_grid::BottomBorder() const -> int
+{
+  return m_bottomRow * m_rowHeight + m_rowHeight / 2;
+}
+
+[[nodiscard]] inline auto level_grid::Centre() const -> game_point
+{
+  auto x = ( static_cast<float>(LeftBorder()) + static_cast<float>(RightBorder()) ) / 2;
+  auto y = ( static_cast<float>(TopBorder()) + static_cast<float>(BottomBorder()) ) / 2;
+  return { x, y };
+}
