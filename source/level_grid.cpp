@@ -83,10 +83,10 @@ level_grid::level_grid(int columnWidth, int leftColumn, int rightColumn, int row
 
 auto level_grid::Initialize(int left, int top, int right, int bottom) -> void
 {
-  m_leftColumn = left / m_columnWidth - 3;
-  m_topRow = top / m_rowHeight - 3;
-  m_rightColumn = right / m_columnWidth + 3;
-  m_bottomRow = bottom / m_rowHeight + 3;
+  m_leftColumn = left / m_columnWidth;
+  m_topRow = top / m_rowHeight;
+  m_rightColumn = right / m_columnWidth;
+  m_bottomRow = bottom / m_rowHeight;
 }
 
 auto level_grid::ColumnWidth() const -> int
@@ -129,6 +129,26 @@ auto level_grid::GetCell(int column, int row) const -> level_grid_cell
   {
     return { static_cast<float>(column * m_columnWidth), static_cast<float>(row * m_rowHeight), static_cast<float>(m_columnWidth), static_cast<float>(m_rowHeight) };
   }
+}
+
+[[nodiscard]] auto level_grid::LeftBorder() const -> int
+{
+  return m_leftColumn * m_columnWidth;
+}
+
+[[nodiscard]] auto level_grid::TopBorder() const -> int
+{
+  return m_topRow * m_rowHeight;
+}
+
+[[nodiscard]] auto level_grid::RightBorder() const -> int
+{
+  return m_rightColumn * m_columnWidth;
+}
+
+[[nodiscard]] auto level_grid::BottomBorder() const -> int
+{
+  return m_bottomRow * m_rowHeight;
 }
 
 auto level_grid::begin() const -> const_level_grid_iterator

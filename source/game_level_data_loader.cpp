@@ -20,6 +20,28 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddTargets(targetView);
 
+  auto leftBorder = static_cast<float>(levelGrid.LeftBorder());
+  auto topBorder = static_cast<float>(levelGrid.TopBorder());
+  // auto rightBorder = static_cast<float>(levelGrid.RightBorder());
+  auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
+
+  auto leftBorderObjectPoints = std::array
+  {
+    game_point { leftBorder - 500, topBorder },
+    game_point { leftBorder, topBorder },
+    game_point { leftBorder, bottomBorder },
+    game_point { leftBorder - 500, bottomBorder }
+  };
+
+  auto leftBorderObject = solid_object { leftBorderObjectPoints };
+
+  auto borderObjects = std::array
+  {
+    solid_object { leftBorderObjectPoints }
+  };
+
+  levelContainer->AddSolidObjects(borderObjects);
+
   auto solidObjectView = levelGrid |
   std::ranges::views::filter([](const auto& cell)
   {
