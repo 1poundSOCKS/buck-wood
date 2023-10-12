@@ -22,27 +22,35 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   auto leftBorder = static_cast<float>(levelGrid.LeftBorder());
   auto topBorder = static_cast<float>(levelGrid.TopBorder());
-  // auto rightBorder = static_cast<float>(levelGrid.RightBorder());
-  // auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
-  auto centre = levelGrid.Centre();
+  auto rightBorder = static_cast<float>(levelGrid.RightBorder());
+  auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
+  // auto centre = levelGrid.Centre();
 
   constexpr float borderSize = 500;
 
   auto leftBorderObjectPoints = std::array
   {
     game_point { leftBorder - borderSize, topBorder - borderSize},
-    game_point { centre.x, topBorder - borderSize },
-    game_point { centre.x, topBorder },
     game_point { leftBorder, topBorder },
-    game_point { leftBorder, centre.y },
-    game_point { leftBorder - borderSize, centre.y }
+    game_point { leftBorder, bottomBorder },
+    game_point { leftBorder - borderSize, bottomBorder + borderSize }
+  };
+
+  auto topBorderObjectPoints = std::array
+  {
+    game_point { leftBorder - borderSize, topBorder - borderSize},
+    game_point { rightBorder + borderSize, topBorder - borderSize },
+    game_point { rightBorder, topBorder },
+    game_point { leftBorder, topBorder }
   };
 
   auto leftBorderObject = solid_object { leftBorderObjectPoints };
+  auto topBorderObject = solid_object { topBorderObjectPoints };
 
   auto borderObjects = std::array
   {
-    solid_object { leftBorderObjectPoints }
+    solid_object { leftBorderObjectPoints },
+    solid_object { topBorderObjectPoints }
   };
 
   levelContainer->AddSolidObjects(borderObjects);
