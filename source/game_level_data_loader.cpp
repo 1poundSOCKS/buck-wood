@@ -77,7 +77,9 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   }) |
   std::ranges::views::transform([](const auto& cell)
   {
-    return solid_object { cell.Left(), cell.Top(), cell.Right(), cell.Bottom() };
+    auto horizontalBorder = cell.Width() / 8;
+    auto verticalBorder = cell.Height() / 8;
+    return solid_object { cell.Left() + horizontalBorder, cell.Top() + verticalBorder, cell.Right() - horizontalBorder, cell.Bottom() - verticalBorder };
   });
 
   levelContainer->AddSolidObjects(solidObjectView);
