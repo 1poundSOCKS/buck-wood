@@ -25,13 +25,13 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   auto rightBorder = static_cast<float>(levelGrid.RightBorder());
   auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
 
-  constexpr float borderSize = 1000;
+  constexpr float borderSize = 800;
 
   auto leftBorderObjectPoints = std::array
   {
     game_point { leftBorder - borderSize, topBorder - borderSize},
-    game_point { leftBorder, topBorder },
-    game_point { leftBorder, bottomBorder },
+    game_point { leftBorder, topBorder - borderSize },
+    game_point { leftBorder, bottomBorder + borderSize },
     game_point { leftBorder - borderSize, bottomBorder + borderSize }
   };
 
@@ -39,15 +39,15 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   {
     game_point { leftBorder - borderSize, topBorder - borderSize},
     game_point { rightBorder + borderSize, topBorder - borderSize },
-    game_point { rightBorder, topBorder },
-    game_point { leftBorder, topBorder }
+    game_point { rightBorder + borderSize, topBorder },
+    game_point { leftBorder - borderSize, topBorder }
   };
 
   auto rightBorderObjectPoints = std::array
   {
     game_point { rightBorder + borderSize, topBorder - borderSize},
-    game_point { rightBorder, topBorder },
-    game_point { rightBorder, bottomBorder },
+    game_point { rightBorder, topBorder - borderSize },
+    game_point { rightBorder, bottomBorder + borderSize },
     game_point { rightBorder + borderSize, bottomBorder + borderSize }
   };
 
@@ -55,8 +55,8 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   {
     game_point { leftBorder - borderSize, bottomBorder + borderSize},
     game_point { rightBorder + borderSize, bottomBorder + borderSize },
-    game_point { rightBorder, bottomBorder },
-    game_point { leftBorder, bottomBorder }
+    game_point { rightBorder + borderSize, bottomBorder },
+    game_point { leftBorder - borderSize, bottomBorder }
   };
 
   auto borderObjects = std::array
