@@ -82,6 +82,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddSolidObjects(solidObjectView);
 
+  levelContainer->SetCentre(levelGrid.Centre());
   levelContainer->SetTimeout(GetTimeLimit());
 
   return levelContainer;

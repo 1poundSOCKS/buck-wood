@@ -36,6 +36,9 @@ public:
   auto SetTimeout(int time) -> void;
   auto HasTimedOut() const -> bool;
 
+  auto SetCentre(const game_point& value) -> void;
+  [[nodiscard]] auto Centre() const -> const game_point&;
+
   auto AddSolidObjects(std::ranges::input_range auto&& cells) -> void;
   auto AddTargets(std::ranges::input_range auto&& cells) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
@@ -71,12 +74,23 @@ private:
   solid_objects m_solidObjects;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
+  game_point m_centre;
 
   int64_t m_ticksRemaining = 0;
 
   bool m_playerHasThrusterOn = false;
   int m_activatedTargetCount = 0;
 };
+
+inline auto level_container::SetCentre(const game_point& value) -> void
+{
+  m_centre = value;
+}
+
+[[nodiscard]] inline auto level_container::Centre() const -> const game_point&
+{
+  return m_centre;
+}
 
 auto level_container::AddSolidObjects(std::ranges::input_range auto&& solidObjects) -> void
 {

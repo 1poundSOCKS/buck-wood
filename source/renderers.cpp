@@ -33,29 +33,29 @@ renderer::renderer()
 
 auto renderer::Render(const level_target& target) const -> void
 {
-  Render(target.Geometry(), target_brush_selector { m_targetBrushes, target });
+  RenderWithBorder(target.Geometry(), target_brush_selector { m_targetBrushes, target });
 }
 
 auto renderer::Render(const mine& levelMine) const -> void
 {
-  Render(levelMine.Geometry(), simple_brush_selector { m_mineBrushes } );
+  RenderWithBorder(levelMine.Geometry(), simple_brush_selector { m_mineBrushes } );
 }
 
 auto renderer::Render(const level_asteroid& asteroid) const -> void
 {
-  Render(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
+  RenderWithBorder(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
 }
 
 auto renderer::Render(const solid_object& solidObject) const -> void
 {
-  RenderWithNoBorder(solidObject.Geometry(), m_asteroidBrushes.Fill().get());
+  RenderWithBorder(solidObject.Geometry(), simple_brush_selector { m_asteroidBrushes });
 }
 
 auto renderer::Render(const player_ship& playerShip) const -> void
 {
   if( playerShip.State() == player_ship::state::alive )
   {
-    Render(playerShip.Geometry(), simple_brush_selector { m_playerShipBrushes });
+    RenderWithBorder(playerShip.Geometry(), simple_brush_selector { m_playerShipBrushes });
 
     if( playerShip.ThrusterOn() )
     {
@@ -127,14 +127,14 @@ auto renderer::Render(const player_shields& playerShields) const -> void
 }
 
 template <typename brush_selector>
-auto renderer::Render(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
+auto renderer::RenderWithBorder(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
   framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
   framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
 }
 
 template <typename brush_selector>
-auto renderer::Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void
+auto renderer::RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
   framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
   framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());

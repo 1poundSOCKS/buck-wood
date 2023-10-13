@@ -192,9 +192,10 @@ auto play_screen::Playing(int64_t frameInterval) -> level_container::update_even
   {
     m_stage = stage::post_play;
     auto playerPosition = m_levelContainer->PlayerPosition();
+    auto levelCentre = m_levelContainer->Centre();
     m_endSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_playZoom };
     m_endSequence.AddPause(performance_counter::CalculateTicks(2.0f));
-    m_endSequence.AddMove( { playerPosition.x, playerPosition.y, 0.1f }, performance_counter::CalculateTicks(5.0f) );
+    m_endSequence.AddMove( { levelCentre.x, levelCentre.y, 0.1f }, performance_counter::CalculateTicks(5.0f) );
     m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
     m_stageTicks = 0;
   }
@@ -293,7 +294,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
       return { playerPosition.x, playerPosition.y, m_startSequence.GetScale(m_stageTicks) };
 
     case stage::post_play:
-      return { playerPosition.x, playerPosition.y, m_endSequence.GetScale(m_stageTicks) };
+      return { m_endSequence.GetPosition(m_stageTicks).x, m_endSequence.GetPosition(m_stageTicks).y, m_endSequence.GetScale(m_stageTicks) };
 
     default:
       return { playerPosition.x, playerPosition.y, m_playZoom };

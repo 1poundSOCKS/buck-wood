@@ -38,8 +38,9 @@ private:
   auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
 
-  template <typename brush_selector> auto Render(const path_geometry& geometry, const brush_selector& object) const -> void;
-  template <typename brush_selector> auto Render(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
+  template <typename brush_selector> auto RenderWithBorder(const path_geometry& geometry, const brush_selector& object) const -> void;
+  template <typename brush_selector> auto RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
+  
   auto RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
   auto RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
 
