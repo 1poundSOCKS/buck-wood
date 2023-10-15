@@ -123,10 +123,11 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
     return level_star { cell.Position().x, cell.Position().y };
   });
 
+  renderer::render_all(m_blankObjects);
   renderer::render_all(starView);
+  renderer::render_all(m_solidObjects);
   renderer::render_all(m_explosionParticles);
   // renderer::render_all(m_asteroids);
-  renderer::render_all(m_solidObjects);
   renderer::render_all(m_targets);
   renderer::render_all(m_mines);
   renderer::render_all(m_impactParticles);

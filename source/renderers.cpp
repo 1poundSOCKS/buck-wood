@@ -29,6 +29,7 @@ renderer::renderer()
   const auto& renderTarget = framework::renderTarget();
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
+  m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -46,9 +47,14 @@ auto renderer::Render(const level_asteroid& asteroid) const -> void
   RenderWithBorder(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
 }
 
-auto renderer::Render(const solid_object& solidObject) const -> void
+auto renderer::Render(const blank_object& object) const -> void
 {
-  RenderWithBorder(solidObject.Geometry(), simple_brush_selector { m_asteroidBrushes });
+  RenderWithNoBorder(object.Geometry(), m_blankBrush.get());
+}
+
+auto renderer::Render(const solid_object& object) const -> void
+{
+  RenderWithBorder(object.Geometry(), simple_brush_selector { m_asteroidBrushes });
 }
 
 auto renderer::Render(const player_ship& playerShip) const -> void

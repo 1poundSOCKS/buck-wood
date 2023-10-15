@@ -86,7 +86,7 @@ auto play_screen::Render() const -> void
 
   auto startRenderTime = performance_counter::QueryValue();
 
-  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  renderTarget->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
 
   auto screenTransform = GetLevelRenderTransform();
   renderTarget->SetTransform(screenTransform.Get());

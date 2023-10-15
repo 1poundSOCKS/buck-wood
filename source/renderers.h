@@ -3,6 +3,7 @@
 #include "render_brushes.h"
 #include "level_asteroid.h"
 #include "solid_objects.h"
+#include "blank_objects.h"
 #include "player_ship.h"
 #include "explosion.h"
 #include "level_star.h"
@@ -29,7 +30,8 @@ private:
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
-  auto Render(const solid_object& solidObject) const -> void;
+  auto Render(const blank_object& object) const -> void;
+  auto Render(const solid_object& object) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& playerBullet) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
@@ -44,6 +46,7 @@ private:
   auto RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
   auto RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
 
+
   target_brushes m_targetBrushes;
   filled_geometry_brushes m_mineBrushes { screen_render_brush_red, screen_render_brush_grey, 3 };
   filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
@@ -52,6 +55,7 @@ private:
   color_scale_brushes m_explosionBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   color_scale_brushes m_impactBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } };
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_blankBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };

@@ -3,6 +3,7 @@
 #include "render_brush_def.h"
 
 inline auto screen_render_brush_white = render_brush_def(D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f));
+inline auto screen_render_brush_black = render_brush_def(D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f));
 inline auto screen_render_brush_grey = render_brush_def(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
 inline auto screen_render_brush_dark_grey = render_brush_def(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
 inline auto screen_render_brush_green = render_brush_def(D2D1::ColorF(0.0f, 1.0f, 0.0f, 1.0f));

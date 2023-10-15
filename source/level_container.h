@@ -10,6 +10,7 @@
 #include "explosion_particle.h"
 #include "level_input.h"
 #include "solid_objects.h"
+#include "blank_objects.h"
 
 class level_container
 {
@@ -39,7 +40,8 @@ public:
   auto SetCentre(const game_point& value) -> void;
   [[nodiscard]] auto Centre() const -> const game_point&;
 
-  auto AddSolidObjects(std::ranges::input_range auto&& cells) -> void;
+  auto AddSolidObjects(std::ranges::input_range auto&& objects) -> void;
+  auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddTargets(std::ranges::input_range auto&& cells) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
 
@@ -72,6 +74,7 @@ private:
   mine_collection m_mines;
   // asteroid_container m_asteroids;
   solid_objects m_solidObjects;
+  blank_objects m_blankObjects;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
   game_point m_centre;
@@ -92,11 +95,19 @@ inline auto level_container::SetCentre(const game_point& value) -> void
   return m_centre;
 }
 
-auto level_container::AddSolidObjects(std::ranges::input_range auto&& solidObjects) -> void
+auto level_container::AddSolidObjects(std::ranges::input_range auto&& objects) -> void
 {
-  std::ranges::for_each(solidObjects, [this](const auto& solidObject)
+  std::ranges::for_each(objects, [this](const auto& object)
   {
-    m_solidObjects.push_back(solidObject);
+    m_solidObjects.push_back(object);
+  });
+}
+
+auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -> void
+{
+  std::ranges::for_each(objects, [this](const auto& object)
+  {
+    m_blankObjects.push_back(object);
   });
 }
 

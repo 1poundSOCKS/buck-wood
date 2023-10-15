@@ -10,7 +10,9 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
 
-  auto levelGrid = level_grid { 800, -4, 4, 800, -4, 4 };
+  constexpr int gridSize = 800;
+
+  auto levelGrid = level_grid { gridSize, -4, 4, gridSize, -4, 4 };
   
   auto targetView = levelGrid | std::ranges::views::filter([](const auto& cell)
   {
@@ -20,54 +22,52 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddTargets(targetView);
 
-  auto leftBorder = static_cast<float>(levelGrid.LeftBorder());
-  auto topBorder = static_cast<float>(levelGrid.TopBorder());
-  auto rightBorder = static_cast<float>(levelGrid.RightBorder());
-  auto bottomBorder = static_cast<float>(levelGrid.BottomBorder());
+  auto leftInnerBorder = static_cast<float>(levelGrid.LeftBorder());
+  auto topInnerBorder = static_cast<float>(levelGrid.TopBorder());
+  auto rightInnerBorder = static_cast<float>(levelGrid.RightBorder());
+  auto bottomInnerBorder = static_cast<float>(levelGrid.BottomBorder());
 
-  constexpr float borderSize = 800;
+  constexpr float borderSize = gridSize;
 
-  auto leftBorderObjectPoints = std::array
+  auto leftOuterBorder = leftInnerBorder - borderSize;
+  auto topOuterBorder = topInnerBorder - borderSize;
+  auto rightOuterBorder = rightInnerBorder + borderSize;
+  auto bottomOuterBorder = bottomInnerBorder + borderSize;
+
+  auto borderObjectPoints = std::array
   {
-    game_point { leftBorder - borderSize, topBorder - borderSize},
-    game_point { leftBorder, topBorder - borderSize },
-    game_point { leftBorder, bottomBorder + borderSize },
-    game_point { leftBorder - borderSize, bottomBorder + borderSize }
+    game_point { leftOuterBorder, topOuterBorder },
+    game_point { rightOuterBorder, topOuterBorder },
+    game_point { rightOuterBorder, bottomOuterBorder },
+    game_point { leftOuterBorder, bottomOuterBorder },
+    game_point { leftOuterBorder, topInnerBorder },
+    game_point { leftInnerBorder, topInnerBorder },
+    game_point { leftInnerBorder, bottomInnerBorder },
+    game_point { rightInnerBorder, bottomInnerBorder },
+    game_point { rightInnerBorder, topInnerBorder },
+    game_point { leftOuterBorder, topInnerBorder }
   };
 
-  auto topBorderObjectPoints = std::array
+  auto innerObjectPoints = std::array
   {
-    game_point { leftBorder - borderSize, topBorder - borderSize},
-    game_point { rightBorder + borderSize, topBorder - borderSize },
-    game_point { rightBorder + borderSize, topBorder },
-    game_point { leftBorder - borderSize, topBorder }
-  };
-
-  auto rightBorderObjectPoints = std::array
-  {
-    game_point { rightBorder + borderSize, topBorder - borderSize},
-    game_point { rightBorder, topBorder - borderSize },
-    game_point { rightBorder, bottomBorder + borderSize },
-    game_point { rightBorder + borderSize, bottomBorder + borderSize }
-  };
-
-  auto bottomBorderObjectPoints = std::array
-  {
-    game_point { leftBorder - borderSize, bottomBorder + borderSize},
-    game_point { rightBorder + borderSize, bottomBorder + borderSize },
-    game_point { rightBorder + borderSize, bottomBorder },
-    game_point { leftBorder - borderSize, bottomBorder }
+    game_point { leftInnerBorder, topInnerBorder },
+    game_point { rightInnerBorder, topInnerBorder },
+    game_point { rightInnerBorder, bottomInnerBorder },
+    game_point { leftInnerBorder, bottomInnerBorder }
   };
 
   auto borderObjects = std::array
   {
-    solid_object { leftBorderObjectPoints },
-    solid_object { topBorderObjectPoints },
-    solid_object { rightBorderObjectPoints },
-    solid_object { bottomBorderObjectPoints }
+    solid_object { borderObjectPoints }
+  };
+
+  auto innerObjects = std::array
+  {
+    blank_object { innerObjectPoints }
   };
 
   levelContainer->AddSolidObjects(borderObjects);
+  levelContainer->AddBlankObjects(innerObjects);
 
   auto solidObjectView = levelGrid |
   std::ranges::views::filter([](const auto& cell)
