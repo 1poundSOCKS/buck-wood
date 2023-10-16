@@ -114,9 +114,10 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
   auto starGrid = level_grid { 100, 100,  viewRect.left, viewRect.top, viewRect.right, viewRect.bottom };
   
-  auto starView = starGrid | std::ranges::views::filter([](const auto& cell)
+  auto starView = starGrid | std::ranges::views::filter([this](const auto& cell)
   {
-    return psn::GetNoise(cell.Position().x, cell.Position().y) > 0.90f;
+    auto inside = have_geometry_and_point_collided(m_blankObjects.front(), cell);
+    return inside && psn::GetNoise(cell.Position().x, cell.Position().y) > 0.90f;
   })
   | std::ranges::views::transform([](const auto& cell)
   {

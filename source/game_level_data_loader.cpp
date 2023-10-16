@@ -27,7 +27,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   auto rightInnerBorder = static_cast<float>(levelGrid.RightBorder());
   auto bottomInnerBorder = static_cast<float>(levelGrid.BottomBorder());
 
-  constexpr float borderSize = gridSize;
+  constexpr float borderSize = gridSize * 10;
 
   auto leftOuterBorder = leftInnerBorder - borderSize;
   auto topOuterBorder = topInnerBorder - borderSize;
@@ -66,7 +66,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
     blank_object { innerObjectPoints }
   };
 
-  levelContainer->AddSolidObjects(borderObjects);
+  // levelContainer->AddSolidObjects(borderObjects);
   levelContainer->AddBlankObjects(innerObjects);
 
   auto solidObjectView = levelGrid |
