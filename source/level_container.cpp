@@ -176,6 +176,13 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     //   playerShip.ApplyFatalDamage();
     // });
 
+    if( !is_geometry_contained(m_blankObjects.front(), m_playerShip) )
+    {
+      auto position = m_playerShip.PreviousPosition();
+      CreateExplosion(position);
+      m_playerShip.ApplyFatalDamage();
+    }
+
     do_geometry_to_geometries_collisions(m_playerShip, m_solidObjects, [this](auto& playerShip, auto& solidObject)
     {
       auto position = playerShip.PreviousPosition();
