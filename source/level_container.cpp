@@ -175,8 +175,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     //   CreateExplosion(position);
     //   playerShip.ApplyFatalDamage();
     // });
-
-    if( !is_geometry_contained(m_blankObjects.front(), m_playerShip) )
+    if( !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
     {
       auto position = m_playerShip.PreviousPosition();
       CreateExplosion(position);
@@ -227,6 +226,14 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
   // });
 
   do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this, updateEvents](auto& mine, auto& solidObject)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    updateEvents->mineExploded = true;
+  });
+
+  check_geometries_contained(m_mines, m_blankObjects.front(), [this, updateEvents](auto& mine)
   {
     auto position = mine.PreviousPosition();
     CreateExplosion(position);

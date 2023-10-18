@@ -62,10 +62,10 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
   return collided;
 }
 
-[[nodiscard]] auto is_geometry_contained(auto& containerGeometryObject, auto& containedGeometryObject) -> bool
+[[nodiscard]] auto is_geometry_contained(auto& geometryObject, auto& containerObject) -> bool
 {
-  const auto& containerGeometry = containerGeometryObject.Geometry();
-  const auto& containedGeometry = containedGeometryObject.Geometry();
+  const auto& containerGeometry = containerObject.Geometry();
+  const auto& containedGeometry = geometryObject.Geometry();
 
   D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
   HRESULT hr = containerGeometry.Get()->CompareWithGeometry(containedGeometry.Get(), D2D1::Matrix3x2F::Identity(), &relation);
@@ -83,6 +83,17 @@ auto erase_destroyed(std::ranges::input_range auto&& objects)
   }
 
   return contained;
+}
+
+auto check_geometries_contained(std::ranges::input_range auto&& geometryObjects, auto& containerObject, auto OnNotContained) -> void
+{
+  for( auto& geometryObject : geometryObjects )
+  {
+    if( !is_geometry_contained(geometryObject, containerObject) )
+    {
+      OnNotContained(geometryObject);
+    }
+  } 
 }
 
 auto do_geometries_to_points_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects, auto OnCollision) -> void
