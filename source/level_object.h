@@ -96,6 +96,17 @@ auto check_geometries_contained(std::ranges::input_range auto&& geometryObjects,
   } 
 }
 
+auto check_points_contained(std::ranges::input_range auto&& pointObjects, auto& containerObject, auto OnNotContained) -> void
+{
+  for( auto& pointObject : pointObjects )
+  {
+    if( !have_geometry_and_point_collided(containerObject, pointObject) )
+    {
+      OnNotContained(pointObject);
+    }
+  }
+}
+
 auto do_geometries_to_points_collisions(std::ranges::input_range auto&& geometryObjects, std::ranges::input_range auto&& pointObjects, auto OnCollision) -> void
 {
   std::for_each(std::begin(geometryObjects), std::end(geometryObjects), [&pointObjects, OnCollision](auto& geometryObject)
