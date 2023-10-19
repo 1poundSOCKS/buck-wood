@@ -252,6 +252,11 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     particle.Destroy();
   });
 
+  check_points_contained(m_explosionParticles, m_blankObjects.front(), [this](auto& particle)
+  {
+    particle.Destroy();
+  });
+
   do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
   {
     m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
