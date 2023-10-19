@@ -8,25 +8,34 @@
 #include "dwrite_factory.h"
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
+#include "volume_controller.h"
 
 main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
   
   global_sound_buffer_selector soundBufferSelector { sound_data::soundBuffers() };
-  auto soundBuffer = soundBufferSelector[sound_buffer_name::menu_theme];
+  
+  auto menuTheme = soundBufferSelector[sound_buffer_name::menu_theme];
+  auto shootEffect = soundBufferSelector[sound_buffer_name::shoot];
+  auto thrustEffect = soundBufferSelector[sound_buffer_name::thrust];
+  auto targetActivatedEffected = soundBufferSelector[sound_buffer_name::target_activated];
+  auto mineExplodedEffect = soundBufferSelector[sound_buffer_name::mine_exploded];
 
-  if( soundBuffer )
+  if( menuTheme )
   {
-    auto volumeRange = float { DSBVOLUME_MAX - DSBVOLUME_MIN };
-    auto volume = static_cast<int>(DSBVOLUME_MIN + volumeRange * 0.8f);
-    HRESULT hr = soundBuffer->SetVolume(volume);
-    if( FAILED(hr) ) throw std::exception();
+    auto musicBuffers = std::array { menuTheme };
+    volume_controller musicVolumeController { musicBuffers };
+    musicVolumeController.SetVolume(0.8f);
+
+    auto effectBuffers = std::array { shootEffect, thrustEffect, targetActivatedEffected, mineExplodedEffect };
+    volume_controller effectVolumeController { effectBuffers };
+    effectVolumeController.SetVolume(0.8f);
   }
   
   // play sound now to ensure no sound glitch on first real play
   {
-    sound_buffer_player player(soundBuffer);
+    sound_buffer_player player(menuTheme);
     player.Play();
   }
 
