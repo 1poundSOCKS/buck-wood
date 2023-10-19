@@ -16,26 +16,24 @@ main_menu_screen::main_menu_screen()
   
   global_sound_buffer_selector soundBufferSelector { sound_data::soundBuffers() };
   
-  auto menuTheme = soundBufferSelector[sound_buffer_name::menu_theme];
-  auto shootEffect = soundBufferSelector[sound_buffer_name::shoot];
-  auto thrustEffect = soundBufferSelector[sound_buffer_name::thrust];
-  auto targetActivatedEffected = soundBufferSelector[sound_buffer_name::target_activated];
-  auto mineExplodedEffect = soundBufferSelector[sound_buffer_name::mine_exploded];
+  auto musicBuffers = std::array { soundBufferSelector[sound_buffer_name::menu_theme] };
+  volume_controller musicVolumeController { musicBuffers };
+  musicVolumeController.SetVolume(0.8f);
 
-  if( menuTheme )
+  auto effectBuffers = std::array
   {
-    auto musicBuffers = std::array { menuTheme };
-    volume_controller musicVolumeController { musicBuffers };
-    musicVolumeController.SetVolume(0.8f);
-
-    auto effectBuffers = std::array { shootEffect, thrustEffect, targetActivatedEffected, mineExplodedEffect };
-    volume_controller effectVolumeController { effectBuffers };
-    effectVolumeController.SetVolume(0.8f);
-  }
+    soundBufferSelector[sound_buffer_name::shoot],
+    soundBufferSelector[sound_buffer_name::thrust],
+    soundBufferSelector[sound_buffer_name::target_activated],
+    soundBufferSelector[sound_buffer_name::mine_exploded]
+  };
+  
+  volume_controller effectVolumeController { effectBuffers };
+  effectVolumeController.SetVolume(0.8f);
   
   // play sound now to ensure no sound glitch on first real play
   {
-    sound_buffer_player player(menuTheme);
+    sound_buffer_player player { soundBufferSelector[sound_buffer_name::menu_theme] };
     player.Play();
   }
 
