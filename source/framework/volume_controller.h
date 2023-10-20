@@ -29,9 +29,12 @@ template <std::size_t N> volume_controller::volume_controller(std::array<IDirect
 
 inline auto volume_controller::AddSoundBuffer(IDirectSoundBuffer8* buffer) -> void
 {
-  m_buffers.emplace_back( sound_buffer_ptr {} );
-  m_buffers.back().attach(buffer);
-  m_buffers.back()->AddRef();
+  if( buffer )
+  {
+    m_buffers.emplace_back( sound_buffer_ptr {} );
+    m_buffers.back().attach(buffer);
+    m_buffers.back()->AddRef();
+  }
 }
 
 inline auto volume_controller::SetVolume(float value) -> void
