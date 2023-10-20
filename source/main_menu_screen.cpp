@@ -14,18 +14,24 @@ main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
   
-  global_sound_buffer_selector soundBufferSelector { sound_data::soundBuffers() };
+  // global_sound_buffer_selector soundBufferSelector { sound_data::soundBuffers() };
   
-  auto musicBuffers = std::array { soundBufferSelector[sound_buffer_name::menu_theme] };
+  const auto& soundBuffers = sound_data::soundBuffers();
+  
+  auto musicBuffers = std::array
+  {
+    soundBuffers[sound_data::menu_theme]
+  };
+
   volume_controller musicVolumeController { musicBuffers };
   musicVolumeController.SetVolume(0.8f);
 
   auto effectBuffers = std::array
   {
-    soundBufferSelector[sound_buffer_name::shoot],
-    soundBufferSelector[sound_buffer_name::thrust],
-    soundBufferSelector[sound_buffer_name::target_activated],
-    soundBufferSelector[sound_buffer_name::mine_exploded]
+    soundBuffers[sound_data::shoot],
+    soundBuffers[sound_data::thrust],
+    soundBuffers[sound_data::target_activated],
+    soundBuffers[sound_data::mine_exploded]
   };
   
   volume_controller effectVolumeController { effectBuffers };
@@ -33,7 +39,7 @@ main_menu_screen::main_menu_screen()
   
   // play sound now to ensure no sound glitch on first real play
   {
-    sound_buffer_player player { soundBufferSelector[sound_buffer_name::menu_theme] };
+    sound_buffer_player player { soundBuffers[sound_data::menu_theme] };
     player.Play();
   }
 

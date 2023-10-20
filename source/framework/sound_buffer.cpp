@@ -52,3 +52,33 @@ winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound
 
   return soundBuffer;
 }
+
+void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop)
+{
+  if( soundBuffer )
+  {
+    DWORD bufferStatus = S_OK;
+
+    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
+      soundBuffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+  }
+}
+
+void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer)
+{
+  if( soundBuffer )
+  {
+    DWORD bufferStatus = S_OK;
+
+    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
+      soundBuffer->Stop();
+  }
+}
+
+void ResetSoundBuffer(IDirectSoundBuffer8* soundBuffer)
+{
+  if( soundBuffer )
+  {
+    soundBuffer->SetCurrentPosition(0);
+  }
+}

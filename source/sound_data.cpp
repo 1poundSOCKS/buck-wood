@@ -1,31 +1,6 @@
 #include "pch.h"
 #include "sound_data.h"
 
-constexpr [[nodiscard]] auto GetWavFilenames()
-{
-  return std::array {
-    L"main_theme.wav", 
-    L"shoot_effect.wav", 
-    L"thrust_effect.wav", 
-    L"target_activated.wav",
-    L"mine_exploded.wav"
-  };
-}
-
-auto LoadSoundBuffers(IDirectSound8* directSound, const std::wstring& path, std::back_insert_iterator<sound_buffers> soundBufferInserter) -> void
-{
-  auto wavFiles = GetWavFilenames();
-
-  std::filesystem::path soundFilePath = path;
-  soundFilePath /= L"sound";
-
-  sound_buffers soundBuffers;
-  std::transform(wavFiles.cbegin(), wavFiles.cend(), soundBufferInserter, [directSound, soundFilePath](const auto filename)
-  {
-    return LoadSoundBuffer(directSound, soundFilePath, filename);
-  });
-}
-
 sound_data* sound_data::m_soundData = nullptr;
 
 auto sound_data::create(IDirectSound8* directSound, const std::wstring& path) -> void
@@ -40,5 +15,6 @@ auto sound_data::soundBuffers() -> sound_buffers&
 
 sound_data::sound_data(IDirectSound8* directSound, const std::wstring& path)
 {
-  LoadSoundBuffers(directSound, path, std::back_inserter(m_soundBuffers));
+  m_soundBuffers.Load(directSound, path, GetWavFilenames());
+  // LoadSoundBuffers(directSound, path, std::back_inserter(m_soundBuffers));
 }

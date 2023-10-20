@@ -118,38 +118,53 @@ auto play_screen::Render() const -> void
 
 auto play_screen::PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void
 {
-  const auto soundBuffers = global_sound_buffer_selector { sound_data::soundBuffers() };
+  const auto& soundBuffers = sound_data::soundBuffers();
 
   if( m_stage != stage::playing || m_paused || !m_continueRunning )
   {
-    StopSoundBufferPlay(soundBuffers[sound_buffer_name::menu_theme]);
-    StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
+    // StopSoundBufferPlay(soundBuffers[sound_buffer_name::menu_theme]);
+    // StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
+    soundBuffers[sound_data::menu_theme].Stop();
+    soundBuffers[sound_data::thrust].Stop();
   }
   else
   {
-    PlaySoundBuffer(soundBuffers[sound_buffer_name::menu_theme], true);
+    // PlaySoundBuffer(soundBuffers[sound_buffer_name::menu_theme], true);
+    soundBuffers[sound_data::menu_theme].Play(true);
 
     if( m_levelContainer->PlayerHasThrusterOn() )
-      PlaySoundBuffer(soundBuffers[sound_buffer_name::thrust], true);
+    {
+      // PlaySoundBuffer(soundBuffers[sound_buffer_name::thrust], true);
+      soundBuffers[sound_data::thrust].Play(true);
+    }
     else
-      StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
+    {
+      // StopSoundBufferPlay(soundBuffers[sound_buffer_name::thrust]);
+      soundBuffers[sound_data::thrust].Stop();
+    }
 
     if( levelUpdateEvents.get() && levelUpdateEvents->playerShot )
     {
-      ResetSoundBuffer(soundBuffers[sound_buffer_name::shoot]);
-      PlaySoundBuffer(soundBuffers[sound_buffer_name::shoot]);
+      // ResetSoundBuffer(soundBuffers[sound_buffer_name::shoot]);
+      // PlaySoundBuffer(soundBuffers[sound_buffer_name::shoot]);
+      soundBuffers[sound_data::shoot].Reset();
+      soundBuffers[sound_data::shoot].Play(false);
     }
 
     if( levelUpdateEvents.get() && levelUpdateEvents->targetActivated )
     {
-      ResetSoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
-      PlaySoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
+      // ResetSoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
+      // PlaySoundBuffer(soundBuffers[sound_buffer_name::target_activated]);
+      soundBuffers[sound_data::target_activated].Reset();
+      soundBuffers[sound_data::target_activated].Play(false);
     }
 
     if( levelUpdateEvents.get() && levelUpdateEvents->mineExploded )
     {
-      ResetSoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
-      PlaySoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
+      // ResetSoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
+      // PlaySoundBuffer(soundBuffers[sound_buffer_name::mine_exploded]);
+      soundBuffers[sound_data::mine_exploded].Reset();
+      soundBuffers[sound_data::mine_exploded].Play(false);
     }
   }
 }
