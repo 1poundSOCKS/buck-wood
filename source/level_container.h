@@ -18,6 +18,8 @@ public:
 
   struct update_events
   {
+    auto reset() -> void;
+
     bool playerShot { false };
     bool targetActivated { false };
     bool mineExploded { false };
@@ -45,7 +47,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& cells) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
 
-  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr;
+  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
@@ -57,13 +59,14 @@ public:
   [[nodiscard]] auto TicksRemaining() const -> int64_t;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
+  [[nodiscard]] auto UpdateEvents() const -> const update_events&;
 
 private:
 
   inline static const auto m_shotTimeNumerator { 1 };
   inline static const auto m_shotTimeDenominator { 20 };
 
-  auto DoCollisions(update_events* updateEvents) -> void;
+  auto DoCollisions() -> void;
   auto CreateExplosion(const game_point& position) -> void;
 
   player_ship m_playerShip;
@@ -83,7 +86,16 @@ private:
 
   bool m_playerHasThrusterOn = false;
   int m_activatedTargetCount = 0;
+
+  update_events m_updateEvents;
 };
+
+inline auto level_container::update_events::reset() -> void
+{
+  playerShot = false ;
+  targetActivated = false;
+  mineExploded = false;
+}
 
 inline auto level_container::SetCentre(const game_point& value) -> void
 {
@@ -135,4 +147,9 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
 [[nodiscard]] inline auto level_container::PlayerShields() const -> const player_ship::shield_status&
 {
   return m_playerShip.ShieldStatus();  
+}
+
+[[nodiscard]] inline auto level_container::UpdateEvents() const -> const update_events&
+{
+  return m_updateEvents;
 }

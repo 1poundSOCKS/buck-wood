@@ -255,6 +255,8 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
 
+    m_swapChain->Present(m_unlockFrameRate ? 0 : 1, 0);
+
     m_inputState.previousWindowData = m_inputState.windowData;
     m_inputState.previousRenderTargetMouseData = m_inputState.renderTargetMouseData;
   }

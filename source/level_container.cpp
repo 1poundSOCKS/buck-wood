@@ -31,11 +31,11 @@ auto level_container::HasTimedOut() const -> bool
   return PlayerDied() || IsComplete();
 }
 
-auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events_ptr
+auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
-  auto updateEvents = std::make_unique<update_events>();
-
   auto interval = framework::gameUpdateInterval(ticks);
+
+  m_updateEvents.reset();
 
   if( m_playerShip.Destroyed() )
   {
@@ -68,7 +68,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
     if( reloaded && triggerPressed )
     {
       m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), *input.ShootAngle() } );
-      updateEvents->playerShot = true;
+      m_updateEvents.playerShot = true;
     }
 
     for( auto& target : m_targets )
@@ -97,7 +97,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   // m_asteroids.Update(grid);
   // m_solidObjects.Update(grid);
 
-  DoCollisions(updateEvents.get());
+  DoCollisions();
 
   erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
@@ -106,8 +106,6 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
-
-  return updateEvents;
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -165,7 +163,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   return m_ticksRemaining;
 }
 
-auto level_container::DoCollisions(update_events* updateEvents) -> void
+auto level_container::DoCollisions() -> void
 {
   if( !m_playerShip.Destroyed() )
   {
@@ -189,13 +187,13 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
       playerShip.ApplyFatalDamage();
     });
 
-    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this, updateEvents](auto& playerShip, auto& mine)
+    do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this](auto& playerShip, auto& mine)
     {
       playerShip.ApplyDamage(2);
       auto position = mine.PreviousPosition();
       CreateExplosion(position);
       mine.Destroy();
-      updateEvents->mineExploded = true;
+      m_updateEvents.mineExploded = true;
     });
 
     do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
@@ -225,20 +223,20 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
   //   particle.Destroy();
   // });
 
-  do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this, updateEvents](auto& mine, auto& solidObject)
+  do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this](auto& mine, auto& solidObject)
   {
     auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
-    updateEvents->mineExploded = true;
+    m_updateEvents.mineExploded = true;
   });
 
-  check_geometries_contained(m_mines, m_blankObjects.front(), [this, updateEvents](auto& mine)
+  check_geometries_contained(m_mines, m_blankObjects.front(), [this](auto& mine)
   {
     auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
-    updateEvents->mineExploded = true;
+    m_updateEvents.mineExploded = true;
   });
 
   do_geometries_to_points_collisions(m_solidObjects, m_bullets, [this](auto& solidObject, auto& bullet)
@@ -257,7 +255,7 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
     particle.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_targets, m_bullets, [this, updateEvents](auto& target, auto& bullet)
+  do_geometries_to_points_collisions(m_targets, m_bullets, [this](auto& target, auto& bullet)
   {
     m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
 
@@ -268,26 +266,26 @@ auto level_container::DoCollisions(update_events* updateEvents) -> void
       if( target.IsActivated() )
       {
         ++m_activatedTargetCount;
-        updateEvents->targetActivated = true;
+        m_updateEvents.targetActivated = true;
       }
     }
 
     bullet.Destroy();
   });
 
-  check_points_contained(m_bullets, m_blankObjects.front(), [this, updateEvents](auto& bullet)
+  check_points_contained(m_bullets, m_blankObjects.front(), [this](auto& bullet)
   {
     m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
     bullet.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_mines, m_bullets, [this, updateEvents](auto& mine, auto& bullet)
+  do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {
     auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
     bullet.Destroy();
-    updateEvents->mineExploded = true;
+    m_updateEvents.mineExploded = true;
   });
 }
 

@@ -49,7 +49,7 @@ auto main_menu_screen::Refresh(int64_t ticks) -> bool
 
   Render();
 
-  framework::present();
+  // framework::present();
 
   return m_continueRunning;
 }

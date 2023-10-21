@@ -27,17 +27,17 @@ private:
 
   enum class stage { pre_play, playing, post_play };
 
-  auto Update(int64_t frameInterval) -> level_container::update_events_ptr;
+  auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
-  auto PostPresent(const level_container::update_events_ptr& levelUpdateEvents) const -> void;
+  auto PostPresent() const -> void;
 
   auto PrePlay(int64_t frameInterval) -> void;
-  auto Playing(int64_t frameInterval) -> level_container::update_events_ptr;
+  auto Playing(int64_t frameInterval) -> void;
   auto PostPlay(int64_t frameInterval) -> void;
 
   [[nodiscard]] auto GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input;
   [[nodiscard]] static auto GetThumbStickAngle(short lx, short ly, float rotation = 0) -> std::optional<float>;
-  auto UpdateLevel(int64_t elapsedTicks) -> level_container::update_events_ptr;
+  auto UpdateLevel(int64_t elapsedTicks) -> void;
   auto GetLevelRenderTransform() const -> screen_transform;
   auto GetOverlayRenderTransform() const -> screen_transform;
   auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
