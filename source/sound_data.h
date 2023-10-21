@@ -29,23 +29,25 @@ private:
 
   using sound_buffer_collection = std::vector<sound_buffer>;
   sound_buffer_collection m_buffers;
+
+  using sound_data_item = std::tuple<LPCWSTR, int&>;
 };
 
 inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
 {
   return std::array {
-    L"main_theme.wav", 
-    L"shoot_effect.wav", 
-    L"thrust_effect.wav", 
-    L"target_activated.wav",
-    L"mine_exploded.wav"
+    sound_data_item { L"main_theme.wav", menu_theme }, 
+    sound_data_item { L"shoot_effect.wav", shoot },
+    sound_data_item { L"thrust_effect.wav", thrust },
+    sound_data_item { L"target_activated.wav", target_activated },
+    sound_data_item { L"mine_exploded.wav", mine_exploded }
   };
 }
 
-inline int sound_data::menu_theme { 0 };
-inline int sound_data::shoot { 1 };
-inline int sound_data::thrust { 2 };
-inline int sound_data::target_activated { 3 };
-inline int sound_data::mine_exploded { 4 };
+inline int sound_data::menu_theme { -1 };
+inline int sound_data::shoot { -1 };
+inline int sound_data::thrust { -1 };
+inline int sound_data::target_activated { -1 };
+inline int sound_data::mine_exploded { -1 };
 
 #endif
