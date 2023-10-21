@@ -44,10 +44,10 @@ inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
   };
 }
 
-inline int sound_data::menu_theme { -1 };
-inline int sound_data::shoot { -1 };
-inline int sound_data::thrust { -1 };
-inline int sound_data::target_activated { -1 };
-inline int sound_data::mine_exploded { -1 };
+inline int sound_data::menu_theme { 0 };
+inline int sound_data::shoot { 0 };
+inline int sound_data::thrust { 0 };
+inline int sound_data::target_activated { 0 };
+inline int sound_data::mine_exploded { 0 };
 
 #endif
