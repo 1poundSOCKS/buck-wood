@@ -5,8 +5,8 @@ winrt::com_ptr<IDirectSoundBuffer8> LoadSoundBuffer(IDirectSound8* directSound, 
 {
   std::filesystem::path filename = path;
   filename /= file;
-  wav_file_data_ptr soundData = std::make_unique<wav_file_data>(filename.c_str());
-  return CreateSoundBuffer(directSound, *soundData);
+  wav_file_data soundData { filename.c_str() };
+  return CreateSoundBuffer(directSound, soundData);
 }
 
 winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound, const wav_file_data& data)

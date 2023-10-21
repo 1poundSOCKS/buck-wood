@@ -3,16 +3,6 @@
 
 #include "data_files.h"
 
-// template <typename selector_name_type>
-// struct sound_buffer_selector
-// {
-//   const sound_buffers& buffers;
-//   IDirectSoundBuffer8* operator[](selector_name_type name) const
-//   {
-//     return buffers[name].get();
-//   }
-// };
-
 winrt::com_ptr<IDirectSoundBuffer8> LoadSoundBuffer(IDirectSound8* directSound, const std::wstring& path, const std::wstring& file);
 winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound, const wav_file_data& data);
 void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop=false);
