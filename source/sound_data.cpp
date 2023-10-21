@@ -25,11 +25,12 @@ auto sound_data::LoadSoundBuffers(IDirectSound8* directSound, const std::wstring
 
   auto filenames = GetWavFilenames();
 
-  int currentIndex = -1;
-  std::transform(filenames.cbegin(), filenames.cend(), std::back_inserter(m_buffers), [directSound, soundFilePath, &currentIndex](const auto soundDataItem)
+  // int currentIndex = -1;
+  std::transform(filenames.cbegin(), filenames.cend(), std::back_inserter(m_buffers), [this, directSound, soundFilePath](const auto soundDataItem)
   {
     auto [filename, index] = soundDataItem;
-    index = ++currentIndex;
+    // index = ++currentIndex;
+    index = static_cast<int>(m_buffers.size());
     std::filesystem::path fullFilename { soundFilePath };
     fullFilename /= filename;
     wav_file_data soundData { fullFilename.c_str() };
