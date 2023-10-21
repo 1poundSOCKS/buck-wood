@@ -12,12 +12,13 @@ inline auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
 
 auto framework::ToggleFullscreenOnKeypress(int key) -> void
 {
-  if( m_inputState.keyboardReader.Pressed(key) )
-  {
-    BOOL fullScreen = FALSE;
-    m_swapChain->GetFullscreenState(&fullScreen, nullptr);
-    m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
-  }
+  m_toggleFullscreenKey = key;
+  // if( m_inputState.keyboardReader.Pressed(key) )
+  // {
+  //   BOOL fullScreen = FALSE;
+  //   m_swapChain->GetFullscreenState(&fullScreen, nullptr);
+  //   m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+  // }
 }
 
 auto framework::create(HINSTANCE instance, int cmdShow) -> void

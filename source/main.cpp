@@ -26,6 +26,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   framework::create(instance, cmdShow);
   framework::DisableMouse();
   framework::setGameSpeedMultiplier(2.0f);
+  framework::toggleFullscreenOnKeypress(DIK_F12);
 
   command_line commandLine { cmdLine };
 

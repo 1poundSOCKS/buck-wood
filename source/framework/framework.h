@@ -88,6 +88,7 @@ private:
   screen_diagnostics_render_data m_diagnosticsRenderData;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
+  std::optional<int> m_toggleFullscreenKey;
   frame_data m_frameData;
   std::vector<std::wstring> m_diagnosticsData;
   int64_t m_diagnosticsUpdateTime { 0 };
@@ -241,6 +242,13 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / framework::fps();
+
+    if( m_toggleFullscreenKey && m_inputState.keyboardReader.Pressed(*m_toggleFullscreenKey) )
+    {
+      BOOL fullScreen = FALSE;
+      m_swapChain->GetFullscreenState(&fullScreen, nullptr);
+      m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
+    }
 
     keepScreenOpen = screenState.Refresh(framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
 

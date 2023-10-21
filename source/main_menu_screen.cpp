@@ -45,7 +45,7 @@ main_menu_screen::main_menu_screen()
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
 {
-  framework::toggleFullscreenOnKeypress(DIK_F12);
+  // framework::toggleFullscreenOnKeypress(DIK_F12);
 
   Update(ticks);
 
