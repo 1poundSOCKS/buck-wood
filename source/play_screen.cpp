@@ -28,14 +28,12 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Refresh(int64_t ticks) -> bool
 {
+  PlaySoundEffects();
+
   Update(ticks);
 
   Render();
   
-  // framework::present();
-  
-  PostPresent();
-
   return m_continueRunning;
 }
 
@@ -43,8 +41,6 @@ auto play_screen::Update(int64_t frameInterval) -> void
 {
   auto startUpdateTime = performance_counter::QueryValue();
 
-  level_container::update_events_ptr levelUpdateEvents;
-  
   switch( m_stage )
   {
     case stage::pre_play:
@@ -112,7 +108,7 @@ auto play_screen::Render() const -> void
   framework::renderDiagnostics();
 }
 
-auto play_screen::PostPresent() const -> void
+auto play_screen::PlaySoundEffects() const -> void
 {
   if( m_stage != stage::playing || m_paused || !m_continueRunning )
   {
