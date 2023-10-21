@@ -1,18 +1,8 @@
 #include "pch.h"
 #include "sound_buffer.h"
 
-winrt::com_ptr<IDirectSoundBuffer8> LoadSoundBuffer(IDirectSound8* directSound, const std::wstring& path, const std::wstring& file)
+auto sound_buffer::Create(IDirectSound8* directSound, const wav_file_data& data) -> void
 {
-  std::filesystem::path filename = path;
-  filename /= file;
-  wav_file_data soundData { filename.c_str() };
-  return CreateSoundBuffer(directSound, soundData);
-}
-
-winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound, const wav_file_data& data)
-{
-  winrt::com_ptr<IDirectSoundBuffer8> soundBuffer;
-
   WAVEFORMATEX waveFormat;
   waveFormat.wFormatTag = WAVE_FORMAT_PCM;
 	waveFormat.nSamplesPerSec = data.dataFormat.sampleRate;
@@ -34,51 +24,67 @@ winrt::com_ptr<IDirectSoundBuffer8> CreateSoundBuffer(IDirectSound8* directSound
 
   if( directSound )
   {
-    HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, tmpBuffer.put(), NULL);
-    if( FAILED(hr) ) throw std::exception();
+    directSound->CreateSoundBuffer(&bufferDesc, tmpBuffer.put(), NULL);
+  }
 
-    hr = tmpBuffer->QueryInterface(IID_IDirectSoundBuffer8, soundBuffer.put_void());
-    if( FAILED(hr) ) throw std::exception();
+  if( tmpBuffer )
+  {
+    tmpBuffer->QueryInterface(IID_IDirectSoundBuffer8, m_buffer.put_void());
+  }
 
+  if( m_buffer )
+  {
     LPVOID bufferPtr;
     DWORD bufferSize;
-    hr = soundBuffer->Lock(0, data.data->size, &bufferPtr, &bufferSize, NULL, 0, 0);
-    if( FAILED(hr) ) throw std::exception();
-
-    memcpy(bufferPtr, data.data->data.get(), bufferSize);
-    hr = soundBuffer->Unlock(bufferPtr, bufferSize, NULL, 0);
-    if( FAILED(hr) ) throw std::exception();
+    
+    if( SUCCEEDED(m_buffer->Lock(0, data.data->size, &bufferPtr, &bufferSize, NULL, 0, 0)) )
+    {
+      memcpy(bufferPtr, data.data->data.get(), bufferSize);
+      m_buffer->Unlock(bufferPtr, bufferSize, NULL, 0);
+    }
   }
-
-  return soundBuffer;
 }
 
-void PlaySoundBuffer(IDirectSoundBuffer8* soundBuffer, bool loop)
+auto sound_buffer::Play(bool loop) const -> void
 {
-  if( soundBuffer )
+  if( m_buffer )
   {
     DWORD bufferStatus = S_OK;
 
-    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
-      soundBuffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+    if( SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
+    {
+      m_buffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
+    }
   }
 }
 
-void StopSoundBufferPlay(IDirectSoundBuffer8* soundBuffer)
+auto sound_buffer::Stop() const -> void
 {
-  if( soundBuffer )
+  if( m_buffer )
   {
     DWORD bufferStatus = S_OK;
 
-    if( SUCCEEDED(soundBuffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
-      soundBuffer->Stop();
+    if( SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
+    {
+      m_buffer->Stop();
+    }
   }
 }
 
-void ResetSoundBuffer(IDirectSoundBuffer8* soundBuffer)
+auto sound_buffer::Reset() const -> void
 {
-  if( soundBuffer )
+  if( m_buffer )
   {
-    soundBuffer->SetCurrentPosition(0);
+    m_buffer->SetCurrentPosition(0);
+  }
+}
+
+auto sound_buffer::SetVolume(float value) const -> void
+{
+  if( m_buffer )
+  {
+    auto volumeRange = float { DSBVOLUME_MAX - DSBVOLUME_MIN };
+    auto volume = static_cast<int>(DSBVOLUME_MIN + volumeRange * value);
+    m_buffer->SetVolume(volume);
   }
 }

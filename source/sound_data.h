@@ -2,7 +2,7 @@
 #define _screen_sound_data_
 
 #include "framework.h"
-#include "sound_buffers.h"
+#include "sound_buffer.h"
 
 class sound_data
 {
@@ -15,17 +15,20 @@ public:
   static int mine_exploded;
 
   static auto create(IDirectSound8* directSound, const std::wstring& path) -> void;
-  static auto soundBuffers() -> sound_buffers&;
+  [[nodiscard]] static auto get(size_t index) -> const sound_buffer&;
 
 private:
 
   static constexpr [[nodiscard]] auto GetWavFilenames();
-  static auto LoadSoundBuffers(IDirectSound8* directSound, const std::wstring& path, std::back_insert_iterator<sound_buffers> soundBufferInserter) -> void;
+  
+  auto LoadSoundBuffers(IDirectSound8* directSound, const std::wstring& path) -> void;
 
   static sound_data* m_soundData;
 
   sound_data(IDirectSound8* directSound, const std::wstring& path);
-  sound_buffers m_soundBuffers;
+
+  using sound_buffer_collection = std::vector<sound_buffer>;
+  sound_buffer_collection m_buffers;
 };
 
 inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
