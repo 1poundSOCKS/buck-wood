@@ -3,6 +3,12 @@
 
 sound_data* sound_data::m_soundData = nullptr;
 
+size_t sound_data::menu_theme { 0 };
+size_t sound_data::shoot { 0 };
+size_t sound_data::thrust { 0 };
+size_t sound_data::target_activated { 0 };
+size_t sound_data::mine_exploded { 0 };
+
 auto sound_data::create(IDirectSound8* directSound, const std::wstring& path) -> void
 {
   m_soundData = new sound_data(directSound, path);

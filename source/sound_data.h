@@ -8,11 +8,11 @@ class sound_data
 {
 public:
 
-  static int menu_theme;
-  static int shoot;
-  static int thrust;
-  static int target_activated;
-  static int mine_exploded;
+  static size_t menu_theme;
+  static size_t shoot;
+  static size_t thrust;
+  static size_t target_activated;
+  static size_t mine_exploded;
 
   static auto create(IDirectSound8* directSound, const std::wstring& path) -> void;
   [[nodiscard]] static auto get(size_t index) -> const sound_buffer&;
@@ -30,7 +30,7 @@ private:
   using sound_buffer_collection = std::vector<sound_buffer>;
   sound_buffer_collection m_buffers;
 
-  using sound_data_item = std::tuple<LPCWSTR, int&>;
+  using sound_data_item = std::tuple<LPCWSTR, size_t&>;
 };
 
 inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
@@ -43,11 +43,5 @@ inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
     sound_data_item { L"mine_exploded.wav", mine_exploded }
   };
 }
-
-inline int sound_data::menu_theme { 0 };
-inline int sound_data::shoot { 0 };
-inline int sound_data::thrust { 0 };
-inline int sound_data::target_activated { 0 };
-inline int sound_data::mine_exploded { 0 };
 
 #endif
