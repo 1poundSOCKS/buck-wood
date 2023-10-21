@@ -9,6 +9,17 @@ size_t sound_data::thrust { 0 };
 size_t sound_data::target_activated { 0 };
 size_t sound_data::mine_exploded { 0 };
 
+constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
+{
+  return std::array {
+    sound_data_item { L"main_theme.wav", menu_theme }, 
+    sound_data_item { L"shoot_effect.wav", shoot },
+    sound_data_item { L"thrust_effect.wav", thrust },
+    sound_data_item { L"target_activated.wav", target_activated },
+    sound_data_item { L"mine_exploded.wav", mine_exploded }
+  };
+}
+
 auto sound_data::create(IDirectSound8* directSound, const std::wstring& path) -> void
 {
   m_soundData = new sound_data(directSound, path);

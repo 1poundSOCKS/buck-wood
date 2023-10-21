@@ -33,15 +33,4 @@ private:
   using sound_data_item = std::tuple<LPCWSTR, size_t&>;
 };
 
-inline constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
-{
-  return std::array {
-    sound_data_item { L"main_theme.wav", menu_theme }, 
-    sound_data_item { L"shoot_effect.wav", shoot },
-    sound_data_item { L"thrust_effect.wav", thrust },
-    sound_data_item { L"target_activated.wav", target_activated },
-    sound_data_item { L"mine_exploded.wav", mine_exploded }
-  };
-}
-
 #endif
