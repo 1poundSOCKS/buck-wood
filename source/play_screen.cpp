@@ -29,11 +29,8 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 auto play_screen::Refresh(int64_t ticks) -> bool
 {
   PlaySoundEffects();
-
   Update(ticks);
-
   Render();
-  
   return m_continueRunning;
 }
 

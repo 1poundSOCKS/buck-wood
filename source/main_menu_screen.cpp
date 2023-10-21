@@ -46,11 +46,7 @@ main_menu_screen::main_menu_screen()
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
 {
   Update(ticks);
-
   Render();
-
-  // framework::present();
-
   return m_continueRunning;
 }
 
