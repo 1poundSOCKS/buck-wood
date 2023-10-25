@@ -1,0 +1,3 @@
+makepkg genmap /f C:\source\repos\buck-wood\layout.xml /d C:\source\repos\buck-wood\install_package
+makepkg genkey /ekb C:\source\repos\buck-wood\SECRET_KEY.lekb
+makepkg pack /lk C:\source\repos\buck-wood\SECRET_KEY.lekb /f C:\source\repos\buck-wood\layout.xml /d C:\source\repos\buck-wood\install_package /pd C:\source\repos\buck-wood
