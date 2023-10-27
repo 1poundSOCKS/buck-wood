@@ -39,7 +39,7 @@ main_menu_screen::main_menu_screen()
     player.Play();
   }
 
-  m_menu = GetMenuDef().CreateMenu();
+  m_menu = GetMenuDef(menu_id::root).CreateMenu();
   m_menu.SelectFirstButton();
 }
 
@@ -79,25 +79,44 @@ auto main_menu_screen::Render() const -> void
   m_menu.Render(viewRect);
 }
 
-[[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
+[[nodiscard]] auto main_menu_screen::GetMenuDef(menu_id id) -> menu_def
 {
   const auto& renderTarget = framework::renderTarget();
 
-  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.3f, 0.3f));
+  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
 
   menu_def menuDef(menuArea.GetRect());
 
-  menuDef.AddButtonDef({ L"Start", [this]() -> void
+  switch( id )
   {
-    m_startPlay = true;
-  }});
 
-  menuDef.AddButtonDef({ L"Exit", [this]() -> void
-  {
-    m_continueRunning = false;
-  }});
+  case menu_id::root:
+
+    menuDef.AddButtonDef({ L"Start", [this]() -> void
+    {
+      m_startPlay = true;
+    }});
+
+    menuDef.AddButtonDef({ L"Options", [this]() -> void
+    {
+    }});
+
+    menuDef.AddButtonDef({ L"Exit", [this]() -> void
+    {
+      m_continueRunning = false;
+    }});
+
+    break;
+
+  case menu_id::options:
+    break;
+
+  default:
+    break;
+
+  }
 
   menuDef.UpdateButtons();
-
+      
   return menuDef;
 }

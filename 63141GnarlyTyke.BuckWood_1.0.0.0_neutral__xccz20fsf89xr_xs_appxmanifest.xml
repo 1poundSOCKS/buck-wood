@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap7="http://schemas.microsoft.com/appx/manifest/uap/windows10/7" xmlns:wincap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/windowscapabilities" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap uap7 wincap rescap" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+  <Identity Name="63141GnarlyTyke.BuckWood" Publisher="CN=36BC00C6-EA0D-4C79-8658-2A110AD2AA9E" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>63141GnarlyTyke.BuckWood</DisplayName>
+    <PublisherDisplayName>None</PublisherDisplayName>
+    <Logo>StoreLogo.png</Logo>
+    <Description>63141GnarlyTyke.BuckWood</Description>
+    <uap:SupportedUsers>multiple</uap:SupportedUsers>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.18362.0" MaxVersionTested="10.0.18362.0" />
+    <uap7:OSPackageDependency Name="Microsoft.GameOs" Version="10.0.18362.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="app" Executable="app.exe" EntryPoint="GamingProxyApp.Application.EntryPoint">
+      <uap:VisualElements DisplayName="63141GnarlyTyke.BuckWood" Square150x150Logo="Square150x150Logo.png" Square44x44Logo="Square44x44Logo.png" Description="63141GnarlyTyke.BuckWood" ForegroundText="light" BackgroundColor="transparent">
+        <uap:SplashScreen Image="SplashScreenImage.png" />
+        <uap:DefaultTile Wide310x150Logo="default480x480.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="ms-xbl-ffffffff" />
+        </uap:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <DeviceCapability Name="microphone" />
+  </Capabilities>
+</Package>

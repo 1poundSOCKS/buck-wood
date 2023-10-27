@@ -15,10 +15,12 @@ public:
 
 private:
 
+  enum class menu_id { root, options };
+
   auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
 
-  [[nodiscard]] auto GetMenuDef() -> menu_def;
+  [[nodiscard]] auto GetMenuDef(menu_id id) -> menu_def;
 
   menu m_menu;
   
