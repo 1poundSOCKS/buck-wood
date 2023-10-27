@@ -99,6 +99,8 @@ auto main_menu_screen::Render() const -> void
 
     menuDef.AddButtonDef({ L"Options", [this]() -> void
     {
+      m_menu = GetMenuDef(menu_id::options).CreateMenu();
+      m_menu.SelectFirstButton();
     }});
 
     menuDef.AddButtonDef({ L"Exit", [this]() -> void
@@ -109,6 +111,13 @@ auto main_menu_screen::Render() const -> void
     break;
 
   case menu_id::options:
+
+    menuDef.AddButtonDef({ L"Back", [this]() -> void
+    {
+      m_menu = GetMenuDef(menu_id::root).CreateMenu();
+      m_menu.SelectFirstButton();
+    }});
+
     break;
 
   default:
