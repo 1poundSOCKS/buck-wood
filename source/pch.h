@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include <list>
+#include <stack>
 #include <iterator>
 #include <algorithm>
 #include <fstream>
