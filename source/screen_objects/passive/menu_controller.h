@@ -9,6 +9,7 @@ public:
 
   auto Open(const menu_def& def) -> void;
   auto Close() -> void;
+  [[nodiscard]] auto GetCurrent() const-> const menu&;
   [[nodiscard]] auto GetCurrent() -> menu&;
 
 private:
@@ -17,6 +18,11 @@ private:
   menu_collection m_menus;
 
 };
+
+[[nodiscard]] inline auto menu_controller::GetCurrent() const -> const menu&
+{
+  return m_menus.top();
+}
 
 [[nodiscard]] inline auto menu_controller::GetCurrent() -> menu&
 {

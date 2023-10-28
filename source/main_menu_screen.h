@@ -3,7 +3,7 @@
 #include "diagnostics.h"
 #include "screen_transform.h"
 #include "button_def.h"
-#include "menu_def.h"
+#include "menu_controller.h"
 #include "mouse_cursor.h"
 
 class main_menu_screen
@@ -22,7 +22,8 @@ private:
 
   [[nodiscard]] auto GetMenuDef(menu_id id) -> menu_def;
 
-  menu m_menu;
+  // menu m_menu;
+  menu_controller m_menuController;
   
   bool m_continueRunning = true;
   bool m_startPlay = false;

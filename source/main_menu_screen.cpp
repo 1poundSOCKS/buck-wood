@@ -39,8 +39,7 @@ main_menu_screen::main_menu_screen()
     player.Play();
   }
 
-  m_menu = GetMenuDef(menu_id::root).CreateMenu();
-  m_menu.SelectFirstButton();
+  m_menuController.Open(GetMenuDef(menu_id::root));
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
@@ -60,7 +59,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   else
   {
     menu_control_data menuControlData { framework::screenInputState() };
-    m_menu.Update(menuControlData);
+    m_menuController.GetCurrent().Update(menuControlData);
   }
 }
 
@@ -76,7 +75,7 @@ auto main_menu_screen::Render() const -> void
   renderTarget->SetTransform(screenTransform.Get());
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
 
-  m_menu.Render(viewRect);
+  m_menuController.GetCurrent().Render(viewRect);
 }
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef(menu_id id) -> menu_def
@@ -99,8 +98,7 @@ auto main_menu_screen::Render() const -> void
 
     menuDef.AddButtonDef({ L"Options", [this]() -> void
     {
-      m_menu = GetMenuDef(menu_id::options).CreateMenu();
-      m_menu.SelectFirstButton();
+      m_menuController.Open(GetMenuDef(menu_id::options));
     }});
 
     menuDef.AddButtonDef({ L"Exit", [this]() -> void
@@ -114,8 +112,7 @@ auto main_menu_screen::Render() const -> void
 
     menuDef.AddButtonDef({ L"Back", [this]() -> void
     {
-      m_menu = GetMenuDef(menu_id::root).CreateMenu();
-      m_menu.SelectFirstButton();
+      m_menuController.Close();
     }});
 
     break;
