@@ -9,6 +9,7 @@
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
+#include "options_menu_def.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -110,10 +111,10 @@ auto main_menu_screen::Render() const -> void
 
   case menu_id::options:
 
-    menuDef.AddButtonDef({ L"Back", [this]() -> void
+    menuDef = GetOptionsMenuDef(menuArea, [this]() -> void
     {
       m_menuController.Close();
-    }});
+    });
 
     break;
 
@@ -123,6 +124,6 @@ auto main_menu_screen::Render() const -> void
   }
 
   menuDef.UpdateButtons();
-      
+
   return menuDef;
 }

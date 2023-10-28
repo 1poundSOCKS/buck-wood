@@ -22,7 +22,6 @@ private:
 
   [[nodiscard]] auto GetMenuDef(menu_id id) -> menu_def;
 
-  // menu m_menu;
   menu_controller m_menuController;
   
   bool m_continueRunning = true;

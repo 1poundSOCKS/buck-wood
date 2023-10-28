@@ -8,6 +8,7 @@
 #include "diagnostics.h"
 #include "sound_buffer_player.h"
 #include "gamepad_trigger.h"
+#include "options_menu_def.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -16,8 +17,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
   m_continueRunning = LoadFirstLevel();
 
-  m_menu = GetMenuDef().CreateMenu();
-  m_menu.SelectFirstButton();
+  m_menuController.Open(GetMenuDef());
 
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
@@ -58,7 +58,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
   if( m_paused )
   {
     menu_control_data menuControlData { framework::screenInputState() };
-    m_menu.Update(menuControlData);
+    m_menuController.GetCurrent().Update(menuControlData);
   }
 
   auto endUpdateTime = performance_counter::QueryValue();
@@ -95,7 +95,7 @@ auto play_screen::Render() const -> void
 
   if( m_paused )
   {
-    m_menu.Render(overlayViewRect);
+    m_menuController.GetCurrent().Render(overlayViewRect);
   }
 
   auto endRenderTime = performance_counter::QueryValue();
@@ -331,6 +331,16 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   menuDef.AddButtonDef({ L"Resume", [this]() -> void
   {
     m_paused = false;
+  }});
+
+  menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
+  {
+    auto optionsMenuDef = GetOptionsMenuDef(menuArea, [this]() -> void
+    {
+      m_menuController.Close();
+    });
+
+    m_menuController.Open(optionsMenuDef);
   }});
 
   menuDef.AddButtonDef({ L"Quit", [this]() -> void

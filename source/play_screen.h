@@ -8,7 +8,7 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
-#include "menu_def.h"
+#include "menu_controller.h"
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
 #include "text_box.h"
@@ -55,7 +55,7 @@ private:
   std::unique_ptr<level_container> m_levelContainer;
   
   mouse_cursor m_cursor;
-  menu m_menu;
+  menu_controller m_menuController;
   level_radar m_levelRadar;
   player_shields m_playerShields;
 
