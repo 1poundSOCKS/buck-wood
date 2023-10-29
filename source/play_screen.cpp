@@ -348,7 +348,5 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
     m_continueRunning = false;
   }});
 
-  menuDef.UpdateButtons();
-
   return menuDef;
 }

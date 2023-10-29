@@ -8,11 +8,13 @@ menu_def::menu_def(D2D1_RECT_F rect) : m_rect(rect)
 auto menu_def::AddButtonDef(button_def&& buttonDef) -> void
 {
   m_buttonDefs.emplace_back(buttonDef);
+  UpdateButtons();
 }
 
 auto menu_def::UpdateButtons() -> void
 {
   int buttonIndex = 0;
+  
   for( auto& buttonDef : m_buttonDefs )
   {
     buttonDef.SetRect(GetButtonRect(buttonIndex++, static_cast<int>(m_buttonDefs.size())));

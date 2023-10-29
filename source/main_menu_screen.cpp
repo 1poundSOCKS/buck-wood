@@ -123,7 +123,5 @@ auto main_menu_screen::Render() const -> void
 
   }
 
-  menuDef.UpdateButtons();
-
   return menuDef;
 }

@@ -17,7 +17,5 @@
 
   menuDef.AddButtonDef({ L"Back", callback});
 
-  menuDef.UpdateButtons();
-
   return menuDef;
 };
