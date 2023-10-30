@@ -13,11 +13,11 @@ auto menu_def::AddButtonDef(button_def&& buttonDef) -> void
 
 auto menu_def::UpdateButtons() -> void
 {
-  int buttonIndex = 0;
+  size_t buttonIndex = 0;
   
   for( auto& buttonDef : m_buttonDefs )
   {
-    buttonDef.SetRect(GetButtonRect(buttonIndex++, static_cast<int>(m_buttonDefs.size())));
+    buttonDef.SetRect(GetButtonRect(buttonIndex++));
   }
 }
 
@@ -38,8 +38,10 @@ auto menu_def::UpdateButtons() -> void
   return newMenu;
 }
 
-[[nodiscard]] auto menu_def::GetButtonRect(int buttonIndex, int buttonCount) const -> D2D1_RECT_F
+[[nodiscard]] auto menu_def::GetButtonRect(size_t buttonIndex) const -> D2D1_RECT_F
 {
+  auto buttonCount = m_buttonDefs.size();
+
   auto relativeDividerHeight = 1;
   auto relativeButtonHeight = 10;
   auto sumOfRelativeHeights = relativeButtonHeight * buttonCount + relativeDividerHeight * ( buttonCount - 1 );
@@ -52,5 +54,6 @@ auto menu_def::UpdateButtons() -> void
   
   auto buttonTop = m_rect.top + buttonIndex * buttonAndDividerHeight;
   auto buttonBottom = buttonTop + buttonHeight;
+
   return { m_rect.left, buttonTop, m_rect.right, buttonBottom };
 }
