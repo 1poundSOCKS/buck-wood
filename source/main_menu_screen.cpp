@@ -111,10 +111,19 @@ auto main_menu_screen::Render() const -> void
 
   case menu_id::options:
 
-    menuDef = GetOptionsMenuDef(menuArea, [this]() -> void
-    {
-      m_menuController.Close();
-    });
+    menuDef = GetOptionsMenuDef(menuArea, 
+      [this]() -> void
+      {
+        m_menuController.Close();
+      },
+      [this]() -> void
+      {
+        m_menuController.Close();
+      },
+      [this]() -> void
+      {
+        m_menuController.Close();
+      });
 
     break;
 

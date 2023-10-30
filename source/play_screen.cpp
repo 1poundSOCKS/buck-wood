@@ -335,10 +335,19 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
   menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
   {
-    auto optionsMenuDef = GetOptionsMenuDef(menuArea, [this]() -> void
-    {
-      m_menuController.Close();
-    });
+    auto optionsMenuDef = GetOptionsMenuDef(menuArea, 
+      [this]() -> void
+      {
+        m_menuController.Close();
+      },
+      [this]() -> void
+      {
+        m_menuController.Close();
+      },
+      [this]() -> void
+      {
+        m_menuController.Close();
+      });
 
     m_menuController.Open(optionsMenuDef);
   }});
