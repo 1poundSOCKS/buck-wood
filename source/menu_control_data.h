@@ -46,7 +46,7 @@ inline menu_control_data::menu_control_data(const screen_input_state& screenInpu
 
   m_select = screenInputState.keyboardReader.Pressed(DIK_SPACE) || screenInputState.keyboardReader.Pressed(DIK_RETURN) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_A);
 
-  m_back = screenInputState.keyboardReader.Pressed(DIK_ESCAPE) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_BACK);
+  m_back = screenInputState.keyboardReader.Pressed(DIK_ESCAPE) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_B);
 }
 
 [[nodiscard]] inline auto menu_control_data::GamepadAttached() const -> bool

@@ -12,6 +12,8 @@ public:
 
   auto Update() -> DWORD;
 
+  [[nodiscard]] auto Pressed(int button) const -> bool;
+
 private:
 
   gamepad_state m_currentState;
@@ -33,4 +35,9 @@ inline auto gamepad_reader::Update() -> DWORD
 {
   m_previousState = m_currentState;
   return m_currentState.Update();
+}
+
+[[nodiscard]] inline auto gamepad_reader::Pressed(int button) const -> bool
+{
+  return m_currentState.Down(button) && !m_previousState.Down(button);
 }

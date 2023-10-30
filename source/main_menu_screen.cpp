@@ -60,7 +60,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   else
   {
     menu_control_data menuControlData { framework::screenInputState() };
-    m_menuController.GetCurrent().Update(menuControlData);
+    m_menuController.Update(menuControlData);
   }
 }
 
@@ -76,7 +76,7 @@ auto main_menu_screen::Render() const -> void
   renderTarget->SetTransform(screenTransform.Get());
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
 
-  m_menuController.GetCurrent().Render(viewRect);
+  m_menuController.Render(viewRect);
 }
 
 [[nodiscard]] auto main_menu_screen::GetMenuDef(menu_id id) -> menu_def
@@ -114,11 +114,9 @@ auto main_menu_screen::Render() const -> void
     menuDef = GetOptionsMenuDef(menuArea, 
       [this]() -> void
       {
-        m_menuController.Close();
       },
       [this]() -> void
       {
-        m_menuController.Close();
       },
       [this]() -> void
       {

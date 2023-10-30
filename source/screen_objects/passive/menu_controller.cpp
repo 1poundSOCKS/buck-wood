@@ -9,5 +9,20 @@ auto menu_controller::Open(const menu_def& def) -> void
 
 auto menu_controller::Close() -> void
 {
-  m_menus.pop();
+  if( m_menus.size() > 1 )
+  {
+    m_menus.pop();
+  }
+}
+
+auto menu_controller::Update(const menu_control_data& controlData) -> void
+{
+  if( controlData.Back() )
+  {
+    Close();
+  }
+  else
+  {
+    GetCurrent().Update(controlData);
+  }
 }

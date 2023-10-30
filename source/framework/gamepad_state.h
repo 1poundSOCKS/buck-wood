@@ -22,6 +22,8 @@ public:
   [[nodiscard]] auto ThumbRX() const -> SHORT;
   [[nodiscard]] auto ThumbRY() const -> SHORT;
 
+  [[nodiscard]] auto Down(int button) const -> bool;
+
 private:
 
   DWORD m_userIndex { 0 };
@@ -83,4 +85,9 @@ inline auto gamepad_state::Update() -> DWORD
 [[nodiscard]] inline auto gamepad_state::ThumbRY() const -> SHORT
 {
   return m_state.Gamepad.sThumbRY;
+}
+
+[[nodiscard]] inline auto gamepad_state::Down(int button) const -> bool
+{
+  return Buttons() & button;
 }

@@ -58,7 +58,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
   if( m_paused )
   {
     menu_control_data menuControlData { framework::screenInputState() };
-    m_menuController.GetCurrent().Update(menuControlData);
+    m_menuController.Update(menuControlData);
   }
 
   auto endUpdateTime = performance_counter::QueryValue();
@@ -95,7 +95,7 @@ auto play_screen::Render() const -> void
 
   if( m_paused )
   {
-    m_menuController.GetCurrent().Render(overlayViewRect);
+    m_menuController.Render(overlayViewRect);
   }
 
   auto endRenderTime = performance_counter::QueryValue();
@@ -290,8 +290,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  menu_control_data menuControlData { framework::screenInputState() };
-  return menuControlData.Back();
+  const auto& screenInputState = framework::screenInputState();
+  return screenInputState.gamepadReader.Pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
@@ -338,11 +338,9 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
     auto optionsMenuDef = GetOptionsMenuDef(menuArea, 
       [this]() -> void
       {
-        m_menuController.Close();
       },
       [this]() -> void
       {
-        m_menuController.Close();
       },
       [this]() -> void
       {
