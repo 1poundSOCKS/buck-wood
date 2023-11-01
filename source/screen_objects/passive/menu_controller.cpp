@@ -9,7 +9,7 @@ auto menu_controller::Open(const menu_def& def) -> void
 
 auto menu_controller::Close() -> void
 {
-  if( m_menus.size() > 1 )
+  if( m_menus.size() > 2 )
   {
     m_menus.pop();
   }
