@@ -61,11 +61,6 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   {
     menu_control_data menuControlData { framework::screenInputState() };
     m_menuController.Update(menuControlData);
-    
-    // if( m_menuController.Depth() == 0 )
-    // {
-    //   m_menuController.Open(GetMenuDef(menu_id::root));
-    // }
   }
 }
 

@@ -29,6 +29,7 @@ private:
 
   auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
+  
   auto PlaySoundEffects() const -> void;
 
   auto PrePlay(int64_t frameInterval) -> void;
