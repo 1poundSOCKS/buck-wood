@@ -20,7 +20,6 @@ public:
 private:
 
   auto UpdateButtons() -> void;
-  [[nodiscard]] auto GetButtonRect(size_t buttonIndex) const -> D2D1_RECT_F;
 
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
   button_defs_collection m_buttonDefs;

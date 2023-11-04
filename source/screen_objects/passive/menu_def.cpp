@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "menu_def.h"
+#include "column_def.h"
 
 menu_def::menu_def(D2D1_RECT_F rect) : m_rect(rect)
 {
@@ -13,11 +14,15 @@ auto menu_def::AddButtonDef(button_def&& buttonDef) -> void
 
 auto menu_def::UpdateButtons() -> void
 {
-  size_t buttonIndex = 0;
+  column_def columnDefs { m_rect, m_buttonDefs.size() };
+
+  auto columnDef = std::begin(columnDefs);
   
   for( auto& buttonDef : m_buttonDefs )
   {
-    buttonDef.SetRect(GetButtonRect(buttonIndex++));
+    const auto& columnRect = *columnDef;
+    buttonDef.SetRect(columnRect);
+    ++columnDef;
   }
 }
 
@@ -36,24 +41,4 @@ auto menu_def::UpdateButtons() -> void
   }
 
   return newMenu;
-}
-
-[[nodiscard]] auto menu_def::GetButtonRect(size_t buttonIndex) const -> D2D1_RECT_F
-{
-  auto buttonCount = m_buttonDefs.size();
-
-  auto relativeDividerHeight = 1;
-  auto relativeButtonHeight = 10;
-  auto sumOfRelativeHeights = relativeButtonHeight * buttonCount + relativeDividerHeight * ( buttonCount - 1 );
-
-  auto menuHeight = m_rect.bottom - m_rect.top;
-
-  auto buttonHeight = menuHeight * relativeButtonHeight / sumOfRelativeHeights;
-  auto dividerHeight = menuHeight * relativeDividerHeight / sumOfRelativeHeights;
-  auto buttonAndDividerHeight = buttonHeight + dividerHeight;
-  
-  auto buttonTop = m_rect.top + buttonIndex * buttonAndDividerHeight;
-  auto buttonBottom = buttonTop + buttonHeight;
-
-  return { m_rect.left, buttonTop, m_rect.right, buttonBottom };
 }
