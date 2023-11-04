@@ -2,6 +2,15 @@
 #include "render_brushes.h"
 #include "framework.h"
 
+menu_brushes::menu_brushes()
+{
+  const auto& renderTarget = framework::renderTarget().get();
+  m_textBrush = screen_render_brush_white.CreateBrush(renderTarget);
+  m_buttonBrush = screen_render_brush_grey.CreateBrush(renderTarget);
+  m_buttonBorderBrush = screen_render_brush_white.CreateBrush(renderTarget);
+  m_buttonHoverBrush = screen_render_brush_green.CreateBrush(renderTarget);
+}
+
 target_brushes::target_brushes()
 {
   const auto& renderTarget = framework::renderTarget();

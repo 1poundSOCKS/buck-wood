@@ -7,7 +7,7 @@ render_text_format_def::render_text_format_def(const std::wstring& fontFamily, D
 {
 }
 
-[[nodiscard]] auto render_text_format_def::CreateTextFormat(IDWriteFactory* writeFactory) -> winrt::com_ptr<IDWriteTextFormat>
+[[nodiscard]] auto render_text_format_def::CreateTextFormat(IDWriteFactory* writeFactory) const -> winrt::com_ptr<IDWriteTextFormat>
 {
   return CreateScreenRenderTextFormat(writeFactory, m_fontFamily.c_str(), m_fontWeight, m_fontStyle, m_fontStretch, m_fontSize);
 }

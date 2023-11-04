@@ -11,11 +11,37 @@
 #include "explosion_particle.h"
 #include "impact_particle.h"
 #include "player_shields.h"
+#include "button.h"
+
+class render_text
+{
+
+public:
+
+  enum class selector { menu_text_default = 0, menu_text_hover };
+
+  render_text();
+  [[nodiscard]] auto get(selector textSelector) const -> const winrt::com_ptr<IDWriteTextFormat>&;
+
+private:
+
+  using text_format_collection = std::vector<winrt::com_ptr<IDWriteTextFormat>>;
+
+  text_format_collection m_textFormat;
+
+};
+
+[[nodiscard]] inline auto render_text::get(selector textSelector) const -> const winrt::com_ptr<IDWriteTextFormat>&
+{
+  return m_textFormat[static_cast<std::underlying_type<selector>::type>(textSelector)];
+}
 
 class renderer
 {
 
 public:
+
+  using VIEW_RECT = D2D1_RECT_F;
 
   static auto create() -> void;
   static auto destroy() -> void;
@@ -39,6 +65,8 @@ private:
   auto Render(const impact_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
+  // auto Render(const menu& menuObject, const VIEW_RECT& viewRect) const -> void;
+  auto Render(const button& buttonObject) const -> void;
 
   template <typename brush_selector> auto RenderWithBorder(const path_geometry& geometry, const brush_selector& object) const -> void;
   template <typename brush_selector> auto RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
@@ -46,7 +74,8 @@ private:
   auto RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
   auto RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
 
-
+  render_text m_renderText;
+  menu_brushes m_menuBrushes;
   target_brushes m_targetBrushes;
   filled_geometry_brushes m_mineBrushes { screen_render_brush_red, screen_render_brush_grey, 3 };
   filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };

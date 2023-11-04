@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "menu.h"
+#include "renderers.h"
 
 menu::menu()
 {
@@ -43,15 +44,5 @@ auto menu::Update(const menu_control_data& controlData) -> void
 
 auto menu::Render(D2D1_RECT_F viewRect) const -> void
 {
-  for( const auto& button : m_buttons )
-  {
-    if( !button.GetHoverState() )
-      button.Render(viewRect);
-  }
-
-  for( const auto& button : m_buttons )
-  {
-    if( button.GetHoverState() )
-      button.Render(viewRect);
-  }
+  renderer::render_all(m_buttons);
 }

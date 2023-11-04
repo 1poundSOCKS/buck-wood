@@ -5,6 +5,41 @@
 #include "level_target.h"
 #include "bullet.h"
 
+class menu_brushes
+{
+
+public:
+
+  menu_brushes();
+
+  enum class id { button = 0, border, button_hover, text };
+
+  [[nodiscard]] auto Get(id brushID) const ->  const winrt::com_ptr<ID2D1SolidColorBrush>&;
+
+private:
+
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBorderBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonHoverBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_textBrush;
+
+};
+
+[[nodiscard]] inline auto menu_brushes::Get(id brushID) const ->  const winrt::com_ptr<ID2D1SolidColorBrush>&
+{
+  switch( brushID )
+  {
+    case id::border:
+      return m_buttonBorderBrush;
+    case id::button_hover:
+      return m_buttonHoverBrush;
+    case id::text:
+      return m_textBrush;
+    default:
+      return m_buttonBrush;
+  }
+}
+
 class filled_geometry_brushes
 {
 public:
