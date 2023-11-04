@@ -2,7 +2,6 @@
 #include "renderers.h"
 #include "color_scale.h"
 #include "slider_control.h"
-#include "render_text_format_def.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -133,10 +132,6 @@ auto renderer::Render(const player_shields& playerShields) const -> void
   framework::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
 }
 
-// auto renderer::Render(const menu& menuObject, const VIEW_RECT& viewRect) const -> void
-// {
-// }
-
 auto renderer::Render(const button& buttonObject) const -> void
 {
   const auto& rect = buttonObject.Rect();
@@ -144,14 +139,12 @@ auto renderer::Render(const button& buttonObject) const -> void
   
   if( buttonObject.GetHoverState() )
   {
-//    framework::renderTarget()->FillRectangle(rect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
     RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
   else
   {
-    // framework::renderTarget()->FillRectangle(rect, m_menuBrushes.Get(menu_brushes::id::button).get());
     RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
       m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -180,25 +173,4 @@ auto renderer::RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColor
 auto renderer::RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
 {
   framework::renderTarget()->FillGeometry(geometry.Get(), brush);
-}
-
-render_text::render_text()
-{
-  using format_def_entry = std::tuple<selector, render_text_format_def>;
-
-  auto renderTextFormats = std::array
-  {
-    format_def_entry { selector::menu_text_default, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100 } },
-    format_def_entry { selector::menu_text_hover, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100 } }
-  };
-
-  const auto& dwriteFactory = dwrite_factory::get();
-
-  for( const auto& [index, format] : renderTextFormats )
-  {
-    size_t indexValue = static_cast<std::underlying_type<selector>::type>(index);
-    auto requiredSize = max(indexValue + 1, m_textFormat.size());
-    m_textFormat.resize(requiredSize);
-    m_textFormat[indexValue] = format.CreateTextFormat(dwriteFactory.get());
-  }
 }
