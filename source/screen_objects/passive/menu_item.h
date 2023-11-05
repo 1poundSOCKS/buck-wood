@@ -15,7 +15,7 @@ public:
 
   [[nodiscard]] auto Get() const -> const item_type&;
 
-  [[nodiscard]] auto GetHoverState() const -> bool;
+  [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
 
   auto Update() -> void;
@@ -40,29 +40,31 @@ inline menu_item::menu_item(const menu_slider& item) : m_item { item }
   return m_item;
 }
 
-struct menu_item_visitor_get_hover_state
+inline auto menu_item::HoverState() const -> bool
 {
-    void operator()(const button& item)
-    {
-      m_hoverState = item.GetHoverState();
-    }
+  struct menu_item_visitor_get_hover_state
+  {
+      void operator()(const button& item)
+      {
+        m_hoverState = item.HoverState();
+      }
 
-    void operator()(const menu_slider& item)
-    {
-    }
+      void operator()(const menu_slider& item)
+      {
+      }
 
-    bool m_hoverState { false };
-};
+      bool m_hoverState { false };
+  };
 
-inline auto menu_item::GetHoverState() const -> bool
-{
   menu_item_visitor_get_hover_state visitor {};
   std::visit(visitor, m_item);
   return visitor.m_hoverState;
 }
 
-struct menu_item_visitor_set_hover_state
+inline auto menu_item::SetHoverState(bool value) -> void
 {
+  struct menu_item_visitor_set_hover_state
+  {
     menu_item_visitor_set_hover_state(bool hoverState) : m_hoverState { hoverState }
     {
     }
@@ -77,43 +79,40 @@ struct menu_item_visitor_set_hover_state
     }
 
     bool m_hoverState { false };
-};
+  };
 
-inline auto menu_item::SetHoverState(bool value) -> void
-{
   std::visit(menu_item_visitor_set_hover_state { value }, m_item);
 }
 
-struct menu_item_visitor_update
-{
-    void operator()(button& item)
-    {
-      item.Update();
-    }
-
-    void operator()(menu_slider& item)
-    {
-    }
-};
-
 inline auto menu_item::Update() -> void
 {
+  struct menu_item_visitor_update
+  {
+      void operator()(button& item)
+      {
+      }
+
+      void operator()(menu_slider& item)
+      {
+      }
+  };
+
   std::visit(menu_item_visitor_update {}, m_item);
 }
 
-struct menu_item_visitor_click
-{
-    void operator()(button& item)
-    {
-      item.Click();
-    }
-
-    void operator()(menu_slider& item)
-    {
-    }
-};
-
 inline auto menu_item::Click() -> void
 {
+  struct menu_item_visitor_click
+  {
+      void operator()(button& item)
+      {
+        item.Click();
+      }
+
+      void operator()(menu_slider& item)
+      {
+      }
+  };
+
   std::visit(menu_item_visitor_click {}, m_item);
 }

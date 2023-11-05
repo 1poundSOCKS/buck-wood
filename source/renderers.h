@@ -44,10 +44,9 @@ private:
   auto Render(const impact_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
-  // auto Render(const menu& menuObject, const VIEW_RECT& viewRect) const -> void;
+  auto Render(const menu_item& menuItem) const -> void;
   auto Render(const button& buttonObject) const -> void;
   auto Render(const menu_slider& menuSlider) const -> void;
-  auto Render(const menu_item& menuItem) const -> void;
 
   template <typename brush_selector> auto RenderWithBorder(const path_geometry& geometry, const brush_selector& object) const -> void;
   template <typename brush_selector> auto RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;

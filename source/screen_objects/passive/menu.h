@@ -57,7 +57,7 @@ inline auto menu::Unselect() -> void
 
   for( auto currentItem = 0; selectedItem == - 1 && currentItem < m_items.size(); ++currentItem )
   {
-    if( m_items[currentItem].GetHoverState() )
+    if( m_items[currentItem].HoverState() )
     {
       selectedItem = currentItem;
     }

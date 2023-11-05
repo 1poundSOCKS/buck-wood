@@ -137,7 +137,7 @@ auto renderer::Render(const button& buttonObject) const -> void
   const auto& rect = buttonObject.Rect();
   const auto& text = buttonObject.Text();
   
-  if( buttonObject.GetHoverState() )
+  if( buttonObject.HoverState() )
   {
     RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
@@ -155,21 +155,21 @@ auto renderer::Render(const menu_slider& menuSlider) const -> void
 {
 }
 
-struct render_menu_item_visitor
-{
-    void operator()(const button& item)
-    {
-      renderer::render(item);
-    }
-
-    void operator()(const menu_slider& item)
-    {
-      renderer::render(item);
-    }
-};
-
 auto renderer::Render(const menu_item& menuItem) const -> void
 {
+  struct render_menu_item_visitor
+  {
+      void operator()(const button& item)
+      {
+        renderer::render(item);
+      }
+
+      void operator()(const menu_slider& item)
+      {
+        renderer::render(item);
+      }
+  };
+
   std::visit(render_menu_item_visitor {}, menuItem.Get());
 }
 
