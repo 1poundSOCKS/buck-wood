@@ -18,11 +18,6 @@ auto menu::AddItem(button&& item) -> void
 
 auto menu::Update(const menu_control_data& controlData) -> void
 {
-  for( auto& item : m_items )
-  {
-    item.Update();
-  }
-
   auto selectedItem = GetSelectedItem();
 
   if( ValidItem(selectedItem) )

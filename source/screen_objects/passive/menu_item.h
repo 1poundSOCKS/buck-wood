@@ -1,24 +1,23 @@
 #pragma once
 
 #include "button.h"
-#include "menu_slider.h"
+#include "slider.h"
 
 class menu_item
 {
 
 public:
 
-  using item_type = std::variant<button, menu_slider>;
+  using item_type = std::variant<button, slider>;
 
   menu_item(const button& item);
-  menu_item(const menu_slider& item);
+  menu_item(const slider& item);
 
   [[nodiscard]] auto Get() const -> const item_type&;
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
 
-  auto Update() -> void;
   auto Click() -> void;
 
 private:
@@ -31,7 +30,7 @@ inline menu_item::menu_item(const button& item) : m_item { item }
 {
 }
 
-inline menu_item::menu_item(const menu_slider& item) : m_item { item }
+inline menu_item::menu_item(const slider& item) : m_item { item }
 {
 }
 
@@ -49,7 +48,7 @@ inline auto menu_item::HoverState() const -> bool
         m_hoverState = item.HoverState();
       }
 
-      void operator()(const menu_slider& item)
+      void operator()(const slider& item)
       {
       }
 
@@ -74,7 +73,7 @@ inline auto menu_item::SetHoverState(bool value) -> void
       item.SetHoverState(m_hoverState);
     }
 
-    void operator()(menu_slider& item)
+    void operator()(slider& item)
     {
     }
 
@@ -82,22 +81,6 @@ inline auto menu_item::SetHoverState(bool value) -> void
   };
 
   std::visit(menu_item_visitor_set_hover_state { value }, m_item);
-}
-
-inline auto menu_item::Update() -> void
-{
-  struct menu_item_visitor_update
-  {
-      void operator()(button& item)
-      {
-      }
-
-      void operator()(menu_slider& item)
-      {
-      }
-  };
-
-  std::visit(menu_item_visitor_update {}, m_item);
 }
 
 inline auto menu_item::Click() -> void
@@ -109,7 +92,7 @@ inline auto menu_item::Click() -> void
         item.Click();
       }
 
-      void operator()(menu_slider& item)
+      void operator()(slider& item)
       {
       }
   };

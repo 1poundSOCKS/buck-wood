@@ -151,7 +151,7 @@ auto renderer::Render(const button& buttonObject) const -> void
   }
 }
 
-auto renderer::Render(const menu_slider& menuSlider) const -> void
+auto renderer::Render(const slider& sliderObject) const -> void
 {
 }
 
@@ -164,7 +164,7 @@ auto renderer::Render(const menu_item& menuItem) const -> void
         renderer::render(item);
       }
 
-      void operator()(const menu_slider& item)
+      void operator()(const slider& item)
       {
         renderer::render(item);
       }
