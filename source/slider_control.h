@@ -7,7 +7,7 @@ public:
 
   enum class alignment { horizontal, vertical };
 
-  slider_control(const D2D1_RECT_F& rect );
+  slider_control(const D2D1_RECT_F& rect);
 
   [[nodiscard]] auto GetBoundingRect() const -> const D2D1_RECT_F&;
   [[nodiscard]] auto GetSliderRect(float percentage) const -> D2D1_RECT_F;
