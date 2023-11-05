@@ -8,14 +8,12 @@ class menu_item
 
 public:
 
-  enum class type { button = 0, slider };
+  using item_type = std::variant<button, menu_slider>;
 
   menu_item(const button& item);
   menu_item(const menu_slider& item);
 
-  [[nodiscard]] auto Type() const -> type;
-  [[nodiscard]] auto Button() const -> const button&;
-  [[nodiscard]] auto Slider() const -> const menu_slider&;
+  [[nodiscard]] auto Get() const -> const item_type&;
 
   [[nodiscard]] auto GetHoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
@@ -25,75 +23,97 @@ public:
 
 private:
 
-  type m_type;
-  using item_type = std::variant<button, menu_slider>;
   item_type m_item;
 
 };
 
-inline menu_item::menu_item(const button& item) : m_type { type::button }, m_item { item }
+inline menu_item::menu_item(const button& item) : m_item { item }
 {
 }
 
-inline menu_item::menu_item(const menu_slider& item) : m_type { type::slider }, m_item { item }
+inline menu_item::menu_item(const menu_slider& item) : m_item { item }
 {
 }
 
-[[nodiscard]] inline auto menu_item::Type() const -> type
+[[nodiscard]] inline auto menu_item::Get() const -> const item_type&
 {
-  return m_type;
+  return m_item;
 }
 
-[[nodiscard]] inline auto menu_item::Button() const -> const button&
+struct menu_item_visitor_get_hover_state
 {
-  return *std::get_if<button>(&m_item);
-}
+    void operator()(const button& item)
+    {
+      m_hoverState = item.GetHoverState();
+    }
 
-[[nodiscard]] inline auto menu_item::Slider() const -> const menu_slider&
-{
-  return *std::get_if<menu_slider>(&m_item);
-}
+    void operator()(const menu_slider& item)
+    {
+    }
+
+    bool m_hoverState { false };
+};
 
 inline auto menu_item::GetHoverState() const -> bool
 {
-  bool hoverState = false;
-
-  switch( m_type )
-  {
-    case type::button:
-      hoverState = std::get_if<button>(&m_item)->GetHoverState();
-      break;
-  }
-
-  return hoverState;
+  menu_item_visitor_get_hover_state visitor {};
+  std::visit(visitor, m_item);
+  return visitor.m_hoverState;
 }
+
+struct menu_item_visitor_set_hover_state
+{
+    menu_item_visitor_set_hover_state(bool hoverState) : m_hoverState { hoverState }
+    {
+    }
+
+    void operator()(button& item)
+    {
+      item.SetHoverState(m_hoverState);
+    }
+
+    void operator()(menu_slider& item)
+    {
+    }
+
+    bool m_hoverState { false };
+};
 
 inline auto menu_item::SetHoverState(bool value) -> void
 {
-  switch( m_type )
-  {
-    case type::button:
-      std::get_if<button>(&m_item)->SetHoverState(value);
-      break;
-  }
+  std::visit(menu_item_visitor_set_hover_state { value }, m_item);
 }
+
+struct menu_item_visitor_update
+{
+    void operator()(button& item)
+    {
+      item.Update();
+    }
+
+    void operator()(menu_slider& item)
+    {
+    }
+};
 
 inline auto menu_item::Update() -> void
 {
-  switch( m_type )
-  {
-    case type::button:
-      std::get_if<button>(&m_item)->Update();
-      break;
-  }
+  std::visit(menu_item_visitor_update {}, m_item);
 }
+
+struct menu_item_visitor_click
+{
+    void operator()(button& item)
+    {
+      item.Click();
+    }
+
+    void operator()(menu_slider& item)
+    {
+    }
+};
 
 inline auto menu_item::Click() -> void
 {
-  switch( m_type )
-  {
-    case type::button:
-      std::get_if<button>(&m_item)->Click();
-      break;
-  }
+  std::visit(menu_item_visitor_click {}, m_item);
 }

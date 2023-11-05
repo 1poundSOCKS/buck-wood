@@ -151,14 +151,26 @@ auto renderer::Render(const button& buttonObject) const -> void
   }
 }
 
+auto renderer::Render(const menu_slider& menuSlider) const -> void
+{
+}
+
+struct render_menu_item_visitor
+{
+    void operator()(const button& item)
+    {
+      renderer::render(item);
+    }
+
+    void operator()(const menu_slider& item)
+    {
+      renderer::render(item);
+    }
+};
+
 auto renderer::Render(const menu_item& menuItem) const -> void
 {
-  switch( menuItem.Type() )
-  {
-    case menu_item::type::button:
-      Render(menuItem.Button());
-      break;
-  }
+  std::visit(render_menu_item_visitor {}, menuItem.Get());
 }
 
 template <typename brush_selector>
