@@ -4,7 +4,7 @@
 auto menu_controller::Open(const menu_def& def) -> void
 {
   m_menus.emplace( def.CreateMenu() );
-  m_menus.top().SelectFirstButton();
+  m_menus.top().SelectFirstItem();
 }
 
 auto menu_controller::Close() -> void

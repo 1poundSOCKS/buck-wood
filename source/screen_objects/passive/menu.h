@@ -8,86 +8,87 @@ class menu
 {
 public:
 
-  using button_collection = std::vector<button>;
-  using button_selection_type = int;
-  static const int invalid_button { -1 };
+  using item_collection = std::vector<button>;
+  using item_selection_type = int;
+
+  static const int invalid_item { -1 };
 
   menu();
   menu(const menu& menuToCopy);
 
-  auto AddButton(button&& menuButton) -> void;
-  auto SelectFirstButton() -> void;
+  auto AddItem(button&& item) -> void;
+  auto SelectFirstItem() -> void;
   auto Unselect() -> void;
   auto Update(const menu_control_data& controlData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
 private:
 
-  [[nodiscard]] auto GetSelectedButton() const -> button_selection_type;
-  auto SelectNextButton(button_selection_type currentButton) -> void;
-  auto SelectPreviousButton(button_selection_type currentButton) -> void;
-  [[nodiscard]] auto ValidButton(button_selection_type selectedButton) const -> bool;
+  [[nodiscard]] auto GetSelectedItem() const -> item_selection_type;
+  auto SelectNextItem(item_selection_type currentItem) -> void;
+  auto SelectPreviousItem(item_selection_type currentItem) -> void;
+  [[nodiscard]] auto ValidItem(item_selection_type currentItem) const -> bool;
   
-  button_collection m_buttons;
+  item_collection m_items;
 
 };
 
-inline auto menu::SelectFirstButton() -> void
+inline auto menu::SelectFirstItem() -> void
 {
   Unselect();
 
-  if( m_buttons.size() > 0 )
+  if( m_items.size() > 0 )
   {
-    m_buttons.front().SetHoverState(true);
+    m_items.front().SetHoverState(true);
   }
 }
 
 inline auto menu::Unselect() -> void
 {
-  for( auto& button : m_buttons )
+  for( auto& item : m_items )
   {
-    button.SetHoverState(false);
+    item.SetHoverState(false);
   }
 }
 
-[[nodiscard]] inline auto menu::GetSelectedButton() const -> button_selection_type
+[[nodiscard]] inline auto menu::GetSelectedItem() const -> item_selection_type
 {
-  auto selectedButton = invalid_button;
+  auto selectedItem = invalid_item;
 
-  for( auto currentButton = 0; selectedButton == - 1 && currentButton < m_buttons.size(); ++currentButton )
+  for( auto currentItem = 0; selectedItem == - 1 && currentItem < m_items.size(); ++currentItem )
   {
-    if( m_buttons[currentButton].GetHoverState() )
+    if( m_items[currentItem].GetHoverState() )
     {
-      selectedButton = currentButton;
+      selectedItem = currentItem;
     }
   }
 
-  return selectedButton;
+  return selectedItem;
 }
 
-inline auto menu::SelectNextButton(button_selection_type currentButton) -> void
+inline auto menu::SelectNextItem(item_selection_type currentItem) -> void
 {
-  auto selectedButton = GetSelectedButton();
+  auto selectedItem = GetSelectedItem();
 
-  if( ValidButton(++selectedButton) )
+  if( ValidItem(++selectedItem) )
   {
     Unselect();
-    m_buttons[selectedButton].SetHoverState(true);
+    m_items[selectedItem].SetHoverState(true);
   }
 }
 
-inline auto menu::SelectPreviousButton(button_selection_type currentButton) -> void
+inline auto menu::SelectPreviousItem(item_selection_type currentItem) -> void
 {
-  auto selectedButton = GetSelectedButton();
+  auto selectedItem = GetSelectedItem();
 
-  if( ValidButton(--selectedButton) )
+  if( ValidItem(--selectedItem) )
   {
     Unselect();
-    m_buttons[selectedButton].SetHoverState(true);
+    m_items[selectedItem].SetHoverState(true);
   }
 }
 
-[[nodiscard]] inline auto menu::ValidButton(button_selection_type selectedButton) const -> bool
+[[nodiscard]] inline auto menu::ValidItem(item_selection_type selectedItem) const -> bool
 {
-  return selectedButton >= 0 && selectedButton < m_buttons.size() ? true : false;
+  return selectedItem >= 0 && selectedItem < m_items.size() ? true : false;
 }
