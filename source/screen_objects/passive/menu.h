@@ -8,7 +8,7 @@ class menu
 {
 public:
 
-  using item_collection = std::vector<button>;
+  using item_collection = std::vector<menu_item>;
   using item_selection_type = int;
 
   static const int invalid_item { -1 };

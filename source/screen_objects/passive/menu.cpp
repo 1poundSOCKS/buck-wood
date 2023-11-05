@@ -18,9 +18,9 @@ auto menu::AddItem(button&& item) -> void
 
 auto menu::Update(const menu_control_data& controlData) -> void
 {
-  for( auto& button : m_items )
+  for( auto& item : m_items )
   {
-    button.Update();
+    item.Update();
   }
 
   auto selectedItem = GetSelectedItem();

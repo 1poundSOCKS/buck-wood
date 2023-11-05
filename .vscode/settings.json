@@ -82,7 +82,8 @@
     "functional": "cpp",
     "queue": "cpp",
     "ranges": "cpp",
-    "span": "cpp"
+    "span": "cpp",
+    "variant": "cpp"
   },
   "cmake.configureOnOpen": false
 }

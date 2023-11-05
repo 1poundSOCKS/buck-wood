@@ -151,6 +151,16 @@ auto renderer::Render(const button& buttonObject) const -> void
   }
 }
 
+auto renderer::Render(const menu_item& menuItem) const -> void
+{
+  switch( menuItem.Type() )
+  {
+    case menu_item::type::button:
+      Render(menuItem.Button());
+      break;
+  }
+}
+
 template <typename brush_selector>
 auto renderer::RenderWithBorder(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
