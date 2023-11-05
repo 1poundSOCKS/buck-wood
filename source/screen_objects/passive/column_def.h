@@ -10,7 +10,7 @@ public:
   column_def(const D2D1_RECT_F& area, size_t rows);
 
   [[nodiscard]] auto begin() const -> row_collection::const_iterator;
-  [[nodiscard]]auto end() const -> row_collection::const_iterator;
+  [[nodiscard]] auto end() const -> row_collection::const_iterator;
 
 private:
 

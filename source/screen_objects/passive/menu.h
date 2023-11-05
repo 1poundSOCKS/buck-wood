@@ -1,5 +1,6 @@
 #pragma once
 
+#include "menu_item.h"
 #include "menu_control_data.h"
 #include "button.h"
 

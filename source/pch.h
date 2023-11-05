@@ -30,6 +30,7 @@
 #include <functional>
 #include <set>
 #include <ranges>
+#include <variant>
 
 #include <windows.h>
 #include <windowsx.h>
