@@ -52,6 +52,7 @@ inline auto menu_item::HoverState() const -> bool
 
       void operator()(const slider& item)
       {
+        m_hoverState = item.HoverState();
       }
 
       bool m_hoverState { false };
@@ -77,6 +78,7 @@ inline auto menu_item::SetHoverState(bool value) -> void
 
     void operator()(slider& item)
     {
+      item.SetHoverState(m_hoverState);
     }
 
     bool m_hoverState { false };
