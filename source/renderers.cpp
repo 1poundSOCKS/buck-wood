@@ -139,12 +139,16 @@ auto renderer::Render(const button& buttonObject) const -> void
   
   if( buttonObject.HoverState() )
   {
+    framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
+
     RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
   else
   {
+    framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
+
     RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
       m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);

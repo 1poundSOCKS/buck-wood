@@ -92,20 +92,9 @@ auto main_menu_screen::Render() const -> void
     m_startPlay = true;
   }});
 
-  menuDef.AddButtonDef({ L"Options", [this, &menuArea]() -> void
+  menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
   {
-    m_menuController.Open(GetOptionsMenuDef(menuArea, 
-      [this]() -> void
-      {
-      },
-      [this]() -> void
-      {
-      },
-      [this]() -> void
-      {
-        m_menuController.Close();
-      })
-    );
+    m_menuController.Open(options_menu_def::get(menuArea, m_menuController));
   }});
 
   menuDef.AddButtonDef({ L"Exit", [this]() -> void

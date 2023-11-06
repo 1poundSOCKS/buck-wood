@@ -325,7 +325,8 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 {
   const auto& renderTarget = framework::renderTarget();
 
-  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.5f, 0.3f));
+  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
+  
   menu_def menuDef(menuArea.GetRect());
 
   menuDef.AddButtonDef({ L"Resume", [this]() -> void
@@ -335,19 +336,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
   menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
   {
-    auto optionsMenuDef = GetOptionsMenuDef(menuArea, 
-      [this]() -> void
-      {
-      },
-      [this]() -> void
-      {
-      },
-      [this]() -> void
-      {
-        m_menuController.Close();
-      });
-
-    m_menuController.Open(optionsMenuDef);
+    m_menuController.Open(options_menu_def::get(menuArea, m_menuController));
   }});
 
   menuDef.AddButtonDef({ L"Quit", [this]() -> void
