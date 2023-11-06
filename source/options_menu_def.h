@@ -14,6 +14,7 @@ namespace options_menu_def
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
     
       menuController.Open( menu_def { area.GetRect() } );
+      menuController.GetCurrent().AddItem( slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
     }});
@@ -23,6 +24,7 @@ namespace options_menu_def
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
 
       menuController.Open( menu_def { area.GetRect() } );
+      menuController.GetCurrent().AddItem( slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
     }});

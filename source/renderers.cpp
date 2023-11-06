@@ -157,6 +157,9 @@ auto renderer::Render(const button& buttonObject) const -> void
 
 auto renderer::Render(const slider& sliderObject) const -> void
 {
+  const auto& rect = sliderObject.Rect();
+
+  framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 }
 
 auto renderer::Render(const menu_item& menuItem) const -> void

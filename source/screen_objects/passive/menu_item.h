@@ -117,6 +117,7 @@ inline auto menu_item::Resize(const D2D1_RECT_F& rect) -> void
 
     void operator()(slider& item)
     {
+      item.Resize(m_rect);
     }
 
     D2D1_RECT_F m_rect;
