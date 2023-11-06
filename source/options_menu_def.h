@@ -2,6 +2,8 @@
 
 #include "menu_def.h"
 #include "render_target_area.h"
+#include "effects_volume_slider.h"
+#include "music_volume_slider.h"
 
 namespace options_menu_def
 {
@@ -14,7 +16,7 @@ namespace options_menu_def
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
     
       menuController.Open( menu_def { area.GetRect() } );
-      menuController.GetCurrent().AddItem( slider {}, false );
+      menuController.GetCurrent().AddItem( effects_volume_slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
     }});
@@ -24,7 +26,7 @@ namespace options_menu_def
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
 
       menuController.Open( menu_def { area.GetRect() } );
-      menuController.GetCurrent().AddItem( slider {}, false );
+      menuController.GetCurrent().AddItem( music_volume_slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
     }});
