@@ -11,7 +11,7 @@ menu::menu(const menu& menuToCopy)
   m_items = menuToCopy.m_items;
 }
 
-auto menu::AddItem(button&& item) -> void
+auto menu::AddItem(menu_item&& item, bool resize) -> void
 {
   m_items.emplace_back(item);
 }

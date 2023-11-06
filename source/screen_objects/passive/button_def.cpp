@@ -26,5 +26,5 @@ auto button_def::SetRect(D2D1_RECT_F rect) -> void
 
 [[nodiscard]] auto button_def::CreateButton() const -> button
 {
-  return button(m_rect, m_text.c_str(), m_eventClicked);
+  return button { m_text.c_str(), m_eventClicked, m_rect };
 }

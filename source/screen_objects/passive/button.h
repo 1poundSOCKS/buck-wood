@@ -6,9 +6,8 @@ class button
 {
 public:
 
-  using callback_for_flag = std::function<bool()>;
-
-  button(D2D1_RECT_F rect, LPCWSTR text, std::function<void()> m_eventClicked);
+  button(LPCWSTR text);
+  button(LPCWSTR text, std::function<void()> m_eventClicked, D2D1_RECT_F rect);
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;

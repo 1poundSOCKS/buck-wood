@@ -10,15 +10,18 @@ namespace options_menu_def
     menu_def menuDef(area.GetRect());
     menuDef.AddButtonDef({ L"Effects volume", [area, &menuController]() -> void
     {
-      menu_def menuDef { area.GetRect() };
-      menuDef.AddButtonDef({ L"Back", [&menuController]() -> void { menuController.Close(); }});
-      menuController.Open(menuDef);
+      // menu_def menuDef { area.GetRect() };
+      // menuDef.AddButtonDef({ L"Back", [&menuController]() -> void { menuController.Close(); }});
+      menuController.Open( menu_def { area.GetRect() } );
+      menuController.GetCurrent().AddItem( button { L"Back" }, true );
     }});
     menuDef.AddButtonDef({ L"Music volume", [area, &menuController]() -> void
     {
-      menu_def menuDef { area.GetRect() };
-      menuDef.AddButtonDef({ L"Back", [&menuController]() -> void { menuController.Close(); }});
-      menuController.Open(menuDef);
+      // menu_def menuDef { area.GetRect() };
+      // menuDef.AddButtonDef({ L"Back", [&menuController]() -> void { menuController.Close(); }});
+      // menuController.Open(menuDef);
+      menuController.Open( menu_def { area.GetRect() } );
+      menuController.GetCurrent().AddItem( button { L"Back" }, true );
     }});
     menuDef.AddButtonDef({ L"Back", [&menuController]() -> void { menuController.Close(); }});
     return menuDef;

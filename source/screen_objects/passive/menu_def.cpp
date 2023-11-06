@@ -37,7 +37,7 @@ auto menu_def::UpdateButtons() -> void
 
   for( auto& buttonDef : m_buttonDefs )
   {
-    newMenu.AddItem(buttonDef.CreateButton());
+    newMenu.AddItem(buttonDef.CreateButton(), false);
   }
 
   return newMenu;

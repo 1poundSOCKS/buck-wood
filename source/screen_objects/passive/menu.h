@@ -16,7 +16,7 @@ public:
   menu();
   menu(const menu& menuToCopy);
 
-  auto AddItem(button&& item) -> void;
+  auto AddItem(menu_item&& item, bool resize) -> void;
   auto SelectFirstItem() -> void;
   auto Unselect() -> void;
   auto Update(const menu_control_data& controlData) -> void;
