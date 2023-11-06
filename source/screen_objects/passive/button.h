@@ -7,6 +7,7 @@ class button
 public:
 
   button(LPCWSTR text);
+  button(LPCWSTR text, std::function<void()> m_eventClicked);
   button(LPCWSTR text, std::function<void()> m_eventClicked, D2D1_RECT_F rect);
 
   [[nodiscard]] auto HoverState() const -> bool;
@@ -24,7 +25,6 @@ private:
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
 
   std::wstring m_text = L"";
-  float m_buttonHeight = 0;
   D2D1_RECT_F m_rect = { 0, 0, 0, 0 };
   std::function<void()> m_eventClicked = [](){};
   bool m_hover { false };

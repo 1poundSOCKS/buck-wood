@@ -5,11 +5,16 @@ button::button(LPCWSTR text) : m_text { text }
 {
 }
 
+button::button(LPCWSTR text, std::function<void()> eventClicked) : 
+  m_text { text },
+  m_eventClicked { eventClicked }
+{
+}
+
 button::button(LPCWSTR text, std::function<void()> eventClicked, D2D1_RECT_F rect) : 
   m_text { text },
   m_eventClicked { eventClicked },
-  m_rect { rect },
-  m_buttonHeight { rect.bottom - rect.top }
+  m_rect { rect }
 {
 }
 
