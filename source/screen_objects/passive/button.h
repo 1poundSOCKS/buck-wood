@@ -17,6 +17,8 @@ public:
   [[nodiscard]] auto Rect() const -> const D2D1_RECT_F&;
   [[nodiscard]] auto Text() const -> const std::wstring&;
 
+  auto Resize(const D2D1_RECT_F& rect) -> void;
+
 private:
 
   [[nodiscard]] static auto IsInsideRect(float x, float y, D2D1_RECT_F rect) -> bool;
@@ -51,4 +53,9 @@ inline auto button::Click() -> void
 [[nodiscard]] inline auto button::Text() const -> const std::wstring&
 {
   return m_text;
+}
+
+inline auto button::Resize(const D2D1_RECT_F& rect) -> void
+{
+  m_rect = rect;
 }

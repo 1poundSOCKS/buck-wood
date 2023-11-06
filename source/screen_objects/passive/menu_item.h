@@ -20,6 +20,8 @@ public:
 
   auto Click() -> void;
 
+  auto Resize(const D2D1_RECT_F& rect) -> void;
+
 private:
 
   item_type m_item;
@@ -98,4 +100,27 @@ inline auto menu_item::Click() -> void
   };
 
   std::visit(menu_item_visitor_click {}, m_item);
+}
+
+inline auto menu_item::Resize(const D2D1_RECT_F& rect) -> void
+{
+  struct menu_item_visitor_resize
+  {
+    menu_item_visitor_resize(const D2D1_RECT_F& rect) : m_rect { rect }
+    {
+    }
+
+    void operator()(button& item)
+    {
+      item.Resize(m_rect);
+    }
+
+    void operator()(slider& item)
+    {
+    }
+
+    D2D1_RECT_F m_rect;
+  };
+
+  std::visit(menu_item_visitor_resize { rect }, m_item);
 }

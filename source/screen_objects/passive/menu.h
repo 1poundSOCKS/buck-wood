@@ -13,7 +13,7 @@ public:
 
   static const int invalid_item { -1 };
 
-  menu();
+  menu(const D2D1_RECT_F& rect);
   menu(const menu& menuToCopy);
 
   auto AddItem(menu_item&& item, bool resize) -> void;
@@ -28,7 +28,9 @@ private:
   auto SelectNextItem(item_selection_type currentItem) -> void;
   auto SelectPreviousItem(item_selection_type currentItem) -> void;
   [[nodiscard]] auto ValidItem(item_selection_type currentItem) const -> bool;
+  auto ResizeItems() -> void;
   
+  D2D1_RECT_F m_rect;
   item_collection m_items;
 
 };

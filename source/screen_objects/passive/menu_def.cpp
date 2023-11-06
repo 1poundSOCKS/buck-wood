@@ -33,12 +33,12 @@ auto menu_def::UpdateButtons() -> void
 
 [[nodiscard]] auto menu_def::CreateMenu() const -> menu
 {
-  menu newMenu;
+  menu menuObject { m_rect };
 
   for( auto& buttonDef : m_buttonDefs )
   {
-    newMenu.AddItem(buttonDef.CreateButton(), false);
+    menuObject.AddItem(buttonDef.CreateButton(), false);
   }
 
-  return newMenu;
+  return menuObject;
 }

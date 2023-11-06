@@ -24,7 +24,7 @@ private:
 
 inline menu_controller::menu_controller()
 {
-  m_menus.emplace(menu{});
+  m_menus.emplace( menu { { 0, 0, 0, 0 } } );
 }
 
 inline auto menu_controller::Render(D2D1_RECT_F viewRect) const -> void
