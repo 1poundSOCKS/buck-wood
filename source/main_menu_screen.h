@@ -20,7 +20,7 @@ private:
   auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
 
-  [[nodiscard]] auto GetMenuDef(menu_id id) -> menu_def;
+  [[nodiscard]] auto GetMenuDef() -> menu_def;
 
   menu_controller m_menuController;
   
