@@ -8,7 +8,7 @@
 #include "diagnostics.h"
 #include "sound_buffer_player.h"
 #include "gamepad_trigger.h"
-#include "options_menu_def.h"
+#include "settings_menu_def.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -334,9 +334,9 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
     m_paused = false;
   }});
 
-  menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
+  menuDef.AddButtonDef({ L"Settings", [this, menuArea]() -> void
   {
-    m_menuController.Open(options_menu_def::get(menuArea, m_menuController));
+    m_menuController.Open(settings_menu_def::get(menuArea, m_menuController));
   }});
 
   menuDef.AddButtonDef({ L"Quit", [this]() -> void

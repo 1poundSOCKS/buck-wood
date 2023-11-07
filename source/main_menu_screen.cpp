@@ -9,7 +9,7 @@
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
-#include "options_menu_def.h"
+#include "settings_menu_def.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -92,9 +92,9 @@ auto main_menu_screen::Render() const -> void
     m_startPlay = true;
   }});
 
-  menuDef.AddButtonDef({ L"Options", [this, menuArea]() -> void
+  menuDef.AddButtonDef({ L"Settings", [this, menuArea]() -> void
   {
-    m_menuController.Open(options_menu_def::get(menuArea, m_menuController));
+    m_menuController.Open(settings_menu_def::get(menuArea, m_menuController));
   }});
 
   menuDef.AddButtonDef({ L"Exit", [this]() -> void

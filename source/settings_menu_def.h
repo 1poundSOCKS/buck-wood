@@ -5,7 +5,7 @@
 #include "effects_volume_slider.h"
 #include "music_volume_slider.h"
 
-namespace options_menu_def
+namespace settings_menu_def
 {
   [[nodiscard]] inline auto get(const render_target_area& area, menu_controller& menuController) -> menu_def
   {
