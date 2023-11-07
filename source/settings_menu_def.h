@@ -15,7 +15,7 @@ namespace settings_menu_def
     {
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
     
-      menuController.Open( menu_def { area.GetRect() } );
+      menuController.Open( { area.GetRect() } );
       menuController.GetCurrent().AddItem( effects_volume_slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
@@ -25,7 +25,7 @@ namespace settings_menu_def
     {
       auto backButtonHandler = [&menuController](){ menuController.Close(); };
 
-      menuController.Open( menu_def { area.GetRect() } );
+      menuController.Open( { area.GetRect() } );
       menuController.GetCurrent().AddItem( music_volume_slider {}, false );
       menuController.GetCurrent().AddItem( button { L"Back", backButtonHandler }, true );
       menuController.GetCurrent().SelectFirstItem();
