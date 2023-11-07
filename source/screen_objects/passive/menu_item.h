@@ -1,17 +1,17 @@
 #pragma once
 
 #include "button.h"
-#include "slider.h"
+#include "setting_slider.h"
 
 class menu_item
 {
 
 public:
 
-  using item_type = std::variant<button, slider>;
+  using item_type = std::variant<button, setting_slider>;
 
   menu_item(const button& item);
-  menu_item(const slider& item);
+  menu_item(const setting_slider& item);
 
   [[nodiscard]] auto Get() const -> const item_type&;
 
@@ -32,7 +32,7 @@ inline menu_item::menu_item(const button& item) : m_item { item }
 {
 }
 
-inline menu_item::menu_item(const slider& item) : m_item { item }
+inline menu_item::menu_item(const setting_slider& item) : m_item { item }
 {
 }
 
@@ -50,7 +50,7 @@ inline auto menu_item::HoverState() const -> bool
         m_hoverState = item.HoverState();
       }
 
-      void operator()(const slider& item)
+      void operator()(const setting_slider& item)
       {
         m_hoverState = item.HoverState();
       }
@@ -76,7 +76,7 @@ inline auto menu_item::SetHoverState(bool value) -> void
       item.SetHoverState(m_hoverState);
     }
 
-    void operator()(slider& item)
+    void operator()(setting_slider& item)
     {
       item.SetHoverState(m_hoverState);
     }
@@ -96,7 +96,7 @@ inline auto menu_item::Click() -> void
         item.Click();
       }
 
-      void operator()(slider& item)
+      void operator()(setting_slider& item)
       {
       }
   };
@@ -117,7 +117,7 @@ inline auto menu_item::Resize(const D2D1_RECT_F& rect) -> void
       item.Resize(m_rect);
     }
 
-    void operator()(slider& item)
+    void operator()(setting_slider& item)
     {
       item.Resize(m_rect);
     }

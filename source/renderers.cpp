@@ -155,9 +155,9 @@ auto renderer::Render(const button& buttonObject) const -> void
   }
 }
 
-auto renderer::Render(const slider& sliderObject) const -> void
+auto renderer::Render(const setting_slider& settingSlider) const -> void
 {
-  const auto& rect = sliderObject.Rect();
+  const auto& rect = settingSlider.Rect();
 
   framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 }
@@ -171,7 +171,7 @@ auto renderer::Render(const menu_item& menuItem) const -> void
         renderer::render(item);
       }
 
-      void operator()(const slider& item)
+      void operator()(const setting_slider& item)
       {
         renderer::render(item);
       }

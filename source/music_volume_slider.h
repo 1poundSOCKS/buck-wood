@@ -1,5 +1,8 @@
 #pragma once
 
-#include "slider.h"
+#include "setting_slider.h"
 
-using music_volume_slider = slider;
+class music_volume_slider : public setting_slider
+{
+
+};
