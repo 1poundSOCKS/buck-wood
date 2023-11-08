@@ -41,6 +41,10 @@ auto menu::Update(const menu_control_data& controlData) -> void
     {
       m_items[selectedItem].Click();
     }
+    else
+    {
+      m_items[selectedItem].Update(controlData);
+    }
   }
 }
 
