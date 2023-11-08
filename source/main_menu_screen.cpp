@@ -9,10 +9,13 @@
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
+#include "game_settings.h"
 
 main_menu_screen::main_menu_screen()
 {
   sound_data::create(framework::directSound().get(), L"data");
+
+  game_settings::load();
   
   auto musicBuffers = std::array
   {
@@ -30,8 +33,8 @@ main_menu_screen::main_menu_screen()
     sound_data::get(sound_data::mine_exploded)
   };
   
-  volume_controller effectVolumeController { effectBuffers };
-  effectVolumeController.SetVolume(0.8f);
+  volume_controller effectsVolumeController { effectBuffers };
+  effectsVolumeController.SetVolume(0.8f);
   
   // play sound now to ensure no sound glitch on first real play
   {

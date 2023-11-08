@@ -12,11 +12,13 @@ public:
 
   auto AddSoundBuffer(const sound_buffer& soundBuffer) -> void;
   auto SetVolume(float value) -> void;
+  [[nodiscard]] auto Volume() const -> float;
 
 private:
 
   using sound_buffer_collection = std::vector<sound_buffer>;
   sound_buffer_collection m_buffers;
+  float m_volume { 1.0 };
 
 };
 
@@ -38,8 +40,15 @@ inline auto volume_controller::AddSoundBuffer(const sound_buffer& soundBuffer) -
 
 inline auto volume_controller::SetVolume(float value) -> void
 {
+  m_volume = value;
+
   for( auto& buffer : m_buffers )
   {
     buffer.SetVolume(value);
   }
+}
+
+[[nodiscard]] inline auto volume_controller::Volume() const -> float
+{
+  return m_volume;
 }
