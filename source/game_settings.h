@@ -11,6 +11,9 @@ public:
   static auto setEffectsVolume(int value) -> void;
   static auto setMusicVolume(int value) -> void;
 
+  static auto effectsVolume() -> int;
+  static auto musicVolume() -> int;
+
 private:
 
   auto Load() -> void;
@@ -20,8 +23,8 @@ private:
 
   static game_settings* m_instance;
 
-  int m_effectsVolume { 8 };
-  int m_musicVolume { 8 };
+  int m_effectsVolume { 6 };
+  int m_musicVolume { 7 };
 
 };
 
@@ -57,4 +60,14 @@ inline auto game_settings::setMusicVolume(int value) -> void
   {
     m_instance->m_effectsVolume = value;
   }
+}
+
+inline auto game_settings::effectsVolume() -> int
+{
+  return m_instance ? m_instance->m_effectsVolume : 10;
+}
+
+inline auto game_settings::musicVolume() -> int
+{
+  return m_instance ? m_instance->m_musicVolume : 10;
 }

@@ -10,32 +10,17 @@
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
 #include "game_settings.h"
+#include "game_volume_controllers.h"
 
 main_menu_screen::main_menu_screen()
 {
+  game_settings::load();
   sound_data::create(framework::directSound().get(), L"data");
 
-  game_settings::load();
-  
-  auto musicBuffers = std::array
-  {
-    sound_data::get(sound_data::menu_theme)
-  };
+  game_volume_controllers::create();
+  game_volume_controllers::setEffectsVolume(6);
+  game_volume_controllers::setMusicVolume(7);
 
-  volume_controller musicVolumeController { musicBuffers };
-  musicVolumeController.SetVolume(0.8f);
-
-  auto effectBuffers = std::array
-  {
-    sound_data::get(sound_data::shoot),
-    sound_data::get(sound_data::thrust),
-    sound_data::get(sound_data::target_activated),
-    sound_data::get(sound_data::mine_exploded)
-  };
-  
-  volume_controller effectsVolumeController { effectBuffers };
-  effectsVolumeController.SetVolume(0.8f);
-  
   // play sound now to ensure no sound glitch on first real play
   {
     sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
