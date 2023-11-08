@@ -3,7 +3,7 @@
 #include "diagnostics.h"
 #include "screen_transform.h"
 #include "button_def.h"
-#include "menu_controller.h"
+#include "main_menu_controller.h"
 #include "mouse_cursor.h"
 
 class main_menu_screen
@@ -20,10 +20,9 @@ private:
   auto Update(int64_t frameInterval) -> void;
   auto Render() const -> void;
 
-  [[nodiscard]] auto GetMenuDef() -> menu_def;
+private:
 
-  menu_controller m_menuController;
-  
+  main_menu_controller m_menuController;
   bool m_continueRunning = true;
   bool m_startPlay = false;
 };

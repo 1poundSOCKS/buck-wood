@@ -40,7 +40,9 @@ main_menu_screen::main_menu_screen()
     player.Play();
   }
 
-  m_menuController.Open(GetMenuDef());
+  const auto& renderTarget = framework::renderTarget();
+  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
+  m_menuController.OpenRoot(menuArea);
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
@@ -61,6 +63,16 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   {
     menu_control_data menuControlData { framework::screenInputState() };
     m_menuController.Update(menuControlData);
+
+    switch( m_menuController.Selection() )
+    {
+      case main_menu_controller::selection::start_play:
+        m_startPlay = true;
+        break;
+      case main_menu_controller::selection::exit_game:
+        m_continueRunning = false;
+        break;
+    }
   }
 }
 
@@ -77,30 +89,4 @@ auto main_menu_screen::Render() const -> void
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
 
   m_menuController.Render(viewRect);
-}
-
-[[nodiscard]] auto main_menu_screen::GetMenuDef() -> menu_def
-{
-  const auto& renderTarget = framework::renderTarget();
-
-  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
-
-  menu_def menuDef(menuArea.GetRect());
-
-  menuDef.AddButtonDef({ L"Start", [this]() -> void
-  {
-    m_startPlay = true;
-  }});
-
-  menuDef.AddButtonDef({ L"Settings", [this, menuArea]() -> void
-  {
-    m_menuController.Open(settings_menu_def::get(menuArea, m_menuController));
-  }});
-
-  menuDef.AddButtonDef({ L"Exit", [this]() -> void
-  {
-    m_continueRunning = false;
-  }});
-
-  return menuDef;
 }
