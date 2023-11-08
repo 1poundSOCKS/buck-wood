@@ -66,10 +66,10 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 
     switch( m_menuController.Selection() )
     {
-      case main_menu_controller::selection::start_play:
+      case main_menu_controller::selection::start:
         m_startPlay = true;
         break;
-      case main_menu_controller::selection::exit_game:
+      case main_menu_controller::selection::exit:
         m_continueRunning = false;
         break;
     }

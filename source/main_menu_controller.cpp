@@ -12,7 +12,7 @@ auto main_menu_controller::OpenRoot(const render_target_area& area) -> void
 
   menuDef.AddButtonDef({ L"Start", [this]() -> void
   {
-    m_selection = selection::start_play;
+    m_selection = selection::start;
   }});
 
   menuDef.AddButtonDef({ L"Settings", [this, area]() -> void
@@ -22,7 +22,7 @@ auto main_menu_controller::OpenRoot(const render_target_area& area) -> void
 
   menuDef.AddButtonDef({ L"Exit", [this]() -> void
   {
-    m_selection = selection::exit_game;
+    m_selection = selection::exit;
   }});
 
   return menuDef;

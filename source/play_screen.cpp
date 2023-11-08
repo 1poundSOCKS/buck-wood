@@ -12,12 +12,13 @@
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
+  m_continueRunning = LoadFirstLevel();
+
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
 
-  m_continueRunning = LoadFirstLevel();
-
-  m_menuController.Open(GetMenuDef());
+  auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
+  m_menuController.OpenRoot(menuArea);
 
   auto playerPosition = m_levelContainer->PlayerPosition();
   m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
@@ -59,6 +60,16 @@ auto play_screen::Update(int64_t frameInterval) -> void
   {
     menu_control_data menuControlData { framework::screenInputState() };
     m_menuController.Update(menuControlData);
+
+    switch( m_menuController.Selection() )
+    {
+      case play_menu_controller::selection::resume:
+        m_paused = false;
+        break;
+      case play_menu_controller::selection::quit:
+        m_continueRunning = false;
+        break;
+    }
   }
 
   auto endUpdateTime = performance_counter::QueryValue();
@@ -319,30 +330,4 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     return true;
   }
-}
-
-[[nodiscard]] auto play_screen::GetMenuDef() -> menu_def
-{
-  const auto& renderTarget = framework::renderTarget();
-
-  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
-  
-  menu_def menuDef(menuArea.GetRect());
-
-  menuDef.AddButtonDef({ L"Resume", [this]() -> void
-  {
-    m_paused = false;
-  }});
-
-  menuDef.AddButtonDef({ L"Settings", [this, menuArea]() -> void
-  {
-    m_menuController.Open(settings_menu_def::get(menuArea, m_menuController));
-  }});
-
-  menuDef.AddButtonDef({ L"Quit", [this]() -> void
-  {
-    m_continueRunning = false;
-  }});
-
-  return menuDef;
 }

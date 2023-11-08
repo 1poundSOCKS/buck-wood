@@ -8,7 +8,7 @@
 #include "mouse_cursor.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
-#include "menu_controller.h"
+#include "play_menu_controller.h"
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
 #include "text_box.h"
@@ -46,7 +46,9 @@ private:
   [[nodiscard]] auto PausePressed() -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
-  [[nodiscard]] auto GetMenuDef() -> menu_def;
+  // [[nodiscard]] auto GetMenuDef() -> menu_def;
+
+private:
 
   stage m_stage = stage::pre_play;
   bool m_paused = false;
@@ -56,7 +58,7 @@ private:
   std::unique_ptr<level_container> m_levelContainer;
   
   mouse_cursor m_cursor;
-  menu_controller m_menuController;
+  play_menu_controller m_menuController;
   level_radar m_levelRadar;
   player_shields m_playerShields;
 
