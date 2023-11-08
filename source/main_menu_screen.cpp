@@ -9,7 +9,6 @@
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
-#include "settings_menu_def.h"
 
 main_menu_screen::main_menu_screen()
 {

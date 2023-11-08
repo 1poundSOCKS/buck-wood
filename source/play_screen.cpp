@@ -8,7 +8,6 @@
 #include "diagnostics.h"
 #include "sound_buffer_player.h"
 #include "gamepad_trigger.h"
-#include "settings_menu_def.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {

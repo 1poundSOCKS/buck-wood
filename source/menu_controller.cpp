@@ -6,12 +6,6 @@ auto menu_controller::Open(const D2D1_RECT_F& area) -> void
   m_menus.emplace( menu { area } );
 }
 
-auto menu_controller::Open(const menu_def& def) -> void
-{
-  m_menus.emplace( def.CreateMenu() );
-  m_menus.top().SelectFirstItem();
-}
-
 auto menu_controller::Close() -> void
 {
   if( m_menus.size() > 2 )

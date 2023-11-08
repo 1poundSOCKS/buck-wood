@@ -1,6 +1,8 @@
 #pragma once
 
-#include "menu_def.h"
+// #include "menu_def.h"
+#include "menu.h"
+#include "menu_control_data.h"
 
 class menu_controller
 {
@@ -9,7 +11,6 @@ public:
 
   menu_controller();
   auto Open(const D2D1_RECT_F& area) -> void;
-  auto Open(const menu_def& def) -> void;
   auto Close() -> void;
   auto Update(const menu_control_data& controlData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;

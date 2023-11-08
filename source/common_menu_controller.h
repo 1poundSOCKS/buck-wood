@@ -8,6 +8,11 @@ class common_menu_controller : public menu_controller
 
 public:
 
-  [[nodiscard]] auto GetSettingsMenuDef(const render_target_area& area) -> menu_def;
+  [[nodiscard]] auto OpenSettingsMenu(const render_target_area& area) -> void;
+
+private:
+
+  [[nodiscard]] auto OpenEffectsVolumeMenu(const render_target_area& area) -> void;
+  [[nodiscard]] auto OpenMusicVolumeMenu(const render_target_area& area) -> void;
 
 };
