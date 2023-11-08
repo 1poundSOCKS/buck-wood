@@ -3,27 +3,9 @@
 
 auto main_menu_controller::OpenRoot(const render_target_area& area) -> void
 {
-  Open(GetRootMenuDef(area));
-}
-
-[[nodiscard]] auto main_menu_controller::GetRootMenuDef(const render_target_area& area) -> menu_def
-{
-  menu_def menuDef(area.GetRect());
-
-  menuDef.AddButtonDef({ L"Start", [this]() -> void
-  {
-    m_selection = selection::start;
-  }});
-
-  menuDef.AddButtonDef({ L"Settings", [this, area]() -> void
-  {
-    Open(GetSettingsMenuDef(area));
-  }});
-
-  menuDef.AddButtonDef({ L"Exit", [this]() -> void
-  {
-    m_selection = selection::exit;
-  }});
-
-  return menuDef;
+  Open(area.GetRect());
+  GetCurrent().AddItem( button { L"Start", [this]() -> void { m_selection = selection::start; }}, false);
+  GetCurrent().AddItem( button { L"Settings", [this, area]() -> void { Open(GetSettingsMenuDef(area)); }}, false);
+  GetCurrent().AddItem( button { L"Exit", [this]() -> void { m_selection = selection::exit; }}, true);
+  GetCurrent().SelectFirstItem();
 }

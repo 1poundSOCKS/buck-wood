@@ -14,8 +14,6 @@ public:
 
 private:
 
-  [[nodiscard]] auto GetRootMenuDef(const render_target_area& area) -> menu_def;
-
   selection m_selection { selection::none };
 
 };
