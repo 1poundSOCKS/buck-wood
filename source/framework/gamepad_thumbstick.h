@@ -21,6 +21,8 @@ public:
 
   [[nodiscard]] auto UpPressed() const -> bool;
   [[nodiscard]] auto DownPressed() const -> bool;
+  [[nodiscard]] auto LeftPressed() const -> bool;
+  [[nodiscard]] auto RightPressed() const -> bool;
 
 private:
 
@@ -103,4 +105,14 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone
 [[nodiscard]] inline auto gamepad_thumbstick::DownPressed() const -> bool
 {
   return m_y < 0 ? true : false;
+}
+
+[[nodiscard]] inline auto gamepad_thumbstick::LeftPressed() const -> bool
+{
+  return m_x < 0 ? true : false;
+}
+
+[[nodiscard]] inline auto gamepad_thumbstick::RightPressed() const -> bool
+{
+  return m_x > 0 ? true : false;
 }

@@ -15,6 +15,8 @@ public:
 
   [[nodiscard]] auto Up() const -> bool;
   [[nodiscard]] auto Down() const -> bool;
+  [[nodiscard]] auto Left() const -> bool;
+  [[nodiscard]] auto Right() const -> bool;
   [[nodiscard]] auto Select() const -> bool;
   [[nodiscard]] auto Back() const -> bool;
 
@@ -23,31 +25,12 @@ private:
   bool m_gamepadAttached { false };
   bool m_up { false };
   bool m_down { false };
+  bool m_left { false };
+  bool m_right { false };
   bool m_select { false };
   bool m_back { false };
 
 };
-
-inline menu_control_data::menu_control_data(const screen_input_state& screenInputState)
-{
-  const auto& currentGamepadState = screenInputState.gamepadReader.CurrentState();
-  const auto& previousGamepadState = screenInputState.gamepadReader.PreviousState();
-
-  gamepad_button_reader gamepadButtonReader { screenInputState.gamepadReader };
-
-  gamepad_thumbstick leftThumbstick { currentGamepadState.ThumbLX(), currentGamepadState.ThumbLY() };
-  gamepad_thumbstick previousLeftThumbstick { previousGamepadState.ThumbLX(), previousGamepadState.ThumbLY() };
-  
-  auto thumbstickUp = leftThumbstick.UpPressed() && !previousLeftThumbstick.UpPressed();
-  m_up = gamepadButtonReader.Pressed(XINPUT_GAMEPAD_DPAD_UP) || thumbstickUp || screenInputState.keyboardReader.Pressed(DIK_UP);
-
-  auto thumbstickDown = leftThumbstick.DownPressed() && !previousLeftThumbstick.DownPressed();
-  m_down = gamepadButtonReader.Pressed(XINPUT_GAMEPAD_DPAD_DOWN) || thumbstickDown || screenInputState.keyboardReader.Pressed(DIK_DOWN);
-
-  m_select = screenInputState.keyboardReader.Pressed(DIK_SPACE) || screenInputState.keyboardReader.Pressed(DIK_RETURN) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_A);
-
-  m_back = screenInputState.keyboardReader.Pressed(DIK_ESCAPE) || gamepadButtonReader.Pressed(XINPUT_GAMEPAD_B);
-}
 
 [[nodiscard]] inline auto menu_control_data::GamepadAttached() const -> bool
 {
@@ -62,6 +45,16 @@ inline menu_control_data::menu_control_data(const screen_input_state& screenInpu
 [[nodiscard]] inline auto menu_control_data::Down() const -> bool
 {
   return m_down;
+}
+
+[[nodiscard]] inline auto menu_control_data::Left() const -> bool
+{
+  return m_left;
+}
+
+[[nodiscard]] inline auto menu_control_data::Right() const -> bool
+{
+  return m_right;
 }
 
 [[nodiscard ]] inline auto menu_control_data::Select() const -> bool
