@@ -11,7 +11,10 @@ public:
 
   [[nodiscard]] auto Min() const -> int;
   [[nodiscard]] auto Max() const -> int;
-  [[nodiscard]] auto Value() const -> int;  
+  [[nodiscard]] auto Value() const -> int;
+
+  auto Increment() -> void;
+  auto Decrement() -> void;
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
@@ -22,7 +25,7 @@ public:
 
 private:
 
-  int m_min { 1 };
+  int m_min { 0 };
   int m_max { 10 };
   int m_value { 1 };
   D2D1_RECT_F m_rect { 0, 0, 0, 0 };
@@ -73,4 +76,20 @@ inline auto setting_slider::SetHoverState(bool value) -> void
 inline auto setting_slider::Resize(const D2D1_RECT_F& rect) -> void
 {
   m_rect = rect;
+}
+
+inline auto setting_slider::Increment() -> void
+{
+  if( ++m_value > m_max )
+  {
+    m_value = m_max;
+  }
+}
+
+inline auto setting_slider::Decrement() -> void
+{
+  if( --m_value < m_min )
+  {
+    m_value = m_min;
+  }
 }

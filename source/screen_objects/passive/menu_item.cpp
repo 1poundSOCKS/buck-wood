@@ -102,6 +102,14 @@ auto menu_item::Update(const menu_control_data& controlData) -> void
 
     void operator()(setting_slider& item)
     {
+      if( m_controlData.Left() )
+      {
+        item.Decrement();
+      }
+      else if( m_controlData.Right() )
+      {
+        item.Increment();
+      }
     }
 
     const menu_control_data& m_controlData;
