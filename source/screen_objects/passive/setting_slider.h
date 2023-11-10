@@ -13,8 +13,8 @@ public:
   [[nodiscard]] auto Max() const -> int;
   [[nodiscard]] auto Value() const -> int;
 
-  auto Increment() -> void;
-  auto Decrement() -> void;
+  auto Increment() -> int;
+  auto Decrement() -> int;
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
@@ -78,18 +78,22 @@ inline auto setting_slider::Resize(const D2D1_RECT_F& rect) -> void
   m_rect = rect;
 }
 
-inline auto setting_slider::Increment() -> void
+inline auto setting_slider::Increment() -> int
 {
   if( ++m_value > m_max )
   {
     m_value = m_max;
   }
+
+  return m_value;
 }
 
-inline auto setting_slider::Decrement() -> void
+inline auto setting_slider::Decrement() -> int
 {
   if( --m_value < m_min )
   {
     m_value = m_min;
   }
+
+  return m_value;
 }
