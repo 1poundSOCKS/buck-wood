@@ -1,17 +1,17 @@
 #pragma once
 
 #include "button.h"
-#include "setting_slider.h"
+#include "effects_volume_slider.h"
+#include "music_volume_slider.h"
 
 class menu_item
 {
 
 public:
 
-  using item_type = std::variant<button, setting_slider>;
+  using item_type = std::variant<button, effects_volume_slider, music_volume_slider>;
 
-  menu_item(const button& item);
-  menu_item(const setting_slider& item);
+  menu_item(const auto& item);
 
   [[nodiscard]] auto Get() const -> const item_type&;
 
@@ -29,11 +29,7 @@ private:
 
 };
 
-inline menu_item::menu_item(const button& item) : m_item { item }
-{
-}
-
-inline menu_item::menu_item(const setting_slider& item) : m_item { item }
+menu_item::menu_item(const auto& item) : m_item { item }
 {
 }
 
