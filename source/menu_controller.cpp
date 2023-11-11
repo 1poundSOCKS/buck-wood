@@ -12,16 +12,20 @@ auto menu_controller::Close() -> void
   {
     m_menus.pop();
   }
+
+  if( m_eventClose )
+  {
+    m_eventClose();
+    m_eventClose = nullptr;
+  }
 }
 
 auto menu_controller::Update(const menu_control_data& controlData) -> void
 {
+  GetCurrent().Update(controlData);
+
   if( controlData.Back() )
   {
     Close();
-  }
-  else
-  {
-    GetCurrent().Update(controlData);
   }
 }

@@ -6,6 +6,13 @@
 class music_volume_slider : public setting_slider
 {
 
+public:
+
+  music_volume_slider();
+  virtual ~music_volume_slider();
+
+private:
+
   [[nodiscard]] virtual auto Min() const -> int;
   [[nodiscard]] virtual auto Max() const -> int;
   [[nodiscard]] virtual auto Value() const -> int;
@@ -14,6 +21,14 @@ class music_volume_slider : public setting_slider
   virtual auto Decrement() -> int;
 
 };
+
+inline music_volume_slider::music_volume_slider()
+{
+}
+
+inline music_volume_slider::~music_volume_slider()
+{
+}
 
 [[nodiscard]] inline auto music_volume_slider::Min() const -> int
 {

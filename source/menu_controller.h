@@ -1,6 +1,5 @@
 #pragma once
 
-// #include "menu_def.h"
 #include "menu.h"
 #include "menu_control_data.h"
 
@@ -16,11 +15,13 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCurrent() const-> const menu&;
   [[nodiscard]] auto GetCurrent() -> menu&;
+  auto SetOnClose(std::function<void()> eventClose);
 
 private:
 
   using menu_collection = std::stack<menu>;
   menu_collection m_menus;
+  std::function<void()> m_eventClose;
 
 };
 
@@ -42,4 +43,9 @@ inline auto menu_controller::Render(D2D1_RECT_F viewRect) const -> void
 [[nodiscard]] inline auto menu_controller::GetCurrent() -> menu&
 {
   return m_menus.top();
+}
+
+inline auto menu_controller::SetOnClose(std::function<void()> eventClose)
+{
+  m_eventClose = eventClose;
 }
