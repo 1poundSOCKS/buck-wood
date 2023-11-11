@@ -9,12 +9,12 @@ public:
   setting_slider(int min, int max, int value);
   setting_slider(int min, int max, int value, const D2D1_RECT_F& rect);
 
-  [[nodiscard]] auto Min() const -> int;
-  [[nodiscard]] auto Max() const -> int;
-  [[nodiscard]] auto Value() const -> int;
+  [[nodiscard]] virtual auto Min() const -> int;
+  [[nodiscard]] virtual auto Max() const -> int;
+  [[nodiscard]] virtual auto Value() const -> int;
 
-  auto Increment() -> int;
-  auto Decrement() -> int;
+  virtual auto Increment() -> int;
+  virtual auto Decrement() -> int;
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
@@ -27,7 +27,7 @@ private:
 
   int m_min { 0 };
   int m_max { 10 };
-  int m_value { 1 };
+  int m_value { 10 };
   D2D1_RECT_F m_rect { 0, 0, 0, 0 };
   bool m_hover { false };
 

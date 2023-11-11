@@ -28,20 +28,26 @@ game_volume_controllers::game_volume_controllers()
   SetMusicVolume(game_settings::musicVolume());
 }
 
-auto game_volume_controllers::setEffectsVolume(int value) -> void
+auto game_volume_controllers::setEffectsVolume(int value) -> int
 {
-  if( m_instance )
-  {
-    m_instance->SetEffectsVolume(value);
-    game_settings::setEffectsVolume(value);
-  }
+  int volume = game_settings::setEffectsVolume(value);
+  if( m_instance ) m_instance->SetEffectsVolume(volume);
+  return volume;
 }
 
-auto game_volume_controllers::setMusicVolume(int value) -> void
+auto game_volume_controllers::setMusicVolume(int value) -> int
 {
-  if( m_instance )
-  {
-    m_instance->SetMusicVolume(value);
-    game_settings::setMusicVolume(value);
-  }
+  int volume = game_settings::setMusicVolume(value);
+  if( m_instance ) m_instance->SetMusicVolume(volume);
+  return volume;
+}
+
+auto game_volume_controllers::effectsVolume() -> int
+{
+  return game_settings::effectsVolume();
+}
+
+auto game_volume_controllers::musicVolume() -> int
+{
+  return game_settings::musicVolume();
 }

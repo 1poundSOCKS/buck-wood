@@ -9,8 +9,11 @@ public:
 
   static auto create() -> void;
 
-  static auto setEffectsVolume(int value) -> void;
-  static auto setMusicVolume(int value) -> void;
+  static auto setEffectsVolume(int value) -> int;
+  static auto setMusicVolume(int value) -> int;
+
+  static auto effectsVolume() -> int;
+  static auto musicVolume() -> int;
 
 private:
 
