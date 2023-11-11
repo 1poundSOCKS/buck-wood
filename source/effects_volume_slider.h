@@ -1,7 +1,7 @@
 #pragma once
 
 #include "setting_slider.h"
-#include "game_volume_controllers.h"
+#include "game_volume_controller.h"
 
 class effects_volume_slider : public setting_slider
 {
@@ -19,27 +19,27 @@ public:
 
 [[nodiscard]] inline auto effects_volume_slider::Min() const -> int
 {
-  return 0;
+  return game_volume_controller::minVolume();
 }
 
 [[nodiscard]] inline auto effects_volume_slider::Max() const -> int
 {
-  return 10;
+  return game_volume_controller::maxVolume();
 }
 
 [[nodiscard]] inline auto effects_volume_slider::Value() const -> int
 {
-  return game_volume_controllers::effectsVolume();
+  return game_volume_controller::effectsVolume();
 }
 
 inline auto effects_volume_slider::Increment() -> int
 {
-  auto volume = game_volume_controllers::effectsVolume();
-  return game_volume_controllers::setEffectsVolume(volume + 1);
+  auto volume = game_volume_controller::effectsVolume();
+  return game_volume_controller::setEffectsVolume(volume + 1);
 }
 
 inline auto effects_volume_slider::Decrement() -> int
 {
-  auto volume = game_volume_controllers::effectsVolume();
-  return game_volume_controllers::setEffectsVolume(volume - 1);
+  auto volume = game_volume_controller::effectsVolume();
+  return game_volume_controller::setEffectsVolume(volume - 1);
 }

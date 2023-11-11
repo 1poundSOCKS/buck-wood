@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "game_volume_controllers.h"
+#include "game_volume_controller.h"
 #include "sound_data.h"
 #include "game_settings.h"
 
-game_volume_controllers* game_volume_controllers::m_instance = nullptr;
+game_volume_controller* game_volume_controller::m_instance = nullptr;
 
-game_volume_controllers::game_volume_controllers()
+game_volume_controller::game_volume_controller()
 {
   auto effectBuffers = std::array
   {
@@ -28,26 +28,40 @@ game_volume_controllers::game_volume_controllers()
   SetMusicVolume(game_settings::musicVolume());
 }
 
-auto game_volume_controllers::setEffectsVolume(int value) -> int
+auto game_volume_controller::minVolume() -> int
 {
+  return 0;
+}
+
+auto game_volume_controller::maxVolume() -> int
+{
+  return 10;
+}
+
+auto game_volume_controller::setEffectsVolume(int value) -> int
+{
+  value = max(value, minVolume());
+  value = min(value, maxVolume());
   int volume = game_settings::setEffectsVolume(value);
   if( m_instance ) m_instance->SetEffectsVolume(volume);
   return volume;
 }
 
-auto game_volume_controllers::setMusicVolume(int value) -> int
+auto game_volume_controller::setMusicVolume(int value) -> int
 {
+  value = max(value, minVolume());
+  value = min(value, maxVolume());
   int volume = game_settings::setMusicVolume(value);
   if( m_instance ) m_instance->SetMusicVolume(volume);
   return volume;
 }
 
-auto game_volume_controllers::effectsVolume() -> int
+auto game_volume_controller::effectsVolume() -> int
 {
   return game_settings::effectsVolume();
 }
 
-auto game_volume_controllers::musicVolume() -> int
+auto game_volume_controller::musicVolume() -> int
 {
   return game_settings::musicVolume();
 }

@@ -10,7 +10,7 @@
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
 #include "game_settings.h"
-#include "game_volume_controllers.h"
+#include "game_volume_controller.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -18,9 +18,9 @@ main_menu_screen::main_menu_screen()
   
   sound_data::create(framework::directSound().get(), L"data");
 
-  game_volume_controllers::create();
-  game_volume_controllers::setEffectsVolume(6);
-  game_volume_controllers::setMusicVolume(7);
+  game_volume_controller::create();
+  game_volume_controller::setEffectsVolume(6);
+  game_volume_controller::setMusicVolume(7);
 
   // play sound now to ensure no sound glitch on first real play
   {
