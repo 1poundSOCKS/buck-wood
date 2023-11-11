@@ -46,7 +46,8 @@ inline auto game_volume_controller::create() -> void
 
 inline auto game_volume_controller::GetFractionalVolume(int value) -> float
 {
-  return static_cast<float>(value) / 10;
+  auto volumeRange = maxVolume() - minVolume();
+  return static_cast<float>(value) / volumeRange + minVolume();
 }
 
 inline auto game_volume_controller::SetEffectsVolume(int value) -> void
