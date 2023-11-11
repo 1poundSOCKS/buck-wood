@@ -33,11 +33,13 @@ class music_volume_slider : public setting_slider
 inline auto music_volume_slider::Increment() -> int
 {
   auto volume = game_volume_controller::musicVolume();
-  return game_volume_controller::setMusicVolume(volume + 1);
+  volume = game_volume_controller::setMusicVolume(volume + 1);
+  return volume;
 }
 
 inline auto music_volume_slider::Decrement() -> int
 {
   auto volume = game_volume_controller::musicVolume();
-  return game_volume_controller::setMusicVolume(volume - 1);
+  volume = game_volume_controller::setMusicVolume(volume - 1);
+  return volume;
 }

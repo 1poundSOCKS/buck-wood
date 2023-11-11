@@ -37,6 +37,7 @@ inline auto effects_volume_slider::Increment() -> int
 {
   auto volume = game_volume_controller::effectsVolume();
   volume = game_volume_controller::setEffectsVolume(volume + 1);
+  sound_data::get(sound_data::mine_exploded).Reset();
   sound_data::get(sound_data::mine_exploded).Play(false);
   return volume;
 }
@@ -45,6 +46,7 @@ inline auto effects_volume_slider::Decrement() -> int
 {
   auto volume = game_volume_controller::effectsVolume();
   volume = game_volume_controller::setEffectsVolume(volume - 1);
+  sound_data::get(sound_data::mine_exploded).Reset();
   sound_data::get(sound_data::mine_exploded).Play(false);
   return volume;
 }
