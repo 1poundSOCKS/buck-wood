@@ -7,12 +7,6 @@ menu::menu(const D2D1_RECT_F& rect) : m_rect { rect }
 {
 }
 
-// menu::menu(const menu& menuToCopy)
-// {
-//   m_rect = menuToCopy.m_rect;
-//   m_items = menuToCopy.m_items;
-// }
-
 auto menu::AddItem(menu_item&& item, bool resize) -> void
 {
   m_items.emplace_back(item);
