@@ -2,6 +2,7 @@
 #include "renderers.h"
 #include "color_scale.h"
 #include "slider_control.h"
+#include "row_def.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -159,7 +160,23 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 {
   const auto& rect = settingSlider.Rect();
 
-  framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
+  framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 2);
+
+  row_def rowDef { rect, static_cast<size_t>(settingSlider.Max() - settingSlider.Min())  };
+
+  auto currentRow = settingSlider.Min();
+
+  for( const auto& rowRect : rowDef )
+  {
+    if( currentRow++ < settingSlider.Value() )
+    {
+      framework::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
+    }
+    else
+    {
+      framework::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button).get());
+    }
+  }
 }
 
 auto renderer::Render(const menu_item& menuItem) const -> void
