@@ -46,7 +46,6 @@ private:
   [[nodiscard]] auto PausePressed() -> bool;
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
-  // [[nodiscard]] auto GetMenuDef() -> menu_def;
 
 private:
 
