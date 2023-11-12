@@ -14,7 +14,7 @@ public:
   static const int invalid_item { -1 };
 
   menu(const D2D1_RECT_F& rect);
-  menu(const menu& menuToCopy);
+  // menu(const menu& menuToCopy);
 
   auto AddItem(menu_item&& item, bool resize) -> void;
   auto SelectFirstItem() -> void;

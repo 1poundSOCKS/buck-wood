@@ -25,5 +25,4 @@
   GetCurrent().AddItem( music_volume_slider {}, true );
   GetCurrent().SelectFirstItem();
   sound_data::get(sound_data::menu_theme).Play(true);
-  SetOnClose([]() { sound_data::get(sound_data::menu_theme).Stop(); });
 }
