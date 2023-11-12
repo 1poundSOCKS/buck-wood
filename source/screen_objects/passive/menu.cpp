@@ -60,3 +60,63 @@ auto menu::ResizeItems() -> void
     ++columnDef;
   }
 }
+
+auto menu::SelectFirstItem() -> void
+{
+  Unselect();
+
+  if( m_items.size() > 0 )
+  {
+    m_items.front().SetHoverState(true);
+  }
+}
+
+auto menu::Unselect() -> void
+{
+  for( auto& item : m_items )
+  {
+    item.SetHoverState(false);
+  }
+}
+
+[[nodiscard]] auto menu::GetSelectedItem() const -> item_selection_type
+{
+  auto selectedItem = invalid_item;
+
+  for( auto currentItem = 0; selectedItem == - 1 && currentItem < m_items.size(); ++currentItem )
+  {
+    if( m_items[currentItem].HoverState() )
+    {
+      selectedItem = currentItem;
+    }
+  }
+
+  return selectedItem;
+}
+
+auto menu::SelectNextItem(item_selection_type currentItem) -> void
+{
+  auto selectedItem = GetSelectedItem();
+
+  if( ValidItem(++selectedItem) )
+  {
+    Unselect();
+    m_items[selectedItem].SetHoverState(true);
+  }
+}
+
+auto menu::SelectPreviousItem(item_selection_type currentItem) -> void
+{
+  auto selectedItem = GetSelectedItem();
+
+  if( ValidItem(--selectedItem) )
+  {
+    Unselect();
+    m_items[selectedItem].SetHoverState(true);
+  }
+}
+
+[[nodiscard]] auto menu::ValidItem(item_selection_type selectedItem) const -> bool
+{
+  return selectedItem >= 0 && selectedItem < m_items.size() ? true : false;
+}
