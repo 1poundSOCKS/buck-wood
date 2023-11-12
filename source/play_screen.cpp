@@ -31,7 +31,6 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
 
 auto play_screen::Refresh(int64_t ticks) -> bool
 {
-  PlaySoundEffects();
   Update(ticks);
   Render();
   return m_continueRunning;
@@ -120,38 +119,31 @@ auto play_screen::Render() const -> void
 
 auto play_screen::PlaySoundEffects() const -> void
 {
-  if( m_stage != stage::playing || Paused() || !m_continueRunning )
+  if( m_levelContainer->PlayerHasThrusterOn() )
   {
-    sound_data::get(sound_data::thrust).Stop();
+    sound_data::get(sound_data::thrust).Play(true);
   }
   else
   {
-    if( m_levelContainer->PlayerHasThrusterOn() )
-    {
-      sound_data::get(sound_data::thrust).Play(true);
-    }
-    else
-    {
-      sound_data::get(sound_data::thrust).Stop();
-    }
+    sound_data::get(sound_data::thrust).Stop();
+  }
 
-    if( m_levelContainer->UpdateEvents().playerShot )
-    {
-      sound_data::get(sound_data::shoot).Reset();
-      sound_data::get(sound_data::shoot).Play(false);
-    }
+  if( m_levelContainer->UpdateEvents().playerShot )
+  {
+    sound_data::get(sound_data::shoot).Reset();
+    sound_data::get(sound_data::shoot).Play(false);
+  }
 
-    if( m_levelContainer->UpdateEvents().targetActivated )
-    {
-      sound_data::get(sound_data::target_activated).Reset();
-      sound_data::get(sound_data::target_activated).Play(false);
-    }
+  if( m_levelContainer->UpdateEvents().targetActivated )
+  {
+    sound_data::get(sound_data::target_activated).Reset();
+    sound_data::get(sound_data::target_activated).Play(false);
+  }
 
-    if( m_levelContainer->UpdateEvents().mineExploded )
-    {
-      sound_data::get(sound_data::mine_exploded).Reset();
-      sound_data::get(sound_data::mine_exploded).Play(false);
-    }
+  if( m_levelContainer->UpdateEvents().mineExploded )
+  {
+    sound_data::get(sound_data::mine_exploded).Reset();
+    sound_data::get(sound_data::mine_exploded).Play(false);
   }
 }
 
@@ -165,11 +157,14 @@ auto play_screen::PrePlay(int64_t frameInterval) -> void
   {
     m_stage = stage::playing;
     m_stageTicks = 0;
+    sound_data::get(sound_data::menu_theme).Play(true);
   }
 }
 
 auto play_screen::Playing(int64_t frameInterval) -> void
 {
+  PlaySoundEffects();
+
   if( PausePressed() )
   {
     if( Paused() )
@@ -204,6 +199,9 @@ auto play_screen::Playing(int64_t frameInterval) -> void
     m_endSequence.AddMove( { levelCentre.x, levelCentre.y, 0.1f }, performance_counter::CalculateTicks(5.0f) );
     m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
     m_stageTicks = 0;
+
+    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::thrust).Stop();
   }
 }
 
@@ -332,6 +330,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 auto play_screen::Pause() -> void
 {
   sound_data::get(sound_data::menu_theme).Stop();
+  sound_data::get(sound_data::thrust).Stop();
   m_paused = true;
 }
 
