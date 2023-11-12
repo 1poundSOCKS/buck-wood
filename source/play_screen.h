@@ -47,6 +47,11 @@ private:
   [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
 
+  [[nodiscard]] auto Paused() const -> bool;
+  auto Pause() -> void;
+  auto Unpause() -> void;
+  auto Quit() -> void;
+
 private:
 
   stage m_stage = stage::pre_play;

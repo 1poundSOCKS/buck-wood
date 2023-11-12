@@ -11,7 +11,10 @@
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
-  m_continueRunning = LoadFirstLevel();
+  if( !LoadFirstLevel() )
+  {
+    Quit();
+  }
 
   const auto& renderTarget = framework::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
@@ -55,7 +58,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   m_cursor.Update(framework::screenInputState());
 
-  if( m_paused )
+  if( Paused() )
   {
     menu_control_data menuControlData { framework::screenInputState() };
     m_menuController.Update(menuControlData);
@@ -63,10 +66,10 @@ auto play_screen::Update(int64_t frameInterval) -> void
     switch( m_menuController.Selection() )
     {
       case play_menu_controller::selection::resume:
-        m_paused = false;
+        Unpause();
         break;
       case play_menu_controller::selection::quit:
-        m_continueRunning = false;
+        Quit();
         break;
     }
   }
@@ -103,7 +106,7 @@ auto play_screen::Render() const -> void
 
   renderer::render(m_playerShields);
 
-  if( m_paused )
+  if( Paused() )
   {
     m_menuController.Render(overlayViewRect);
   }
@@ -117,15 +120,12 @@ auto play_screen::Render() const -> void
 
 auto play_screen::PlaySoundEffects() const -> void
 {
-  if( m_stage != stage::playing || m_paused || !m_continueRunning )
+  if( m_stage != stage::playing || Paused() || !m_continueRunning )
   {
-    sound_data::get(sound_data::menu_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
   }
   else
   {
-    sound_data::get(sound_data::menu_theme).Play(true);
-
     if( m_levelContainer->PlayerHasThrusterOn() )
     {
       sound_data::get(sound_data::thrust).Play(true);
@@ -172,12 +172,19 @@ auto play_screen::Playing(int64_t frameInterval) -> void
 {
   if( PausePressed() )
   {
-    m_paused = !m_paused;
+    if( Paused() )
+    {
+      Unpause();
+    }
+    else
+    {
+      Pause();
+    }
   }
 
-  auto elapsedTicks = m_paused ? 0 : frameInterval;
+  auto elapsedTicks = Paused() ? 0 : frameInterval;
 
-  if( !m_paused )
+  if( !Paused() )
   {
     UpdateLevel(elapsedTicks);
   }
@@ -208,7 +215,7 @@ auto play_screen::PostPlay(int64_t frameInterval) -> void
 
   if( m_stageTicks > m_endSequence.GetTotalTicks() )
   {
-    m_continueRunning = false;
+    Quit();
   }
 }
 
@@ -315,6 +322,29 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     return true;
   }
+}
+
+[[nodiscard]] auto play_screen::Paused() const -> bool
+{
+  return m_paused;
+}
+
+auto play_screen::Pause() -> void
+{
+  sound_data::get(sound_data::menu_theme).Stop();
+  m_paused = true;
+}
+
+auto play_screen::Unpause() -> void
+{
+  m_paused = false;
+  sound_data::get(sound_data::menu_theme).Play(true);
+}
+
+auto play_screen::Quit() -> void
+{
+  sound_data::get(sound_data::menu_theme).Stop();
+  m_continueRunning = false;
 }
 
 [[nodiscard]] auto play_screen::LoadNextLevel() -> bool
