@@ -20,6 +20,9 @@ private:
   virtual auto Increment() -> int;
   virtual auto Decrement() -> int;
 
+  virtual auto Select() -> void;
+  virtual auto Unselect() -> void;
+
 };
 
 inline music_volume_slider::music_volume_slider()
@@ -57,4 +60,14 @@ inline auto music_volume_slider::Decrement() -> int
   auto volume = game_volume_controller::musicVolume();
   volume = game_volume_controller::setMusicVolume(volume - 1);
   return volume;
+}
+
+inline auto music_volume_slider::Select() -> void
+{
+  sound_data::get(sound_data::menu_theme).Play(true);
+}
+
+inline auto music_volume_slider::Unselect() -> void
+{
+  sound_data::get(sound_data::menu_theme).Stop();  
 }

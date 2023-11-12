@@ -7,6 +7,11 @@ menu::menu(const D2D1_RECT_F& rect) : m_rect { rect }
 {
 }
 
+menu::~menu()
+{
+  Unselect();
+}
+
 auto menu::AddItem(menu_item&& item, bool resize) -> void
 {
   m_items.emplace_back(item);
@@ -67,6 +72,7 @@ auto menu::SelectFirstItem() -> void
 
   if( m_items.size() > 0 )
   {
+    m_items.front().Select();
     m_items.front().SetHoverState(true);
   }
 }
@@ -75,6 +81,7 @@ auto menu::Unselect() -> void
 {
   for( auto& item : m_items )
   {
+    item.Unselect();
     item.SetHoverState(false);
   }
 }
@@ -101,6 +108,7 @@ auto menu::SelectNextItem(item_selection_type currentItem) -> void
   if( ValidItem(++selectedItem) )
   {
     Unselect();
+    m_items[selectedItem].Select();
     m_items[selectedItem].SetHoverState(true);
   }
 }
@@ -112,6 +120,7 @@ auto menu::SelectPreviousItem(item_selection_type currentItem) -> void
   if( ValidItem(--selectedItem) )
   {
     Unselect();
+    m_items[selectedItem].Select();
     m_items[selectedItem].SetHoverState(true);
   }
 }

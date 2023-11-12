@@ -17,6 +17,8 @@ public:
 
   [[nodiscard]] auto HoverState() const -> bool;
   auto SetHoverState(bool value) -> void;
+  auto Select() -> void;
+  auto Unselect() -> void;
 
   auto Click() -> void;
   auto Update(const menu_control_data& controlData) -> void;

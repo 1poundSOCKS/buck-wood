@@ -22,3 +22,13 @@ button::button(LPCWSTR text, std::function<void()> eventClicked, D2D1_RECT_F rec
 {
   return ( x < rect.left || x > rect.right || y < rect.top || y > rect.bottom ) ? false : true;
 }
+
+auto button::Select() -> void
+{
+
+}
+
+auto button::Unselect() -> void
+{
+  
+}

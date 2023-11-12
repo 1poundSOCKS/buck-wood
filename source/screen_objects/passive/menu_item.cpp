@@ -47,6 +47,42 @@ auto menu_item::SetHoverState(bool value) -> void
   std::visit(visitor { value }, m_item);
 }
 
+auto menu_item::Select() -> void
+{
+  struct visitor
+  {
+      void operator()(button& item)
+      {
+        item.Select();
+      }
+
+      void operator()(setting_slider& item)
+      {
+        item.Select();
+      }
+  };
+
+  std::visit(visitor {}, m_item);
+}
+
+auto menu_item::Unselect() -> void
+{
+  struct visitor
+  {
+      void operator()(button& item)
+      {
+        item.Unselect();
+      }
+
+      void operator()(setting_slider& item)
+      {
+        item.Unselect();
+      }
+  };
+
+  std::visit(visitor {}, m_item);
+}
+
 auto menu_item::Click() -> void
 {
   struct visitor
