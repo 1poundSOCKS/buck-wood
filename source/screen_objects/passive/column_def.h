@@ -12,6 +12,8 @@ public:
   [[nodiscard]] auto begin() const -> row_collection::const_iterator;
   [[nodiscard]] auto end() const -> row_collection::const_iterator;
 
+  [[nodiscard]] auto operator[](size_t index) const -> const D2D1_RECT_F&;
+
 private:
 
   row_collection m_rows;
@@ -26,4 +28,9 @@ private:
 [[nodiscard]] inline auto column_def::end() const -> row_collection::const_iterator
 {
   return std::end(m_rows);
+}
+
+[[nodiscard]] inline auto column_def::operator[](size_t index) const -> const D2D1_RECT_F&
+{
+  return m_rows[index];
 }

@@ -8,6 +8,7 @@ public:
   setting_slider() = default;
   setting_slider(int min, int max, int value);
   setting_slider(int min, int max, int value, const D2D1_RECT_F& rect);
+  virtual ~setting_slider() = default;
 
   [[nodiscard]] virtual auto Min() const -> int;
   [[nodiscard]] virtual auto Max() const -> int;
@@ -26,6 +27,8 @@ public:
 
   auto Resize(const D2D1_RECT_F& rect) -> void;
 
+  [[nodiscard]] auto Name() const -> const std::wstring&;
+
 private:
 
   int m_min { 0 };
@@ -33,5 +36,9 @@ private:
   int m_value { 10 };
   D2D1_RECT_F m_rect { 0, 0, 0, 0 };
   bool m_hover { false };
+
+protected:
+
+  std::wstring m_name;
 
 };

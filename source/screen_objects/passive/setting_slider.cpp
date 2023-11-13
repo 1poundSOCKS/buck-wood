@@ -75,3 +75,8 @@ auto setting_slider::Decrement() -> int
 
   return m_value;
 }
+
+[[nodiscard]] auto setting_slider::Name() const -> const std::wstring&
+{
+  return m_name;
+}

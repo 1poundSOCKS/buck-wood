@@ -7,10 +7,11 @@ render_text::render_text()
 {
   using format_def_entry = std::tuple<selector, render_text_format_def>;
 
-  auto renderTextFormats = std::array
+  auto renderTextFormats =
   {
     format_def_entry { selector::menu_text_default, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100 } },
-    format_def_entry { selector::menu_text_hover, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100 } }
+    format_def_entry { selector::menu_text_hover, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100 } },
+    format_def_entry { selector::menu_text_small, render_text_format_def { L"System Bold", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 50 } }
   };
 
   const auto& dwriteFactory = dwrite_factory::get();

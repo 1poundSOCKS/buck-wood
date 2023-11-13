@@ -5,7 +5,7 @@ class render_text
 
 public:
 
-  enum class selector { menu_text_default = 0, menu_text_hover };
+  enum class selector { menu_text_default = 0, menu_text_hover, menu_text_small };
 
   render_text();
   [[nodiscard]] auto get(selector textSelector) const -> const winrt::com_ptr<IDWriteTextFormat>&;

@@ -9,6 +9,8 @@ class effects_volume_slider : public setting_slider
 
 public:
 
+  effects_volume_slider();
+
   [[nodiscard]] virtual auto Min() const -> int;
   [[nodiscard]] virtual auto Max() const -> int;
   [[nodiscard]] virtual auto Value() const -> int;
@@ -17,6 +19,11 @@ public:
   virtual auto Decrement() -> int;
 
 };
+
+inline effects_volume_slider::effects_volume_slider()
+{
+  m_name = L"Effects volume";
+}
 
 [[nodiscard]] inline auto effects_volume_slider::Min() const -> int
 {

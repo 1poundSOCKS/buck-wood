@@ -9,7 +9,6 @@ class music_volume_slider : public setting_slider
 public:
 
   music_volume_slider();
-  virtual ~music_volume_slider();
 
 private:
 
@@ -27,10 +26,7 @@ private:
 
 inline music_volume_slider::music_volume_slider()
 {
-}
-
-inline music_volume_slider::~music_volume_slider()
-{
+  m_name = L"Music volume";
 }
 
 [[nodiscard]] inline auto music_volume_slider::Min() const -> int

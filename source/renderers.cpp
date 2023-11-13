@@ -3,6 +3,7 @@
 #include "color_scale.h"
 #include "slider_control.h"
 #include "row_def.h"
+#include "column_def.h"
 
 constexpr D2D1_RECT_F GetBulletRect()
 {
@@ -162,7 +163,17 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 
   framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 2);
 
-  row_def rowDef { rect, static_cast<size_t>(settingSlider.Max() - settingSlider.Min())  };
+  column_def columnDef { rect, 2 };
+
+  auto headerRect = columnDef[0];
+
+  RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
+    m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
+    DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+
+  auto sliderRect = columnDef[1];
+
+  row_def rowDef { sliderRect, static_cast<size_t>(settingSlider.Max() - settingSlider.Min())  };
 
   auto currentRow = settingSlider.Min();
 
