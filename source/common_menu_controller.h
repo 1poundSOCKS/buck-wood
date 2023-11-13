@@ -10,9 +10,4 @@ public:
 
   [[nodiscard]] auto OpenSettingsMenu(const render_target_area& area) -> void;
 
-private:
-
-  [[nodiscard]] auto OpenEffectsVolumeMenu(const render_target_area& area) -> void;
-  [[nodiscard]] auto OpenMusicVolumeMenu(const render_target_area& area) -> void;
-
 };

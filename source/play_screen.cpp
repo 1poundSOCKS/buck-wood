@@ -163,8 +163,6 @@ auto play_screen::PrePlay(int64_t frameInterval) -> void
 
 auto play_screen::Playing(int64_t frameInterval) -> void
 {
-  PlaySoundEffects();
-
   if( PausePressed() )
   {
     if( Paused() )
@@ -177,10 +175,10 @@ auto play_screen::Playing(int64_t frameInterval) -> void
     }
   }
 
-  auto elapsedTicks = Paused() ? 0 : frameInterval;
-
   if( !Paused() )
   {
+    PlaySoundEffects();
+    auto elapsedTicks = Paused() ? 0 : frameInterval;
     UpdateLevel(elapsedTicks);
   }
 

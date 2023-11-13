@@ -167,7 +167,9 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 
   auto headerRect = columnDef[0];
 
-  RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
+  auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
+
+  RenderText(framework::renderTarget().get(), textBrush.get(), 
     m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 
