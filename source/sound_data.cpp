@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "sound_data.h"
+#include "audio_output.h"
 
 sound_data* sound_data::m_soundData = nullptr;
 
@@ -20,9 +21,10 @@ constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
   };
 }
 
-auto sound_data::create(IDirectSound8* directSound, const std::wstring& path) -> void
+auto sound_data::create(const std::wstring& path) -> void
 {
-  m_soundData = new sound_data(directSound, path);
+  const auto& directSound = audio_output::directSound();
+  m_soundData = new sound_data(directSound.get(), path);
 }
 
 sound_data::sound_data(IDirectSound8* directSound, const std::wstring& path)

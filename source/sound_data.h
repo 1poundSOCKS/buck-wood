@@ -1,7 +1,6 @@
 #ifndef _screen_sound_data_
 #define _screen_sound_data_
 
-#include "framework.h"
 #include "sound_buffer.h"
 
 class sound_data
@@ -14,7 +13,7 @@ public:
   static size_t target_activated;
   static size_t mine_exploded;
 
-  static auto create(IDirectSound8* directSound, const std::wstring& path) -> void;
+  static auto create(const std::wstring& path) -> void;
   [[nodiscard]] static auto get(size_t index) -> const sound_buffer&;
 
 private:
