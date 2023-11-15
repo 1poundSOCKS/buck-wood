@@ -2,6 +2,7 @@
 
 #include "render_text.h"
 #include "render_brushes.h"
+#include "mouse_cursor.h"
 #include "level_asteroid.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -31,6 +32,7 @@ private:
   static renderer* m_instance;
   renderer();
 
+  auto Render(const mouse_cursor& mouseCursor) const -> void;
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;

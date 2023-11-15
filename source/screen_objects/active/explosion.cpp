@@ -26,10 +26,10 @@ auto explosion::particle_state::Update(float interval) -> void
   m_y += m_yVelocity * interval;
 }
 
-auto explosion::particle_state::GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect
+auto explosion::particle_state::GetRenderRect() const -> D2D1_RECT_F
 {
   const auto particleSize = 6.0f;
-  return { m_x - particleSize, m_y - particleSize, m_x + particleSize, m_y + particleSize, brush };
+  return { m_x - particleSize, m_y - particleSize, m_x + particleSize, m_y + particleSize };
 }
 
 [[nodiscard]] auto explosion::particle_state::DistanceTravelled() const -> float

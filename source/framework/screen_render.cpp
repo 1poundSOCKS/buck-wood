@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "screen_render.h"
-#include "render.h"
+// #include "render.h"
 
 winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
 {

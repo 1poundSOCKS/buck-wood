@@ -15,7 +15,7 @@ public:
 
     auto Initialize(float x, float y) -> void;
     auto Update(float interval) -> void;
-    auto GetRenderRect(ID2D1SolidColorBrush* brush) const -> render_rect;
+    auto GetRenderRect() const -> D2D1_RECT_F;
 
     [[nodiscard]] auto DistanceTravelled() const -> float;
     [[nodiscard]] auto Range() const -> float;

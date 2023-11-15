@@ -5,6 +5,86 @@
 #include "row_def.h"
 #include "column_def.h"
 
+struct render_point
+{
+  D2D1_RECT_F rect;
+  ID2D1SolidColorBrush* brush;
+};
+
+using render_rect = render_point;
+
+struct render_line
+{
+  render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width = 1);
+  
+  D2D1_POINT_2F start, end;
+  ID2D1SolidColorBrush* brush = nullptr;
+  float width = 1;
+};
+
+render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width)
+: start(start), end(end), brush(brush), width(width)
+{
+}
+
+template <typename input_iterator_type>
+void RenderPoints(
+  ID2D1RenderTarget* renderTarget, 
+  const typename input_iterator_type begin, 
+  const typename input_iterator_type end)
+{
+  for( auto point = begin; point != end; ++point )
+  {
+    renderTarget->FillRectangle( point->rect, point->brush);
+  }
+}
+
+template <typename input_iterator_type, typename insert_iterator_type>
+void CreateDisconnectedRenderLines(
+  typename input_iterator_type begin, 
+  typename input_iterator_type end, 
+  insert_iterator_type insertIterator, 
+  ID2D1SolidColorBrush* brush, 
+  float width, 
+  float x=0, 
+  float y=0)
+{
+  for( auto i = begin; i != end; std::advance(i, 2) )
+  {
+    auto next = std::next(i);
+    if( next != end ) insertIterator = render_line({i->x + x, i->y + y}, {next->x + x, next->y + y}, brush, width);
+  }
+};
+
+template <typename input_iterator_type>
+void RenderLines(
+  ID2D1RenderTarget* renderTarget, 
+  input_iterator_type begin, 
+  input_iterator_type end)
+{
+  for( auto line = begin; line != end; ++line )
+  {
+    renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
+  }
+}
+
+consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
+{
+  const float cursorSize = 20.0f;
+  const float cursorSizeGap = 10.0f;
+
+  return std::array<D2D1_POINT_2F, 8> {
+    D2D1_POINT_2F { 0, -cursorSize },
+    D2D1_POINT_2F { 0,-cursorSizeGap },
+    D2D1_POINT_2F { 0,cursorSize },
+    D2D1_POINT_2F { 0,cursorSizeGap },
+    D2D1_POINT_2F { -cursorSize,0 },
+    D2D1_POINT_2F { -cursorSizeGap,0 },
+    D2D1_POINT_2F { cursorSize,0 },
+    D2D1_POINT_2F { cursorSizeGap,0 }
+  };
+}
+
 constexpr D2D1_RECT_F GetBulletRect()
 {
   return { -5, -5, 5, 5 };
@@ -32,6 +112,27 @@ renderer::renderer()
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
+}
+
+// auto mouse_cursor::Render(D2D1_RECT_F viewRect) const -> void
+auto renderer::Render(const mouse_cursor& mouseCursor) const -> void
+{
+  static const float cursorSize = 20.0f;
+  static const float cursorSizeGap = 10.0f;
+
+  auto mouseCursorRenderData = GetCursorRenderData();
+
+  std::vector<render_line> renderLines;
+
+  auto [mouseX,mouseY] = mouseCursor.Position();
+
+  CreateDisconnectedRenderLines(
+    mouseCursorRenderData.cbegin(), 
+    mouseCursorRenderData.cend(), 
+    std::back_inserter(renderLines), 
+    m_starBrush.get(), 5, mouseX, mouseY);
+  
+  RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -92,7 +193,8 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
   std::transform(std::cbegin(playerExplosion.Particles()), std::cend(playerExplosion.Particles()), std::back_inserter(renderParticles), [this](auto particle) -> render_rect
   {
     const auto& brush = m_explosionBrushes[particle.DistanceTravelled() / particle.Range()];
-    return particle.GetRenderRect(brush.get());
+    auto rect = particle.GetRenderRect();
+    return { rect, brush.get() };
   });
 
   RenderPoints(render_target::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());  
@@ -143,10 +245,6 @@ auto renderer::Render(const button& buttonObject) const -> void
   {
     render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 
-    // RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
-    //   m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
-    //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
-    
     render_target::renderText(m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
@@ -154,10 +252,6 @@ auto renderer::Render(const button& buttonObject) const -> void
   else
   {
     render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
-
-    // RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
-    //   m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
-    //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 
     render_target::renderText(m_menuBrushes.Get(menu_brushes::id::button).get(), 
       m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
@@ -176,10 +270,6 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
   auto headerRect = columnDef[0];
 
   auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
-
-  // RenderText(render_target::renderTarget().get(), textBrush.get(), 
-  //   m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
-  //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 
   render_target::renderText(textBrush.get(), 
     m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 

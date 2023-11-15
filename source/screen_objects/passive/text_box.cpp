@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "text_box.h"
-#include "render.h"
+// #include "render.h"
 #include "screen_render_brush_defs.h"
 #include "render_text_format_def.h"
 #include "dwrite_factory.h"
@@ -46,7 +46,6 @@ auto text_box::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( !m_hidden && m_textValue.length() > 0 )
   {
-    // RenderText(render_target::renderTarget().get(), m_brush.get(), m_textFormat.get(), m_textValue.c_str(), m_renderTargetArea.GetRect(), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
     render_target::renderText(m_brush.get(), m_textFormat.get(), m_textValue.c_str(), m_renderTargetArea.GetRect(), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
 }
