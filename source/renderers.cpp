@@ -143,7 +143,11 @@ auto renderer::Render(const button& buttonObject) const -> void
   {
     render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 
-    RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
+    // RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
+    //   m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
+    //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    
+    render_target::renderText(m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
@@ -151,7 +155,11 @@ auto renderer::Render(const button& buttonObject) const -> void
   {
     render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 
-    RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
+    // RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
+    //   m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
+    //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+
+    render_target::renderText(m_menuBrushes.Get(menu_brushes::id::button).get(), 
       m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
@@ -169,7 +177,11 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 
   auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
 
-  RenderText(render_target::renderTarget().get(), textBrush.get(), 
+  // RenderText(render_target::renderTarget().get(), textBrush.get(), 
+  //   m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
+  //   DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+
+  render_target::renderText(textBrush.get(), 
     m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 

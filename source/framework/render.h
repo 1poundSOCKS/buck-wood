@@ -20,23 +20,6 @@ using render_point_inserter_type = std::back_insert_iterator<std::vector<render_
 using render_line_inserter_type = std::back_insert_iterator<std::vector<render_line>>;
 using render_rect = render_point;
 
-void RenderText(
-  ID2D1RenderTarget* renderTarget, 
-  ID2D1SolidColorBrush* brush, 
-  IDWriteTextFormat* textFormat, 
-  std::wstring_view text, 
-  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
-  DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
-
-void RenderText(
-  ID2D1RenderTarget* renderTarget, 
-  ID2D1SolidColorBrush* brush, 
-  IDWriteTextFormat* textFormat, 
-  std::wstring_view text,
-  D2D1_RECT_F rect,
-  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR, 
-  DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING);
-
 template <typename input_iterator_type>
 void RenderPoints(
   ID2D1RenderTarget* renderTarget, 

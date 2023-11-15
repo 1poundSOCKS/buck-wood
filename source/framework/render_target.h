@@ -47,6 +47,12 @@ public:
   static auto DisableMouse() -> void;
   [[nodiscard]] static auto MouseEnabled() -> bool;
 
+  static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text,
+    DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void;
+
+  static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text, const D2D1_RECT_F& rect,
+    DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void;
+
 private:
 
   struct screen_diagnostics_render_data
@@ -68,6 +74,12 @@ private:
   auto ProcessWindowMessages() -> bool;
 
   auto AddDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
+
+  auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text,
+    DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment=DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING) -> void;
+
+  auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text, const D2D1_RECT_F& rect,
+    DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment=DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT_LEADING) -> void;
 
   static inline std::mt19937 m_rng; // pseudo-random generator
 
@@ -101,7 +113,8 @@ auto render_target::RenderDiagnostics(std::ranges::input_range auto&& objects) -
     return complete + value + L'\n';
   });
 
-  RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+  // RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+  RenderText(m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
 }
 
 [[nodiscard]] inline auto render_target:: get() -> render_target&
@@ -271,4 +284,16 @@ inline auto render_target::addDiagnostics(std::wstring_view label, auto value) -
 inline auto render_target::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
 {
   m_instance->AddDiagnosticsTime(label, ticks);
+}
+
+inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text,
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void
+{
+  m_instance->RenderText(brush, textFormat, text, paragraphAlignment, textAlignment);  
+}
+
+inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text, const D2D1_RECT_F& rect,
+  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void
+{
+  m_instance->RenderText(brush, textFormat, text, rect, paragraphAlignment, textAlignment);  
 }
