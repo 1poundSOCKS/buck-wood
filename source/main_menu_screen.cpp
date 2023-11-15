@@ -16,7 +16,7 @@ main_menu_screen::main_menu_screen()
 {
   game_settings::load();
   
-  sound_data::create(render_target::directSound().get(), L"data");
+  sound_data::create(audio_output::directSound().get(), L"data");
 
   game_volume_controller::create();
   game_volume_controller::setEffectsVolume(6);

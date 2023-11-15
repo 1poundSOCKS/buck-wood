@@ -23,10 +23,13 @@
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
-  render_target::create(instance, cmdShow);
+  HWND wnd = render_target::create(instance, cmdShow);
+
   render_target::DisableMouse();
   render_target::setGameSpeedMultiplier(2.0f);
   render_target::toggleFullscreenOnKeypress(DIK_F12);
+
+  audio_output::create(wnd);
 
   command_line commandLine { cmdLine };
 

@@ -15,7 +15,7 @@ class render_target
 {
 public:
 
-  static auto create(HINSTANCE appInstance, int cmdShow) -> void;
+  static auto create(HINSTANCE appInstance, int cmdShow) -> HWND;
   static auto destroy() -> void;
   [[nodiscard]] static auto get() -> render_target&;
   [[nodiscard]] static auto windowData() -> window_data&;
@@ -23,8 +23,6 @@ public:
   [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
   [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
-  [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
-  [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
   [[nodiscard]] static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
   static auto present() -> void;
   [[nodiscard]] static auto fps() -> int;
@@ -82,8 +80,6 @@ private:
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1PathGeometry> m_pathGeometry;
-  winrt::com_ptr<IDirectSound8> m_directSound;
-  winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
   screen_diagnostics_render_data m_diagnosticsRenderData;
   bool m_unlockFrameRate { false };
@@ -136,16 +132,6 @@ auto render_target::RenderDiagnostics(std::ranges::input_range auto&& objects) -
 [[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
   return ::CreatePathGeometry(m_instance->m_d2dFactory.get());
-}
-
-[[nodiscard]] inline auto render_target::directSound() -> winrt::com_ptr<IDirectSound8>&
-{
-  return m_instance->m_directSound;
-}
-
-[[nodiscard]] inline auto render_target::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
-{
-  return m_instance->m_primarySoundBuffer;
 }
 
 [[nodiscard]] inline auto render_target::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&

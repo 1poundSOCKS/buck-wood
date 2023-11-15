@@ -15,7 +15,7 @@ auto render_target::ToggleFullscreenOnKeypress(int key) -> void
   m_toggleFullscreenKey = key;
 }
 
-auto render_target::create(HINSTANCE appInstance, int cmdShow) -> void
+auto render_target::create(HINSTANCE appInstance, int cmdShow) -> HWND
 {
   m_instance = new render_target(appInstance, cmdShow);
   m_instance->Init();
@@ -28,6 +28,8 @@ auto render_target::create(HINSTANCE appInstance, int cmdShow) -> void
   m_instance->m_diagnosticsRenderData = screen_diagnostics_render_data { diagnosticsBrush, diagnosticsTextFormat };
 
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
+
+  return m_instance->m_window;
 }
 
 auto render_target::destroy() -> void
@@ -51,13 +53,6 @@ auto render_target::Init() -> void
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
 
-  m_directSound = CreateDirectSound(m_window);
-
-  if( m_directSound )
-  {
-    m_primarySoundBuffer = CreatePrimarySoundBuffer(m_directSound.get());
-  }
-  
   m_keyboard = CreateKeyboard(m_appInstance, m_window);
 
   HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
