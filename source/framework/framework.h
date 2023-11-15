@@ -11,13 +11,13 @@
 #include "clock_frequency.h"
 #include "screen_transform.h"
 
-class framework
+class render_target
 {
 public:
 
-  static auto create(HINSTANCE instance, int cmdShow) -> void;
+  static auto create(HINSTANCE appInstance, int cmdShow) -> void;
   static auto destroy() -> void;
-  [[nodiscard]] static auto get() -> framework&;
+  [[nodiscard]] static auto get() -> render_target&;
   [[nodiscard]] static auto windowData() -> window_data&;
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
   [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
@@ -57,10 +57,10 @@ private:
     winrt::com_ptr<IDWriteTextFormat> textFormat;
   };
 
-  framework(HINSTANCE instance, int cmdShow);
+  render_target(HINSTANCE appInstance, int cmdShow);
   auto Init() -> void;
 
-  static framework* m_framework;
+  static render_target* m_instance;
 
   template <typename screen_state_type> auto OpenScreen() -> void;
   auto RenderDiagnostics() -> void;
@@ -73,7 +73,7 @@ private:
 
   static inline std::mt19937 m_rng; // pseudo-random generator
 
-  HINSTANCE m_instance = nullptr;
+  HINSTANCE m_appInstance = nullptr;
   int m_cmdShow { 0 };
   HWND m_window = nullptr;
   window_data m_windowData;
@@ -98,7 +98,7 @@ private:
 
 };
 
-auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
+auto render_target::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
 {
   auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
   {
@@ -108,122 +108,122 @@ auto framework::RenderDiagnostics(std::ranges::input_range auto&& objects) -> vo
   RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
 }
 
-[[nodiscard]] inline auto framework:: get() -> framework&
+[[nodiscard]] inline auto render_target:: get() -> render_target&
 {
-  return *m_framework;
+  return *m_instance;
 }
 
-[[nodiscard]] inline auto framework::windowData() -> window_data&
+[[nodiscard]] inline auto render_target::windowData() -> window_data&
 {
-  return m_framework->m_windowData;
+  return m_instance->m_windowData;
 }
 
-[[nodiscard]] inline auto framework::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
+[[nodiscard]] inline auto render_target::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
 {
-  return m_framework->m_swapChain;
+  return m_instance->m_swapChain;
 }
 
-[[nodiscard]] inline auto framework::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
+[[nodiscard]] inline auto render_target::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
 {
-  return m_framework->m_d2dFactory;  
+  return m_instance->m_d2dFactory;  
 }
 
-[[nodiscard]] inline auto framework::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
+[[nodiscard]] inline auto render_target::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
-  return m_framework->m_renderTarget;
+  return m_instance->m_renderTarget;
 }
 
-[[nodiscard]] inline auto framework::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+[[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
-  return ::CreatePathGeometry(m_framework->m_d2dFactory.get());
+  return ::CreatePathGeometry(m_instance->m_d2dFactory.get());
 }
 
-[[nodiscard]] inline auto framework::directSound() -> winrt::com_ptr<IDirectSound8>&
+[[nodiscard]] inline auto render_target::directSound() -> winrt::com_ptr<IDirectSound8>&
 {
-  return m_framework->m_directSound;
+  return m_instance->m_directSound;
 }
 
-[[nodiscard]] inline auto framework::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
+[[nodiscard]] inline auto render_target::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
 {
-  return m_framework->m_primarySoundBuffer;
+  return m_instance->m_primarySoundBuffer;
 }
 
-[[nodiscard]] inline auto framework::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
+[[nodiscard]] inline auto render_target::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
 {
-  return m_framework->m_keyboard;
+  return m_instance->m_keyboard;
 }
 
-inline auto framework::present() -> void
+inline auto render_target::present() -> void
 {
-  m_framework->m_swapChain->Present(m_framework->m_unlockFrameRate ? 0 : 1, 0);
+  m_instance->m_swapChain->Present(m_instance->m_unlockFrameRate ? 0 : 1, 0);
 }
 
-[[nodiscard]] inline auto framework::fps() -> int
+[[nodiscard]] inline auto render_target::fps() -> int
 {
   return 60;
 }
 
-[[nodiscard]] inline auto framework::isFrameRateUnlocked() -> bool
+[[nodiscard]] inline auto render_target::isFrameRateUnlocked() -> bool
 {
-  return m_framework->m_unlockFrameRate;
+  return m_instance->m_unlockFrameRate;
 }
 
-inline auto framework::unlockFrameRate() -> void
+inline auto render_target::unlockFrameRate() -> void
 {
-  m_framework->m_unlockFrameRate = true;
+  m_instance->m_unlockFrameRate = true;
 }
 
-[[nodiscard]] inline auto framework::gameSpeedMultiplier() -> float
+[[nodiscard]] inline auto render_target::gameSpeedMultiplier() -> float
 {
-  return m_framework->m_gameSpeedMultiplier;
+  return m_instance->m_gameSpeedMultiplier;
 }
 
-inline auto framework::setGameSpeedMultiplier(float value) -> void
+inline auto render_target::setGameSpeedMultiplier(float value) -> void
 {
-  m_framework->m_gameSpeedMultiplier = value;
+  m_instance->m_gameSpeedMultiplier = value;
 }
 
-[[nodiscard]] inline auto framework::gameUpdateInterval(int64_t ticks) -> float
+[[nodiscard]] inline auto render_target::gameUpdateInterval(int64_t ticks) -> float
 {
-  return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_framework->m_gameSpeedMultiplier;
+  return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_instance->m_gameSpeedMultiplier;
 }
 
-[[nodiscard]] inline auto framework::rng() -> std::mt19937&
+[[nodiscard]] inline auto render_target::rng() -> std::mt19937&
 {
   return m_rng;
 }
 
-inline auto framework::setDiagnosticsUpdateTime(int64_t ticks) -> void
+inline auto render_target::setDiagnosticsUpdateTime(int64_t ticks) -> void
 {
-  m_framework->m_diagnosticsUpdateTime = ticks;
+  m_instance->m_diagnosticsUpdateTime = ticks;
 }
 
-inline auto framework::setDiagnosticsRenderTime(int64_t ticks) -> void
+inline auto render_target::setDiagnosticsRenderTime(int64_t ticks) -> void
 {
-  m_framework->m_diagnosticsRenderTime = ticks;
+  m_instance->m_diagnosticsRenderTime = ticks;
 }
 
-inline auto framework::renderDiagnostics() -> void
+inline auto render_target::renderDiagnostics() -> void
 {
-  m_framework->RenderDiagnostics();
+  m_instance->RenderDiagnostics();
 }
 
-inline auto framework::fullScreen() -> void
+inline auto render_target::fullScreen() -> void
 {
-  m_framework->m_swapChain->SetFullscreenState(TRUE, nullptr);
+  m_instance->m_swapChain->SetFullscreenState(TRUE, nullptr);
 }
 
-inline auto framework::toggleFullscreenOnKeypress(int key) -> void
+inline auto render_target::toggleFullscreenOnKeypress(int key) -> void
 {
-  m_framework->ToggleFullscreenOnKeypress(key);
+  m_instance->ToggleFullscreenOnKeypress(key);
 }
 
-template <typename screen_state_type> static auto framework::openScreen() -> void
+template <typename screen_state_type> static auto render_target::openScreen() -> void
 {
-  m_framework->OpenScreen<screen_state_type>();
+  m_instance->OpenScreen<screen_state_type>();
 }
 
-template <typename screen_state_type> auto framework::OpenScreen() -> void
+template <typename screen_state_type> auto render_target::OpenScreen() -> void
 {
   screen_state_type screenState;
 
@@ -234,14 +234,14 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    m_inputState.windowData = framework::windowData();
-    m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, framework::renderTarget().get());
+    m_inputState.windowData = render_target::windowData();
+    m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, render_target::renderTarget().get());
 
-    m_inputState.keyboardReader.Update(framework::keyboard().get());
+    m_inputState.keyboardReader.Update(render_target::keyboard().get());
     m_inputState.gamepadReader.Update();
 
     auto timerFrequency = performance_counter::QueryFrequency();
-    auto frameTime = timerFrequency / framework::fps();
+    auto frameTime = timerFrequency / render_target::fps();
 
     if( m_toggleFullscreenKey && m_inputState.keyboardReader.Pressed(*m_toggleFullscreenKey) )
     {
@@ -250,7 +250,7 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
       m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
     }
 
-    keepScreenOpen = screenState.Refresh(framework::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
+    keepScreenOpen = screenState.Refresh(render_target::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
 
     previousTime = currentTime;
     currentTime = performance_counter::QueryValue();
@@ -262,27 +262,27 @@ template <typename screen_state_type> auto framework::OpenScreen() -> void
   }
 }
 
-[[nodiscard]] inline auto framework::screenInputState() -> const screen_input_state&
+[[nodiscard]] inline auto render_target::screenInputState() -> const screen_input_state&
 {
-  return m_framework->m_inputState;
+  return m_instance->m_inputState;
 }
 
-inline auto framework::DisableMouse() -> void
+inline auto render_target::DisableMouse() -> void
 {
-  m_framework->m_mouseEnabled = false;
+  m_instance->m_mouseEnabled = false;
 }
 
-[[nodiscard]] inline auto framework::MouseEnabled() -> bool
+[[nodiscard]] inline auto render_target::MouseEnabled() -> bool
 {
-  return m_framework->m_mouseEnabled;
+  return m_instance->m_mouseEnabled;
 }
 
-inline auto framework::addDiagnostics(std::wstring_view label, auto value) -> void
+inline auto render_target::addDiagnostics(std::wstring_view label, auto value) -> void
 {
-  m_framework->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
+  m_instance->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
 }
 
-inline auto framework::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
+inline auto render_target::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
 {
-  m_framework->AddDiagnosticsTime(label, ticks);
+  m_instance->AddDiagnosticsTime(label, ticks);
 }

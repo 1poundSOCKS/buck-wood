@@ -16,7 +16,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     Quit();
   }
 
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
 
   auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
@@ -55,11 +55,11 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   auto overlayTransform = GetOverlayRenderTransform();
 
-  m_cursor.Update(framework::screenInputState());
+  m_cursor.Update(render_target::screenInputState());
 
   if( Paused() )
   {
-    menu_control_data menuControlData { framework::screenInputState() };
+    menu_control_data menuControlData { render_target::screenInputState() };
     m_menuController.Update(menuControlData);
 
     switch( m_menuController.Selection() )
@@ -75,15 +75,15 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   auto endUpdateTime = performance_counter::QueryValue();
 
-  framework::setDiagnosticsUpdateTime(endUpdateTime - startUpdateTime);
+  render_target::setDiagnosticsUpdateTime(endUpdateTime - startUpdateTime);
 }
 
 auto play_screen::Render() const -> void
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
 
-  render_guard renderGuard { framework::renderTarget() };
+  render_guard renderGuard { render_target::renderTarget() };
 
   auto startRenderTime = performance_counter::QueryValue();
 
@@ -112,9 +112,9 @@ auto play_screen::Render() const -> void
 
   auto endRenderTime = performance_counter::QueryValue();
 
-  framework::setDiagnosticsRenderTime(endRenderTime - startRenderTime);
+  render_target::setDiagnosticsRenderTime(endRenderTime - startRenderTime);
 
-  framework::renderDiagnostics();
+  render_target::renderDiagnostics();
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -220,16 +220,16 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> void
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
 
-  const auto levelInput = GetLevelInput(framework::screenInputState(), screenTransform);
+  const auto levelInput = GetLevelInput(render_target::screenInputState(), screenTransform);
 
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
   m_levelContainer->Update(levelInput, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraAngle = 0.0f;
@@ -249,10 +249,10 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     gamepad_trigger rightTrigger { currentGamepadState.RightTrigger() };
     gamepad_buttons buttons { currentGamepadState.Buttons() };
     
-    framework::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
-    framework::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
-    framework::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
-    framework::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
+    render_target::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
+    render_target::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
+    render_target::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
+    render_target::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
     auto rotation = leftThumbstick.XRatio() * 10.0f;
 
@@ -303,7 +303,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  const auto& screenInputState = framework::screenInputState();
+  const auto& screenInputState = render_target::screenInputState();
   return screenInputState.gamepadReader.Pressed(XINPUT_GAMEPAD_BACK);
 }
 

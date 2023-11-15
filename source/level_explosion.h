@@ -114,8 +114,8 @@ inline auto const_level_explosion_iterator::operator==(const const_level_explosi
 
 auto const_level_explosion_iterator::GetRandomVelocity() const -> game_velocity
 {
-  auto angle = static_cast<float>(m_angleDist(framework::rng()));
-  auto velocity = static_cast<float>(m_velocityDist(framework::rng()));
+  auto angle = static_cast<float>(m_angleDist(render_target::rng()));
+  auto velocity = static_cast<float>(m_velocityDist(render_target::rng()));
   return { angle, velocity };
 }
 

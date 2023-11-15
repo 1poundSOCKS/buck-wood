@@ -13,8 +13,8 @@ auto explosion::particle_state::Initialize(float x, float y) -> void
   m_startX = m_x = x;
   m_startY = m_y = y;
 
-  auto angle = static_cast<float>(particleAngleDist(framework::rng()));
-  const auto velocity = static_cast<float>(particleSpeedDist(framework::rng()));
+  auto angle = static_cast<float>(particleAngleDist(render_target::rng()));
+  const auto velocity = static_cast<float>(particleSpeedDist(render_target::rng()));
 
   m_xVelocity = CalculateVectorX(velocity, angle);
   m_yVelocity = CalculateVectorY(velocity, angle);
@@ -67,7 +67,7 @@ explosion::explosion(float x, float y)
 
 auto explosion::Update(int64_t tickCount) -> void
 {
-  auto updateInterval = framework::gameUpdateInterval(tickCount);
+  auto updateInterval = render_target::gameUpdateInterval(tickCount);
 
   auto particle = std::begin(m_particles);
 

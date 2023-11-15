@@ -22,7 +22,7 @@ consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
 
 mouse_cursor::mouse_cursor()
 {
-  Initialize(framework::renderTarget().get());
+  Initialize(render_target::renderTarget().get());
 }
 
 auto mouse_cursor::Initialize(ID2D1RenderTarget* renderTarget) -> void
@@ -51,5 +51,5 @@ auto mouse_cursor::Render(D2D1_RECT_F viewRect) const -> void
     std::back_inserter(renderLines), 
     m_brush.get(), 5, m_x, m_y);
   
-  RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
+  RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }

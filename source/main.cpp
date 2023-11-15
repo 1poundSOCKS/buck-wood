@@ -23,29 +23,29 @@
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
-  framework::create(instance, cmdShow);
-  framework::DisableMouse();
-  framework::setGameSpeedMultiplier(2.0f);
-  framework::toggleFullscreenOnKeypress(DIK_F12);
+  render_target::create(instance, cmdShow);
+  render_target::DisableMouse();
+  render_target::setGameSpeedMultiplier(2.0f);
+  render_target::toggleFullscreenOnKeypress(DIK_F12);
 
   command_line commandLine { cmdLine };
 
   if( commandLine.Contains(L"-u") )
   {
-    framework::unlockFrameRate();
+    render_target::unlockFrameRate();
   }
 
   if( !commandLine.Contains(L"-w") )
   {
-    framework::fullScreen();
+    render_target::fullScreen();
   }
 
   renderer::create();
 
-  framework::openScreen<main_menu_screen>();
+  render_target::openScreen<main_menu_screen>();
 
   renderer::destroy();
-  framework::destroy();
+  render_target::destroy();
 
   return 0;
 }

@@ -33,7 +33,7 @@ auto level_container::HasTimedOut() const -> bool
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
-  auto interval = framework::gameUpdateInterval(ticks);
+  auto interval = render_target::gameUpdateInterval(ticks);
 
   m_updateEvents.reset();
 

@@ -25,7 +25,7 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
     float distance { 0 };
   };
 
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto renderTargetSize = renderTarget->GetSize();
   auto centreX = renderTargetSize.width / 2;
   auto centreY = renderTargetSize.height / 2;

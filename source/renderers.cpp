@@ -28,7 +28,7 @@ auto renderer::destroy() -> void
 
 renderer::renderer()
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
@@ -72,7 +72,7 @@ auto renderer::Render(const player_ship& playerShip) const -> void
       std::vector<game_point> thrusterPoints;
       playerShip.GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
       CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_playerShipBrushes.Thruster().get(), 5);
-      RenderLines(framework::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
+      RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
     }
   }
 }
@@ -82,7 +82,7 @@ auto renderer::Render(const bullet& playerBullet) const -> void
   const D2D1_RECT_F rect = GetBulletRect();
   auto position = playerBullet.Position();
   const auto& brush = m_bulletBrushes[playerBullet.DistanceTravelled() / playerBullet.Range()];
-  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, brush.get());
+  render_target::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, brush.get());
 }
 
 auto renderer::Render(const explosion& playerExplosion) const -> void
@@ -95,7 +95,7 @@ auto renderer::Render(const explosion& playerExplosion) const -> void
     return particle.GetRenderRect(brush.get());
   });
 
-  RenderPoints(framework::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());  
+  RenderPoints(render_target::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());  
 }
 
 auto renderer::Render(const explosion_particle& particle) const -> void
@@ -105,7 +105,7 @@ auto renderer::Render(const explosion_particle& particle) const -> void
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
 
-  framework::renderTarget()->FillRectangle(particleRect, brush.get());
+  render_target::renderTarget()->FillRectangle(particleRect, brush.get());
 }
 
 auto renderer::Render(const impact_particle& particle) const -> void
@@ -115,13 +115,13 @@ auto renderer::Render(const impact_particle& particle) const -> void
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
 
-  framework::renderTarget()->FillRectangle(particleRect, brush.get());
+  render_target::renderTarget()->FillRectangle(particleRect, brush.get());
 }
 
 auto renderer::Render(const level_star& star) const -> void
 {
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
-  framework::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y }, m_starBrush.get());
+  render_target::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y }, m_starBrush.get());
 }
 
 auto renderer::Render(const player_shields& playerShields) const -> void
@@ -130,8 +130,8 @@ auto renderer::Render(const player_shields& playerShields) const -> void
 
   slider_control damageSlider = { D2D1_RECT_F { 50, 500, 100, 800 } };
 
-  framework::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_playerShieldsBrushes.Fill().get());
-  framework::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
+  render_target::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_playerShieldsBrushes.Fill().get());
+  render_target::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
 }
 
 auto renderer::Render(const button& buttonObject) const -> void
@@ -141,17 +141,17 @@ auto renderer::Render(const button& buttonObject) const -> void
   
   if( buttonObject.HoverState() )
   {
-    framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
+    render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 
-    RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
+    RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button_hover).get(), 
       m_renderText.get(render_text::selector::menu_text_hover).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
   else
   {
-    framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
+    render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 1);
 
-    RenderText(framework::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
+    RenderText(render_target::renderTarget().get(), m_menuBrushes.Get(menu_brushes::id::button).get(), 
       m_renderText.get(render_text::selector::menu_text_default).get(), text.c_str(), rect, 
       DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
@@ -161,7 +161,7 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 {
   const auto& rect = settingSlider.Rect();
 
-  framework::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 2);
+  render_target::renderTarget()->DrawRectangle(rect, m_menuBrushes.Get(menu_brushes::id::border).get(), 2);
 
   column_def columnDef { rect, 2 };
 
@@ -169,7 +169,7 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
 
   auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
 
-  RenderText(framework::renderTarget().get(), textBrush.get(), 
+  RenderText(render_target::renderTarget().get(), textBrush.get(), 
     m_renderText.get(render_text::selector::menu_text_small).get(), settingSlider.Name().c_str(), headerRect, 
     DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
 
@@ -183,11 +183,11 @@ auto renderer::Render(const setting_slider& settingSlider) const -> void
   {
     if( currentRow++ < settingSlider.Value() )
     {
-      framework::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
+      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
     }
     else
     {
-      framework::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button).get());
+      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button).get());
     }
   }
 }
@@ -213,23 +213,23 @@ auto renderer::Render(const menu_item& menuItem) const -> void
 template <typename brush_selector>
 auto renderer::RenderWithBorder(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
-  framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
-  framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
+  render_target::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
+  render_target::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
 }
 
 template <typename brush_selector>
 auto renderer::RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void
 {
-  framework::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
-  framework::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
+  render_target::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
+  render_target::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
 }
 
 auto renderer::RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
 {
-  framework::renderTarget()->FillGeometry(geometry.Get(), brush);
+  render_target::renderTarget()->FillGeometry(geometry.Get(), brush);
 }
 
 auto renderer::RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
 {
-  framework::renderTarget()->FillGeometry(geometry.Get(), brush);
+  render_target::renderTarget()->FillGeometry(geometry.Get(), brush);
 }

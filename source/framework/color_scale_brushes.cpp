@@ -5,7 +5,7 @@
 
 color_scale_brushes::color_scale_brushes(const color_scale& colorScale)
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
 
   auto brushesView = colorScale | std::ranges::views::transform([&renderTarget](auto color) -> brush_ptr
   {

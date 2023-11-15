@@ -20,7 +20,7 @@ auto mine::Update(int64_t tickCount) -> void
 {
   m_previousState = m_body;
 
-  auto updateInterval = framework::gameUpdateInterval(tickCount);
+  auto updateInterval = render_target::gameUpdateInterval(tickCount);
   m_spin += m_spinRate * updateInterval;
 
   auto velocity = m_body.Velocity();

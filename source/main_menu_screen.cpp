@@ -16,7 +16,7 @@ main_menu_screen::main_menu_screen()
 {
   game_settings::load();
   
-  sound_data::create(framework::directSound().get(), L"data");
+  sound_data::create(render_target::directSound().get(), L"data");
 
   game_volume_controller::create();
   game_volume_controller::setEffectsVolume(6);
@@ -28,7 +28,7 @@ main_menu_screen::main_menu_screen()
     player.Play();
   }
 
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
   m_menuController.OpenRoot(menuArea);
 }
@@ -44,12 +44,12 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
-    framework::openScreen<play_screen>();
+    render_target::openScreen<play_screen>();
     m_startPlay = false;
   }
   else
   {
-    menu_control_data menuControlData { framework::screenInputState() };
+    menu_control_data menuControlData { render_target::screenInputState() };
     m_menuController.Update(menuControlData);
 
     switch( m_menuController.Selection() )
@@ -66,7 +66,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 
 auto main_menu_screen::Render() const -> void
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
 
   render_guard renderGuard { renderTarget };
   

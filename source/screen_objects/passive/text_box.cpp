@@ -8,7 +8,7 @@
 
 inline auto render_text_format_text_box = render_text_format_def(L"Franklin Gothic", DWRITE_FONT_WEIGHT_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 100);
 
-text_box::text_box() : m_renderTargetArea(framework::renderTarget()->GetSize())
+text_box::text_box() : m_renderTargetArea(render_target::renderTarget()->GetSize())
 {
   Initialize();
 }
@@ -30,7 +30,7 @@ auto text_box::SetCallbackForHiddenFlag(callback_for_flag callbackForHiddenFlag)
 
 auto text_box::Initialize() -> void
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_brush = screen_render_brush_yellow.CreateBrush(renderTarget.get());
   const auto& dwriteFactory = dwrite_factory::get();
   m_textFormat = render_text_format_text_box.CreateTextFormat(dwriteFactory.get());
@@ -46,6 +46,6 @@ auto text_box::Render(D2D1_RECT_F viewRect) const -> void
 {
   if( !m_hidden && m_textValue.length() > 0 )
   {
-    RenderText(framework::renderTarget().get(), m_brush.get(), m_textFormat.get(), m_textValue.c_str(), m_renderTargetArea.GetRect(), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
+    RenderText(render_target::renderTarget().get(), m_brush.get(), m_textFormat.get(), m_textValue.c_str(), m_renderTargetArea.GetRect(), DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER);
   }
 }

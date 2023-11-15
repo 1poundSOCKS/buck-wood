@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "path_geometry.h"
 
-path_geometry::path_geometry() : m_geometry(framework::createPathGeometry())
+path_geometry::path_geometry() : m_geometry { render_target::createPathGeometry() }
 {
 }
 

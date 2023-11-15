@@ -145,7 +145,7 @@ template <typename brushes_container>
 inline filled_geometry_brushes::filled_geometry_brushes(D2D_COLOR_F fillColor, D2D_COLOR_F drawColor, float strokeWidth) : 
   m_strokeWidth { strokeWidth }
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_fill = render_brush_def { fillColor }.CreateBrush(renderTarget.get());
   m_draw = render_brush_def { drawColor }.CreateBrush(renderTarget.get());
 }
@@ -153,7 +153,7 @@ inline filled_geometry_brushes::filled_geometry_brushes(D2D_COLOR_F fillColor, D
 inline filled_geometry_brushes::filled_geometry_brushes(const render_brush_def& fillBrushDef, const render_brush_def& drawBrushDef, float strokeWidth) : 
   m_strokeWidth { strokeWidth }
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_fill = fillBrushDef.CreateBrush(renderTarget.get());
   m_draw = drawBrushDef.CreateBrush(renderTarget.get());
 }

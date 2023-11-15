@@ -4,7 +4,7 @@
 
 menu_brushes::menu_brushes()
 {
-  const auto& renderTarget = framework::renderTarget().get();
+  const auto& renderTarget = render_target::renderTarget().get();
   m_textBrush = screen_render_brush_white.CreateBrush(renderTarget);
   m_buttonBrush = screen_render_brush_grey.CreateBrush(renderTarget);
   m_buttonBorderBrush = screen_render_brush_white.CreateBrush(renderTarget);
@@ -13,7 +13,7 @@ menu_brushes::menu_brushes()
 
 target_brushes::target_brushes()
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_notActivated = screen_render_brush_green.CreateBrush(renderTarget.get());
   m_activated =  screen_render_brush_red.CreateBrush(renderTarget.get());
   m_fill =  screen_render_brush_dark_grey.CreateBrush(renderTarget.get());
@@ -36,7 +36,7 @@ target_brushes::target_brushes()
 
 player_ship_brushes::player_ship_brushes() : filled_geometry_brushes { screen_render_brush_grey, screen_render_brush_white, 2 }
 {
-  const auto& renderTarget = framework::renderTarget();
+  const auto& renderTarget = render_target::renderTarget();
   m_thruster = screen_render_brush_red.CreateBrush(renderTarget.get());
 }
 
