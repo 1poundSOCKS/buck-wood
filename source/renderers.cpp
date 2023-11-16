@@ -109,13 +109,13 @@ auto renderer::destroy() -> void
 renderer::renderer()
 {
   const auto& renderTarget = render_target::renderTarget();
+  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
 }
 
-// auto mouse_cursor::Render(D2D1_RECT_F viewRect) const -> void
-auto renderer::Render(const mouse_cursor& mouseCursor) const -> void
+auto renderer::RenderMouseCursor(float x, float y) const -> void
 {
   static const float cursorSize = 20.0f;
   static const float cursorSizeGap = 10.0f;
@@ -124,13 +124,11 @@ auto renderer::Render(const mouse_cursor& mouseCursor) const -> void
 
   std::vector<render_line> renderLines;
 
-  auto [mouseX,mouseY] = mouseCursor.Position();
-
   CreateDisconnectedRenderLines(
     mouseCursorRenderData.cbegin(), 
     mouseCursorRenderData.cend(), 
     std::back_inserter(renderLines), 
-    m_starBrush.get(), 5, mouseX, mouseY);
+    m_starBrush.get(), 5, x, y);
   
   RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }

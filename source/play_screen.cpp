@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "play_screen.h"
-// #include "render.h"
 #include "diagnostics.h"
 #include "screen_view.h"
 #include "global_state.h"
@@ -54,8 +53,6 @@ auto play_screen::Update(int64_t frameInterval) -> void
   }
 
   auto overlayTransform = GetOverlayRenderTransform();
-
-  m_cursor.Update(render_target::screenInputState());
 
   if( Paused() )
   {

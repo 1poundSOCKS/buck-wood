@@ -3,7 +3,6 @@
 #include "diagnostics.h"
 #include "screen_transform.h"
 #include "main_menu_controller.h"
-#include "mouse_cursor.h"
 
 class main_menu_screen
 {

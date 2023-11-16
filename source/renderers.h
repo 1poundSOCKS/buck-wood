@@ -2,7 +2,6 @@
 
 #include "render_text.h"
 #include "render_brushes.h"
-#include "mouse_cursor.h"
 #include "level_asteroid.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -32,7 +31,7 @@ private:
   static renderer* m_instance;
   renderer();
 
-  auto Render(const mouse_cursor& mouseCursor) const -> void;
+  auto RenderMouseCursor(float x, float y) const -> void;
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
@@ -66,6 +65,7 @@ private:
   color_scale_brushes m_impactBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } };
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
   winrt::com_ptr<ID2D1SolidColorBrush> m_blankBrush;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 };
