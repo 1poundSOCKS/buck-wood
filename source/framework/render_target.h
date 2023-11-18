@@ -4,7 +4,6 @@
 #include "performance_counter.h"
 #include "frame_data.h"
 #include "render_guard.h"
-// #include "render.h"
 #include "sound.h"
 #include "sound_buffer.h"
 #include "dwrite_factory.h"
