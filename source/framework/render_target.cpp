@@ -99,21 +99,13 @@ auto render_target::RenderDiagnostics() -> void
   m_diagnosticsData.clear();
 }
 
-auto render_target::RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text,
-  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void
+auto render_target::RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
 {
-  D2D1_SIZE_F rect = m_renderTarget->GetSize();
-  RenderText(brush, textFormat, text, D2D1_RECT_F { 0, 0, rect.width - 1, rect.height - 1 }, paragraphAlignment, textAlignment);
+  m_renderTarget->DrawText(text.data(), static_cast<UINT32>(text.length()), textFormat, rect, brush);
 }
 
-auto render_target::RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, std::wstring_view text, const D2D1_RECT_F& rect,
-  DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment) -> void
+auto render_target::RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
 {
-  HRESULT hr1 = textFormat->SetParagraphAlignment(paragraphAlignment);
-  HRESULT hr2 = textFormat->SetTextAlignment(textAlignment);
-
-  if( SUCCEEDED(hr1) && SUCCEEDED(hr2) )
-  {
-    m_renderTarget->DrawText(text.data(), static_cast<UINT32>(text.length()), textFormat, rect, brush);
-  }
+  D2D1_SIZE_F rect = m_renderTarget->GetSize();
+  RenderText(D2D1_RECT_F { 0, 0, rect.width - 1, rect.height - 1 }, brush, textFormat, text);
 }

@@ -10,7 +10,6 @@
 #include "play_menu_controller.h"
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
-#include "text_box.h"
 #include "level_radar.h"
 #include "player_shields.h"
 #include "gamepad_thumbstick.h"
