@@ -14,6 +14,8 @@
 #include "player_shields.h"
 #include "menu_item.h"
 
+#include "level_target_renderer.h"
+
 class renderer
 {
 
@@ -68,6 +70,8 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
+
+  level_target_renderer m_levelTargetRenderer;
 };
 
 auto renderer::render(const auto& object) -> void

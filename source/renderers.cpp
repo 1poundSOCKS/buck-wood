@@ -136,6 +136,7 @@ auto renderer::RenderMouseCursor(float x, float y) const -> void
 
 auto renderer::Render(const level_target& target) const -> void
 {
+  m_levelTargetRenderer.Write(target);
   RenderWithBorder(target.Geometry(), target_brush_selector { m_targetBrushes, target });
 }
 
