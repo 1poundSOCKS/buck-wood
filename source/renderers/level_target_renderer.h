@@ -18,6 +18,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
   winrt::com_ptr<ID2D1SolidColorBrush> m_notActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
+  
 };
 
 class target_brush_selector
