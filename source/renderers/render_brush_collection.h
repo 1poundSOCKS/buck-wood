@@ -34,6 +34,6 @@ render_brush_collection<brush_type>::render_brush_collection(const auto& brushes
       m_brushes.resize(requiredSize);
     }
 
-    m_brushes[brushIndex] = brush;
+    m_brushes[static_cast<std::underlying_type<brush_type>::type>(brushIndex)] = brush;
   }
 }
