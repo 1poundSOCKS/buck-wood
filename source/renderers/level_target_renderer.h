@@ -2,6 +2,8 @@
 
 #include "level_target.h"
 #include "geometry_renderer.h"
+#include "render_brush_collection.h"
+#include "screen_render_brush_defs.h"
 
 class target_brushes
 {
@@ -18,22 +20,6 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
   winrt::com_ptr<ID2D1SolidColorBrush> m_notActivated;
   winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
-  
-};
-
-class target_brush_selector
-{
-public:
-
-  target_brush_selector(const target_brushes& brushes, const level_target& target);
-
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto StrokeWidth() const -> float;
-
-private:
-  const target_brushes& m_brushes;
-  const level_target& m_target;
 
 };
 
@@ -48,6 +34,17 @@ private:
 
   geometry_renderer m_geometryRenderer;
   target_brushes m_targetBrushes;
+
+  enum class brushes { fill=0, activated,  not_activated };
+
+  render_brush_collection<brushes> m_brushes
+  {
+    std::initializer_list<std::tuple<brushes, render_brush_def>>
+    {
+      std::tuple<brushes, render_brush_def> { brushes::fill, screen_render_brush_dark_grey }, 
+      std::tuple<brushes, render_brush_def> { brushes::activated, screen_render_brush_red },
+      std::tuple<brushes, render_brush_def> { brushes::not_activated, screen_render_brush_green }
+  }};
 
 };
 

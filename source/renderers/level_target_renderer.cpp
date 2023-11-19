@@ -2,25 +2,6 @@
 #include "level_target_renderer.h"
 #include "screen_render_brush_defs.h"
 
-target_brush_selector::target_brush_selector(const target_brushes& brushes, const level_target& target) : m_brushes(brushes), m_target(target)
-{
-}
-
-[[nodiscard]] auto target_brush_selector::Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_brushes.Fill();
-}
-
-[[nodiscard]] auto target_brush_selector::Draw() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&
-{
-  return m_target.IsActivated() ? m_brushes.Activated() : m_brushes.NotActivated();
-}
-
-[[nodiscard]] auto target_brush_selector::StrokeWidth() const -> float
-{
-  return 8.0f;
-}
-
 target_brushes::target_brushes()
 {
   const auto& renderTarget = render_target::renderTarget();
