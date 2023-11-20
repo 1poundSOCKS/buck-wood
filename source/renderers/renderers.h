@@ -15,6 +15,7 @@
 #include "menu_item.h"
 
 #include "level_target_renderer.h"
+#include "player_ship_renderer.h"
 
 class renderer
 {
@@ -58,12 +59,15 @@ private:
 
   render_text m_renderText;
   menu_brushes m_menuBrushes;
+  
   filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
-  player_ship_brushes m_playerShipBrushes;
+  
   color_scale_brushes m_bulletBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   color_scale_brushes m_explosionBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   color_scale_brushes m_impactBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } };
+  
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
+  
   winrt::com_ptr<ID2D1SolidColorBrush> m_blankBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_mouseCursorBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
@@ -71,6 +75,8 @@ private:
 
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
+  player_ship_renderer m_playerShipRenderer;
+
 };
 
 auto renderer::render(const auto& object) -> void

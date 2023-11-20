@@ -161,20 +161,7 @@ auto renderer::Render(const solid_object& object) const -> void
 
 auto renderer::Render(const player_ship& playerShip) const -> void
 {
-  if( playerShip.State() == player_ship::state::alive )
-  {
-    RenderWithBorder(playerShip.Geometry(), simple_brush_selector { m_playerShipBrushes });
-
-    if( playerShip.ThrusterOn() )
-    {
-      std::vector<render_line> renderLines;
-      auto renderLinesInserter = std::back_inserter(renderLines);
-      std::vector<game_point> thrusterPoints;
-      playerShip.GetTransformedThrusterGeometry(std::back_inserter(thrusterPoints));
-      CreateDisconnectedRenderLines(thrusterPoints.cbegin(), thrusterPoints.cend(), renderLinesInserter, m_playerShipBrushes.Thruster().get(), 5);
-      RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
-    }
-  }
+  m_playerShipRenderer.Write(playerShip);
 }
 
 auto renderer::Render(const bullet& playerBullet) const -> void

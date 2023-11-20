@@ -38,7 +38,6 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
 
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
-  auto GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void;
   [[nodiscard]] auto CanShoot() -> bool;
 
 private:

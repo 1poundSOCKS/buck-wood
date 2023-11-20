@@ -2,7 +2,6 @@
 
 #include "level_target.h"
 #include "geometry_renderer.h"
-#include "render_brush_collection.h"
 #include "screen_render_brush_defs.h"
 
 class level_target_renderer

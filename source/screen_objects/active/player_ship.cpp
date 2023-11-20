@@ -15,17 +15,6 @@ constexpr auto GetPlayerGeometryData()
   };
 }
 
-constexpr auto GetPlayerThrusterGeometryData()
-{
-  constexpr float width { 5 };
-  constexpr float yOffset { 16 };
-  
-  return std::array {
-    game_point { width, yOffset },
-    game_point { -width, yOffset }
-  };
-}
-
 player_ship::player_ship() : 
   m_geometry(GetPlayerGeometryData()), m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
 {
@@ -53,14 +42,6 @@ auto player_ship::UpdateShipGeometryData() -> void
 {
   auto rotateAndMove = D2D1::Matrix3x2F::Rotation(m_body.Angle(), D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y);
   m_transformedGeometry = { m_geometry, rotateAndMove };
-}
-
-auto player_ship::GetTransformedThrusterGeometry(std::back_insert_iterator<points_collection> pointsInserter) const -> void
-{
-  const auto& thrusterGeometryData = GetPlayerThrusterGeometryData();
-
-  TransformPoints(thrusterGeometryData.cbegin(), thrusterGeometryData.cend(), pointsInserter, 
-    D2D1::Matrix3x2F::Rotation(m_body.Angle(), D2D1::Point2F(0,0)) * D2D1::Matrix3x2F::Translation(m_body.Position().x, m_body.Position().y));
 }
 
 [[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
