@@ -2,28 +2,22 @@
 
 #include "render_types.h"
 #include "path_geometry.h"
+#include "render_types.h"
 
 class geometry_renderer
 {
 
 public:
 
-  enum class brush_type { fill=0, draw };
+  geometry_renderer(const render_brush& fillBrush);
+  geometry_renderer(const render_brush& fillBrush, const render_brush& drawBrush, float drawWidth);
 
-  auto Write(const path_geometry& pathGeometry, const render_brush& fillBrush, const render_brush& drawBrush, float drawWidth) const -> void;
-  auto Write(const path_geometry& pathGeometry, const render_brush& fillBrush) const -> void;
+  auto Write(const path_geometry& pathGeometry) const -> void;
 
 private:
 
+  render_brush m_fillBrush;
+  render_brush m_drawBrush;
+  float m_drawWidth { 0 };
+
 };
-
-inline auto geometry_renderer::Write(const path_geometry& pathGeometry, const render_brush& fillBrush, const render_brush& drawBrush, float drawWidth) const -> void
-{
-  render_target::renderTarget()->FillGeometry(pathGeometry.Get(), fillBrush.get());
-  render_target::renderTarget()->DrawGeometry(pathGeometry.Get(), drawBrush.get(), drawWidth);
-}
-
-inline auto geometry_renderer::Write(const path_geometry& pathGeometry, const render_brush& fillBrush) const -> void
-{
-  render_target::renderTarget()->FillGeometry(pathGeometry.Get(), fillBrush.get());
-}

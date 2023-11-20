@@ -14,24 +14,18 @@ public:
 
 private:
 
-  geometry_renderer m_geometryRenderer;
-
-  enum class brush_type { fill=0, activated,  not_activated };
-  using brush_collection_type = render_brush_collection<brush_type>;
-
-  brush_collection_type m_brushes
+  geometry_renderer m_deactivatedRenderer
   {
-    std::initializer_list<brush_collection_type::initializer_type>
-    {
-      brush_collection_type::initializer_type { brush_type::fill, screen_render_brush_dark_grey }, 
-      brush_collection_type::initializer_type { brush_type::activated, screen_render_brush_red },
-      brush_collection_type::initializer_type { brush_type::not_activated, screen_render_brush_green }
-  }};
+    screen_render_brush_dark_grey.CreateBrush(render_target::renderTarget().get()),
+    screen_render_brush_red.CreateBrush(render_target::renderTarget().get()),
+    10
+  };
+  
+  geometry_renderer m_activatedRenderer { screen_render_brush_dark_grey.CreateBrush(render_target::renderTarget().get()) };
 
 };
 
 inline auto level_target_renderer::Write(const level_target& levelTarget) const -> void
 {
-  levelTarget.IsActivated() ? m_geometryRenderer.Write(levelTarget.Geometry(), m_brushes[brush_type::fill], m_brushes[brush_type::activated], 5) :
-    m_geometryRenderer.Write(levelTarget.Geometry(), m_brushes[brush_type::fill], m_brushes[brush_type::not_activated], 5);
+  levelTarget.IsActivated() ? m_activatedRenderer.Write(levelTarget.Geometry()) : m_deactivatedRenderer.Write(levelTarget.Geometry());
 }
