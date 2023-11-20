@@ -58,7 +58,6 @@ private:
 
   render_text m_renderText;
   menu_brushes m_menuBrushes;
-  filled_geometry_brushes m_mineBrushes { screen_render_brush_red, screen_render_brush_grey, 3 };
   filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
   player_ship_brushes m_playerShipBrushes;
   color_scale_brushes m_bulletBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
@@ -71,6 +70,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 
   level_target_renderer m_levelTargetRenderer;
+  geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
 };
 
 auto renderer::render(const auto& object) -> void

@@ -141,7 +141,7 @@ auto renderer::Render(const level_target& target) const -> void
 
 auto renderer::Render(const mine& levelMine) const -> void
 {
-  RenderWithBorder(levelMine.Geometry(), simple_brush_selector { m_mineBrushes } );
+  m_mineRenderer.Write(levelMine.Geometry());
 }
 
 auto renderer::Render(const level_asteroid& asteroid) const -> void
