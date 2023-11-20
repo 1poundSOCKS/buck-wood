@@ -5,24 +5,6 @@
 #include "render_brush_collection.h"
 #include "screen_render_brush_defs.h"
 
-class target_brushes
-{
-public:
-
-  target_brushes();
-
-  [[nodiscard]] auto Fill() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto NotActivated() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-  [[nodiscard]] auto Activated() const -> const winrt::com_ptr<ID2D1SolidColorBrush>&;
-
-private:
-
-  winrt::com_ptr<ID2D1SolidColorBrush> m_fill;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_notActivated;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_activated;
-
-};
-
 class level_target_renderer
 {
 
@@ -33,7 +15,6 @@ public:
 private:
 
   geometry_renderer m_geometryRenderer;
-  target_brushes m_targetBrushes;
 
   enum class brush_type { fill=0, activated,  not_activated };
   using brush_collection_type = render_brush_collection<brush_type>;

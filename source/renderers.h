@@ -58,7 +58,7 @@ private:
 
   render_text m_renderText;
   menu_brushes m_menuBrushes;
-  target_brushes m_targetBrushes;
+  // target_brushes m_targetBrushes;
   filled_geometry_brushes m_mineBrushes { screen_render_brush_red, screen_render_brush_grey, 3 };
   filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
   player_ship_brushes m_playerShipBrushes;

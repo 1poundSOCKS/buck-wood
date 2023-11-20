@@ -8,8 +8,12 @@ class geometry_renderer
 
 public:
 
+  enum class brush_type { fill=0, draw };
+
   auto Write(const path_geometry& pathGeometry, const render_brush& fillBrush, const render_brush& drawBrush, float drawWidth) const -> void;
   auto Write(const path_geometry& pathGeometry, const render_brush& fillBrush) const -> void;
+
+private:
 
 };
 
