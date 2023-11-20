@@ -10,7 +10,6 @@ public:
 
   menu_controller();
   auto Open(auto && menuObject) -> void;
-  // auto Open(const D2D1_RECT_F& area) -> void;
   auto Close() -> void;
   auto Update(const menu_control_data& controlData) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;

@@ -13,6 +13,7 @@ public:
   using collection_type = std::vector<render_brush>;
 
   render_brush_collection<brush_type>(const auto& brushes);
+  [[nodiscard]] auto operator[](brush_type brushType) const -> const render_brush&;
 
 private:
 
@@ -23,17 +24,25 @@ private:
 template <typename brush_type>
 render_brush_collection<brush_type>::render_brush_collection(const auto& brushes)
 {
-  for( const auto& [brushIndex, brushDef] : brushes )
+  for( const auto& [brushType, brushDef] : brushes )
   {
+    auto brushIndex = static_cast<std::underlying_type<brush_type>::type>(brushType);
     auto brush = brushDef.CreateBrush(render_target::renderTarget().get());
 
-    auto requiredSize = static_cast<std::underlying_type<brush_type>::type>(brushIndex) + 1;
+    auto requiredSize = brushIndex + 1;
 
     if( m_brushes.size() < requiredSize )
     {
       m_brushes.resize(requiredSize);
     }
 
-    m_brushes[static_cast<std::underlying_type<brush_type>::type>(brushIndex)] = brush;
+    m_brushes[brushIndex] = brush;
   }
+}
+
+template <typename brush_type>
+[[nodiscard]] auto render_brush_collection<brush_type>::operator[](brush_type brushType) const -> const render_brush&
+{
+  auto brushIndex = static_cast<std::underlying_type<brush_type>::type>(brushType);
+  return m_brushes[brushIndex];
 }

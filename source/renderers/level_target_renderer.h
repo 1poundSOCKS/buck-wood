@@ -35,21 +35,22 @@ private:
   geometry_renderer m_geometryRenderer;
   target_brushes m_targetBrushes;
 
-  enum class brushes { fill=0, activated,  not_activated };
+  enum class brush_type { fill=0, activated,  not_activated };
+  using brush_collection_type = render_brush_collection<brush_type>;
 
-  render_brush_collection<brushes> m_brushes
+  brush_collection_type m_brushes
   {
-    std::initializer_list<std::tuple<brushes, render_brush_def>>
+    std::initializer_list<brush_collection_type::initializer_type>
     {
-      std::tuple<brushes, render_brush_def> { brushes::fill, screen_render_brush_dark_grey }, 
-      std::tuple<brushes, render_brush_def> { brushes::activated, screen_render_brush_red },
-      std::tuple<brushes, render_brush_def> { brushes::not_activated, screen_render_brush_green }
+      brush_collection_type::initializer_type { brush_type::fill, screen_render_brush_dark_grey }, 
+      brush_collection_type::initializer_type { brush_type::activated, screen_render_brush_red },
+      brush_collection_type::initializer_type { brush_type::not_activated, screen_render_brush_green }
   }};
 
 };
 
 inline auto level_target_renderer::Write(const level_target& levelTarget) const -> void
 {
-  levelTarget.IsActivated() ? m_geometryRenderer.Write(levelTarget.Geometry(), m_targetBrushes.Fill(), m_targetBrushes.Activated(), 5) :
-    m_geometryRenderer.Write(levelTarget.Geometry(), m_targetBrushes.Fill(), m_targetBrushes.NotActivated(), 5);
+  levelTarget.IsActivated() ? m_geometryRenderer.Write(levelTarget.Geometry(), m_brushes[brush_type::fill], m_brushes[brush_type::activated], 5) :
+    m_geometryRenderer.Write(levelTarget.Geometry(), m_brushes[brush_type::fill], m_brushes[brush_type::not_activated], 5);
 }
