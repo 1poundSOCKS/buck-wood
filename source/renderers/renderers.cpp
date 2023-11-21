@@ -26,11 +26,6 @@ void RenderPoints(
   }
 }
 
-constexpr D2D1_RECT_F GetBulletRect()
-{
-  return { -5, -5, 5, 5 };
-}
-
 renderer* renderer::m_instance = nullptr;
 
 auto renderer::create() -> void
@@ -49,11 +44,9 @@ auto renderer::destroy() -> void
 
 renderer::renderer()
 {
-  const auto& renderTarget = render_target::renderTarget();
-  m_mouseCursorBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
-  m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
-  m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
-  m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
+  m_playerExplosionBrush = screen_render_brush_white.CreateBrush();
+  m_starBrush = screen_render_brush_white.CreateBrush();
+  m_blankBrush = screen_render_brush_black.CreateBrush();
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -86,13 +79,9 @@ auto renderer::Render(const player_ship& playerShip) const -> void
   m_playerShipRenderer.Write(playerShip);
 }
 
-auto renderer::Render(const bullet& playerBullet) const -> void
+auto renderer::Render(const bullet& bulletInstance) const -> void
 {
-  
-  const D2D1_RECT_F rect = GetBulletRect();
-  auto position = playerBullet.Position();
-  const auto& brush = m_bulletBrushes[playerBullet.DistanceTravelled() / playerBullet.Range()];
-  render_target::renderTarget()->FillRectangle(D2D1_RECT_F { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y }, brush.get());
+  m_bulletRenderer.Write(bulletInstance);
 }
 
 auto renderer::Render(const explosion& playerExplosion) const -> void
