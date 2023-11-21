@@ -17,6 +17,7 @@
 #include "level_target_renderer.h"
 #include "player_ship_renderer.h"
 #include "bullet_renderer.h"
+#include "explosion_particle_renderer.h"
 
 class renderer
 {
@@ -53,7 +54,6 @@ private:
   render_text m_renderText;
   menu_brushes m_menuBrushes;
   
-  color_scale_brushes m_explosionBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   color_scale_brushes m_impactBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } };
   
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
@@ -67,6 +67,7 @@ private:
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 6 };
   geometry_renderer m_blankRenderer { screen_render_brush_black.CreateBrush() };
+  explosion_particle_renderer m_explosionParticleRenderer;
 };
 
 auto renderer::render(const auto& object) -> void
