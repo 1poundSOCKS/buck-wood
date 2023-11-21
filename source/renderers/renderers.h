@@ -1,7 +1,5 @@
 #pragma once
 
-#include "render_text.h"
-#include "render_brushes.h"
 #include "level_asteroid.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -19,6 +17,7 @@
 #include "bullet_renderer.h"
 #include "particle_renderer.h"
 #include "menu_renderer.h"
+#include "slider_control_renderer.h"
 
 class renderer
 {
@@ -34,7 +33,7 @@ public:
 
 private:
 
-  renderer();
+  renderer() = default;
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
@@ -59,9 +58,8 @@ private:
   geometry_renderer m_blankRenderer { screen_render_brush_black.CreateBrush() };
   particle_renderer m_particleRenderer;
   menu_renderer m_menuRenderer;
-
-  render_brush m_starBrush;
-  filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };  
+  slider_control_renderer m_playerShieldsRenderer;
+  render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
 
 };
 

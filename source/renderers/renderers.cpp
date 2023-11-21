@@ -23,11 +23,6 @@ auto renderer::destroy() -> void
   }
 }
 
-renderer::renderer()
-{
-  m_starBrush = screen_render_brush_white.CreateBrush();
-}
-
 auto renderer::Render(const level_target& target) const -> void
 {
   m_levelTargetRenderer.Write(target);
@@ -81,10 +76,7 @@ auto renderer::Render(const level_star& star) const -> void
 
 auto renderer::Render(const player_shields& playerShields) const -> void
 {
-  auto shieldRemaining = 100.0f - playerShields.GetDamagePercentage();
-  slider_control damageSlider = { D2D1_RECT_F { 50, 500, 100, 800 } };
-  render_target::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_playerShieldsBrushes.Fill().get());
-  render_target::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
+  m_playerShieldsRenderer.Write(playerShields);
 }
 
 auto renderer::Render(const menu_item& menuItem) const -> void

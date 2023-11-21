@@ -26,12 +26,12 @@ inline slider_control::slider_control(const D2D1_RECT_F& rect) : m_rect { rect }
 {
 }
 
-[[nodiscard]] auto slider_control::GetBoundingRect() const -> const D2D1_RECT_F&
+[[nodiscard]] inline auto slider_control::GetBoundingRect() const -> const D2D1_RECT_F&
 {
   return m_rect;
 }
 
-[[nodiscard]] auto slider_control::GetSliderRect(float percentage) const -> D2D1_RECT_F
+[[nodiscard]] inline auto slider_control::GetSliderRect(float percentage) const -> D2D1_RECT_F
 {
   switch( m_alignment )
   {
