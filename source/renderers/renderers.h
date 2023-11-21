@@ -3,14 +3,12 @@
 #include "level_asteroid.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
-#include "player_ship.h"
 #include "explosion.h"
 #include "level_star.h"
 #include "mine.h"
 #include "explosion_particle.h"
 #include "impact_particle.h"
 #include "player_shields.h"
-#include "menu_item.h"
 
 #include "level_target_renderer.h"
 #include "player_ship_renderer.h"
@@ -24,8 +22,6 @@ class renderer
 
 public:
 
-  using VIEW_RECT = D2D1_RECT_F;
-
   static auto create() -> void;
   static auto destroy() -> void;
   static auto render(const auto& object) -> void;
@@ -33,7 +29,6 @@ public:
 
 private:
 
-  renderer() = default;
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
@@ -74,4 +69,66 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   {
     m_instance->Render(object);
   }
+}
+
+inline auto renderer::Render(const level_target& target) const -> void
+{
+  m_levelTargetRenderer.Write(target);
+}
+
+inline auto renderer::Render(const mine& levelMine) const -> void
+{
+  m_mineRenderer.Write(levelMine.Geometry());
+}
+
+inline auto renderer::Render(const level_asteroid& asteroid) const -> void
+{
+  m_solidObjectRenderer.Write(asteroid.Geometry());
+}
+
+inline auto renderer::Render(const blank_object& blankObject) const -> void
+{
+  m_blankRenderer.Write(blankObject.Geometry());
+}
+
+inline auto renderer::Render(const solid_object& solidObject) const -> void
+{
+  m_solidObjectRenderer.Write(solidObject.Geometry());
+}
+
+inline auto renderer::Render(const player_ship& playerShip) const -> void
+{
+  m_playerShipRenderer.Write(playerShip);
+}
+
+inline auto renderer::Render(const bullet& bulletInstance) const -> void
+{
+  m_bulletRenderer.Write(bulletInstance);
+}
+
+inline auto renderer::Render(const explosion_particle& particle) const -> void
+{
+  m_particleRenderer.Write(particle);
+}
+
+inline auto renderer::Render(const impact_particle& particle) const -> void
+{
+  m_particleRenderer.Write(particle);
+}
+
+inline auto renderer::Render(const level_star& star) const -> void
+{
+  static const D2D1_RECT_F rect { -4, -4, 4, 4 };
+  D2D1_RECT_F renderRect { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y };
+  render_target::renderTarget()->FillRectangle(renderRect, m_starBrush.get());
+}
+
+inline auto renderer::Render(const player_shields& playerShields) const -> void
+{
+  m_playerShieldsRenderer.Write(playerShields);
+}
+
+inline auto renderer::Render(const menu_item& menuItem) const -> void
+{
+  m_menuRenderer.Write(menuItem);
 }
