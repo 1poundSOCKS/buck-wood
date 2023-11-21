@@ -8,11 +8,14 @@ public:
     DWRITE_FONT_STRETCH m_fontStretch, float fontSize);
 
   [[nodiscard]] auto CreateTextFormat(IDWriteFactory* writeFactory) const -> winrt::com_ptr<IDWriteTextFormat>;
+  [[nodiscard]] auto CreateTextFormat() const -> winrt::com_ptr<IDWriteTextFormat>;
 
 private:
+
   std::wstring m_fontFamily;
   DWRITE_FONT_WEIGHT m_fontWeight;
   DWRITE_FONT_STYLE m_fontStyle;
   DWRITE_FONT_STRETCH m_fontStretch;
   float m_fontSize;
+
 };

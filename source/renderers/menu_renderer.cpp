@@ -36,12 +36,12 @@ auto menu_renderer::Write(const button& buttonObject) const -> void
   
   if( buttonObject.HoverState() )
   {
-    text_renderer textRenderer { m_textHoverBrush, m_renderText.get(render_text::selector::menu_text_hover) };
+    text_renderer textRenderer { m_textHoverBrush, m_hoverText };
     textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
   }
   else
   {
-    text_renderer textRenderer { m_textBrush, m_renderText.get(render_text::selector::menu_text_default) };
+    text_renderer textRenderer { m_textBrush, m_defaultText };
     textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
   }
 }
@@ -56,7 +56,7 @@ auto menu_renderer::Write(const setting_slider& settingSlider) const -> void
 
   auto textBrush = settingSlider.HoverState() ? m_textHoverBrush : m_textBrush;
 
-  text_renderer textRenderer { { textBrush }, { m_renderText.get(render_text::selector::menu_text_small) } };
+  text_renderer textRenderer { { textBrush }, { m_smallText } };
   textRenderer.Write(headerRect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, settingSlider.Name().c_str());
 
   auto sliderRect = columnDef[1];
