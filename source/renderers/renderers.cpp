@@ -14,20 +14,6 @@ struct render_point
 
 using render_rect = render_point;
 
-struct render_line
-{
-  render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width = 1);
-  
-  D2D1_POINT_2F start, end;
-  ID2D1SolidColorBrush* brush = nullptr;
-  float width = 1;
-};
-
-render_line::render_line(const D2D1_POINT_2F& start, const D2D1_POINT_2F& end, ID2D1SolidColorBrush* brush, float width)
-: start(start), end(end), brush(brush), width(width)
-{
-}
-
 template <typename input_iterator_type>
 void RenderPoints(
   ID2D1RenderTarget* renderTarget, 
@@ -38,52 +24,6 @@ void RenderPoints(
   {
     renderTarget->FillRectangle( point->rect, point->brush);
   }
-}
-
-template <typename input_iterator_type, typename insert_iterator_type>
-void CreateDisconnectedRenderLines(
-  typename input_iterator_type begin, 
-  typename input_iterator_type end, 
-  insert_iterator_type insertIterator, 
-  ID2D1SolidColorBrush* brush, 
-  float width, 
-  float x=0, 
-  float y=0)
-{
-  for( auto i = begin; i != end; std::advance(i, 2) )
-  {
-    auto next = std::next(i);
-    if( next != end ) insertIterator = render_line({i->x + x, i->y + y}, {next->x + x, next->y + y}, brush, width);
-  }
-};
-
-template <typename input_iterator_type>
-void RenderLines(
-  ID2D1RenderTarget* renderTarget, 
-  input_iterator_type begin, 
-  input_iterator_type end)
-{
-  for( auto line = begin; line != end; ++line )
-  {
-    renderTarget->DrawLine(line->start, line->end, line->brush, line->width);
-  }
-}
-
-consteval std::array<D2D1_POINT_2F, 8> GetCursorRenderData()
-{
-  const float cursorSize = 20.0f;
-  const float cursorSizeGap = 10.0f;
-
-  return std::array<D2D1_POINT_2F, 8> {
-    D2D1_POINT_2F { 0, -cursorSize },
-    D2D1_POINT_2F { 0,-cursorSizeGap },
-    D2D1_POINT_2F { 0,cursorSize },
-    D2D1_POINT_2F { 0,cursorSizeGap },
-    D2D1_POINT_2F { -cursorSize,0 },
-    D2D1_POINT_2F { -cursorSizeGap,0 },
-    D2D1_POINT_2F { cursorSize,0 },
-    D2D1_POINT_2F { cursorSizeGap,0 }
-  };
 }
 
 constexpr D2D1_RECT_F GetBulletRect()
@@ -114,24 +54,6 @@ renderer::renderer()
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_starBrush = screen_render_brush_white.CreateBrush(renderTarget.get());
   m_blankBrush = screen_render_brush_black.CreateBrush(renderTarget.get());
-}
-
-auto renderer::RenderMouseCursor(float x, float y) const -> void
-{
-  static const float cursorSize = 20.0f;
-  static const float cursorSizeGap = 10.0f;
-
-  auto mouseCursorRenderData = GetCursorRenderData();
-
-  std::vector<render_line> renderLines;
-
-  CreateDisconnectedRenderLines(
-    mouseCursorRenderData.cbegin(), 
-    mouseCursorRenderData.cend(), 
-    std::back_inserter(renderLines), 
-    m_starBrush.get(), 5, x, y);
-  
-  RenderLines(render_target::renderTarget().get(), renderLines.cbegin(), renderLines.cend());
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -166,6 +88,7 @@ auto renderer::Render(const player_ship& playerShip) const -> void
 
 auto renderer::Render(const bullet& playerBullet) const -> void
 {
+  
   const D2D1_RECT_F rect = GetBulletRect();
   auto position = playerBullet.Position();
   const auto& brush = m_bulletBrushes[playerBullet.DistanceTravelled() / playerBullet.Range()];

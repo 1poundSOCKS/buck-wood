@@ -16,6 +16,7 @@
 
 #include "level_target_renderer.h"
 #include "player_ship_renderer.h"
+#include "bullet_renderer.h"
 
 class renderer
 {
@@ -34,7 +35,6 @@ private:
   static renderer* m_instance;
   renderer();
 
-  auto RenderMouseCursor(float x, float y) const -> void;
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
@@ -76,7 +76,7 @@ private:
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
   player_ship_renderer m_playerShipRenderer;
-
+  bullet_renderer m_bulletRenderer;
 };
 
 auto renderer::render(const auto& object) -> void
