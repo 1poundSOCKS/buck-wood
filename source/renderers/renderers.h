@@ -42,7 +42,6 @@ private:
   auto Render(const solid_object& solidObject) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
-  auto Render(const explosion& playerExplosion) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
   auto Render(const level_star& star) const -> void;
@@ -59,8 +58,8 @@ private:
   
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
   
-  winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
-  winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
+  render_brush m_playerExplosionBrush;
+  render_brush m_starBrush;
 
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };

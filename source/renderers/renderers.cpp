@@ -6,30 +6,11 @@
 #include "column_def.h"
 #include "text_renderer.h"
 
-struct render_point
-{
-  D2D1_RECT_F rect;
-  ID2D1SolidColorBrush* brush;
-};
-
-using render_rect = render_point;
-
-template <typename input_iterator_type>
-void RenderPoints(
-  ID2D1RenderTarget* renderTarget, 
-  const typename input_iterator_type begin, 
-  const typename input_iterator_type end)
-{
-  for( auto point = begin; point != end; ++point )
-  {
-    renderTarget->FillRectangle( point->rect, point->brush);
-  }
-}
-
 renderer* renderer::m_instance = nullptr;
 
 auto renderer::create() -> void
 {
+  destroy();
   m_instance = new renderer();
 }
 
@@ -83,37 +64,19 @@ auto renderer::Render(const bullet& bulletInstance) const -> void
   m_bulletRenderer.Write(bulletInstance);
 }
 
-auto renderer::Render(const explosion& playerExplosion) const -> void
-{
-  std::vector<render_point> renderParticles;
-
-  std::transform(std::cbegin(playerExplosion.Particles()), std::cend(playerExplosion.Particles()), std::back_inserter(renderParticles), [this](auto particle) -> render_rect
-  {
-    const auto& brush = m_explosionBrushes[particle.DistanceTravelled() / particle.Range()];
-    auto rect = particle.GetRenderRect();
-    return { rect, brush.get() };
-  });
-
-  RenderPoints(render_target::renderTarget().get(), renderParticles.cbegin(), renderParticles.cend());  
-}
-
 auto renderer::Render(const explosion_particle& particle) const -> void
 {
   const auto& brush = m_explosionBrushes[particle.Age() / particle.Lifespan()];
-
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
-
   render_target::renderTarget()->FillRectangle(particleRect, brush.get());
 }
 
 auto renderer::Render(const impact_particle& particle) const -> void
 {
   const auto& brush = m_impactBrushes[particle.Age() / particle.Lifespan()];
-
   static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
   const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
-
   render_target::renderTarget()->FillRectangle(particleRect, brush.get());
 }
 
@@ -126,9 +89,7 @@ auto renderer::Render(const level_star& star) const -> void
 auto renderer::Render(const player_shields& playerShields) const -> void
 {
   auto shieldRemaining = 100.0f - playerShields.GetDamagePercentage();
-
   slider_control damageSlider = { D2D1_RECT_F { 50, 500, 100, 800 } };
-
   render_target::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_playerShieldsBrushes.Fill().get());
   render_target::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
 }
