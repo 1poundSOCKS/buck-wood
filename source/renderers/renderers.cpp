@@ -61,7 +61,7 @@ auto renderer::Render(const mine& levelMine) const -> void
 
 auto renderer::Render(const level_asteroid& asteroid) const -> void
 {
-  RenderWithBorder(asteroid.Geometry(), simple_brush_selector { m_asteroidBrushes });
+  m_solidObjectRenderer.Write(asteroid.Geometry());
 }
 
 auto renderer::Render(const blank_object& object) const -> void
@@ -69,9 +69,9 @@ auto renderer::Render(const blank_object& object) const -> void
   RenderWithNoBorder(object.Geometry(), m_blankBrush.get());
 }
 
-auto renderer::Render(const solid_object& object) const -> void
+auto renderer::Render(const solid_object& solidObject) const -> void
 {
-  RenderWithBorder(object.Geometry(), simple_brush_selector { m_asteroidBrushes });
+  m_solidObjectRenderer.Write(solidObject.Geometry());
 }
 
 auto renderer::Render(const player_ship& playerShip) const -> void

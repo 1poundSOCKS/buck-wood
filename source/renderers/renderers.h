@@ -39,7 +39,7 @@ private:
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const blank_object& object) const -> void;
-  auto Render(const solid_object& object) const -> void;
+  auto Render(const solid_object& solidObject) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const explosion& playerExplosion) const -> void;
@@ -60,8 +60,6 @@ private:
   render_text m_renderText;
   menu_brushes m_menuBrushes;
   
-  filled_geometry_brushes m_asteroidBrushes { screen_render_brush_grey, screen_render_brush_dark_grey, 6 };
-  
   color_scale_brushes m_explosionBrushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   color_scale_brushes m_impactBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f), 10 } };
   
@@ -75,6 +73,7 @@ private:
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
   player_ship_renderer m_playerShipRenderer;
   bullet_renderer m_bulletRenderer;
+  geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 6 };
 };
 
 auto renderer::render(const auto& object) -> void
