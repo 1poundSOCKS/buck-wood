@@ -25,7 +25,6 @@ auto renderer::destroy() -> void
 
 renderer::renderer()
 {
-  m_playerExplosionBrush = screen_render_brush_white.CreateBrush();
   m_starBrush = screen_render_brush_white.CreateBrush();
 }
 
@@ -66,15 +65,12 @@ auto renderer::Render(const bullet& bulletInstance) const -> void
 
 auto renderer::Render(const explosion_particle& particle) const -> void
 {
-  m_explosionParticleRenderer.Write(particle);
+  m_particleRenderer.Write(particle);
 }
 
 auto renderer::Render(const impact_particle& particle) const -> void
 {
-  const auto& brush = m_impactBrushes[particle.Age() / particle.Lifespan()];
-  static const auto rect = D2D1_RECT_F { -4, -4, 4, 4 };
-  const auto particleRect = D2D1_RECT_F { rect.left + particle.Position().x, rect.top + particle.Position().y, rect.right + particle.Position().x, rect.bottom + particle.Position().y };
-  render_target::renderTarget()->FillRectangle(particleRect, brush.get());
+  m_particleRenderer.Write(particle);
 }
 
 auto renderer::Render(const level_star& star) const -> void

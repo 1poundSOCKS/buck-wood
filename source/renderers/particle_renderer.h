@@ -1,16 +1,16 @@
 #pragma once
 
 #include "render_types.h"
-#include "explosion_particle.h"
+#include "particle.h"
 #include "render_target.h"
 #include "color_scale_brushes.h"
 
-class explosion_particle_renderer
+class particle_renderer
 {
 
 public:
 
-  auto Write(const explosion_particle& particle) const -> void;
+  auto Write(const particle& particleInstance) const -> void;
 
 private:
 
@@ -18,11 +18,11 @@ private:
 
 };
 
-inline auto explosion_particle_renderer::Write(const explosion_particle& particle) const -> void
+inline auto particle_renderer::Write(const particle& particleInstance) const -> void
 {
   static const auto rect = render_rect { -4, -4, 4, 4 };
-  const auto& brush = m_brushes[particle.Age() / particle.Lifespan()];
-  const auto& position = particle.Position();
+  const auto& brush = m_brushes[particleInstance.Age() / particleInstance.Lifespan()];
+  const auto& position = particleInstance.Position();
   const auto particleRect = render_rect { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y };
   render_target::renderTarget()->FillRectangle(particleRect, brush.get());
 }
