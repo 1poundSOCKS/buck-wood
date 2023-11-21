@@ -1,8 +1,8 @@
 #pragma once
 
 #include "menu_item.h"
-#include "render_brushes.h"
 #include "render_text.h"
+#include "screen_render_brush_defs.h"
 
 class menu_renderer
 {
@@ -15,7 +15,11 @@ public:
 
 private:
 
-  menu_brushes m_menuBrushes;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBrush { screen_render_brush_white.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonBorderBrush { screen_render_brush_grey.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_buttonHoverBrush { screen_render_brush_green.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_textHoverBrush { screen_render_brush_green.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_textBrush { screen_render_brush_grey.CreateBrush() };
   render_text m_renderText;
 
 };

@@ -3,6 +3,7 @@
 #include "column_def.h"
 #include "row_def.h"
 #include "text_renderer.h"
+#include "render_target.h"
 
 auto menu_renderer::Write(const menu_item& menuItem) const -> void
 {
@@ -35,12 +36,12 @@ auto menu_renderer::Write(const button& buttonObject) const -> void
   
   if( buttonObject.HoverState() )
   {
-    text_renderer textRenderer { { m_menuBrushes.Get(menu_brushes::id::button_hover) }, { m_renderText.get(render_text::selector::menu_text_hover) } };
+    text_renderer textRenderer { m_textHoverBrush, m_renderText.get(render_text::selector::menu_text_hover) };
     textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
   }
   else
   {
-    text_renderer textRenderer { { m_menuBrushes.Get(menu_brushes::id::button) }, { m_renderText.get(render_text::selector::menu_text_default) } };
+    text_renderer textRenderer { m_textBrush, m_renderText.get(render_text::selector::menu_text_default) };
     textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
   }
 }
@@ -53,7 +54,7 @@ auto menu_renderer::Write(const setting_slider& settingSlider) const -> void
 
   auto headerRect = columnDef[0];
 
-  auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
+  auto textBrush = settingSlider.HoverState() ? m_textHoverBrush : m_textBrush;
 
   text_renderer textRenderer { { textBrush }, { m_renderText.get(render_text::selector::menu_text_small) } };
   textRenderer.Write(headerRect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, settingSlider.Name().c_str());
@@ -68,11 +69,11 @@ auto menu_renderer::Write(const setting_slider& settingSlider) const -> void
   {
     if( currentRow++ < settingSlider.Value() )
     {
-      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
+      render_target::renderTarget()->FillRectangle(rowRect, m_buttonHoverBrush.get());
     }
     else
     {
-      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button).get());
+      render_target::renderTarget()->FillRectangle(rowRect, m_buttonBrush.get());
     }
   }
 }
