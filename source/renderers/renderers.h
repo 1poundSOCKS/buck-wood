@@ -38,7 +38,7 @@ private:
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
-  auto Render(const blank_object& object) const -> void;
+  auto Render(const blank_object& blankObject) const -> void;
   auto Render(const solid_object& solidObject) const -> void;
   auto Render(const player_ship& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
@@ -51,12 +51,6 @@ private:
   auto Render(const button& buttonObject) const -> void;
   auto Render(const setting_slider& settingSlider) const -> void;
 
-  template <typename brush_selector> auto RenderWithBorder(const path_geometry& geometry, const brush_selector& object) const -> void;
-  template <typename brush_selector> auto RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void;
-  
-  auto RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
-  auto RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void;
-
   render_text m_renderText;
   menu_brushes m_menuBrushes;
   
@@ -65,7 +59,6 @@ private:
   
   filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
   
-  winrt::com_ptr<ID2D1SolidColorBrush> m_blankBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerExplosionBrush;
   winrt::com_ptr<ID2D1SolidColorBrush> m_starBrush;
 
@@ -74,6 +67,7 @@ private:
   player_ship_renderer m_playerShipRenderer;
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 6 };
+  geometry_renderer m_blankRenderer { screen_render_brush_black.CreateBrush() };
 };
 
 auto renderer::render(const auto& object) -> void

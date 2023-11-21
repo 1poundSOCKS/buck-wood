@@ -46,7 +46,6 @@ renderer::renderer()
 {
   m_playerExplosionBrush = screen_render_brush_white.CreateBrush();
   m_starBrush = screen_render_brush_white.CreateBrush();
-  m_blankBrush = screen_render_brush_black.CreateBrush();
 }
 
 auto renderer::Render(const level_target& target) const -> void
@@ -64,9 +63,9 @@ auto renderer::Render(const level_asteroid& asteroid) const -> void
   m_solidObjectRenderer.Write(asteroid.Geometry());
 }
 
-auto renderer::Render(const blank_object& object) const -> void
+auto renderer::Render(const blank_object& blankObject) const -> void
 {
-  RenderWithNoBorder(object.Geometry(), m_blankBrush.get());
+  m_blankRenderer.Write(blankObject.Geometry());
 }
 
 auto renderer::Render(const solid_object& solidObject) const -> void
@@ -199,28 +198,4 @@ auto renderer::Render(const menu_item& menuItem) const -> void
   };
 
   std::visit(render_menu_item_visitor {}, menuItem.Get());
-}
-
-template <typename brush_selector>
-auto renderer::RenderWithBorder(const path_geometry& geometry, const brush_selector& brushSelector) const -> void
-{
-  render_target::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
-  render_target::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
-}
-
-template <typename brush_selector>
-auto renderer::RenderWithBorder(const transformed_path_geometry& geometry, const brush_selector& brushSelector) const -> void
-{
-  render_target::renderTarget()->FillGeometry(geometry.Get(), brushSelector.Fill().get());
-  render_target::renderTarget()->DrawGeometry(geometry.Get(), brushSelector.Draw().get(), brushSelector.StrokeWidth());
-}
-
-auto renderer::RenderWithNoBorder(const path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
-{
-  render_target::renderTarget()->FillGeometry(geometry.Get(), brush);
-}
-
-auto renderer::RenderWithNoBorder(const transformed_path_geometry& geometry, ID2D1SolidColorBrush* brush) const -> void
-{
-  render_target::renderTarget()->FillGeometry(geometry.Get(), brush);
 }
