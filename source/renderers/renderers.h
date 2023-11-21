@@ -18,6 +18,7 @@
 #include "player_ship_renderer.h"
 #include "bullet_renderer.h"
 #include "particle_renderer.h"
+#include "menu_renderer.h"
 
 class renderer
 {
@@ -33,9 +34,7 @@ public:
 
 private:
 
-  static renderer* m_instance;
   renderer();
-
   auto Render(const level_target& target) const -> void;
   auto Render(const mine& mine) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
@@ -48,16 +47,10 @@ private:
   auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
-  auto Render(const button& buttonObject) const -> void;
-  auto Render(const setting_slider& settingSlider) const -> void;
 
-  render_text m_renderText;
-  menu_brushes m_menuBrushes;
-  
-  filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };
-  
-  render_brush m_starBrush;
+private:
 
+  static renderer* m_instance;
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
   player_ship_renderer m_playerShipRenderer;
@@ -65,6 +58,11 @@ private:
   geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 6 };
   geometry_renderer m_blankRenderer { screen_render_brush_black.CreateBrush() };
   particle_renderer m_particleRenderer;
+  menu_renderer m_menuRenderer;
+
+  render_brush m_starBrush;
+  filled_geometry_brushes m_playerShieldsBrushes { D2D1::ColorF(0.5f, 0.5f, 0.5f, 1.0f), D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), 3 };  
+
 };
 
 auto renderer::render(const auto& object) -> void

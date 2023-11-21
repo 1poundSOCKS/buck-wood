@@ -87,69 +87,7 @@ auto renderer::Render(const player_shields& playerShields) const -> void
   render_target::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_playerShieldsBrushes.Draw().get(), m_playerShieldsBrushes.StrokeWidth());
 }
 
-auto renderer::Render(const button& buttonObject) const -> void
-{
-  const auto& rect = buttonObject.Rect();
-  const auto& text = buttonObject.Text();
-  
-  if( buttonObject.HoverState() )
-  {
-    text_renderer textRenderer { { m_menuBrushes.Get(menu_brushes::id::button_hover) }, { m_renderText.get(render_text::selector::menu_text_hover) } };
-    textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
-  }
-  else
-  {
-    text_renderer textRenderer { { m_menuBrushes.Get(menu_brushes::id::button) }, { m_renderText.get(render_text::selector::menu_text_default) } };
-    textRenderer.Write(rect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, text.c_str());
-  }
-}
-
-auto renderer::Render(const setting_slider& settingSlider) const -> void
-{
-  const auto& rect = settingSlider.Rect();
-
-  column_def columnDef { rect, 2 };
-
-  auto headerRect = columnDef[0];
-
-  auto textBrush = settingSlider.HoverState() ? m_menuBrushes.Get(menu_brushes::id::button_hover) : m_menuBrushes.Get(menu_brushes::id::button);
-
-  text_renderer textRenderer { { textBrush }, { m_renderText.get(render_text::selector::menu_text_small) } };
-  textRenderer.Write(headerRect, DWRITE_PARAGRAPH_ALIGNMENT_CENTER, DWRITE_TEXT_ALIGNMENT_CENTER, settingSlider.Name().c_str());
-
-  auto sliderRect = columnDef[1];
-
-  row_def rowDef { sliderRect, static_cast<size_t>(settingSlider.Max() - settingSlider.Min())  };
-
-  auto currentRow = settingSlider.Min();
-
-  for( const auto& rowRect : rowDef )
-  {
-    if( currentRow++ < settingSlider.Value() )
-    {
-      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button_hover).get());
-    }
-    else
-    {
-      render_target::renderTarget()->FillRectangle(rowRect, m_menuBrushes.Get(menu_brushes::id::button).get());
-    }
-  }
-}
-
 auto renderer::Render(const menu_item& menuItem) const -> void
 {
-  struct render_menu_item_visitor
-  {
-      void operator()(const button& item)
-      {
-        renderer::render(item);
-      }
-
-      void operator()(const setting_slider& item)
-      {
-        renderer::render(item);
-      }
-  };
-
-  std::visit(render_menu_item_visitor {}, menuItem.Get());
+  m_menuRenderer.Write(menuItem);
 }
