@@ -19,7 +19,6 @@ public:
   static auto destroy() -> void;
 
   static auto update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void;
-  static auto next() -> void;
   
   static auto windowData() -> const window_data&;
   static auto renderTargetMouseData() -> const render_target_mouse_data&;
@@ -31,7 +30,6 @@ private:
 
   screen_input_state(HINSTANCE instance, HWND window);
   auto Update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void;
-  auto Next() -> void;
   static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
 
 private:
@@ -53,11 +51,6 @@ winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND wind
 inline auto screen_input_state::update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void
 {
   m_instance->Update(windowData, mouseData);
-}
-
-inline auto screen_input_state::next() -> void
-{
-  m_instance->Next();
 }
 
 inline auto screen_input_state::keyboardReader() -> const keyboard_reader&

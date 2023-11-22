@@ -190,8 +190,6 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
     currentTime = performance_counter::QueryValue();
 
     m_swapChain->Present(m_unlockFrameRate ? 0 : 1, 0);
-
-    screen_input_state::next();
   }
 }
 

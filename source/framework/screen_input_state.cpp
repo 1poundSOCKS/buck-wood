@@ -25,16 +25,12 @@ screen_input_state::screen_input_state(HINSTANCE instance, HWND window)
 
 auto screen_input_state::Update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void
 {
+  m_previousWindowData = m_windowData;
+  m_previousRenderTargetMouseData = m_renderTargetMouseData;
   m_windowData = windowData;
   m_renderTargetMouseData = mouseData;
   m_keyboardReader.Update(m_keyboard.get());
   m_gamepadReader.Update();
-}
-
-auto screen_input_state::Next() -> void
-{
-  m_previousWindowData = m_windowData;
-  m_previousRenderTargetMouseData = m_renderTargetMouseData;
 }
 
 auto screen_input_state::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
