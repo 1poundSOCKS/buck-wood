@@ -26,6 +26,7 @@ public:
   static auto setUpdateTime(int64_t ticks) -> void;
   static auto setRenderTime(int64_t ticks) -> void;
   static auto addTimingData() -> void;
+  static auto updateFrameData() -> void;
   static auto clear() -> void;
 
   [[nodiscard]] static auto data() -> const diagnostics_data_collection&;
@@ -77,6 +78,11 @@ inline auto diagnostics::setRenderTime(int64_t ticks) -> void
 inline auto diagnostics::addTimingData() -> void
 {
   m_instance->AddTimingData();
+}
+
+inline auto diagnostics::updateFrameData() -> void
+{
+  m_instance->m_frameData.Update();
 }
 
 inline auto diagnostics::clear() -> void

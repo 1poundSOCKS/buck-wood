@@ -114,6 +114,7 @@ auto play_screen::Render() const -> void
 
   diagnostics::setRenderTime(endRenderTime - startRenderTime);
   diagnostics::addTimingData();
+  diagnostics::updateFrameData();
   renderer::renderDiagnostics();
   diagnostics::clear();
 }
