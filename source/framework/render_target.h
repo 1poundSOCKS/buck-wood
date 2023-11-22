@@ -16,7 +16,7 @@ public:
 
   static auto create(HINSTANCE appInstance, int cmdShow) -> HWND;
   static auto destroy() -> void;
-  
+
   [[nodiscard]] static auto get() -> render_target&;
   [[nodiscard]] static auto windowData() -> window_data&;
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
@@ -46,16 +46,8 @@ public:
 
 private:
 
-  struct screen_diagnostics_render_data
-  {
-    winrt::com_ptr<ID2D1SolidColorBrush> brush;
-    winrt::com_ptr<IDWriteTextFormat> textFormat;
-  };
-
   render_target(HINSTANCE appInstance, int cmdShow);
   auto Init() -> void;
-
-  static render_target* m_instance;
 
   template <typename screen_state_type> auto OpenScreen() -> void;
   auto ToggleFullscreenOnKeypress(int key) -> void;
@@ -65,6 +57,9 @@ private:
   auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
 
+private:
+
+  static render_target* m_instance;
   static inline std::mt19937 m_rng; // pseudo-random generator
 
   HINSTANCE m_appInstance = nullptr;
