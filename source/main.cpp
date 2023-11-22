@@ -24,6 +24,7 @@
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   HWND wnd = render_target::create(instance, cmdShow);
+  screen_input_state::create(instance, wnd);
   dwrite_factory::create();
   diagnostics::create();
   audio_output::create(wnd);
@@ -50,6 +51,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   renderer::destroy();
   diagnostics::destroy();
   dwrite_factory::destroy();
+  screen_input_state::destroy();
   render_target::destroy();
 
   return 0;

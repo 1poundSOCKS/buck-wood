@@ -17,8 +17,6 @@ auto render_target::create(HINSTANCE appInstance, int cmdShow) -> HWND
 
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 
-  screen_input_state::create();
-
   return m_instance->m_window;
 }
 
@@ -26,8 +24,6 @@ auto render_target::destroy() -> void
 {
   if( m_instance )
   {
-    screen_input_state::destroy();
-    
     delete m_instance;
     m_instance = nullptr;
   }
@@ -44,8 +40,6 @@ auto render_target::Init() -> void
   m_swapChain = CreateSwapChain(m_window, render_target::fps(), 1);
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
-
-  m_keyboard = CreateKeyboard(m_appInstance, m_window);
 
   HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
   if( FAILED(hr) ) 

@@ -15,10 +15,10 @@ class screen_input_state
 
 public:
 
-  static auto create() -> void;
+  static auto create(HINSTANCE instance, HWND window) -> void;
   static auto destroy() -> void;
 
-  static auto update(const window_data& windowData, const render_target_mouse_data& mouseData, IDirectInputDevice8* keyboard) -> void;
+  static auto update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void;
   static auto next() -> void;
   
   static auto windowData() -> const window_data&;
@@ -29,13 +29,16 @@ public:
 
 private:
 
-  auto Update(const window_data& windowData, const render_target_mouse_data& mouseData, IDirectInputDevice8* keyboard) -> void;
+  screen_input_state(HINSTANCE instance, HWND window);
+  auto Update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void;
   auto Next() -> void;
+  static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
 
 private:
 
   static screen_input_state* m_instance;
 
+  winrt::com_ptr<IDirectInputDevice8> m_keyboard;
   window_data m_windowData;
   window_data m_previousWindowData;
   keyboard_reader m_keyboardReader;
@@ -47,9 +50,9 @@ private:
 
 winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
 
-inline auto screen_input_state::update(const window_data& windowData, const render_target_mouse_data& mouseData, IDirectInputDevice8* keyboard) -> void
+inline auto screen_input_state::update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void
 {
-  m_instance->Update(windowData, mouseData, keyboard);
+  m_instance->Update(windowData, mouseData);
 }
 
 inline auto screen_input_state::next() -> void

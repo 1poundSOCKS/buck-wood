@@ -23,7 +23,6 @@ public:
   [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
   [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
-  [[nodiscard]] static auto keyboard() -> winrt::com_ptr<IDirectInputDevice8>&;
   static auto present() -> void;
   [[nodiscard]] static auto fps() -> int;
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
@@ -37,7 +36,6 @@ public:
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
   template <typename screen_state_type> static auto openScreen() -> void;
-  // [[nodiscard]] static auto screenInputState() -> const screen_input_state&;
   static auto DisableMouse() -> void;
   [[nodiscard]] static auto MouseEnabled() -> bool;
 
@@ -71,11 +69,9 @@ private:
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1PathGeometry> m_pathGeometry;
-  winrt::com_ptr<IDirectInputDevice8> m_keyboard;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
   std::optional<int> m_toggleFullscreenKey;
-  // screen_input_state m_inputState;
   bool m_mouseEnabled { true };
 
 };
@@ -108,11 +104,6 @@ private:
 [[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
   return ::CreatePathGeometry(m_instance->m_d2dFactory.get());
-}
-
-[[nodiscard]] inline auto render_target::keyboard() -> winrt::com_ptr<IDirectInputDevice8>&
-{
-  return m_instance->m_keyboard;
 }
 
 inline auto render_target::present() -> void
@@ -181,20 +172,11 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    // m_inputState.windowData = render_target::windowData();
-    // m_inputState.renderTargetMouseData = GetRenderTargetMouseData(m_inputState.windowData, render_target::renderTarget().get());
-
-    // m_inputState.keyboardReader.Update(render_target::keyboard().get());
-    // m_inputState.gamepadReader.Update();
-
-    screen_input_state::update(render_target::windowData(), 
-      GetRenderTargetMouseData(screen_input_state::windowData(), render_target::renderTarget().get()),
-      render_target::keyboard().get());
+    screen_input_state::update(m_windowData, GetRenderTargetMouseData(m_windowData, m_renderTarget.get()));
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / render_target::fps();
 
-    // if( m_toggleFullscreenKey && m_inputState.keyboardReader.Pressed(*m_toggleFullscreenKey) )
     if( m_toggleFullscreenKey && screen_input_state::keyboardReader().Pressed(*m_toggleFullscreenKey) )
     {
       BOOL fullScreen = FALSE;
@@ -209,16 +191,9 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
 
     m_swapChain->Present(m_unlockFrameRate ? 0 : 1, 0);
 
-    // m_inputState.previousWindowData = m_inputState.windowData;
-    // m_inputState.previousRenderTargetMouseData = m_inputState.renderTargetMouseData;
     screen_input_state::next();
   }
 }
-
-// [[nodiscard]] inline auto render_target::screenInputState() -> const screen_input_state&
-// {
-//   return m_instance->m_inputState;
-// }
 
 inline auto render_target::DisableMouse() -> void
 {
