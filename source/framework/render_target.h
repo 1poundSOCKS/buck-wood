@@ -35,11 +35,11 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
-  static auto addDiagnostics(std::wstring_view label, auto value) -> void;
-  static auto addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
-  static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
-  static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
-  static auto renderDiagnostics() -> void;
+  // static auto addDiagnostics(std::wstring_view label, auto value) -> void;
+  // static auto addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
+  // static auto setDiagnosticsUpdateTime(int64_t ticks) -> void;
+  // static auto setDiagnosticsRenderTime(int64_t ticks) -> void;
+  // static auto renderDiagnostics() -> void;
 
   template <typename screen_state_type> static auto openScreen() -> void;
   [[nodiscard]] static auto screenInputState() -> const screen_input_state&;
@@ -63,13 +63,13 @@ private:
   static render_target* m_instance;
 
   template <typename screen_state_type> auto OpenScreen() -> void;
-  auto RenderDiagnostics() -> void;
-  auto RenderDiagnostics(std::ranges::input_range auto&& objects) -> void;
+  // auto RenderDiagnostics() -> void;
+  // auto RenderDiagnostics(std::ranges::input_range auto&& objects) -> void;
   auto ToggleFullscreenOnKeypress(int key) -> void;
 
   auto ProcessWindowMessages() -> bool;
 
-  auto AddDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
+  // auto AddDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void;
 
   auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -86,29 +86,28 @@ private:
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   winrt::com_ptr<ID2D1PathGeometry> m_pathGeometry;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
-  screen_diagnostics_render_data m_diagnosticsRenderData;
+  // screen_diagnostics_render_data m_diagnosticsRenderData;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
   std::optional<int> m_toggleFullscreenKey;
-  frame_data m_frameData;
-  std::vector<std::wstring> m_diagnosticsData;
-  int64_t m_diagnosticsUpdateTime { 0 };
-  int64_t m_diagnosticsRenderTime { 0 };
+  // frame_data m_frameData;
+  // std::vector<std::wstring> m_diagnosticsData;
+  // int64_t m_diagnosticsUpdateTime { 0 };
+  // int64_t m_diagnosticsRenderTime { 0 };
   screen_input_state m_inputState;
   bool m_mouseEnabled { true };
 
 };
 
-auto render_target::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
-{
-  auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
-  {
-    return complete + value + L'\n';
-  });
+// auto render_target::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
+// {
+//   auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
+//   {
+//     return complete + value + L'\n';
+//   });
 
-  // RenderText(m_renderTarget.get(), m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
-  RenderText(m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
-}
+//   RenderText(m_diagnosticsRenderData.brush.get(), m_diagnosticsRenderData.textFormat.get(), diagnosticsString);
+// }
 
 [[nodiscard]] inline auto render_target:: get() -> render_target&
 {
@@ -185,20 +184,20 @@ inline auto render_target::setGameSpeedMultiplier(float value) -> void
   return m_rng;
 }
 
-inline auto render_target::setDiagnosticsUpdateTime(int64_t ticks) -> void
-{
-  m_instance->m_diagnosticsUpdateTime = ticks;
-}
+// inline auto render_target::setDiagnosticsUpdateTime(int64_t ticks) -> void
+// {
+//   m_instance->m_diagnosticsUpdateTime = ticks;
+// }
 
-inline auto render_target::setDiagnosticsRenderTime(int64_t ticks) -> void
-{
-  m_instance->m_diagnosticsRenderTime = ticks;
-}
+// inline auto render_target::setDiagnosticsRenderTime(int64_t ticks) -> void
+// {
+//   m_instance->m_diagnosticsRenderTime = ticks;
+// }
 
-inline auto render_target::renderDiagnostics() -> void
-{
-  m_instance->RenderDiagnostics();
-}
+// inline auto render_target::renderDiagnostics() -> void
+// {
+//   m_instance->RenderDiagnostics();
+// }
 
 inline auto render_target::fullScreen() -> void
 {
@@ -269,15 +268,15 @@ inline auto render_target::DisableMouse() -> void
   return m_instance->m_mouseEnabled;
 }
 
-inline auto render_target::addDiagnostics(std::wstring_view label, auto value) -> void
-{
-  m_instance->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
-}
+// inline auto render_target::addDiagnostics(std::wstring_view label, auto value) -> void
+// {
+//   m_instance->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
+// }
 
-inline auto render_target::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
-{
-  m_instance->AddDiagnosticsTime(label, ticks);
-}
+// inline auto render_target::addDiagnosticsTime(std::wstring_view label, int64_t ticks) -> void
+// {
+//   m_instance->AddDiagnosticsTime(label, ticks);
+// }
 
 inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
 {

@@ -16,6 +16,7 @@
 #include "particle_renderer.h"
 #include "menu_renderer.h"
 #include "slider_control_renderer.h"
+#include "diagnostics_renderer.h"
 
 class renderer
 {
@@ -26,6 +27,7 @@ public:
   static auto destroy() -> void;
   static auto render(const auto& object) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
+  static auto renderDiagnostics() -> void;
 
 private:
 
@@ -55,6 +57,7 @@ private:
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
   render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
+  diagnostics_renderer m_diagnosticsRenderer;
 
 };
 
@@ -69,6 +72,11 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   {
     m_instance->Render(object);
   }
+}
+
+inline auto renderer::renderDiagnostics() -> void
+{
+  m_instance->m_diagnosticsRenderer.Write();
 }
 
 inline auto renderer::Render(const level_target& target) const -> void

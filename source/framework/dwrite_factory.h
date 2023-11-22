@@ -5,6 +5,7 @@ class dwrite_factory
 public:
 
   static auto create() -> void;
+  static auto destroy() -> void;
   static auto get() -> const winrt::com_ptr<IDWriteFactory>&;
 
 private:

@@ -7,6 +7,7 @@
 #include "diagnostics.h"
 #include "sound_buffer_player.h"
 #include "gamepad_trigger.h"
+#include "diagnostics.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
@@ -37,6 +38,8 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t frameInterval) -> void
 {
+  diagnostics::add(render_target::screenInputState());
+
   auto startUpdateTime = performance_counter::QueryValue();
 
   switch( m_stage )
@@ -72,7 +75,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   auto endUpdateTime = performance_counter::QueryValue();
 
-  render_target::setDiagnosticsUpdateTime(endUpdateTime - startUpdateTime);
+  diagnostics::setUpdateTime(endUpdateTime - startUpdateTime);
 }
 
 auto play_screen::Render() const -> void
@@ -109,9 +112,10 @@ auto play_screen::Render() const -> void
 
   auto endRenderTime = performance_counter::QueryValue();
 
-  render_target::setDiagnosticsRenderTime(endRenderTime - startRenderTime);
-
-  render_target::renderDiagnostics();
+  diagnostics::setRenderTime(endRenderTime - startRenderTime);
+  diagnostics::addTimingData();
+  renderer::renderDiagnostics();
+  diagnostics::clear();
 }
 
 auto play_screen::PlaySoundEffects() const -> void
@@ -246,10 +250,10 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
     gamepad_trigger rightTrigger { currentGamepadState.RightTrigger() };
     gamepad_buttons buttons { currentGamepadState.Buttons() };
     
-    render_target::addDiagnostics(L"Left thumb X", leftThumbstick.X() );
-    render_target::addDiagnostics(L"Left thumb Y", leftThumbstick.Y());
-    render_target::addDiagnostics(L"Left thumb X ratio", leftThumbstick.XRatio());
-    render_target::addDiagnostics(L"Left thumb Y ratio", leftThumbstick.YRatio());
+    diagnostics::add(L"Left thumb X", leftThumbstick.X() );
+    diagnostics::add(L"Left thumb Y", leftThumbstick.Y());
+    diagnostics::add(L"Left thumb X ratio", leftThumbstick.XRatio());
+    diagnostics::add(L"Left thumb Y ratio", leftThumbstick.YRatio());
 
     auto rotation = leftThumbstick.XRatio() * 10.0f;
 
