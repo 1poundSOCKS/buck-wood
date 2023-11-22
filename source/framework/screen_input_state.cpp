@@ -22,32 +22,33 @@ winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND wind
   return keyboard;
 }
 
-float GetRatioMouseX(const screen_input_state& screenInputState)
+screen_input_state* screen_input_state::m_instance { nullptr };
+
+auto screen_input_state::create() -> void
 {
-  return screenInputState.renderTargetMouseData.x / screenInputState.renderTargetMouseData.size.width;
+  destroy();
+  m_instance = new screen_input_state {};
 }
 
-float GetRatioMouseY(const screen_input_state& screenInputState)
+auto screen_input_state::destroy() -> void
 {
-  return screenInputState.renderTargetMouseData.y / screenInputState.renderTargetMouseData.size.height;
+  if( m_instance )
+  {
+    delete m_instance;
+    m_instance = nullptr;
+  }
 }
 
-bool MouseMoved(const screen_input_state& screenInputState)
+auto screen_input_state::Update(const window_data& windowData, const render_target_mouse_data& mouseData, IDirectInputDevice8* keyboard) -> void
 {
-  return
-    screenInputState.windowData.mouse.x != screenInputState.previousWindowData.mouse.x ||
-    screenInputState.windowData.mouse.y != screenInputState.previousWindowData.mouse.y;
+  m_windowData = windowData;
+  m_renderTargetMouseData = mouseData;
+  m_keyboardReader.Update(keyboard);
+  m_gamepadReader.Update();
 }
 
-bool LeftMouseButtonDrag(const screen_input_state& screenInputState)
+auto screen_input_state::Next() -> void
 {
-  return
-    !screenInputState.windowData.mouse.leftButtonDown &&
-    screenInputState.previousWindowData.mouse.leftButtonDown && 
-    MouseMoved(screenInputState);
-}
-
-bool LeftMouseButtonReleased(const screen_input_state& screenInputState)
-{
-  return screenInputState.previousWindowData.mouse.leftButtonDown && !screenInputState.windowData.mouse.leftButtonDown;
+  m_previousWindowData = m_windowData;
+  m_previousRenderTargetMouseData = m_renderTargetMouseData;
 }

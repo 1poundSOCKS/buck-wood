@@ -9,7 +9,7 @@ class menu_control_data
 
 public:
 
-  menu_control_data(const screen_input_state& screenInputState);
+  menu_control_data();
 
   [[nodiscard]] auto GamepadAttached() const -> bool;
 

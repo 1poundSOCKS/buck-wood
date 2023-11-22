@@ -17,6 +17,8 @@ auto render_target::create(HINSTANCE appInstance, int cmdShow) -> HWND
 
   m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 
+  screen_input_state::create();
+
   return m_instance->m_window;
 }
 
@@ -24,6 +26,8 @@ auto render_target::destroy() -> void
 {
   if( m_instance )
   {
+    screen_input_state::destroy();
+    
     delete m_instance;
     m_instance = nullptr;
   }

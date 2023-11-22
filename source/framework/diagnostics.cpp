@@ -3,19 +3,19 @@
 #include "performance_counter.h"
 #include "render_target.h"
 
-void FormatDiagnostics(const screen_input_state& inputState, diagnostics_data_inserter_type diagnosticsDataInserter)
-{
-  diagnosticsDataInserter = std::format(L"mouse: {}, {}", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
-  diagnosticsDataInserter = std::format(L"client rect: {}, {}", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
-}
+// void FormatDiagnostics(const screen_input_state& inputState, diagnostics_data_inserter_type diagnosticsDataInserter)
+// {
+//   diagnosticsDataInserter = std::format(L"mouse: {}, {}", inputState.windowData.mouse.x, inputState.windowData.mouse.y);
+//   diagnosticsDataInserter = std::format(L"client rect: {}, {}", inputState.windowData.clientRect.right, inputState.windowData.clientRect.bottom);
+// }
 
-std::wstring GetDiagnosticsString(diagnostics_data_const_iterator textBegin, diagnostics_data_const_iterator textEnd)
-{
-  return std::reduce(textBegin, textEnd, std::wstring(L""), [](const auto& complete, const auto& value)
-  {
-    return complete + value + L'\n';
-  });
-}
+// std::wstring GetDiagnosticsString(diagnostics_data_const_iterator textBegin, diagnostics_data_const_iterator textEnd)
+// {
+//   return std::reduce(textBegin, textEnd, std::wstring(L""), [](const auto& complete, const auto& value)
+//   {
+//     return complete + value + L'\n';
+//   });
+// }
 
 auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
 {
@@ -45,9 +45,11 @@ auto diagnostics::AddTime(std::wstring_view label, int64_t ticks) -> void
   m_diagnosticsData.emplace_back(std::format(L"{}: {:.1f}", label, GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
 }
 
-auto diagnostics::Add(const screen_input_state& screenInputState) -> void
+auto diagnostics::AddScreenInputState() -> void
 {
-  FormatDiagnostics(screenInputState, std::back_inserter(m_diagnosticsData));
+  auto inserter = std::back_inserter(m_diagnosticsData);
+  inserter = std::format(L"mouse: {}, {}", screen_input_state::windowData().mouse.x, screen_input_state::windowData().mouse.y);
+  inserter = std::format(L"client rect: {}, {}", screen_input_state::windowData().clientRect.right, screen_input_state::windowData().clientRect.bottom);
 }
 
 auto diagnostics::AddTimingData() -> void

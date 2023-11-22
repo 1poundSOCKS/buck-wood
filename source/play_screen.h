@@ -34,7 +34,7 @@ private:
   auto Playing(int64_t frameInterval) -> void;
   auto PostPlay(int64_t frameInterval) -> void;
 
-  [[nodiscard]] auto GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input;
+  [[nodiscard]] auto GetLevelInput(const screen_transform& transform) const -> level_input;
   [[nodiscard]] static auto GetThumbStickAngle(short lx, short ly, float rotation = 0) -> std::optional<float>;
   auto UpdateLevel(int64_t elapsedTicks) -> void;
   auto GetLevelRenderTransform() const -> screen_transform;

@@ -49,8 +49,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
   }
   else
   {
-    menu_control_data menuControlData { render_target::screenInputState() };
-    m_menuController.Update(menuControlData);
+    m_menuController.Update(menu_control_data {});
 
     switch( m_menuController.Selection() )
     {

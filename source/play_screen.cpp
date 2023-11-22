@@ -38,7 +38,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t frameInterval) -> void
 {
-  diagnostics::add(render_target::screenInputState());
+  diagnostics::addScreenInputState();
 
   auto startUpdateTime = performance_counter::QueryValue();
 
@@ -59,8 +59,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   if( Paused() )
   {
-    menu_control_data menuControlData { render_target::screenInputState() };
-    m_menuController.Update(menuControlData);
+    m_menuController.Update(menu_control_data {});
 
     switch( m_menuController.Selection() )
     {
@@ -222,7 +221,7 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> void
   auto renderTransform = GetLevelRenderTransform();
   auto screenTransform = screen_transform { renderTransform.Get() };
 
-  const auto levelInput = GetLevelInput(render_target::screenInputState(), screenTransform);
+  const auto levelInput = GetLevelInput(screenTransform);
 
   const auto& renderTarget = render_target::renderTarget();
   auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
@@ -239,9 +238,9 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   return { cameraTransform.Get() };
 }
 
-[[nodiscard]] auto play_screen::GetLevelInput(const screen_input_state& input, const screen_transform& transform) const -> level_input
+[[nodiscard]] auto play_screen::GetLevelInput(const screen_transform& transform) const -> level_input
 {
-  const auto& currentGamepadState = input.gamepadReader.CurrentState();
+  const auto& currentGamepadState = screen_input_state::gamepadReader().CurrentState();
 
   if( currentGamepadState.Connected() )
   {
@@ -266,14 +265,18 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   }
   else
   {
-    auto mousePosition = transform.GetScreenPosition({ input.renderTargetMouseData.x, input.renderTargetMouseData.y });
-    auto previousMousePosition = transform.GetScreenPosition({ input.previousRenderTargetMouseData.x, input.previousRenderTargetMouseData.y });
+    const auto& mouseData = screen_input_state::renderTargetMouseData();
+    const auto& previousMouseData = screen_input_state::previousRenderTargetMouseData();
+    const auto& windowData = screen_input_state::windowData();
+
+    auto mousePosition = transform.GetScreenPosition({ mouseData.x, mouseData.y });
+    auto previousMousePosition = transform.GetScreenPosition({ previousMouseData.x, previousMouseData.y });
 
     auto playerPosition = m_levelContainer->PlayerPosition();
     auto playerAngle = playerPosition.AngleTo(mousePosition);
 
-    auto thrust = input.windowData.mouse.rightButtonDown ? 1.0f : 0;
-    auto shootAngle = input.windowData.mouse.leftButtonDown ? std::optional<float>(playerAngle) : std::nullopt;
+    auto thrust = windowData.mouse.rightButtonDown ? 1.0f : 0;
+    auto shootAngle = windowData.mouse.leftButtonDown ? std::optional<float>(playerAngle) : std::nullopt;
 
     return { playerAngle, std::nullopt, thrust, shootAngle };
   }
@@ -305,8 +308,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  const auto& screenInputState = render_target::screenInputState();
-  return screenInputState.gamepadReader.Pressed(XINPUT_GAMEPAD_BACK);
+  return screen_input_state::gamepadReader().Pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
