@@ -67,15 +67,3 @@ auto diagnostics::AddTimingData() -> void
 
   return text;
 }
-
-// auto diagnostics::RenderDiagnostics(const screen_input_state& screenInputState) -> void
-// {
-//   m_frameData.Update();
-//   FormatDiagnostics(screenInputState, std::back_inserter(m_diagnosticsData));
-//   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
-//   auto frameTime = performance_counter::QueryFrequency() / render_target::fps();
-//   m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
-//   m_diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsRenderTime)));
-//   RenderDiagnostics(m_diagnosticsData);
-//   m_diagnosticsData.clear();
-// }

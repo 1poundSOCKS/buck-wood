@@ -37,8 +37,6 @@ private:
   auto Add(const screen_input_state& screenInputState) -> void;
   auto AddTimingData() -> void;
   [[nodiscard]] auto Text() const -> std::wstring;
-  // auto RenderDiagnostics(const screen_input_state& screenInputState) -> void;
-  // auto RenderDiagnostics(std::ranges::input_range auto&& objects) -> void;
 
 private:
 
@@ -95,21 +93,5 @@ inline auto diagnostics::clear() -> void
 {
   return m_instance->Text();
 }
-
-// inline auto diagnostics::renderDiagnostics(const screen_input_state& screenInputState) -> void
-// {
-//   m_instance->RenderDiagnostics(screenInputState);
-// }
-
-// auto diagnostics::RenderDiagnostics(std::ranges::input_range auto&& objects) -> void
-// {
-//   auto diagnosticsString = std::reduce(std::cbegin(objects), std::cend(objects), std::wstring(L""), [](const auto& complete, const auto& value)
-//   {
-//     return complete + value + L'\n';
-//   });
-
-//   text_renderer textRenderer { m_diagnosticsRenderData.brush, m_diagnosticsRenderData.textFormat };
-//   textRenderer.Write(DWRITE_PARAGRAPH_ALIGNMENT_NEAR, DWRITE_TEXT_ALIGNMENT_LEADING, diagnosticsString.c_str());
-// }
 
 #endif
