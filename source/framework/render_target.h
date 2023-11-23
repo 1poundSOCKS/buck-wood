@@ -17,8 +17,6 @@ public:
   static auto create(HWND wnd) -> void;
   static auto destroy() -> void;
 
-  [[nodiscard]] static auto get() -> render_target&;
-  [[nodiscard]] static auto windowData() -> window_data&;
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
   [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
@@ -66,11 +64,6 @@ private:
   std::optional<int> m_toggleFullscreenKey;
 
 };
-
-[[nodiscard]] inline auto render_target:: get() -> render_target&
-{
-  return *m_instance;
-}
 
 [[nodiscard]] inline auto render_target::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
 {
