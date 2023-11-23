@@ -23,6 +23,8 @@
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
+  pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
+  
   main_window::create(instance, cmdShow);
   render_target::create(main_window::handle());
   screen_input_state::create(instance, main_window::handle());

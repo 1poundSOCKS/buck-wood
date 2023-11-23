@@ -30,7 +30,6 @@ public:
   [[nodiscard]] static auto gameSpeedMultiplier() -> float;
   static auto setGameSpeedMultiplier(float value) -> void;
   [[nodiscard]] static auto gameUpdateInterval(int64_t ticks) -> float;
-  [[nodiscard]] static auto rng() -> std::mt19937&;
 
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
@@ -60,8 +59,6 @@ private:
 private:
 
   static render_target* m_instance;
-  static inline std::mt19937 m_rng; // pseudo-random generator
-
   HINSTANCE m_appInstance = nullptr;
   bool m_closeApp { false };
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
@@ -131,11 +128,6 @@ inline auto render_target::setGameSpeedMultiplier(float value) -> void
 [[nodiscard]] inline auto render_target::gameUpdateInterval(int64_t ticks) -> float
 {
   return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_instance->m_gameSpeedMultiplier;
-}
-
-[[nodiscard]] inline auto render_target::rng() -> std::mt19937&
-{
-  return m_rng;
 }
 
 inline auto render_target::fullScreen() -> void

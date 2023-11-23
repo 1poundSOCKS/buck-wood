@@ -13,8 +13,8 @@ auto explosion::particle_state::Initialize(float x, float y) -> void
   m_startX = m_x = x;
   m_startY = m_y = y;
 
-  auto angle = static_cast<float>(particleAngleDist(render_target::rng()));
-  const auto velocity = static_cast<float>(particleSpeedDist(render_target::rng()));
+  auto angle = static_cast<float>(particleAngleDist(pseudo_random_generator::get()));
+  const auto velocity = static_cast<float>(particleSpeedDist(pseudo_random_generator::get()));
 
   m_xVelocity = CalculateVectorX(velocity, angle);
   m_yVelocity = CalculateVectorY(velocity, angle);

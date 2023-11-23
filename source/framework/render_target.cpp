@@ -30,7 +30,6 @@ render_target::render_target(HWND wnd)
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
   m_swapChain->SetFullscreenState(FALSE, NULL);
-  m_rng.seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 }
 
 auto render_target::ProcessWindowMessages() -> bool
