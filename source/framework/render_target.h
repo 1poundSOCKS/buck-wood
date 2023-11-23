@@ -36,8 +36,6 @@ public:
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
   template <typename screen_state_type> static auto openScreen() -> void;
-  static auto DisableMouse() -> void;
-  [[nodiscard]] static auto MouseEnabled() -> bool;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -72,7 +70,6 @@ private:
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
   std::optional<int> m_toggleFullscreenKey;
-  bool m_mouseEnabled { true };
 
 };
 
@@ -191,16 +188,6 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
 
     m_swapChain->Present(m_unlockFrameRate ? 0 : 1, 0);
   }
-}
-
-inline auto render_target::DisableMouse() -> void
-{
-  m_instance->m_mouseEnabled = false;
-}
-
-[[nodiscard]] inline auto render_target::MouseEnabled() -> bool
-{
-  return m_instance->m_mouseEnabled;
 }
 
 inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void

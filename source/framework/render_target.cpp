@@ -40,10 +40,7 @@ auto render_target::Init() -> void
   m_swapChain = CreateSwapChain(m_window, render_target::fps(), 1);
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
-
-  HRESULT hr = m_swapChain->SetFullscreenState(FALSE, NULL);
-  if( FAILED(hr) ) 
-    throw std::exception();
+  m_swapChain->SetFullscreenState(FALSE, NULL);
 }
 
 auto render_target::ProcessWindowMessages() -> bool

@@ -30,7 +30,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   audio_output::create(wnd);
   renderer::create();
 
-  render_target::DisableMouse();
   render_target::setGameSpeedMultiplier(2.0f);
   render_target::toggleFullscreenOnKeypress(DIK_F12);
 
