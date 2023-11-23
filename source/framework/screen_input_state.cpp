@@ -36,20 +36,21 @@ auto screen_input_state::Update(const window_data& windowData, const render_targ
 auto screen_input_state::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
 {
   winrt::com_ptr<IDirectInput8> directInput;
-  HRESULT hr = DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
-  if( FAILED(hr) ) throw L"error";
+  DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
 
   winrt::com_ptr<IDirectInputDevice8> keyboard;
-  hr = directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
-  if( FAILED(hr) ) throw L"error";
+  
+  if( directInput )
+  {
+    directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
+  }
 
-  hr = keyboard->SetDataFormat(&c_dfDIKeyboard);
-  if( FAILED(hr) ) throw L"error";
-
-  hr = keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-  if( FAILED(hr) ) throw L"error";
-
-  keyboard->Acquire();
+  if( keyboard )
+  {
+    keyboard->SetDataFormat(&c_dfDIKeyboard);
+    keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+    keyboard->Acquire();
+  }
 
   return keyboard;
 }
