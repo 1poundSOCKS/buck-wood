@@ -6,6 +6,7 @@ class audio_output
 public:
 
   static auto create(HWND wnd) -> void;
+  static auto destroy() -> void;
 
   [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
   [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;

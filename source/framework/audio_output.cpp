@@ -6,7 +6,17 @@ audio_output* audio_output::m_instance = nullptr;
 
 auto audio_output::create(HWND wnd) -> void
 {
+  destroy();
   m_instance = new audio_output { wnd };
+}
+
+auto audio_output::destroy() -> void
+{
+  if( m_instance )
+  {
+    delete m_instance;
+    m_instance = nullptr;
+  }
 }
 
 audio_output::audio_output(HWND wnd)

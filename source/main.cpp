@@ -49,6 +49,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   render_target::openScreen<main_menu_screen>(screen_input_state::keyboardReader());
 
   renderer::destroy();
+  audio_output::destroy();
   diagnostics::destroy();
   dwrite_factory::destroy();
   screen_input_state::destroy();
