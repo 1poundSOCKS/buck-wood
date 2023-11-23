@@ -9,9 +9,6 @@ using diagnostics_data_collection = std::vector<std::wstring>;
 using diagnostics_data_const_iterator = diagnostics_data_collection::const_iterator;
 using diagnostics_data_inserter_type = std::back_insert_iterator<diagnostics_data_collection>;
 
-// void FormatDiagnostics(const screen_input_state& inputState, diagnostics_data_inserter_type diagnosticsDataInserter);
-// std::wstring GetDiagnosticsString(diagnostics_data_const_iterator textBegin, diagnostics_data_const_iterator textEnd);
-
 class diagnostics
 {
 
@@ -22,7 +19,7 @@ public:
 
   static auto add(std::wstring_view label, auto value) -> void;
   static auto addTime(std::wstring_view label, int64_t ticks) -> void;
-  static auto addScreenInputState() -> void;
+  static auto addWindowData(const window_data& windowData) -> void;
   static auto setUpdateTime(int64_t ticks) -> void;
   static auto setRenderTime(int64_t ticks) -> void;
   static auto addTimingData() -> void;
@@ -35,7 +32,7 @@ public:
 private:
 
   auto AddTime(std::wstring_view label, int64_t ticks) -> void;
-  auto AddScreenInputState() -> void;
+  auto AddWindowData(const window_data& windowData) -> void;
   auto AddTimingData() -> void;
   [[nodiscard]] auto Text() const -> std::wstring;
 
@@ -60,9 +57,9 @@ inline auto diagnostics::addTime(std::wstring_view label, int64_t ticks) -> void
   m_instance->AddTime(label, ticks);
 }
 
-inline auto diagnostics::addScreenInputState() -> void
+inline auto diagnostics::addWindowData(const window_data& windowData) -> void
 {
-  m_instance->AddScreenInputState();
+  m_instance->AddWindowData(windowData);
 }
 
 inline auto diagnostics::setUpdateTime(int64_t ticks) -> void

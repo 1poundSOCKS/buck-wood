@@ -35,7 +35,7 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
-  template <typename screen_state_type> static auto openScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void;
+  template <typename screen_state_type> static auto openScreen(const keyboard_reader& keyboardReader) -> void;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -44,7 +44,7 @@ private:
 
   render_target(HWND wnd);
 
-  template <typename screen_state_type> auto OpenScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void;
+  template <typename screen_state_type> auto OpenScreen(const keyboard_reader& keyboardReader) -> void;
   auto ToggleFullscreenOnKeypress(int key) -> void;
 
   auto ProcessWindowMessages() -> bool;
@@ -148,12 +148,12 @@ inline auto render_target::toggleFullscreenOnKeypress(int key) -> void
   m_instance->ToggleFullscreenOnKeypress(key);
 }
 
-template <typename screen_state_type> static auto render_target::openScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void
+template <typename screen_state_type> static auto render_target::openScreen(const keyboard_reader& keyboardReader) -> void
 {
-  m_instance->OpenScreen<screen_state_type>(windowData, keyboardReader);
+  m_instance->OpenScreen<screen_state_type>(keyboardReader);
 }
 
-template <typename screen_state_type> auto render_target::OpenScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void
+template <typename screen_state_type> auto render_target::OpenScreen(const keyboard_reader& keyboardReader) -> void
 {
   screen_state_type screenState;
 
@@ -166,7 +166,7 @@ template <typename screen_state_type> auto render_target::OpenScreen(const windo
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    screen_input_state::update(windowData, render_target_mouse_data { windowData, renderTargetSize });
+    screen_input_state::update();
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / render_target::fps();

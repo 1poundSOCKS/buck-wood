@@ -46,7 +46,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     render_target::fullScreen();
   }
 
-  render_target::openScreen<main_menu_screen>(main_window::data(), screen_input_state::keyboardReader());
+  render_target::openScreen<main_menu_screen>(screen_input_state::keyboardReader());
 
   renderer::destroy();
   diagnostics::destroy();

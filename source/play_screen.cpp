@@ -38,7 +38,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t frameInterval) -> void
 {
-  diagnostics::addScreenInputState();
+  diagnostics::addWindowData(main_window::data());
 
   auto startUpdateTime = performance_counter::QueryValue();
 
@@ -265,20 +265,7 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
   }
   else
   {
-    const auto& mouseData = screen_input_state::renderTargetMouseData();
-    const auto& previousMouseData = screen_input_state::previousRenderTargetMouseData();
-    const auto& windowData = screen_input_state::windowData();
-
-    auto mousePosition = transform.GetScreenPosition({ mouseData.x, mouseData.y });
-    auto previousMousePosition = transform.GetScreenPosition({ previousMouseData.x, previousMouseData.y });
-
-    auto playerPosition = m_levelContainer->PlayerPosition();
-    auto playerAngle = playerPosition.AngleTo(mousePosition);
-
-    auto thrust = windowData.mouse.rightButtonDown ? 1.0f : 0;
-    auto shootAngle = windowData.mouse.leftButtonDown ? std::optional<float>(playerAngle) : std::nullopt;
-
-    return { playerAngle, std::nullopt, thrust, shootAngle };
+    return { std::nullopt, std::nullopt, 0, std::nullopt };
   }
 }
 
