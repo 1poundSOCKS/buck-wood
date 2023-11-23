@@ -66,7 +66,6 @@ private:
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
-  winrt::com_ptr<ID2D1PathGeometry> m_pathGeometry;
   bool m_unlockFrameRate { false };
   float m_gameSpeedMultiplier { 1.0f };
   std::optional<int> m_toggleFullscreenKey;
@@ -167,9 +166,11 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
 
   auto keepScreenOpen { true };
   
+  auto renderTargetSize = m_renderTarget->GetSize();
+  
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    screen_input_state::update(m_windowData, GetRenderTargetMouseData(m_windowData, m_renderTarget.get()));
+    screen_input_state::update(m_windowData, render_target_mouse_data { m_windowData, renderTargetSize });
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / render_target::fps();

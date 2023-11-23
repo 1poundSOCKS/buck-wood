@@ -112,21 +112,6 @@ winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory)
   return pathGeometry;
 }
 
-render_target_mouse_data GetRenderTargetMouseData(const window_data& windowData, ID2D1RenderTarget* renderTarget)
-{
-  D2D1_SIZE_F renderTargetSize = renderTarget->GetSize();
-
-  long clientWidth = windowData.clientRect.right - windowData.clientRect.left;
-  long clientHeight = windowData.clientRect.bottom - windowData.clientRect.top;
-  
-  return render_target_mouse_data
-  {
-    static_cast<float>(windowData.mouse.x * renderTargetSize.width) / static_cast<float>(clientWidth), 
-    static_cast<float>(windowData.mouse.y * renderTargetSize.height) / static_cast<float>(clientHeight),
-    renderTargetSize
-  };
-}
-
 LRESULT CALLBACK WndProc(HWND handle, UINT message, WPARAM wParam, LPARAM lParam)
 {
   if( message == WM_MOUSEMOVE )
