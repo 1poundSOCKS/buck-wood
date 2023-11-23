@@ -3,10 +3,10 @@
 
 screen_input_state* screen_input_state::m_instance { nullptr };
 
-auto screen_input_state::create(HINSTANCE instance, HWND window) -> void
+auto screen_input_state::create(HINSTANCE instance, HWND wnd) -> void
 {
   destroy();
-  m_instance = new screen_input_state { instance, window };
+  m_instance = new screen_input_state { instance, wnd };
 }
 
 auto screen_input_state::destroy() -> void

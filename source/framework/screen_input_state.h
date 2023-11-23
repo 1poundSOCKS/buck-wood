@@ -1,6 +1,7 @@
 #pragma once
 
-#include "main_window.h"
+#include "window_data.h"
+#include "render_target_mouse_data.h"
 #include "keyboard_reader.h"
 #include "gamepad_reader.h"
 
@@ -9,7 +10,7 @@ class screen_input_state
 
 public:
 
-  static auto create(HINSTANCE instance, HWND window) -> void;
+  static auto create(HINSTANCE instance, HWND wnd) -> void;
   static auto destroy() -> void;
 
   static auto update(const window_data& windowData, const render_target_mouse_data& renderTargetMouseData) -> void;
@@ -29,7 +30,6 @@ private:
 private:
 
   static screen_input_state* m_instance;
-
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
   window_data m_windowData;
   window_data m_previousWindowData;

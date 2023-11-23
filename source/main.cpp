@@ -23,11 +23,12 @@
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
-  HWND wnd = render_target::create(instance, cmdShow);
-  screen_input_state::create(instance, wnd);
+  main_window::create(instance, cmdShow);
+  render_target::create(main_window::handle());
+  screen_input_state::create(instance, main_window::handle());
   dwrite_factory::create();
   diagnostics::create();
-  audio_output::create(wnd);
+  audio_output::create(main_window::handle());
   renderer::create();
 
   render_target::setGameSpeedMultiplier(2.0f);
@@ -45,13 +46,14 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     render_target::fullScreen();
   }
 
-  render_target::openScreen<main_menu_screen>();
+  render_target::openScreen<main_menu_screen>(main_window::data(), screen_input_state::keyboardReader());
 
   renderer::destroy();
   diagnostics::destroy();
   dwrite_factory::destroy();
   screen_input_state::destroy();
   render_target::destroy();
+  main_window::destroy();
 
   return 0;
 }

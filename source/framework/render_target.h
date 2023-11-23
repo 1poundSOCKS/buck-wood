@@ -14,7 +14,7 @@ class render_target
 {
 public:
 
-  static auto create(HINSTANCE appInstance, int cmdShow) -> HWND;
+  static auto create(HWND wnd) -> void;
   static auto destroy() -> void;
 
   [[nodiscard]] static auto get() -> render_target&;
@@ -35,17 +35,16 @@ public:
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
 
-  template <typename screen_state_type> static auto openScreen() -> void;
+  template <typename screen_state_type> static auto openScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
 
 private:
 
-  render_target(HINSTANCE appInstance, int cmdShow);
-  auto Init() -> void;
+  render_target(HWND wnd);
 
-  template <typename screen_state_type> auto OpenScreen() -> void;
+  template <typename screen_state_type> auto OpenScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void;
   auto ToggleFullscreenOnKeypress(int key) -> void;
 
   auto ProcessWindowMessages() -> bool;
@@ -53,15 +52,17 @@ private:
   auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
 
+  static winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator);
+  static winrt::com_ptr<ID2D1Factory> CreateD2DFactory();
+  static winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory);
+  static winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory);
+
 private:
 
   static render_target* m_instance;
   static inline std::mt19937 m_rng; // pseudo-random generator
 
   HINSTANCE m_appInstance = nullptr;
-  int m_cmdShow { 0 };
-  HWND m_window = nullptr;
-  window_data m_windowData;
   bool m_closeApp { false };
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
@@ -75,11 +76,6 @@ private:
 [[nodiscard]] inline auto render_target:: get() -> render_target&
 {
   return *m_instance;
-}
-
-[[nodiscard]] inline auto render_target::windowData() -> window_data&
-{
-  return m_instance->m_windowData;
 }
 
 [[nodiscard]] inline auto render_target::swapChain() -> winrt::com_ptr<IDXGISwapChain>&
@@ -99,7 +95,7 @@ private:
 
 [[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
 {
-  return ::CreatePathGeometry(m_instance->m_d2dFactory.get());
+  return CreatePathGeometry(m_instance->m_d2dFactory.get());
 }
 
 inline auto render_target::present() -> void
@@ -152,12 +148,12 @@ inline auto render_target::toggleFullscreenOnKeypress(int key) -> void
   m_instance->ToggleFullscreenOnKeypress(key);
 }
 
-template <typename screen_state_type> static auto render_target::openScreen() -> void
+template <typename screen_state_type> static auto render_target::openScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void
 {
-  m_instance->OpenScreen<screen_state_type>();
+  m_instance->OpenScreen<screen_state_type>(windowData, keyboardReader);
 }
 
-template <typename screen_state_type> auto render_target::OpenScreen() -> void
+template <typename screen_state_type> auto render_target::OpenScreen(const window_data& windowData, const keyboard_reader& keyboardReader) -> void
 {
   screen_state_type screenState;
 
@@ -170,12 +166,12 @@ template <typename screen_state_type> auto render_target::OpenScreen() -> void
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    screen_input_state::update(m_windowData, render_target_mouse_data { m_windowData, renderTargetSize });
+    screen_input_state::update(windowData, render_target_mouse_data { windowData, renderTargetSize });
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / render_target::fps();
 
-    if( m_toggleFullscreenKey && screen_input_state::keyboardReader().Pressed(*m_toggleFullscreenKey) )
+    if( m_toggleFullscreenKey && keyboardReader.Pressed(*m_toggleFullscreenKey) )
     {
       BOOL fullScreen = FALSE;
       m_swapChain->GetFullscreenState(&fullScreen, nullptr);

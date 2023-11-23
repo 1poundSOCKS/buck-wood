@@ -44,7 +44,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
-    render_target::openScreen<play_screen>();
+    render_target::openScreen<play_screen>(main_window::data(), screen_input_state::keyboardReader());
     m_startPlay = false;
   }
   else
