@@ -4,12 +4,6 @@
 #include "keyboard_reader.h"
 #include "gamepad_reader.h"
 
-struct client_mouse_data
-{
-  RECT rect;
-  float x = 0, y = 0;
-};
-
 class screen_input_state
 {
 
@@ -45,8 +39,6 @@ private:
   gamepad_reader m_gamepadReader;
 
 };
-
-winrt::com_ptr<IDirectInputDevice8> CreateKeyboard(HINSTANCE instance, HWND window);
 
 inline auto screen_input_state::update(const window_data& windowData, const render_target_mouse_data& mouseData) -> void
 {
