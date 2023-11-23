@@ -65,15 +65,13 @@ explosion::explosion(float x, float y)
   return m_particles;
 }
 
-auto explosion::Update(int64_t tickCount) -> void
+auto explosion::Update(float interval) -> void
 {
-  auto updateInterval = render_target::gameUpdateInterval(tickCount);
-
   auto particle = std::begin(m_particles);
 
   while( particle != std::end(m_particles) )
   {
-    particle->Update(updateInterval);
+    particle->Update(interval);
     particle = particle->HasExpired() ? m_particles.erase(particle) : ++particle;
   }
 }

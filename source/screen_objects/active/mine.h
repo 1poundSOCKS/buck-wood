@@ -17,8 +17,8 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
 
   auto Destroy() -> void;
-  auto Update(int64_t tickCount, float x, float y) -> void;
-  auto Update(int64_t tickCount) -> void;
+  auto Update(float interval, float x, float y) -> void;
+  auto Update(float interval) -> void;
 
 private:
 

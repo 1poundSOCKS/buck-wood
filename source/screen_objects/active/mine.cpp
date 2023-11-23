@@ -8,29 +8,28 @@ mine::mine(float x, float y) : m_body { game_point { x, y } }, m_transformedGeom
   UpdateGeometry();
 }
 
-auto mine::Update(int64_t tickCount, float x, float y) -> void
+auto mine::Update(float interval, float x, float y) -> void
 {
   auto position = m_body.Position();
   auto angle = CalculateAngle(position.x, position.y, x, y);
   m_body.SetAngle(angle);
-  Update(tickCount);
+  Update(interval);
 }
 
-auto mine::Update(int64_t tickCount) -> void
+auto mine::Update(float interval) -> void
 {
   m_previousState = m_body;
 
-  auto updateInterval = render_target::gameUpdateInterval(tickCount);
-  m_spin += m_spinRate * updateInterval;
+  m_spin += m_spinRate * interval;
 
   auto velocity = m_body.Velocity();
-  float velocityChange = 1.0f - 0.1f * updateInterval;
+  float velocityChange = 1.0f - 0.1f * interval;
   velocity.Update(velocityChange, velocityChange);
-  m_body.SetVelocity(velocity);
 
-  m_body.Accelerate(m_thrustPower * updateInterval);
-  
-  m_body.Update(updateInterval);
+  m_body.SetVelocity(velocity);
+  m_body.Accelerate(m_thrustPower * interval);
+  m_body.Update(interval);
+
   UpdateGeometry();
 }
 

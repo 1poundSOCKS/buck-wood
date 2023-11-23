@@ -39,7 +39,7 @@ public:
 
   [[nodiscard]] auto Particles() const -> const particle_collection&;
   
-  auto Update(int64_t tickCount) -> void;
+  auto Update(float interval) -> void;
 
   [[nodiscard]] auto Destroyed() const -> bool;
 

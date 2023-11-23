@@ -4,6 +4,7 @@
 #include "main_menu_screen.h"
 #include "renderers.h"
 #include "command_line.h"
+#include "game_clock.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -33,7 +34,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   audio_output::create(main_window::handle());
   renderer::create();
 
-  render_target::setGameSpeedMultiplier(2.0f);
+  game_clock::setMultiplier(2);
   render_target::toggleFullscreenOnKeypress(DIK_F12);
 
   command_line commandLine { cmdLine };

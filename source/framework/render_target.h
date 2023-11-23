@@ -27,9 +27,9 @@ public:
   [[nodiscard]] static auto fps() -> int;
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
   static auto unlockFrameRate() -> void;
-  [[nodiscard]] static auto gameSpeedMultiplier() -> float;
-  static auto setGameSpeedMultiplier(float value) -> void;
-  [[nodiscard]] static auto gameUpdateInterval(int64_t ticks) -> float;
+  // [[nodiscard]] static auto gameSpeedMultiplier() -> float;
+  // static auto setGameSpeedMultiplier(float value) -> void;
+  // [[nodiscard]] static auto gameUpdateInterval(int64_t ticks) -> float;
 
   static auto fullScreen() -> void;
   static auto toggleFullscreenOnKeypress(int key) -> void;
@@ -115,20 +115,20 @@ inline auto render_target::unlockFrameRate() -> void
   m_instance->m_unlockFrameRate = true;
 }
 
-[[nodiscard]] inline auto render_target::gameSpeedMultiplier() -> float
-{
-  return m_instance->m_gameSpeedMultiplier;
-}
+// [[nodiscard]] inline auto render_target::gameSpeedMultiplier() -> float
+// {
+//   return m_instance->m_gameSpeedMultiplier;
+// }
 
-inline auto render_target::setGameSpeedMultiplier(float value) -> void
-{
-  m_instance->m_gameSpeedMultiplier = value;
-}
+// inline auto render_target::setGameSpeedMultiplier(float value) -> void
+// {
+//   m_instance->m_gameSpeedMultiplier = value;
+// }
 
-[[nodiscard]] inline auto render_target::gameUpdateInterval(int64_t ticks) -> float
-{
-  return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_instance->m_gameSpeedMultiplier;
-}
+// [[nodiscard]] inline auto render_target::gameUpdateInterval(int64_t ticks) -> float
+// {
+//   return static_cast<float>(ticks) / static_cast<float>(clock_frequency::get()) * m_instance->m_gameSpeedMultiplier;
+// }
 
 inline auto render_target::fullScreen() -> void
 {

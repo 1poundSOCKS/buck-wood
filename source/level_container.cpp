@@ -6,6 +6,7 @@
 #include "level_star.h"
 #include "perlin_simplex_noise.h"
 #include "level_explosion.h"
+#include "game_clock.h"
 
 level_container::level_container() : m_reloadTimer { static_cast<float>(m_shotTimeNumerator) / static_cast<float>(m_shotTimeDenominator) }
 {
@@ -33,7 +34,7 @@ auto level_container::HasTimedOut() const -> bool
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
-  auto interval = render_target::gameUpdateInterval(ticks);
+  auto interval = game_clock::getInterval(ticks);
 
   m_updateEvents.reset();
 
@@ -41,7 +42,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   {
     for( auto& mine : m_mines )
     {
-      mine.Update(ticks);
+      mine.Update(interval);
     }
   }
   else
@@ -83,7 +84,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     for( auto& mine : m_mines )
     {
-      mine.Update(ticks, playerPosition.x, playerPosition.y);
+      mine.Update(interval, playerPosition.x, playerPosition.y);
     }
   }
   
