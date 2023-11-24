@@ -5,6 +5,7 @@
 #include "renderers.h"
 #include "command_line.h"
 #include "game_clock.h"
+#include "run_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -32,7 +33,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
   user_input::create(instance, main_window::handle());
-  windows_message_loop::create(swap_chain::get(), render_target::fps());
+  windows_message_loop::create(swap_chain::get(), 60, DIK_F12);
   dwrite_factory::create();
   diagnostics::create();
   audio_output::create(main_window::handle());
@@ -52,7 +53,9 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     swap_chain::fullScreen();
   }
 
-  windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader(), swap_chain::isFrameRateUnlocked(), DIK_F12);
+  // windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader());
+  run_screen<main_menu_screen> screenRunner { 60, DIK_F12 };
+  windows_message_loop::run(screenRunner);
 
   renderer::destroy();
   audio_output::destroy();

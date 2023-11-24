@@ -112,7 +112,7 @@ auto play_screen::Render() const -> void
   auto endRenderTime = performance_counter::QueryValue();
 
   diagnostics::setRenderTime(endRenderTime - startRenderTime);
-  diagnostics::addTimingData(render_target::fps());
+  diagnostics::addTimingData(60);
   diagnostics::updateFrameData();
   renderer::renderDiagnostics();
   diagnostics::clear();

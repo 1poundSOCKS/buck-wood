@@ -8,7 +8,6 @@ public:
   static auto destroy() -> void;
 
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  [[nodiscard]] static auto fps() -> int;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -31,11 +30,6 @@ private:
 [[nodiscard]] inline auto render_target::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
   return m_instance->m_renderTarget;
-}
-
-[[nodiscard]] inline auto render_target::fps() -> int
-{
-  return 60;
 }
 
 inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
