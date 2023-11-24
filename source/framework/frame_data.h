@@ -1,7 +1,4 @@
-#ifndef _perf_data_
-#define _perf_data_
-
-#include "performance_counter.h"
+#pragma once
 
 class frame_data
 {
@@ -20,5 +17,3 @@ private:
   std::vector<int64_t> m_intervalTimes;
   int m_intervalIndex;
 };
-
-#endif

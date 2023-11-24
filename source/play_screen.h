@@ -3,7 +3,6 @@
 #include "framework.h"
 #include "screen_transform.h"
 #include "sound_data.h"
-#include "screen_input_state.h"
 #include "sound_data.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"

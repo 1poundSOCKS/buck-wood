@@ -1,6 +1,5 @@
 #pragma once
 
-#include "screen_input_state.h"
 #include "geometry.h"
 
 class screen_transform

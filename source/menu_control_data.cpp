@@ -1,18 +1,16 @@
 #include "pch.h"
 #include "menu_control_data.h"
 
-menu_control_data::menu_control_data()
+menu_control_data::menu_control_data(const keyboard_reader& keyboardReader, const gamepad_reader& gamepadReader)
 {
-  const auto& currentGamepadState = screen_input_state::gamepadReader().CurrentState();
-  const auto& previousGamepadState = screen_input_state::gamepadReader().PreviousState();
+  const auto& currentGamepadState = gamepadReader.CurrentState();
+  const auto& previousGamepadState = gamepadReader.PreviousState();
 
-  gamepad_button_reader gamepadButtonReader { screen_input_state::gamepadReader() };
+  gamepad_button_reader gamepadButtonReader { gamepadReader };
 
   gamepad_thumbstick leftThumbstick { currentGamepadState.ThumbLX(), currentGamepadState.ThumbLY() };
   gamepad_thumbstick previousLeftThumbstick { previousGamepadState.ThumbLX(), previousGamepadState.ThumbLY() };
 
-  const auto& keyboardReader = screen_input_state::keyboardReader();
-  
   auto thumbstickUp = leftThumbstick.UpPressed() && !previousLeftThumbstick.UpPressed();
   m_up = gamepadButtonReader.Pressed(XINPUT_GAMEPAD_DPAD_UP) || thumbstickUp || keyboardReader.Pressed(DIK_UP);
 

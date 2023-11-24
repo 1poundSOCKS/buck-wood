@@ -1,15 +1,13 @@
 #pragma once
 
-#include "screen_input_state.h"
-#include "gamepad_thumbstick.h"
-#include "gamepad_button_reader.h"
+#include "framework.h"
 
 class menu_control_data
 {
 
 public:
 
-  menu_control_data();
+  menu_control_data(const keyboard_reader& keyboardReader, const gamepad_reader& gamepadReader);
 
   [[nodiscard]] auto GamepadAttached() const -> bool;
 

@@ -1,15 +1,15 @@
 #include "pch.h"
-#include "screen_input_state.h"
+#include "user_input.h"
 
-screen_input_state* screen_input_state::m_instance { nullptr };
+user_input* user_input::m_instance { nullptr };
 
-auto screen_input_state::create(HINSTANCE instance, HWND wnd) -> void
+auto user_input::create(HINSTANCE instance, HWND wnd) -> void
 {
   destroy();
-  m_instance = new screen_input_state { instance, wnd };
+  m_instance = new user_input { instance, wnd };
 }
 
-auto screen_input_state::destroy() -> void
+auto user_input::destroy() -> void
 {
   if( m_instance )
   {
@@ -18,18 +18,18 @@ auto screen_input_state::destroy() -> void
   }
 }
 
-screen_input_state::screen_input_state(HINSTANCE instance, HWND window)
+user_input::user_input(HINSTANCE instance, HWND window)
 {
   m_keyboard = CreateKeyboard(instance, window);
 }
 
-auto screen_input_state::Update() -> void
+auto user_input::Update() -> void
 {
   m_keyboardReader.Update(m_keyboard.get());
   m_gamepadReader.Update();
 }
 
-auto screen_input_state::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
+auto user_input::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
 {
   winrt::com_ptr<IDirectInput8> directInput;
   DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);

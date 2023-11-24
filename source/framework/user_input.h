@@ -5,7 +5,7 @@
 #include "keyboard_reader.h"
 #include "gamepad_reader.h"
 
-class screen_input_state
+class user_input
 {
 
 public:
@@ -20,30 +20,30 @@ public:
 
 private:
 
-  screen_input_state(HINSTANCE instance, HWND window);
+  user_input(HINSTANCE instance, HWND window);
   auto Update() -> void;
   static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
 
 private:
 
-  static screen_input_state* m_instance;
+  static user_input* m_instance;
   winrt::com_ptr<IDirectInputDevice8> m_keyboard;
   keyboard_reader m_keyboardReader;
   gamepad_reader m_gamepadReader;
 
 };
 
-inline auto screen_input_state::update() -> void
+inline auto user_input::update() -> void
 {
   m_instance->Update();
 }
 
-inline auto screen_input_state::keyboardReader() -> const keyboard_reader&
+inline auto user_input::keyboardReader() -> const keyboard_reader&
 {
   return m_instance->m_keyboardReader;
 }
 
-inline auto screen_input_state::gamepadReader() -> const gamepad_reader&
+inline auto user_input::gamepadReader() -> const gamepad_reader&
 {
   return m_instance->m_gamepadReader;
 }

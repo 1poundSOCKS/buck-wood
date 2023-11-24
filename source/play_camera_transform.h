@@ -1,7 +1,5 @@
 #pragma once
 
-#include "screen_input_state.h"
-
 class play_camera_transform
 {
 public:

@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "main_menu_screen.h"
+#include "framework.h"
 #include "screen_render.h"
 #include "render_text_format_def.h"
 #include "play_screen.h"
 #include "global_state.h"
 #include "button.h"
-#include "dwrite_factory.h"
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
@@ -44,12 +44,12 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
-    windows_message_loop::openScreen<play_screen>(screen_input_state::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
+    windows_message_loop::openScreen<play_screen>(user_input::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
     m_startPlay = false;
   }
   else
   {
-    m_menuController.Update(menu_control_data {});
+    m_menuController.Update(menu_control_data { user_input::keyboardReader(), user_input::gamepadReader() });
 
     switch( m_menuController.Selection() )
     {

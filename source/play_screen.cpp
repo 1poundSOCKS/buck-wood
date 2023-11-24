@@ -59,7 +59,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   if( Paused() )
   {
-    m_menuController.Update(menu_control_data {});
+    m_menuController.Update(menu_control_data { user_input::keyboardReader(), user_input::gamepadReader() });
 
     switch( m_menuController.Selection() )
     {
@@ -112,7 +112,7 @@ auto play_screen::Render() const -> void
   auto endRenderTime = performance_counter::QueryValue();
 
   diagnostics::setRenderTime(endRenderTime - startRenderTime);
-  diagnostics::addTimingData();
+  diagnostics::addTimingData(render_target::fps());
   diagnostics::updateFrameData();
   renderer::renderDiagnostics();
   diagnostics::clear();
@@ -240,7 +240,7 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 
 [[nodiscard]] auto play_screen::GetLevelInput(const screen_transform& transform) const -> level_input
 {
-  const auto& currentGamepadState = screen_input_state::gamepadReader().CurrentState();
+  const auto& currentGamepadState = user_input::gamepadReader().CurrentState();
 
   if( currentGamepadState.Connected() )
   {
@@ -295,7 +295,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  return screen_input_state::gamepadReader().Pressed(XINPUT_GAMEPAD_BACK);
+  return user_input::gamepadReader().Pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool

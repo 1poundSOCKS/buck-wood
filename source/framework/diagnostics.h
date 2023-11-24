@@ -1,9 +1,8 @@
 #ifndef _diagnostics_
 #define _diagnostics_
 
-#include "screen_input_state.h"
 #include "frame_data.h"
-#include "text_renderer.h"
+#include "window_data.h"
 
 using diagnostics_data_collection = std::vector<std::wstring>;
 using diagnostics_data_const_iterator = diagnostics_data_collection::const_iterator;
@@ -18,11 +17,11 @@ public:
   static auto destroy() -> void;
 
   static auto add(std::wstring_view label, auto value) -> void;
-  static auto addTime(std::wstring_view label, int64_t ticks) -> void;
+  static auto addTime(std::wstring_view label, int64_t ticks, int fps) -> void;
   static auto addWindowData(const window_data& windowData) -> void;
   static auto setUpdateTime(int64_t ticks) -> void;
   static auto setRenderTime(int64_t ticks) -> void;
-  static auto addTimingData() -> void;
+  static auto addTimingData(int fps) -> void;
   static auto updateFrameData() -> void;
   static auto clear() -> void;
 
@@ -31,15 +30,15 @@ public:
 
 private:
 
-  auto AddTime(std::wstring_view label, int64_t ticks) -> void;
+  auto AddTime(std::wstring_view label, int64_t ticks, int fps) -> void;
   auto AddWindowData(const window_data& windowData) -> void;
-  auto AddTimingData() -> void;
+  auto AddTimingData(int fps) -> void;
   [[nodiscard]] auto Text() const -> std::wstring;
+  static auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float;
 
 private:
 
   static diagnostics* m_instance;
-
   diagnostics_data_collection m_diagnosticsData;
   int64_t m_diagnosticsUpdateTime { 0 };
   int64_t m_diagnosticsRenderTime { 0 };
@@ -52,9 +51,9 @@ inline auto diagnostics::add(std::wstring_view label, auto value) -> void
   m_instance->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
 }
 
-inline auto diagnostics::addTime(std::wstring_view label, int64_t ticks) -> void
+inline auto diagnostics::addTime(std::wstring_view label, int64_t ticks, int fps) -> void
 {
-  m_instance->AddTime(label, ticks);
+  m_instance->AddTime(label, ticks, fps);
 }
 
 inline auto diagnostics::addWindowData(const window_data& windowData) -> void
@@ -72,9 +71,9 @@ inline auto diagnostics::setRenderTime(int64_t ticks) -> void
   m_instance->m_diagnosticsRenderTime = ticks;
 }
 
-inline auto diagnostics::addTimingData() -> void
+inline auto diagnostics::addTimingData(int fps) -> void
 {
-  m_instance->AddTimingData();
+  m_instance->AddTimingData(fps);
 }
 
 inline auto diagnostics::updateFrameData() -> void

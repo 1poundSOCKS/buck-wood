@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "frame_data.h"
+#include "performance_counter.h"
 
 frame_data::frame_data() : m_intervalIndex(-1)
 {

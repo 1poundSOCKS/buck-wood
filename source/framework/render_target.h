@@ -1,15 +1,5 @@
 #pragma once
 
-#include "screen_input_state.h"
-#include "performance_counter.h"
-#include "frame_data.h"
-#include "render_guard.h"
-#include "sound.h"
-#include "sound_buffer.h"
-#include "dwrite_factory.h"
-#include "clock_frequency.h"
-#include "screen_transform.h"
-
 class render_target
 {
 public:

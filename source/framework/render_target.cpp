@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "render_target.h"
-#include "diagnostics.h"
-#include "screen_render.h"
+#include "dwrite_factory.h"
 
 render_target* render_target::m_instance = nullptr;
 

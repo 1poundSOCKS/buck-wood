@@ -1,12 +1,6 @@
 #include "pch.h"
 #include "diagnostics.h"
 #include "performance_counter.h"
-#include "render_target.h"
-
-auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
-{
-  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
-}
 
 diagnostics* diagnostics::m_instance { nullptr };
 
@@ -25,9 +19,9 @@ auto diagnostics::destroy() -> void
   }
 }
 
-auto diagnostics::AddTime(std::wstring_view label, int64_t ticks) -> void
+auto diagnostics::AddTime(std::wstring_view label, int64_t ticks, int fps) -> void
 {
-  auto frameTime = performance_counter::QueryFrequency() / render_target::fps();
+  auto frameTime = performance_counter::QueryFrequency() / fps;
   m_diagnosticsData.emplace_back(std::format(L"{}: {:.1f}", label, GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
 }
 
@@ -38,10 +32,10 @@ auto diagnostics::AddWindowData(const window_data& windowData) -> void
   inserter = std::format(L"client rect: {}, {}", windowData.clientRect.right, windowData.clientRect.bottom);
 }
 
-auto diagnostics::AddTimingData() -> void
+auto diagnostics::AddTimingData(int fps) -> void
 {
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
-  auto frameTime = performance_counter::QueryFrequency() / render_target::fps();
+  auto frameTime = performance_counter::QueryFrequency() / fps;
   m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
   m_diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsRenderTime)));
 }
@@ -54,4 +48,9 @@ auto diagnostics::AddTimingData() -> void
   });
 
   return text;
+}
+
+auto diagnostics::GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float
+{
+  return static_cast<float>(elapsedTime) / static_cast<float>(frameTicks) * 100.0f;
 }

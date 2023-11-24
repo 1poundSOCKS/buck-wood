@@ -1,8 +1,7 @@
 #pragma once
 
-#include "keyboard_reader.h"
 #include "performance_counter.h"
-#include "screen_input_state.h"
+#include "user_input.h"
 
 class windows_message_loop
 {
@@ -67,7 +66,7 @@ auto windows_message_loop::OpenScreen(const keyboard_reader& keyboardReader, boo
   
   while( !ProcessWindowMessages() && keepScreenOpen )
   {
-    screen_input_state::update();
+    user_input::update();
 
     auto timerFrequency = performance_counter::QueryFrequency();
     auto frameTime = timerFrequency / m_fps;

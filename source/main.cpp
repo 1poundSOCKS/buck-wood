@@ -28,7 +28,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   
   main_window::create(instance, cmdShow);
   render_target::create(main_window::handle());
-  screen_input_state::create(instance, main_window::handle());
+  user_input::create(instance, main_window::handle());
   windows_message_loop::create(render_target::swapChain(), render_target::fps());
   dwrite_factory::create();
   diagnostics::create();
@@ -49,14 +49,14 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     render_target::fullScreen();
   }
 
-  windows_message_loop::openScreen<main_menu_screen>(screen_input_state::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
+  windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
 
   renderer::destroy();
   audio_output::destroy();
   diagnostics::destroy();
   dwrite_factory::destroy();
   windows_message_loop::destroy();
-  screen_input_state::destroy();
+  user_input::destroy();
   render_target::destroy();
   main_window::destroy();
 
