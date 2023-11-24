@@ -7,6 +7,7 @@
 #include "pseudo_random_generator.h"
 
 #include "screen_render.h"
+#include "swap_chain.h"
 #include "d2d_factory.h"
 #include "render_target.h"
 #include "render_guard.h"

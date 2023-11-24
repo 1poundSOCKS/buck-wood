@@ -37,10 +37,12 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
   
   main_window::create(instance, cmdShow);
+  swap_chain::create(main_window::handle(), 60, 1);
+  swap_chain::get()->SetFullscreenState(FALSE, NULL);
   d2d_factory::create(); 
-  render_target::create(main_window::handle(), d2d_factory::get_raw());
+  render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
   user_input::create(instance, main_window::handle());
-  windows_message_loop::create(render_target::swapChain(), render_target::fps());
+  windows_message_loop::create(swap_chain::get(), render_target::fps());
   dwrite_factory::create();
   diagnostics::create();
   audio_output::create(main_window::handle());
@@ -52,15 +54,15 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   if( commandLine.Contains(L"-u") )
   {
-    render_target::unlockFrameRate();
+    swap_chain::unlockFrameRate();
   }
 
   if( !commandLine.Contains(L"-w") )
   {
-    render_target::fullScreen();
+    swap_chain::fullScreen();
   }
 
-  windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
+  windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader(), swap_chain::isFrameRateUnlocked(), DIK_F12);
 
   renderer::destroy();
   audio_output::destroy();
@@ -70,6 +72,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   user_input::destroy();
   render_target::destroy();
   d2d_factory::destroy();
+  swap_chain::destroy();
   main_window::destroy();
 
   return 0;
