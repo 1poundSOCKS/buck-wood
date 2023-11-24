@@ -12,6 +12,7 @@ public:
 
   [[nodiscard]] static auto get() -> const winrt::com_ptr<ID2D1Factory>&;
   [[nodiscard]] static auto get_raw() -> ID2D1Factory*;
+  [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
 
 private:
 

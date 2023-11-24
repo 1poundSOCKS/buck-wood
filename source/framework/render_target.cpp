@@ -92,13 +92,3 @@ winrt::com_ptr<ID2D1RenderTarget> render_target::CreateRenderTarget(IDXGISwapCha
 
   return renderTarget;
 }
-
-// winrt::com_ptr<ID2D1PathGeometry> render_target::CreatePathGeometry(ID2D1Factory* d2dFactory)
-// {
-//   winrt::com_ptr<ID2D1PathGeometry> pathGeometry;
-
-//   HRESULT hr = d2dFactory->CreatePathGeometry(pathGeometry.put());
-//   if( FAILED(hr) ) throw L"error";
-
-//   return pathGeometry;
-// }
