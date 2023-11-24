@@ -22,16 +22,6 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
-// winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
-// {
-//   winrt::com_ptr<ID2D1Factory> d2dFactory;
-	
-//   HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
-//   if( FAILED(hr) ) throw L"error";
-  
-//   return d2dFactory;
-// }
-
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
