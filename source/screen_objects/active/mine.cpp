@@ -2,7 +2,9 @@
 #include "mine.h"
 #include "shape_generator.h"
 
-mine::mine(float x, float y) : m_body { game_point { x, y } }, m_transformedGeometry(m_geometry, D2D1::Matrix3x2F::Identity())
+mine::mine(float x, float y) : 
+  m_body { game_point { x, y } }, 
+  m_transformedGeometry { d2d_factory::get_raw(), m_geometry.Get(), D2D1::Matrix3x2F::Identity() }
 {
   m_geometry.Load( shape_generator { 0, 0, 40, 40, 3 } );
   UpdateGeometry();
@@ -36,7 +38,7 @@ auto mine::Update(float interval) -> void
 auto mine::UpdateGeometry() -> void
 {
   auto transform = Transform();
-  m_transformedGeometry = { m_geometry, transform };
+  m_transformedGeometry = { d2d_factory::get_raw(), m_geometry.Get(), transform };
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool

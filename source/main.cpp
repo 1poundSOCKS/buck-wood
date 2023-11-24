@@ -22,12 +22,23 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
+// winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
+// {
+//   winrt::com_ptr<ID2D1Factory> d2dFactory;
+	
+//   HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
+//   if( FAILED(hr) ) throw L"error";
+  
+//   return d2dFactory;
+// }
+
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
   
   main_window::create(instance, cmdShow);
-  render_target::create(main_window::handle());
+  d2d_factory::create(); 
+  render_target::create(main_window::handle(), d2d_factory::get_raw());
   user_input::create(instance, main_window::handle());
   windows_message_loop::create(render_target::swapChain(), render_target::fps());
   dwrite_factory::create();
@@ -58,6 +69,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   windows_message_loop::destroy();
   user_input::destroy();
   render_target::destroy();
+  d2d_factory::destroy();
   main_window::destroy();
 
   return 0;

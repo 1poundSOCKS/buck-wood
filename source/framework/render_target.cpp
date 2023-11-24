@@ -4,9 +4,9 @@
 
 render_target* render_target::m_instance = nullptr;
 
-auto render_target::create(HWND wnd) -> void
+auto render_target::create(HWND wnd, ID2D1Factory* d2dFactory) -> void
 {
-  m_instance = new render_target(wnd);
+  m_instance = new render_target(wnd, d2dFactory);
 }
 
 auto render_target::destroy() -> void
@@ -18,11 +18,10 @@ auto render_target::destroy() -> void
   }
 }
 
-render_target::render_target(HWND wnd)
+render_target::render_target(HWND wnd, ID2D1Factory* d2dFactory)
 {
   m_swapChain = CreateSwapChain(wnd, render_target::fps(), 1);
-  m_d2dFactory = CreateD2DFactory();
-  m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
+  m_renderTarget = CreateRenderTarget(m_swapChain.get(), d2dFactory);
   m_swapChain->SetFullscreenState(FALSE, NULL);
 }
 
@@ -75,16 +74,6 @@ winrt::com_ptr<IDXGISwapChain> render_target::CreateSwapChain(HWND window, UINT 
   return swapChain;
 }
 
-winrt::com_ptr<ID2D1Factory> render_target::CreateD2DFactory()
-{
-  winrt::com_ptr<ID2D1Factory> d2dFactory;
-	
-  HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
-  if( FAILED(hr) ) throw L"error";
-  
-  return d2dFactory;
-}
-
 winrt::com_ptr<ID2D1RenderTarget> render_target::CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory)
 {
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
@@ -104,12 +93,12 @@ winrt::com_ptr<ID2D1RenderTarget> render_target::CreateRenderTarget(IDXGISwapCha
   return renderTarget;
 }
 
-winrt::com_ptr<ID2D1PathGeometry> render_target::CreatePathGeometry(ID2D1Factory* d2dFactory)
-{
-  winrt::com_ptr<ID2D1PathGeometry> pathGeometry;
+// winrt::com_ptr<ID2D1PathGeometry> render_target::CreatePathGeometry(ID2D1Factory* d2dFactory)
+// {
+//   winrt::com_ptr<ID2D1PathGeometry> pathGeometry;
 
-  HRESULT hr = d2dFactory->CreatePathGeometry(pathGeometry.put());
-  if( FAILED(hr) ) throw L"error";
+//   HRESULT hr = d2dFactory->CreatePathGeometry(pathGeometry.put());
+//   if( FAILED(hr) ) throw L"error";
 
-  return pathGeometry;
-}
+//   return pathGeometry;
+// }

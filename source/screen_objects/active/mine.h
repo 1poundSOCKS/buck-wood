@@ -1,6 +1,6 @@
 #pragma once
 
-#include "transformed_path_geometry.h"
+#include "framework.h"
 #include "directional_body.h"
 
 class mine
@@ -33,7 +33,7 @@ private:
   game_angle m_spin;
   bool m_destroyed { false };
 
-  path_geometry m_geometry;
+  path_geometry m_geometry { d2d_factory::get_raw() };
   transformed_path_geometry m_transformedGeometry;
 };
 

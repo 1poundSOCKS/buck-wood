@@ -1,6 +1,15 @@
 #include "pch.h"
 #include "screen_render.h"
-// #include "render.h"
+
+winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
+{
+  winrt::com_ptr<ID2D1Factory> d2dFactory;
+	
+  HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
+  if( FAILED(hr) ) throw L"error";
+  
+  return d2dFactory;
+}
 
 winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
 {

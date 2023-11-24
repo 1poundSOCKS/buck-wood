@@ -1,9 +1,7 @@
 #pragma once
 
+#include "framework.h"
 #include "play_event.h"
-#include "geometry.h"
-#include "path_geometry.h"
-#include "transformed_path_geometry.h"
 #include "reload_timer.h"
 #include "directional_body.h"
 #include "health_status.h"
@@ -55,7 +53,7 @@ private:
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 
-  path_geometry m_geometry;
+  path_geometry m_geometry { d2d_factory::get_raw() };
   transformed_path_geometry m_transformedGeometry;
 };
 

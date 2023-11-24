@@ -28,7 +28,7 @@ level_asteroid::level_asteroid(float x, float y, float maxWidth, float maxHeight
   m_geometry.Load(irregularShape);
   
   auto transform = D2D1::Matrix3x2F::Rotation(angle) * D2D1::Matrix3x2F::Translation(x, y);
-  m_transformedGeometry = transformed_path_geometry { m_geometry, transform };
+  m_transformedGeometry = transformed_path_geometry { d2d_factory::get_raw(), m_geometry.Get(), transform };
 }
 
 [[nodiscard]] auto level_asteroid::Geometry() const -> const transformed_path_geometry&

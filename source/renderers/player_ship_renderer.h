@@ -18,7 +18,7 @@ public:
 private:
 
   geometry_renderer m_renderer { screen_render_brush_dark_grey.CreateBrush(), screen_render_brush_white.CreateBrush(), 2 };
-  path_geometry m_thrusterGeometry;
+  path_geometry m_thrusterGeometry { d2d_factory::get_raw() };
   geometry_renderer m_thrusterRenderer { screen_render_brush_red.CreateBrush() };
 
 };

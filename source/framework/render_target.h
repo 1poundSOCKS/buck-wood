@@ -4,13 +4,13 @@ class render_target
 {
 public:
 
-  static auto create(HWND wnd) -> void;
+  static auto create(HWND wnd, ID2D1Factory* d2dFactory) -> void;
   static auto destroy() -> void;
 
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
-  [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
+  // [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
+  // [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
   [[nodiscard]] static auto fps() -> int;
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
 
@@ -23,22 +23,22 @@ public:
 
 private:
 
-  render_target(HWND wnd);
+  render_target(HWND wnd, ID2D1Factory* d2dFactory);
 
   auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
 
   static winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator);
-  static winrt::com_ptr<ID2D1Factory> CreateD2DFactory();
+  // static winrt::com_ptr<ID2D1Factory> CreateD2DFactory();
   static winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory);
-  static winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory);
+  // static winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory);
 
 private:
 
   static render_target* m_instance;
   HINSTANCE m_appInstance = nullptr;
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
-  winrt::com_ptr<ID2D1Factory> m_d2dFactory;
+  // winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   bool m_unlockFrameRate { false };
 
@@ -49,20 +49,20 @@ private:
   return m_instance->m_swapChain;
 }
 
-[[nodiscard]] inline auto render_target::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
-{
-  return m_instance->m_d2dFactory;  
-}
+// [[nodiscard]] inline auto render_target::d2dFactory() -> winrt::com_ptr<ID2D1Factory>
+// {
+//   return m_instance->m_d2dFactory;  
+// }
 
 [[nodiscard]] inline auto render_target::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
 {
   return m_instance->m_renderTarget;
 }
 
-[[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
-{
-  return CreatePathGeometry(m_instance->m_d2dFactory.get());
-}
+// [[nodiscard]] inline auto render_target::createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+// {
+//   return CreatePathGeometry(m_instance->m_d2dFactory.get());
+// }
 
 inline auto render_target::present() -> void
 {

@@ -6,10 +6,14 @@
 #include "diagnostics.h"
 #include "pseudo_random_generator.h"
 
+#include "screen_render.h"
+#include "d2d_factory.h"
 #include "render_target.h"
 #include "render_guard.h"
 #include "dwrite_factory.h"
 #include "text_renderer.h"
+#include "path_geometry.h"
+#include "transformed_path_geometry.h"
 
 #include "audio_output.h"
 

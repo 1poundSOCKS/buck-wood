@@ -1,7 +1,6 @@
 #pragma once
 
-#include "geometry.h"
-#include "transformed_path_geometry.h"
+#include "framework.h"
 
 class level_asteroid
 {
@@ -12,6 +11,6 @@ public:
 
 private:
 
-  path_geometry m_geometry;
+  path_geometry m_geometry { d2d_factory::get_raw() };
   transformed_path_geometry m_transformedGeometry;
 };
