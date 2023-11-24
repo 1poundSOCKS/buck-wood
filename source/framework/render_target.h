@@ -8,9 +8,7 @@ public:
   static auto destroy() -> void;
 
   [[nodiscard]] static auto swapChain() -> winrt::com_ptr<IDXGISwapChain>&;
-  // [[nodiscard]] static auto d2dFactory() -> winrt::com_ptr<ID2D1Factory>;
   [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
-  // [[nodiscard]] static auto createPathGeometry() -> winrt::com_ptr<ID2D1PathGeometry>;
   [[nodiscard]] static auto fps() -> int;
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
 
