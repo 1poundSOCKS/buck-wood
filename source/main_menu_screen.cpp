@@ -44,7 +44,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
-    render_target::openScreen<play_screen>(screen_input_state::keyboardReader());
+    windows_message_loop::openScreen<play_screen>(screen_input_state::keyboardReader(), render_target::isFrameRateUnlocked(), DIK_F12);
     m_startPlay = false;
   }
   else

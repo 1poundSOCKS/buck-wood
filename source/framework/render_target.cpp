@@ -5,11 +5,6 @@
 
 render_target* render_target::m_instance = nullptr;
 
-auto render_target::ToggleFullscreenOnKeypress(int key) -> void
-{
-  m_toggleFullscreenKey = key;
-}
-
 auto render_target::create(HWND wnd) -> void
 {
   m_instance = new render_target(wnd);
@@ -30,27 +25,6 @@ render_target::render_target(HWND wnd)
   m_d2dFactory = CreateD2DFactory();
   m_renderTarget = CreateRenderTarget(m_swapChain.get(), m_d2dFactory.get());
   m_swapChain->SetFullscreenState(FALSE, NULL);
-}
-
-auto render_target::ProcessWindowMessages() -> bool
-{
-  MSG msg;
-
-  if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (!TranslateAccelerator(msg.hwnd, NULL, &msg))
-    {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-    }
-  
-    if( msg.message == WM_QUIT )
-    {
-      m_closeApp = true;
-    }
-  }
-
-  return m_closeApp;
 }
 
 auto render_target::RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void

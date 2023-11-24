@@ -27,9 +27,6 @@ public:
   static auto present() -> void;
   static auto unlockFrameRate() -> void;
   static auto fullScreen() -> void;
-  static auto toggleFullscreenOnKeypress(int key) -> void;
-
-  template <typename screen_state_type> static auto openScreen(const keyboard_reader& keyboardReader) -> void;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -37,11 +34,6 @@ public:
 private:
 
   render_target(HWND wnd);
-
-  template <typename screen_state_type> auto OpenScreen(const keyboard_reader& keyboardReader) -> void;
-  auto ToggleFullscreenOnKeypress(int key) -> void;
-
-  auto ProcessWindowMessages() -> bool;
 
   auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -55,13 +47,10 @@ private:
 
   static render_target* m_instance;
   HINSTANCE m_appInstance = nullptr;
-  bool m_closeApp { false };
   winrt::com_ptr<IDXGISwapChain> m_swapChain;
   winrt::com_ptr<ID2D1Factory> m_d2dFactory;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
   bool m_unlockFrameRate { false };
-  float m_gameSpeedMultiplier { 1.0f };
-  std::optional<int> m_toggleFullscreenKey;
 
 };
 
@@ -87,7 +76,7 @@ private:
 
 inline auto render_target::present() -> void
 {
-  m_instance->m_swapChain->Present(m_instance->m_unlockFrameRate ? 0 : 1, 0);
+  m_instance->m_swapChain->Present(m_instance->isFrameRateUnlocked() ? 0 : 1, 0);
 }
 
 [[nodiscard]] inline auto render_target::fps() -> int
@@ -108,50 +97,6 @@ inline auto render_target::unlockFrameRate() -> void
 inline auto render_target::fullScreen() -> void
 {
   m_instance->m_swapChain->SetFullscreenState(TRUE, nullptr);
-}
-
-inline auto render_target::toggleFullscreenOnKeypress(int key) -> void
-{
-  m_instance->ToggleFullscreenOnKeypress(key);
-}
-
-template <typename screen_state_type> static auto render_target::openScreen(const keyboard_reader& keyboardReader) -> void
-{
-  m_instance->OpenScreen<screen_state_type>(keyboardReader);
-}
-
-template <typename screen_state_type> auto render_target::OpenScreen(const keyboard_reader& keyboardReader) -> void
-{
-  screen_state_type screenState;
-
-  auto previousTime = performance_counter::QueryValue();
-  auto currentTime = previousTime;
-
-  auto keepScreenOpen { true };
-  
-  auto renderTargetSize = m_renderTarget->GetSize();
-  
-  while( !ProcessWindowMessages() && keepScreenOpen )
-  {
-    screen_input_state::update();
-
-    auto timerFrequency = performance_counter::QueryFrequency();
-    auto frameTime = timerFrequency / render_target::fps();
-
-    if( m_toggleFullscreenKey && keyboardReader.Pressed(*m_toggleFullscreenKey) )
-    {
-      BOOL fullScreen = FALSE;
-      m_swapChain->GetFullscreenState(&fullScreen, nullptr);
-      m_swapChain->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
-    }
-
-    keepScreenOpen = screenState.Refresh(render_target::isFrameRateUnlocked() ? currentTime - previousTime : frameTime);
-
-    previousTime = currentTime;
-    currentTime = performance_counter::QueryValue();
-
-    m_swapChain->Present(m_unlockFrameRate ? 0 : 1, 0);
-  }
 }
 
 inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
