@@ -4,6 +4,7 @@
 #include "clock_frequency.h"
 #include "main_window.h"
 #include "windows_message_loop.h"
+#include "performance_counter.h"
 #include "diagnostics.h"
 #include "pseudo_random_generator.h"
 

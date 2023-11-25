@@ -23,16 +23,15 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
-const int fullscreen_key { DIK_F12 };
-
-auto create_all(HINSTANCE instance, int cmdShow, std::optional<int> framerate) -> void
+auto create_all(HINSTANCE instance, int cmdShow, int screenRefreshRate) -> void
 {
   main_window::create(instance, cmdShow);
-  swap_chain::create(main_window::handle(), framerate ? *framerate : 60, 1);
+  swap_chain::create(main_window::handle(), screenRefreshRate, 1);
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
   user_input::create(instance, main_window::handle());
-  windows_message_loop::create(swap_chain::get(), framerate, fullscreen_key);
+  // windows_message_loop::create(swap_chain::get(), framerate, fullscreen_key);
+  windows_message_loop::create();
   dwrite_factory::create();
   diagnostics::create();
   audio_output::create(main_window::handle());
@@ -64,9 +63,27 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_settings::load();
 
-  create_all(instance, cmdShow, game_settings::framerate());
+  if( command_line::contains(L"-u") )
+  {
+    game_settings::setFramerate(std::nullopt);
+  }
+
+  auto framerate = game_settings::framerate();
+  int screenRefreshRate = framerate ? *framerate : 60;
+
+  create_all(instance, cmdShow, screenRefreshRate);
+
+  if( game_settings::framerate() == std::nullopt )
+  {
+    swap_chain::unlockFrameRate();
+  }
 
   swap_chain::get()->SetFullscreenState(FALSE, NULL);
+
+  if( !command_line::contains(L"-w") )
+  {
+    swap_chain::fullScreen();
+  }
 
   game_volume_controller::setEffectsVolume(6);
   game_volume_controller::setMusicVolume(7);
@@ -79,18 +96,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_clock::setMultiplier(2);
 
-  if( command_line::contains(L"-u") )
-  {
-    swap_chain::unlockFrameRate();
-    game_settings::setFramerate(std::nullopt);
-  }
-
-  if( !command_line::contains(L"-w") )
-  {
-    swap_chain::fullScreen();
-  }
-
-  render_screen<main_menu_screen> mainMenu { 60, fullscreen_key };
+  render_screen<main_menu_screen> mainMenu { 60, DIK_F12 };
   windows_message_loop::run(mainMenu);
 
   destroy_all();

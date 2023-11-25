@@ -1,41 +1,31 @@
 #pragma once
 
-#include "performance_counter.h"
-#include "user_input.h"
-
 class windows_message_loop
 {
 
 public:
 
-  static auto create(const winrt::com_ptr<IDXGISwapChain>& swapChain, std::optional<int> fps, std::optional<int> toggleFullscreenKey) -> void;
+  static auto create() -> void;
   static auto destroy() -> void;
 
   static auto run(auto& callable) -> void;
 
 private:
 
-  windows_message_loop(const winrt::com_ptr<IDXGISwapChain>& swapChain, std::optional<int> fps, std::optional<int> toggleFullscreenKey);
-  template <typename screen_state_type> auto OpenScreen(const keyboard_reader& keyboardReader) -> void;
-  template <typename screen_state_type> auto RefreshScreen(screen_state_type& screenState, __int64 frameTime, const keyboard_reader& keyboardReader) -> bool;
+  windows_message_loop() = default;
   auto ProcessWindowMessages() -> bool;
-  auto ToggleFullscreenOnKeypress(int key) -> void;
 
 private:
 
   inline static windows_message_loop* m_instance { nullptr };
-  winrt::com_ptr<IDXGISwapChain> m_swapChain;
-  std::optional<int> m_fps;
-  std::optional<int> m_toggleFullscreenKey;
-  bool m_presentOnVsync { true };
   bool m_continue { true };
 
 };
 
-inline auto windows_message_loop::create(const winrt::com_ptr<IDXGISwapChain>& swapChain, std::optional<int> fps, std::optional<int> toggleFullscreenKey) -> void
+inline auto windows_message_loop::create() -> void
 {
   destroy();
-  m_instance = new windows_message_loop(swapChain, fps, toggleFullscreenKey);
+  m_instance = new windows_message_loop();
 }
 
 inline auto windows_message_loop::destroy() -> void
