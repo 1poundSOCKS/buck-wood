@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "screen_render.h"
+#include "directx_functions.h"
 
 winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator)
 {

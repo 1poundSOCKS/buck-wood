@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "render_brush_def.h"
-#include "screen_render.h"
+#include "directx_functions.h"
 #include "render_target.h"
 
 render_brush_def::render_brush_def(D2D_COLOR_F color) : m_color { color.r, color.g, color.b, color.a }

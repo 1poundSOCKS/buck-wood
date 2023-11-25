@@ -1,7 +1,5 @@
 #pragma once
 
-#include "screen_render.h"
-
 class d2d_factory
 {
 
@@ -48,9 +46,4 @@ inline auto d2d_factory::destroy() -> void
 [[nodiscard]] inline auto d2d_factory::get_raw() -> ID2D1Factory*
 {
   return m_instance->m_factory.get();
-}
-
-inline d2d_factory::d2d_factory()
-{
-  m_factory = CreateD2DFactory();
 }

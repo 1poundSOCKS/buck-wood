@@ -1,9 +1,10 @@
 #include "pch.h"
-#include "main_menu_screen.h"
 #include "framework.h"
-#include "screen_render.h"
-#include "render_text_format_def.h"
+
+#include "main_menu_screen.h"
 #include "play_screen.h"
+
+#include "render_text_format_def.h"
 #include "global_state.h"
 #include "button.h"
 #include "render_target_area.h"

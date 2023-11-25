@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "render_target.h"
-#include "screen_render.h"
+#include "directx_functions.h"
 #include "dwrite_factory.h"
 
 render_target* render_target::m_instance = nullptr;
@@ -19,9 +19,8 @@ auto render_target::destroy() -> void
   }
 }
 
-render_target::render_target(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory)
-{
-  m_renderTarget = CreateRenderTarget(swapChain, d2dFactory);
+render_target::render_target(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) : m_renderTarget { CreateRenderTarget(swapChain, d2dFactory) }
+{  
 }
 
 auto render_target::RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void

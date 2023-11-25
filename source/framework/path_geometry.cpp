@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "path_geometry.h"
-#include "screen_render.h"
+#include "directx_functions.h"
 
 path_geometry::path_geometry(ID2D1Factory* d2dFactory) : m_geometry { CreatePathGeometry(d2dFactory) }
 {

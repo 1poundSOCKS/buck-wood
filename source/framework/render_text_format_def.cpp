@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "render_text_format_def.h"
-#include "screen_render.h"
+#include "directx_functions.h"
 #include "dwrite_factory.h"
 
 render_text_format_def::render_text_format_def(const std::wstring& fontFamily, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch, float fontSize) : 
