@@ -12,7 +12,6 @@ public:
 
   static auto present() -> void;
   static auto unlockFrameRate() -> void;
-  static auto fullScreen() -> void;
 
   [[nodiscard]] static auto isFrameRateUnlocked() -> bool;
 
@@ -66,9 +65,4 @@ inline auto swap_chain::present() -> void
 inline auto swap_chain::unlockFrameRate() -> void
 {
   m_instance->m_unlockFrameRate = true;
-}
-
-inline auto swap_chain::fullScreen() -> void
-{
-  m_instance->m_swapChain->SetFullscreenState(TRUE, nullptr);
 }

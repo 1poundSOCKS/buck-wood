@@ -77,12 +77,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     swap_chain::unlockFrameRate();
   }
 
-  swap_chain::get()->SetFullscreenState(FALSE, NULL);
-
-  if( !command_line::contains(L"-w") )
-  {
-    swap_chain::fullScreen();
-  }
+  BOOL fullscreen = command_line::contains(L"-w") ? FALSE : TRUE;
+  swap_chain::get()->SetFullscreenState(fullscreen, NULL);
 
   game_volume_controller::setEffectsVolume(6);
   game_volume_controller::setMusicVolume(7);
