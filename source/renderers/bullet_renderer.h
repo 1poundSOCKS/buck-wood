@@ -25,5 +25,5 @@ inline auto bullet_renderer::Write(const bullet& bulletInstance) const -> void
   const auto& position = bulletInstance.Position();
   const auto& brush = m_brushes[bulletInstance.DistanceTravelled() / bulletInstance.Range()];
   D2D1_RECT_F renderRect { m_bulletRect.left + position.x, m_bulletRect.top + position.y, m_bulletRect.right + position.x, m_bulletRect.bottom + position.y };
-  render_target::renderTarget()->FillRectangle(renderRect, brush.get());
+  render_target::get()->FillRectangle(renderRect, brush.get());
 }

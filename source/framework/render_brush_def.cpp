@@ -13,7 +13,7 @@ render_brush_def::render_brush_def(D2D1::ColorF color) : m_color { color }
 
 [[nodiscard]] auto render_brush_def::CreateBrush() const -> winrt::com_ptr<ID2D1SolidColorBrush>
 {
-  return CreateScreenRenderBrush(render_target::renderTarget().get(), m_color);
+  return CreateScreenRenderBrush(render_target::get_raw(), m_color);
 }
 
 [[nodiscard]] auto render_brush_def::CreateBrush(ID2D1RenderTarget* renderTarget) const -> winrt::com_ptr<ID2D1SolidColorBrush>

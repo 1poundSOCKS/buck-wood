@@ -22,6 +22,6 @@ inline auto slider_control_renderer::Write(const player_shields& playerShields) 
 {
   auto shieldRemaining = 100.0f - playerShields.GetDamagePercentage();
   slider_control damageSlider = { render_rect { 50, 500, 100, 800 } };
-  render_target::renderTarget()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_fillBrush.get());
-  render_target::renderTarget()->DrawRectangle(damageSlider.GetBoundingRect(), m_drawBrush.get(), 5);
+  render_target::get()->FillRectangle(damageSlider.GetSliderRect(shieldRemaining), m_fillBrush.get());
+  render_target::get()->DrawRectangle(damageSlider.GetBoundingRect(), m_drawBrush.get(), 5);
 }

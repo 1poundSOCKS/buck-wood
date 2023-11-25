@@ -69,11 +69,11 @@ auto menu_renderer::Write(const setting_slider& settingSlider) const -> void
   {
     if( currentRow++ < settingSlider.Value() )
     {
-      render_target::renderTarget()->FillRectangle(rowRect, m_sliderActiveBrush.get());
+      render_target::get()->FillRectangle(rowRect, m_sliderActiveBrush.get());
     }
     else
     {
-      render_target::renderTarget()->FillRectangle(rowRect, m_sliderInactiveBrush.get());
+      render_target::get()->FillRectangle(rowRect, m_sliderInactiveBrush.get());
     }
   }
 }

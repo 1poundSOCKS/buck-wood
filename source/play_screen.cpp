@@ -16,8 +16,7 @@ play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>(
     Quit();
   }
 
-  const auto& renderTarget = render_target::renderTarget();
-  auto renderTargetSize = renderTarget->GetSize();
+  auto renderTargetSize = render_target::get()->GetSize();
 
   auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
   m_menuController.OpenRoot(menuArea);
@@ -79,21 +78,20 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
 auto play_screen::Render() const -> void
 {
-  const auto& renderTarget = render_target::renderTarget();
-  auto renderTargetSize = renderTarget->GetSize();
+  auto renderTargetSize = render_target::get()->GetSize();
 
-  render_guard renderGuard { render_target::renderTarget() };
+  render_guard renderGuard { render_target::get() };
 
   auto startRenderTime = performance_counter::QueryValue();
 
-  renderTarget->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
+  render_target::get()->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
 
   auto screenTransform = GetLevelRenderTransform();
-  renderTarget->SetTransform(screenTransform.Get());
+  render_target::get()->SetTransform(screenTransform.Get());
   m_levelContainer->Render(screenTransform.GetViewRect(renderTargetSize));
 
   auto overlayRenderTransform = GetOverlayRenderTransform();
-  renderTarget->SetTransform(overlayRenderTransform.Get());
+  render_target::get()->SetTransform(overlayRenderTransform.Get());
 
   if( m_stage == stage::playing )
   {
@@ -223,15 +221,13 @@ auto play_screen::UpdateLevel(int64_t elapsedTicks) -> void
 
   const auto levelInput = GetLevelInput(screenTransform);
 
-  const auto& renderTarget = render_target::renderTarget();
-  auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
+  auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
   m_levelContainer->Update(levelInput, elapsedTicks, viewRect);
 }
 
 auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
-  const auto& renderTarget = render_target::renderTarget();
-  auto renderTargetSize = renderTarget->GetSize();
+  auto renderTargetSize = render_target::get()->GetSize();
   auto cameraPosition = GetCameraPosition(renderTargetSize);
   auto cameraAngle = 0.0f;
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };

@@ -15,8 +15,7 @@
 
 main_menu_screen::main_menu_screen()
 {
-  const auto& renderTarget = render_target::renderTarget();
-  auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
+  auto menuArea = render_target_area(render_target::get()->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
   m_menuController.OpenRoot(menuArea);
 }
 
@@ -53,15 +52,13 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 
 auto main_menu_screen::Render() const -> void
 {
-  const auto& renderTarget = render_target::renderTarget();
-
-  render_guard renderGuard { renderTarget };
+  render_guard renderGuard { render_target::get() };
   
-  renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+  render_target::get()->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
   screen_transform screenTransform;
-  renderTarget->SetTransform(screenTransform.Get());
-  auto viewRect = screenTransform.GetViewRect(renderTarget->GetSize());
+  render_target::get()->SetTransform(screenTransform.Get());
+  auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
   m_menuController.Render(viewRect);
 }

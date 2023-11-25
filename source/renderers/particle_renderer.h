@@ -24,5 +24,5 @@ inline auto particle_renderer::Write(const particle& particleInstance) const -> 
   const auto& brush = m_brushes[particleInstance.Age() / particleInstance.Lifespan()];
   const auto& position = particleInstance.Position();
   const auto particleRect = render_rect { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y };
-  render_target::renderTarget()->FillRectangle(particleRect, brush.get());
+  render_target::get()->FillRectangle(particleRect, brush.get());
 }

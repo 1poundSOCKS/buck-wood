@@ -11,20 +11,20 @@ geometry_renderer::geometry_renderer(const render_brush& fillBrush, const render
 
 auto geometry_renderer::Write(const path_geometry& geometry) const -> void
 {
-  render_target::renderTarget()->FillGeometry(geometry.Get(), m_fillBrush.get());
+  render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
 
   if( m_drawBrush )
   {
-    render_target::renderTarget()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
+    render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
   }
 }
 
 auto geometry_renderer::Write(const transformed_path_geometry& geometry) const -> void
 {
-  render_target::renderTarget()->FillGeometry(geometry.Get(), m_fillBrush.get());
+  render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
 
   if( m_drawBrush )
   {
-    render_target::renderTarget()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
+    render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
   }
 }

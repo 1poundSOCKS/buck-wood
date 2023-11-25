@@ -128,7 +128,7 @@ inline auto renderer::Render(const level_star& star) const -> void
 {
   static const D2D1_RECT_F rect { -4, -4, 4, 4 };
   D2D1_RECT_F renderRect { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y };
-  render_target::renderTarget()->FillRectangle(renderRect, m_starBrush.get());
+  render_target::get()->FillRectangle(renderRect, m_starBrush.get());
 }
 
 inline auto renderer::Render(const player_shields& playerShields) const -> void

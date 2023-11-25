@@ -25,8 +25,7 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
     float distance { 0 };
   };
 
-  const auto& renderTarget = render_target::renderTarget();
-  auto renderTargetSize = renderTarget->GetSize();
+  auto renderTargetSize = render_target::get()->GetSize();
   auto centreX = renderTargetSize.width / 2;
   auto centreY = renderTargetSize.height / 2;
 
@@ -48,6 +47,6 @@ auto level_radar::Render(game_point playerPosition, std::ranges::input_range aut
     D2D1_RECT_F renderRect = { renderPoint.x - 5, renderPoint.y - 5, renderPoint.x + 5, renderPoint.y + 5 };
     auto distanceRatio = min(1.0f, radarTarget.distance / 5000.0f);
 
-    renderTarget->FillRectangle(renderRect, m_brushes[distanceRatio].get());
+    render_target::get()->FillRectangle(renderRect, m_brushes[distanceRatio].get());
   }
 }

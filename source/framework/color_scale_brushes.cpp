@@ -5,12 +5,10 @@
 
 color_scale_brushes::color_scale_brushes(const color_scale& colorScale)
 {
-  const auto& renderTarget = render_target::renderTarget();
-
-  auto brushesView = colorScale | std::ranges::views::transform([&renderTarget](auto color) -> brush_ptr
+  auto brushesView = colorScale | std::ranges::views::transform([](auto color) -> brush_ptr
   {
     render_brush_def brushDef { color };
-    return brushDef.CreateBrush(renderTarget.get());
+    return brushDef.CreateBrush(render_target::get_raw());
   });
 
   std::ranges::copy(std::cbegin(brushesView), std::cend(brushesView), std::back_inserter(m_brushes));

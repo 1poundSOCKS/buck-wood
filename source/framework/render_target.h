@@ -7,7 +7,8 @@ public:
   static auto create(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> void;
   static auto destroy() -> void;
 
-  [[nodiscard]] static auto renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&;
+  [[nodiscard]] static auto get() -> const winrt::com_ptr<ID2D1RenderTarget>&;
+  [[nodiscard]] static auto get_raw() -> ID2D1RenderTarget*;
 
   static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
   static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
@@ -27,9 +28,14 @@ private:
 
 };
 
-[[nodiscard]] inline auto render_target::renderTarget() -> winrt::com_ptr<ID2D1RenderTarget>&
+[[nodiscard]] inline auto render_target::get() -> const winrt::com_ptr<ID2D1RenderTarget>&
 {
   return m_instance->m_renderTarget;
+}
+
+[[nodiscard]] inline auto render_target::get_raw() -> ID2D1RenderTarget*
+{
+  return m_instance->m_renderTarget.get();
 }
 
 inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
