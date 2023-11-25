@@ -26,12 +26,11 @@
 auto create_all(HINSTANCE instance, int cmdShow, int screenRefreshRate) -> void
 {
   main_window::create(instance, cmdShow);
+  windows_message_loop::create();
   swap_chain::create(main_window::handle(), screenRefreshRate, 1);
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
   user_input::create(instance, main_window::handle());
-  // windows_message_loop::create(swap_chain::get(), framerate, fullscreen_key);
-  windows_message_loop::create();
   dwrite_factory::create();
   diagnostics::create();
   audio_output::create(main_window::handle());
@@ -48,11 +47,11 @@ auto destroy_all() -> void
   audio_output::destroy();
   diagnostics::destroy();
   dwrite_factory::destroy();
-  windows_message_loop::destroy();
   user_input::destroy();
   render_target::destroy();
   d2d_factory::destroy();
   swap_chain::destroy();
+  windows_message_loop::destroy();
   main_window::destroy();
 }
 
