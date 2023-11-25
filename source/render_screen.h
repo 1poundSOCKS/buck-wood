@@ -3,12 +3,12 @@
 #include "framework.h"
 
 template <typename screen_state_type>
-class run_screen
+class render_screen
 {
 
 public:
 
-  run_screen(std::optional<int> fps, std::optional<int> toggleFullscreenKey) : 
+  render_screen(std::optional<int> fps, std::optional<int> toggleFullscreenKey) : 
     m_fps { fps }, m_toggleFullscreenKey { toggleFullscreenKey }, m_timerFrequency { performance_counter::QueryFrequency() }, 
     m_previousTime { performance_counter::QueryValue() }, m_currentTime { m_previousTime }
   {

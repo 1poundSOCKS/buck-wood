@@ -5,7 +5,7 @@
 #include "renderers.h"
 #include "command_line.h"
 #include "game_clock.h"
-#include "run_screen.h"
+#include "render_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -53,9 +53,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     swap_chain::fullScreen();
   }
 
-  // windows_message_loop::openScreen<main_menu_screen>(user_input::keyboardReader());
-  run_screen<main_menu_screen> screenRunner { 60, DIK_F12 };
-  windows_message_loop::run(screenRunner);
+  render_screen<main_menu_screen> mainMenu { 60, DIK_F12 };
+  windows_message_loop::run(mainMenu);
 
   renderer::destroy();
   audio_output::destroy();
