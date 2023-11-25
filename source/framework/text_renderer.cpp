@@ -18,17 +18,21 @@ auto text_renderer::Write(const D2D1_RECT_F& rect, DWRITE_PARAGRAPH_ALIGNMENT pa
 {
   m_textFormat->SetParagraphAlignment(paragraphAlignment);
   m_textFormat->SetTextAlignment(textAlignment);
-  render_target::renderText(rect, m_brush.get(), m_textFormat.get(), text);
+  render_target::get()->DrawText(text.data(), static_cast<UINT32>(text.length()), m_textFormat.get(), rect, m_brush.get());
 }
 
 auto text_renderer::Write(DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_TEXT_ALIGNMENT textAlignment, const std::wstring_view& text) -> void
 {
   m_textFormat->SetParagraphAlignment(paragraphAlignment);
   m_textFormat->SetTextAlignment(textAlignment);
-  render_target::renderText(m_brush.get(), m_textFormat.get(), text);
+  auto renderTargetSize = render_target::get()->GetSize();
+  D2D1_RECT_F rect { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 };
+  render_target::get()->DrawText(text.data(), static_cast<UINT32>(text.length()), m_textFormat.get(), rect, m_brush.get());
 }
 
 auto text_renderer::Write(const std::wstring_view& text) -> void
 {
-  render_target::renderText(m_brush.get(), m_textFormat.get(), text);
+  auto renderTargetSize = render_target::get()->GetSize();
+  D2D1_RECT_F rect { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 };
+  render_target::get()->DrawText(text.data(), static_cast<UINT32>(text.length()), m_textFormat.get(), rect, m_brush.get());
 }

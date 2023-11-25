@@ -10,20 +10,13 @@ public:
   [[nodiscard]] static auto get() -> const winrt::com_ptr<ID2D1RenderTarget>&;
   [[nodiscard]] static auto get_raw() -> ID2D1RenderTarget*;
 
-  static auto renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
-  static auto renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
-
 private:
 
   render_target(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory);
 
-  auto RenderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
-  auto RenderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void;
-
 private:
 
   static render_target* m_instance;
-  HINSTANCE m_appInstance = nullptr;
   winrt::com_ptr<ID2D1RenderTarget> m_renderTarget;
 
 };
@@ -36,14 +29,4 @@ private:
 [[nodiscard]] inline auto render_target::get_raw() -> ID2D1RenderTarget*
 {
   return m_instance->m_renderTarget.get();
-}
-
-inline auto render_target::renderText(ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
-{
-  m_instance->RenderText(brush, textFormat, text);
-}
-
-inline auto render_target::renderText(const D2D1_RECT_F& rect, ID2D1SolidColorBrush* brush, IDWriteTextFormat* textFormat, const std::wstring_view& text) -> void
-{
-  m_instance->RenderText(rect, brush, textFormat, text);
 }
