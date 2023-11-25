@@ -1,5 +1,6 @@
 #pragma once
 
+#include "command_line.h"
 #include "clock_frequency.h"
 #include "main_window.h"
 #include "windows_message_loop.h"
@@ -17,6 +18,7 @@
 #include "transformed_path_geometry.h"
 
 #include "audio_output.h"
+#include "sound_buffer_player.h"
 
 #include "user_input.h"
 #include "gamepad_thumbstick.h"

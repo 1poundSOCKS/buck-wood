@@ -10,26 +10,11 @@
 #include "render_target_area.h"
 #include "sound_buffer_player.h"
 #include "volume_controller.h"
-#include "game_settings.h"
 #include "game_volume_controller.h"
 #include "render_screen.h"
 
 main_menu_screen::main_menu_screen()
 {
-  game_settings::load();
-  
-  sound_data::create(L"data");
-
-  game_volume_controller::create();
-  game_volume_controller::setEffectsVolume(6);
-  game_volume_controller::setMusicVolume(7);
-
-  // play sound now to ensure no sound glitch on first real play
-  {
-    sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
-    player.Play();
-  }
-
   const auto& renderTarget = render_target::renderTarget();
   auto menuArea = render_target_area(renderTarget->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
   m_menuController.OpenRoot(menuArea);

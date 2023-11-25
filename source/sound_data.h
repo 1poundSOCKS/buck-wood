@@ -14,6 +14,8 @@ public:
   static size_t mine_exploded;
 
   static auto create(const std::wstring& path) -> void;
+  static auto destroy() -> void;
+  
   [[nodiscard]] static auto get(size_t index) -> const sound_buffer&;
 
 private:

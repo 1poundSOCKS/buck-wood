@@ -10,9 +10,11 @@ public:
 
   static auto setEffectsVolume(int value) -> int;
   static auto setMusicVolume(int value) -> int;
+  static auto setFramerate(std::optional<int> value) -> void;
 
   static auto effectsVolume() -> int;
   static auto musicVolume() -> int;
+  static auto framerate() -> std::optional<int>;
 
 private:
 
@@ -25,6 +27,7 @@ private:
 
   int m_effectsVolume { 10 };
   int m_musicVolume { 10 };
+  std::optional<int> m_framerate { 60 };
 
 };
 
@@ -59,6 +62,11 @@ inline auto game_settings::setMusicVolume(int value) -> int
   return m_instance ? m_instance->m_musicVolume = value : value;
 }
 
+inline auto game_settings::setFramerate(std::optional<int> value) -> void
+{
+  m_instance->m_framerate = value;
+}
+
 inline auto game_settings::effectsVolume() -> int
 {
   return m_instance ? m_instance->m_effectsVolume : 10;
@@ -67,4 +75,9 @@ inline auto game_settings::effectsVolume() -> int
 inline auto game_settings::musicVolume() -> int
 {
   return m_instance ? m_instance->m_musicVolume : 10;
+}
+
+inline auto game_settings::framerate() -> std::optional<int>
+{
+  return m_instance->m_framerate;
 }

@@ -23,8 +23,18 @@ constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
 
 auto sound_data::create(const std::wstring& path) -> void
 {
+  destroy();
   const auto& directSound = audio_output::directSound();
   m_soundData = new sound_data(directSound.get(), path);
+}
+
+auto sound_data::destroy() -> void
+{
+  if( m_soundData )
+  {
+    delete m_soundData;
+    m_soundData = nullptr;
+  }
 }
 
 sound_data::sound_data(IDirectSound8* directSound, const std::wstring& path)

@@ -8,6 +8,7 @@ class game_volume_controller
 public:
 
   static auto create() -> void;
+  static auto destroy() -> void;
 
   static auto minVolume() -> int;
   static auto maxVolume() -> int;
@@ -38,9 +39,16 @@ private:
 
 inline auto game_volume_controller::create() -> void
 {
-  if( m_instance == nullptr )
+  destroy();
+  m_instance = new game_volume_controller();
+}
+
+inline auto game_volume_controller::destroy() -> void
+{
+  if( m_instance )
   {
-    m_instance = new game_volume_controller();
+    delete m_instance;
+    m_instance = nullptr;
   }
 }
 

@@ -1,6 +1,26 @@
 #include "pch.h"
 #include "command_line.h"
 
+auto command_line::create(LPCWSTR cmdLine) -> void
+{
+  destroy();
+  m_instance = new command_line { cmdLine };
+}
+
+auto command_line::destroy() -> void
+{
+  if( m_instance )
+  {
+    delete m_instance;
+    m_instance = nullptr;
+  }
+}
+
+[[nodiscard]] auto command_line::contains(LPCWSTR arg) -> bool
+{
+  return m_instance->Contains(arg);
+}
+
 command_line::command_line(LPCWSTR cmdLine)
 {
   int numArgs { 0 };
