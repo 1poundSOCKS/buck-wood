@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "windows_message_loop.h"
 
+windows_message_loop::windows_message_loop(const winrt::com_ptr<IDXGISwapChain>& swapChain, std::optional<int> fps, std::optional<int> toggleFullscreenKey) : 
+  m_swapChain { swapChain }, m_fps { fps }, m_toggleFullscreenKey { toggleFullscreenKey }
+{
+  m_presentOnVsync = m_fps ? 1 : 0;
+}
+
 auto windows_message_loop::ProcessWindowMessages() -> bool
 {
   MSG msg;
@@ -15,9 +21,9 @@ auto windows_message_loop::ProcessWindowMessages() -> bool
   
     if( msg.message == WM_QUIT )
     {
-      m_closeApp = true;
+      m_continue = false;
     }
   }
 
-  return m_closeApp;
+  return m_continue;
 }
