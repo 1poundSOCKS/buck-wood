@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "audio_output.h"
-#include "sound.h"
+#include "directx_functions.h"
 
 audio_output* audio_output::m_instance = nullptr;
 
