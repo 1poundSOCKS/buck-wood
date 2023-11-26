@@ -5,7 +5,7 @@
 #include "renderers.h"
 #include "game_settings.h"
 #include "game_clock.h"
-#include "render_screen.h"
+#include "screen_container.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -86,7 +86,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_clock::setMultiplier(2);
 
-  render_screen<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
+  screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
   windows_message_loop::run(mainMenu);
 
   destroy_all();
