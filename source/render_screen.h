@@ -32,7 +32,7 @@ public:
     m_previousTime = m_currentTime;
     m_currentTime = performance_counter::QueryValue();
 
-    swap_chain::present();
+    swap_chain::get()->Present(m_fps ? 1 : 0, 0);
 
     return keepOpen;
   }

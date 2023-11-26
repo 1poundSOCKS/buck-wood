@@ -72,11 +72,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   create_all(instance, cmdShow, screenRefreshRate);
 
-  if( game_settings::framerate() == std::nullopt )
-  {
-    swap_chain::unlockFrameRate();
-  }
-
   BOOL fullscreen = command_line::contains(L"-w") ? FALSE : TRUE;
   swap_chain::get()->SetFullscreenState(fullscreen, NULL);
 
@@ -91,7 +86,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_clock::setMultiplier(2);
 
-  render_screen<main_menu_screen> mainMenu { 60, DIK_F12 };
+  render_screen<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
   windows_message_loop::run(mainMenu);
 
   destroy_all();

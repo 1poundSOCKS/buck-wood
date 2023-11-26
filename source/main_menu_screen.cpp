@@ -12,6 +12,7 @@
 #include "volume_controller.h"
 #include "game_volume_controller.h"
 #include "render_screen.h"
+#include "game_settings.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -30,7 +31,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 {
   if( m_startPlay )
   {
-    render_screen<play_screen> playScreen { 60, DIK_F12 };
+    render_screen<play_screen> playScreen { game_settings::framerate(), DIK_F12 };
     windows_message_loop::run(playScreen);
     m_startPlay = false;
   }
