@@ -33,6 +33,7 @@ auto create_all(HINSTANCE instance, int cmdShow, int screenRefreshRate) -> void
   dwrite_factory::create();
   direct_input::create(instance);
   keyboard_device::create(direct_input::get_raw(), main_window::handle());
+  keyboard_reader2::create(keyboard_device::get());
   user_input::create(keyboard_device::get());
   diagnostics::create();
   audio_output::create(main_window::handle());
@@ -49,6 +50,7 @@ auto destroy_all() -> void
   audio_output::destroy();
   diagnostics::destroy();
   user_input::destroy();
+  keyboard_reader2::destroy();
   keyboard_device::destroy();
   direct_input::destroy();
   dwrite_factory::destroy();

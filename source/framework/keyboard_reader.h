@@ -41,3 +41,24 @@ inline auto keyboard_reader::Update(IDirectInputDevice8* keyboard) -> void
 {
   return m_currentState.Down(key) && !m_previousState.Down(key);
 }
+
+class keyboard_reader2
+{
+
+public:
+
+  static auto create(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) -> void;
+  static auto destroy() -> void;
+
+private:
+
+  keyboard_reader2(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice);
+
+private:
+
+  inline static keyboard_reader2* m_instance { nullptr };
+  winrt::com_ptr<IDirectInputDevice8> m_keyboardDevice;
+  std::unique_ptr<keyboard_state> m_currentState;
+  std::unique_ptr<keyboard_state> m_previousState;
+
+};
