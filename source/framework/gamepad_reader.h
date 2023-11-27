@@ -2,7 +2,7 @@
 
 #include "gamepad_state.h"
 
-class gamepad_reader2
+class gamepad_reader
 {
 
 public:
@@ -30,7 +30,7 @@ public:
 
 private:
 
-  gamepad_reader2();
+  gamepad_reader();
   auto Update() -> void;
 
   [[nodiscard]] auto Pressed(int button) const -> bool;
@@ -42,7 +42,7 @@ private:
 
 private:
 
-  inline static gamepad_reader2* m_instance { nullptr };
+  inline static gamepad_reader* m_instance { nullptr };
   std::unique_ptr<gamepad_state> m_currentState;
   std::unique_ptr<gamepad_state> m_previousState;
 

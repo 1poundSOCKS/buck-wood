@@ -236,12 +236,12 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 
 [[nodiscard]] auto play_screen::GetLevelInput(const screen_transform& transform) const -> level_input
 {
-  if( gamepad_reader2::connected() )
+  if( gamepad_reader::connected() )
   {
-    gamepad_thumbstick leftThumbstick { gamepad_reader2::thumb_lx(), gamepad_reader2::thumb_ly(), 8000 };
-    gamepad_thumbstick rightThumbstick { gamepad_reader2::thumb_rx(), gamepad_reader2::thumb_ry(), 5000 };
-    gamepad_trigger leftTrigger { gamepad_reader2::left_trigger() };
-    gamepad_trigger rightTrigger { gamepad_reader2::right_trigger() };
+    gamepad_thumbstick leftThumbstick { gamepad_reader::thumb_lx(), gamepad_reader::thumb_ly(), 8000 };
+    gamepad_thumbstick rightThumbstick { gamepad_reader::thumb_rx(), gamepad_reader::thumb_ry(), 5000 };
+    gamepad_trigger leftTrigger { gamepad_reader::left_trigger() };
+    gamepad_trigger rightTrigger { gamepad_reader::right_trigger() };
 
     diagnostics::add(L"Left thumb X", leftThumbstick.X() );
     diagnostics::add(L"Left thumb Y", leftThumbstick.Y());
@@ -288,7 +288,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader2::pressed(XINPUT_GAMEPAD_BACK);
+  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
