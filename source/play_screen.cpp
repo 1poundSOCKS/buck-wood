@@ -291,7 +291,7 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  return user_input::gamepadReader().Pressed(XINPUT_GAMEPAD_BACK);
+  return keyboard_reader::pressed(DIK_ESCAPE) || user_input::gamepadReader().Pressed(XINPUT_GAMEPAD_BACK);
 }
 
 [[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
