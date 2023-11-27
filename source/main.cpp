@@ -34,7 +34,8 @@ auto create_all(HINSTANCE instance, int cmdShow, int screenRefreshRate) -> void
   direct_input::create(instance);
   keyboard_device::create(direct_input::get_raw(), main_window::handle());
   keyboard_reader2::create(keyboard_device::get());
-  user_input::create(keyboard_device::get());
+  // user_input::create(keyboard_device::get());
+  user_input::create();
   diagnostics::create();
   audio_output::create(main_window::handle());
   renderer::create();

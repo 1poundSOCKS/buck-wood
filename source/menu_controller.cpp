@@ -9,8 +9,11 @@ auto menu_controller::Close() -> void
   }
 }
 
-auto menu_controller::Update(const menu_control_data& controlData) -> void
+// auto menu_controller::Update(const menu_control_data& controlData) -> void
+auto menu_controller::Update() -> void
 {
+  menu_control_data controlData {};
+
   GetCurrent().Update(controlData);
 
   if( controlData.Back() )

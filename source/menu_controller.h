@@ -11,7 +11,8 @@ public:
   menu_controller();
   auto Open(auto && menuObject) -> void;
   auto Close() -> void;
-  auto Update(const menu_control_data& controlData) -> void;
+  // auto Update(const menu_control_data& controlData) -> void;
+  auto Update() -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
   [[nodiscard]] auto GetCurrent() const-> const menu&;
   [[nodiscard]] auto GetCurrent() -> menu&;

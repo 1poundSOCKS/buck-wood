@@ -16,6 +16,16 @@ auto keyboard_reader2::destroy() -> void
   }
 }
 
+auto keyboard_reader2::update() -> void
+{
+  m_instance->Update();
+}
+
+[[nodiscard]] auto keyboard_reader2::pressed(int key) -> bool
+{
+  return m_instance->Pressed(key);
+}
+
 keyboard_reader2::keyboard_reader2(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) : 
   m_keyboardDevice { keyboardDevice }, m_currentState { std::make_unique<keyboard_state>() }, m_previousState { std::make_unique<keyboard_state>() }
 {

@@ -58,7 +58,7 @@ auto play_screen::Update(int64_t frameInterval) -> void
 
   if( Paused() )
   {
-    m_menuController.Update(menu_control_data { user_input::keyboardReader(), user_input::gamepadReader() });
+    m_menuController.Update();
 
     switch( m_menuController.Selection() )
     {

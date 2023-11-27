@@ -7,7 +7,8 @@ class menu_control_data
 
 public:
 
-  menu_control_data(const keyboard_reader& keyboardReader, const gamepad_reader& gamepadReader);
+  // menu_control_data(const keyboard_reader& keyboardReader, const gamepad_reader& gamepadReader);
+  menu_control_data();
 
   [[nodiscard]] auto GamepadAttached() const -> bool;
 

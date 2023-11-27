@@ -16,11 +16,13 @@ public:
 
   auto operator()() -> bool
   {
+    keyboard_reader2::update();
     user_input::update();
 
     auto frameTime = m_fps ? m_timerFrequency / *m_fps : m_currentTime - m_previousTime;
 
-    if( m_toggleFullscreenKey && user_input::keyboardReader().Pressed(*m_toggleFullscreenKey) )
+    // if( m_toggleFullscreenKey && user_input::keyboardReader().Pressed(*m_toggleFullscreenKey) )
+    if( m_toggleFullscreenKey && keyboard_reader2::pressed(*m_toggleFullscreenKey) )
     {
       BOOL fullScreen = FALSE;
       swap_chain::get()->GetFullscreenState(&fullScreen, nullptr);
