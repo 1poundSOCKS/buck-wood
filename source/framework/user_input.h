@@ -10,7 +10,7 @@ class user_input
 
 public:
 
-  static auto create(HINSTANCE instance, HWND wnd) -> void;
+  static auto create(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) -> void;
   static auto destroy() -> void;
 
   static auto update() -> void;
@@ -20,9 +20,9 @@ public:
 
 private:
 
-  user_input(HINSTANCE instance, HWND window);
+  user_input(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice);
   auto Update() -> void;
-  static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
+  // static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
 
 private:
 

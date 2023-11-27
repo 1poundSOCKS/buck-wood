@@ -12,8 +12,10 @@
 #include "swap_chain.h"
 #include "d2d_factory.h"
 #include "render_target.h"
-#include "render_guard.h"
 #include "dwrite_factory.h"
+#include "keyboard_device.h"
+
+#include "render_guard.h"
 #include "text_renderer.h"
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"

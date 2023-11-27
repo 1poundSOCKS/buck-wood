@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "directx_functions.h"
 
-winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator)
+auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator) -> winrt::com_ptr<IDXGISwapChain>
 {
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -39,7 +39,7 @@ winrt::com_ptr<IDXGISwapChain> CreateSwapChain(HWND window, UINT refreshRateNume
   return swapChain;
 }
 
-winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
+auto CreateD2DFactory() -> winrt::com_ptr<ID2D1Factory>
 {
   winrt::com_ptr<ID2D1Factory> d2dFactory;
 	
@@ -49,7 +49,7 @@ winrt::com_ptr<ID2D1Factory> CreateD2DFactory()
   return d2dFactory;
 }
 
-winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory)
+auto CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> winrt::com_ptr<ID2D1RenderTarget>
 {
   winrt::com_ptr<ID2D1RenderTarget> renderTarget;
 
@@ -68,7 +68,7 @@ winrt::com_ptr<ID2D1RenderTarget> CreateRenderTarget(IDXGISwapChain* swapChain, 
   return renderTarget;
 }
 
-winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
+auto CreateDWriteFactory() -> winrt::com_ptr<IDWriteFactory>
 {
   winrt::com_ptr<IDWriteFactory> dwriteFactory;
   HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(dwriteFactory),reinterpret_cast<IUnknown**>(dwriteFactory.put()));
@@ -76,7 +76,7 @@ winrt::com_ptr<IDWriteFactory> CreateDWriteFactory()
   return dwriteFactory;
 }
 
-winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory)
+auto CreatePathGeometry(ID2D1Factory* d2dFactory) -> winrt::com_ptr<ID2D1PathGeometry>
 {
   winrt::com_ptr<ID2D1PathGeometry> pathGeometry;
 
@@ -86,7 +86,7 @@ winrt::com_ptr<ID2D1PathGeometry> CreatePathGeometry(ID2D1Factory* d2dFactory)
   return pathGeometry;
 }
 
-winrt::com_ptr<ID2D1TransformedGeometry> CreateTransformedGeometry(ID2D1Factory* d2dFactory, ID2D1PathGeometry* geometry, const D2D1_MATRIX_3X2_F& transform)
+auto CreateTransformedGeometry(ID2D1Factory* d2dFactory, ID2D1PathGeometry* geometry, const D2D1_MATRIX_3X2_F& transform) -> winrt::com_ptr<ID2D1TransformedGeometry>
 {
   winrt::com_ptr<ID2D1TransformedGeometry> transformedGeometry;
   HRESULT hr = d2dFactory->CreateTransformedGeometry(geometry, transform, transformedGeometry.put());
@@ -94,7 +94,7 @@ winrt::com_ptr<ID2D1TransformedGeometry> CreateTransformedGeometry(ID2D1Factory*
   return transformedGeometry;
 }
 
-winrt::com_ptr<ID2D1SolidColorBrush> CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color)
+auto CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color) -> winrt::com_ptr<ID2D1SolidColorBrush>
 {
   winrt::com_ptr<ID2D1SolidColorBrush> brush;
   HRESULT hr = renderTarget->CreateSolidColorBrush(color, brush.put());
@@ -102,13 +102,8 @@ winrt::com_ptr<ID2D1SolidColorBrush> CreateScreenRenderBrush(ID2D1RenderTarget* 
   return brush;
 }
 
-winrt::com_ptr<IDWriteTextFormat> CreateScreenRenderTextFormat(
-  IDWriteFactory* writeFactory, 
-  LPCWSTR fontFamily, 
-  DWRITE_FONT_WEIGHT fontWeight, 
-  DWRITE_FONT_STYLE fontStyle,
-  DWRITE_FONT_STRETCH fontStretch,
-  float fontSize)
+auto CreateScreenRenderTextFormat(IDWriteFactory* writeFactory, LPCWSTR fontFamily, DWRITE_FONT_WEIGHT fontWeight, 
+  DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch, float fontSize) -> winrt::com_ptr<IDWriteTextFormat>
 {
   winrt::com_ptr<IDWriteTextFormat> textFormat;
   HRESULT hr = writeFactory->CreateTextFormat(fontFamily, NULL, fontWeight, fontStyle, fontStretch, fontSize, L"", textFormat.put());
@@ -116,7 +111,7 @@ winrt::com_ptr<IDWriteTextFormat> CreateScreenRenderTextFormat(
   return textFormat;
 }
 
-winrt::com_ptr<IDirectSound8> CreateDirectSound(HWND window)
+auto CreateDirectSound(HWND window) -> winrt::com_ptr<IDirectSound8>
 {
   winrt::com_ptr<IDirectSound8> directSound;
 
@@ -131,7 +126,7 @@ winrt::com_ptr<IDirectSound8> CreateDirectSound(HWND window)
   return directSound;
 }
 
-winrt::com_ptr<IDirectSoundBuffer> CreatePrimarySoundBuffer(IDirectSound8* directSound)
+auto CreatePrimarySoundBuffer(IDirectSound8* directSound) -> winrt::com_ptr<IDirectSoundBuffer>
 {
   DSBUFFERDESC bufferDesc;
   bufferDesc.dwSize = sizeof(DSBUFFERDESC);

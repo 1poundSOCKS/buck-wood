@@ -3,10 +3,10 @@
 
 user_input* user_input::m_instance { nullptr };
 
-auto user_input::create(HINSTANCE instance, HWND wnd) -> void
+auto user_input::create(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) -> void
 {
   destroy();
-  m_instance = new user_input { instance, wnd };
+  m_instance = new user_input { keyboardDevice };
 }
 
 auto user_input::destroy() -> void
@@ -18,9 +18,9 @@ auto user_input::destroy() -> void
   }
 }
 
-user_input::user_input(HINSTANCE instance, HWND window)
+user_input::user_input(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) : m_keyboard { keyboardDevice }
 {
-  m_keyboard = CreateKeyboard(instance, window);
+  // m_keyboard = CreateKeyboard(instance, window);
 }
 
 auto user_input::Update() -> void
@@ -29,24 +29,24 @@ auto user_input::Update() -> void
   m_gamepadReader.Update();
 }
 
-auto user_input::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
-{
-  winrt::com_ptr<IDirectInput8> directInput;
-  DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
+// auto user_input::CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
+// {
+//   winrt::com_ptr<IDirectInput8> directInput;
+//   DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
 
-  winrt::com_ptr<IDirectInputDevice8> keyboard;
+//   winrt::com_ptr<IDirectInputDevice8> keyboard;
   
-  if( directInput )
-  {
-    directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
-  }
+//   if( directInput )
+//   {
+//     directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
+//   }
 
-  if( keyboard )
-  {
-    keyboard->SetDataFormat(&c_dfDIKeyboard);
-    keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-    keyboard->Acquire();
-  }
+//   if( keyboard )
+//   {
+//     keyboard->SetDataFormat(&c_dfDIKeyboard);
+//     keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+//     keyboard->Acquire();
+//   }
 
-  return keyboard;
-}
+//   return keyboard;
+// }
