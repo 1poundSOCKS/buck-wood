@@ -50,6 +50,9 @@ public:
   static auto create(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice) -> void;
   static auto destroy() -> void;
 
+  auto Update() -> void;
+  [[nodiscard]] auto Pressed(int key) const -> bool;
+
 private:
 
   keyboard_reader2(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice);
