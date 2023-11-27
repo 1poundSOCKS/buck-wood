@@ -24,6 +24,6 @@
 #include "audio_output.h"
 #include "sound_buffer_player.h"
 
-#include "user_input.h"
+#include "keyboard_reader.h"
+#include "gamepad_reader.h"
 #include "gamepad_thumbstick.h"
-#include "gamepad_button_reader.h"

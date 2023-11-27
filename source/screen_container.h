@@ -17,7 +17,7 @@ public:
   auto operator()() -> bool
   {
     keyboard_reader::update();
-    user_input::update();
+    gamepad_reader2::update();
 
     auto frameTime = m_fps ? m_timerFrequency / *m_fps : m_currentTime - m_previousTime;
 

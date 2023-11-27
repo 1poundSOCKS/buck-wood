@@ -2,42 +2,48 @@
 
 #include "gamepad_state.h"
 
-class gamepad_reader
+class gamepad_reader2
 {
 
 public:
 
-  [[nodiscard]] auto CurrentState() const -> const gamepad_state&;
-  [[nodiscard]] auto PreviousState() const -> const gamepad_state&;
+  static auto create() -> void;
+  static auto destroy() -> void;
 
-  auto Update() -> DWORD;
+  static [[nodiscard]] auto connected() -> bool;
 
-  [[nodiscard]] auto Pressed(int button) const -> bool;
+  static auto update() -> void;
+  
+  static [[nodiscard]] auto pressed(int button) -> bool;  
+  static [[nodiscard]] auto up_pressed() -> bool;
+  static [[nodiscard]] auto down_pressed() -> bool;
+  static [[nodiscard]] auto left_pressed() -> bool;
+  static [[nodiscard]] auto right_pressed() -> bool;
+
+  static [[nodiscard]] auto thumb_lx() -> SHORT;
+  static [[nodiscard]] auto thumb_ly() -> SHORT;
+  static [[nodiscard]] auto thumb_rx() -> SHORT;
+  static [[nodiscard]] auto thumb_ry() -> SHORT;
+  static [[nodiscard]] auto left_trigger() -> BYTE;
+  static [[nodiscard]] auto right_trigger() -> BYTE;
+  static [[nodiscard]] auto buttons() -> WORD;
 
 private:
 
-  gamepad_state m_currentState;
-  gamepad_state m_previousState;
+  gamepad_reader2();
+  auto Update() -> void;
+
+  [[nodiscard]] auto Pressed(int button) const -> bool;
+  [[nodiscard]] auto UpPressed() -> bool;
+  [[nodiscard]] auto DownPressed() -> bool;
+  [[nodiscard]] auto LetfPressed() -> bool;
+  [[nodiscard]] auto RightPressed() -> bool;
+
+
+private:
+
+  inline static gamepad_reader2* m_instance { nullptr };
+  std::unique_ptr<gamepad_state> m_currentState;
+  std::unique_ptr<gamepad_state> m_previousState;
 
 };
-
-[[nodiscard]] inline auto gamepad_reader::CurrentState() const -> const gamepad_state&
-{
-  return m_currentState;
-}
-
-[[nodiscard]] inline auto gamepad_reader::PreviousState() const -> const gamepad_state&
-{
-  return m_previousState;
-}
-
-inline auto gamepad_reader::Update() -> DWORD
-{
-  m_previousState = m_currentState;
-  return m_currentState.Update();
-}
-
-[[nodiscard]] inline auto gamepad_reader::Pressed(int button) const -> bool
-{
-  return m_currentState.Down(button) && !m_previousState.Down(button);
-}
