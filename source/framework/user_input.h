@@ -22,7 +22,6 @@ private:
 
   user_input(const winrt::com_ptr<IDirectInputDevice8>& keyboardDevice);
   auto Update() -> void;
-  // static auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
 
 private:
 

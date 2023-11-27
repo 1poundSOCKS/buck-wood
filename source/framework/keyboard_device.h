@@ -7,10 +7,10 @@ class keyboard_device : public com_singleton<IDirectInputDevice8>
 
 public:
 
-  static auto create(HINSTANCE instance, HWND window) -> void;
+  static auto create(IDirectInput8* directInput, HWND wnd) -> void;
 
 private:
 
-  keyboard_device(HINSTANCE instance, HWND window);
+  keyboard_device(IDirectInput8* directInput, HWND wnd);
 
 };

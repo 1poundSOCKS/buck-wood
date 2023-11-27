@@ -155,17 +155,17 @@ auto CreatePrimarySoundBuffer(IDirectSound8* directSound) -> winrt::com_ptr<IDir
   return primaryBuffer;
 }
 
-auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
+auto CreateDirectInput(HINSTANCE instance) -> winrt::com_ptr<IDirectInput8>
 {
   winrt::com_ptr<IDirectInput8> directInput;
   DirectInput8Create(instance, DIRECTINPUT_VERSION, IID_IDirectInput8, directInput.put_void(), NULL);
+  return directInput;
+}
 
+auto CreateKeyboard(IDirectInput8* directInput, HWND window) -> winrt::com_ptr<IDirectInputDevice8>
+{
   winrt::com_ptr<IDirectInputDevice8> keyboard;
-  
-  if( directInput )
-  {
-    directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
-  }
+  directInput->CreateDevice(GUID_SysKeyboard, keyboard.put(), NULL);
 
   if( keyboard )
   {

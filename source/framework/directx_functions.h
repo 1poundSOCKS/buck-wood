@@ -10,4 +10,5 @@ auto CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color
 auto CreateScreenRenderTextFormat(IDWriteFactory* writeFactory, LPCWSTR fontFamily, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle,DWRITE_FONT_STRETCH fontStretch, float fontSize) -> winrt::com_ptr<IDWriteTextFormat>;
 auto CreateDirectSound(HWND window) -> winrt::com_ptr<IDirectSound8>;
 auto CreatePrimarySoundBuffer(IDirectSound8* directSound) -> winrt::com_ptr<IDirectSoundBuffer>;
-auto CreateKeyboard(HINSTANCE instance, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;
+auto CreateDirectInput(HINSTANCE instance) -> winrt::com_ptr<IDirectInput8>;
+auto CreateKeyboard(IDirectInput8* directInput, HWND window) -> winrt::com_ptr<IDirectInputDevice8>;

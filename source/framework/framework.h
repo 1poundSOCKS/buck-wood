@@ -13,6 +13,7 @@
 #include "d2d_factory.h"
 #include "render_target.h"
 #include "dwrite_factory.h"
+#include "direct_input.h"
 #include "keyboard_device.h"
 
 #include "render_guard.h"
