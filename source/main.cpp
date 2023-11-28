@@ -36,9 +36,10 @@ auto create_all(HINSTANCE instance, int cmdShow, int screenRefreshRate) -> void
   keyboard_reader::create(keyboard_device::get());
   gamepad_reader::create();
   diagnostics::create();
-  audio_output::create(main_window::handle());
+  direct_sound::create(main_window::handle());
+  audio_output::create(direct_sound::get_raw());
   renderer::create();
-  sound_data::create(L"data");
+  sound_data::create(direct_sound::get_raw(), L"data");
   game_volume_controller::create();
 }
 
@@ -48,6 +49,7 @@ auto destroy_all() -> void
   sound_data::destroy();
   renderer::destroy();
   audio_output::destroy();
+  direct_sound::destroy();
   diagnostics::destroy();
   gamepad_reader::destroy();
   keyboard_reader::destroy();

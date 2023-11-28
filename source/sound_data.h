@@ -13,7 +13,7 @@ public:
   static size_t target_activated;
   static size_t mine_exploded;
 
-  static auto create(const std::wstring& path) -> void;
+  static auto create(IDirectSound8* directSound, const std::wstring& path) -> void;
   static auto destroy() -> void;
   
   [[nodiscard]] static auto get(size_t index) -> const sound_buffer&;

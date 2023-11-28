@@ -21,6 +21,7 @@
 #include "path_geometry.h"
 #include "transformed_path_geometry.h"
 
+#include "direct_sound.h"
 #include "audio_output.h"
 #include "sound_buffer_player.h"
 

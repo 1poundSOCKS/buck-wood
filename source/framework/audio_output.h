@@ -1,32 +1,16 @@
 #pragma once
 
-class audio_output
+#include "com_singleton.h"
+
+class audio_output : public com_singleton<IDirectSoundBuffer>
 {
 
 public:
 
-  static auto create(HWND wnd) -> void;
-  static auto destroy() -> void;
-
-  [[nodiscard]] static auto directSound() -> winrt::com_ptr<IDirectSound8>&;
-  [[nodiscard]] static auto primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&;
+  static auto create(IDirectSound8* directSound) -> void;
 
 private:
 
-  static audio_output* m_instance;
-
-  audio_output(HWND wnd);
-  winrt::com_ptr<IDirectSound8> m_directSound;
-  winrt::com_ptr<IDirectSoundBuffer> m_primarySoundBuffer;
+  audio_output(IDirectSound8* directSound);
 
 };
-
-[[nodiscard]] inline auto audio_output::directSound() -> winrt::com_ptr<IDirectSound8>&
-{
-  return m_instance->m_directSound;
-}
-
-[[nodiscard]] inline auto audio_output::primarySoundBuffer() -> winrt::com_ptr<IDirectSoundBuffer>&
-{
-  return m_instance->m_primarySoundBuffer;
-}
