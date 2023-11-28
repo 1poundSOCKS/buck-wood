@@ -130,7 +130,5 @@ auto gamepad_reader::Update() -> void
 
 [[nodiscard]] auto gamepad_reader::ToFloat(BYTE value) -> float
 {
-  constexpr auto positiveShift = -CHAR_MIN;
-  auto positiveShiftedValue = static_cast<float>(value) + positiveShift;
-  return positiveShiftedValue / positiveShift - 1.0f;
+  return static_cast<float>(value) / UCHAR_MAX;
 }
