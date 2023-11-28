@@ -22,7 +22,7 @@
 #include "transformed_path_geometry.h"
 
 #include "direct_sound.h"
-#include "audio_output.h"
+#include "primary_sound_buffer.h"
 #include "sound_buffer_player.h"
 
 #include "keyboard_reader.h"

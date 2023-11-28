@@ -2,7 +2,7 @@
 
 #include "com_singleton.h"
 
-class audio_output : public com_singleton<IDirectSoundBuffer>
+class primary_sound_buffer : public com_singleton<IDirectSoundBuffer>
 {
 
 public:
@@ -11,6 +11,6 @@ public:
 
 private:
 
-  audio_output(IDirectSound8* directSound);
+  primary_sound_buffer(IDirectSound8* directSound);
 
 };
