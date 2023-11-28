@@ -66,6 +66,7 @@ auto destroy_all() -> void
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   command_line::create(cmdLine);
+  
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 
   game_settings::load();

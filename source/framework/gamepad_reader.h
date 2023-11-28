@@ -20,12 +20,13 @@ public:
   static [[nodiscard]] auto left_pressed() -> bool;
   static [[nodiscard]] auto right_pressed() -> bool;
 
-  static [[nodiscard]] auto thumb_lx() -> SHORT;
-  static [[nodiscard]] auto thumb_ly() -> SHORT;
-  static [[nodiscard]] auto thumb_rx() -> SHORT;
-  static [[nodiscard]] auto thumb_ry() -> SHORT;
-  static [[nodiscard]] auto left_trigger() -> BYTE;
-  static [[nodiscard]] auto right_trigger() -> BYTE;
+  static [[nodiscard]] auto thumb_lx() -> float;
+  static [[nodiscard]] auto thumb_ly() -> float;
+  static [[nodiscard]] auto thumb_rx() -> float;
+  static [[nodiscard]] auto thumb_ry() -> float;
+  static [[nodiscard]] auto left_trigger() -> float;
+  static [[nodiscard]] auto right_trigger() -> float;
+
   static [[nodiscard]] auto buttons() -> WORD;
 
 private:
@@ -39,6 +40,8 @@ private:
   [[nodiscard]] auto LetfPressed() -> bool;
   [[nodiscard]] auto RightPressed() -> bool;
 
+  static [[nodiscard]] auto ToFloat(SHORT value) -> float;
+  static [[nodiscard]] auto ToFloat(BYTE value) -> float;
 
 private:
 

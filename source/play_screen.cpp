@@ -238,21 +238,13 @@ auto play_screen::GetLevelRenderTransform() const -> screen_transform
 {
   if( gamepad_reader::connected() )
   {
-    gamepad_thumbstick leftThumbstick { gamepad_reader::thumb_lx(), gamepad_reader::thumb_ly(), 8000 };
-    gamepad_thumbstick rightThumbstick { gamepad_reader::thumb_rx(), gamepad_reader::thumb_ry(), 5000 };
-    gamepad_trigger leftTrigger { gamepad_reader::left_trigger() };
-    gamepad_trigger rightTrigger { gamepad_reader::right_trigger() };
+    diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
+    diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
+    diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
 
-    diagnostics::add(L"Left thumb X", leftThumbstick.X() );
-    diagnostics::add(L"Left thumb Y", leftThumbstick.Y());
-    diagnostics::add(L"Left thumb X ratio", leftThumbstick.XRatio());
-    diagnostics::add(L"Left thumb Y ratio", leftThumbstick.YRatio());
-
-    auto rotation = leftThumbstick.XRatio() * 10.0f;
-
-    auto thrust = leftTrigger.Ratio();
-
-    std::optional<float> shootAngle = rightTrigger.Value() > 0 ? std::optional<float>(m_levelContainer->PlayerAngle()) : std::nullopt;
+    auto rotation = gamepad_reader::thumb_lx() * 10.0f;
+    auto thrust = gamepad_reader::left_trigger();
+    std::optional<float> shootAngle = gamepad_reader::right_trigger() > 0 ? std::optional<float>(m_levelContainer->PlayerAngle()) : std::nullopt;
 
     return { std::nullopt, rotation, thrust, shootAngle };
   }

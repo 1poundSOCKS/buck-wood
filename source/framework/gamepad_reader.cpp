@@ -51,34 +51,34 @@ auto gamepad_reader::update() -> void
   return m_instance->RightPressed();
 }
 
-[[nodiscard]] auto gamepad_reader::thumb_lx() -> SHORT
+[[nodiscard]] auto gamepad_reader::thumb_lx() -> float
 {
-  return m_instance->m_currentState->ThumbLX();
+  return ToFloat(m_instance->m_currentState->ThumbLX());
 }
 
-[[nodiscard]] auto gamepad_reader::thumb_ly() -> SHORT
+[[nodiscard]] auto gamepad_reader::thumb_ly() -> float
 {
-  return m_instance->m_currentState->ThumbLY();
+  return ToFloat(m_instance->m_currentState->ThumbLY());
 }
 
-[[nodiscard]] auto gamepad_reader::thumb_rx() -> SHORT
+[[nodiscard]] auto gamepad_reader::thumb_rx() -> float
 {
-  return m_instance->m_currentState->ThumbRX();
+  return ToFloat(m_instance->m_currentState->ThumbRX());
 }
 
-[[nodiscard]] auto gamepad_reader::thumb_ry() -> SHORT
+[[nodiscard]] auto gamepad_reader::thumb_ry() -> float
 {
-  return m_instance->m_currentState->ThumbRY();
+  return ToFloat(m_instance->m_currentState->ThumbRY());
 }
 
-[[nodiscard]] auto gamepad_reader::left_trigger() -> BYTE
+[[nodiscard]] auto gamepad_reader::left_trigger() -> float
 {
-  return m_instance->m_currentState->LeftTrigger();
+  return ToFloat(m_instance->m_currentState->LeftTrigger());
 }
 
-[[nodiscard]] auto gamepad_reader::right_trigger() -> BYTE
+[[nodiscard]] auto gamepad_reader::right_trigger() -> float
 {
-  return m_instance->m_currentState->RightTrigger();
+  return ToFloat(m_instance->m_currentState->RightTrigger());
 }
 
 [[nodiscard]] auto gamepad_reader::buttons() -> WORD
@@ -119,4 +119,18 @@ auto gamepad_reader::Update() -> void
 [[nodiscard]] auto gamepad_reader::RightPressed() -> bool
 {
   return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_RIGHT);
+}
+
+[[nodiscard]] auto gamepad_reader::ToFloat(SHORT value) -> float
+{
+  constexpr auto positiveShift = -SHRT_MIN;
+  auto positiveShiftedValue = static_cast<float>(value) + positiveShift;
+  return positiveShiftedValue / positiveShift - 1.0f;
+}
+
+[[nodiscard]] auto gamepad_reader::ToFloat(BYTE value) -> float
+{
+  constexpr auto positiveShift = -CHAR_MIN;
+  auto positiveShiftedValue = static_cast<float>(value) + positiveShift;
+  return positiveShiftedValue / positiveShift - 1.0f;
 }
