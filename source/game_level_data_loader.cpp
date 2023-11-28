@@ -27,28 +27,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   auto rightInnerBorder = static_cast<float>(levelGrid.RightBorder());
   auto bottomInnerBorder = static_cast<float>(levelGrid.BottomBorder());
 
-  constexpr float borderSize = gridSize * 10;
-
-  auto leftOuterBorder = leftInnerBorder - borderSize;
-  auto topOuterBorder = topInnerBorder - borderSize;
-  auto rightOuterBorder = rightInnerBorder + borderSize;
-  auto bottomOuterBorder = bottomInnerBorder + borderSize;
-
-  auto borderObjectPoints = std::array
-  {
-    game_point { leftOuterBorder, topOuterBorder },
-    game_point { rightOuterBorder, topOuterBorder },
-    game_point { rightOuterBorder, bottomOuterBorder },
-    game_point { leftOuterBorder, bottomOuterBorder },
-    game_point { leftOuterBorder, topInnerBorder },
-    game_point { leftInnerBorder, topInnerBorder },
-    game_point { leftInnerBorder, bottomInnerBorder },
-    game_point { rightInnerBorder, bottomInnerBorder },
-    game_point { rightInnerBorder, topInnerBorder },
-    game_point { leftOuterBorder, topInnerBorder }
-  };
-
-  auto innerObjectPoints = std::array
+  auto blankObjectPoints = std::array
   {
     game_point { leftInnerBorder, topInnerBorder },
     game_point { rightInnerBorder, topInnerBorder },
@@ -56,18 +35,12 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
     game_point { leftInnerBorder, bottomInnerBorder }
   };
 
-  auto borderObjects = std::array
+  auto blankObjects = std::array
   {
-    solid_object { borderObjectPoints }
+    blank_object { blankObjectPoints }
   };
 
-  auto innerObjects = std::array
-  {
-    blank_object { innerObjectPoints }
-  };
-
-  // levelContainer->AddSolidObjects(borderObjects);
-  levelContainer->AddBlankObjects(innerObjects);
+  levelContainer->AddBlankObjects(blankObjects);
 
   auto solidObjectView = levelGrid |
   std::ranges::views::filter([](const auto& cell)
