@@ -53,22 +53,22 @@ auto gamepad_reader::update() -> void
 
 [[nodiscard]] auto gamepad_reader::thumb_lx() -> float
 {
-  return ToFloat(m_instance->m_currentState->ThumbLX());
+  return ToFloat(m_instance->m_currentState->ThumbLX(), m_instance->m_stickDeadzone);
 }
 
 [[nodiscard]] auto gamepad_reader::thumb_ly() -> float
 {
-  return ToFloat(m_instance->m_currentState->ThumbLY());
+  return ToFloat(m_instance->m_currentState->ThumbLY(), m_instance->m_stickDeadzone);
 }
 
 [[nodiscard]] auto gamepad_reader::thumb_rx() -> float
 {
-  return ToFloat(m_instance->m_currentState->ThumbRX());
+  return ToFloat(m_instance->m_currentState->ThumbRX(), m_instance->m_stickDeadzone);
 }
 
 [[nodiscard]] auto gamepad_reader::thumb_ry() -> float
 {
-  return ToFloat(m_instance->m_currentState->ThumbRY());
+  return ToFloat(m_instance->m_currentState->ThumbRY(), m_instance->m_stickDeadzone);
 }
 
 [[nodiscard]] auto gamepad_reader::left_trigger() -> float
@@ -84,6 +84,11 @@ auto gamepad_reader::update() -> void
 [[nodiscard]] auto gamepad_reader::buttons() -> WORD
 {
   return m_instance->m_currentState->Buttons();
+}
+
+auto gamepad_reader::set_stick_deadzone(float value) -> void
+{
+  m_instance->m_stickDeadzone = value;
 }
 
 gamepad_reader::gamepad_reader() : m_currentState { std::make_unique<gamepad_state>() }, m_previousState { std::make_unique<gamepad_state>() }
@@ -121,6 +126,12 @@ auto gamepad_reader::Update() -> void
   return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_RIGHT);
 }
 
+[[nodiscard]] auto gamepad_reader::ToFloat(SHORT value, float deadzone) -> float
+{
+  auto floatValue = ToFloat(value);
+  return ( floatValue < deadzone && floatValue > -deadzone ) ? 0 : ScaleToLivezone(floatValue, deadzone);
+}
+
 [[nodiscard]] auto gamepad_reader::ToFloat(SHORT value) -> float
 {
   constexpr auto positiveShift = -SHRT_MIN;
@@ -131,4 +142,11 @@ auto gamepad_reader::Update() -> void
 [[nodiscard]] auto gamepad_reader::ToFloat(BYTE value) -> float
 {
   return static_cast<float>(value) / UCHAR_MAX;
+}
+
+[[nodiscard]] auto gamepad_reader::ScaleToLivezone(float floatValue, float deadzone) -> float
+{
+  auto range = 1.0f - deadzone;
+  auto zeroShiftedValue = ( floatValue > 0 ) ? ( floatValue - deadzone ) : ( floatValue + deadzone );
+  return zeroShiftedValue / range;
 }

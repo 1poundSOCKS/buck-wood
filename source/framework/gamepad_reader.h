@@ -29,6 +29,8 @@ public:
 
   static [[nodiscard]] auto buttons() -> WORD;
 
+  static auto set_stick_deadzone(float value) -> void;
+
 private:
 
   gamepad_reader();
@@ -40,13 +42,15 @@ private:
   [[nodiscard]] auto LetfPressed() -> bool;
   [[nodiscard]] auto RightPressed() -> bool;
 
+  static [[nodiscard]] auto ToFloat(SHORT value, float deadzone) -> float;
   static [[nodiscard]] auto ToFloat(SHORT value) -> float;
   static [[nodiscard]] auto ToFloat(BYTE value) -> float;
+  static [[nodiscard]] auto ScaleToLivezone(float floatValue, float deadzone) -> float;
 
 private:
 
   inline static gamepad_reader* m_instance { nullptr };
   std::unique_ptr<gamepad_state> m_currentState;
   std::unique_ptr<gamepad_state> m_previousState;
-
+  float m_stickDeadzone { 0.1 };
 };
