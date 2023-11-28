@@ -24,7 +24,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   demo_level demoLevel { levelGrid };
 
-  levelContainer->AddBlankObjects(std::array { blank_object { demoLevel } } );
+  levelContainer->AddBlankObjects(std::array { blank_object { demoLevel.Boundary() } } );
 
   auto solidObjectView = levelGrid |
   std::ranges::views::filter([](const auto& cell)

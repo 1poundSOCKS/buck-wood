@@ -10,11 +10,10 @@ public:
 
   demo_level(const level_grid& levelGrid);
 
-  auto begin() const -> std::vector<game_point>::const_iterator;
-  auto end() const -> std::vector<game_point>::const_iterator;
+  [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
 
 private:
 
-  std::vector<game_point> m_points;
+  std::vector<game_point> m_boundary;
 
 };

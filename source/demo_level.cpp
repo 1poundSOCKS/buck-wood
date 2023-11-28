@@ -16,15 +16,10 @@ demo_level::demo_level(const level_grid& levelGrid)
     game_point { leftInnerBorder, bottomInnerBorder }
   };
 
-  std::ranges::copy(blankObjectPoints, std::back_inserter(m_points));
+  std::ranges::copy(blankObjectPoints, std::back_inserter(m_boundary));
 }
 
-auto demo_level::begin() const -> std::vector<game_point>::const_iterator
+[[nodiscard]] auto demo_level::Boundary() const -> const std::vector<game_point>&
 {
-  return std::begin(m_points);
-}
-
-auto demo_level::end() const -> std::vector<game_point>::const_iterator
-{
-  return std::end(m_points);
+  return m_boundary;
 }
