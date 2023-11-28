@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 #include "level_grid_cell_type.h"
+#include "demo_level.h"
 
 game_level_data_loader::game_level_data_loader()
 {
@@ -11,7 +12,6 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
 
   constexpr int gridSize = 800;
-
   auto levelGrid = level_grid { gridSize, -4, 4, gridSize, -4, 4 };
   
   auto targetView = levelGrid | std::ranges::views::filter([](const auto& cell)
@@ -22,25 +22,9 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddTargets(targetView);
 
-  auto leftInnerBorder = static_cast<float>(levelGrid.LeftBorder());
-  auto topInnerBorder = static_cast<float>(levelGrid.TopBorder());
-  auto rightInnerBorder = static_cast<float>(levelGrid.RightBorder());
-  auto bottomInnerBorder = static_cast<float>(levelGrid.BottomBorder());
+  demo_level demoLevel { levelGrid };
 
-  auto blankObjectPoints = std::array
-  {
-    game_point { leftInnerBorder, topInnerBorder },
-    game_point { rightInnerBorder, topInnerBorder },
-    game_point { rightInnerBorder, bottomInnerBorder },
-    game_point { leftInnerBorder, bottomInnerBorder }
-  };
-
-  auto blankObjects = std::array
-  {
-    blank_object { blankObjectPoints }
-  };
-
-  levelContainer->AddBlankObjects(blankObjects);
+  levelContainer->AddBlankObjects(std::array { blank_object { demoLevel } } );
 
   auto solidObjectView = levelGrid |
   std::ranges::views::filter([](const auto& cell)
