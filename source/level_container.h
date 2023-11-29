@@ -28,6 +28,7 @@ public:
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
+  using asteroid_collection = std::vector<level_asteroid>;
   using explosion_particle_collection  = std::list<explosion_particle>;
   using impact_particle_collection  = std::list<impact_particle>;
 
@@ -42,9 +43,9 @@ public:
 
   auto AddSolidObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
-  // auto AddTargets(std::ranges::input_range auto&& cells) -> void;
-  auto AddTargets(std::ranges::input_range auto&& targetPositions) -> void;
+  auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
+  auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
 
   auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -74,7 +75,7 @@ private:
   bullet_collection m_bullets;
   target_collection m_targets;
   mine_collection m_mines;
-  // asteroid_container m_asteroids;
+  asteroid_collection m_asteroids;
   solid_objects m_solidObjects;
   blank_objects m_blankObjects;
   explosion_particle_collection m_explosionParticles;
@@ -122,19 +123,11 @@ auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -
   });
 }
 
-// auto level_container::AddTargets(std::ranges::input_range auto&& cells) -> void
-// {
-//   std::ranges::for_each(cells, [this](const auto& cell)
-//   {
-//     m_targets.emplace_back( level_target { cell.Position().x, cell.Position().y } );
-//   });
-// }
-
-auto level_container::AddTargets(std::ranges::input_range auto&& targetPositions) -> void
+auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
 {
-  std::ranges::for_each(targetPositions, [this](const auto& targetPosition)
+  std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.emplace_back( level_target { targetPosition.x, targetPosition.y } );
+    m_targets.emplace_back( level_target { position.x, position.y } );
   });
 }
 
@@ -143,6 +136,14 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
   std::ranges::for_each(positions, [this](const auto& position)
   {
     m_mines.emplace_back( mine { static_cast<float>(position.x), static_cast<float>(position.y) } );
+  });
+}
+
+auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
+{
+  std::ranges::for_each(positions, [this](const auto& position)
+  {
+    m_mines.emplace_back( level_asteroid { static_cast<float>(position.x), static_cast<float>(position.y) } );
   });
 }
 

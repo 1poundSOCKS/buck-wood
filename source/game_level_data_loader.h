@@ -13,7 +13,7 @@ public:
 
 private:
 
-  int m_levelIndex { 0 };
+  int m_levelIndex { -1 };
   inline static int m_levelCount { 1 };
 
 };

@@ -93,11 +93,6 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   update_all(m_explosionParticles, interval);
   update_all(m_impactParticles, interval);
 
-  // auto grid = GetGrid(viewRect.left, viewRect.top, viewRect.right, viewRect.bottom);
-  
-  // m_asteroids.Update(grid);
-  // m_solidObjects.Update(grid);
-
   DoCollisions();
 
   erase_destroyed(m_mines);
@@ -127,7 +122,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(starView);
   renderer::render_all(m_solidObjects);
   renderer::render_all(m_explosionParticles);
-  // renderer::render_all(m_asteroids);
+  renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
   renderer::render_all(m_mines);
   renderer::render_all(m_impactParticles);
@@ -168,12 +163,13 @@ auto level_container::DoCollisions() -> void
 {
   if( !m_playerShip.Destroyed() )
   {
-    // do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
-    // {
-    //   auto position = playerShip.PreviousPosition();
-    //   CreateExplosion(position);
-    //   playerShip.ApplyFatalDamage();
-    // });
+    do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
+    {
+      auto position = playerShip.PreviousPosition();
+      CreateExplosion(position);
+      playerShip.ApplyFatalDamage();
+    });
+
     if( m_blankObjects.size() && !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
     {
       auto position = m_playerShip.PreviousPosition();
@@ -205,24 +201,24 @@ auto level_container::DoCollisions() -> void
     });
   }
 
-  // do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this, updateEvents](auto& mine, auto& asteroid)
-  // {
-  //   auto position = mine.PreviousPosition();
-  //   CreateExplosion(position);
-  //   mine.Destroy();
-  //   updateEvents->mineExploded = true;
-  // });
+  do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  });
 
-  // do_geometries_to_points_collisions(m_asteroids, m_bullets, [this](auto& asteroid, auto& bullet)
-  // {
-  //   m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
-  //   bullet.Destroy();
-  // });
+  do_geometries_to_points_collisions(m_asteroids, m_bullets, [this](auto& asteroid, auto& bullet)
+  {
+    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    bullet.Destroy();
+  });
 
-  // do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
-  // {
-  //   particle.Destroy();
-  // });
+  do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  });
 
   do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this](auto& mine, auto& solidObject)
   {
