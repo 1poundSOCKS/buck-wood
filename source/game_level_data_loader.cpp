@@ -16,6 +16,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   levelContainer->AddBlankObjects(std::array { blank_object { demoLevel.Boundary() } } );
   levelContainer->AddTargets(demoLevel.Targets());
+  levelContainer->AddAsteroids(demoLevel.Asteroids());
   levelContainer->SetTimeout(60);
 
   return levelContainer;

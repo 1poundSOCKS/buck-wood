@@ -91,6 +91,7 @@ public:
 
   [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
   [[nodiscard]] auto Targets() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto Asteroids() const -> const std::vector<game_point>&;
 
 private:
 
@@ -99,6 +100,7 @@ private:
 
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
+  std::vector<game_point> m_asteroids;
 
   inline static auto m_boundaryBuildCommands = {
     build_command { build_command::move_direction::right, 2 },
@@ -118,6 +120,11 @@ private:
     cell { -2, -1 },
     cell { 1, 1 },
     cell { 1, 5 }
+  };
+
+  inline static auto m_asteroidPositions = {
+    cell { 1, 0 },
+    cell { -2, -3 }
   };
 
 };

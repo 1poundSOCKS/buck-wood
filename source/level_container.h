@@ -143,7 +143,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_mines.emplace_back( level_asteroid { static_cast<float>(position.x), static_cast<float>(position.y) } );
+    m_asteroids.emplace_back( level_asteroid { static_cast<float>(position.x), static_cast<float>(position.y), 800, 800 } );
   });
 }
 
