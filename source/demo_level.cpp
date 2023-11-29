@@ -4,7 +4,7 @@
 demo_level::demo_level(int cellWidth, int cellHeight)
 {
   geometry_builder geometryBuilder { m_left, m_top, cellWidth, cellHeight };
-  geometryBuilder.Run(m_buildCommands, std::back_inserter(m_boundary));
+  geometryBuilder.Run(m_boundaryBuildCommands, std::back_inserter(m_boundary));
 
   std::ranges::transform(m_targetPositions, std::back_inserter(m_targets), [cellWidth, cellHeight](const cell& targetCell)
   {

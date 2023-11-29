@@ -100,7 +100,7 @@ private:
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
 
-  inline static auto m_buildCommands = std::array {
+  inline static auto m_boundaryBuildCommands = {
     build_command { build_command::move_direction::right, 2 },
     build_command { build_command::move_direction::up, 2 },
     build_command { build_command::move_direction::right, 2 },
@@ -114,7 +114,7 @@ private:
     build_command { build_command::move_direction::left, 4 }
   };
 
-  static inline auto m_targetPositions = {
+  inline static auto m_targetPositions = {
     cell { -2, -1 },
     cell { 1, 1 },
     cell { 1, 5 }

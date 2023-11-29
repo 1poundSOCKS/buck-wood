@@ -11,7 +11,7 @@
 
 play_screen::play_screen() : m_levelContainer(std::make_unique<level_container>())
 {
-  if( !LoadFirstLevel() )
+  if( !LoadNextLevel() )
   {
     Quit();
   }
@@ -283,19 +283,6 @@ auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camer
   return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::pressed(XINPUT_GAMEPAD_BACK);
 }
 
-[[nodiscard]] auto play_screen::LoadFirstLevel() -> bool
-{
-  if( m_gameLevelDataLoader.EndOfLevels() )
-  {
-    return false;
-  }
-  else
-  {
-    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
-    return true;
-  }
-}
-
 [[nodiscard]] auto play_screen::Paused() const -> bool
 {
   return m_paused;
@@ -322,14 +309,13 @@ auto play_screen::Quit() -> void
 
 [[nodiscard]] auto play_screen::LoadNextLevel() -> bool
 {
-  if( m_gameLevelDataLoader.EndOfLevels() )
+  if( m_gameLevelDataLoader.NextLevel() )
   {
-    return false;
+    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
+    return true;
   }
   else
   {
-    m_gameLevelDataLoader.NextLevel();
-    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
-    return true;
+    return false;
   }
 }

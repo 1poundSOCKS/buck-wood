@@ -115,7 +115,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   
   auto starView = starGrid | std::ranges::views::filter([this](const auto& cell)
   {
-    auto inside = have_geometry_and_point_collided(m_blankObjects.front(), cell);
+    auto inside = m_blankObjects.size() && have_geometry_and_point_collided(m_blankObjects.front(), cell);
     return inside && psn::GetNoise(cell.Position().x, cell.Position().y) > 0.90f;
   })
   | std::ranges::views::transform([](const auto& cell)
@@ -174,7 +174,7 @@ auto level_container::DoCollisions() -> void
     //   CreateExplosion(position);
     //   playerShip.ApplyFatalDamage();
     // });
-    if( !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
+    if( m_blankObjects.size() && !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
     {
       auto position = m_playerShip.PreviousPosition();
       CreateExplosion(position);
@@ -232,13 +232,16 @@ auto level_container::DoCollisions() -> void
     m_updateEvents.mineExploded = true;
   });
 
-  check_geometries_contained(m_mines, m_blankObjects.front(), [this](auto& mine)
+  if( m_blankObjects.size() )
   {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
+    check_geometries_contained(m_mines, m_blankObjects.front(), [this](auto& mine)
+    {
+      auto position = mine.PreviousPosition();
+      CreateExplosion(position);
+      mine.Destroy();
+      m_updateEvents.mineExploded = true;
+    });
+  }
 
   do_geometries_to_points_collisions(m_solidObjects, m_bullets, [this](auto& solidObject, auto& bullet)
   {
@@ -251,10 +254,13 @@ auto level_container::DoCollisions() -> void
     particle.Destroy();
   });
 
-  check_points_contained(m_explosionParticles, m_blankObjects.front(), [this](auto& particle)
+  if( m_blankObjects.size() )
   {
-    particle.Destroy();
-  });
+    check_points_contained(m_explosionParticles, m_blankObjects.front(), [this](auto& particle)
+    {
+      particle.Destroy();
+    });
+  }
 
   do_geometries_to_points_collisions(m_targets, m_bullets, [this](auto& target, auto& bullet)
   {
@@ -274,11 +280,14 @@ auto level_container::DoCollisions() -> void
     bullet.Destroy();
   });
 
-  check_points_contained(m_bullets, m_blankObjects.front(), [this](auto& bullet)
+  if( m_blankObjects.size() )
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
-    bullet.Destroy();
-  });
+    check_points_contained(m_bullets, m_blankObjects.front(), [this](auto& bullet)
+    {
+      m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+      bullet.Destroy();
+    });
+  }
 
   do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {

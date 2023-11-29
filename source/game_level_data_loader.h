@@ -9,12 +9,11 @@ public:
   game_level_data_loader();
 
   auto LoadLevel() -> std::unique_ptr<level_container>;
-  auto NextLevel() -> void;
-  [[nodiscard]] auto EndOfLevels() const -> bool;
+  [[nodiscard]] auto NextLevel() -> bool;
 
 private:
 
-  [[nodiscard]] auto GetTimeLimit() const -> int;
+  int m_levelIndex { 0 };
+  inline static int m_levelCount { 1 };
 
-  int m_levelIndex = 0;
 };

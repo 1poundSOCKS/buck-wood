@@ -41,7 +41,6 @@ private:
   auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
 
   [[nodiscard]] auto PausePressed() -> bool;
-  [[nodiscard]] auto LoadFirstLevel() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
 
   [[nodiscard]] auto Paused() const -> bool;
