@@ -123,8 +123,10 @@ private:
   };
 
   inline static auto m_asteroidPositions = {
+    cell { 1, -1 },
+    cell { -1, 1 },
     cell { 1, 0 },
-    cell { -2, -3 }
+    cell { -2, -2 }
   };
 
 };
