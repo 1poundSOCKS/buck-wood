@@ -14,33 +14,10 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   constexpr int gridSize = 800;
   auto levelGrid = level_grid { gridSize, -4, 4, gridSize, -4, 4 };
   
-  auto targetView = levelGrid | std::ranges::views::filter([](const auto& cell)
-  {
-    auto cellType = level_grid_cell_type { cell };
-    return cellType.IsTarget();
-  });
-
-  levelContainer->AddTargets(targetView);
-
-  demo_level demoLevel { levelGrid };
+  demo_level demoLevel { gridSize, gridSize };
 
   levelContainer->AddBlankObjects(std::array { blank_object { demoLevel.Boundary() } } );
-
-  auto solidObjectView = levelGrid |
-  std::ranges::views::filter([](const auto& cell)
-  {
-    auto cellType = level_grid_cell_type { cell };
-    return cellType.IsAsteroid();
-  }) |
-  std::ranges::views::transform([](const auto& cell)
-  {
-    auto horizontalBorder = cell.Width() / 8;
-    auto verticalBorder = cell.Height() / 8;
-    return solid_object { cell.Left() + horizontalBorder, cell.Top() + verticalBorder, cell.Right() - horizontalBorder, cell.Bottom() - verticalBorder };
-  });
-
-  levelContainer->AddSolidObjects(solidObjectView);
-
+  levelContainer->AddTargets(demoLevel.Targets());
   levelContainer->SetCentre(levelGrid.Centre());
   levelContainer->SetTimeout(GetTimeLimit());
 

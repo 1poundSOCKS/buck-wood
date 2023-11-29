@@ -42,7 +42,8 @@ public:
 
   auto AddSolidObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
-  auto AddTargets(std::ranges::input_range auto&& cells) -> void;
+  // auto AddTargets(std::ranges::input_range auto&& cells) -> void;
+  auto AddTargets(std::ranges::input_range auto&& targetPositions) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
 
   auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void;
@@ -121,11 +122,19 @@ auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -
   });
 }
 
-auto level_container::AddTargets(std::ranges::input_range auto&& cells) -> void
+// auto level_container::AddTargets(std::ranges::input_range auto&& cells) -> void
+// {
+//   std::ranges::for_each(cells, [this](const auto& cell)
+//   {
+//     m_targets.emplace_back( level_target { cell.Position().x, cell.Position().y } );
+//   });
+// }
+
+auto level_container::AddTargets(std::ranges::input_range auto&& targetPositions) -> void
 {
-  std::ranges::for_each(cells, [this](const auto& cell)
+  std::ranges::for_each(targetPositions, [this](const auto& targetPosition)
   {
-    m_targets.emplace_back( level_target { cell.Position().x, cell.Position().y } );
+    m_targets.emplace_back( level_target { targetPosition.x, targetPosition.y } );
   });
 }
 

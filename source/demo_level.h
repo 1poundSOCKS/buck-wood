@@ -1,7 +1,6 @@
 #pragma once
 
 #include "geometry.h"
-#include "level_grid.h"
 
 class build_command
 {
@@ -41,10 +40,10 @@ public:
   {
   }
 
-  auto Run(auto&& commands, auto output) -> void
+  auto Run(std::ranges::input_range auto&& commands, auto output) -> void
   {
-    float x = static_cast<float>(m_startX * m_cellWidth);
-    float y = static_cast<float>(m_startY * m_cellHeight);
+    float x = static_cast<float>(m_startX * m_cellWidth) - m_cellWidth / 2;
+    float y = static_cast<float>(m_startY * m_cellHeight) - m_cellHeight / 2;
 
     output = game_point { x, y };
 
@@ -86,22 +85,39 @@ class demo_level
 
 public:
 
-  demo_level(const level_grid& levelGrid);
+  struct cell { int x { 0 }; int y { 0 }; };
+
+  demo_level(int cellWidth, int cellHeight);
 
   [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto Targets() const -> const std::vector<game_point>&;
 
 private:
 
+  inline static int m_left { -3 };
+  inline static int m_top { -3 };
+
   std::vector<game_point> m_boundary;
+  std::vector<game_point> m_targets;
 
   inline static auto m_buildCommands = std::array {
-    build_command { build_command::move_direction::right, 4 },
+    build_command { build_command::move_direction::right, 2 },
     build_command { build_command::move_direction::up, 2 },
     build_command { build_command::move_direction::right, 2 },
-    build_command { build_command::move_direction::down, 5 },
-    build_command { build_command::move_direction::right, 4 },
-    build_command { build_command::move_direction::down, 10 },
-    build_command { build_command::move_direction::left, 10 }
+    build_command { build_command::move_direction::down, 3 },
+    build_command { build_command::move_direction::right, 2 },
+    build_command { build_command::move_direction::down, 4 },
+    build_command { build_command::move_direction::left, 1 },
+    build_command { build_command::move_direction::down, 4 },
+    build_command { build_command::move_direction::left, 1 },
+    build_command { build_command::move_direction::up, 4 },
+    build_command { build_command::move_direction::left, 4 }
+  };
+
+  static inline auto m_targetPositions = {
+    cell { -2, -1 },
+    cell { 1, 1 },
+    cell { 1, 5 }
   };
 
 };
