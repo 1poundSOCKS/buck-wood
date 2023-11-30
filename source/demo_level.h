@@ -111,7 +111,11 @@ private:
     build_command { build_command::move_direction::down, 4 },
     build_command { build_command::move_direction::left, 1 },
     build_command { build_command::move_direction::down, 4 },
-    build_command { build_command::move_direction::left, 1 },
+    build_command { build_command::move_direction::right, 3 },
+    build_command { build_command::move_direction::down, 1 },
+    build_command { build_command::move_direction::left, 5 },
+    build_command { build_command::move_direction::up, 1 },
+    build_command { build_command::move_direction::right, 1 },
     build_command { build_command::move_direction::up, 4 },
     build_command { build_command::move_direction::left, 4 }
   };
