@@ -208,23 +208,6 @@ public:
 
 private:
 
-  // enum class stage { pre_play, playing, post_play };
-
-  // auto Update(int64_t frameInterval) -> void;
-  // auto Render() const -> void;
-  
-  // auto PlaySoundEffects() const -> void;
-
-  // auto PrePlay(int64_t frameInterval) -> void;
-  // auto Playing(int64_t frameInterval) -> void;
-  // auto PostPlay(int64_t frameInterval) -> void;
-
-  // [[nodiscard]] auto GetLevelInput() const -> level_input;
-  // auto UpdateLevel(int64_t elapsedTicks) -> void;
-  // auto GetLevelRenderTransform() const -> screen_transform;
-  // auto GetOverlayRenderTransform() const -> screen_transform;
-  // auto GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position;
-
   [[nodiscard]] auto PausePressed() -> bool;
   [[nodiscard]] auto LoadNextLevel() -> bool;
 
@@ -235,28 +218,15 @@ private:
 
 private:
 
-  // stage m_stage = stage::pre_play;
-  bool m_paused = false;
-  bool m_continueRunning = true;
-  // int64_t m_stageTicks = 0;
-  
-  level_container_ptr m_levelContainer;
-  
-  play_menu_controller m_menuController;
-  // level_radar m_levelRadar;
-  // player_shields m_playerShields;
-
-  game_level_data_loader m_gameLevelDataLoader;
-  
-  // std::vector<int64_t> m_levelTimes;
-  // camera_sequence m_startSequence;
-  // camera_sequence m_endSequence;
-
   using play_scene_ptr = std::unique_ptr<play_scene>;
   using play_scene_collection = std::vector<play_scene_ptr>;
 
+  bool m_paused = false;
+  bool m_continueRunning = true;
+  level_container_ptr m_levelContainer;  
+  play_menu_controller m_menuController;
+  game_level_data_loader m_gameLevelDataLoader;
   play_scene_collection m_scenes;
   play_scene_collection::iterator m_currentScene;
 
-  // static inline float m_playZoom = 0.6f;
 };

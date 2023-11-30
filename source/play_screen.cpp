@@ -16,22 +16,13 @@ play_screen::play_screen() : m_levelContainer(std::make_shared<level_container>(
   auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
   m_menuController.OpenRoot(menuArea);
 
-  // auto playerPosition = m_levelContainer->PlayerPosition();
-  // m_startSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
-  // m_startSequence.AddMove( { playerPosition.x, playerPosition.y, m_playZoom }, performance_counter::CalculateTicks(3.0f) );
-
-  // m_playerShields.Attach(m_levelContainer->PlayerShields());
-
-  if( !LoadNextLevel() )
+  if( LoadNextLevel() )
   {
-    Quit();
+    m_scenes.emplace_back( std::make_unique<opening_play_scene>(m_levelContainer) );
+    m_scenes.emplace_back( std::make_unique<main_play_scene>(m_levelContainer) );
+    m_scenes.emplace_back( std::make_unique<closing_play_scene>(m_levelContainer) );
+    m_currentScene = std::begin(m_scenes);
   }
-
-  m_scenes.emplace_back( std::make_unique<opening_play_scene>(m_levelContainer) );
-  m_scenes.emplace_back( std::make_unique<main_play_scene>(m_levelContainer) );
-  m_scenes.emplace_back( std::make_unique<closing_play_scene>(m_levelContainer) );
-
-  m_currentScene = std::begin(m_scenes);
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -65,284 +56,34 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
   auto elapsedTicks = Paused() ? 0 : ticks;
 
-  auto keepScreenOpen = ( *m_currentScene)->Refresh(elapsedTicks) || ++m_currentScene != std::end(m_scenes) ? true : false;
+  auto keepScreenOpen = m_scenes.size() && ( *m_currentScene)->Refresh(elapsedTicks) || ++m_currentScene != std::end(m_scenes) ? true : false;
 
-  // render_guard renderGuard { render_target::get() };
-  
-  // auto overlayRenderTransform = GetOverlayRenderTransform();
-  // render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  // m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
-
-  // auto overlayViewRect = overlayRenderTransform.GetViewRect(render_target::get()->GetSize());
+  render_guard renderGuard { render_target::get() };
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( Paused() )
   {
-    render_guard renderGuard { render_target::get() };
-    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     screen_transform screen_transform {};
     auto overlayViewRect = screen_transform.GetViewRect(render_target::get()->GetSize());
     m_menuController.Render(overlayViewRect);
   }
 
-  auto continueRunning = keepScreenOpen && m_continueRunning;
+  diagnostics::addWindowData(main_window::data());
+  diagnostics::updateFrameData();
+  renderer::renderDiagnostics();
+  diagnostics::clear();
 
-  if( !continueRunning )
+  if( keepScreenOpen && m_continueRunning )
+  {
+    return true;
+  }
+  else
   {
     sound_data::get(sound_data::menu_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
+    return false;
   }
-
-  return continueRunning;
-
-  // Update(ticks);
-  // Render();
-  // return m_continueRunning;
 }
-
-// auto play_screen::Update(int64_t frameInterval) -> void
-// {
-//   diagnostics::addWindowData(main_window::data());
-
-//   auto startUpdateTime = performance_counter::QueryValue();
-
-//   switch( m_stage )
-//   {
-//     case stage::pre_play:
-//       PrePlay(frameInterval);
-//       break;
-//     case stage::playing:
-//       Playing(frameInterval);
-//       break;
-//     case stage::post_play:
-//       PostPlay(frameInterval);
-//       break;
-//   }
-
-//   auto overlayTransform = GetOverlayRenderTransform();
-
-//   if( Paused() )
-//   {
-//     m_menuController.Update();
-
-//     switch( m_menuController.Selection() )
-//     {
-//       case play_menu_controller::selection::resume:
-//         Unpause();
-//         break;
-//       case play_menu_controller::selection::quit:
-//         Quit();
-//         break;
-//     }
-//   }
-
-//   auto endUpdateTime = performance_counter::QueryValue();
-
-//   diagnostics::setUpdateTime(endUpdateTime - startUpdateTime);
-// }
-
-// auto play_screen::Render() const -> void
-// {
-//   auto renderTargetSize = render_target::get()->GetSize();
-
-//   render_guard renderGuard { render_target::get() };
-
-//   auto startRenderTime = performance_counter::QueryValue();
-
-//   render_target::get()->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
-
-//   auto screenTransform = GetLevelRenderTransform();
-//   render_target::get()->SetTransform(screenTransform.Get());
-//   m_levelContainer->Render(screenTransform.GetViewRect(renderTargetSize));
-
-//   auto overlayRenderTransform = GetOverlayRenderTransform();
-//   render_target::get()->SetTransform(overlayRenderTransform.Get());
-
-//   if( m_stage == stage::playing )
-//   {
-//     m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
-//   }
-
-//   auto overlayViewRect = overlayRenderTransform.GetViewRect(renderTargetSize);
-
-//   renderer::render(m_playerShields);
-
-//   if( Paused() )
-//   {
-//     m_menuController.Render(overlayViewRect);
-//   }
-
-//   auto endRenderTime = performance_counter::QueryValue();
-
-//   diagnostics::setRenderTime(endRenderTime - startRenderTime);
-//   diagnostics::addTimingData(60);
-//   diagnostics::updateFrameData();
-//   renderer::renderDiagnostics();
-//   diagnostics::clear();
-// }
-
-// auto play_screen::PlaySoundEffects() const -> void
-// {
-//   if( m_levelContainer->PlayerHasThrusterOn() )
-//   {
-//     sound_data::get(sound_data::thrust).Play(true);
-//   }
-//   else
-//   {
-//     sound_data::get(sound_data::thrust).Stop();
-//   }
-
-//   if( m_levelContainer->UpdateEvents().playerShot )
-//   {
-//     sound_data::get(sound_data::shoot).Reset();
-//     sound_data::get(sound_data::shoot).Play(false);
-//   }
-
-//   if( m_levelContainer->UpdateEvents().targetActivated )
-//   {
-//     sound_data::get(sound_data::target_activated).Reset();
-//     sound_data::get(sound_data::target_activated).Play(false);
-//   }
-
-//   if( m_levelContainer->UpdateEvents().mineExploded )
-//   {
-//     sound_data::get(sound_data::mine_exploded).Reset();
-//     sound_data::get(sound_data::mine_exploded).Play(false);
-//   }
-// }
-
-// auto play_screen::PrePlay(int64_t frameInterval) -> void
-// {
-//   m_stageTicks += frameInterval;
-
-//   UpdateLevel(0);
-
-//   if( m_stageTicks > m_startSequence.GetTotalTicks() )
-//   {
-//     m_stage = stage::playing;
-//     m_stageTicks = 0;
-//     sound_data::get(sound_data::menu_theme).Play(true);
-//   }
-// }
-
-// auto play_screen::Playing(int64_t frameInterval) -> void
-// {
-//   if( PausePressed() )
-//   {
-//     if( Paused() )
-//     {
-//       Unpause();
-//     }
-//     else
-//     {
-//       Pause();
-//     }
-//   }
-
-//   if( !Paused() )
-//   {
-//     PlaySoundEffects();
-//     auto elapsedTicks = Paused() ? 0 : frameInterval;
-//     UpdateLevel(elapsedTicks);
-//   }
-
-//   if( m_levelContainer->IsComplete() )
-//   {
-//     m_levelTimes.emplace_back(m_levelContainer->TicksRemaining());
-//   }
-
-//   if( m_levelContainer->HasFinished() )
-//   {
-//     m_stage = stage::post_play;
-//     auto playerPosition = m_levelContainer->PlayerPosition();
-//     auto levelCentre = m_levelContainer->Centre();
-//     m_endSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_playZoom };
-//     m_endSequence.AddPause(performance_counter::CalculateTicks(2.0f));
-//     m_endSequence.AddMove( { levelCentre.x, levelCentre.y, 0.1f }, performance_counter::CalculateTicks(5.0f) );
-//     m_endSequence.AddPause(performance_counter::CalculateTicks(3.0f));
-//     m_stageTicks = 0;
-
-//     sound_data::get(sound_data::menu_theme).Stop();
-//     sound_data::get(sound_data::thrust).Stop();
-//   }
-// }
-
-// auto play_screen::PostPlay(int64_t frameInterval) -> void
-// {
-//   m_stageTicks += frameInterval;
-
-//   UpdateLevel(frameInterval);
-
-//   if( m_stageTicks > m_endSequence.GetTotalTicks() )
-//   {
-//     Quit();
-//   }
-// }
-
-// auto play_screen::UpdateLevel(int64_t elapsedTicks) -> void
-// {
-//   auto renderTransform = GetLevelRenderTransform();
-//   auto screenTransform = screen_transform { renderTransform.Get() };
-
-//   // const auto levelInput = GetLevelInput(screenTransform);
-//   const auto levelInput = GetLevelInput();
-
-//   auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
-//   m_levelContainer->Update(levelInput, elapsedTicks, viewRect);
-// }
-
-// auto play_screen::GetLevelRenderTransform() const -> screen_transform
-// {
-//   auto renderTargetSize = render_target::get()->GetSize();
-//   auto cameraPosition = GetCameraPosition(renderTargetSize);
-//   auto cameraAngle = 0.0f;
-//   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, renderTargetSize };
-//   return { cameraTransform.Get() };
-// }
-
-// [[nodiscard]] auto play_screen::GetLevelInput() const -> level_input
-// {
-//   if( gamepad_reader::connected() )
-//   {
-//     diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
-//     diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
-//     diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
-
-//     auto rotation = gamepad_reader::thumb_lx() * 10.0f;
-//     auto thrust = gamepad_reader::left_trigger();
-//     std::optional<float> shootAngle = gamepad_reader::right_trigger() > 0 ? std::optional<float>(m_levelContainer->PlayerAngle()) : std::nullopt;
-
-//     return { std::nullopt, rotation, thrust, shootAngle };
-//   }
-//   else
-//   {
-//     return { std::nullopt, std::nullopt, 0, std::nullopt };
-//   }
-// }
-
-// auto play_screen::GetOverlayRenderTransform() const -> screen_transform
-// {
-//   return {};
-// }
-
-// auto play_screen::GetCameraPosition(D2D1_SIZE_F renderTargetSize) const -> camera_sequence::camera_position
-// {
-//   camera_sequence::camera_position cameraPosition = { 0, 0, 1.0f };
-
-//   auto playerPosition = m_levelContainer->PlayerPosition();
-
-//   switch( m_stage )
-//   {
-//     case stage::pre_play:
-//       return { playerPosition.x, playerPosition.y, m_startSequence.GetScale(m_stageTicks) };
-
-//     case stage::post_play:
-//       return { m_endSequence.GetPosition(m_stageTicks).x, m_endSequence.GetPosition(m_stageTicks).y, m_endSequence.GetScale(m_stageTicks) };
-
-//     default:
-//       return { playerPosition.x, playerPosition.y, m_playZoom };
-//   }
-// }
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
