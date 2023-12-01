@@ -1,7 +1,9 @@
 #pragma once
 
 #include "framework.h"
-#include "play_screen_scene.h"
+#include "opening_play_scene.h"
+#include "main_play_scene.h"
+#include "closing_play_scene.h"
 
 class play_screen
 {
