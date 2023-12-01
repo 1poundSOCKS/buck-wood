@@ -24,16 +24,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
   Update(ticks);
   Render();
 
-  if( m_continueRunning && m_currentScene != std::end(m_scenes) )
-  {
-    return true;
-  }
-  else
-  {
-    sound_data::get(sound_data::menu_theme).Stop();
-    sound_data::get(sound_data::thrust).Stop();
-    return false;
-  }
+  return m_continueRunning && m_currentScene != std::end(m_scenes);
 }
 
 auto play_screen::Update(int64_t ticks) -> void

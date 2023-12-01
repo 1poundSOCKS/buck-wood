@@ -10,7 +10,7 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>();
 
-  constexpr int gridSize = 800;
+  constexpr int gridSize = 600;
   
   demo_level demoLevel { gridSize, gridSize };
 
