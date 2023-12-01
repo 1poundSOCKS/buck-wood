@@ -16,13 +16,7 @@ play_screen::play_screen() : m_levelContainer(std::make_shared<level_container>(
   auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
   m_menuController.OpenRoot(menuArea);
 
-  if( LoadNextLevel() )
-  {
-    m_scenes.emplace_back( std::make_unique<opening_play_scene>(m_levelContainer) );
-    m_scenes.emplace_back( std::make_unique<main_play_scene>(m_levelContainer) );
-    m_scenes.emplace_back( std::make_unique<closing_play_scene>(m_levelContainer) );
-    m_currentScene = std::begin(m_scenes);
-  }
+  LoadNextLevel();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -44,14 +38,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
   if( PausePressed() )
   {
-    if( Paused() )
-    {
-      Unpause();
-    }
-    else
-    {
-      Pause();
-    }
+    Paused() ? Unpause() : Pause();
   }
 
   auto elapsedTicks = Paused() ? 0 : ticks;
@@ -114,11 +101,16 @@ auto play_screen::Quit() -> void
   m_continueRunning = false;
 }
 
-[[nodiscard]] auto play_screen::LoadNextLevel() -> bool
+auto play_screen::LoadNextLevel() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
+    m_scenes.clear();
+    m_scenes.emplace_back( std::make_unique<opening_play_scene>(m_levelContainer) );
+    m_scenes.emplace_back( std::make_unique<main_play_scene>(m_levelContainer) );
+    m_scenes.emplace_back( std::make_unique<closing_play_scene>(m_levelContainer) );
+    m_currentScene = std::begin(m_scenes);
     return true;
   }
   else

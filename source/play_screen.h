@@ -209,7 +209,7 @@ public:
 private:
 
   [[nodiscard]] auto PausePressed() -> bool;
-  [[nodiscard]] auto LoadNextLevel() -> bool;
+  auto LoadNextLevel() -> bool;
 
   [[nodiscard]] auto Paused() const -> bool;
   auto Pause() -> void;
