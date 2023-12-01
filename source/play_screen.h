@@ -8,11 +8,15 @@ class play_screen
 public:
 
   play_screen();
+
   auto Refresh(int64_t ticks) -> bool;
 
 private:
 
-  auto RefreshCurrentScene(__int64 ticks) -> void;
+  auto Update(int64_t ticks) -> void;
+  auto Render() -> void;
+
+  auto RefreshCurrentScene(int64_t ticks) -> void;
   auto LoadNextLevel() -> bool;
 
   [[nodiscard]] auto PausePressed() -> bool;

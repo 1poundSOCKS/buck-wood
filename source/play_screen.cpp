@@ -21,6 +21,23 @@ play_screen::play_screen() : m_levelContainer(std::make_shared<level_container>(
 
 auto play_screen::Refresh(int64_t ticks) -> bool
 {
+  Update(ticks);
+  Render();
+
+  if( m_continueRunning && m_currentScene != std::end(m_scenes) )
+  {
+    return true;
+  }
+  else
+  {
+    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::thrust).Stop();
+    return false;
+  }
+}
+
+auto play_screen::Update(int64_t ticks) -> void
+{
   if( Paused() )
   {
     m_menuController.Update();
@@ -44,7 +61,10 @@ auto play_screen::Refresh(int64_t ticks) -> bool
   auto elapsedTicks = Paused() ? 0 : ticks;
 
   RefreshCurrentScene(elapsedTicks);
+}
 
+auto play_screen::Render() -> void
+{
   render_guard renderGuard { render_target::get() };
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
@@ -59,17 +79,6 @@ auto play_screen::Refresh(int64_t ticks) -> bool
   diagnostics::updateFrameData();
   renderer::renderDiagnostics();
   diagnostics::clear();
-
-  if( m_continueRunning && m_currentScene != std::end(m_scenes) )
-  {
-    return true;
-  }
-  else
-  {
-    sound_data::get(sound_data::menu_theme).Stop();
-    sound_data::get(sound_data::thrust).Stop();
-    return false;
-  }
 }
 
 auto play_screen::RefreshCurrentScene(__int64 ticks) -> void
