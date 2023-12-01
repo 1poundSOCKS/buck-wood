@@ -22,6 +22,10 @@ public:
   {
   }
 
+  virtual ~play_scene()
+  {
+  }
+
   virtual auto Begin() -> void
   {    
   }
@@ -164,8 +168,15 @@ public:
     m_playerShields.Attach(m_levelContainer->PlayerShields());
   }
 
+  ~main_play_scene()
+  {
+    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::thrust).Stop();
+  }
+
   auto Begin() -> void override
   {
+    sound_data::get(sound_data::menu_theme).Play(true);
   }
 
   auto Refresh(__int64 ticks) -> bool override
@@ -183,6 +194,8 @@ public:
 
   auto End() -> void override
   {    
+    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::thrust).Stop();
   }
 
 private:
