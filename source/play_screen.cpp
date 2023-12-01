@@ -43,7 +43,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
   auto elapsedTicks = Paused() ? 0 : ticks;
 
-  auto keepScreenOpen = m_scenes.size() && ( *m_currentScene)->Refresh(elapsedTicks) || ++m_currentScene != std::end(m_scenes) ? true : false;
+  RefreshCurrentScene(elapsedTicks);
 
   render_guard renderGuard { render_target::get() };
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -60,7 +60,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
   renderer::renderDiagnostics();
   diagnostics::clear();
 
-  if( keepScreenOpen && m_continueRunning )
+  if( m_continueRunning && m_currentScene != std::end(m_scenes) )
   {
     return true;
   }
@@ -69,6 +69,24 @@ auto play_screen::Refresh(int64_t ticks) -> bool
     sound_data::get(sound_data::menu_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
     return false;
+  }
+}
+
+auto play_screen::RefreshCurrentScene(__int64 ticks) -> void
+{
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    auto& currentScene = *m_currentScene;
+
+    if( !currentScene->Refresh(ticks) )
+    {
+      currentScene->End();
+
+      if( ++m_currentScene != std::end(m_scenes) )
+      {
+        (*m_currentScene)->Begin();
+      }
+    }
   }
 }
 
