@@ -1,6 +1,7 @@
 #pragma once
 
 #include "play_scene.h"
+#include "stopwatch.h"
 
 class closing_play_scene : public play_scene
 {
@@ -15,11 +16,11 @@ public:
   {
     SetCameraZoom(0.5);
     play_scene::Refresh(ticks);
-    return ( m_ticks -= ticks ) > 0 ? true : false;
+    return m_stopwatch.Update(ticks);
   }
 
 private:
 
-  __int64 m_ticks { performance_counter::CalculateTicks(3) };
+  stopwatch m_stopwatch { 3.0f };
 
 };
