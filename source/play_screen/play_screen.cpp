@@ -107,9 +107,9 @@ auto play_screen::LoadNextLevel() -> bool
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     
     m_sceneController.Clear();
-    m_sceneController.AddScene(std::move(std::make_unique<opening_play_scene>(m_levelContainer)));
-    m_sceneController.AddScene(std::move(std::make_unique<main_play_scene>(m_levelContainer)));
-    m_sceneController.AddScene(std::move(std::make_unique<closing_play_scene>(m_levelContainer)));
+    m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
+    m_sceneController.AddScene<main_play_scene>(m_levelContainer);
+    m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
     m_sceneController.Begin();
 
     return true;
