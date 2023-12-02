@@ -1,5 +1,4 @@
-#ifndef _data_files_
-#define _data_files_
+#pragma once
 
 struct wav_file_header
 {
@@ -32,15 +31,10 @@ struct wav_file_chunk
 struct wav_file_data
 {
   wav_file_data(const wchar_t* filename);
+  auto GetSize() const -> int;
 
   std::unique_ptr<wav_file_header> header;
   std::unique_ptr<wav_file_chunk> format;
   std::unique_ptr<wav_file_chunk> data;
   wav_file_data_format dataFormat;
 };
-
-int GetWavFileDataSize(const wav_file_data& data);
-
-using wav_file_data_ptr = std::unique_ptr<wav_file_data>;
-
-#endif

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "data_files.h"
+#include "wav_file_data.h"
 
 wav_file_header::wav_file_header(std::ifstream& reader)
 {
@@ -38,7 +38,7 @@ wav_file_data::wav_file_data(const wchar_t* filename)
   fileReader.close();
 }
 
-int GetWavFileDataSize(const wav_file_data& wavFileData)
+auto wav_file_data::GetSize() const -> int
 {
-  return wavFileData.data->size;
+  return data->size;
 }

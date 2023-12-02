@@ -1,7 +1,6 @@
-#ifndef _sound_buffer_
-#define _sound_buffer_
+#pragma once
 
-#include "data_files.h"
+#include "wav_file_data.h"
 
 class sound_buffer
 {
@@ -50,5 +49,3 @@ inline sound_buffer::sound_buffer(const winrt::com_ptr<IDirectSoundBuffer8>& buf
 {
   return static_cast<bool>(m_buffer);
 }
-
-#endif

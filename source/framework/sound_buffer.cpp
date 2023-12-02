@@ -15,7 +15,7 @@ auto sound_buffer::Create(IDirectSound8* directSound, const wav_file_data& data)
   DSBUFFERDESC bufferDesc;
   bufferDesc.dwSize = sizeof(DSBUFFERDESC);
 	bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
-	bufferDesc.dwBufferBytes = GetWavFileDataSize(data);
+	bufferDesc.dwBufferBytes = data.GetSize();
 	bufferDesc.dwReserved = 0;
 	bufferDesc.lpwfxFormat = &waveFormat;
 	bufferDesc.guid3DAlgorithm = GUID_NULL;

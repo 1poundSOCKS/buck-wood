@@ -1,5 +1,4 @@
-#ifndef _screen_sound_data_
-#define _screen_sound_data_
+#pragma once
 
 #include "sound_buffer.h"
 
@@ -33,5 +32,3 @@ private:
 
   using sound_data_item = std::tuple<LPCWSTR, size_t&>;
 };
-
-#endif
