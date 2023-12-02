@@ -10,7 +10,6 @@ public:
   using play_scene_ptr = std::unique_ptr<play_scene>;
   using play_scene_collection = std::vector<play_scene_ptr>;
 
-  auto AddScene(play_scene_ptr playScene) -> void;
   template <typename scene_type, class... Args> auto AddScene(Args&&... args) -> void;
   auto Clear() -> void;
   auto Begin() -> void;
@@ -26,15 +25,9 @@ private:
 
 };
 
-inline auto play_scene_controller::AddScene(play_scene_ptr playScene) -> void
-{
-  m_scenes.push_back(std::move(playScene));
-}
-
 template <typename scene_type, class... Args> auto play_scene_controller::AddScene(Args&&... args) -> void
 {
-  std::unique_ptr<scene_type> playScene = std::make_unique<scene_type>(std::forward<Args>(args)...);
-  m_scenes.emplace_back(std::move(playScene));
+  m_scenes.emplace_back(std::make_unique<scene_type>(std::forward<Args>(args)...));
 }
 
 inline auto play_scene_controller::Clear() -> void
