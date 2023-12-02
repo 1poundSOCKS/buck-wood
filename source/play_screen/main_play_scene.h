@@ -33,7 +33,6 @@ public:
     renderer::render(m_playerShields);
     level_radar levelRadar { m_levelContainer->PlayerPosition() };
     renderer::render(levelRadar, m_levelContainer->Targets());
-    // m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
 
     return m_levelContainer->HasFinished() ? false : true;
   }
