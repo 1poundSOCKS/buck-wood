@@ -24,7 +24,7 @@ auto play_screen::Refresh(int64_t ticks) -> bool
   Update(ticks);
   Render();
 
-  return m_continueRunning && m_currentScene != std::end(m_scenes);
+  return m_continueRunning && !m_sceneController.Complete();
 }
 
 auto play_screen::Update(int64_t ticks) -> void
@@ -50,8 +50,7 @@ auto play_screen::Update(int64_t ticks) -> void
   }
 
   auto elapsedTicks = Paused() ? 0 : ticks;
-
-  RefreshCurrentScene(elapsedTicks);
+  m_sceneController.RefreshScene(elapsedTicks);
 }
 
 auto play_screen::Render() -> void
@@ -70,24 +69,6 @@ auto play_screen::Render() -> void
   diagnostics::updateFrameData();
   renderer::renderDiagnostics();
   diagnostics::clear();
-}
-
-auto play_screen::RefreshCurrentScene(__int64 ticks) -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    auto& currentScene = *m_currentScene;
-
-    if( !currentScene->Refresh(ticks) )
-    {
-      currentScene->End();
-
-      if( ++m_currentScene != std::end(m_scenes) )
-      {
-        (*m_currentScene)->Begin();
-      }
-    }
-  }
 }
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
@@ -124,11 +105,13 @@ auto play_screen::LoadNextLevel() -> bool
   if( m_gameLevelDataLoader.NextLevel() )
   {
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
-    m_scenes.clear();
-    m_scenes.emplace_back( std::make_unique<opening_play_scene>(m_levelContainer) );
-    m_scenes.emplace_back( std::make_unique<main_play_scene>(m_levelContainer) );
-    m_scenes.emplace_back( std::make_unique<closing_play_scene>(m_levelContainer) );
-    m_currentScene = std::begin(m_scenes);
+    
+    m_sceneController.Clear();
+    m_sceneController.AddScene(std::move(std::make_unique<opening_play_scene>(m_levelContainer)));
+    m_sceneController.AddScene(std::move(std::make_unique<main_play_scene>(m_levelContainer)));
+    m_sceneController.AddScene(std::move(std::make_unique<closing_play_scene>(m_levelContainer)));
+    m_sceneController.Begin();
+
     return true;
   }
   else
