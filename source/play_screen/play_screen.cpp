@@ -50,12 +50,15 @@ auto play_screen::Update(int64_t ticks) -> void
   }
 
   auto elapsedTicks = Paused() ? 0 : ticks;
-  m_sceneController.RefreshScene(elapsedTicks);
+  m_sceneController.UpdateScene(elapsedTicks);
 }
 
 auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
+
+  m_sceneController.RenderScene();
+
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( Paused() )

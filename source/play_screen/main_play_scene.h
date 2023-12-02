@@ -23,24 +23,24 @@ public:
     sound_data::get(sound_data::menu_theme).Play(true);
   }
 
-  auto Refresh(__int64 ticks) -> bool override
-  {
-    SetCameraZoom(1);
-    play_scene::Refresh(ticks);
-
-    render_guard renderGuard { render_target::get() };
-    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderer::render(m_playerShields);
-    level_radar levelRadar { m_levelContainer->PlayerPosition() };
-    renderer::render(levelRadar, m_levelContainer->Targets());
-
-    return m_levelContainer->HasFinished() ? false : true;
-  }
-
   auto End() -> void override
   {
     sound_data::get(sound_data::menu_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
+  }
+
+  auto Update(int64_t ticks) -> bool override
+  {
+    SetCameraZoom(1);
+    return play_scene::Update(ticks);
+  }
+
+  auto Render() const -> void override
+  {
+    play_scene::Render();
+    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+    renderer::render(m_playerShields);
+    renderer::render(level_radar { m_levelContainer->PlayerPosition() }, m_levelContainer->Targets());
   }
 
 private:

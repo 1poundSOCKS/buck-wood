@@ -12,10 +12,10 @@ public:
   {
   }
 
-  auto Refresh(__int64 ticks) -> bool override
+  auto Update(int64_t ticks) -> bool override
   {
     SetCameraZoom(0.5);
-    play_scene::Refresh(ticks);
+    play_scene::Update(ticks);
     return m_stopwatch.Update(ticks);
   }
 

@@ -11,9 +11,12 @@ public:
   using play_scene_collection = std::vector<play_scene_ptr>;
 
   template <typename scene_type, class... Args> auto AddScene(Args&&... args) -> void;
+
   auto Clear() -> void;
   auto Begin() -> void;
-  auto RefreshScene(int64_t ticks) -> void;
+
+  auto UpdateScene(int64_t ticks) -> void;
+  auto RenderScene() const -> void;
 
   [[nodiscard]] auto Current() const -> play_scene&;
   [[nodiscard]] auto Complete() const -> bool;
@@ -45,21 +48,45 @@ inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
   return *(m_currentScene->get());
 }
 
-inline auto play_scene_controller::RefreshScene(int64_t ticks) -> void
+// inline auto play_scene_controller::RefreshScene(int64_t ticks) -> void
+// {
+//   if( m_currentScene != std::end(m_scenes) )
+//   {
+//     auto& currentScene = *m_currentScene;
+
+//     if( !currentScene->Refresh(ticks) )
+//     {
+//       currentScene->End();
+
+//       if( ++m_currentScene != std::end(m_scenes) )
+//       {
+//         (*m_currentScene)->Begin();
+//       }
+//     }
+//   }
+// }
+
+inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
-    auto& currentScene = *m_currentScene;
-
-    if( !currentScene->Refresh(ticks) )
+    if( !Current().Update(ticks) )
     {
-      currentScene->End();
+      Current().End();
 
       if( ++m_currentScene != std::end(m_scenes) )
       {
-        (*m_currentScene)->Begin();
+        Current().Begin();
       }
     }
+  }
+}
+
+inline auto play_scene_controller::RenderScene() const -> void
+{
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    Current().Render();
   }
 }
 

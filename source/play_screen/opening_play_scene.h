@@ -14,10 +14,10 @@ public:
     m_cameraSequence.AddMove( { playerPosition.x, playerPosition.y, 1 }, performance_counter::CalculateTicks(2) );
   }
 
-  auto Refresh(__int64 ticks) -> bool override
+  auto Update(int64_t ticks) -> bool override
   {
     SetCameraZoom(m_cameraSequence.GetScale(m_ticks));
-    play_scene::Refresh(0);
+    play_scene::Update(0);
     return ( m_ticks += ticks ) < m_cameraSequence.GetTotalTicks() ? true : false;
   }
 

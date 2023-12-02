@@ -27,10 +27,14 @@ public:
   }
 
   virtual auto Begin() -> void
-  {    
+  {
   }
 
-  virtual auto Refresh(__int64 ticks) -> bool
+  virtual auto End() -> void
+  {
+  }
+
+  virtual auto Update(__int64 ticks) -> bool
   {
     PlaySoundEffects();
 
@@ -41,21 +45,12 @@ public:
     auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
     auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
-
     m_levelContainer->Update(levelInput, ticks, viewRect);
 
-    Render();
-
-    return true;
+    return m_levelContainer->HasFinished() ? false : true;
   }
 
-  virtual auto End() -> void
-  {    
-  }
-
-protected:
-
-  auto Render() -> void
+  virtual auto Render() const -> void
   {
     auto playerPosition = m_levelContainer->PlayerPosition();
     camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, m_cameraZoom };
@@ -63,11 +58,12 @@ protected:
     auto screenTransform = screen_transform { cameraTransform.Get() };
     auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
-    render_guard renderGuard { render_target::get() };
     render_target::get()->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
     render_target::get()->SetTransform(screenTransform.Get());
     m_levelContainer->Render(viewRect);
   }
+
+protected:
 
   [[nodiscard]] auto GetLevelInput() const -> level_input
   {
