@@ -48,24 +48,6 @@ inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
   return *(m_currentScene->get());
 }
 
-// inline auto play_scene_controller::RefreshScene(int64_t ticks) -> void
-// {
-//   if( m_currentScene != std::end(m_scenes) )
-//   {
-//     auto& currentScene = *m_currentScene;
-
-//     if( !currentScene->Refresh(ticks) )
-//     {
-//       currentScene->End();
-
-//       if( ++m_currentScene != std::end(m_scenes) )
-//       {
-//         (*m_currentScene)->Begin();
-//       }
-//     }
-//   }
-// }
-
 inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
 {
   if( m_currentScene != std::end(m_scenes) )
