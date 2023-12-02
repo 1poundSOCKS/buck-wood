@@ -31,7 +31,9 @@ public:
     render_guard renderGuard { render_target::get() };
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     renderer::render(m_playerShields);
-    m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
+    level_radar levelRadar { m_levelContainer->PlayerPosition() };
+    renderer::render(levelRadar, m_levelContainer->Targets());
+    // m_levelRadar.Render(m_levelContainer->PlayerPosition(), m_levelContainer->Targets());
 
     return m_levelContainer->HasFinished() ? false : true;
   }

@@ -17,6 +17,7 @@
 #include "menu_renderer.h"
 #include "slider_control_renderer.h"
 #include "diagnostics_renderer.h"
+#include "level_radar_renderer.h"
 
 class renderer
 {
@@ -26,6 +27,7 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
   static auto render(const auto& object) -> void;
+  static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
   static auto renderDiagnostics() -> void;
 
@@ -43,6 +45,7 @@ private:
   auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
+  auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
 
 private:
 
@@ -58,12 +61,18 @@ private:
   slider_control_renderer m_playerShieldsRenderer;
   render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
   diagnostics_renderer m_diagnosticsRenderer;
+  level_radar_renderer m_levelRadarRenderer;
 
 };
 
 auto renderer::render(const auto& object) -> void
 {
   m_instance->Render(object);
+}
+
+auto renderer::render(const auto& object, std::ranges::input_range auto&& objects) -> void
+{
+  m_instance->Render(object, objects);
 }
 
 auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
@@ -139,4 +148,9 @@ inline auto renderer::Render(const player_shields& playerShields) const -> void
 inline auto renderer::Render(const menu_item& menuItem) const -> void
 {
   m_menuRenderer.Write(menuItem);
+}
+
+inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void
+{
+  m_levelRadarRenderer.Write(levelRadar, objects);
 }

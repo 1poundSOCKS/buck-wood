@@ -127,7 +127,7 @@ protected:
 protected:
 
   level_container_ptr m_levelContainer;
-  level_radar m_levelRadar;
+  // level_radar m_levelRadar;
   float m_cameraZoom { 1 };
 
 };
