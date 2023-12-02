@@ -47,27 +47,21 @@ auto sound_buffer::Create(IDirectSound8* directSound, const wav_file_data& data)
 
 auto sound_buffer::Play(bool loop) const -> void
 {
-  if( m_buffer )
-  {
-    DWORD bufferStatus = S_OK;
+  DWORD bufferStatus = S_OK;
 
-    if( SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
-    {
-      m_buffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
-    }
+  if( m_buffer && SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && !(bufferStatus & DSBSTATUS_PLAYING) )
+  {
+    m_buffer->Play(0, 0, loop ? DSBPLAY_LOOPING : 0);
   }
 }
 
 auto sound_buffer::Stop() const -> void
 {
-  if( m_buffer )
-  {
-    DWORD bufferStatus = S_OK;
+  DWORD bufferStatus = S_OK;
 
-    if( SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
-    {
-      m_buffer->Stop();
-    }
+  if( m_buffer && SUCCEEDED(m_buffer->GetStatus(&bufferStatus)) && bufferStatus & DSBSTATUS_PLAYING )
+  {
+    m_buffer->Stop();
   }
 }
 
