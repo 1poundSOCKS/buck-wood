@@ -38,7 +38,7 @@ public:
   }
 
   auto End() -> void override
-  {    
+  {
     sound_data::get(sound_data::menu_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
   }

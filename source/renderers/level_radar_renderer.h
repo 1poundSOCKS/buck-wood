@@ -32,17 +32,17 @@ auto level_radar_renderer::Write(const level_radar& levelRadar, std::ranges::inp
   auto centreX = renderTargetSize.width / 2;
   auto centreY = renderTargetSize.height / 2;
 
-  auto radarTargetsView = targets | 
-  std::ranges::views::filter([](const auto& target)
+  auto targetsNotActivated = targets | std::ranges::views::filter([](const auto& target)
   {
     return !target.IsActivated();
-  }) | 
-  std::ranges::views::transform([&levelRadar](const auto& target) -> radar_target
+  });
+
+  auto radarTargets = targetsNotActivated | std::ranges::views::transform([&levelRadar](const auto& target) -> radar_target
   {
     return { levelRadar.AngleTo(target.Position()), levelRadar.DistanceTo(target.Position()) };
   });
 
-  for( auto radarTarget : radarTargetsView )
+  for( auto radarTarget : radarTargets )
   {
     D2D1_POINT_2F targetPoint { 0, -250 };
     D2D1::Matrix3x2F transform = D2D1::Matrix3x2F::Rotation(radarTarget.angle) * D2D1::Matrix3x2F::Translation(centreX, centreY);
