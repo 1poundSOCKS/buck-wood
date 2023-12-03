@@ -90,6 +90,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   
   update_all(m_targets, interval);
   update_all(m_bullets, interval);
+  update_all(m_ductFans, interval);
   update_all(m_explosionParticles, interval);
   update_all(m_impactParticles, interval);
 
@@ -125,6 +126,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_asteroids);
   renderer::render_all(m_targets);
   renderer::render_all(m_mines);
+  renderer::render_all(m_ductFans);
   renderer::render_all(m_impactParticles);
   renderer::render_all(m_bullets);
 
@@ -163,19 +165,19 @@ auto level_container::DoCollisions() -> void
 {
   if( !m_playerShip.Destroyed() )
   {
-    do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
-    {
-      auto position = playerShip.PreviousPosition();
-      CreateExplosion(position);
-      playerShip.ApplyFatalDamage();
-    });
-
     if( m_blankObjects.size() && !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
     {
       auto position = m_playerShip.PreviousPosition();
       CreateExplosion(position);
       m_playerShip.ApplyFatalDamage();
     }
+
+    do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
+    {
+      auto position = playerShip.PreviousPosition();
+      CreateExplosion(position);
+      playerShip.ApplyFatalDamage();
+    });
 
     do_geometry_to_geometries_collisions(m_playerShip, m_solidObjects, [this](auto& playerShip, auto& solidObject)
     {
@@ -194,6 +196,14 @@ auto level_container::DoCollisions() -> void
     });
 
     do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
+    {
+      playerShip.ApplyFatalDamage();
+      auto position = playerShip.PreviousPosition();
+      CreateExplosion(position);
+    });
+
+
+    do_geometry_to_geometries_collisions(m_playerShip, m_ductFans, [this](auto& playerShip, auto& ductFan)
     {
       playerShip.ApplyFatalDamage();
       auto position = playerShip.PreviousPosition();

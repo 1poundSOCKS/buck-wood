@@ -76,6 +76,7 @@ public:
   [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
   [[nodiscard]] auto Targets() const -> const std::vector<game_point>&;
   [[nodiscard]] auto Asteroids() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto DuctFans() const -> const std::vector<game_point>&;
 
 private:
 
@@ -85,6 +86,7 @@ private:
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
   std::vector<game_point> m_asteroids;
+  std::vector<game_point> m_ductFans;
 
   inline static auto m_boundaryBuildCommands = {
     build_command { 2, 0 },
@@ -116,6 +118,10 @@ private:
     cell { -1, 1 },
     cell { 1, 0 },
     cell { -2, -2 }
+  };
+
+  inline static auto m_ductFanPositions = {
+    cell { 1, 3 }
   };
 
 };

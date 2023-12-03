@@ -1,7 +1,5 @@
 #pragma once
 
-#include "framework.h"
-
 class path_geometry
 {
 

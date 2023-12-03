@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "geometry_renderer.h"
+#include "framework.h"
 
 geometry_renderer::geometry_renderer(const render_brush& fillBrush) : m_fillBrush { fillBrush }
 {

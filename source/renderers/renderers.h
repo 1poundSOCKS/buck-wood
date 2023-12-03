@@ -9,6 +9,7 @@
 #include "explosion_particle.h"
 #include "impact_particle.h"
 #include "player_shields.h"
+#include "duct_fan.h"
 
 #include "level_target_renderer.h"
 #include "player_ship_renderer.h"
@@ -46,6 +47,7 @@ private:
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
+  auto Render(const duct_fan& ductFan) const -> void;
 
 private:
 
@@ -62,6 +64,7 @@ private:
   render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
+  geometry_renderer m_ductFanRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_brown.CreateBrush(), 4 };
 
 };
 
@@ -153,4 +156,9 @@ inline auto renderer::Render(const menu_item& menuItem) const -> void
 inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void
 {
   m_levelRadarRenderer.Write(levelRadar, objects);
+}
+
+inline auto renderer::Render(const duct_fan& ductFan) const -> void
+{
+  m_ductFanRenderer.Write(ductFan.Geometry());
 }

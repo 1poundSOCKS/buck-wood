@@ -11,6 +11,7 @@
 #include "level_input.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
+#include "duct_fan.h"
 
 class level_container
 {
@@ -29,6 +30,7 @@ public:
   using target_collection = std::vector<level_target>;
   using mine_collection = std::vector<mine>;
   using asteroid_collection = std::vector<level_asteroid>;
+  using duct_fan_collection = std::vector<duct_fan>;
   using explosion_particle_collection  = std::list<explosion_particle>;
   using impact_particle_collection  = std::list<impact_particle>;
 
@@ -46,6 +48,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
+  auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
   auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -78,6 +81,7 @@ private:
   asteroid_collection m_asteroids;
   solid_objects m_solidObjects;
   blank_objects m_blankObjects;
+  duct_fan_collection m_ductFans;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
   game_point m_centre;
@@ -144,6 +148,14 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
   std::ranges::for_each(positions, [this](const auto& position)
   {
     m_asteroids.emplace_back( level_asteroid { static_cast<float>(position.x), static_cast<float>(position.y), 800, 800 } );
+  });
+}
+
+auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> void
+{
+  std::ranges::for_each(positions, [this](const auto& position)
+  {
+    m_ductFans.emplace_back( duct_fan { static_cast<float>(position.x), static_cast<float>(position.y), 400 } );
   });
 }
 

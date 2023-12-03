@@ -19,6 +19,13 @@ demo_level::demo_level(int cellWidth, int cellHeight)
     auto y = static_cast<float>(asteroidCell.y * cellHeight);
     return game_point { x, y };
   });
+
+  std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [cellWidth, cellHeight](const cell& targetCell)
+  {
+    auto x = static_cast<float>(targetCell.x * cellWidth);
+    auto y = static_cast<float>(targetCell.y * cellHeight);
+    return game_point { x, y };
+  });
 }
 
 [[nodiscard]] auto demo_level::Boundary() const -> const std::vector<game_point>&
@@ -34,4 +41,9 @@ demo_level::demo_level(int cellWidth, int cellHeight)
 [[nodiscard]] auto demo_level::Asteroids() const -> const std::vector<game_point>&
 {
   return m_asteroids;
+}
+
+[[nodiscard]] auto demo_level::DuctFans() const -> const std::vector<game_point>&
+{
+  return m_ductFans;
 }
