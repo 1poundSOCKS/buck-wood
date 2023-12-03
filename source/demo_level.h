@@ -80,8 +80,8 @@ public:
 
 private:
 
-  inline static int m_left { -3 };
-  inline static int m_top { -3 };
+  inline static int m_left { -2 };
+  inline static int m_top { -2 };
 
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
@@ -89,7 +89,6 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_boundaryBuildCommands = {
-    build_command { 2, 0 },
     build_command { 1, -1 },
     build_command { 1, 0 },
     build_command { 1, 3 },
@@ -104,24 +103,25 @@ private:
     build_command { 0, -1 },
     build_command { 1, 0 },
     build_command { 0, -4 },
-    build_command { -4, 0 }
+    build_command { -2, 0 },
+    build_command { -1, -1 },
+    build_command { 0, -2 }
   };
 
   inline static auto m_targetPositions = {
     cell { -2, -1 },
-    cell { 1, 1 },
-    cell { 1, 5 }
+    cell { 0, 1 },
+    cell { 0, 5 }
   };
 
   inline static auto m_asteroidPositions = {
-    cell { 1, -1 },
     cell { -1, 1 },
     cell { 1, 0 },
     cell { -2, -2 }
   };
 
   inline static auto m_ductFanPositions = {
-    cell { 1, 3 }
+    cell { 0, 4 }
   };
 
 };

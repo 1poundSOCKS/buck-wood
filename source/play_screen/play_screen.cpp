@@ -8,6 +8,7 @@
 #include "sound_buffer_player.h"
 #include "gamepad_trigger.h"
 #include "diagnostics.h"
+#include "show_level_play_scene.h"
 
 play_screen::play_screen() : m_levelContainer(std::make_shared<level_container>())
 {
@@ -110,6 +111,7 @@ auto play_screen::LoadNextLevel() -> bool
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
     
     m_sceneController.Clear();
+    m_sceneController.AddScene<show_level_play_scene>(m_levelContainer);
     m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
     m_sceneController.AddScene<main_play_scene>(m_levelContainer);
     m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
