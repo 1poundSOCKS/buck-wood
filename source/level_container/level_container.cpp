@@ -241,7 +241,29 @@ auto level_container::DoCollisions() -> void
     bullet.Destroy();
   });
 
+  do_geometries_to_points_collisions(m_solidObjects, m_bullets, [this](auto& solidObject, auto& bullet)
+  {
+    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    bullet.Destroy();
+  });
+
+  do_geometries_to_points_collisions(m_ductFans, m_bullets, [this](auto& ductFan, auto& bullet)
+  {
+    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    bullet.Destroy();
+  });
+
   do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  do_geometries_to_points_collisions(m_solidObjects, m_explosionParticles, [this](auto& solidObject, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  do_geometries_to_points_collisions(m_ductFans, m_explosionParticles, [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
   });
@@ -255,24 +277,16 @@ auto level_container::DoCollisions() -> void
       mine.Destroy();
       m_updateEvents.mineExploded = true;
     });
-  }
 
-  do_geometries_to_points_collisions(m_solidObjects, m_bullets, [this](auto& solidObject, auto& bullet)
-  {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
-    bullet.Destroy();
-  });
-
-  do_geometries_to_points_collisions(m_solidObjects, m_explosionParticles, [this](auto& solidObject, auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  if( m_blankObjects.size() )
-  {
     check_points_contained(m_explosionParticles, m_blankObjects.front(), [this](auto& particle)
     {
       particle.Destroy();
+    });
+
+    check_points_contained(m_bullets, m_blankObjects.front(), [this](auto& bullet)
+    {
+      m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+      bullet.Destroy();
     });
   }
 
@@ -293,15 +307,6 @@ auto level_container::DoCollisions() -> void
 
     bullet.Destroy();
   });
-
-  if( m_blankObjects.size() )
-  {
-    check_points_contained(m_bullets, m_blankObjects.front(), [this](auto& bullet)
-    {
-      m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
-      bullet.Destroy();
-    });
-  }
 
   do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {

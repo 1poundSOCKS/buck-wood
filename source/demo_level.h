@@ -90,10 +90,10 @@ private:
 
   inline static auto m_boundaryBuildCommands = {
     build_command { 2, 0 },
-    build_command { 0, -2 },
-    build_command { 2, 0 },
-    build_command { 0, 3 },
-    build_command { 2, 0 },
+    build_command { 1, -1 },
+    build_command { 1, 0 },
+    build_command { 1, 3 },
+    build_command { 1, 0 },
     build_command { 0, 4 },
     build_command { -1, 0 },
     build_command { 0, 3 },
