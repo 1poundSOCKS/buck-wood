@@ -7,26 +7,24 @@ class build_command
 
 public:
 
-  enum class move_direction { none, left, right, up, down };
-
-  build_command(move_direction moveDirection, int count) : m_moveDirection { moveDirection }, m_count { count }
+  build_command(int cx, int cy) : m_cx { cx }, m_cy { cy }
   {
   }
 
-  [[nodiscard]] auto MoveDirection() const -> move_direction
+  [[nodiscard]] auto cx() const -> int
   {
-    return m_moveDirection;
+    return m_cx;
   }
 
-  [[nodiscard]] auto Count() const -> int
+  [[nodiscard]] auto cy() const -> int
   {
-    return m_count;
+    return m_cy;
   }
 
 private:
 
-  move_direction m_moveDirection { move_direction::none };
-  int m_count { 0 };
+  int m_cx { 0 };
+  int m_cy { 0 };
 
 };
 
@@ -49,22 +47,8 @@ public:
 
     auto view = commands | std::ranges::views::transform([this, &x,&y](const build_command& buildCommand) -> game_point
     {
-      switch( buildCommand.MoveDirection() )
-      {
-        case build_command::move_direction::left:
-          x -= buildCommand.Count() * m_cellWidth;
-          break;
-        case build_command::move_direction::right:
-          x += buildCommand.Count() * m_cellWidth;
-          break;
-        case build_command::move_direction::up:
-          y -= buildCommand.Count() * m_cellHeight;
-          break;
-        case build_command::move_direction::down:        
-          y += buildCommand.Count() * m_cellHeight;
-          break;
-      }
-
+      x += buildCommand.cx() * m_cellWidth;
+      y += buildCommand.cy() * m_cellHeight;
       return { x, y };
     });
 
@@ -103,21 +87,22 @@ private:
   std::vector<game_point> m_asteroids;
 
   inline static auto m_boundaryBuildCommands = {
-    build_command { build_command::move_direction::right, 2 },
-    build_command { build_command::move_direction::up, 2 },
-    build_command { build_command::move_direction::right, 2 },
-    build_command { build_command::move_direction::down, 3 },
-    build_command { build_command::move_direction::right, 2 },
-    build_command { build_command::move_direction::down, 4 },
-    build_command { build_command::move_direction::left, 1 },
-    build_command { build_command::move_direction::down, 4 },
-    build_command { build_command::move_direction::right, 3 },
-    build_command { build_command::move_direction::down, 1 },
-    build_command { build_command::move_direction::left, 5 },
-    build_command { build_command::move_direction::up, 1 },
-    build_command { build_command::move_direction::right, 1 },
-    build_command { build_command::move_direction::up, 4 },
-    build_command { build_command::move_direction::left, 4 }
+    build_command { 2, 0 },
+    build_command { 0, -2 },
+    build_command { 2, 0 },
+    build_command { 0, 3 },
+    build_command { 2, 0 },
+    build_command { 0, 4 },
+    build_command { -1, 0 },
+    build_command { 0, 3 },
+    build_command { 1, 1 },
+    build_command { 2, 0 },
+    build_command { 0, 1 },
+    build_command { -5, 0 },
+    build_command { 0, -1 },
+    build_command { 1, 0 },
+    build_command { 0, -4 },
+    build_command { -4, 0 }
   };
 
   inline static auto m_targetPositions = {
