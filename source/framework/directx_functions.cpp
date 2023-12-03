@@ -128,29 +128,34 @@ auto CreateDirectSound(HWND window) -> winrt::com_ptr<IDirectSound8>
 
 auto CreatePrimarySoundBuffer(IDirectSound8* directSound) -> winrt::com_ptr<IDirectSoundBuffer>
 {
-  DSBUFFERDESC bufferDesc;
-  bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-	bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
-	bufferDesc.dwBufferBytes = 0;
-	bufferDesc.dwReserved = 0;
-	bufferDesc.lpwfxFormat = NULL;
-	bufferDesc.guid3DAlgorithm = GUID_NULL;
-
   winrt::com_ptr<IDirectSoundBuffer> primaryBuffer;
-  HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
-  if( FAILED(hr) ) throw std::exception();
+  
+  if( directSound )
+  {
+    DSBUFFERDESC bufferDesc;
+    bufferDesc.dwSize = sizeof(DSBUFFERDESC);
+    bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
+    bufferDesc.dwBufferBytes = 0;
+    bufferDesc.dwReserved = 0;
+    bufferDesc.lpwfxFormat = NULL;
+    bufferDesc.guid3DAlgorithm = GUID_NULL;
 
-  WAVEFORMATEX waveFormat;
-	waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-	waveFormat.nSamplesPerSec = 44100;
-	waveFormat.wBitsPerSample = 16;
-	waveFormat.nChannels = 2;
-	waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
-	waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
-	waveFormat.cbSize = 0;
+    directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
 
-	hr = primaryBuffer->SetFormat(&waveFormat);
-  if( FAILED(hr) ) throw std::exception();
+    if( primaryBuffer )
+    {
+      WAVEFORMATEX waveFormat;
+      waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+      waveFormat.nSamplesPerSec = 44100;
+      waveFormat.wBitsPerSample = 16;
+      waveFormat.nChannels = 2;
+      waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+      waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+      waveFormat.cbSize = 0;
+
+      primaryBuffer->SetFormat(&waveFormat);
+    }
+  }
   
   return primaryBuffer;
 }
