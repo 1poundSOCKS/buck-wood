@@ -64,7 +64,7 @@ private:
   render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
-  geometry_renderer m_ductFanRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_brown.CreateBrush(), 4 };
+  geometry_renderer m_ductFanRenderer { screen_render_brush_brown.CreateBrush(), screen_render_brush_grey.CreateBrush(), 4 };
 
 };
 

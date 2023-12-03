@@ -219,6 +219,22 @@ auto level_container::DoCollisions() -> void
     m_updateEvents.mineExploded = true;
   });
 
+  do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this](auto& mine, auto& solidObject)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  });
+
+  do_geometries_to_geometries_collisions(m_mines, m_ductFans, [this](auto& mine, auto& ductFan)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  });
+
   do_geometries_to_points_collisions(m_asteroids, m_bullets, [this](auto& asteroid, auto& bullet)
   {
     m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
@@ -228,14 +244,6 @@ auto level_container::DoCollisions() -> void
   do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
-  });
-
-  do_geometries_to_geometries_collisions(m_mines, m_solidObjects, [this](auto& mine, auto& solidObject)
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
   });
 
   if( m_blankObjects.size() )
