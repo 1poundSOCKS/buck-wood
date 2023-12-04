@@ -3,11 +3,9 @@
 
 demo_level::demo_level(int cellWidth, int cellHeight)
 {
-  geometry_builder geometryBuilder;
-  std::vector<geometry_builder::point> boundaryPoints;
-  geometryBuilder.Run(m_boundaryBuildCommands, std::back_inserter(boundaryPoints));
+  m_boundary.AddGeometry(m_boundaryBuildCommands);
 
-  std::ranges::transform(boundaryPoints, std::back_inserter(m_boundary), [cellWidth, cellHeight](geometry_builder::point point) -> game_point
+  std::ranges::transform(m_boundary, std::back_inserter(m_boundaryPoints), [cellWidth, cellHeight](geometry_builder::point point) -> game_point
   {
     const auto [x, y] = point;
     return { static_cast<float>(x * cellWidth), static_cast<float>(y * cellWidth) };
@@ -37,7 +35,7 @@ demo_level::demo_level(int cellWidth, int cellHeight)
 
 [[nodiscard]] auto demo_level::Boundary() const -> const std::vector<game_point>&
 {
-  return m_boundary;
+  return m_boundaryPoints;
 }
 
 [[nodiscard]] auto demo_level::Targets() const -> const std::vector<game_point>&

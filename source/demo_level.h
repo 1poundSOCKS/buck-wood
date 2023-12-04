@@ -56,34 +56,37 @@ private:
 
 };
 
-class geometry_collection
+class level_boundary
 {
 
 public:
 
-  enum class type { small_cavern, vertical_shaft };
+  using points_type = std::vector<geometry_builder::point>;
 
-  geometry_collection(auto&& geometries)
+  auto AddGeometry(std::ranges::input_range auto&& commands) -> void
   {
-    std::ranges::copy(geometries, std::back_inserter(m_geometries));
+    geometry_builder geometryBuilder;
+    geometryBuilder.Run(commands, std::back_inserter(m_points));
   }
 
-  auto AddGeometry(type geometryType, const geometry_builder& geometryBuilder) -> void
+  [[nodiscard]] auto Points() const -> const points_type&
   {
-    m_geometries[geometryType] = geometryBuilder;
+    return m_points;
   }
 
-  auto Build(type startingGeometryType, auto&& outputGeometry) const -> void
+  auto begin() const -> points_type::const_iterator
   {
-    const auto& startingGeometry = m_geometries[startingGeometryType];
-    std::ranges::copy(startingGeometry, outputGeometry);
+    return std::begin(m_points);
+  }
+
+  auto end() const -> points_type::const_iterator
+  {
+    return std::end(m_points);
   }
 
 private:
 
-  using collection_type = std::map<type, geometry_builder>;
-
-  collection_type m_geometries;
+  points_type m_points;
 
 };
 
@@ -107,7 +110,8 @@ public:
 
 private:
 
-  std::vector<game_point> m_boundary;
+  level_boundary m_boundary;
+  std::vector<game_point> m_boundaryPoints;
   std::vector<game_point> m_targets;
   std::vector<game_point> m_asteroids;
   std::vector<game_point> m_ductFans;
