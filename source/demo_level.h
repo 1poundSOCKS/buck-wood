@@ -33,20 +33,31 @@ class geometry_builder
 
 public:
 
-  geometry_builder(int startX, int startY, int cellWidth, int cellHeight) : 
-    m_startX { startX }, m_startY { startY }, m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
-  {
-  }
+  using point = std::tuple<int, int>;
+
+  // geometry_builder(int startX, int startY, int cellWidth, int cellHeight) : 
+  //   m_startX { startX }, m_startY { startY }, m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
+  // {
+  // }
+
+  // geometry_builder(int startX, int startY, int cellWidth, int cellHeight) : 
+  //   m_startX { startX }, m_startY { startY }, m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
+  // {
+  // }
 
   auto Run(std::ranges::input_range auto&& commands, auto output) -> void
   {
-    float x = static_cast<float>(m_startX * m_cellWidth) - m_cellWidth / 2;
-    float y = static_cast<float>(m_startY * m_cellHeight) - m_cellHeight / 2;
+    // float x = static_cast<float>(m_startX * m_cellWidth) - m_cellWidth / 2;
+    // float y = static_cast<float>(m_startY * m_cellHeight) - m_cellHeight / 2;
 
-    output = game_point { x, y };
+    // output = game_point { x, y };
 
-    auto view = commands | std::ranges::views::transform([this, &x,&y](const build_command& buildCommand) -> game_point
+    int x = 0, y = 0;
+
+    auto view = commands | std::ranges::views::transform([this, &x,&y](const build_command& buildCommand) -> point
     {
+      // x += buildCommand.cx() * m_cellWidth;
+      // y += buildCommand.cy() * m_cellHeight;
       x += buildCommand.cx() * m_cellWidth;
       y += buildCommand.cy() * m_cellHeight;
       return { x, y };
@@ -57,10 +68,41 @@ public:
 
 private:
 
-  int m_startX { 0 };
-  int m_startY { 0 };
+  // int m_startX { 0 };
+  // int m_startY { 0 };
   int m_cellWidth { 1 };
   int m_cellHeight { 1 };
+
+};
+
+class geometry_collection
+{
+
+public:
+
+  enum class type { small_cavern, vertical_shaft };
+
+  geometry_collection(auto&& geometries)
+  {
+    std::ranges::copy(geometries, std::back_inserter(m_geometries));
+  }
+
+  auto AddGeometry(type geometryType, const geometry_builder& geometryBuilder) -> void
+  {
+    m_geometries[geometryType] = geometryBuilder;
+  }
+
+  auto Build(type startingGeometryType, auto&& outputGeometry) const -> void
+  {
+    const auto& startingGeometry = m_geometries[startingGeometryType];
+    std::ranges::copy(startingGeometry, outputGeometry);
+  }
+
+private:
+
+  using collection_type = std::map<type, geometry_builder>;
+
+  collection_type m_geometries;
 
 };
 
@@ -69,7 +111,11 @@ class demo_level
 
 public:
 
-  struct cell { int x { 0 }; int y { 0 }; };
+  struct cell
+  {
+    int x { 0 };
+    int y { 0 };
+  };
 
   demo_level(int cellWidth, int cellHeight);
 
@@ -80,8 +126,8 @@ public:
 
 private:
 
-  inline static int m_left { -2 };
-  inline static int m_top { -2 };
+  // inline static int m_left { -2 };
+  // inline static int m_top { -2 };
 
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
@@ -89,6 +135,7 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_boundaryBuildCommands = {
+    build_command { -2, -2 },
     build_command { 1, -1 },
     build_command { 1, 0 },
     build_command { 1, 3 },
