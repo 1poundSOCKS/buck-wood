@@ -35,29 +35,12 @@ public:
 
   using point = std::tuple<int, int>;
 
-  // geometry_builder(int startX, int startY, int cellWidth, int cellHeight) : 
-  //   m_startX { startX }, m_startY { startY }, m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
-  // {
-  // }
-
-  // geometry_builder(int startX, int startY, int cellWidth, int cellHeight) : 
-  //   m_startX { startX }, m_startY { startY }, m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
-  // {
-  // }
-
   auto Run(std::ranges::input_range auto&& commands, auto output) -> void
   {
-    // float x = static_cast<float>(m_startX * m_cellWidth) - m_cellWidth / 2;
-    // float y = static_cast<float>(m_startY * m_cellHeight) - m_cellHeight / 2;
-
-    // output = game_point { x, y };
-
     int x = 0, y = 0;
 
     auto view = commands | std::ranges::views::transform([this, &x,&y](const build_command& buildCommand) -> point
     {
-      // x += buildCommand.cx() * m_cellWidth;
-      // y += buildCommand.cy() * m_cellHeight;
       x += buildCommand.cx() * m_cellWidth;
       y += buildCommand.cy() * m_cellHeight;
       return { x, y };
@@ -68,8 +51,6 @@ public:
 
 private:
 
-  // int m_startX { 0 };
-  // int m_startY { 0 };
   int m_cellWidth { 1 };
   int m_cellHeight { 1 };
 
@@ -125,9 +106,6 @@ public:
   [[nodiscard]] auto DuctFans() const -> const std::vector<game_point>&;
 
 private:
-
-  // inline static int m_left { -2 };
-  // inline static int m_top { -2 };
 
   std::vector<game_point> m_boundary;
   std::vector<game_point> m_targets;
