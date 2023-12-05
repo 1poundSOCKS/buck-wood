@@ -105,19 +105,22 @@ public:
 
   auto Build(auto outputPoints) -> void
   {
-    Build(m_builds.front(), outputPoints);
+    Build(std::begin(m_builds), outputPoints);
   }
 
 private:
 
-  auto Build(std::ranges::input_range auto&& inputCommands, auto outputPoints) -> void
+  auto Build(build_type_collection::const_iterator currentBuild, auto outputPoints) -> void
   {
-    for( const auto& inputCommand : inputCommands )
+    for( const auto& inputCommand : *currentBuild )
     {
       switch( inputCommand.Type() )
       {
         case boundary_build_command::type::portal:
-          m_builder.Run(inputCommand, outputPoints);
+          if( std::next(currentBuild) != std::end(m_builds) )
+          {
+            Build(std::next(currentBuild), outputPoints);
+          }
           break;
         default:
           m_builder.Run(inputCommand, outputPoints);
@@ -157,7 +160,7 @@ private:
   std::vector<game_point> m_asteroids;
   std::vector<game_point> m_ductFans;
 
-  inline static auto m_rootBoundaryBuildCommands = {
+  inline static auto m_startBoundaryBuildCommands = {
     boundary_build_command { 0, -1 },
     boundary_build_command { 1, 0 },
     boundary_build_command { 1, 1 },
@@ -168,14 +171,27 @@ private:
     boundary_build_command { 0, -1 }
   };
 
-  inline static auto m_nextBoundaryBuildCommands = {
+  inline static auto m_joinBoundaryBuildCommands = {
     boundary_build_command { 0, 2 },
-    boundary_build_command { -1, 0 },
+    boundary_build_command { -1, 0, boundary_build_command::type::portal },
     boundary_build_command { 0, -2 }
   };
 
-  inline static auto m_targetPositions = {
-    cell { 0, 1 }
+  inline static auto m_endBoundaryBuildCommands = {
+    boundary_build_command { 1, 1 },
+    boundary_build_command { 0, 1 },
+    boundary_build_command { -1, 1 },
+    boundary_build_command { -1, 0 },
+    boundary_build_command { -1, -1 },
+    boundary_build_command { 0, -1 },
+    boundary_build_command { 1, -1 }
   };
 
+  inline static auto m_targetPositions = {
+    cell { 0, 5 }
+  };
+
+  inline static auto m_ductFanPositions = {
+    cell { 0, 3 }
+  };
 };

@@ -4,8 +4,10 @@
 demo_level::demo_level(int cellWidth, int cellHeight)
 {
   std::vector<geometry_builder::point> boundaryPoints;
-  m_boundary.AddGeometry(m_rootBoundaryBuildCommands);
-  m_boundary.AddGeometry(m_nextBoundaryBuildCommands);
+
+  m_boundary.AddGeometry(m_startBoundaryBuildCommands);
+  m_boundary.AddGeometry(m_joinBoundaryBuildCommands);
+  m_boundary.AddGeometry(m_endBoundaryBuildCommands);
   m_boundary.Build(std::back_inserter(boundaryPoints));
 
   std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [cellWidth, cellHeight](geometry_builder::point point) -> game_point
@@ -28,12 +30,12 @@ demo_level::demo_level(int cellWidth, int cellHeight)
   //   return game_point { x, y };
   // });
 
-  // std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [cellWidth, cellHeight](const cell& targetCell)
-  // {
-  //   auto x = static_cast<float>(targetCell.x * cellWidth);
-  //   auto y = static_cast<float>(targetCell.y * cellHeight);
-  //   return game_point { x, y };
-  // });
+  std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [cellWidth, cellHeight](const cell& targetCell)
+  {
+    auto x = static_cast<float>(targetCell.x * cellWidth);
+    auto y = static_cast<float>(targetCell.y * cellHeight);
+    return game_point { x, y };
+  });
 }
 
 [[nodiscard]] auto demo_level::Boundary() const -> const std::vector<game_point>&
