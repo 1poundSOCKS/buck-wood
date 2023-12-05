@@ -41,6 +41,7 @@ inline auto play_scene_controller::Clear() -> void
 inline auto play_scene_controller::Begin() -> void
 {
   m_currentScene = std::begin(m_scenes);
+  Current().Begin();
 }
 
 inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
