@@ -37,20 +37,27 @@ public:
 
   auto Run(std::ranges::input_range auto&& commands, auto output) -> void
   {
-    int x = 0, y = 0;
-
-    auto view = commands | std::ranges::views::transform([this, &x,&y](const build_command& buildCommand) -> point
+    auto view = commands | std::ranges::views::transform([this](const build_command& buildCommand) -> point
     {
-      x += buildCommand.cx() * m_cellWidth;
-      y += buildCommand.cy() * m_cellHeight;
-      return { x, y };
+      m_x += buildCommand.cx() * m_cellWidth;
+      m_y += buildCommand.cy() * m_cellHeight;
+      return { m_x, m_y };
     });
 
     std::ranges::copy(view, output);
   }
 
+  auto Run(const build_command& command, auto output) -> void
+  {
+    m_x += command.cx() * m_cellWidth;
+    m_y += command.cy() * m_cellHeight;
+    output = { m_x, m_y };
+  }
+
 private:
 
+  int m_x { 0 };
+  int m_y { 0  };
   int m_cellWidth { 1 };
   int m_cellHeight { 1 };
 
@@ -69,6 +76,11 @@ public:
 
   boundary_build_command(int cx, int cy, type commandType) : build_command { cx, cy }, m_type { commandType }
   {
+  }
+
+  [[nodiscard]] auto Type() const -> type
+  {
+    return m_type;
   }
 
 private:
@@ -91,15 +103,31 @@ public:
     m_builds.emplace_back(commands);    
   }
 
-  auto Build(auto&& outputPoints) -> void
+  auto Build(auto outputPoints) -> void
   {
-    geometry_builder geometryBuilder;
-    geometryBuilder.Run(m_builds.front(), outputPoints);
+    Build(m_builds.front(), outputPoints);
   }
 
 private:
 
+  auto Build(std::ranges::input_range auto&& inputCommands, auto outputPoints) -> void
+  {
+    for( const auto& inputCommand : inputCommands )
+    {
+      switch( inputCommand.Type() )
+      {
+        case boundary_build_command::type::portal:
+          m_builder.Run(inputCommand, outputPoints);
+          break;
+        default:
+          m_builder.Run(inputCommand, outputPoints);
+          break;
+      }
+    }
+  }
+
   build_type_collection m_builds;
+  geometry_builder m_builder;
 
 };
 
@@ -129,7 +157,7 @@ private:
   std::vector<game_point> m_asteroids;
   std::vector<game_point> m_ductFans;
 
-  inline static auto m_boundaryBuildCommands = {
+  inline static auto m_rootBoundaryBuildCommands = {
     boundary_build_command { 0, -1 },
     boundary_build_command { 1, 0 },
     boundary_build_command { 1, 1 },
@@ -138,6 +166,12 @@ private:
     boundary_build_command { -1, 0, boundary_build_command::type::portal },
     boundary_build_command { -1, -1 },
     boundary_build_command { 0, -1 }
+  };
+
+  inline static auto m_nextBoundaryBuildCommands = {
+    boundary_build_command { 0, 2 },
+    boundary_build_command { -1, 0 },
+    boundary_build_command { 0, -2 }
   };
 
   inline static auto m_targetPositions = {

@@ -4,7 +4,8 @@
 demo_level::demo_level(int cellWidth, int cellHeight)
 {
   std::vector<geometry_builder::point> boundaryPoints;
-  m_boundary.AddGeometry(m_boundaryBuildCommands);
+  m_boundary.AddGeometry(m_rootBoundaryBuildCommands);
+  m_boundary.AddGeometry(m_nextBoundaryBuildCommands);
   m_boundary.Build(std::back_inserter(boundaryPoints));
 
   std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [cellWidth, cellHeight](geometry_builder::point point) -> game_point
