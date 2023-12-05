@@ -61,32 +61,24 @@ class level_boundary
 
 public:
 
+  using build_type = std::vector<build_command>;
+  using build_type_collection = std::list<build_type>;
   using points_type = std::vector<geometry_builder::point>;
 
   auto AddGeometry(std::ranges::input_range auto&& commands) -> void
   {
+    m_builds.emplace_back(commands);    
+  }
+
+  auto Build(auto&& outputPoints) -> void
+  {
     geometry_builder geometryBuilder;
-    geometryBuilder.Run(commands, std::back_inserter(m_points));
-  }
-
-  [[nodiscard]] auto Points() const -> const points_type&
-  {
-    return m_points;
-  }
-
-  auto begin() const -> points_type::const_iterator
-  {
-    return std::begin(m_points);
-  }
-
-  auto end() const -> points_type::const_iterator
-  {
-    return std::end(m_points);
+    geometryBuilder.Run(m_builds.front(), outputPoints);
   }
 
 private:
 
-  points_type m_points;
+  build_type_collection m_builds;
 
 };
 
@@ -117,40 +109,18 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_boundaryBuildCommands = {
-    build_command { -2, -2 },
-    build_command { 1, -1 },
-    build_command { 1, 0 },
-    build_command { 1, 3 },
-    build_command { 1, 0 },
-    build_command { 0, 4 },
-    build_command { -1, 0 },
-    build_command { 0, 3 },
-    build_command { 1, 1 },
-    build_command { 2, 0 },
-    build_command { 0, 1 },
-    build_command { -5, 0 },
     build_command { 0, -1 },
     build_command { 1, 0 },
-    build_command { 0, -4 },
-    build_command { -2, 0 },
+    build_command { 1, 1 },
+    build_command { 0, 1 },
+    build_command { -1, 1 },
+    build_command { -1, 0 },
     build_command { -1, -1 },
-    build_command { 0, -2 }
+    build_command { 0, -1 }
   };
 
   inline static auto m_targetPositions = {
-    cell { -2, -1 },
-    cell { 0, 1 },
-    cell { 0, 5 }
-  };
-
-  inline static auto m_asteroidPositions = {
-    cell { -1, 1 },
-    cell { 1, 0 },
-    cell { -2, -2 }
-  };
-
-  inline static auto m_ductFanPositions = {
-    cell { 0, 4 }
+    cell { 0, 1 }
   };
 
 };
