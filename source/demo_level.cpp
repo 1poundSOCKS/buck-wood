@@ -23,12 +23,14 @@ demo_level::demo_level(int cellWidth, int cellHeight)
     return game_point { x, y };
   });
 
-  // std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [cellWidth, cellHeight](const cell& asteroidCell)
-  // {
-  //   auto x = static_cast<float>(asteroidCell.x * cellWidth);
-  //   auto y = static_cast<float>(asteroidCell.y * cellHeight);
-  //   return game_point { x, y };
-  // });
+#ifdef INCLUDE_ASTEROIDS
+  std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [cellWidth, cellHeight](const cell& asteroidCell)
+  {
+    auto x = static_cast<float>(asteroidCell.x * cellWidth);
+    auto y = static_cast<float>(asteroidCell.y * cellHeight);
+    return game_point { x, y };
+  });
+#endif
 
   std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [cellWidth, cellHeight](const cell& targetCell)
   {

@@ -172,9 +172,9 @@ private:
   };
 
   inline static auto m_joinBoundaryBuildCommands = {
-    boundary_build_command { 0, 2 },
+    boundary_build_command { 0, 3 },
     boundary_build_command { -1, 0, boundary_build_command::type::portal },
-    boundary_build_command { 0, -2 }
+    boundary_build_command { 0, -3 }
   };
 
   inline static auto m_endBoundaryBuildCommands = {
