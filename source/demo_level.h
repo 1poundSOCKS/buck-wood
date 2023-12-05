@@ -56,12 +56,33 @@ private:
 
 };
 
+class boundary_build_command : public build_command
+{
+
+public:
+
+  enum class type { normal, portal };
+
+  boundary_build_command(int cx, int cy) : build_command { cx, cy }
+  {
+  }
+
+  boundary_build_command(int cx, int cy, type commandType) : build_command { cx, cy }, m_type { commandType }
+  {
+  }
+
+private:
+
+  type m_type { type::normal };
+
+};
+
 class level_boundary
 {
 
 public:
 
-  using build_type = std::vector<build_command>;
+  using build_type = std::vector<boundary_build_command>;
   using build_type_collection = std::list<build_type>;
   using points_type = std::vector<geometry_builder::point>;
 
@@ -109,14 +130,14 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_boundaryBuildCommands = {
-    build_command { 0, -1 },
-    build_command { 1, 0 },
-    build_command { 1, 1 },
-    build_command { 0, 1 },
-    build_command { -1, 1 },
-    build_command { -1, 0 },
-    build_command { -1, -1 },
-    build_command { 0, -1 }
+    boundary_build_command { 0, -1 },
+    boundary_build_command { 1, 0 },
+    boundary_build_command { 1, 1 },
+    boundary_build_command { 0, 1 },
+    boundary_build_command { -1, 1 },
+    boundary_build_command { -1, 0, boundary_build_command::type::portal },
+    boundary_build_command { -1, -1 },
+    boundary_build_command { 0, -1 }
   };
 
   inline static auto m_targetPositions = {

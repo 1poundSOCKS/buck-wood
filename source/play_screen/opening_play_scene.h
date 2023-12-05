@@ -9,9 +9,14 @@ public:
 
   opening_play_scene(const level_container_ptr& levelContainer) : play_scene { levelContainer }
   {
+  }
+
+  auto Begin() -> void override
+  {
     auto playerPosition = m_levelContainer->PlayerPosition();
     m_cameraSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 0.1f };
     m_cameraSequence.AddMove( { playerPosition.x, playerPosition.y, 1 }, performance_counter::CalculateTicks(2) );
+    SetCameraZoom(m_cameraSequence.GetScale(0));
   }
 
   auto Update(int64_t ticks) -> bool override

@@ -20,6 +20,7 @@ public:
 
   auto Begin() -> void override
   {
+    SetCameraZoom(1);
     sound_data::get(sound_data::menu_theme).Play(true);
   }
 
@@ -31,7 +32,6 @@ public:
 
   auto Update(int64_t ticks) -> bool override
   {
-    SetCameraZoom(1);
     return play_scene::Update(ticks);
   }
 
