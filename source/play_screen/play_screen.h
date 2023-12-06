@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "play_scene_controller.h"
+#include "scene_controller.h"
 #include "play_scene.h"
 
 class play_screen
@@ -30,7 +30,7 @@ private:
 
   bool m_paused = false;
   bool m_continueRunning = true;
-  play_scene_controller m_sceneController;
+  scene_controller m_sceneController;
   play_scene::level_container_ptr m_levelContainer;
   play_menu_controller m_menuController;
   game_level_data_loader m_gameLevelDataLoader;

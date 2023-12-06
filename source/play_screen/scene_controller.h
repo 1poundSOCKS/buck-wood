@@ -1,14 +1,14 @@
 #pragma once
 
-#include "play_scene.h"
+#include "base_scene.h"
 
-class play_scene_controller
+class scene_controller
 {
 
 public:
 
-  using play_scene_ptr = std::unique_ptr<base_scene>;
-  using play_scene_collection = std::vector<play_scene_ptr>;
+  using scene_ptr = std::unique_ptr<base_scene>;
+  using scene_collection = std::vector<scene_ptr>;
 
   template <typename scene_type, class... Args> auto AddScene(Args&&... args) -> void;
 
@@ -27,22 +27,22 @@ public:
 
 private:
 
-  play_scene_collection m_scenes;
-  play_scene_collection::iterator m_currentScene;
+  scene_collection m_scenes;
+  scene_collection::iterator m_currentScene;
 
 };
 
-template <typename scene_type, class... Args> auto play_scene_controller::AddScene(Args&&... args) -> void
+template <typename scene_type, class... Args> auto scene_controller::AddScene(Args&&... args) -> void
 {
   m_scenes.emplace_back(std::make_unique<scene_type>(std::forward<Args>(args)...));
 }
 
-inline auto play_scene_controller::Clear() -> void
+inline auto scene_controller::Clear() -> void
 {
   m_scenes.clear();
 }
 
-inline auto play_scene_controller::Begin() -> void
+inline auto scene_controller::Begin() -> void
 {
   m_currentScene = std::begin(m_scenes);
 
@@ -52,7 +52,7 @@ inline auto play_scene_controller::Begin() -> void
   }
 }
 
-inline auto play_scene_controller::End() -> void
+inline auto scene_controller::End() -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
@@ -60,7 +60,7 @@ inline auto play_scene_controller::End() -> void
   }
 }
 
-inline auto play_scene_controller::Pause() const -> void
+inline auto scene_controller::Pause() const -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
@@ -68,7 +68,7 @@ inline auto play_scene_controller::Pause() const -> void
   }
 }
 
-inline auto play_scene_controller::Resume() const -> void
+inline auto scene_controller::Resume() const -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
@@ -76,7 +76,7 @@ inline auto play_scene_controller::Resume() const -> void
   }
 }
 
-inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
+inline auto scene_controller::UpdateScene(int64_t ticks) -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
@@ -92,7 +92,7 @@ inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
   }
 }
 
-inline auto play_scene_controller::RenderScene() const -> void
+inline auto scene_controller::RenderScene() const -> void
 {
   if( m_currentScene != std::end(m_scenes) )
   {
@@ -100,12 +100,12 @@ inline auto play_scene_controller::RenderScene() const -> void
   }
 }
 
-inline [[nodiscard]] auto play_scene_controller::Current() const -> base_scene&
+inline [[nodiscard]] auto scene_controller::Current() const -> base_scene&
 {
   return *(m_currentScene->get());
 }
 
-inline [[nodiscard]] auto play_scene_controller::Complete() const -> bool
+inline [[nodiscard]] auto scene_controller::Complete() const -> bool
 {
   return m_currentScene == std::end(m_scenes);
 }
