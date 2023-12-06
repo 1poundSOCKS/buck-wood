@@ -34,6 +34,14 @@ public:
   {
   }
 
+  virtual auto Pause() -> void
+  {
+  }
+
+  virtual auto Resume() -> void
+  {
+  }
+
   virtual auto Update(__int64 ticks) -> bool
   {
     PlaySoundEffects();

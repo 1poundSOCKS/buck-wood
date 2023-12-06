@@ -30,6 +30,17 @@ public:
     sound_data::get(sound_data::thrust).Stop();
   }
 
+  auto Pause() -> void override
+  {
+    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::thrust).Stop();
+  }
+
+  auto Resume() -> void override
+  {
+    sound_data::get(sound_data::menu_theme).Play(true);
+  }
+
   auto Update(int64_t ticks) -> bool override
   {
     return play_scene::Update(ticks);

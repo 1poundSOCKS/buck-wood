@@ -25,7 +25,7 @@ private:
   [[nodiscard]] auto Paused() const -> bool;
 
   auto Pause() -> void;
-  auto Unpause() -> void;
+  auto Resume() -> void;
   auto Quit() -> void;
 
 private:

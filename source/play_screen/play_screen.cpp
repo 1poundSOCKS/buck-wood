@@ -37,7 +37,7 @@ auto play_screen::Update(int64_t ticks) -> void
     switch( m_menuController.Selection() )
     {
       case play_menu_controller::selection::resume:
-        Unpause();
+        Resume();
         break;
       case play_menu_controller::selection::quit:
         Quit();
@@ -47,7 +47,7 @@ auto play_screen::Update(int64_t ticks) -> void
 
   if( PausePressed() )
   {
-    Paused() ? Unpause() : Pause();
+    Paused() ? Resume() : Pause();
   }
 
   auto elapsedTicks = Paused() ? 0 : ticks;
@@ -87,15 +87,17 @@ auto play_screen::Render() -> void
 
 auto play_screen::Pause() -> void
 {
-  sound_data::get(sound_data::menu_theme).Stop();
-  sound_data::get(sound_data::thrust).Stop();
+  m_sceneController.Pause();
+  // sound_data::get(sound_data::menu_theme).Stop();
+  // sound_data::get(sound_data::thrust).Stop();
   m_paused = true;
 }
 
-auto play_screen::Unpause() -> void
+auto play_screen::Resume() -> void
 {
+  m_sceneController.Resume();
   m_paused = false;
-  sound_data::get(sound_data::menu_theme).Play(true);
+  // sound_data::get(sound_data::menu_theme).Play(true);
 }
 
 auto play_screen::Quit() -> void

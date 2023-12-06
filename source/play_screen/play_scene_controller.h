@@ -15,6 +15,9 @@ public:
   auto Clear() -> void;
   auto Begin() -> void;
 
+  auto Pause() const -> void;
+  auto Resume() const -> void;
+
   auto UpdateScene(int64_t ticks) -> void;
   auto RenderScene() const -> void;
 
@@ -44,9 +47,14 @@ inline auto play_scene_controller::Begin() -> void
   Current().Begin();
 }
 
-inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
+inline auto play_scene_controller::Pause() const -> void
 {
-  return *(m_currentScene->get());
+  Current().Pause();
+}
+
+inline auto play_scene_controller::Resume() const -> void
+{
+  Current().Resume();
 }
 
 inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
@@ -71,6 +79,11 @@ inline auto play_scene_controller::RenderScene() const -> void
   {
     Current().Render();
   }
+}
+
+inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
+{
+  return *(m_currentScene->get());
 }
 
 inline [[nodiscard]] auto play_scene_controller::Complete() const -> bool
