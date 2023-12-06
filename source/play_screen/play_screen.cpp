@@ -88,8 +88,6 @@ auto play_screen::Render() -> void
 auto play_screen::Pause() -> void
 {
   m_sceneController.Pause();
-  // sound_data::get(sound_data::menu_theme).Stop();
-  // sound_data::get(sound_data::thrust).Stop();
   m_paused = true;
 }
 
@@ -97,7 +95,6 @@ auto play_screen::Resume() -> void
 {
   m_sceneController.Resume();
   m_paused = false;
-  // sound_data::get(sound_data::menu_theme).Play(true);
 }
 
 auto play_screen::Quit() -> void
