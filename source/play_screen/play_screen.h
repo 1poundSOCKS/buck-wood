@@ -2,9 +2,7 @@
 
 #include "framework.h"
 #include "play_scene_controller.h"
-#include "opening_play_scene.h"
-#include "main_play_scene.h"
-#include "closing_play_scene.h"
+#include "play_scene.h"
 
 class play_screen
 {
@@ -32,8 +30,8 @@ private:
 
   bool m_paused = false;
   bool m_continueRunning = true;
-  level_container_ptr m_levelContainer;  
   play_scene_controller m_sceneController;
+  play_scene::level_container_ptr m_levelContainer;
   play_menu_controller m_menuController;
   game_level_data_loader m_gameLevelDataLoader;
 

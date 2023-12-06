@@ -1,22 +1,18 @@
 #include "pch.h"
 #include "play_screen.h"
-#include "diagnostics.h"
 #include "screen_view.h"
-#include "global_state.h"
 #include "render_target_area.h"
 #include "diagnostics.h"
-#include "sound_buffer_player.h"
-#include "gamepad_trigger.h"
-#include "diagnostics.h"
 #include "show_level_play_scene.h"
+#include "opening_play_scene.h"
+#include "main_play_scene.h"
+#include "closing_play_scene.h"
 
-play_screen::play_screen() : m_levelContainer(std::make_shared<level_container>())
+play_screen::play_screen() : m_levelContainer { play_scene::create_level_container() }
 {
   auto renderTargetSize = render_target::get()->GetSize();
-
   auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
   m_menuController.OpenRoot(menuArea);
-
   LoadNextLevel();
 }
 
@@ -24,7 +20,6 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 {
   Update(ticks);
   Render();
-
   return m_continueRunning && !m_sceneController.Complete();
 }
 
@@ -99,7 +94,7 @@ auto play_screen::Resume() -> void
 
 auto play_screen::Quit() -> void
 {
-  sound_data::get(sound_data::menu_theme).Stop();
+  m_sceneController.End();
   m_continueRunning = false;
 }
 
@@ -108,16 +103,15 @@ auto play_screen::LoadNextLevel() -> bool
   if( m_gameLevelDataLoader.NextLevel() )
   {
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
-    
     m_sceneController.Clear();
 
     #ifdef PREVIEW_LEVEL
     m_sceneController.AddScene<show_level_play_scene>(m_levelContainer);
     #endif
+
     m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
     m_sceneController.AddScene<main_play_scene>(m_levelContainer);
     m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
-
     m_sceneController.Begin();
 
     return true;

@@ -7,13 +7,14 @@ class play_scene_controller
 
 public:
 
-  using play_scene_ptr = std::unique_ptr<play_scene>;
+  using play_scene_ptr = std::unique_ptr<base_scene>;
   using play_scene_collection = std::vector<play_scene_ptr>;
 
   template <typename scene_type, class... Args> auto AddScene(Args&&... args) -> void;
 
   auto Clear() -> void;
   auto Begin() -> void;
+  auto End() -> void;
 
   auto Pause() const -> void;
   auto Resume() const -> void;
@@ -21,7 +22,7 @@ public:
   auto UpdateScene(int64_t ticks) -> void;
   auto RenderScene() const -> void;
 
-  [[nodiscard]] auto Current() const -> play_scene&;
+  [[nodiscard]] auto Current() const -> base_scene&;
   [[nodiscard]] auto Complete() const -> bool;
 
 private:
@@ -44,17 +45,35 @@ inline auto play_scene_controller::Clear() -> void
 inline auto play_scene_controller::Begin() -> void
 {
   m_currentScene = std::begin(m_scenes);
-  Current().Begin();
+
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    Current().Begin();
+  }
+}
+
+inline auto play_scene_controller::End() -> void
+{
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    Current().End();
+  }
 }
 
 inline auto play_scene_controller::Pause() const -> void
 {
-  Current().Pause();
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    Current().Pause();
+  }
 }
 
 inline auto play_scene_controller::Resume() const -> void
 {
-  Current().Resume();
+  if( m_currentScene != std::end(m_scenes) )
+  {
+    Current().Resume();
+  }
 }
 
 inline auto play_scene_controller::UpdateScene(int64_t ticks) -> void
@@ -81,7 +100,7 @@ inline auto play_scene_controller::RenderScene() const -> void
   }
 }
 
-inline [[nodiscard]] auto play_scene_controller::Current() const -> play_scene&
+inline [[nodiscard]] auto play_scene_controller::Current() const -> base_scene&
 {
   return *(m_currentScene->get());
 }

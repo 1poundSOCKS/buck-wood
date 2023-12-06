@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework.h"
+#include "base_scene.h"
 #include "screen_transform.h"
 #include "sound_data.h"
 #include "diagnostics.h"
@@ -11,12 +12,17 @@
 #include "level_radar.h"
 #include "player_shields.h"
 
-using level_container_ptr = std::shared_ptr<level_container>;
-
-class play_scene
+class play_scene : public base_scene
 {
 
 public:
+
+  using level_container_ptr = std::shared_ptr<level_container>;
+
+  static [[nodiscard]] auto create_level_container() -> level_container_ptr
+  {
+    return std::make_shared<level_container>();
+  }
 
   play_scene(const level_container_ptr& levelContainer) : m_levelContainer { levelContainer }
   {
@@ -26,23 +32,23 @@ public:
   {
   }
 
-  virtual auto Begin() -> void
+  auto Begin() -> void override
   {
   }
 
-  virtual auto End() -> void
+  auto End() -> void override
   {
   }
 
-  virtual auto Pause() -> void
+  auto Pause() -> void override
   {
   }
 
-  virtual auto Resume() -> void
+  auto Resume() -> void override
   {
   }
 
-  virtual auto Update(__int64 ticks) -> bool
+  auto Update(__int64 ticks) -> bool override
   {
     PlaySoundEffects();
 
@@ -58,7 +64,7 @@ public:
     return m_levelContainer->HasFinished() ? false : true;
   }
 
-  virtual auto Render() const -> void
+  auto Render() const -> void override
   {
     auto playerPosition = m_levelContainer->PlayerPosition();
     camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, m_cameraZoom };
