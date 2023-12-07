@@ -16,8 +16,7 @@
 
 main_menu_screen::main_menu_screen()
 {
-  auto menuArea = render_target_area(render_target::get()->GetSize(), render_target_area::contraint_centred(0.4f, 0.4f));
-  m_menuController.OpenRoot(menuArea);
+  m_menuController.OpenRoot( render_target_area { render_target::get()->GetSize(), render_target_area::contraint_centred(0.5f, 1.0f) } );
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool

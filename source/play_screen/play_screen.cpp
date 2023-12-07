@@ -10,9 +10,7 @@
 
 play_screen::play_screen() : m_levelContainer { play_scene::create_level_container() }
 {
-  auto renderTargetSize = render_target::get()->GetSize();
-  auto menuArea = render_target_area { renderTargetSize, render_target_area::contraint_centred(0.4f, 0.4f) };
-  m_menuController.OpenRoot(menuArea);
+  m_menuController.OpenRoot( render_target_area { render_target::get()->GetSize(), render_target_area::contraint_centred(0.5f, 1.0f) } );
   LoadNextLevel();
 }
 

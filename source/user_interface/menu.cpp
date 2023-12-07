@@ -58,10 +58,10 @@ auto menu::ResizeItems() -> void
 
   auto columnDef = std::begin(columnDefs);
   
-  for( auto& buttonObject : m_items )
+  for( auto& item : m_items )
   {
     const auto& columnRect = *columnDef;
-    buttonObject.Resize(columnRect);
+    item.Resize(columnRect);
     ++columnDef;
   }
 }
