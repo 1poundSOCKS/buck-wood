@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "menu.h"
 #include "renderers.h"
+#include "render_target_area.h"
 #include "column_def.h"
 
 menu::menu()
@@ -56,8 +57,8 @@ auto menu::Render(D2D1_RECT_F viewRect) const -> void
 
 auto menu::ResizeItems() -> void
 {
-  column_def columnDefs { m_rect, m_items.size() };
-
+  render_target_area menuArea { m_rect, render_target_area::constraint_centred(0.5, min(m_items.size() * 0.15f, 0.8f)) };
+  column_def columnDefs { menuArea.GetRect(), m_items.size() };
   auto columnDef = std::begin(columnDefs);
   
   for( auto& item : m_items )

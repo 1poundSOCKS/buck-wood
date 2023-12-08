@@ -4,11 +4,11 @@ class render_target_area
 {
 public:
 
-  class contraint_centred
+  class constraint_centred
   {
   public:
 
-    contraint_centred(float width, float height);
+    constraint_centred(float width, float height);
 
     [[nodiscard]] auto GetLeftBorder(float width) const -> float;
     [[nodiscard]] auto GetTopBorder(float height) const -> float;

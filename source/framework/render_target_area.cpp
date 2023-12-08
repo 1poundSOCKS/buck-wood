@@ -1,26 +1,26 @@
 #include "pch.h"
 #include "render_target_area.h"
 
-render_target_area::contraint_centred::contraint_centred(float width, float height) : m_width(width), m_height(height)
+render_target_area::constraint_centred::constraint_centred(float width, float height) : m_width(width), m_height(height)
 {
 }
 
-[[nodiscard]] auto render_target_area::contraint_centred::GetLeftBorder(float width) const -> float
+[[nodiscard]] auto render_target_area::constraint_centred::GetLeftBorder(float width) const -> float
 {
   return ( width - width * m_width ) / 2;
 }
 
-[[nodiscard]] auto render_target_area::contraint_centred::GetTopBorder(float height) const -> float
+[[nodiscard]] auto render_target_area::constraint_centred::GetTopBorder(float height) const -> float
 {
   return ( height - height * m_height ) / 2;
 }
 
-[[nodiscard]] auto render_target_area::contraint_centred::GetRightBorder(float width) const -> float
+[[nodiscard]] auto render_target_area::constraint_centred::GetRightBorder(float width) const -> float
 {
   return GetLeftBorder(width);
 }
 
-[[nodiscard]] auto render_target_area::contraint_centred::GetBottomBorder(float height) const -> float
+[[nodiscard]] auto render_target_area::constraint_centred::GetBottomBorder(float height) const -> float
 {
   return GetTopBorder(height);
 }
