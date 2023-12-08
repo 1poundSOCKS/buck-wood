@@ -3,8 +3,10 @@
 #include "renderers.h"
 #include "column_def.h"
 
-menu::menu(const D2D1_RECT_F& rect) : m_rect { rect }
+menu::menu()
 {
+  auto renderTargetSize = render_target::get()->GetSize();
+  m_rect = render_rect { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 };
 }
 
 menu::~menu()

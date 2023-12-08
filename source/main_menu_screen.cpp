@@ -16,7 +16,7 @@
 
 main_menu_screen::main_menu_screen()
 {
-  m_menuController.OpenRoot( render_target_area { render_target::get()->GetSize(), render_target_area::contraint_centred(0.5f, 1.0f) } );
+  m_menuController.OpenRoot();
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
@@ -53,12 +53,8 @@ auto main_menu_screen::Update(int64_t frameInterval) -> void
 auto main_menu_screen::Render() const -> void
 {
   render_guard renderGuard { render_target::get() };
-  
   render_target::get()->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-  screen_transform screenTransform;
-  render_target::get()->SetTransform(screenTransform.Get());
-  auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
-
-  m_menuController.Render(viewRect);
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+  auto renderTargetSize = render_target::get()->GetSize();
+  m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 });
 }

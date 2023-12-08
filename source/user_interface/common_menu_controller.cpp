@@ -4,9 +4,9 @@
 #include "effects_volume_slider.h"
 #include "music_volume_slider.h"
 
-[[nodiscard]] auto common_menu_controller::OpenSettingsMenu(const render_target_area& area) -> void
+[[nodiscard]] auto common_menu_controller::OpenSettingsMenu() -> void
 {
-  Open(area.GetRect());
+  Open();
   GetCurrent().AddItem( effects_volume_slider {}, false );
   GetCurrent().AddItem( music_volume_slider {}, true );
   GetCurrent().SelectFirstItem();

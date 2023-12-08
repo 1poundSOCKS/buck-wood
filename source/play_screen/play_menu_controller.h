@@ -8,7 +8,7 @@ public:
 
   enum class selection { none, resume, quit };
 
-  auto OpenRoot(const render_target_area& area) -> void;
+  auto OpenRoot() -> void;
   [[nodiscard]] auto Selection() -> selection;
 
 private:

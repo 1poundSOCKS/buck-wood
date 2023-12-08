@@ -9,10 +9,11 @@ class menu_controller
 public:
 
   menu_controller();
-  auto Open(auto && menuObject) -> void;
+  auto Open() -> void;
   auto Close() -> void;
   auto Update() -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
+  auto Render() const -> void;
   [[nodiscard]] auto GetCurrent() const-> const menu&;
   [[nodiscard]] auto GetCurrent() -> menu&;
 
@@ -25,12 +26,12 @@ private:
 
 inline menu_controller::menu_controller()
 {
-  m_menus.emplace( menu { { 0, 0, 0, 0 } } );
+  m_menus.emplace();
 }
 
-auto menu_controller::Open(auto && menuObject) -> void
+inline auto menu_controller::Open() -> void
 {
-  m_menus.emplace( menuObject );
+  m_menus.emplace();
 }
 
 inline auto menu_controller::Render(D2D1_RECT_F viewRect) const -> void

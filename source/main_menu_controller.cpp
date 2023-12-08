@@ -2,11 +2,11 @@
 #include "main_menu_controller.h"
 #include "button.h"
 
-auto main_menu_controller::OpenRoot(const render_target_area& area) -> void
+auto main_menu_controller::OpenRoot() -> void
 {
-  Open(area.GetRect());
+  Open();
   GetCurrent().AddItem( button { L"Start", [this]() -> void { m_selection = selection::start; } }, false);
-  GetCurrent().AddItem( button { L"Settings", [this, area]() -> void { OpenSettingsMenu(area); } }, false);
+  GetCurrent().AddItem( button { L"Settings", [this]() -> void { OpenSettingsMenu(); } }, false);
   GetCurrent().AddItem( button { L"Exit", [this]() -> void { m_selection = selection::exit; } }, true);
   GetCurrent().SelectFirstItem();
 }

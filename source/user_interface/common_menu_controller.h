@@ -8,6 +8,6 @@ class common_menu_controller : public menu_controller
 
 public:
 
-  [[nodiscard]] auto OpenSettingsMenu(const render_target_area& area) -> void;
+  [[nodiscard]] auto OpenSettingsMenu() -> void;
 
 };

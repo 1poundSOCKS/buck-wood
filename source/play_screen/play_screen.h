@@ -16,8 +16,8 @@ private:
 
   auto Update(int64_t ticks) -> void;
   auto Render() -> void;
-
-  auto LoadNextLevel() -> bool;
+  auto RenderUI() -> void;
+  auto RenderDiagnostics() -> void;
 
   [[nodiscard]] auto PausePressed() -> bool;
   [[nodiscard]] auto Paused() const -> bool;
@@ -25,6 +25,9 @@ private:
   auto Pause() -> void;
   auto Resume() -> void;
   auto Quit() -> void;
+
+  auto LoadNextLevel() -> bool;
+  auto RestartScenes() -> void;
 
 private:
 

@@ -10,8 +10,12 @@
 
 play_screen::play_screen() : m_levelContainer { play_scene::create_level_container() }
 {
-  m_menuController.OpenRoot( render_target_area { render_target::get()->GetSize(), render_target_area::contraint_centred(0.5f, 1.0f) } );
-  LoadNextLevel();
+  m_menuController.OpenRoot();
+
+  if( LoadNextLevel() )
+  {
+    RestartScenes();
+  }
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -50,18 +54,24 @@ auto play_screen::Update(int64_t ticks) -> void
 auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
-
   m_sceneController.RenderScene();
+  RenderUI();
+  RenderDiagnostics();
+}
 
+auto play_screen::RenderUI() -> void
+{
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( Paused() )
   {
-    screen_transform screen_transform {};
-    auto overlayViewRect = screen_transform.GetViewRect(render_target::get()->GetSize());
-    m_menuController.Render(overlayViewRect);
+    D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
+    m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
   }
+}
 
+auto play_screen::RenderDiagnostics() -> void
+{
   diagnostics::addWindowData(main_window::data());
   diagnostics::updateFrameData();
   renderer::renderDiagnostics();
@@ -101,21 +111,24 @@ auto play_screen::LoadNextLevel() -> bool
   if( m_gameLevelDataLoader.NextLevel() )
   {
     m_levelContainer = m_gameLevelDataLoader.LoadLevel();
-    m_sceneController.Clear();
-
-    #ifdef PREVIEW_LEVEL
-    m_sceneController.AddScene<show_level_play_scene>(m_levelContainer);
-    #endif
-
-    m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
-    m_sceneController.AddScene<main_play_scene>(m_levelContainer);
-    m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
-    m_sceneController.Begin();
-
     return true;
   }
   else
   {
     return false;
   }
+}
+
+auto play_screen::RestartScenes() -> void
+{
+  m_sceneController.Clear();
+
+  #ifdef PREVIEW_LEVEL
+  m_sceneController.AddScene<show_level_play_scene>(m_levelContainer);
+  #endif
+
+  m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
+  m_sceneController.AddScene<main_play_scene>(m_levelContainer);
+  m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
+  m_sceneController.Begin();
 }
