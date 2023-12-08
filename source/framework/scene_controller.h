@@ -10,7 +10,7 @@ public:
   using scene_ptr = std::unique_ptr<base_scene>;
   using scene_collection = std::vector<scene_ptr>;
 
-  template <typename scene_type, class... Args> auto AddScene(Args&&... args) -> void;
+  template <typename T, class... Args> auto AddScene(Args&&... args) -> void;
 
   auto Clear() -> void;
   auto Begin() -> void;
@@ -32,9 +32,9 @@ private:
 
 };
 
-template <typename scene_type, class... Args> auto scene_controller::AddScene(Args&&... args) -> void
+template <typename T, class... Args> auto scene_controller::AddScene(Args&&... args) -> void
 {
-  m_scenes.emplace_back(std::make_unique<scene_type>(std::forward<Args>(args)...));
+  m_scenes.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 inline auto scene_controller::Clear() -> void

@@ -7,8 +7,8 @@
 [[nodiscard]] auto common_menu_controller::OpenSettingsMenu() -> void
 {
   Open();
-  GetCurrent().AddItem<effects_volume_slider>();
-  GetCurrent().AddItem<music_volume_slider>();
+  GetCurrent().AddEffectsVolumeSlider();
+  GetCurrent().AddMusicVolumeSlider();
   GetCurrent().ResizeItems();
   GetCurrent().SelectFirstItem();
 }

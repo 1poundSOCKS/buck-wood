@@ -16,7 +16,10 @@ public:
   menu();
   virtual ~menu();
 
-  template <typename item_type, class... Args> auto AddItem(Args&&... args) -> void;
+  template <class... Args> auto AddButton(Args&&... args) -> void;
+  template <class... Args> auto AddEffectsVolumeSlider(Args&&... args) -> void;
+  template <class... Args> auto AddMusicVolumeSlider(Args&&... args) -> void;
+
   auto ResizeItems() -> void;
   auto SelectFirstItem() -> void;
   auto Unselect() -> void;
@@ -35,7 +38,17 @@ private:
 
 };
 
-template <typename item_type, class... Args> auto menu::AddItem(Args&&... args) -> void
+template <class... Args> auto menu::AddButton(Args&&... args) -> void
 {
-  m_items.emplace_back(std::in_place_type_t<item_type>(), std::forward<Args>(args)...);
+  m_items.emplace_back(std::in_place_type<button>, std::forward<Args>(args)...);
+}
+
+template <class... Args> auto menu::AddEffectsVolumeSlider(Args&&... args) -> void
+{
+  m_items.emplace_back(std::in_place_type<effects_volume_slider>, std::forward<Args>(args)...);
+}
+
+template <class... Args> auto menu::AddMusicVolumeSlider(Args&&... args) -> void
+{
+  m_items.emplace_back(std::in_place_type<music_volume_slider>, std::forward<Args>(args)...);
 }
