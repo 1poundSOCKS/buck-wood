@@ -1,11 +1,6 @@
 #include "pch.h"
 #include "screen_transform.h"
 
-screen_transform::screen_transform()
-{
-  Set(D2D1::Matrix3x2F::Identity());
-}
-
 screen_transform::screen_transform(D2D1::Matrix3x2F transform)
 {
   Set(transform);

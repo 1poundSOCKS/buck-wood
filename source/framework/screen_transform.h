@@ -7,7 +7,6 @@ class screen_transform
 
 public:
 
-  screen_transform();
   screen_transform(D2D1::Matrix3x2F transform);
   auto Set(const D2D1::Matrix3x2F& transform) -> bool;
   [[nodiscard]] auto Get() const -> const D2D1::Matrix3x2F&;

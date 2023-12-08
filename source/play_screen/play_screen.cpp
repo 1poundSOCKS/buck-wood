@@ -3,6 +3,7 @@
 #include "screen_view.h"
 #include "render_target_area.h"
 #include "diagnostics.h"
+#include "game_settings.h"
 #include "show_level_play_scene.h"
 #include "opening_play_scene.h"
 #include "main_play_scene.h"
@@ -74,6 +75,14 @@ auto play_screen::RenderDiagnostics() -> void
 {
   diagnostics::addWindowData(main_window::data());
   diagnostics::updateFrameData();
+
+  auto framerate = game_settings::framerate();
+
+  if( framerate )
+  {
+    diagnostics::addTimingData(*framerate);
+  }
+
   renderer::renderDiagnostics();
   diagnostics::clear();
 }
