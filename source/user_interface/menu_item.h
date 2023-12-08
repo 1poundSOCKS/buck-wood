@@ -11,7 +11,6 @@ public:
 
   using item_type = std::variant<button, effects_volume_slider, music_volume_slider>;
 
-  // template <typename item_type, class... Args> menu_item(Args&&... args);
   template <typename T, class... Args> menu_item(std::in_place_type_t<T>, Args&&... args);
 
   [[nodiscard]] auto Get() const -> const item_type&;
@@ -32,8 +31,6 @@ private:
 
 };
 
-// template <typename item_type, class... Args> menu_item::menu_item(Args&&... args) : 
-//   m_item { std::in_place_type<item_type>, std::forward<Args>(args)... }
 template <typename T, class... Args> menu_item::menu_item(std::in_place_type_t<T>, Args&&... args) : 
   m_item { std::in_place_type<T>, std::forward<Args>(args)... }
 {
