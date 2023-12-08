@@ -5,8 +5,9 @@
 auto main_menu_controller::OpenRoot() -> void
 {
   Open();
-  GetCurrent().AddItem( button { L"Start", [this]() -> void { m_selection = selection::start; } }, false);
-  GetCurrent().AddItem( button { L"Settings", [this]() -> void { OpenSettingsMenu(); } }, false);
-  GetCurrent().AddItem( button { L"Exit", [this]() -> void { m_selection = selection::exit; } }, true);
+  GetCurrent().AddItem<button>(L"Start", [this]() -> void { m_selection = selection::start; });
+  GetCurrent().AddItem<button>(L"Settings", [this]() -> void { OpenSettingsMenu(); });
+  GetCurrent().AddItem<button>(L"Exit", [this]() -> void { m_selection = selection::exit; });
+  GetCurrent().ResizeItems();
   GetCurrent().SelectFirstItem();
 }

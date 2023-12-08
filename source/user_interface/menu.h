@@ -16,7 +16,8 @@ public:
   menu();
   virtual ~menu();
 
-  auto AddItem(menu_item&& item, bool resize) -> void;
+  template <typename item_type, class... Args> auto AddItem(Args&&... args) -> void;
+  auto ResizeItems() -> void;
   auto SelectFirstItem() -> void;
   auto Unselect() -> void;
   auto Update(const menu_control_data& controlData) -> void;
@@ -28,9 +29,13 @@ private:
   auto SelectNextItem(item_selection_type currentItem) -> void;
   auto SelectPreviousItem(item_selection_type currentItem) -> void;
   [[nodiscard]] auto ValidItem(item_selection_type currentItem) const -> bool;
-  auto ResizeItems() -> void;
   
   D2D1_RECT_F m_rect;
   item_collection m_items;
 
 };
+
+template <typename item_type, class... Args> auto menu::AddItem(Args&&... args) -> void
+{
+  m_items.emplace_back(std::in_place_type_t<item_type>(), std::forward<Args>(args)...);
+}

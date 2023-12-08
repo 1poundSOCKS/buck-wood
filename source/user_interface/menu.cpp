@@ -15,15 +15,15 @@ menu::~menu()
   Unselect();
 }
 
-auto menu::AddItem(menu_item&& item, bool resize) -> void
-{
-  m_items.emplace_back(item);
+// auto menu::AddItem(menu_item&& item, bool resize) -> void
+// {
+//   m_items.emplace_back(item);
 
-  if( resize )
-  {
-    ResizeItems();
-  }
-}
+//   if( resize )
+//   {
+//     ResizeItems();
+//   }
+// }
 
 auto menu::Update(const menu_control_data& controlData) -> void
 {
