@@ -9,14 +9,10 @@
 #include "main_play_scene.h"
 #include "closing_play_scene.h"
 
-play_screen::play_screen() : m_levelContainer { play_scene::create_level_container() }
+play_screen::play_screen()
 {
   m_menuController.OpenRoot();
-
-  if( LoadNextLevel() )
-  {
-    RestartScenes();
-  }
+  RestartScenes();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -115,29 +111,24 @@ auto play_screen::Quit() -> void
   m_continueRunning = false;
 }
 
-auto play_screen::LoadNextLevel() -> bool
+auto play_screen::RestartScenes() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
-    m_levelContainer = m_gameLevelDataLoader.LoadLevel();
+    std::shared_ptr<level_container> levelContainer = m_gameLevelDataLoader.LoadLevel();
+    
+    m_sceneController.Clear();
+    #ifdef PREVIEW_LEVEL
+    m_sceneController.AddScene<show_level_play_scene>(levelContainer);
+    #endif
+    m_sceneController.AddScene<opening_play_scene>(levelContainer);
+    m_sceneController.AddScene<main_play_scene>(levelContainer);
+    m_sceneController.AddScene<closing_play_scene>(levelContainer);
+    m_sceneController.Begin();
     return true;
   }
   else
   {
     return false;
   }
-}
-
-auto play_screen::RestartScenes() -> void
-{
-  m_sceneController.Clear();
-
-  #ifdef PREVIEW_LEVEL
-  m_sceneController.AddScene<show_level_play_scene>(m_levelContainer);
-  #endif
-
-  m_sceneController.AddScene<opening_play_scene>(m_levelContainer);
-  m_sceneController.AddScene<main_play_scene>(m_levelContainer);
-  m_sceneController.AddScene<closing_play_scene>(m_levelContainer);
-  m_sceneController.Begin();
 }

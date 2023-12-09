@@ -26,15 +26,13 @@ private:
   auto Resume() -> void;
   auto Quit() -> void;
 
-  auto LoadNextLevel() -> bool;
-  auto RestartScenes() -> void;
+  auto RestartScenes() -> bool;
 
 private:
 
   bool m_paused = false;
   bool m_continueRunning = true;
   scene_controller m_sceneController;
-  play_scene::level_container_ptr m_levelContainer;
   play_menu_controller m_menuController;
   game_level_data_loader m_gameLevelDataLoader;
 

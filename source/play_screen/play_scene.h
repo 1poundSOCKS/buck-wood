@@ -19,11 +19,6 @@ public:
 
   using level_container_ptr = std::shared_ptr<level_container>;
 
-  static [[nodiscard]] auto create_level_container() -> level_container_ptr
-  {
-    return std::make_shared<level_container>();
-  }
-
   play_scene(const level_container_ptr& levelContainer) : m_levelContainer { levelContainer }
   {
   }
