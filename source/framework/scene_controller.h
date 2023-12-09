@@ -15,6 +15,7 @@ public:
   auto Clear() -> void;
   auto Begin() -> void;
   auto End() -> void;
+  auto Quit() -> void;
 
   auto Pause() const -> void;
   auto Resume() const -> void;
@@ -58,6 +59,12 @@ inline auto scene_controller::End() -> void
   {
     Current().End();
   }
+}
+
+inline auto scene_controller::Quit() -> void
+{
+  End();
+  m_currentScene = std::end(m_scenes);
 }
 
 inline auto scene_controller::Pause() const -> void

@@ -23,7 +23,10 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t ticks) -> bool
 {
-  bool continueRunning = true;
+  if( PausePressed() )
+  {
+    Paused() ? Resume() : Pause();
+  }
 
   if( Paused() )
   {
@@ -35,21 +38,16 @@ auto play_screen::Update(int64_t ticks) -> bool
         Resume();
         break;
       case play_menu_controller::selection::quit:
-        continueRunning = false;
-        m_sceneController.End();
+        m_sceneController.Quit();
         break;
     }
   }
 
-  if( PausePressed() )
-  {
-    Paused() ? Resume() : Pause();
-  }
-
   auto elapsedTicks = Paused() ? 0 : ticks;
+
   m_sceneController.UpdateScene(elapsedTicks);
 
-  return continueRunning && !m_sceneController.Complete();
+  return !m_sceneController.Complete();
 }
 
 auto play_screen::Render() -> void
