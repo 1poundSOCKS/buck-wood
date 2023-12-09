@@ -115,8 +115,8 @@ auto play_screen::RestartScenes() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
-    std::shared_ptr<level_container> levelContainer = m_gameLevelDataLoader.LoadLevel();
-    
+    play_scene::level_container_ptr levelContainer = m_gameLevelDataLoader.LoadLevel();
+
     m_sceneController.Clear();
     #ifdef PREVIEW_LEVEL
     m_sceneController.AddScene<show_level_play_scene>(levelContainer);
@@ -125,6 +125,7 @@ auto play_screen::RestartScenes() -> bool
     m_sceneController.AddScene<main_play_scene>(levelContainer);
     m_sceneController.AddScene<closing_play_scene>(levelContainer);
     m_sceneController.Begin();
+    
     return true;
   }
   else
