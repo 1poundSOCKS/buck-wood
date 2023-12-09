@@ -17,12 +17,7 @@ auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDen
   swapChainDesc.SampleDesc.Quality = 0;
   swapChainDesc.Windowed = TRUE;
 
-  D3D_FEATURE_LEVEL featureLevels[] =
-  {
-      D3D_FEATURE_LEVEL_11_0,
-      D3D_FEATURE_LEVEL_10_1,
-      D3D_FEATURE_LEVEL_10_0,
-  };
+  D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, };
 
   winrt::com_ptr<ID3D11Device> d3dDevice;
   winrt::com_ptr<IDXGISwapChain> swapChain;
@@ -57,10 +52,7 @@ auto CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> 
   HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_surface.put_void());
   if( FAILED(hr) ) throw L"error";
 
-  D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
-    D2D1_RENDER_TARGET_TYPE_DEFAULT,
-    D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED)
-  );
+  D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_IGNORE));
   
   hr = d2dFactory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, renderTarget.put());
   if( FAILED(hr) ) throw L"error";

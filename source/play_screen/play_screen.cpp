@@ -25,27 +25,27 @@ auto play_screen::Update(int64_t ticks) -> bool
 {
   if( PausePressed() )
   {
-    Paused() ? Resume() : Pause();
+    m_sceneController.TogglePause();
   }
 
-  if( Paused() )
+  if( m_sceneController.Paused() )
   {
     m_menuController.Update();
 
     switch( m_menuController.Selection() )
     {
       case play_menu_controller::selection::resume:
-        Resume();
+        m_sceneController.Resume();
         break;
       case play_menu_controller::selection::quit:
         m_sceneController.Quit();
         break;
     }
   }
-
-  auto elapsedTicks = Paused() ? 0 : ticks;
-
-  m_sceneController.UpdateScene(elapsedTicks);
+  else
+  {
+    m_sceneController.UpdateScene(ticks);
+  }
 
   return !m_sceneController.Complete();
 }
@@ -62,8 +62,9 @@ auto play_screen::RenderUI() -> void
 {
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
-  if( Paused() )
+  if( m_sceneController.Paused() )
   {
+    render_target::get()->Clear(D2D1::ColorF { 0.0f, 0.0f, 0.0f, 0.5f });
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
     m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
   }
@@ -83,28 +84,6 @@ auto play_screen::RenderDiagnostics() -> void
 
   renderer::renderDiagnostics();
   diagnostics::clear();
-}
-
-[[nodiscard]] auto play_screen::PausePressed() -> bool
-{
-  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::pressed(XINPUT_GAMEPAD_BACK);
-}
-
-[[nodiscard]] auto play_screen::Paused() const -> bool
-{
-  return m_paused;
-}
-
-auto play_screen::Pause() -> void
-{
-  m_sceneController.Pause();
-  m_paused = true;
-}
-
-auto play_screen::Resume() -> void
-{
-  m_sceneController.Resume();
-  m_paused = false;
 }
 
 auto play_screen::InitializeScenes() -> bool
@@ -128,4 +107,9 @@ auto play_screen::InitializeScenes() -> bool
   {
     return false;
   }
+}
+
+[[nodiscard]] auto play_screen::PausePressed() -> bool
+{
+  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::pressed(XINPUT_GAMEPAD_BACK);
 }

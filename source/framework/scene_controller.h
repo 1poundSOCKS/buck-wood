@@ -17,102 +17,26 @@ public:
   auto End() -> void;
   auto Quit() -> void;
 
-  auto Pause() const -> void;
-  auto Resume() const -> void;
+  auto Pause() -> void;
+  auto Resume() -> void;
+  auto TogglePause() -> bool;
 
   auto UpdateScene(int64_t ticks) -> void;
   auto RenderScene() const -> void;
 
   [[nodiscard]] auto Current() const -> base_scene&;
   [[nodiscard]] auto Complete() const -> bool;
+  [[nodiscard]] auto Paused() const -> bool;
 
 private:
 
   scene_collection m_scenes;
   scene_collection::iterator m_currentScene;
+  bool m_paused { false };
 
 };
 
 template <typename T, class... Args> auto scene_controller::AddScene(Args&&... args) -> void
 {
   m_scenes.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
-}
-
-inline auto scene_controller::Clear() -> void
-{
-  m_scenes.clear();
-}
-
-inline auto scene_controller::Begin() -> void
-{
-  m_currentScene = std::begin(m_scenes);
-
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    Current().Begin();
-  }
-}
-
-inline auto scene_controller::End() -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    Current().End();
-  }
-}
-
-inline auto scene_controller::Quit() -> void
-{
-  End();
-  m_currentScene = std::end(m_scenes);
-}
-
-inline auto scene_controller::Pause() const -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    Current().Pause();
-  }
-}
-
-inline auto scene_controller::Resume() const -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    Current().Resume();
-  }
-}
-
-inline auto scene_controller::UpdateScene(int64_t ticks) -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    if( !Current().Update(ticks) )
-    {
-      Current().End();
-
-      if( ++m_currentScene != std::end(m_scenes) )
-      {
-        Current().Begin();
-      }
-    }
-  }
-}
-
-inline auto scene_controller::RenderScene() const -> void
-{
-  if( m_currentScene != std::end(m_scenes) )
-  {
-    Current().Render();
-  }
-}
-
-inline [[nodiscard]] auto scene_controller::Current() const -> base_scene&
-{
-  return *(m_currentScene->get());
-}
-
-inline [[nodiscard]] auto scene_controller::Complete() const -> bool
-{
-  return m_currentScene == std::end(m_scenes);
 }
