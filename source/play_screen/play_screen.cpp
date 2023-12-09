@@ -12,18 +12,19 @@
 play_screen::play_screen()
 {
   m_menuController.OpenRoot();
-  RestartScenes();
+  InitializeScenes();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
 {
-  Update(ticks);
   Render();
-  return m_continueRunning && !m_sceneController.Complete();
+  return Update(ticks);
 }
 
-auto play_screen::Update(int64_t ticks) -> void
+auto play_screen::Update(int64_t ticks) -> bool
 {
+  bool continueRunning = true;
+
   if( Paused() )
   {
     m_menuController.Update();
@@ -34,7 +35,8 @@ auto play_screen::Update(int64_t ticks) -> void
         Resume();
         break;
       case play_menu_controller::selection::quit:
-        Quit();
+        continueRunning = false;
+        m_sceneController.End();
         break;
     }
   }
@@ -46,6 +48,8 @@ auto play_screen::Update(int64_t ticks) -> void
 
   auto elapsedTicks = Paused() ? 0 : ticks;
   m_sceneController.UpdateScene(elapsedTicks);
+
+  return continueRunning && !m_sceneController.Complete();
 }
 
 auto play_screen::Render() -> void
@@ -105,13 +109,7 @@ auto play_screen::Resume() -> void
   m_paused = false;
 }
 
-auto play_screen::Quit() -> void
-{
-  m_sceneController.End();
-  m_continueRunning = false;
-}
-
-auto play_screen::RestartScenes() -> bool
+auto play_screen::InitializeScenes() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
@@ -125,7 +123,7 @@ auto play_screen::RestartScenes() -> bool
     m_sceneController.AddScene<main_play_scene>(levelContainer);
     m_sceneController.AddScene<closing_play_scene>(levelContainer);
     m_sceneController.Begin();
-    
+
     return true;
   }
   else

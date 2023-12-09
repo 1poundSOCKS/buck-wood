@@ -14,7 +14,7 @@ public:
 
 private:
 
-  auto Update(int64_t ticks) -> void;
+  auto Update(int64_t ticks) -> bool;
   auto Render() -> void;
   auto RenderUI() -> void;
   auto RenderDiagnostics() -> void;
@@ -24,9 +24,8 @@ private:
 
   auto Pause() -> void;
   auto Resume() -> void;
-  auto Quit() -> void;
 
-  auto RestartScenes() -> bool;
+  auto InitializeScenes() -> bool;
 
 private:
 
