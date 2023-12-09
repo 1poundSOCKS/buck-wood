@@ -3,14 +3,6 @@
 
 #include "main_menu_screen.h"
 #include "play_screen.h"
-
-#include "render_text_format_def.h"
-#include "global_state.h"
-#include "button.h"
-#include "render_target_area.h"
-#include "sound_buffer_player.h"
-#include "volume_controller.h"
-#include "game_volume_controller.h"
 #include "screen_container.h"
 #include "game_settings.h"
 
@@ -21,33 +13,27 @@ main_menu_screen::main_menu_screen()
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
 {
-  Update(ticks);
   Render();
-  return m_continueRunning;
+  return Update(ticks);
 }
 
-auto main_menu_screen::Update(int64_t frameInterval) -> void
+auto main_menu_screen::Update(int64_t frameInterval) -> bool
 {
-  if( m_startPlay )
-  {
-    screen_container<play_screen> playScreen { game_settings::framerate(), DIK_F12 };
-    windows_message_loop::run(playScreen);
-    m_startPlay = false;
-  }
-  else
-  {
-    m_menuController.Update();
+  bool continueRunning = true;
 
-    switch( m_menuController.Selection() )
-    {
-      case main_menu_controller::selection::start:
-        m_startPlay = true;
-        break;
-      case main_menu_controller::selection::exit:
-        m_continueRunning = false;
-        break;
-    }
+  m_menuController.Update();
+
+  switch( m_menuController.Selection() )
+  {
+    case main_menu_controller::selection::start:
+      StartPlay();
+      break;
+    case main_menu_controller::selection::exit:
+      continueRunning = false;
+      break;
   }
+
+  return continueRunning;
 }
 
 auto main_menu_screen::Render() const -> void
@@ -57,4 +43,10 @@ auto main_menu_screen::Render() const -> void
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   auto renderTargetSize = render_target::get()->GetSize();
   m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1 });
+}
+
+auto main_menu_screen::StartPlay() -> void
+{
+  screen_container<play_screen> playScreen { game_settings::framerate(), DIK_F12 };
+  windows_message_loop::run(playScreen);
 }
