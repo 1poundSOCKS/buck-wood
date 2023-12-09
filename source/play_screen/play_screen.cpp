@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "play_screen.h"
-#include "screen_view.h"
-#include "render_target_area.h"
 #include "diagnostics.h"
 #include "game_settings.h"
 #include "show_level_play_scene.h"
@@ -54,17 +52,15 @@ auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
   m_sceneController.RenderScene();
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderUI();
   RenderDiagnostics();
 }
 
 auto play_screen::RenderUI() -> void
 {
-  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-
   if( m_sceneController.Paused() )
   {
-    render_target::get()->Clear(D2D1::ColorF { 0.0f, 0.0f, 0.0f, 0.5f });
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
     m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
   }
