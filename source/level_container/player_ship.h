@@ -38,6 +38,8 @@ public:
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   [[nodiscard]] auto CanShoot() -> bool;
 
+  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
+
 private:
 
   inline static const auto m_thrustPower { 400.0f };
@@ -129,4 +131,9 @@ inline auto player_ship::Destroy() -> void
 [[nodiscard]] inline auto player_ship::Destroyed() const -> bool
 {
   return m_destroyed;
+}
+
+inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, float cy) const -> game_point
+{
+  return m_body.RelativePosition(angle, cx, cy);
 }

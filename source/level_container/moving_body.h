@@ -4,31 +4,32 @@
 
 class moving_body
 {
-  public:
 
-    moving_body() = default;
-    moving_body(const game_point& position);
-    moving_body(const game_point& position, const game_velocity& velocity);
+public:
 
-    auto SetPosition(const game_point& position) -> void;
-    auto SetVelocity(const game_velocity& velocity) -> void;
-    auto SetVelocity(float speed, float direction) -> void;
-    auto Accelerate(const game_velocity& amount) -> void;
-    auto Accelerate(float amount) -> void;
-    auto Accelerate(float amount, float direction) -> void;
-    auto SetDirection(float direction) -> void;
+  moving_body() = default;
+  moving_body(const game_point& position);
+  moving_body(const game_point& position, const game_velocity& velocity);
 
-    [[nodiscard]] auto Position() const -> const game_point&;
-    [[nodiscard]] auto Velocity() const -> const game_velocity&;
+  auto SetPosition(const game_point& position) -> void;
+  auto SetVelocity(const game_velocity& velocity) -> void;
+  auto SetVelocity(float speed, float direction) -> void;
+  auto Accelerate(const game_velocity& amount) -> void;
+  auto Accelerate(float amount) -> void;
+  auto Accelerate(float amount, float direction) -> void;
+  auto SetDirection(float direction) -> void;
 
-    auto Update(float interval) -> void;
+  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Velocity() const -> const game_velocity&;
 
-    [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
+  auto Update(float interval) -> void;
 
-  private:
+  [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
 
-    game_point m_position { 0, 0 };
-    game_velocity m_velocity { 0, 0 };
+protected:
+
+  game_point m_position { 0, 0 };
+  game_velocity m_velocity { 0, 0 };
 
 };
 
@@ -94,7 +95,7 @@ inline auto moving_body::Update(float interval) -> void
   m_position.y += m_velocity.y * interval;
 }
 
-[[nodiscard]] inline auto moving_body::Transform() const -> D2D1::Matrix3x2F
+inline [[nodiscard]] auto moving_body::Transform() const -> D2D1::Matrix3x2F
 {
   return D2D1::Matrix3x2F::Translation(m_position.x, m_position.y);
 }

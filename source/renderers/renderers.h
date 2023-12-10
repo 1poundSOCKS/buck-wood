@@ -13,7 +13,6 @@
 #include "thrust_particle.h"
 
 #include "level_target_renderer.h"
-#include "player_ship_renderer.h"
 #include "bullet_renderer.h"
 #include "particle_renderer.h"
 #include "menu_renderer.h"
@@ -55,7 +54,7 @@ private:
   inline static renderer* m_instance { nullptr };
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
-  player_ship_renderer m_playerShipRenderer;
+  geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
@@ -118,7 +117,7 @@ inline auto renderer::Render(const solid_object& solidObject) const -> void
 
 inline auto renderer::Render(const player_ship& playerShip) const -> void
 {
-  m_playerShipRenderer.Write(playerShip);
+  m_playerShipRenderer.Write(playerShip.Geometry());
 }
 
 inline auto renderer::Render(const bullet& bulletInstance) const -> void

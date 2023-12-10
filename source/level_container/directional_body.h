@@ -17,6 +17,7 @@ public:
   auto Accelerate(float value) -> void;
 
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
 
 private:
 
@@ -76,4 +77,13 @@ inline auto directional_body::Accelerate(float amount) -> void
 [[nodiscard]] inline auto directional_body::Angle() const -> float
 {
   return m_angle;
+}
+
+inline [[nodiscard]] auto directional_body::RelativePosition(float angle, float cx, float cy) const -> game_point
+{
+  game_angle relativeAngle { m_angle };
+  relativeAngle += angle;
+  auto transform = D2D1::Matrix3x2F::Rotation(relativeAngle);
+  auto result = transform.TransformPoint({cx, cy});
+  return { m_position.x + result.x, m_position.y + result.y };
 }

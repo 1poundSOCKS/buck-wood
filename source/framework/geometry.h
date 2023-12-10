@@ -115,6 +115,10 @@ public:
 
   game_angle() = default;
 
+  game_angle(float value) : m_value { value }
+  {
+  }
+
   operator float() const
   {
     return m_value;
@@ -233,7 +237,6 @@ struct game_open_object
 
 [[nodiscard]] auto GetBoundingRect(game_line line) -> game_rect ;
 [[nodiscard]] auto GetBoundingRect(game_rect rect1, game_rect rect2) -> game_rect;
-// [[nodiscard]] auto GetBoundingRect(const game_closed_object& object) -> game_rect;
 [[nodiscard]] auto DoOverlap(game_rect rect1, game_rect rect2) -> bool;
 [[nodiscard]] auto GetCentrePoint(game_rect rect) -> game_point;
 
