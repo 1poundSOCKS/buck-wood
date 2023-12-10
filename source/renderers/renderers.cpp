@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "renderers.h"
 
-renderer* renderer::m_instance = nullptr;
-
 auto renderer::create() -> void
 {
   destroy();

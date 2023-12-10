@@ -49,7 +49,7 @@ auto play_scene::Render() const -> void
   auto screenTransform = screen_transform { cameraTransform.Get() };
   auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
-  render_target::get()->Clear(D2D1::ColorF(0.4f, 0.4f, 0.4f, 1.0f));
+  render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   render_target::get()->SetTransform(screenTransform.Get());
   m_levelContainer->Render(viewRect);
 }

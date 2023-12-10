@@ -13,8 +13,8 @@ public:
 
 private:
 
-  geometry_renderer m_deactivatedRenderer { screen_render_brush_dark_grey.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
-  geometry_renderer m_activatedRenderer { screen_render_brush_dark_grey.CreateBrush() };
+  geometry_renderer m_deactivatedRenderer { screen_render_brush_red.CreateBrush(), 10 };
+  geometry_renderer m_activatedRenderer { screen_render_brush_grey.CreateBrush(), 10 };
 
 };
 

@@ -107,20 +107,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
-  auto starGrid = level_grid { 100, 100,  viewRect.left, viewRect.top, viewRect.right, viewRect.bottom };
-  
-  auto starView = starGrid | std::ranges::views::filter([this](const auto& cell)
-  {
-    auto inside = m_blankObjects.size() && have_geometry_and_point_collided(m_blankObjects.front(), cell);
-    return inside && psn::GetNoise(cell.Position().x, cell.Position().y) > 0.90f;
-  })
-  | std::ranges::views::transform([](const auto& cell)
-  {
-    return level_star { cell.Position().x, cell.Position().y };
-  });
-
   renderer::render_all(m_blankObjects);
-  renderer::render_all(starView);
   renderer::render_all(m_solidObjects);
   renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);

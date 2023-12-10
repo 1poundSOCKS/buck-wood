@@ -1,16 +1,6 @@
 #include "pch.h"
 #include "player_ship_renderer.h"
 
-player_ship_renderer::player_ship_renderer()
-{
-  constexpr float width { 5 };
-  constexpr float top { 14 };
-  constexpr float bottom { 20 };
-
-  m_thrusterGeometry.Load(std::initializer_list { game_point { width, top }, game_point { -width, top },
-    game_point { -width, bottom }, game_point { width, bottom } });
-}
-
 auto player_ship_renderer::Write(const player_ship& playerShip) const -> void
 {
   m_renderer.Write(playerShip.Geometry());

@@ -51,20 +51,20 @@ private:
 
 private:
 
-  static renderer* m_instance;
+  inline static renderer* m_instance { nullptr };
   level_target_renderer m_levelTargetRenderer;
-  geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), screen_render_brush_grey.CreateBrush(), 3 };
+  geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
   player_ship_renderer m_playerShipRenderer;
   bullet_renderer m_bulletRenderer;
-  geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 6 };
-  geometry_renderer m_blankRenderer { screen_render_brush_black.CreateBrush() };
+  geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 8 };
+  geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   particle_renderer m_particleRenderer;
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
   render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
-  geometry_renderer m_ductFanRenderer { screen_render_brush_brown.CreateBrush(), screen_render_brush_grey.CreateBrush(), 4 };
+  geometry_renderer m_ductFanRenderer { screen_render_brush_green.CreateBrush(), 8 };
 
 };
 
