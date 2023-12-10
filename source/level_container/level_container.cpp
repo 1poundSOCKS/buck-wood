@@ -93,6 +93,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   update_all(m_ductFans, interval);
   update_all(m_explosionParticles, interval);
   update_all(m_impactParticles, interval);
+  update_all(m_thrustParticles, interval);
 
   DoCollisions();
 
@@ -100,6 +101,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   erase_destroyed(m_bullets);
   erase_destroyed(m_explosionParticles);
   erase_destroyed(m_impactParticles);
+  erase_destroyed(m_thrustParticles);
 
   m_ticksRemaining -= ticks;
   m_ticksRemaining = max(0, m_ticksRemaining);
@@ -121,6 +123,8 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   {
     renderer::render(m_playerShip);
   }
+  
+  renderer::render_all(m_thrustParticles);
 }
 
 [[nodiscard]] auto level_container::Targets() const -> const target_collection&

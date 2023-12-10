@@ -10,6 +10,7 @@
 #include "impact_particle.h"
 #include "player_shields.h"
 #include "duct_fan.h"
+#include "thrust_particle.h"
 
 #include "level_target_renderer.h"
 #include "player_ship_renderer.h"
@@ -47,6 +48,7 @@ private:
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const duct_fan& ductFan) const -> void;
+  auto Render(const thrust_particle& particle) const -> void;
 
 private:
 
@@ -152,4 +154,9 @@ inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_r
 inline auto renderer::Render(const duct_fan& ductFan) const -> void
 {
   m_ductFanRenderer.Write(ductFan.Geometry());
+}
+
+inline auto renderer::Render(const thrust_particle& particle) const -> void
+{
+  m_particleRenderer.Write(particle);
 }

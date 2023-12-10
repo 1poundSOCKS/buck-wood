@@ -8,6 +8,7 @@
 #include "asteroid_container.h"
 #include "mine.h"
 #include "explosion_particle.h"
+#include "thrust_particle.h"
 #include "level_input.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -33,6 +34,7 @@ public:
   using duct_fan_collection = std::vector<duct_fan>;
   using explosion_particle_collection  = std::list<explosion_particle>;
   using impact_particle_collection  = std::list<impact_particle>;
+  using thrust_particle_collection = std::list<thrust_particle>;
 
   level_container();
   level_container(const level_container& levelContainer) = delete;
@@ -84,6 +86,7 @@ private:
   duct_fan_collection m_ductFans;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
+  thrust_particle_collection m_thrustParticles;
   game_point m_centre;
 
   int64_t m_ticksRemaining = 0;
