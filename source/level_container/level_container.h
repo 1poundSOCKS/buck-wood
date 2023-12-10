@@ -88,7 +88,6 @@ private:
 
   int64_t m_ticksRemaining = 0;
 
-  bool m_playerHasThrusterOn = false;
   int m_activatedTargetCount = 0;
 
   update_events m_updateEvents;

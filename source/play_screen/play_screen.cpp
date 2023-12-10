@@ -10,7 +10,7 @@
 play_screen::play_screen()
 {
   m_menuController.OpenRoot();
-  InitializeScenes();
+  LoadNextLevel();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -82,7 +82,7 @@ auto play_screen::RenderDiagnostics() -> void
   diagnostics::clear();
 }
 
-auto play_screen::InitializeScenes() -> bool
+auto play_screen::LoadNextLevel() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {

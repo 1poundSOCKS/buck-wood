@@ -9,7 +9,6 @@ class play_screen
 public:
 
   play_screen();
-
   auto Refresh(int64_t ticks) -> bool;
 
 private:
@@ -18,7 +17,7 @@ private:
   auto Render() -> void;
   auto RenderUI() -> void;
   auto RenderDiagnostics() -> void;
-  auto InitializeScenes() -> bool;
+  auto LoadNextLevel() -> bool;
   [[nodiscard]] auto PausePressed() -> bool;
 
 private:
