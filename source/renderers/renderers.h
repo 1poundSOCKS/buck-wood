@@ -43,7 +43,6 @@ private:
   auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
-  auto Render(const level_star& star) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
@@ -61,10 +60,9 @@ private:
   particle_renderer m_particleRenderer;
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
-  render_brush m_starBrush { screen_render_brush_white.CreateBrush() };
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
-  geometry_renderer m_ductFanRenderer { screen_render_brush_green.CreateBrush(), 8 };
+  geometry_renderer m_ductFanRenderer { screen_render_brush_grey.CreateBrush(), 8 };
 
 };
 
@@ -134,13 +132,6 @@ inline auto renderer::Render(const explosion_particle& particle) const -> void
 inline auto renderer::Render(const impact_particle& particle) const -> void
 {
   m_particleRenderer.Write(particle);
-}
-
-inline auto renderer::Render(const level_star& star) const -> void
-{
-  static const D2D1_RECT_F rect { -4, -4, 4, 4 };
-  D2D1_RECT_F renderRect { rect.left + star.x, rect.top + star.y, rect.right + star.x, rect.bottom + star.y };
-  render_target::get()->FillRectangle(renderRect, m_starBrush.get());
 }
 
 inline auto renderer::Render(const player_shields& playerShields) const -> void
