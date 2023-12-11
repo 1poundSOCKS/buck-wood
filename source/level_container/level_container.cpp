@@ -30,35 +30,15 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   }
   else
   {
-    const auto& playerPosition = m_playerShip.Position();
-
-    if( input.Angle() )
-    {
-      m_playerShip.SetAngle(*input.Angle());
-    }
-
-    if( input.Rotation() )
-    {
-      m_playerShip.Rotate(*input.Rotation() * interval * 20.0f);
-    }
-
-    m_playerShip.SetThrust(input.Thrust());
-
-    if( m_playerShip.ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
-    {
-      auto thrustPosition = m_playerShip.RelativePosition(180, 0, -10);
-      auto thrustAngle = m_playerShip.Angle() + 180;
-      game_velocity thrustVelocity { thrustAngle, 300 };
-      m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
-    }
-
-    m_playerShip.Update(interval);
+    UpdatePlayer(input, interval);
 
     if( m_reloadTimer.Update(interval) && input.ShootAngle() )
     {
       m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), *input.ShootAngle() } );
       m_updateEvents.playerShot = true;
     }
+
+    const auto& playerPosition = m_playerShip.Position();
 
     for( auto& target : m_targets )
     {
@@ -90,9 +70,31 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   erase_destroyed(m_explosionParticles);
   erase_destroyed(m_impactParticles);
   erase_destroyed(m_thrustParticles);
+}
 
-  // m_ticksRemaining -= ticks;
-  // m_ticksRemaining = max(0, m_ticksRemaining);
+auto level_container::UpdatePlayer(const level_input& input, float interval) -> void
+{
+  if( input.Angle() )
+  {
+    m_playerShip.SetAngle(*input.Angle());
+  }
+
+  if( input.Rotation() )
+  {
+    m_playerShip.Rotate(*input.Rotation() * interval * 20.0f);
+  }
+
+  m_playerShip.SetThrust(input.Thrust());
+
+  if( m_playerShip.ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
+  {
+    auto thrustPosition = m_playerShip.RelativePosition(180, 0, -10);
+    auto thrustAngle = m_playerShip.Angle() + 180;
+    game_velocity thrustVelocity { thrustAngle, 300 };
+    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
+  }
+
+  m_playerShip.Update(interval);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -145,6 +147,7 @@ auto level_container::DoCollisions() -> void
   DoMineCollisions();
   DoBulletCollisions();
   DoExplosionParticleCollisions();
+  DoThrustParticleCollisions();
 
   if( m_blankObjects.size() )
   {
@@ -292,6 +295,24 @@ auto level_container::DoExplosionParticleCollisions() -> void
   });
 }
 
+auto level_container::DoThrustParticleCollisions() -> void
+{
+  do_geometries_to_points_collisions(m_asteroids, m_thrustParticles, [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  do_geometries_to_points_collisions(m_solidObjects, m_thrustParticles, [this](auto& solidObject, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  do_geometries_to_points_collisions(m_ductFans, m_thrustParticles, [this](auto& ductFan, auto& particle)
+  {
+    particle.Destroy();
+  });
+}
+
 auto level_container::DoBorderCollisions(const blank_object& border) -> void
 {
   check_geometries_contained(m_mines, border, [this](auto& mine)
@@ -303,6 +324,11 @@ auto level_container::DoBorderCollisions(const blank_object& border) -> void
   });
 
   check_points_contained(m_explosionParticles, border, [this](auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  check_points_contained(m_thrustParticles, border, [this](auto& particle)
   {
     particle.Destroy();
   });
