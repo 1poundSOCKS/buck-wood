@@ -63,7 +63,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     if( m_playerShip.ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
     {
-      auto thrustPosition = m_playerShip.RelativePosition(180, 0, -20);
+      auto thrustPosition = m_playerShip.RelativePosition(180, 0, -10);
       auto thrustAngle = m_playerShip.Angle() + 180;
       game_velocity thrustVelocity { thrustAngle, 300 };
       m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
