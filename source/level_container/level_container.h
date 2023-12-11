@@ -72,6 +72,12 @@ private:
   inline static const auto m_shotTimeDenominator { 20 };
 
   auto DoCollisions() -> void;
+  auto DoPlayerShipCollisions() -> void;
+  auto DoMineCollisions() -> void;
+  auto DoBulletCollisions() -> void;
+  auto DoExplosionParticleCollisions() -> void;
+  auto DoBorderCollisions(const blank_object& border) -> void;
+
   auto CreateExplosion(const game_point& position) -> void;
 
   player_ship m_playerShip;
