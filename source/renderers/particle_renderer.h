@@ -10,19 +10,24 @@ class particle_renderer
 
 public:
 
+  template <class... Args> particle_renderer(Args&&... args);
   auto Write(const particle& particleInstance) const -> void;
 
 private:
 
-  color_scale_brushes m_brushes { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
+  inline static constexpr auto m_renderRect = render_rect { -4, -4, 4, 4 };
+  color_scale_brushes m_brushes;
 
 };
 
+template <class... Args> particle_renderer::particle_renderer(Args&&... args) : m_brushes(std::forward<Args>(args)...)
+{
+}
+
 inline auto particle_renderer::Write(const particle& particleInstance) const -> void
 {
-  static const auto rect = render_rect { -4, -4, 4, 4 };
   const auto& brush = m_brushes[particleInstance.Age() / particleInstance.Lifespan()];
   const auto& position = particleInstance.Position();
-  const auto particleRect = render_rect { rect.left + position.x, rect.top + position.y, rect.right + position.x, rect.bottom + position.y };
+  const auto particleRect = render_rect { m_renderRect.left + position.x, m_renderRect.top + position.y, m_renderRect.right + position.x, m_renderRect.bottom + position.y };
   render_target::get()->FillRectangle(particleRect, brush.get());
 }

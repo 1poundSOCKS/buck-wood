@@ -52,13 +52,15 @@ private:
 private:
 
   inline static renderer* m_instance { nullptr };
+
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
   geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
-  particle_renderer m_particleRenderer;
+  particle_renderer m_particleRenderer { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
+  particle_renderer m_thrustParticleRenderer { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
   diagnostics_renderer m_diagnosticsRenderer;
@@ -157,5 +159,5 @@ inline auto renderer::Render(const duct_fan& ductFan) const -> void
 
 inline auto renderer::Render(const thrust_particle& particle) const -> void
 {
-  m_particleRenderer.Write(particle);
+  m_thrustParticleRenderer.Write(particle);
 }
