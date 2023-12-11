@@ -90,7 +90,7 @@ auto level_container::UpdatePlayer(const level_input& input, float interval) -> 
   {
     auto thrustPosition = m_playerShip.RelativePosition(180, 0, -10);
     auto thrustAngle = m_playerShip.Angle() + 180;
-    game_velocity thrustVelocity { thrustAngle, 300 };
+    game_velocity thrustVelocity { thrustAngle, 100 };
     m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
   }
 
