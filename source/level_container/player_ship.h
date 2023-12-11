@@ -46,8 +46,6 @@ private:
 
   void UpdateShipGeometryData();
 
-  static auto GetShotTimeInterval() -> int64_t;
-
   state m_state { state::alive };
   directional_body m_body;
   directional_body m_previousState;

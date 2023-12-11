@@ -8,7 +8,7 @@
 #include "level_explosion.h"
 #include "game_clock.h"
 
-level_container::level_container() : m_reloadTimer { static_cast<float>(m_shotTimeNumerator) / static_cast<float>(m_shotTimeDenominator) }
+level_container::level_container()
 {
 }
 
@@ -61,7 +61,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     m_playerShip.SetThrust(input.Thrust());
 
-    if( m_playerShip.ThrusterOn() )
+    if( m_playerShip.ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
     {
       auto thrustPosition = m_playerShip.RelativePosition(180, 0, -20);
       auto thrustAngle = m_playerShip.Angle() + 180;
@@ -71,10 +71,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     m_playerShip.Update(interval);
 
-    auto reloaded = m_reloadTimer.Update(interval);
-    auto triggerPressed = input.ShootAngle() ? true : false;
-
-    if( reloaded && triggerPressed )
+    if( m_reloadTimer.Update(interval) && input.ShootAngle() )
     {
       m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), *input.ShootAngle() } );
       m_updateEvents.playerShot = true;
