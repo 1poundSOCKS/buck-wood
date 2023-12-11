@@ -17,7 +17,8 @@ private:
 
 public:
 
-  duct_fan(float x, float y, float size) : m_position { x , y },
+  duct_fan(float x, float y, float size, float rotationSpeed) : 
+    m_position { x , y }, m_rotationSpeed { rotationSpeed },
     m_baseGeometry { d2d_factory::get_raw(), GetGeometryData(size) }, 
     m_geometry { d2d_factory::get_raw(), GetGeometryData(size), D2D1::Matrix3x2F::Translation(x, y) }
   {
@@ -30,7 +31,7 @@ public:
 
   auto Update(float interval) -> void
   {
-    m_angle += 60 * interval;
+    m_angle += m_rotationSpeed * interval;
     m_geometry = { d2d_factory::get_raw(), m_baseGeometry.Get(), D2D1::Matrix3x2F::Rotation(m_angle) * D2D1::Matrix3x2F::Translation(m_position.x, m_position.y) };
   }
 
@@ -48,5 +49,6 @@ private:
 
   game_point m_position;
   game_angle m_angle;
+  float m_rotationSpeed { 0 };
 
 };
