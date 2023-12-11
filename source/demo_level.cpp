@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "demo_level.h"
 
-demo_level::demo_level(int cellWidth, int cellHeight)
+demo_level::demo_level()
 {
   std::vector<geometry_builder::point> boundaryPoints;
 
@@ -10,32 +10,32 @@ demo_level::demo_level(int cellWidth, int cellHeight)
   m_boundary.AddGeometry(m_endBoundaryBuildCommands);
   m_boundary.Build(std::back_inserter(boundaryPoints));
 
-  std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [cellWidth, cellHeight](geometry_builder::point point) -> game_point
+  std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [](geometry_builder::point point) -> game_point
   {
     const auto [x, y] = point;
-    return { static_cast<float>(x * cellWidth) - cellWidth / 2, static_cast<float>(y * cellHeight) - cellHeight / 2  };
+    return { static_cast<float>(x * m_cellSize) - m_cellSize / 2, static_cast<float>(y * m_cellSize) - m_cellSize / 2  };
   });
 
-  std::ranges::transform(m_targetPositions, std::back_inserter(m_targets), [cellWidth, cellHeight](const cell& targetCell)
+  std::ranges::transform(m_targetPositions, std::back_inserter(m_targets), [](const cell& targetCell)
   {
-    auto x = static_cast<float>(targetCell.x * cellWidth);
-    auto y = static_cast<float>(targetCell.y * cellHeight);
+    auto x = static_cast<float>(targetCell.x * m_cellSize);
+    auto y = static_cast<float>(targetCell.y * m_cellSize);
     return game_point { x, y };
   });
 
 #ifdef INCLUDE_ASTEROIDS
-  std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [cellWidth, cellHeight](const cell& asteroidCell)
+  std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [](const cell& asteroidCell)
   {
-    auto x = static_cast<float>(asteroidCell.x * cellWidth);
-    auto y = static_cast<float>(asteroidCell.y * cellHeight);
+    auto x = static_cast<float>(asteroidCell.x * m_cellSize);
+    auto y = static_cast<float>(asteroidCell.y * m_cellSize);
     return game_point { x, y };
   });
 #endif
 
-  std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [cellWidth, cellHeight](const cell& targetCell)
+  std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [](const cell& targetCell)
   {
-    auto x = static_cast<float>(targetCell.x * cellWidth);
-    auto y = static_cast<float>(targetCell.y * cellHeight);
+    auto x = static_cast<float>(targetCell.x * m_cellSize);
+    auto y = static_cast<float>(targetCell.y * m_cellSize);
     return game_point { x, y };
   });
 }

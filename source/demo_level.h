@@ -145,7 +145,7 @@ public:
     int y { 0 };
   };
 
-  demo_level(int cellWidth, int cellHeight);
+  demo_level();
 
   [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
   [[nodiscard]] auto Targets() const -> const std::vector<game_point>&;
@@ -154,6 +154,8 @@ public:
 
 private:
 
+  inline static constexpr int m_cellSize = 150;  
+
   level_boundary m_boundary;
   std::vector<game_point> m_boundaryPoints;
   std::vector<game_point> m_targets;
@@ -161,37 +163,38 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { 0, -1 },
-    boundary_build_command { 1, 0 },
-    boundary_build_command { 1, 1 },
-    boundary_build_command { 0, 1 },
-    boundary_build_command { -1, 1 },
-    boundary_build_command { -1, 0, boundary_build_command::type::portal },
-    boundary_build_command { -1, -1 },
-    boundary_build_command { 0, -1 }
+    boundary_build_command { 0, -4 },
+    boundary_build_command { 4, 0 },
+    boundary_build_command { 4, 4 },
+    boundary_build_command { 0, 4 },
+    boundary_build_command { -4, 4 },
+    boundary_build_command { -4, 0, boundary_build_command::type::portal },
+    boundary_build_command { -4, -4 },
+    boundary_build_command { 0, -4 }
   };
 
   inline static auto m_joinBoundaryBuildCommands = {
-    boundary_build_command { 0, 3 },
-    boundary_build_command { -1, 0, boundary_build_command::type::portal },
-    boundary_build_command { 0, -3 }
+    boundary_build_command { 0, 12 },
+    boundary_build_command { -4, 0, boundary_build_command::type::portal },
+    boundary_build_command { 0, -12 }
   };
 
   inline static auto m_endBoundaryBuildCommands = {
-    boundary_build_command { 1, 1 },
-    boundary_build_command { 0, 1 },
-    boundary_build_command { -1, 1 },
-    boundary_build_command { -1, 0 },
-    boundary_build_command { -1, -1 },
-    boundary_build_command { 0, -1 },
-    boundary_build_command { 1, -1 }
+    boundary_build_command { 4, 4 },
+    boundary_build_command { 0, 4 },
+    boundary_build_command { -4, 4 },
+    boundary_build_command { -4, 0 },
+    boundary_build_command { -4, -4 },
+    boundary_build_command { 0, -4 },
+    boundary_build_command { 4, -4 }
   };
 
   inline static auto m_targetPositions = {
-    cell { 0, 6 }
+    cell { 0, 24 }
   };
 
   inline static auto m_ductFanPositions = {
-    cell { 0, 3 }
+    cell { 0, 12 }
   };
+
 };
