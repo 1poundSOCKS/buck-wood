@@ -288,7 +288,7 @@ auto level_container::DoCollisions() -> void
 
   do_geometries_to_points_collisions(m_targets, m_bullets, [this](auto& target, auto& bullet)
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    m_impactParticles.emplace_back(bullet.Position());
 
     if( !target.IsActivated() )
     {
