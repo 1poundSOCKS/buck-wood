@@ -2,7 +2,7 @@
 #include "level_container.h"
 #include "bullet.h"
 #include "explosion.h"
-#include "level_object.h"
+#include "level_object_functions.h"
 #include "level_star.h"
 #include "perlin_simplex_noise.h"
 #include "level_explosion.h"
