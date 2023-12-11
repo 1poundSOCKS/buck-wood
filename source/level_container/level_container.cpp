@@ -8,20 +8,6 @@
 #include "level_explosion.h"
 #include "game_clock.h"
 
-level_container::level_container()
-{
-}
-
-auto level_container::SetTimeout(int time) -> void
-{
-  m_ticksRemaining = performance_counter::QueryFrequency() * time;
-}
-
-auto level_container::HasTimedOut() const -> bool
-{
-  return m_ticksRemaining == 0;
-}
-
 [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
   return m_activatedTargetCount == m_targets.size();
@@ -40,10 +26,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   if( m_playerShip.Destroyed() )
   {
-    for( auto& mine : m_mines )
-    {
-      mine.Update(interval);
-    }
+    update_all(m_mines, interval);
   }
   else
   {
@@ -108,8 +91,8 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   erase_destroyed(m_impactParticles);
   erase_destroyed(m_thrustParticles);
 
-  m_ticksRemaining -= ticks;
-  m_ticksRemaining = max(0, m_ticksRemaining);
+  // m_ticksRemaining -= ticks;
+  // m_ticksRemaining = max(0, m_ticksRemaining);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -150,11 +133,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
   return m_playerShip.Destroyed();
-}
-
-[[nodiscard]] auto level_container::TicksRemaining() const -> int64_t
-{
-  return m_ticksRemaining;
 }
 
 auto level_container::DoCollisions() -> void

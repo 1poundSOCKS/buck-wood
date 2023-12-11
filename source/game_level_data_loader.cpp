@@ -18,7 +18,6 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
   levelContainer->AddTargets(demoLevel.Targets());
   levelContainer->AddAsteroids(demoLevel.Asteroids());
   levelContainer->AddDuctFans(demoLevel.DuctFans());
-  levelContainer->SetTimeout(60);
 
   return levelContainer;
 }

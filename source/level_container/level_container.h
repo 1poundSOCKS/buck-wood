@@ -36,14 +36,8 @@ public:
   using impact_particle_collection  = std::list<impact_particle>;
   using thrust_particle_collection = std::list<thrust_particle>;
 
-  level_container();
+  level_container() = default;
   level_container(const level_container& levelContainer) = delete;
-
-  auto SetTimeout(int time) -> void;
-  auto HasTimedOut() const -> bool;
-
-  auto SetCentre(const game_point& value) -> void;
-  [[nodiscard]] auto Centre() const -> const game_point&;
 
   auto AddSolidObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
@@ -61,15 +55,14 @@ public:
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
-  [[nodiscard]] auto TicksRemaining() const -> int64_t;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto UpdateEvents() const -> const update_events&;
 
 private:
 
-  inline static const auto m_shotTimeNumerator { 1 };
-  inline static const auto m_shotTimeDenominator { 20 };
+  inline static constexpr auto m_shotTimeNumerator { 1 };
+  inline static constexpr auto m_shotTimeDenominator { 20 };
 
   auto DoCollisions() -> void;
   auto DoPlayerShipCollisions() -> void;
@@ -95,12 +88,7 @@ private:
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
   thrust_particle_collection m_thrustParticles;
-  game_point m_centre;
-
-  int64_t m_ticksRemaining = 0;
-
-  int m_activatedTargetCount = 0;
-
+  int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
 };
 
@@ -109,16 +97,6 @@ inline auto level_container::update_events::reset() -> void
   playerShot = false ;
   targetActivated = false;
   mineExploded = false;
-}
-
-inline auto level_container::SetCentre(const game_point& value) -> void
-{
-  m_centre = value;
-}
-
-[[nodiscard]] inline auto level_container::Centre() const -> const game_point&
-{
-  return m_centre;
 }
 
 auto level_container::AddSolidObjects(std::ranges::input_range auto&& objects) -> void
