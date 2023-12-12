@@ -34,22 +34,21 @@ public:
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto Destroyed() const -> bool;
-
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   [[nodiscard]] auto CanShoot() -> bool;
-
   [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
 
 private:
 
-  inline static const auto m_thrustPower { 400.0f };
-
   void UpdateShipGeometryData();
 
+private:
+
+  inline static const auto m_thrustPower { 400.0f };
   state m_state { state::alive };
   directional_body m_body;
   directional_body m_previousState;
-  float m_thrust = 0;
+  float m_thrust { 0 };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 

@@ -79,7 +79,7 @@ private:
   player_ship m_playerShip;
   
   reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
-  reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(20) };
+  reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(10) };
 
   bullet_collection m_bullets;
   target_collection m_targets;
