@@ -1,5 +1,4 @@
-#ifndef _geometry_
-#define _geometry_
+#pragma once
 
 #define PI 3.14159265f
 #define DEGTORAD(D)((D * PI) / 180.0f)
@@ -112,50 +111,72 @@ private:
 struct game_velocity
 {
   game_velocity() = default;
-  game_velocity(float x, float y);
+  // game_velocity(float x, float y);
   game_velocity(const game_angle& direction, float speed);
 
   auto operator+=(const game_velocity& increase) -> game_velocity&;
   [[nodiscard]] auto operator+(const game_velocity& increase) const -> game_velocity;
   auto Update(float xMultiplier, float yMultipler) -> void;
 
+  [[nodiscard]] auto x() const -> float;
+  [[nodiscard]] auto y() const -> float;
   [[nodiscard]] auto Speed() const -> float;
 
-  float x { 0 };
-  float y { 0 };
+  auto Accelerate(float cx, float cy) -> void;
+
+private:
+
+  float m_x { 0 };
+  float m_y { 0 };
 };
 
-inline game_velocity::game_velocity(float xVal, float yVal) : x { xVal }, y { yVal }
-{
-}
+// inline game_velocity::game_velocity(float xVal, float yVal) : x { xVal }, y { yVal }
+// {
+// }
 
 inline game_velocity::game_velocity(const game_angle& direction, float speed)
 {
-  x = speed * sin(DEGTORAD(direction));
-  y = -speed * cos(DEGTORAD(direction));
+  m_x = speed * sin(DEGTORAD(direction));
+  m_y = -speed * cos(DEGTORAD(direction));
 }
 
 inline auto game_velocity::operator+=(const game_velocity& increase) -> game_velocity&
 {
-  x += increase.x;
-  y += increase.y;
+  m_x += increase.m_x;
+  m_y += increase.m_y;
   return *this;
 }
 
 inline [[nodiscard]] auto game_velocity::operator+(const game_velocity& value) const -> game_velocity
 {
-  return { x + value.x, y + value.y };
+  return { m_x + value.m_x, m_y + value.m_y };
 }
 
 inline auto game_velocity::Update(float xMultiplier, float yMultiplier) -> void
 {
-  x *= xMultiplier;
-  y *= yMultiplier;
+  m_x *= xMultiplier;
+  m_y *= yMultiplier;
 }
 
-[[nodiscard]] inline auto game_velocity::Speed() const -> float
+inline [[nodiscard]] auto game_velocity::x() const -> float
 {
-  return sqrt(x * x + y * y);
+  return m_x;
+}
+
+inline [[nodiscard]] auto game_velocity::y() const -> float
+{
+  return m_y;
+}
+
+inline [[nodiscard]] auto game_velocity::Speed() const -> float
+{
+  return sqrt(m_x * m_x + m_y * m_y);
+}
+
+inline auto game_velocity::Accelerate(float cx, float cy) -> void
+{
+  m_x += cx;
+  m_y += cy;
 }
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
@@ -266,5 +287,3 @@ void TransformPoints(auto begin, auto end, auto transformedPoints, const D2D1::M
   CreateConnectedLines(openObject.points.cbegin(), openObject.points.cend(), std::back_inserter(openObject.lines), false);
   return openObject;
 }
-
-#endif

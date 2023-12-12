@@ -63,8 +63,7 @@ inline auto moving_body::Accelerate(const game_velocity& amount) -> void
 
 inline auto moving_body::Accelerate(float amount) -> void
 {
-  m_velocity.x += m_velocity.x * amount;
-  m_velocity.y += m_velocity.y * amount;
+  m_velocity.Accelerate(m_velocity.x() * amount, m_velocity.y() * amount);
 }
 
 inline auto moving_body::SetDirection(float direction) -> void
@@ -75,8 +74,7 @@ inline auto moving_body::SetDirection(float direction) -> void
 
 inline auto moving_body::Accelerate(float amount, float direction) -> void
 {
-  m_velocity.x += amount * sin(DEGTORAD(direction));
-  m_velocity.y -= amount * cos(DEGTORAD(direction));
+  m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
 }
 
 [[nodiscard]] inline auto moving_body::Position() const -> const game_point&
@@ -91,8 +89,8 @@ inline auto moving_body::Accelerate(float amount, float direction) -> void
 
 inline auto moving_body::Update(float interval) -> void
 {
-  m_position.x += m_velocity.x * interval;
-  m_position.y += m_velocity.y * interval;
+  m_position.x += m_velocity.x() * interval;
+  m_position.y += m_velocity.y() * interval;
 }
 
 inline [[nodiscard]] auto moving_body::Transform() const -> D2D1::Matrix3x2F
