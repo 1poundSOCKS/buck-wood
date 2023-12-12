@@ -123,6 +123,19 @@ auto do_geometries_to_points_collisions(std::ranges::input_range auto&& geometry
   });
 }
 
+auto do_geometry_to_points_collisions(auto&& geometryObject, std::ranges::input_range auto&& pointObjects, auto OnCollision) -> void
+{
+  for( auto& pointObject : pointObjects )
+  {
+    {
+      if( have_geometry_and_point_collided(geometryObject, pointObject) )
+      {
+        OnCollision(geometryObject, pointObject);
+      }
+    }
+  }
+}
+
 auto do_geometries_to_geometries_collisions(std::ranges::input_range auto&& geometryObjects1, std::ranges::input_range auto&& geometryObjects2, auto OnCollision) -> void
 {
   std::for_each(std::begin(geometryObjects1), std::end(geometryObjects1), [&geometryObjects2, OnCollision](auto& geometryObject1)

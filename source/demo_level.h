@@ -163,7 +163,7 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { 0, -4 },
+    boundary_build_command { -1, -3 },
     boundary_build_command { 4, 0 },
     boundary_build_command { 4, 4 },
     boundary_build_command { 0, 4 },

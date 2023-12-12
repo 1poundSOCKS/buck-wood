@@ -139,20 +139,32 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
+  if( !m_playerShip.Destroyed() && m_blankObjects.size() )
+  {
+    const auto& border = m_blankObjects.front();
+
+    if( !is_geometry_contained(m_playerShip, border) )
+    {
+      auto position = m_playerShip.PreviousPosition();
+      CreateExplosion(position);
+      m_playerShip.ApplyFatalDamage();
+    }
+  }
+
   if( !m_playerShip.Destroyed() )
   {
     DoPlayerShipCollisions();
+  }
+
+  if( m_blankObjects.size() )
+  {
+    DoBorderCollisions(m_blankObjects.front());
   }
 
   DoMineCollisions();
   DoBulletCollisions();
   DoExplosionParticleCollisions();
   DoThrustParticleCollisions();
-
-  if( m_blankObjects.size() )
-  {
-    DoBorderCollisions(m_blankObjects.front());
-  }
 
   do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
   {
@@ -166,13 +178,6 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::DoPlayerShipCollisions() -> void
 {
-  if( m_blankObjects.size() && !is_geometry_contained(m_playerShip, m_blankObjects.front()) )
-  {
-    auto position = m_playerShip.PreviousPosition();
-    CreateExplosion(position);
-    m_playerShip.ApplyFatalDamage();
-  }
-
   do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
   {
     auto position = playerShip.PreviousPosition();
@@ -279,6 +284,11 @@ auto level_container::DoBulletCollisions() -> void
 
 auto level_container::DoExplosionParticleCollisions() -> void
 {
+  do_geometry_to_points_collisions(m_playerShip, m_explosionParticles, [this](auto& playerShip, auto& particle)
+  {
+    particle.Destroy();
+  });
+
   do_geometries_to_points_collisions(m_asteroids, m_explosionParticles, [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
