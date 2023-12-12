@@ -1,6 +1,5 @@
 #pragma once
 
-#include "geometry.h"
 #include "level_asteroid.h"
 #include "level_grid.h"
 

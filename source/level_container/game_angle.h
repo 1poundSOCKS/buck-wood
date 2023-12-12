@@ -1,5 +1,9 @@
 #pragma once
 
+#define PI 3.14159265f
+#define DEGTORAD(D)((D * PI) / 180.0f)
+#define RADTODEG(R)((180.0f * R) / PI)
+
 class game_angle
 {
 public:

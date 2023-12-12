@@ -1,7 +1,7 @@
 #ifndef _collisions_
 #define _collisions_
 
-#include "geometry.h"
+#include "game_point.h"
 
 struct game_line
 {

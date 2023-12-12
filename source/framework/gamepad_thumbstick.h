@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry.h"
+#include "game_point.h"
 
 class gamepad_thumbstick
 {

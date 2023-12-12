@@ -1,8 +1,6 @@
 #pragma once
 
-#include "framework.h"
-#include "geometry.h"
-#include "color_scale_brushes.h"
+#include "game_point.h"
 
 class level_radar
 {

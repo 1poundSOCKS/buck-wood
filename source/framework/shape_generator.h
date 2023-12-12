@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geometry.h"
+#include "game_point.h"
 #include "perlin_simplex_noise.h"
 
 class const_shape_iterator

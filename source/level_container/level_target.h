@@ -1,7 +1,6 @@
 #pragma once
 
 #include "play_event.h"
-#include "geometry.h"
 #include "path_geometry.h"
 #include "reload_timer.h"
 

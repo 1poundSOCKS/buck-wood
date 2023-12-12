@@ -4,6 +4,16 @@
 std::uniform_int_distribution<int> particleAngleDist(0, 359);
 std::uniform_int_distribution<int> particleSpeedDist(200, 300);
 
+[[nodiscard]] auto CalculateVectorX(float value, float angle) -> float
+{
+  return value * sin(DEGTORAD(angle));
+}
+
+[[nodiscard]] auto CalculateVectorY(float value, float angle) -> float
+{
+  return value * cos(DEGTORAD(angle));
+}
+
 explosion::particle_state::particle_state()
 {
 }

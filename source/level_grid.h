@@ -41,7 +41,6 @@ public:
 
   level_grid() = default;
   level_grid(int columnWidth, int leftColumn, int rightColumn, int rowHeight, int topRow, int bottomRow);
-  // level_grid(int columnWidth, int rowHeight, int left, int top, int right, int bottom);
   level_grid(int columnWidth, int rowHeight, float left, float top, float right, float bottom);
   auto operator==(const level_grid&) const -> bool = default;
 
