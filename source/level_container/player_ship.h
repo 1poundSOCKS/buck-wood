@@ -138,9 +138,5 @@ inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, f
 
 inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float value) const -> game_velocity
 {
-  game_velocity thrustVelocity { angle, value };
-
-  // return thrustVelocity + m_body.Velocity();
-  thrustVelocity += m_body.Velocity();
-  return thrustVelocity;
+  return m_body.Velocity() + game_velocity { game_angle { angle }, value };
 }

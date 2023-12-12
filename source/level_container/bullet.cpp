@@ -6,7 +6,7 @@
 bullet::bullet(const game_point& position, const game_velocity& velocity, float angle) : 
   m_startPosition { position }, m_movingBody { position, velocity }
 {
-  m_movingBody.Accelerate(game_velocity { angle, m_bulletSpeed });
+  m_movingBody.Accelerate(game_velocity { game_angle { angle }, m_bulletSpeed });
 }
 
 [[nodiscard]] auto bullet::Position() const -> const game_point&

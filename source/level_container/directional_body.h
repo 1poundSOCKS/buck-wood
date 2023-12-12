@@ -71,7 +71,7 @@ inline auto directional_body::RotateAnticlockwise(float angle) -> void
 
 inline auto directional_body::Accelerate(float amount) -> void
 {
-  moving_body::Accelerate( game_velocity { m_angle, amount } );
+  moving_body::Accelerate( game_velocity { game_angle { m_angle }, amount } );
 }
 
 [[nodiscard]] inline auto directional_body::Angle() const -> float

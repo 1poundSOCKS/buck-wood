@@ -53,7 +53,7 @@ inline auto moving_body::SetVelocity(const game_velocity& velocity) -> void
 
 inline auto moving_body::SetVelocity(float speed, float direction) -> void
 {
-  m_velocity = game_velocity { direction, speed };
+  m_velocity = game_velocity { game_angle { direction }, speed };
 }
 
 inline auto moving_body::Accelerate(const game_velocity& amount) -> void

@@ -22,7 +22,7 @@ private:
 };
 
 inline impact_particle::impact_particle(const game_point& position) :
-  particle { position, game_velocity { 0, 0 }, m_defaultLifespan }
+  particle { position, game_velocity {}, m_defaultLifespan }
 {
 }
 

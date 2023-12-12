@@ -116,7 +116,7 @@ auto const_level_explosion_iterator::GetRandomVelocity() const -> game_velocity
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
   auto velocity = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
-  return { angle, velocity };
+  return { game_angle { angle }, velocity };
 }
 
 inline level_explosion::level_explosion(const game_point& position) : m_position { position }

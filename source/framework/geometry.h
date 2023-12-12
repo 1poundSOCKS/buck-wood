@@ -111,7 +111,7 @@ private:
 struct game_velocity
 {
   game_velocity() = default;
-  // game_velocity(float x, float y);
+  game_velocity(float x, float y);
   game_velocity(const game_angle& direction, float speed);
 
   auto operator+=(const game_velocity& increase) -> game_velocity&;
@@ -130,9 +130,9 @@ private:
   float m_y { 0 };
 };
 
-// inline game_velocity::game_velocity(float xVal, float yVal) : x { xVal }, y { yVal }
-// {
-// }
+inline game_velocity::game_velocity(float x, float y) : m_x { x }, m_y { y }
+{
+}
 
 inline game_velocity::game_velocity(const game_angle& direction, float speed)
 {
