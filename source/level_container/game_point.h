@@ -1,7 +1,5 @@
 #pragma once
 
-#include "geometry.h"
-
 struct game_point
 {
   float x = 0;

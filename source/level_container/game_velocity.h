@@ -1,7 +1,6 @@
 #pragma once
 
 #include "game_angle.h"
-#include "geometry.h"
 
 struct game_velocity
 {

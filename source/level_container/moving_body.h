@@ -1,6 +1,7 @@
 #pragma once
 
-#include "geometry.h"
+#include "game_point.h"
+#include "game_velocity.h"
 
 class moving_body
 {
