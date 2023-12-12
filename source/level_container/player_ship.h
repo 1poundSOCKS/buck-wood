@@ -37,6 +37,7 @@ public:
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   [[nodiscard]] auto CanShoot() -> bool;
   [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
+  [[nodiscard]] auto RelativeVelocity(float angle, float value) const -> game_velocity;
 
 private:
 
@@ -90,42 +91,42 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-[[nodiscard]] inline auto player_ship::Position() const -> const game_point&
+inline [[nodiscard]] auto player_ship::Position() const -> const game_point&
 {
   return m_body.Position();
 }
 
-[[nodiscard]] inline auto player_ship::PreviousPosition() const -> const game_point&
+inline [[nodiscard]] auto player_ship::PreviousPosition() const -> const game_point&
 {
   return m_previousState.Position();
 }
 
-[[nodiscard]] inline auto player_ship::Angle() const -> float
+inline [[nodiscard]] auto player_ship::Angle() const -> float
 {
   return m_body.Angle();
 }
 
-[[nodiscard]] inline auto player_ship::Velocity() const -> const game_velocity&
+inline [[nodiscard]] auto player_ship::Velocity() const -> const game_velocity&
 {
   return m_body.Velocity();
 }
 
-[[nodiscard]] inline auto player_ship::State() const -> state
+inline [[nodiscard]] auto player_ship::State() const -> state
 {
   return m_state;
 }
 
-[[nodiscard]] inline auto player_ship::ThrusterOn() const -> bool
+inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
   return m_thrust > 0 ? true : false;
 }
 
-[[nodiscard]] inline auto player_ship::ShieldStatus() const -> const shield_status&
+inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_status&
 {
   return m_shieldStatus;
 }
 
-[[nodiscard]] inline auto player_ship::Destroyed() const -> bool
+inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
 {
   return m_destroyed;
 }
@@ -133,4 +134,13 @@ inline auto player_ship::Destroy() -> void
 inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, float cy) const -> game_point
 {
   return m_body.RelativePosition(angle, cx, cy);
+}
+
+inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float value) const -> game_velocity
+{
+  game_velocity thrustVelocity { angle, value };
+
+  // return thrustVelocity + m_body.Velocity();
+  thrustVelocity += m_body.Velocity();
+  return thrustVelocity;
 }

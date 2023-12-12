@@ -77,6 +77,7 @@ struct game_velocity
   game_velocity(float direction, float speed);
 
   auto operator+=(const game_velocity& increase) -> game_velocity&;
+  [[nodiscard]] auto operator+(const game_velocity& increase) const -> game_velocity;
   auto Update(float xMultiplier, float yMultipler) -> void;
 
   [[nodiscard]] auto Speed() const -> float;
@@ -96,6 +97,11 @@ inline auto game_velocity::operator+=(const game_velocity& increase) -> game_vel
   x += increase.x;
   y += increase.y;
   return *this;
+}
+
+inline [[nodiscard]] auto game_velocity::operator+(const game_velocity& value) const -> game_velocity
+{
+  return { x + value.x, y + value.y };
 }
 
 inline auto game_velocity::Update(float xMultiplier, float yMultiplier) -> void
