@@ -47,29 +47,6 @@ struct game_point
   return CalculateAngle(x, y, p.x, p.y);
 }
 
-struct game_line
-{
-  game_point start;
-  game_point end;
-};
-
-struct game_rect
-{
-  game_rect();
-  game_rect(float left, float top, float right, float bottom);
-  game_rect(game_point topLeft, game_point bottomRight);
-  game_rect(D2D1_RECT_F rect);
-
-  [[nodiscard]] auto Width() const -> float;
-  [[nodiscard]] auto Height() const -> float;
-  [[nodiscard]] auto CentrePoint() const -> game_point;
-
-  auto Resize(float widthRatio, float heightRation) -> void;
-
-  game_point topLeft = { 0, 0 };
-  game_point bottomRight = { 0, 0 };
-};
-
 class game_angle
 {
 public:
