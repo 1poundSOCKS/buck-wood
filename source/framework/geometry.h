@@ -71,50 +71,6 @@ struct game_rect
   game_point bottomRight = { 0, 0 };
 };
 
-struct game_velocity
-{
-  game_velocity() = default;
-  game_velocity(float direction, float speed);
-
-  auto operator+=(const game_velocity& increase) -> game_velocity&;
-  [[nodiscard]] auto operator+(const game_velocity& increase) const -> game_velocity;
-  auto Update(float xMultiplier, float yMultipler) -> void;
-
-  [[nodiscard]] auto Speed() const -> float;
-
-  float x { 0 };
-  float y { 0 };
-};
-
-inline game_velocity::game_velocity(float direction, float speed)
-{
-  x = speed * sin(DEGTORAD(direction));
-  y = -speed * cos(DEGTORAD(direction));
-}
-
-inline auto game_velocity::operator+=(const game_velocity& increase) -> game_velocity&
-{
-  x += increase.x;
-  y += increase.y;
-  return *this;
-}
-
-inline [[nodiscard]] auto game_velocity::operator+(const game_velocity& value) const -> game_velocity
-{
-  return { x + value.x, y + value.y };
-}
-
-inline auto game_velocity::Update(float xMultiplier, float yMultiplier) -> void
-{
-  x *= xMultiplier;
-  y *= yMultiplier;
-}
-
-[[nodiscard]] inline auto game_velocity::Speed() const -> float
-{
-  return sqrt(x * x + y * y);
-}
-
 class game_angle
 {
 public:
@@ -152,6 +108,55 @@ private:
   float m_value { 0 };
 
 };
+
+struct game_velocity
+{
+  game_velocity() = default;
+  game_velocity(float x, float y);
+  game_velocity(const game_angle& direction, float speed);
+
+  auto operator+=(const game_velocity& increase) -> game_velocity&;
+  [[nodiscard]] auto operator+(const game_velocity& increase) const -> game_velocity;
+  auto Update(float xMultiplier, float yMultipler) -> void;
+
+  [[nodiscard]] auto Speed() const -> float;
+
+  float x { 0 };
+  float y { 0 };
+};
+
+inline game_velocity::game_velocity(float xVal, float yVal) : x { xVal }, y { yVal }
+{
+}
+
+inline game_velocity::game_velocity(const game_angle& direction, float speed)
+{
+  x = speed * sin(DEGTORAD(direction));
+  y = -speed * cos(DEGTORAD(direction));
+}
+
+inline auto game_velocity::operator+=(const game_velocity& increase) -> game_velocity&
+{
+  x += increase.x;
+  y += increase.y;
+  return *this;
+}
+
+inline [[nodiscard]] auto game_velocity::operator+(const game_velocity& value) const -> game_velocity
+{
+  return { x + value.x, y + value.y };
+}
+
+inline auto game_velocity::Update(float xMultiplier, float yMultiplier) -> void
+{
+  x *= xMultiplier;
+  y *= yMultiplier;
+}
+
+[[nodiscard]] inline auto game_velocity::Speed() const -> float
+{
+  return sqrt(x * x + y * y);
+}
 
 void CreateConnectedLines(auto begin, auto end, auto lines, bool loop=true)
 {
