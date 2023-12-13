@@ -122,7 +122,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.emplace_back( level_target { position.x, position.y } );
+    m_targets.emplace_back(position.x, position.y);
   });
 }
 
@@ -130,7 +130,7 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_mines.emplace_back( mine { static_cast<float>(position.x), static_cast<float>(position.y) } );
+    m_mines.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y));
   });
 }
 
@@ -138,7 +138,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.emplace_back( level_asteroid { static_cast<float>(position.x), static_cast<float>(position.y), 200, 200 } );
+    m_asteroids.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y), 200.0f, 200.0f);
   });
 }
 
