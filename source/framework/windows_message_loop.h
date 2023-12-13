@@ -8,7 +8,7 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  static auto run(auto& callable) -> void;
+  static auto run(auto&& callable) -> void;
 
 private:
 
@@ -37,7 +37,7 @@ inline auto windows_message_loop::destroy() -> void
   }
 }
 
-inline auto windows_message_loop::run(auto& callable) -> void
+inline auto windows_message_loop::run(auto&& callable) -> void
 {
   while( m_instance->ProcessWindowMessages() && callable() ) {}
 }
