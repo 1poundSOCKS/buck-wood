@@ -146,7 +146,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y), 400.0f, 30.0f);
+    m_ductFans.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y), 300.0f, 30.0f);
   });
 }
 
