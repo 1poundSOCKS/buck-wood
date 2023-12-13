@@ -39,7 +39,6 @@ public:
   level_container() = default;
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddSolidObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddMines(std::ranges::input_range auto&& cells) -> void;
@@ -85,7 +84,6 @@ private:
   target_collection m_targets;
   mine_collection m_mines;
   asteroid_collection m_asteroids;
-  solid_objects m_solidObjects;
   blank_objects m_blankObjects;
   duct_fan_collection m_ductFans;
   explosion_particle_collection m_explosionParticles;
@@ -100,14 +98,6 @@ inline auto level_container::update_events::reset() -> void
   playerShot = false ;
   targetActivated = false;
   mineExploded = false;
-}
-
-auto level_container::AddSolidObjects(std::ranges::input_range auto&& objects) -> void
-{
-  std::ranges::for_each(objects, [this](const auto& object)
-  {
-    m_solidObjects.push_back(object);
-  });
 }
 
 auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -> void
@@ -130,7 +120,7 @@ auto level_container::AddMines(std::ranges::input_range auto&& positions) -> voi
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_mines.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y));
+    m_mines.emplace_back(position.x, position.y);
   });
 }
 
@@ -138,7 +128,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y), 200.0f, 200.0f);
+    m_asteroids.emplace_back(position.x, position.y, 200.0f, 200.0f);
   });
 }
 
@@ -146,7 +136,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.emplace_back(static_cast<float>(position.x), static_cast<float>(position.y), 300.0f, 30.0f);
+    m_ductFans.emplace_back(position.x, position.y, 300.0f, 30.0f);
   });
 }
 
