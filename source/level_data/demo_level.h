@@ -58,7 +58,8 @@ private:
   };
 
   inline static auto m_targetPositions = {
-    cell { 0, 24 }
+    cell { 0, 24 },
+    cell { -3, 27 }
   };
 
   inline static auto m_ductFanPositions = {
