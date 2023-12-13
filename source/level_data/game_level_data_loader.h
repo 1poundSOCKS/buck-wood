@@ -6,9 +6,11 @@ class game_level_data_loader
 {
 public:
 
+  using level_ptr = std::unique_ptr<level_container>;
+
   game_level_data_loader();
 
-  auto LoadLevel() -> std::unique_ptr<level_container>;
+  auto LoadLevel() -> level_ptr;
   [[nodiscard]] auto NextLevel() -> bool;
 
 private:

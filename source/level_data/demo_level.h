@@ -147,10 +147,10 @@ public:
 
   demo_level();
 
-  [[nodiscard]] auto Boundary() const -> const std::vector<game_point>&;
-  [[nodiscard]] auto Targets() const -> const std::vector<game_point>&;
-  [[nodiscard]] auto Asteroids() const -> const std::vector<game_point>&;
-  [[nodiscard]] auto DuctFans() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto BoundaryPoints() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto TargetPositions() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto AsteroidPositions() const -> const std::vector<game_point>&;
+  [[nodiscard]] auto DuctFanPositions() const -> const std::vector<game_point>&;
 
 private:
 
@@ -195,6 +195,13 @@ private:
 
   inline static auto m_ductFanPositions = {
     cell { 0, 12 }
+  };
+
+  inline static auto m_asteroidPositions = {
+    cell { 0, 1 },
+    cell { -3, 3 },
+    cell { 3, 26 },
+    cell { -1, 22 }
   };
 
 };

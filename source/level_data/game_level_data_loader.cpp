@@ -12,10 +12,10 @@ auto game_level_data_loader::LoadLevel() -> std::unique_ptr<level_container>
 
   demo_level demoLevel;
 
-  levelContainer->AddBlankObjects(std::array { blank_object { demoLevel.Boundary() } } );
-  levelContainer->AddTargets(demoLevel.Targets());
-  levelContainer->AddAsteroids(demoLevel.Asteroids());
-  levelContainer->AddDuctFans(demoLevel.DuctFans());
+  levelContainer->AddBlankObjects(std::array { blank_object { demoLevel.BoundaryPoints() } } );
+  levelContainer->AddTargets(demoLevel.TargetPositions());
+  levelContainer->AddAsteroids(demoLevel.AsteroidPositions());
+  levelContainer->AddDuctFans(demoLevel.DuctFanPositions());
 
   return levelContainer;
 }

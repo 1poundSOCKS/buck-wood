@@ -57,7 +57,7 @@ private:
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
   geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
   bullet_renderer m_bulletRenderer;
-  geometry_renderer m_solidObjectRenderer { screen_render_brush_grey.CreateBrush(), screen_render_brush_dark_grey.CreateBrush(), 8 };
+  geometry_renderer m_solidObjectRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   particle_renderer m_particleRenderer { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
   particle_renderer m_thrustParticleRenderer { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };

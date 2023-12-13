@@ -23,14 +23,12 @@ demo_level::demo_level()
     return game_point { x, y };
   });
 
-#ifdef INCLUDE_ASTEROIDS
   std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [](const cell& asteroidCell)
   {
     auto x = static_cast<float>(asteroidCell.x * m_cellSize);
     auto y = static_cast<float>(asteroidCell.y * m_cellSize);
     return game_point { x, y };
   });
-#endif
 
   std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [](const cell& targetCell)
   {
@@ -40,22 +38,22 @@ demo_level::demo_level()
   });
 }
 
-[[nodiscard]] auto demo_level::Boundary() const -> const std::vector<game_point>&
+[[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<game_point>&
 {
   return m_boundaryPoints;
 }
 
-[[nodiscard]] auto demo_level::Targets() const -> const std::vector<game_point>&
+[[nodiscard]] auto demo_level::TargetPositions() const -> const std::vector<game_point>&
 {
   return m_targets;
 }
 
-[[nodiscard]] auto demo_level::Asteroids() const -> const std::vector<game_point>&
+[[nodiscard]] auto demo_level::AsteroidPositions() const -> const std::vector<game_point>&
 {
   return m_asteroids;
 }
 
-[[nodiscard]] auto demo_level::DuctFans() const -> const std::vector<game_point>&
+[[nodiscard]] auto demo_level::DuctFanPositions() const -> const std::vector<game_point>&
 {
   return m_ductFans;
 }
