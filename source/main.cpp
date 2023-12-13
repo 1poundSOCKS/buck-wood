@@ -93,7 +93,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     player.Play();
   }
 
-  game_clock::setMultiplier(2);
+  game_clock::setMultiplier(1.5f);
 
   screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
   windows_message_loop::run(mainMenu);

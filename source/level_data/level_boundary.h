@@ -14,11 +14,12 @@ public:
 
   auto AddGeometry(std::ranges::input_range auto&& commands) -> void
   {
-    m_builds.emplace_back(commands);    
+    m_builds.emplace_back(commands);
   }
 
-  auto Build(auto outputPoints) -> void
+  auto Build(int x, int y, auto outputPoints) -> void
   {
+    outputPoints = m_builder.Run( { x, y } );
     Build(std::begin(m_builds), outputPoints);
   }
 
@@ -37,7 +38,7 @@ private:
           }
           break;
         default:
-          m_builder.Run(inputCommand, outputPoints);
+          outputPoints = m_builder.Run(inputCommand);
           break;
       }
     }

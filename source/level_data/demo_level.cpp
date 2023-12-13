@@ -8,7 +8,8 @@ demo_level::demo_level()
   m_boundary.AddGeometry(m_startBoundaryBuildCommands);
   m_boundary.AddGeometry(m_joinBoundaryBuildCommands);
   m_boundary.AddGeometry(m_endBoundaryBuildCommands);
-  m_boundary.Build(std::back_inserter(boundaryPoints));
+  
+  m_boundary.Build(-2, -6, std::back_inserter(boundaryPoints));
 
   std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [](geometry_builder::point point) -> game_point
   {

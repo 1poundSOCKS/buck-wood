@@ -21,11 +21,11 @@ public:
     std::ranges::copy(view, output);
   }
 
-  auto Run(const build_command& command, auto output) -> void
+  auto Run(const build_command& command) -> point
   {
     m_x += command.cx() * m_cellWidth;
     m_y += command.cy() * m_cellHeight;
-    output = { m_x, m_y };
+    return { m_x, m_y };
   }
 
 private:
