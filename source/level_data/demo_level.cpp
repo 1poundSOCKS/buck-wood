@@ -13,7 +13,7 @@ demo_level::demo_level()
   std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [](geometry_builder::point point) -> game_point
   {
     const auto [x, y] = point;
-    return { static_cast<float>(x * m_cellSize) - m_cellSize / 2, static_cast<float>(y * m_cellSize) - m_cellSize / 2  };
+    return { static_cast<float>(x * m_cellSize), static_cast<float>(y * m_cellSize) };
   });
 
   std::ranges::transform(m_targetPositions, std::back_inserter(m_targets), [](const cell& targetCell)
