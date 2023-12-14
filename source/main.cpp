@@ -24,9 +24,31 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
-auto create_d2d_render_target(int screenRefreshRate) -> void
+auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
-  swap_chain::create(main_window::handle(), screenRefreshRate, 1);
+  auto framerate = game_settings::framerate();
+  int screenRefreshRate = framerate ? *framerate : 60;
+
+  ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+  swapChainDesc.BufferCount = 2;
+  swapChainDesc.BufferDesc.Width = 1920;
+  swapChainDesc.BufferDesc.Height = 1080;
+  swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = screenRefreshRate;
+  swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+  swapChainDesc.OutputWindow = main_window::handle();
+  swapChainDesc.SampleDesc.Count = 1;
+  swapChainDesc.SampleDesc.Quality = 0;
+  swapChainDesc.Windowed = TRUE;
+}
+
+auto create_d2d_render_target() -> void
+{
+  DXGI_SWAP_CHAIN_DESC swapChainDesc;
+  format(swapChainDesc);
+  D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, };
+  swap_chain::create(swapChainDesc, featureLevels);
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
 }
@@ -38,10 +60,10 @@ auto destroy_d2d_render_target() -> void
   swap_chain::destroy();
 }
 
-auto create_input_devices(HINSTANCE instance, HWND wnd) -> void
+auto create_input_devices(HINSTANCE instance) -> void
 {
   direct_input::create(instance);
-  keyboard_device::create(direct_input::get_raw(), wnd);
+  keyboard_device::create(direct_input::get_raw(), main_window::handle());
   keyboard_reader::create(keyboard_device::get());
   gamepad_reader::create();
 }
@@ -54,16 +76,16 @@ auto destroy_input_devices() -> void
   direct_input::destroy();
 }
 
-auto create_all(HINSTANCE instance, HWND wnd, int screenRefreshRate) -> void
+auto create_all(HINSTANCE instance) -> void
 {
 #ifndef STEAMDECK_BUILD
-  create_d2d_render_target(screenRefreshRate);
+  create_d2d_render_target();
   dwrite_factory::create();
 #endif
-  create_input_devices(instance, wnd);
+  create_input_devices(instance);
   diagnostics::create();
 #ifndef STEAMDECK_BUILD
-  direct_sound::create(wnd);
+  direct_sound::create(main_window::handle());
   primary_sound_buffer::create(direct_sound::get_raw());
   renderer::create();
   sound_data::create(direct_sound::get_raw(), L"data");
@@ -104,13 +126,10 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
     game_settings::setFramerate(std::nullopt);
   }
 
-  auto framerate = game_settings::framerate();
-  int screenRefreshRate = framerate ? *framerate : 60;
-
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
 
-  create_all(instance, main_window::handle(), screenRefreshRate);
+  create_all(instance);
 
 #ifndef STEAMDECK_BUILD
   BOOL fullscreen = command_line::contains(L"-w") ? FALSE : TRUE;

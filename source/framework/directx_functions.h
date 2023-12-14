@@ -1,6 +1,9 @@
 #pragma once
 
-auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator) -> winrt::com_ptr<IDXGISwapChain>;
+using d3d_device_and_swap_chain = std::tuple<winrt::com_ptr<ID3D11Device>, winrt::com_ptr<IDXGISwapChain>>;
+
+auto CreateDeviceAndSwapChain(DXGI_SWAP_CHAIN_DESC& swapChainDesc, D3D_FEATURE_LEVEL featureLevels[]) -> d3d_device_and_swap_chain;
+auto GetDXGIDevice(ID3D11Device* d3dDevice) -> winrt::com_ptr<IDXGIDevice>;
 auto CreateD2DFactory() -> winrt::com_ptr<ID2D1Factory>;
 auto CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> winrt::com_ptr<ID2D1RenderTarget>;
 auto CreateDWriteFactory() -> winrt::com_ptr<IDWriteFactory>;

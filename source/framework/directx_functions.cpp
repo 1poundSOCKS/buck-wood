@@ -2,27 +2,11 @@
 #include "directx_functions.h"
 #include "log.h"
 
-auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator) -> winrt::com_ptr<IDXGISwapChain>
+auto CreateDeviceAndSwapChain(DXGI_SWAP_CHAIN_DESC& swapChainDesc, D3D_FEATURE_LEVEL featureLevels[]) -> d3d_device_and_swap_chain
 {
-  DXGI_SWAP_CHAIN_DESC swapChainDesc;
-  ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-  swapChainDesc.BufferCount = 2;
-  swapChainDesc.BufferDesc.Width = 1920;
-  swapChainDesc.BufferDesc.Height = 1080;
-  swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  swapChainDesc.BufferDesc.RefreshRate.Numerator = refreshRateNumerator;
-  swapChainDesc.BufferDesc.RefreshRate.Denominator = refreshRateDenominator;
-  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDesc.OutputWindow = window;
-  swapChainDesc.SampleDesc.Count = 1;
-  swapChainDesc.SampleDesc.Quality = 0;
-  swapChainDesc.Windowed = TRUE;
-
-  D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, };
-
-  winrt::com_ptr<ID3D11Device> d3dDevice;
-  winrt::com_ptr<IDXGISwapChain> swapChain;
-
+  d3d_device_and_swap_chain deviceAndSwapChain;
+  auto& [d3dDevice, swapChain] = deviceAndSwapChain;
+  
   HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_BGRA_SUPPORT, 
     featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, swapChain.put(), d3dDevice.put(), NULL, NULL);
 
@@ -35,8 +19,13 @@ auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDen
     log::file() << "create d3d device & swap chain - FAILED\n";
   }
 
-  winrt::com_ptr<IDXGIDevice> dxgiDevice; // NOT USED: gets thrown away
-  hr = d3dDevice->QueryInterface(dxgiDevice.put());
+  return deviceAndSwapChain;
+}
+
+auto GetDXGIDevice(ID3D11Device* d3dDevice) -> winrt::com_ptr<IDXGIDevice>
+{
+  winrt::com_ptr<IDXGIDevice> dxgiDevice;
+  HRESULT hr = d3dDevice->QueryInterface(dxgiDevice.put());
 
   if( SUCCEEDED(hr) )
   {
@@ -47,7 +36,7 @@ auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDen
     log::file() << "get dxgi device - FAILED\n";
   }
 
-  return swapChain;
+  return dxgiDevice;
 }
 
 auto CreateD2DFactory() -> winrt::com_ptr<ID2D1Factory>

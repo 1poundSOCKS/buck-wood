@@ -13,6 +13,7 @@ public:
 
 protected:
 
+  com_singleton() = default;
   com_singleton(const winrt::com_ptr<interface_type>& comObject);
 
 protected:
