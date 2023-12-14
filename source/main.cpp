@@ -6,6 +6,7 @@
 #include "game_settings.h"
 #include "game_clock.h"
 #include "screen_container.h"
+#include "log.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -90,6 +91,11 @@ auto destroy_all() -> void
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
   command_line::create(cmdLine);
+  
+  log::create();
+  log::open();
+  log::file() << "log file opened\n";
+
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
   game_settings::load();
 
@@ -137,6 +143,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   windows_message_loop::destroy();
   main_window::destroy();
+  log::file() << "log file closing\n";
+  log::destroy();
   command_line::destroy();
 
   return 0;
