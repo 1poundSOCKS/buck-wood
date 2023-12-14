@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "directx_functions.h"
+#include "log.h"
 
 auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDenominator) -> winrt::com_ptr<IDXGISwapChain>
 {
@@ -25,11 +26,26 @@ auto CreateSwapChain(HWND window, UINT refreshRateNumerator, UINT refreshRateDen
   HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_BGRA_SUPPORT, 
     featureLevels, 3, D3D11_SDK_VERSION, &swapChainDesc, swapChain.put(), d3dDevice.put(), NULL, NULL);
 
-  if( FAILED(hr) ) throw L"error";
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "create d3d device & swap chain - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "create d3d device & swap chain - FAILED\n";
+  }
 
   winrt::com_ptr<IDXGIDevice> dxgiDevice; // NOT USED: gets thrown away
   hr = d3dDevice->QueryInterface(dxgiDevice.put());
-  if( FAILED(hr) ) throw L"error";
+
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "get dxgi device - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "get dxgi device - FAILED\n";
+  }
 
   return swapChain;
 }
@@ -39,7 +55,15 @@ auto CreateD2DFactory() -> winrt::com_ptr<ID2D1Factory>
   winrt::com_ptr<ID2D1Factory> d2dFactory;
 	
   HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dFactory.put());
-  if( FAILED(hr) ) throw L"error";
+
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "create d2d factory - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "create d2d factory - FAILED\n";
+  }
   
   return d2dFactory;
 }
@@ -50,12 +74,28 @@ auto CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> 
 
   winrt::com_ptr<IDXGISurface> dxgi_surface;
   HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_surface.put_void());
-  if( FAILED(hr) ) throw L"error";
+
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "get dxgi surface - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "get dxgi surface - FAILED\n";
+  }
 
   D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(D2D1_RENDER_TARGET_TYPE_DEFAULT, D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_IGNORE));
   
   hr = d2dFactory->CreateDxgiSurfaceRenderTarget(dxgi_surface.get(), props, renderTarget.put());
-  if( FAILED(hr) ) throw L"error";
+
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "create render target on dxgi surface - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "create render target on dxgi surface - FAILED\n";
+  }
 
   return renderTarget;
 }
@@ -64,7 +104,16 @@ auto CreateDWriteFactory() -> winrt::com_ptr<IDWriteFactory>
 {
   winrt::com_ptr<IDWriteFactory> dwriteFactory;
   HRESULT hr = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(dwriteFactory),reinterpret_cast<IUnknown**>(dwriteFactory.put()));
-  if( FAILED(hr) ) throw L"error";
+
+  if( SUCCEEDED(hr) )
+  {
+    log::file() << "create dwrite factory - SUCCESS\n";
+  }
+  else
+  {
+    log::file() << "create dwrite factory - FAILED\n";
+  }
+
   return dwriteFactory;
 }
 

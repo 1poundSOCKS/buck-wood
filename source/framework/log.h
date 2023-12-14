@@ -10,6 +10,8 @@ public:
   static auto open() -> void;
   static auto file() -> std::ofstream&;
 
+  auto operator<<(const char* output) -> std::ostream&;
+
 private:
 
   auto Open() -> void;
