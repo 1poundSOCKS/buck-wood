@@ -41,6 +41,7 @@ template <typename...Args> auto log::Write(type msgType, std::format_string<Args
   if( msgType == type::fatal )
   {
     m_file.flush();
+    m_file.close();
     exit(1);
   }
 }
