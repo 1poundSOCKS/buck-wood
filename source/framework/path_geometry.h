@@ -1,5 +1,7 @@
 #pragma once
 
+#include "d2d_factory.h"
+
 class path_geometry
 {
 
@@ -7,6 +9,9 @@ public:
 
   path_geometry(ID2D1Factory* d2dFactory);
   path_geometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points);
+
+  path_geometry();
+  path_geometry(std::ranges::input_range auto&& points);
 
   auto Get() const -> ID2D1PathGeometry*;
   auto Load(std::ranges::input_range auto&& points) -> void;
@@ -20,6 +25,10 @@ private:
 path_geometry::path_geometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points) : path_geometry(d2dFactory)
 {
   Load(points);
+}
+
+path_geometry::path_geometry(std::ranges::input_range auto&& points) : path_geometry(d2d_factory::get_raw(), points)
+{
 }
 
 auto path_geometry::Load(std::ranges::input_range auto&& points) -> void

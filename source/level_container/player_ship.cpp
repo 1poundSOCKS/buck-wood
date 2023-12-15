@@ -3,18 +3,6 @@
 #include "math.h"
 #include "renderers.h"
 
-constexpr auto GetPlayerGeometryData()
-{
-  constexpr float width { 7 };
-  constexpr float height { 10 };
-
-  return std::array {
-    game_point { 0, -height },
-    game_point { width, height },
-    game_point { -width, height }
-  };
-}
-
 player_ship::player_ship() : 
   m_geometry { d2d_factory::get_raw(), GetPlayerGeometryData() }, 
   m_transformedGeometry { d2d_factory::get_raw(), m_geometry.Get(), D2D1::Matrix3x2F::Identity() }

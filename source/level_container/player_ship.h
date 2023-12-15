@@ -1,10 +1,23 @@
 #pragma once
 
 #include "framework.h"
+#include "dynamic_geometry.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "directional_body.h"
 #include "health_status.h"
+
+constexpr auto GetPlayerGeometryData()
+{
+  constexpr float width { 7 };
+  constexpr float height { 10 };
+
+  return std::array {
+    game_point { 0, -height },
+    game_point { width, height },
+    game_point { -width, height }
+  };
+}
 
 class player_ship
 {
@@ -55,6 +68,8 @@ private:
 
   path_geometry m_geometry { d2d_factory::get_raw() };
   transformed_path_geometry m_transformedGeometry;
+
+  dynamic_geometry m_dg { GetPlayerGeometryData() };
 };
 
 inline auto player_ship::SetAngle(float angle) -> void
