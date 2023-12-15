@@ -39,16 +39,16 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   
   log::create();
   log::open();
-  log::message("app started");
+  log::write(log::type::info, "app started");
 
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
   game_settings::load();
 
   game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(60));
-  log::message("framerate {}", game_settings::framerate() ? "CAPPED" : "UNCAPPED");
+  log::write(log::type::info, "framerate {}", game_settings::framerate() ? "CAPPED" : "UNCAPPED");
 
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
-  log::message("app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
+  log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
 
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
@@ -72,7 +72,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   RunMainMenuScreen();
 
-  log::message("app closing");
+  log::write(log::type::info, "app closing");
 
   game_volume_controller::destroy();
   sound_data::destroy();
