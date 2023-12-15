@@ -38,7 +38,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   command_line::create(cmdLine);
   
   log::create();
-  log::open();
   log::write(log::type::info, "app started");
 
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));

@@ -4,8 +4,8 @@
 auto log::create() -> void
 {
   destroy();
-
   m_instance = new log();
+  m_instance->Open();
 }
 
 auto log::destroy() -> void
@@ -17,17 +17,8 @@ auto log::destroy() -> void
   }
 }
 
-auto log::open() -> void
-{
-  m_instance->Open();
-}
-
-auto log::file() -> std::ofstream&
-{
-  return m_instance->m_file;
-}
-
 auto log::Open() -> void
 {
   m_file.open("log.txt");
+  write(type::info, "log created - {}", m_creationTime);
 }

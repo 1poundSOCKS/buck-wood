@@ -9,8 +9,7 @@ public:
 
   static auto create() -> void;
   static auto destroy() -> void;
-  static auto open() -> void;
-  static auto file() -> std::ofstream&;
+
   template <typename...Args> static auto write(type msgType, std::format_string<Args...> fmt, Args&&... args) -> void;
 
 private:
@@ -22,6 +21,7 @@ private:
 
   inline static log* m_instance { nullptr };
   std::ofstream m_file;
+  std::chrono::system_clock::time_point m_creationTime { std::chrono::system_clock::now() };
 
 };
 
@@ -32,5 +32,14 @@ template <typename...Args> auto log::write(type msgType, std::format_string<Args
 
 template <typename...Args> auto log::Write(type msgType, std::format_string<Args...> fmt, Args&&... args) -> void
 {
-  m_file << std::format(fmt, std::forward<Args>(args)...).c_str() << "\n";
+  auto timestamp = std::chrono::system_clock::now() - m_creationTime;
+  auto msg = std::format(fmt, std::forward<Args>(args)...);
+
+  m_file << std::format("{} {}", timestamp.count(), msg) << "\n";
+
+  if( msgType == type::fatal )
+  {
+    m_file.flush();
+    exit(1);
+  }
 }
