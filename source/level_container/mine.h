@@ -2,6 +2,8 @@
 
 #include "framework.h"
 #include "directional_body.h"
+#include "dynamic_geometry.h"
+#include "shape_generator.h"
 
 class mine
 {
@@ -24,17 +26,12 @@ private:
 
   inline static const float m_spinRate { 500.0f };
   inline static const float m_thrustPower { 100.0f };
-
-  auto UpdateGeometry() -> void;
-  [[nodiscard]] auto Transform() const -> D2D1::Matrix3x2F;
-
   directional_body m_body;
   directional_body m_previousState;
   game_angle m_spin;
   bool m_destroyed { false };
-
-  path_geometry m_geometry { d2d_factory::get_raw() };
-  transformed_path_geometry m_transformedGeometry;
+  dynamic_geometry m_geometry { shape_generator { 0, 0, 40, 40, 3 } };
+  
 };
 
 [[nodiscard]] inline auto mine::Position() const -> const game_point&
@@ -49,10 +46,5 @@ private:
 
 [[nodiscard]] inline auto mine::Geometry() const -> const transformed_path_geometry&
 {
-  return m_transformedGeometry;
-}
-
-[[nodiscard]] inline auto mine::Transform() const -> D2D1::Matrix3x2F
-{
-  return D2D1::Matrix3x2F::Rotation(m_spin, { 0, 0 }) * m_body.Transform();
+  return m_geometry;
 }

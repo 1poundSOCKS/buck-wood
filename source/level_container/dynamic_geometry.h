@@ -8,6 +8,7 @@ class dynamic_geometry
 
 public:
 
+  dynamic_geometry(std::ranges::input_range auto&& points, const D2D1::Matrix3x2F& transform);
   dynamic_geometry(std::ranges::input_range auto&& points);
 
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
@@ -22,7 +23,11 @@ private:
 
 };
 
-dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points) : m_geometry { points }, m_transformedGeometry { points, D2D1::Matrix3x2F::Identity() }
+dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points, const D2D1::Matrix3x2F& transform) : m_geometry { points }, m_transformedGeometry { points, transform }
+{  
+}
+
+dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points) : dynamic_geometry(points, D2D1::Matrix3x2F::Identity())
 {
 }
 
