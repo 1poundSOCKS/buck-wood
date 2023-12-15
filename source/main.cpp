@@ -24,23 +24,93 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
+auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void;
+auto create_d2d_render_target() -> void;
+auto destroy_d2d_render_target() -> void;
+auto create_input_devices(HINSTANCE instance) -> void;
+auto destroy_input_devices() -> void;
+auto create_directx_objects(HINSTANCE instance) -> void;
+auto destroy_directx_objects() -> void;
+auto RunMainMenuScreen() -> void;
+
+auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
+{
+  command_line::create(cmdLine);
+  
+  log::create();
+  log::open();
+  log::message("app started");
+
+  pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
+  game_settings::load();
+
+  if( command_line::contains(L"-u") )
+  {
+    game_settings::setFramerate(std::nullopt);
+  }
+
+  log::message("framerate {}", game_settings::framerate() ? "CAPPED" : "UNCAPPED");
+
+  if( command_line::contains(L"-w") )
+  {
+    game_settings::setFullscreen(false);
+  }
+
+  log::message("app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
+
+  main_window::create(instance, cmdShow);
+  windows_message_loop::create();
+
+  create_directx_objects(instance);
+
+  diagnostics::create();
+  sound_data::create(direct_sound::get_raw(), L"data");
+  game_volume_controller::create();
+
+  game_volume_controller::setEffectsVolume(6);
+  game_volume_controller::setMusicVolume(7);
+
+  // play sound now to ensure no sound glitch on first real play
+  {
+    sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
+    player.Play();
+  }
+
+  game_clock::setMultiplier(1.6f);
+
+  RunMainMenuScreen();
+
+  log::message("app closing");
+
+  game_volume_controller::destroy();
+  sound_data::destroy();
+  diagnostics::destroy();
+
+  destroy_directx_objects();
+
+  windows_message_loop::destroy();
+  main_window::destroy();
+  log::destroy();
+  command_line::destroy();
+
+  return 0;
+}
+
 auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
-  auto framerate = game_settings::framerate();
-  int screenRefreshRate = framerate ? *framerate : 60;
-
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
   swapChainDesc.BufferCount = 2;
   swapChainDesc.BufferDesc.Width = 1920;
   swapChainDesc.BufferDesc.Height = 1080;
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  swapChainDesc.BufferDesc.RefreshRate.Numerator = screenRefreshRate;
+  auto framerate = game_settings::framerate();
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
   swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
   swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
   swapChainDesc.OutputWindow = main_window::handle();
   swapChainDesc.SampleDesc.Count = 1;
   swapChainDesc.SampleDesc.Quality = 0;
-  swapChainDesc.Windowed = TRUE;
+  swapChainDesc.Windowed = game_settings::fullscreen() ? false : true;
 }
 
 auto create_d2d_render_target() -> void
@@ -76,95 +146,28 @@ auto destroy_input_devices() -> void
   direct_input::destroy();
 }
 
-auto create_all(HINSTANCE instance) -> void
+auto create_directx_objects(HINSTANCE instance) -> void
 {
-#ifndef STEAMDECK_BUILD
   create_d2d_render_target();
   dwrite_factory::create();
-#endif
-  create_input_devices(instance);
-  diagnostics::create();
-#ifndef STEAMDECK_BUILD
+  renderer::create();
   direct_sound::create(main_window::handle());
   primary_sound_buffer::create(direct_sound::get_raw());
-  renderer::create();
-  sound_data::create(direct_sound::get_raw(), L"data");
-  game_volume_controller::create();
-#endif
+  create_input_devices(instance);
 }
 
-auto destroy_all() -> void
+auto destroy_directx_objects() -> void
 {
-#ifndef STEAMDECK_BUILD
-  game_volume_controller::destroy();
-  sound_data::destroy();
-  renderer::destroy();
+  destroy_input_devices();
   primary_sound_buffer::destroy();
   direct_sound::destroy();
-#endif
-  diagnostics::destroy();
-  destroy_input_devices();
-#ifndef STEAMDECK_BUILD
+  renderer::destroy();
   dwrite_factory::destroy();
   destroy_d2d_render_target();
-#endif
 }
 
-auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
+auto RunMainMenuScreen() -> void
 {
-  command_line::create(cmdLine);
-  
-  log::create();
-  log::open();
-  log::file() << "log file opened\n";
-
-  pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
-  game_settings::load();
-
-  if( command_line::contains(L"-u") )
-  {
-    game_settings::setFramerate(std::nullopt);
-  }
-
-  main_window::create(instance, cmdShow);
-  windows_message_loop::create();
-
-  create_all(instance);
-
-#ifndef STEAMDECK_BUILD
-  BOOL fullscreen = command_line::contains(L"-w") ? FALSE : TRUE;
-  swap_chain::get()->SetFullscreenState(fullscreen, NULL);
-
-  game_volume_controller::setEffectsVolume(6);
-  game_volume_controller::setMusicVolume(7);
-
-  // play sound now to ensure no sound glitch on first real play
-  {
-    sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
-    player.Play();
-  }
-#endif
-
-  game_clock::setMultiplier(1.6f);
-
-#ifndef STEAMDECK_BUILD
   screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
-  windows_message_loop::run(mainMenu);
-#else
-  windows_message_loop::run( []() -> bool
-  {
-    keyboard_reader::update();
-    return keyboard_reader::pressed(DIK_ESCAPE) ? false : true;
-  });
-#endif
-  
-  destroy_all();
-
-  windows_message_loop::destroy();
-  main_window::destroy();
-  log::file() << "log file closing\n";
-  log::destroy();
-  command_line::destroy();
-
-  return 0;
+  windows_message_loop::run(mainMenu);  
 }
