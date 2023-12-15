@@ -4,7 +4,6 @@
 #include "solid_objects.h"
 #include "blank_objects.h"
 #include "explosion.h"
-#include "level_star.h"
 #include "mine.h"
 #include "explosion_particle.h"
 #include "impact_particle.h"
