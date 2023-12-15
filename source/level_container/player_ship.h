@@ -62,7 +62,7 @@ private:
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 
-  dynamic_geometry m_dg { GetPlayerGeometryData() };
+  dynamic_geometry m_geometry { GetPlayerGeometryData() };
 };
 
 inline auto player_ship::SetAngle(float angle) -> void

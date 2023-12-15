@@ -9,8 +9,6 @@ class transformed_path_geometry
 
 public:
 
-  transformed_path_geometry() = default;
-
   transformed_path_geometry(ID2D1Factory* d2dFactory, ID2D1PathGeometry* geometry, const D2D1_MATRIX_3X2_F& transform);
   transformed_path_geometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points);
   transformed_path_geometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points, const D2D1_MATRIX_3X2_F& transform);

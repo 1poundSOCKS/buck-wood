@@ -27,7 +27,7 @@ private:
 
   game_point m_position { 0, 0 };
   bool m_activated = false;
-  path_geometry m_geometry { d2d_factory::get_raw() };
+  path_geometry m_geometry;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   int m_hitPoints { 10 };

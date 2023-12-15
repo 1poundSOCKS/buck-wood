@@ -15,7 +15,7 @@ public:
 private:
 
   path_geometry m_geometry { d2d_factory::get_raw() };
-  transformed_path_geometry m_transformedGeometry;
+  transformed_path_geometry m_transformedGeometry { m_geometry.Get(), D2D1::Matrix3x2F::Identity() };
 
 };
 
