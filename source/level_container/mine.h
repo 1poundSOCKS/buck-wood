@@ -10,7 +10,6 @@ class mine
 
 public:
 
-  mine() = default;
   mine(float x, float y);
 
   [[nodiscard]] auto Position() const -> const game_point&;
@@ -31,7 +30,7 @@ private:
   game_angle m_spin;
   bool m_destroyed { false };
   dynamic_geometry m_geometry { shape_generator { 0, 0, 40, 40, 3 } };
-  
+
 };
 
 [[nodiscard]] inline auto mine::Position() const -> const game_point&
