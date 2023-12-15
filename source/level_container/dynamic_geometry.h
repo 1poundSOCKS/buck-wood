@@ -13,6 +13,8 @@ public:
   [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
   auto Transform(const D2D1::Matrix3x2F& transform) -> void;
 
+  operator const transformed_path_geometry&() const;
+
 private:
 
   path_geometry m_geometry;
@@ -25,6 +27,11 @@ dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points) : m_g
 }
 
 inline [[nodiscard]] auto dynamic_geometry::Geometry() const -> const transformed_path_geometry&
+{
+  return m_transformedGeometry;
+}
+
+inline dynamic_geometry::operator const transformed_path_geometry&() const
 {
   return m_transformedGeometry;
 }

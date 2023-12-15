@@ -28,7 +28,7 @@ public:
   using points_collection = std::vector<game_point>;
   using shield_status = std::shared_ptr<health_status>;
 
-  player_ship();
+  player_ship() = default;
   player_ship(const game_point& position);
 
   auto SetAngle(float angle) -> void;
@@ -54,10 +54,6 @@ public:
 
 private:
 
-  void UpdateShipGeometryData();
-
-private:
-
   inline static const auto m_thrustPower { 400.0f };
   state m_state { state::alive };
   directional_body m_body;
@@ -65,9 +61,6 @@ private:
   float m_thrust { 0 };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
-
-  path_geometry m_geometry { d2d_factory::get_raw() };
-  transformed_path_geometry m_transformedGeometry;
 
   dynamic_geometry m_dg { GetPlayerGeometryData() };
 };
