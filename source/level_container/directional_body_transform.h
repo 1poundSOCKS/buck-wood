@@ -8,7 +8,7 @@ class directional_body_transform
 public:
 
   directional_body_transform(const directional_body& body) : 
-    m_transform { D2D1::Matrix3x2F::Rotation(body.Angle(), D2D1::Point2F(0, 0)) * D2D1::Matrix3x2F::Translation(body.Position().x, body.Position().y) }
+    m_transform { D2D1::Matrix3x2F::Rotation(body.Angle()) * D2D1::Matrix3x2F::Translation(body.Position().x, body.Position().y) }
   {
   }
 

@@ -2,8 +2,6 @@
 
 #include "framework.h"
 #include "directional_body.h"
-#include "dynamic_geometry.h"
-#include "shape_generator.h"
 
 class mine
 {
@@ -14,7 +12,7 @@ public:
 
   [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto PreviousPosition() const -> const game_point&;
-  [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
+  [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Destroyed() const -> bool;
 
   auto Destroy() -> void;
@@ -29,21 +27,20 @@ private:
   directional_body m_previousState;
   game_angle m_spin;
   bool m_destroyed { false };
-  dynamic_geometry m_geometry { shape_generator { 0, 0, 40, 40, 3 } };
 
 };
 
-[[nodiscard]] inline auto mine::Position() const -> const game_point&
+inline [[nodiscard]] auto mine::Position() const -> const game_point&
 {
   return m_body.Position();
 }
 
-[[nodiscard]] inline auto mine::PreviousPosition() const -> const game_point&
+inline [[nodiscard]] auto mine::PreviousPosition() const -> const game_point&
 {
   return m_previousState.Position();
 }
 
-[[nodiscard]] inline auto mine::Geometry() const -> const transformed_path_geometry&
+inline [[nodiscard]] auto mine::Angle() const -> float
 {
-  return m_geometry;
+  return m_spin;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dynamic_object.h"
 #include "level_asteroid.h"
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -34,7 +35,8 @@ public:
 private:
 
   auto Render(const level_target& target) const -> void;
-  auto Render(const mine& mine) const -> void;
+  // auto Render(const mine& mine) const -> void;
+  auto Render(const dynamic_object<mine>& mineObject) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const solid_object& solidObject) const -> void;
@@ -96,9 +98,14 @@ inline auto renderer::Render(const level_target& target) const -> void
   m_levelTargetRenderer.Write(target);
 }
 
-inline auto renderer::Render(const mine& levelMine) const -> void
+// inline auto renderer::Render(const mine& levelMine) const -> void
+// {
+//   m_mineRenderer.Write(levelMine.Geometry());
+// }
+
+inline auto renderer::Render(const dynamic_object<mine>& mineObject) const -> void
 {
-  m_mineRenderer.Write(levelMine.Geometry());
+  m_mineRenderer.Write(mineObject.Geometry());
 }
 
 inline auto renderer::Render(const level_asteroid& asteroid) const -> void

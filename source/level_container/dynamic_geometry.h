@@ -18,12 +18,11 @@ public:
 
 private:
 
-  path_geometry m_geometry;
   transformed_path_geometry m_transformedGeometry;
 
 };
 
-dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points, const D2D1::Matrix3x2F& transform) : m_geometry { points }, m_transformedGeometry { points, transform }
+dynamic_geometry::dynamic_geometry(std::ranges::input_range auto&& points, const D2D1::Matrix3x2F& transform) : m_transformedGeometry { points, transform }
 {  
 }
 

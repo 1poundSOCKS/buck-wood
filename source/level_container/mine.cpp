@@ -1,8 +1,7 @@
 #include "pch.h"
 #include "mine.h"
-#include "directional_body_transform.h"
 
-mine::mine(float x, float y) : m_body { game_point { x, y } }, m_geometry { shape_generator { 0, 0, 40, 40, 3 }, directional_body_transform { m_body } }
+mine::mine(float x, float y) : m_body { game_point { x, y } }
 {
 }
 
@@ -27,8 +26,6 @@ auto mine::Update(float interval) -> void
   m_body.SetVelocity(velocity);
   m_body.Accelerate(m_thrustPower * interval);
   m_body.Update(interval);
-
-  m_geometry.Transform(D2D1::Matrix3x2F::Rotation(m_spin) * directional_body_transform { m_body });
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool

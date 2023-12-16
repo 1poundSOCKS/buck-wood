@@ -13,6 +13,7 @@
 #include "solid_objects.h"
 #include "blank_objects.h"
 #include "duct_fan.h"
+#include "dynamic_object.h"
 
 class level_container
 {
@@ -27,9 +28,12 @@ public:
     bool mineExploded { false };
   };
 
+  using mine_object = dynamic_object<mine>;
+
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
-  using mine_collection = std::vector<mine>;
+  using mine_collection = std::vector<mine_object>;
+  using mine_collection = std::vector<mine_object>;
   using asteroid_collection = std::vector<level_asteroid>;
   using duct_fan_collection = std::vector<duct_fan>;
   using explosion_particle_collection  = std::list<explosion_particle>;
@@ -41,7 +45,6 @@ public:
 
   auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
-  auto AddMines(std::ranges::input_range auto&& cells) -> void;
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
@@ -82,6 +85,7 @@ private:
 
   bullet_collection m_bullets;
   target_collection m_targets;
+  // mine_collection m_mines;
   mine_collection m_mines;
   asteroid_collection m_asteroids;
   blank_objects m_blankObjects;
@@ -116,13 +120,13 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   });
 }
 
-auto level_container::AddMines(std::ranges::input_range auto&& positions) -> void
-{
-  std::ranges::for_each(positions, [this](const auto& position)
-  {
-    m_mines.emplace_back(position.x, position.y);
-  });
-}
+// auto level_container::AddMines(std::ranges::input_range auto&& positions) -> void
+// {
+  // std::ranges::for_each(positions, [this](const auto& position)
+  // {
+  //   m_mines.emplace_back(position.x, position.y);
+  // });
+// }
 
 auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
 {
