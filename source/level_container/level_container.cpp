@@ -26,10 +26,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   if( m_playerShip.Destroyed() )
   {
-    for( auto& mine : m_mines )
-    {
-      mine.Update(interval);
-    }
+    m_mines.Update(interval);
   }
   else
   {
@@ -49,14 +46,11 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
       
       if( target.ShootAt(playerPosition) )
       {
-        m_mines.emplace_back(shape_generator { 0, 0, 40, 40, 3 }, targetPosition.x, targetPosition.y);
+        m_mines.Create(shape_generator { 0, 0, 40, 40, 3 }, targetPosition.x, targetPosition.y);
       }
     }
 
-    for( auto& mine : m_mines )
-    {
-      mine.Update(interval, playerPosition.x, playerPosition.y);
-    }
+    m_mines.Update(interval, playerPosition.x, playerPosition.y);
   }
   
   update_all(m_targets, interval);
@@ -68,7 +62,6 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   DoCollisions();
 
-  // erase_destroyed(m_mines);
   erase_destroyed(m_bullets);
   erase_destroyed(m_explosionParticles);
   erase_destroyed(m_impactParticles);

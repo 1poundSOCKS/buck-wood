@@ -14,6 +14,7 @@
 #include "blank_objects.h"
 #include "duct_fan.h"
 #include "dynamic_object.h"
+#include "dynamic_object_collection.h"
 
 class level_container
 {
@@ -32,8 +33,8 @@ public:
 
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
-  using mine_collection = std::vector<mine_object>;
-  using mine_collection = std::vector<mine_object>;
+  // using mine_collection = std::vector<mine_object>;
+  using mine_collection = dynamic_object_collection<mine>;
   using asteroid_collection = std::vector<level_asteroid>;
   using duct_fan_collection = std::vector<duct_fan>;
   using explosion_particle_collection  = std::list<explosion_particle>;
