@@ -33,7 +33,6 @@ public:
 
   using bullet_collection = std::list<bullet>;
   using target_collection = std::vector<level_target>;
-  // using mine_collection = std::vector<mine_object>;
   using mine_collection = dynamic_object_collection<mine>;
   using asteroid_collection = std::vector<level_asteroid>;
   using duct_fan_collection = std::vector<duct_fan>;
@@ -86,7 +85,6 @@ private:
 
   bullet_collection m_bullets;
   target_collection m_targets;
-  // mine_collection m_mines;
   mine_collection m_mines;
   asteroid_collection m_asteroids;
   blank_objects m_blankObjects;

@@ -43,6 +43,16 @@ public:
     return std::end(m_objectCollection);
   }
 
+  auto EraseDestroyed() -> void
+  {
+    auto object = std::begin(m_objectCollection);
+
+    while( object != std::end(m_objectCollection) )
+    {
+      object = object->Object().Destroyed() ? m_objectCollection.erase(object) : ++object;
+    }
+  }
+
 private:
 
   collection_type m_objectCollection;
