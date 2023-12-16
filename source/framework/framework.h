@@ -1,6 +1,7 @@
 #pragma once
 
 #include "command_line.h"
+#include "log.h"
 #include "clock_frequency.h"
 #include "main_window.h"
 #include "windows_message_loop.h"

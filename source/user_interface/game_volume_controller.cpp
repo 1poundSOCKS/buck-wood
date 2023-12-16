@@ -3,8 +3,6 @@
 #include "sound_data.h"
 #include "game_settings.h"
 
-game_volume_controller* game_volume_controller::m_instance = nullptr;
-
 game_volume_controller::game_volume_controller()
 {
   auto effectBuffers = std::array
@@ -23,9 +21,6 @@ game_volume_controller::game_volume_controller()
   };
 
   m_musicVolumeController = volume_controller { musicBuffers };
-
-  SetEffectsVolume(game_settings::effectsVolume());
-  SetMusicVolume(game_settings::musicVolume());
 }
 
 auto game_volume_controller::minVolume() -> int

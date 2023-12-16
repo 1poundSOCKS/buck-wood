@@ -6,7 +6,6 @@
 #include "game_settings.h"
 #include "game_clock.h"
 #include "screen_container.h"
-#include "log.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -55,14 +54,15 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   create_directx_objects(instance);
 
   diagnostics::create();
+
   sound_data::create(direct_sound::get_raw(), L"data");
+
   game_volume_controller::create();
+  game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
+  game_volume_controller::setMusicVolume(game_settings::musicVolume());
 
-  game_volume_controller::setEffectsVolume(6);
-  game_volume_controller::setMusicVolume(7);
-
-  // play sound now to ensure no sound glitch on first real play
   {
+    log::write(log::type::info, "playing a sound to avoid any glitches when the game starts");
     sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
     player.Play();
   }
@@ -159,6 +159,7 @@ auto destroy_directx_objects() -> void
 
 auto RunMainMenuScreen() -> void
 {
+  log::write(log::type::info, "opening main menu screen");
   screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
   windows_message_loop::run(mainMenu);  
 }

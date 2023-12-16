@@ -12,6 +12,7 @@ public:
     m_fps { fps }, m_toggleFullscreenKey { toggleFullscreenKey }, m_timerFrequency { performance_counter::QueryFrequency() }, 
     m_previousTime { performance_counter::QueryValue() }, m_currentTime { m_previousTime }
   {
+    log::write(log::type::info, "create screen container");
   }
 
   auto operator()() -> bool
