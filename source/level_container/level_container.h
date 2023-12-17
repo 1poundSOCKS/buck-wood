@@ -74,6 +74,7 @@ private:
 
   path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
   path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
+  path_geometry m_ductFanGeometry { duct_fan::GetGeometryData(300) };
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
 
@@ -134,19 +135,19 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   });
 }
 
+auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> void
+{
+  std::ranges::for_each(positions, [this](const auto& position)
+  {
+    m_ductFans.Create(m_ductFanGeometry, position.x, position.y, 30.0f);
+  });
+}
+
 auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
     m_asteroids.emplace_back(position.x, position.y, 200.0f, 200.0f);
-  });
-}
-
-auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> void
-{
-  std::ranges::for_each(positions, [this](const auto& position)
-  {
-    m_ductFans.Create(duct_fan::GetGeometryData(300), position.x, position.y, 30.0f);
   });
 }
 

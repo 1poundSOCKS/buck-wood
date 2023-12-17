@@ -200,7 +200,6 @@ auto level_container::DoPlayerShipCollisions() -> void
     CreateExplosion(position);
   });
 
-  // do_geometry_to_geometries_collisions(m_playerShip, m_ductFans, [this](auto& playerShip, auto& ductFan)
   m_ductFans.DoCollisionsWithGeometry(m_playerShip, [this](auto& ductFan) -> void
   {
     m_playerShip.ApplyFatalDamage();
@@ -236,21 +235,21 @@ auto level_container::DoBulletCollisions() -> void
     bullet.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_ductFans, m_bullets, [this](auto& ductFan, auto& bullet)
+  m_ductFans.DoCollisionsWithPoints(m_bullets, [this](auto& ductFan, auto& bullet) -> void
   {
     m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
     bullet.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_targets, m_bullets, [this](auto& target, auto& bullet)
+  m_targets.DoCollisionsWithPoints(m_bullets, [this](auto& target, auto& bullet) -> void
   {
     m_impactParticles.emplace_back(bullet.Position());
 
-    if( !target->IsActivated() )
+    if( !target.IsActivated() )
     {
-      target->HitByBullet();
+      target.HitByBullet();
 
-      if( target->IsActivated() )
+      if( target.IsActivated() )
       {
         ++m_activatedTargetCount;
         m_updateEvents.targetActivated = true;
