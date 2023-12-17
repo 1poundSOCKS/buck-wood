@@ -51,10 +51,13 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     m_mines.Update(interval, playerPosition.x, playerPosition.y);
   }
+
+  // update_all(m_targets, interval);
+  // update_all(m_ductFans, interval);
+  m_targets.Update(interval);
+  m_ductFans.Update(interval);
   
-  update_all(m_targets, interval);
   update_all(m_bullets, interval);
-  update_all(m_ductFans, interval);
   update_all(m_explosionParticles, interval);
   update_all(m_impactParticles, interval);
   update_all(m_thrustParticles, interval);
@@ -65,6 +68,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   erase_destroyed(m_explosionParticles);
   erase_destroyed(m_impactParticles);
   erase_destroyed(m_thrustParticles);
+
   m_mines.EraseDestroyed();
 }
 
@@ -196,10 +200,11 @@ auto level_container::DoPlayerShipCollisions() -> void
     CreateExplosion(position);
   });
 
-  do_geometry_to_geometries_collisions(m_playerShip, m_ductFans, [this](auto& playerShip, auto& ductFan)
+  // do_geometry_to_geometries_collisions(m_playerShip, m_ductFans, [this](auto& playerShip, auto& ductFan)
+  m_ductFans.DoCollisionsWithGeometry(m_playerShip, [this](auto& ductFan) -> void
   {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
+    m_playerShip.ApplyFatalDamage();
+    auto position = m_playerShip.PreviousPosition();
     CreateExplosion(position);
   });
 }

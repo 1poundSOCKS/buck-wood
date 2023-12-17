@@ -33,10 +33,11 @@ public:
 
   using target_object = dynamic_object<level_target>;
   using mine_object = dynamic_object<mine>;
-  using duct_fan_collection = std::vector<duct_fan>;
+  using duct_fan_object = dynamic_object<duct_fan>;
 
   using target_collection = dynamic_object_collection<level_target>;
   using mine_collection = dynamic_object_collection<mine>;
+  using duct_fan_collection = dynamic_object_collection<duct_fan>;
 
   using asteroid_collection = std::vector<level_asteroid>;
 
@@ -93,15 +94,18 @@ private:
   reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
   reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(10) };
 
-  bullet_collection m_bullets;
   target_collection m_targets;
   mine_collection m_mines;
-  asteroid_collection m_asteroids;
-  blank_objects m_blankObjects;
   duct_fan_collection m_ductFans;
+  
+  bullet_collection m_bullets;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
   thrust_particle_collection m_thrustParticles;
+  
+  asteroid_collection m_asteroids;
+  blank_objects m_blankObjects;
+
   int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
 
@@ -142,7 +146,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.emplace_back(position.x, position.y, 300.0f, 30.0f);
+    m_ductFans.Create(duct_fan::GetGeometryData(300), position.x, position.y, 30.0f);
   });
 }
 

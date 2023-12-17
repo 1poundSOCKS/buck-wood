@@ -36,6 +36,7 @@ private:
 
   auto Render(const dynamic_object<level_target>& targetObject) const -> void;
   auto Render(const dynamic_object<mine>& mineObject) const -> void;
+  auto Render(const dynamic_object<duct_fan>& ductFan) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const solid_object& solidObject) const -> void;
@@ -46,7 +47,7 @@ private:
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
-  auto Render(const duct_fan& ductFan) const -> void;
+  // auto Render(const duct_fan& ductFan) const -> void;
   auto Render(const thrust_particle& particle) const -> void;
 
 private:
@@ -102,6 +103,12 @@ inline auto renderer::Render(const dynamic_object<mine>& mineObject) const -> vo
   m_mineRenderer.Write(mineObject.Geometry());
 }
 
+// inline auto renderer::Render(const duct_fan& ductFan) const -> void
+inline auto renderer::Render(const dynamic_object<duct_fan>& ductFan) const -> void
+{
+  m_ductFanRenderer.Write(ductFan.Geometry());
+}
+
 inline auto renderer::Render(const level_asteroid& asteroid) const -> void
 {
   m_solidObjectRenderer.Write(asteroid.Geometry());
@@ -150,11 +157,6 @@ inline auto renderer::Render(const menu_item& menuItem) const -> void
 inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void
 {
   m_levelRadarRenderer.Write(levelRadar, objects);
-}
-
-inline auto renderer::Render(const duct_fan& ductFan) const -> void
-{
-  m_ductFanRenderer.Write(ductFan.Geometry());
 }
 
 inline auto renderer::Render(const thrust_particle& particle) const -> void

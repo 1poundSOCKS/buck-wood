@@ -10,7 +10,7 @@ public:
 
   level_target(float x, float y);
 
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto ShootAt(game_point position) const -> bool;
@@ -32,6 +32,11 @@ private:
   int m_hitPoints { 10 };
 
 };
+
+inline [[nodiscard]] auto level_target::Position() const -> const game_point&
+{
+  return m_position;
+}
 
 inline [[nodiscard]] auto level_target::Angle() const -> float
 {
