@@ -161,11 +161,11 @@ auto level_container::DoCollisions() -> void
   DoExplosionParticleCollisions();
   DoThrustParticleCollisions();
 
-  do_geometries_to_points_collisions(m_mines, m_bullets, [this](auto& mine, auto& bullet)
+  m_mines.DoCollisionsWithPoints(m_bullets, [this](auto& mine, auto& bullet) -> void
   {
-    auto position = mine.Object().PreviousPosition();
+    auto position = mine.PreviousPosition();
     CreateExplosion(position);
-    mine.Object().Destroy();
+    mine.Destroy();
     bullet.Destroy();
     m_updateEvents.mineExploded = true;
   });
