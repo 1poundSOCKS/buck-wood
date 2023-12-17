@@ -5,7 +5,7 @@ class log
 
 public:
 
-  enum class type { info, error, fatal };
+  enum class type { none, debug, info, error, fatal };
 
   static auto create() -> void;
   static auto destroy() -> void;
@@ -23,6 +23,7 @@ private:
   inline static log* m_instance { nullptr };
   std::ofstream m_file;
   std::chrono::system_clock::time_point m_creationTime { std::chrono::system_clock::now() };
+  type m_logLevel { type::info };
 
 };
 
@@ -32,17 +33,20 @@ template <typename...Args> auto log::write(type msgType, std::format_string<Args
 }
 
 template <typename...Args> auto log::Write(type msgType, std::format_string<Args...> fmt, Args&&... args) -> void
-{ 
-  auto timestamp = std::chrono::system_clock::now() - m_creationTime;
-  auto msg = std::format(fmt, std::forward<Args>(args)...);
-
-  m_file << std::format("{} {} {}", timestamp.count(), GetMessageTypeAsString(msgType), msg) << "\n";
-
-  if( msgType == type::fatal )
+{
+  if( msgType >= m_logLevel )
   {
-    m_file.flush();
-    m_file.close();
-    exit(1);
+    auto timestamp = std::chrono::system_clock::now() - m_creationTime;
+    auto msg = std::format(fmt, std::forward<Args>(args)...);
+
+    m_file << std::format("{} {} {}", timestamp.count(), GetMessageTypeAsString(msgType), msg) << "\n";
+
+    if( msgType == type::fatal )
+    {
+      m_file.flush();
+      m_file.close();
+      exit(1);
+    }
   }
 }
 
@@ -50,6 +54,8 @@ inline auto log::GetMessageTypeAsString(type msgType) -> const char*
 {
   switch( msgType )
   {
+    case type::debug:
+      return "DEBUG";
     case type::info:
       return "INFO";
     case type::error:
