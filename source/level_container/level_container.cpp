@@ -180,12 +180,12 @@ auto level_container::DoPlayerShipCollisions() -> void
     playerShip.ApplyFatalDamage();
   });
 
-  do_geometry_to_geometries_collisions(m_playerShip, m_mines, [this](auto& playerShip, auto& mine)
+  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine)
   {
-    playerShip.ApplyDamage(2);
-    auto position = mine.Object().PreviousPosition();
+    m_playerShip.ApplyDamage(2);
+    auto position = mine.PreviousPosition();
     CreateExplosion(position);
-    mine.Object().Destroy();
+    mine.Destroy();
     m_updateEvents.mineExploded = true;
   });
 

@@ -54,11 +54,22 @@ public:
     }
   }
 
-  auto DoCollisionsWithGeometries(std::ranges::input_range auto&& geoemtryObjects, auto&& callable) -> void
+  auto DoCollisionsWithGeometry(auto&& geometryObject, auto&& callable) -> void
   {
-    std::for_each(std::begin(m_objectCollection), std::end(m_objectCollection), [&geoemtryObjects, &callable](dynamic_object_type& object1) -> void
+    std::for_each(std::begin(m_objectCollection), std::end(m_objectCollection), [&geometryObject, &callable](dynamic_object_type& object) -> void
     {
-      for( auto& object2 : geoemtryObjects )
+      if( object.Geometry().HasCollidedWith(geometryObject.Geometry()) )
+      {
+        callable(object.Object());
+      }
+    });
+  }
+
+  auto DoCollisionsWithGeometries(std::ranges::input_range auto&& geometryObjects, auto&& callable) -> void
+  {
+    std::for_each(std::begin(m_objectCollection), std::end(m_objectCollection), [&geometryObjects, &callable](dynamic_object_type& object1) -> void
+    {
+      for( auto& object2 : geometryObjects )
       {
         if( object1.Geometry().HasCollidedWith(object2.Geometry()) )
         {
