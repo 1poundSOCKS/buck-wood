@@ -67,16 +67,13 @@ public:
 
   auto DoCollisionsWithGeometries(std::ranges::input_range auto&& geometryObjects, auto&& callable) -> void
   {
-    std::for_each(std::begin(m_objectCollection), std::end(m_objectCollection), [&geometryObjects, &callable](dynamic_object_type& object1) -> void
+    for( auto& object1 : geometryObjects )
     {
-      for( auto& object2 : geometryObjects )
+      DoCollisionsWithGeometry(object1, [&object1, &callable](auto& object2) -> void
       {
-        if( object1.Geometry().HasCollidedWith(object2.Geometry()) )
-        {
-          callable(object1.Object(), object2);
-        }
-      }
-    });
+        callable(object2, object1);
+      });
+    }
   }
 
 private:
