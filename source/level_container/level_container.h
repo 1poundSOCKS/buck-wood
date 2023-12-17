@@ -19,6 +19,7 @@
 
 class level_container
 {
+
 public:
 
   struct update_events
@@ -30,14 +31,16 @@ public:
     bool mineExploded { false };
   };
 
-  using mine_object = dynamic_object<mine>;
   using target_object = dynamic_object<level_target>;
+  using mine_object = dynamic_object<mine>;
+  using duct_fan_collection = std::vector<duct_fan>;
 
-  using bullet_collection = std::list<bullet>;
   using target_collection = dynamic_object_collection<level_target>;
   using mine_collection = dynamic_object_collection<mine>;
+
   using asteroid_collection = std::vector<level_asteroid>;
-  using duct_fan_collection = std::vector<duct_fan>;
+
+  using bullet_collection = std::list<bullet>;  
   using explosion_particle_collection  = std::list<explosion_particle>;
   using impact_particle_collection  = std::list<impact_particle>;
   using thrust_particle_collection = std::list<thrust_particle>;
@@ -83,6 +86,8 @@ private:
 
   auto CreateExplosion(const game_point& position) -> void;
 
+private:
+
   player_ship m_playerShip;
   
   reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
@@ -99,6 +104,7 @@ private:
   thrust_particle_collection m_thrustParticles;
   int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
+
 };
 
 inline auto level_container::update_events::reset() -> void
