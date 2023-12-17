@@ -29,6 +29,16 @@ public:
     m_geometry.Transform(D2D1::Matrix3x2F::Rotation(m_object.Angle()) * D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y));
   }
 
+  auto operator->() const -> const object_type*
+  {
+    return &m_object;
+  }
+
+  auto operator->() -> object_type*
+  {
+    return &m_object;
+  }
+
 private:
 
   object_type m_object;

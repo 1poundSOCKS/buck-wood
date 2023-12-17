@@ -34,8 +34,7 @@ public:
 
 private:
 
-  auto Render(const level_target& target) const -> void;
-  // auto Render(const mine& mine) const -> void;
+  auto Render(const dynamic_object<level_target>& targetObject) const -> void;
   auto Render(const dynamic_object<mine>& mineObject) const -> void;
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
@@ -93,15 +92,10 @@ inline auto renderer::renderDiagnostics() -> void
   m_instance->m_diagnosticsRenderer.Write();
 }
 
-inline auto renderer::Render(const level_target& target) const -> void
+inline auto renderer::Render(const dynamic_object<level_target>& targetObject) const -> void
 {
-  m_levelTargetRenderer.Write(target);
+  m_levelTargetRenderer.Write(targetObject);
 }
-
-// inline auto renderer::Render(const mine& levelMine) const -> void
-// {
-//   m_mineRenderer.Write(levelMine.Geometry());
-// }
 
 inline auto renderer::Render(const dynamic_object<mine>& mineObject) const -> void
 {

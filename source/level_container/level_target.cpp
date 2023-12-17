@@ -5,7 +5,6 @@
 
 level_target::level_target(float x, float y) : m_position { x, y }
 {
-  m_geometry.Load( shape_generator { x, y, 100, 100, 6 } );
   m_reloadTimer = reload_timer { m_defaultReloadTime };
 }
 
@@ -17,11 +16,6 @@ level_target::level_target(float x, float y) : m_position { x, y }
 [[nodiscard]] auto level_target::IsActivated() const -> bool
 {
   return m_activated;
-}
-
-[[nodiscard]] auto level_target::Geometry() const -> const path_geometry&
-{
-  return m_geometry;
 }
 
 [[nodiscard]] auto level_target::ShootAt(game_point position) const -> bool

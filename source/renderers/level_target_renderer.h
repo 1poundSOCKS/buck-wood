@@ -9,7 +9,7 @@ class level_target_renderer
 
 public:
 
-  auto Write(const level_target& levelTarget) const -> void;
+  auto Write(const dynamic_object<level_target>& targetObject) const -> void;
 
 private:
 
@@ -18,7 +18,7 @@ private:
 
 };
 
-inline auto level_target_renderer::Write(const level_target& levelTarget) const -> void
+inline auto level_target_renderer::Write(const dynamic_object<level_target>& targetObject) const -> void
 {
-  levelTarget.IsActivated() ? m_activatedRenderer.Write(levelTarget.Geometry()) : m_deactivatedRenderer.Write(levelTarget.Geometry());
+  targetObject->IsActivated() ? m_activatedRenderer.Write(targetObject.Geometry()) : m_deactivatedRenderer.Write(targetObject.Geometry());
 }

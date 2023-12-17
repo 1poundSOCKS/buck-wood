@@ -24,6 +24,11 @@ public:
     }
   }
 
+  [[nodiscard]] auto Size() const -> collection_type::size_type
+  {
+    return m_objectCollection.size();
+  }
+
   [[nodiscard]] auto begin() const -> collection_type::const_iterator
   {
     return std::begin(m_objectCollection);

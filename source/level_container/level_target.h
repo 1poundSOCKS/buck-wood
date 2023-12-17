@@ -11,8 +11,8 @@ public:
   level_target(float x, float y);
 
   [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto IsActivated() const -> bool;
-  [[nodiscard]] auto Geometry() const -> const path_geometry&;
   [[nodiscard]] auto ShootAt(game_point position) const -> bool;
 
   auto HitByBullet() -> void;
@@ -27,9 +27,13 @@ private:
 
   game_point m_position { 0, 0 };
   bool m_activated = false;
-  path_geometry m_geometry;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   int m_hitPoints { 10 };
 
 };
+
+inline [[nodiscard]] auto level_target::Angle() const -> float
+{
+  return 0;
+}

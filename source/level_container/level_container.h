@@ -31,9 +31,10 @@ public:
   };
 
   using mine_object = dynamic_object<mine>;
+  using target_object = dynamic_object<level_target>;
 
   using bullet_collection = std::list<bullet>;
-  using target_collection = std::vector<level_target>;
+  using target_collection = dynamic_object_collection<level_target>;
   using mine_collection = dynamic_object_collection<mine>;
   using asteroid_collection = std::vector<level_asteroid>;
   using duct_fan_collection = std::vector<duct_fan>;
@@ -68,6 +69,7 @@ private:
   inline static constexpr auto m_shotTimeDenominator { 20 };
 
   path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
+  path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
 
@@ -118,7 +120,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.emplace_back(position.x, position.y);
+    m_targets.Create(m_targetGeometry, position.x, position.y);
   });
 }
 

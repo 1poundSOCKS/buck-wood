@@ -34,12 +34,12 @@ auto level_radar_renderer::Write(const level_radar& levelRadar, std::ranges::inp
 
   auto targetsNotActivated = targets | std::ranges::views::filter([](const auto& target)
   {
-    return !target.IsActivated();
+    return !target->IsActivated();
   });
 
   auto radarTargets = targetsNotActivated | std::ranges::views::transform([&levelRadar](const auto& target) -> radar_target
   {
-    return { levelRadar.AngleTo(target.Position()), levelRadar.DistanceTo(target.Position()) };
+    return { levelRadar.AngleTo(target->Position()), levelRadar.DistanceTo(target->Position()) };
   });
 
   for( auto radarTarget : radarTargets )

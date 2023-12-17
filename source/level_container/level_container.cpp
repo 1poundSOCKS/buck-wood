@@ -9,7 +9,7 @@
 
 [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return m_activatedTargetCount == m_targets.size();
+  return m_activatedTargetCount == m_targets.Size();
 }
 
 [[nodiscard]] auto level_container::HasFinished() const -> bool
@@ -41,9 +41,9 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     for( auto& target : m_targets )
     {
-      auto targetPosition = target.Position();
+      auto targetPosition = target->Position();
       
-      if( target.ShootAt(playerPosition) )
+      if( target->ShootAt(playerPosition) )
       {
         m_mines.Create(m_mineGeometry, targetPosition.x, targetPosition.y);
       }
@@ -241,11 +241,11 @@ auto level_container::DoBulletCollisions() -> void
   {
     m_impactParticles.emplace_back(bullet.Position());
 
-    if( !target.IsActivated() )
+    if( !target->IsActivated() )
     {
-      target.HitByBullet();
+      target->HitByBullet();
 
-      if( target.IsActivated() )
+      if( target->IsActivated() )
       {
         ++m_activatedTargetCount;
         m_updateEvents.targetActivated = true;
