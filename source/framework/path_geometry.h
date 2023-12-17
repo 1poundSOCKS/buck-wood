@@ -16,6 +16,8 @@ public:
   auto Get() const -> ID2D1PathGeometry*;
   auto Load(std::ranges::input_range auto&& points) -> void;
 
+  operator ID2D1Geometry*() const;
+
 private:
 
   winrt::com_ptr<ID2D1PathGeometry> m_geometry;
@@ -52,4 +54,9 @@ auto path_geometry::Load(std::ranges::input_range auto&& points) -> void
   sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 
   sink->Close();
+}
+
+inline path_geometry::operator ID2D1Geometry*() const
+{
+  return m_geometry.get();
 }

@@ -8,8 +8,8 @@ class dynamic_object
 
 public:
 
-  template <typename...Args> dynamic_object(std::ranges::input_range auto&& points, Args...args) : 
-    m_object { std::forward<Args>(args)... }, m_geometry { points, D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y) }
+  template <typename...Args> dynamic_object(const path_geometry& baseGeometry, Args...args) : 
+    m_object { std::forward<Args>(args)... }, m_geometry { baseGeometry, D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y) }
   {
   }
 

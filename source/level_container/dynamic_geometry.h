@@ -10,6 +10,9 @@ public:
   dynamic_geometry(std::ranges::input_range auto&& points, const D2D1::Matrix3x2F& transform);
   dynamic_geometry(std::ranges::input_range auto&& points);
 
+  dynamic_geometry(const path_geometry& pathGeometry, const D2D1::Matrix3x2F& transform);
+  dynamic_geometry(const path_geometry& pathGeometry);
+
   [[nodiscard]] auto Get() const -> ID2D1TransformedGeometry*;
 
   auto Transform(const D2D1::Matrix3x2F& transform) -> void;

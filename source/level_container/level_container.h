@@ -15,6 +15,7 @@
 #include "duct_fan.h"
 #include "dynamic_object.h"
 #include "dynamic_object_collection.h"
+#include "shape_generator.h"
 
 class level_container
 {
@@ -65,6 +66,8 @@ private:
 
   inline static constexpr auto m_shotTimeNumerator { 1 };
   inline static constexpr auto m_shotTimeDenominator { 20 };
+
+  path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
 
@@ -118,14 +121,6 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
     m_targets.emplace_back(position.x, position.y);
   });
 }
-
-// auto level_container::AddMines(std::ranges::input_range auto&& positions) -> void
-// {
-  // std::ranges::for_each(positions, [this](const auto& position)
-  // {
-  //   m_mines.emplace_back(position.x, position.y);
-  // });
-// }
 
 auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
 {
