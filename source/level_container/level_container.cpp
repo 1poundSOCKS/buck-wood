@@ -52,8 +52,6 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
     m_mines.Update(interval, playerPosition.x, playerPosition.y);
   }
 
-  // update_all(m_targets, interval);
-  // update_all(m_ductFans, interval);
   m_targets.Update(interval);
   m_ductFans.Update(interval);
   
