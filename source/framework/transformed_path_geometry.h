@@ -19,6 +19,8 @@ public:
   [[nodiscard]] auto Get() const -> ID2D1TransformedGeometry*;
   [[nodiscard]] auto GetSource() const -> winrt::com_ptr<ID2D1Geometry>;
 
+  [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
+
 private:
 
   winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;

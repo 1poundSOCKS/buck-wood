@@ -207,19 +207,19 @@ auto level_container::DoPlayerShipCollisions() -> void
 
 auto level_container::DoMineCollisions() -> void
 {
-  do_geometries_to_geometries_collisions(m_mines, m_asteroids, [this](auto& mine, auto& asteroid)
+  m_mines.DoCollisionsWithGeometries(m_asteroids, [this](auto& mine, auto& asteroid)
   {
-    auto position = mine.Object().PreviousPosition();
+    auto position = mine.PreviousPosition();
     CreateExplosion(position);
-    mine.Object().Destroy();
+    mine.Destroy();
     m_updateEvents.mineExploded = true;
   });
 
-  do_geometries_to_geometries_collisions(m_mines, m_ductFans, [this](auto& mine, auto& ductFan)
+  m_mines.DoCollisionsWithGeometries(m_ductFans, [this](auto& mine, auto& ductFan)
   {
-    auto position = mine.Object().PreviousPosition();
+    auto position = mine.PreviousPosition();
     CreateExplosion(position);
-    mine.Object().Destroy();
+    mine.Destroy();
     m_updateEvents.mineExploded = true;
   });
 }

@@ -8,7 +8,8 @@ class dynamic_object_collection
 
 public:
 
-  using collection_type = std::vector<dynamic_object<object_type>>;
+  using dynamic_object_type = dynamic_object<object_type>;
+  using collection_type = std::vector<dynamic_object_type>;
 
   template <typename...Args>auto Create(Args...args) -> void
   {
@@ -51,6 +52,20 @@ public:
     {
       object = object->Object().Destroyed() ? m_objectCollection.erase(object) : ++object;
     }
+  }
+
+  auto DoCollisionsWithGeometries(std::ranges::input_range auto&& geoemtryObjects, auto&& callable) -> void
+  {
+    std::for_each(std::begin(m_objectCollection), std::end(m_objectCollection), [&geoemtryObjects, &callable](dynamic_object_type& object1) -> void
+    {
+      for( auto& object2 : geoemtryObjects )
+      {
+        if( object1.Geometry().HasCollidedWith(object2.Geometry()) )
+        {
+          callable(object1.Object(), object2);
+        }
+      }
+    });
   }
 
 private:

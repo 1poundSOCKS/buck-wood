@@ -16,6 +16,8 @@ public:
 
   operator const transformed_path_geometry&() const;
 
+  [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
+
 private:
 
   transformed_path_geometry m_transformedGeometry;
@@ -38,4 +40,9 @@ inline [[nodiscard]] auto dynamic_geometry::Get() const -> ID2D1TransformedGeome
 inline dynamic_geometry::operator const transformed_path_geometry&() const
 {
   return m_transformedGeometry;
+}
+
+inline [[nodiscard]] auto dynamic_geometry::HasCollidedWith(const transformed_path_geometry& geometry) const -> bool
+{
+  return m_transformedGeometry.HasCollidedWith(geometry);
 }
