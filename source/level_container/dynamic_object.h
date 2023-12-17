@@ -13,14 +13,14 @@ public:
   {
   }
 
-  [[nodiscard]] auto Geometry() const -> const dynamic_geometry&
-  {
-    return m_geometry;
-  }
-
   [[nodiscard]] auto Object() -> object_type&
   {
     return m_object;
+  }
+
+  [[nodiscard]] auto Geometry() const -> const dynamic_geometry&
+  {
+    return m_geometry;
   }
 
   template <typename...Args> auto Update(Args...args)
