@@ -29,3 +29,5 @@
 #include "keyboard_reader.h"
 #include "gamepad_reader.h"
 #include "gamepad_thumbstick.h"
+
+#include "shape_generator.h"

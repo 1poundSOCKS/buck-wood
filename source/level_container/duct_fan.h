@@ -7,14 +7,6 @@ class duct_fan
 
 public:
 
-  static [[nodiscard]] auto GetGeometryData(float size)
-  {
-    return m_geometryData | std::ranges::views::transform([size](const game_point& gamePoint) -> game_point
-    {
-      return { gamePoint.x * size, gamePoint.y * size  };
-    });
-  }
-
   duct_fan(float x, float y, float rotationSpeed) : m_position { x , y }, m_rotationSpeed { rotationSpeed }
   {
   }
@@ -28,13 +20,6 @@ public:
   [[nodiscard]] auto Angle() const -> float;
 
 private:
-
-  inline static auto m_geometryData = std::array {
-    game_point { -0.05, -0.5 },
-    game_point { 0.05, -0.5 },
-    game_point { 0.05, 0.5 },
-    game_point { -0.05, 0.5 }
-  };
 
   game_point m_position;
   game_angle m_angle;

@@ -45,7 +45,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
       
       if( target->ShootAt(playerPosition) )
       {
-        m_mines.Create(m_mineGeometry, targetPosition.x, targetPosition.y);
+        m_mines.Create(m_geometries.MineGeometry(), targetPosition.x, targetPosition.y);
       }
     }
 

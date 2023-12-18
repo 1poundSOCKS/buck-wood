@@ -1,6 +1,6 @@
 #pragma once
 
-#include "performance_counter.h"
+// #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
 #include "explosion.h"
@@ -15,7 +15,7 @@
 #include "duct_fan.h"
 #include "dynamic_object.h"
 #include "dynamic_object_collection.h"
-#include "shape_generator.h"
+#include "level_geometries.h"
 
 class level_container
 {
@@ -69,13 +69,6 @@ public:
 
 private:
 
-  inline static constexpr auto m_shotTimeNumerator { 1 };
-  inline static constexpr auto m_shotTimeDenominator { 20 };
-
-  path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
-  path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
-  path_geometry m_ductFanGeometry { duct_fan::GetGeometryData(300) };
-
   auto UpdatePlayer(const level_input& input, float interval) -> void;
 
   auto DoCollisions() -> void;
@@ -89,6 +82,11 @@ private:
   auto CreateExplosion(const game_point& position) -> void;
 
 private:
+
+  inline static constexpr auto m_shotTimeNumerator { 1 };
+  inline static constexpr auto m_shotTimeDenominator { 20 };
+
+  level_geometries m_geometries;
 
   player_ship m_playerShip;
   
@@ -131,7 +129,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.Create(m_targetGeometry, position.x, position.y);
+    m_targets.Create(m_geometries.TargetGeometry(), position.x, position.y);
   });
 }
 
@@ -139,7 +137,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.Create(m_ductFanGeometry, position.x, position.y, 30.0f);
+    m_ductFans.Create(m_geometries.DuctFanGeometry(), position.x, position.y, 30.0f);
   });
 }
 
