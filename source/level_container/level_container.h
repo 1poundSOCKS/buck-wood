@@ -37,8 +37,7 @@ public:
   using target_collection = dynamic_object_collection<level_target>;
   using mine_collection = dynamic_object_collection<mine>;
   using duct_fan_collection = dynamic_object_collection<duct_fan>;
-
-  using asteroid_collection = std::vector<level_asteroid>;
+  using asteroid_collection = dynamic_object_collection<level_asteroid>;
 
   using bullet_collection = std::list<bullet>;  
   using explosion_particle_collection  = std::list<explosion_particle>;
@@ -137,7 +136,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.emplace_back(position.x, position.y, 200.0f, 200.0f);
+    m_asteroids.Create(m_geometries.AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
   });
 }
 

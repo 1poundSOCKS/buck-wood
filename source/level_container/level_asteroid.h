@@ -8,11 +8,19 @@ class level_asteroid
 public:
 
   level_asteroid(float x, float y, float maxWidth, float maxHeight);
-  [[nodiscard]] auto Geometry() const -> const transformed_path_geometry&;
+
+  [[nodiscard]] auto Position() const -> const game_point&
+  {
+    return m_position;
+  }
+
+  [[nodiscard]] auto Angle() const -> float
+  {
+    return 0;
+  }
 
 private:
 
-  path_geometry m_geometry { d2d_factory::get_raw() };
-  transformed_path_geometry m_transformedGeometry { m_geometry.Get(), D2D1::Matrix3x2F::Identity() };
+  game_point m_position { 0, 0 };
 
 };
