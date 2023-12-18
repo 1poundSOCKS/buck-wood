@@ -59,14 +59,21 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   sound_data::create(direct_sound::get_raw(), L"data");
 
   game_volume_controller::create();
-  game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
-  game_volume_controller::setMusicVolume(game_settings::musicVolume());
+
+  auto savedEffectsVolume = game_settings::effectsVolume();
+  auto savedMusicVolume = game_settings::musicVolume();
+
+  game_volume_controller::setEffectsVolume(0);
+  game_volume_controller::setMusicVolume(0);
 
   {
-    log::write(log::type::info, "playing a sound to avoid any glitches when the game starts");
+    log::write(log::type::info, "play a sound to avoid any glitches when the game starts");
     sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
     player.Play();
   }
+
+  game_volume_controller::setEffectsVolume(savedEffectsVolume);
+  game_volume_controller::setMusicVolume(savedMusicVolume);
 
   game_clock::setMultiplier(1.6f);
 
