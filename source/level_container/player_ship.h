@@ -22,10 +22,11 @@ public:
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
   auto SetThrust(float value) -> void;
-  auto Update(float interval) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
+
+  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation) -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto PreviousPosition() const -> const game_point&;

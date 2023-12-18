@@ -73,17 +73,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
 auto level_container::UpdatePlayer(const level_input& input, float interval) -> void
 {
-  if( input.Angle() )
-  {
-    m_playerShip->SetAngle(*input.Angle());
-  }
-
-  if( input.Rotation() )
-  {
-    m_playerShip->Rotate(*input.Rotation() * interval * 20.0f);
-  }
-
-  m_playerShip->SetThrust(input.Thrust());
+  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation());
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
   {
@@ -92,8 +82,6 @@ auto level_container::UpdatePlayer(const level_input& input, float interval) -> 
     auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
     m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.3f);
   }
-
-  m_playerShip.Update(interval);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
