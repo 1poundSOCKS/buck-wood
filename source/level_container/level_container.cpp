@@ -267,12 +267,12 @@ auto level_container::DoExplosionParticleCollisions() -> void
 
 auto level_container::DoThrustParticleCollisions() -> void
 {
-  do_geometries_to_points_collisions(m_asteroids, m_thrustParticles, [this](auto& asteroid, auto& particle)
+  m_asteroids.DoCollisionsWithPoints(m_thrustParticles, [this](auto& asteroid, auto& particle) -> void
   {
     particle.Destroy();
   });
 
-  do_geometries_to_points_collisions(m_ductFans, m_thrustParticles, [this](auto& ductFan, auto& particle)
+  m_ductFans.DoCollisionsWithPoints(m_thrustParticles, [this](auto& ductFan, auto& particle) -> void
   {
     particle.Destroy();
   });
