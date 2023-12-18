@@ -35,29 +35,27 @@ private:
     });
   }
 
-  // auto xRatioNoise = psn::GetNoise(x / 7, y / 7);
-  // auto yRatioNoise = psn::GetNoise(x / 13, y / 13);
-  // auto angleNoise = psn::GetNoise(x / 17, y / 17);
+  static [[nodiscard]] auto CreateAsteroidGeometry(float x, float y, float maxWidth, float maxHeight) -> path_geometry
+  {
+    auto xRatioNoise = psn::GetNoise(x / 7, y / 7);
+    auto yRatioNoise = psn::GetNoise(x / 13, y / 13);
 
-  // auto xRatio = ( xRatioNoise + 1 ) / 4 + 0.5f;
-  // auto yRatio = ( yRatioNoise + 1 ) / 4 + 0.5f;
-  // auto angle = ( angleNoise + 1 ) / 2 * 360;
-  
-  // auto width = maxWidth * xRatio;
-  // auto height = maxHeight * yRatio;
+    auto xRatio = ( xRatioNoise + 1 ) / 4 + 0.5f;
+    auto yRatio = ( yRatioNoise + 1 ) / 4 + 0.5f;
+    
+    auto width = maxWidth * xRatio;
+    auto height = maxHeight * yRatio;
 
-  // auto shapeGenerator = shape_generator { 0, 0, width, height, 10 };
+    auto shapeGenerator = shape_generator { 0, 0, width, height, 10 };
 
-  // auto irregularShape = shapeGenerator | std::ranges::views::transform([x, y](auto point)
-  // {
-  //   auto noise = 0.7f + ( psn::GetNoise(x + point.x, y + point.y) + 1 ) * 0.1f;
-  //   return game_point { point.x * noise, point.y * noise };
-  // });
-  
-  // m_geometry.Load(irregularShape);
-  
-  // auto transform = D2D1::Matrix3x2F::Rotation(angle) * D2D1::Matrix3x2F::Translation(x, y);
-  // m_transformedGeometry = transformed_path_geometry { d2d_factory::get_raw(), m_geometry.Get(), transform };
+    auto irregularShape = shapeGenerator | std::ranges::views::transform([x, y](auto point)
+    {
+      auto noise = 0.7f + ( psn::GetNoise(x + point.x, y + point.y) + 1 ) * 0.1f;
+      return game_point { point.x * noise, point.y * noise };
+    });
+
+    return path_geometry { irregularShape };
+  }
 
 public:
 
@@ -82,7 +80,7 @@ public:
 
   [[nodiscard]] auto AsteroidGeometry() const -> const path_geometry&
   {
-    return m_targetGeometry;
+    return m_asteroidGeometry;
   }
 
   [[nodiscard]] auto DuctFanGeometry() const -> const path_geometry&
@@ -95,6 +93,7 @@ private:
   path_geometry m_playerShipGeometry;
   path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
   path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
+  path_geometry m_asteroidGeometry { CreateAsteroidGeometry(0, 0, 200, 200) };
   path_geometry m_ductFanGeometry;
 
 };
