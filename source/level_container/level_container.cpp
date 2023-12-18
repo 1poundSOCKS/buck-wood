@@ -164,14 +164,14 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::DoPlayerShipCollisions() -> void
 {
-  do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
+  m_asteroids.DoCollisionsWithGeometry(m_playerShip, [this](auto& asteroid) -> void
   {
-    auto position = playerShip->PreviousPosition();
+    auto position = m_playerShip->PreviousPosition();
     CreateExplosion(position);
-    playerShip->ApplyFatalDamage();
+    m_playerShip->ApplyFatalDamage();
   });
 
-  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine)
+  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine) -> void
   {
     m_playerShip->ApplyDamage(2);
     auto position = mine.PreviousPosition();
@@ -180,10 +180,10 @@ auto level_container::DoPlayerShipCollisions() -> void
     m_updateEvents.mineExploded = true;
   });
 
-  do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
+  m_targets.DoCollisionsWithGeometry(m_playerShip, [this](auto& target) -> void
   {
-    playerShip->ApplyFatalDamage();
-    auto position = playerShip->PreviousPosition();
+    m_playerShip->ApplyFatalDamage();
+    auto position = m_playerShip->PreviousPosition();
     CreateExplosion(position);
   });
 
