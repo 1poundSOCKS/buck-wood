@@ -8,6 +8,18 @@ class level_geometries
 
 private:
 
+  static constexpr auto GetPlayerGeometryData()
+  {
+    constexpr float width { 7 };
+    constexpr float height { 10 };
+
+    return std::array {
+      game_point { 0, -height },
+      game_point { width, height },
+      game_point { -width, height }
+    };
+  }
+
   static [[nodiscard]] auto GetDuctFanGeometryData(float size)
   {
     static constexpr auto ductFanGeometryData = std::array {
@@ -25,8 +37,13 @@ private:
 
 public:
 
-  level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(300) }
+  level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(300) }, m_playerShipGeometry { GetPlayerGeometryData() }
   {
+  }
+
+  [[nodiscard]] auto PlayerShipGeometry() const -> const path_geometry&
+  {
+    return m_playerShipGeometry;
   }
 
   [[nodiscard]] auto MineGeometry() const -> const path_geometry&
@@ -46,6 +63,7 @@ public:
 
 private:
 
+  path_geometry m_playerShipGeometry;
   path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
   path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
   path_geometry m_ductFanGeometry;

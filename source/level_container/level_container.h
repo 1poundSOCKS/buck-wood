@@ -1,10 +1,8 @@
 #pragma once
 
-// #include "performance_counter.h"
 #include "player_ship.h"
 #include "level_target.h"
 #include "explosion.h"
-#include "renderers.h"
 #include "asteroid_container.h"
 #include "mine.h"
 #include "explosion_particle.h"
@@ -13,9 +11,10 @@
 #include "solid_objects.h"
 #include "blank_objects.h"
 #include "duct_fan.h"
-#include "dynamic_object.h"
 #include "dynamic_object_collection.h"
 #include "level_geometries.h"
+#include "bullet.h"
+#include "impact_particle.h"
 
 class level_container
 {
@@ -83,25 +82,18 @@ private:
 
 private:
 
-  inline static constexpr auto m_shotTimeNumerator { 1 };
-  inline static constexpr auto m_shotTimeDenominator { 20 };
-
-  level_geometries m_geometries;
-
-  player_ship m_playerShip;
-  
   reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
   reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(10) };
 
+  level_geometries m_geometries;
+  dynamic_object<player_ship> m_playerShip { m_geometries.PlayerShipGeometry() };  
   target_collection m_targets;
   mine_collection m_mines;
   duct_fan_collection m_ductFans;
-  
   bullet_collection m_bullets;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
-  thrust_particle_collection m_thrustParticles;
-  
+  thrust_particle_collection m_thrustParticles;  
   asteroid_collection m_asteroids;
   blank_objects m_blankObjects;
 
@@ -151,12 +143,12 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 
 [[nodiscard]] inline auto level_container::PlayerAngle() const -> float
 {
-  return m_playerShip.Angle();
+  return m_playerShip->Angle();
 }
 
 [[nodiscard]] inline auto level_container::PlayerShields() const -> const player_ship::shield_status&
 {
-  return m_playerShip.ShieldStatus();  
+  return m_playerShip->ShieldStatus();  
 }
 
 [[nodiscard]] inline auto level_container::UpdateEvents() const -> const update_events&

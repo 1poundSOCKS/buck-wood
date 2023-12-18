@@ -16,11 +16,5 @@ auto player_ship::Update(float interval) -> void
     m_previousState = m_body;
     m_body.Accelerate(m_thrust * interval);
     m_body.Update(interval);
-    m_geometry.Transform(directional_body_transform { m_body });
   }
-}
-
-[[nodiscard]] auto player_ship::Geometry() const -> const transformed_path_geometry&
-{
-  return m_geometry;
 }

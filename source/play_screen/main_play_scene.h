@@ -1,6 +1,7 @@
 #pragma once
 
 #include "play_scene.h"
+#include "renderers.h"
 
 class main_play_scene : public play_scene
 {

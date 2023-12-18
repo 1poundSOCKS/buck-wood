@@ -6,6 +6,7 @@
 #include "perlin_simplex_noise.h"
 #include "level_explosion.h"
 #include "game_clock.h"
+#include "renderers.h"
 
 [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
@@ -23,7 +24,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   m_updateEvents.reset();
 
-  if( m_playerShip.Destroyed() )
+  if( m_playerShip->Destroyed() )
   {
     m_mines.Update(interval);
   }
@@ -33,11 +34,11 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     if( m_reloadTimer.Update(interval) && input.ShootAngle() )
     {
-      m_bullets.emplace_back( bullet { m_playerShip.Position(), m_playerShip.Velocity(), *input.ShootAngle() } );
+      m_bullets.emplace_back(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
       m_updateEvents.playerShot = true;
     }
 
-    const auto& playerPosition = m_playerShip.Position();
+    const auto& playerPosition = m_playerShip->Position();
 
     for( auto& target : m_targets )
     {
@@ -74,21 +75,21 @@ auto level_container::UpdatePlayer(const level_input& input, float interval) -> 
 {
   if( input.Angle() )
   {
-    m_playerShip.SetAngle(*input.Angle());
+    m_playerShip->SetAngle(*input.Angle());
   }
 
   if( input.Rotation() )
   {
-    m_playerShip.Rotate(*input.Rotation() * interval * 20.0f);
+    m_playerShip->Rotate(*input.Rotation() * interval * 20.0f);
   }
 
-  m_playerShip.SetThrust(input.Thrust());
+  m_playerShip->SetThrust(input.Thrust());
 
-  if( m_playerShip.ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
+  if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
   {
-    auto thrustPosition = m_playerShip.RelativePosition(180, 0, -15);
-    auto thrustAngle = m_playerShip.Angle() + 180;
-    auto thrustVelocity = m_playerShip.RelativeVelocity(thrustAngle, 100);
+    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
+    auto thrustAngle = m_playerShip->Angle() + 180;
+    auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
     m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.3f);
   }
 
@@ -106,7 +107,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_impactParticles);
   renderer::render_all(m_bullets);
 
-  if( !m_playerShip.Destroyed() )
+  if( !m_playerShip->Destroyed() )
   {
     renderer::render(m_playerShip);
   }
@@ -121,34 +122,34 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 [[nodiscard]] auto level_container::PlayerPosition() const -> game_point
 {
-  return m_playerShip.Position();
+  return m_playerShip->Position();
 }
 
 [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
 {
-  return m_playerShip.ThrusterOn();
+  return m_playerShip->ThrusterOn();
 }
 
 [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
-  return m_playerShip.Destroyed();
+  return m_playerShip->Destroyed();
 }
 
 auto level_container::DoCollisions() -> void
 {
-  if( !m_playerShip.Destroyed() && m_blankObjects.size() )
+  if( !m_playerShip->Destroyed() && m_blankObjects.size() )
   {
     const auto& border = m_blankObjects.front();
 
     if( !is_geometry_contained(m_playerShip, border) )
     {
-      auto position = m_playerShip.PreviousPosition();
+      auto position = m_playerShip->PreviousPosition();
       CreateExplosion(position);
-      m_playerShip.ApplyFatalDamage();
+      m_playerShip->ApplyFatalDamage();
     }
   }
 
-  if( !m_playerShip.Destroyed() )
+  if( !m_playerShip->Destroyed() )
   {
     DoPlayerShipCollisions();
   }
@@ -177,14 +178,14 @@ auto level_container::DoPlayerShipCollisions() -> void
 {
   do_geometry_to_geometries_collisions(m_playerShip, m_asteroids, [this](auto& playerShip, auto& asteroid)
   {
-    auto position = playerShip.PreviousPosition();
+    auto position = playerShip->PreviousPosition();
     CreateExplosion(position);
-    playerShip.ApplyFatalDamage();
+    playerShip->ApplyFatalDamage();
   });
 
   m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine)
   {
-    m_playerShip.ApplyDamage(2);
+    m_playerShip->ApplyDamage(2);
     auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
@@ -193,15 +194,15 @@ auto level_container::DoPlayerShipCollisions() -> void
 
   do_geometry_to_geometries_collisions(m_playerShip, m_targets, [this](auto& playerShip, auto& target)
   {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
+    playerShip->ApplyFatalDamage();
+    auto position = playerShip->PreviousPosition();
     CreateExplosion(position);
   });
 
   m_ductFans.DoCollisionsWithGeometry(m_playerShip, [this](auto& ductFan) -> void
   {
-    m_playerShip.ApplyFatalDamage();
-    auto position = m_playerShip.PreviousPosition();
+    m_playerShip->ApplyFatalDamage();
+    auto position = m_playerShip->PreviousPosition();
     CreateExplosion(position);
   });
 }

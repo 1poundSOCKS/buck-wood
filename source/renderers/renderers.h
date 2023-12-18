@@ -40,7 +40,8 @@ private:
   auto Render(const level_asteroid& asteroid) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const solid_object& solidObject) const -> void;
-  auto Render(const player_ship& playerShip) const -> void;
+  // auto Render(const player_ship& playerShip) const -> void;
+  auto Render(const dynamic_object<player_ship>& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
@@ -124,7 +125,8 @@ inline auto renderer::Render(const solid_object& solidObject) const -> void
   m_solidObjectRenderer.Write(solidObject.Geometry());
 }
 
-inline auto renderer::Render(const player_ship& playerShip) const -> void
+// inline auto renderer::Render(const player_ship& playerShip) const -> void
+inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
 {
   m_playerShipRenderer.Write(playerShip.Geometry());
 }
