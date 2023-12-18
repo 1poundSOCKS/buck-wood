@@ -8,6 +8,8 @@ class level_geometries
 
 private:
 
+  inline static level_geometries* m_instance { nullptr };
+
   static constexpr auto GetPlayerGeometryData()
   {
     constexpr float width { 7 };
@@ -57,35 +59,50 @@ private:
     return path_geometry { irregularShape };
   }
 
-public:
-
   level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(300) }, m_playerShipGeometry { GetPlayerGeometryData() }
   {
   }
 
-  [[nodiscard]] auto PlayerShipGeometry() const -> const path_geometry&
+public:
+
+  static auto create() -> void
   {
-    return m_playerShipGeometry;
+    destroy();
+    m_instance = new level_geometries();
   }
 
-  [[nodiscard]] auto MineGeometry() const -> const path_geometry&
+  static auto destroy() -> void
   {
-    return m_mineGeometry;
+    if( m_instance )
+    {
+      delete m_instance;
+      m_instance = nullptr;
+    }
   }
 
-  [[nodiscard]] auto TargetGeometry() const -> const path_geometry&
+  static [[nodiscard]] auto PlayerShipGeometry() -> const path_geometry&
   {
-    return m_targetGeometry;
+    return m_instance->m_playerShipGeometry;
   }
 
-  [[nodiscard]] auto AsteroidGeometry() const -> const path_geometry&
+  static [[nodiscard]] auto MineGeometry() -> const path_geometry&
   {
-    return m_asteroidGeometry;
+    return m_instance->m_mineGeometry;
   }
 
-  [[nodiscard]] auto DuctFanGeometry() const -> const path_geometry&
+  static [[nodiscard]] auto TargetGeometry() -> const path_geometry&
   {
-    return m_ductFanGeometry;
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto AsteroidGeometry() -> const path_geometry&
+  {
+    return m_instance->m_asteroidGeometry;
+  }
+
+  static [[nodiscard]] auto DuctFanGeometry() -> const path_geometry&
+  {
+    return m_instance->m_ductFanGeometry;
   }
 
 private:

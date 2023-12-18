@@ -84,8 +84,7 @@ private:
   reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
   reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(10) };
 
-  level_geometries m_geometries;
-  dynamic_object<player_ship> m_playerShip { m_geometries.PlayerShipGeometry() };  
+  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry() };
   target_collection m_targets;
   mine_collection m_mines;
   duct_fan_collection m_ductFans;
@@ -120,7 +119,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.Create(m_geometries.TargetGeometry(), position.x, position.y);
+    m_targets.Create(level_geometries::TargetGeometry(), position.x, position.y);
   });
 }
 
@@ -128,7 +127,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.Create(m_geometries.DuctFanGeometry(), position.x, position.y, 30.0f);
+    m_ductFans.Create(level_geometries::DuctFanGeometry(), position.x, position.y, 30.0f);
   });
 }
 
@@ -136,7 +135,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.Create(m_geometries.AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
+    m_asteroids.Create(level_geometries::AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
   });
 }
 

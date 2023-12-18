@@ -1,11 +1,12 @@
 #include "pch.h"
 
 #include "framework.h"
-#include "main_menu_screen.h"
+#include "level_geometries.h"
 #include "renderers.h"
 #include "game_settings.h"
 #include "game_clock.h"
 #include "screen_container.h"
+#include "main_menu_screen.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -141,6 +142,7 @@ auto create_directx_objects(HINSTANCE instance) -> void
 {
   create_d2d_render_target();
   dwrite_factory::create();
+  level_geometries::create();
   renderer::create();
   direct_sound::create(main_window::handle());
   primary_sound_buffer::create(direct_sound::get_raw());
@@ -153,6 +155,7 @@ auto destroy_directx_objects() -> void
   primary_sound_buffer::destroy();
   direct_sound::destroy();
   renderer::destroy();
+  level_geometries::destroy();
   dwrite_factory::destroy();
   destroy_d2d_render_target();
 }
