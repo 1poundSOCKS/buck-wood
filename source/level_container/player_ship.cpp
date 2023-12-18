@@ -4,8 +4,7 @@
 #include "renderers.h"
 #include "directional_body_transform.h"
 
-player_ship::player_ship(const game_point& position) : 
-  m_body { position }
+player_ship::player_ship(const game_point& position) : m_body { position }
 {
 }
 
