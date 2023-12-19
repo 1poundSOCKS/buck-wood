@@ -249,17 +249,17 @@ auto level_container::DoBulletCollisions() -> void
 
 auto level_container::DoExplosionParticleCollisions() -> void
 {
-  m_playerShip.DoCollisionsWithPoints(m_explosionParticles, [this](auto& particle) -> void
+  m_playerShip.DoCollisionsWithPoints(m_explosionParticles, [](auto& particle) -> void
   {
     particle.Destroy();
   });
 
-  m_asteroids.DoCollisionsWithPoints(m_explosionParticles, [this](auto& asteroid, auto& particle) -> void
+  m_asteroids.DoCollisionsWithPoints(m_explosionParticles, [](auto& asteroid, auto& particle) -> void
   {
     particle.Destroy();
   });
 
-  m_ductFans.DoCollisionsWithPoints(m_explosionParticles, [this](auto& ductFan, auto& particle) -> void
+  m_ductFans.DoCollisionsWithPoints(m_explosionParticles, [](auto& ductFan, auto& particle) -> void
   {
     particle.Destroy();
   });
@@ -267,12 +267,12 @@ auto level_container::DoExplosionParticleCollisions() -> void
 
 auto level_container::DoThrustParticleCollisions() -> void
 {
-  m_asteroids.DoCollisionsWithPoints(m_thrustParticles, [this](auto& asteroid, auto& particle) -> void
+  m_asteroids.DoCollisionsWithPoints(m_thrustParticles, [](auto& asteroid, auto& particle) -> void
   {
     particle.Destroy();
   });
 
-  m_ductFans.DoCollisionsWithPoints(m_thrustParticles, [this](auto& ductFan, auto& particle) -> void
+  m_ductFans.DoCollisionsWithPoints(m_thrustParticles, [](auto& ductFan, auto& particle) -> void
   {
     particle.Destroy();
   });
