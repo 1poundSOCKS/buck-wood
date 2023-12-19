@@ -21,6 +21,11 @@ public:
 
   [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
   [[nodiscard]] auto HasCollidedWith(const game_point& point) const -> bool;
+  
+  [[nodiscard]] auto Contains(ID2D1Geometry* geometry) const -> bool
+  {
+    return m_transformedGeometry.Contains(geometry);
+  }
 
 private:
 

@@ -48,13 +48,25 @@ public:
   {
     for( auto& pointObject : pointObjects )
     {
-      // DoCollisionsWithPoint(pointObject, [&pointObject, &callable](auto& geometryObject) -> void
-      // {
-      //   callable(geometryObject, pointObject);
-      // });
       if( m_geometry.HasCollidedWith(pointObject.Position()) )
       {
         callable(pointObject);
+      }
+    }
+  }
+
+  [[nodiscard]] auto Contains(ID2D1Geometry* geometry) const -> bool
+  {
+    return m_geometry.Contains(geometry);
+  }
+
+  [[nodiscard]] auto Contains(std::ranges::input_range auto&& geometries, auto&& callable) -> void
+  {
+    for( auto& geometry : geometries )
+    {
+      if( m_geometry.Contains(geometry) )
+      {
+        callable(geometry);
       }
     }
   }

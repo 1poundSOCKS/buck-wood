@@ -52,3 +52,23 @@ transformed_path_geometry::transformed_path_geometry(ID2D1Geometry* geometry, co
   HRESULT hr = m_geometry->FillContainsPoint({point.x, point.y}, D2D1::Matrix3x2F::Identity(), &collision);
   return SUCCEEDED(hr) && collision ? true : false;
 }
+
+[[nodiscard]] auto transformed_path_geometry::Contains(ID2D1Geometry* geometry) const -> bool
+{
+  D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
+  HRESULT hr = m_geometry->CompareWithGeometry(geometry, D2D1::Matrix3x2F::Identity(), &relation);
+
+  bool contained = false;
+
+  if( SUCCEEDED(hr) )
+  {
+    switch( relation )
+    {
+      case D2D1_GEOMETRY_RELATION_CONTAINS:
+        contained = true;
+        break;
+    }
+  }
+
+  return contained;
+}

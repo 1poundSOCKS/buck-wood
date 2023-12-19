@@ -151,15 +151,6 @@ auto level_container::DoCollisions() -> void
   DoBulletCollisions();
   DoExplosionParticleCollisions();
   DoThrustParticleCollisions();
-
-  m_mines.DoCollisionsWithPoints(m_bullets, [this](auto& mine, auto& bullet) -> void
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    bullet.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
 }
 
 auto level_container::DoPlayerShipCollisions() -> void
@@ -169,15 +160,6 @@ auto level_container::DoPlayerShipCollisions() -> void
     auto position = m_playerShip->PreviousPosition();
     CreateExplosion(position);
     m_playerShip->ApplyFatalDamage();
-  });
-
-  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine) -> void
-  {
-    m_playerShip->ApplyDamage(2);
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
   });
 
   m_targets.DoCollisionsWithGeometry(m_playerShip, [this](auto& target) -> void
@@ -197,6 +179,15 @@ auto level_container::DoPlayerShipCollisions() -> void
 
 auto level_container::DoMineCollisions() -> void
 {
+  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine) -> void
+  {
+    m_playerShip->ApplyDamage(2);
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  });
+
   m_mines.DoCollisionsWithGeometries(m_asteroids, [this](auto& mine, auto& asteroid)
   {
     auto position = mine.PreviousPosition();
@@ -210,6 +201,15 @@ auto level_container::DoMineCollisions() -> void
     auto position = mine.PreviousPosition();
     CreateExplosion(position);
     mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  });
+
+  m_mines.DoCollisionsWithPoints(m_bullets, [this](auto& mine, auto& bullet) -> void
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    bullet.Destroy();
     m_updateEvents.mineExploded = true;
   });
 }
