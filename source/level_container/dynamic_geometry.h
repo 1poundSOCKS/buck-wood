@@ -20,6 +20,7 @@ public:
   operator const transformed_path_geometry&() const;
 
   [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
+  [[nodiscard]] auto HasCollidedWith(const game_point& point) const -> bool;
 
 private:
 
@@ -48,4 +49,9 @@ inline dynamic_geometry::operator const transformed_path_geometry&() const
 inline [[nodiscard]] auto dynamic_geometry::HasCollidedWith(const transformed_path_geometry& geometry) const -> bool
 {
   return m_transformedGeometry.HasCollidedWith(geometry);
+}
+
+inline [[nodiscard]] auto dynamic_geometry::HasCollidedWith(const game_point& point) const -> bool
+{
+  return m_transformedGeometry.HasCollidedWith(point);
 }

@@ -3,6 +3,7 @@
 #include "path_geometry.h"
 #include "directx_functions.h"
 #include "d2d_factory.h"
+#include "game_point.h"
 
 class transformed_path_geometry
 {
@@ -20,6 +21,7 @@ public:
   [[nodiscard]] auto GetSource() const -> winrt::com_ptr<ID2D1Geometry>;
 
   [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
+  [[nodiscard]] auto HasCollidedWith(const game_point& point) const -> bool;
 
 private:
 

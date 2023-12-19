@@ -39,6 +39,26 @@ public:
     return &m_object;
   }
 
+  [[nodiscard]] auto HasCollidedWith(auto&& object) const -> bool
+  {
+    return m_geometry.HasCollidedWith(object.Geometry());
+  }
+
+  auto DoCollisionsWithPoints(std::ranges::input_range auto&& pointObjects, auto&& callable) -> void
+  {
+    for( auto& pointObject : pointObjects )
+    {
+      // DoCollisionsWithPoint(pointObject, [&pointObject, &callable](auto& geometryObject) -> void
+      // {
+      //   callable(geometryObject, pointObject);
+      // });
+      if( m_geometry.HasCollidedWith(pointObject.Position()) )
+      {
+        callable(pointObject);
+      }
+    }
+  }
+
 private:
 
   object_type m_object;

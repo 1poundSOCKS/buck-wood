@@ -45,3 +45,10 @@ transformed_path_geometry::transformed_path_geometry(ID2D1Geometry* geometry, co
 
   return collided;
 }
+
+[[nodiscard]] auto transformed_path_geometry::HasCollidedWith(const game_point& point) const -> bool
+{
+  BOOL collision = FALSE;
+  HRESULT hr = m_geometry->FillContainsPoint({point.x, point.y}, D2D1::Matrix3x2F::Identity(), &collision);
+  return SUCCEEDED(hr) && collision ? true : false;
+}

@@ -218,13 +218,13 @@ auto level_container::DoBulletCollisions() -> void
 {
   m_asteroids.DoCollisionsWithPoints(m_bullets, [this](auto& asteroid, auto& bullet) -> void
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    m_impactParticles.emplace_back(bullet.Position());
     bullet.Destroy();
   });
 
   m_ductFans.DoCollisionsWithPoints(m_bullets, [this](auto& ductFan, auto& bullet) -> void
   {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
+    m_impactParticles.emplace_back(bullet.Position());
     bullet.Destroy();
   });
 
@@ -249,7 +249,7 @@ auto level_container::DoBulletCollisions() -> void
 
 auto level_container::DoExplosionParticleCollisions() -> void
 {
-  do_geometry_to_points_collisions(m_playerShip, m_explosionParticles, [this](auto& playerShip, auto& particle)
+  m_playerShip.DoCollisionsWithPoints(m_explosionParticles, [this](auto& particle) -> void
   {
     particle.Destroy();
   });
