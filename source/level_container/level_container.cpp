@@ -156,20 +156,8 @@ auto level_container::DoCollisions() -> void
 auto level_container::DoPlayerShipCollisions() -> void
 {
   m_shipToAsteroidCollision(m_playerShip, m_asteroids);
-
-  m_targets.DoCollisionsWithGeometry(m_playerShip, [this](auto& target) -> void
-  {
-    m_playerShip->ApplyFatalDamage();
-    auto position = m_playerShip->PreviousPosition();
-    CreateExplosion(position);
-  });
-
-  m_ductFans.DoCollisionsWithGeometry(m_playerShip, [this](auto& ductFan) -> void
-  {
-    m_playerShip->ApplyFatalDamage();
-    auto position = m_playerShip->PreviousPosition();
-    CreateExplosion(position);
-  });
+  m_shipToTargetCollision(m_playerShip, m_targets);
+  m_shipToDuctFanCollision(m_playerShip, m_ductFans);
 }
 
 auto level_container::DoMineCollisions() -> void

@@ -45,6 +45,17 @@ public:
     }
   }
 
+  auto operator()(dynamic_object_collection<object_type_1>& object1Collection, dynamic_object_collection<object_type_2>& object2Collection) -> void
+  {
+    for( auto& object1 : object1Collection )
+    {
+      for( auto& object2 : object2Collection )
+      {
+        (*this)(object1, object2);
+      }
+    }
+  }
+
 private:
 
   std::function<void(object_type_1&, object_type_2&)> m_callable;

@@ -106,6 +106,20 @@ private:
     playerShip.ApplyFatalDamage();
   }};
 
+  geometry_collision<player_ship, level_target> m_shipToTargetCollision { [this](auto& playerShip, auto& target)
+  {
+    playerShip.ApplyFatalDamage();
+    auto position = playerShip.PreviousPosition();
+    CreateExplosion(position);
+  }};
+
+  geometry_collision<player_ship, duct_fan> m_shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
+  {
+    playerShip.ApplyFatalDamage();
+    auto position = playerShip.PreviousPosition();
+    CreateExplosion(position);
+  }};
+
 };
 
 inline auto level_container::update_events::reset() -> void
