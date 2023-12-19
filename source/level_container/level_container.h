@@ -15,6 +15,7 @@
 #include "level_geometries.h"
 #include "bullet.h"
 #include "impact_particle.h"
+#include "geometry_collision.h"
 
 class level_container
 {
@@ -97,6 +98,13 @@ private:
 
   int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
+
+  geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
+  {
+    auto position = playerShip.PreviousPosition();
+    CreateExplosion(position);
+    playerShip.ApplyFatalDamage();
+  }};
 
 };
 

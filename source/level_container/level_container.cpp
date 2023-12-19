@@ -155,12 +155,7 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::DoPlayerShipCollisions() -> void
 {
-  m_asteroids.DoCollisionsWithGeometry(m_playerShip, [this](auto& asteroid) -> void
-  {
-    auto position = m_playerShip->PreviousPosition();
-    CreateExplosion(position);
-    m_playerShip->ApplyFatalDamage();
-  });
+  m_shipToAsteroidCollision(m_playerShip, m_asteroids);
 
   m_targets.DoCollisionsWithGeometry(m_playerShip, [this](auto& target) -> void
   {
