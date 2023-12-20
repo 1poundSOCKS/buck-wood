@@ -200,6 +200,16 @@ private:
     particle.Destroy();
   }};
 
+  point_collision<level_asteroid, thrust_particle> m_asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  point_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
 };
 
 inline auto level_container::update_events::reset() -> void
