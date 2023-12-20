@@ -16,7 +16,7 @@
 #include "bullet.h"
 #include "impact_particle.h"
 #include "geometry_collision.h"
-#include "point_collision.h"
+#include "particle_collision.h"
 
 class level_container
 {
@@ -139,7 +139,7 @@ private:
     m_updateEvents.mineExploded = true;
   }};
 
-  point_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
+  particle_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
   {
     auto position = mine->PreviousPosition();
     CreateExplosion(position);
@@ -148,19 +148,19 @@ private:
     m_updateEvents.mineExploded = true;
   }};
 
-  point_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
+  particle_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
   {
     m_impactParticles.emplace_back(bullet.Position());
     bullet.Destroy();
   }};
 
-  point_collision<duct_fan, bullet> m_ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
+  particle_collision<duct_fan, bullet> m_ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
   {
     m_impactParticles.emplace_back(bullet.Position());
     bullet.Destroy();
   }};
 
-  point_collision<level_target, bullet> m_targetToBulletCollision { [this](auto& target, auto& bullet)
+  particle_collision<level_target, bullet> m_targetToBulletCollision { [this](auto& target, auto& bullet)
   {
     m_impactParticles.emplace_back(bullet.Position());
 
@@ -178,27 +178,27 @@ private:
     bullet.Destroy();
   }};
 
-  point_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
+  particle_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
   {
     particle.Destroy();
   }};
 
-  point_collision<level_asteroid, explosion_particle> m_asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
+  particle_collision<level_asteroid, explosion_particle> m_asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
   }};
 
-  point_collision<duct_fan, explosion_particle> m_ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
+  particle_collision<duct_fan, explosion_particle> m_ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
   }};
 
-  point_collision<level_asteroid, thrust_particle> m_asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
+  particle_collision<level_asteroid, thrust_particle> m_asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
   }};
 
-  point_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
+  particle_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
   }};
