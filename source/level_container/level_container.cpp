@@ -162,72 +162,17 @@ auto level_container::DoPlayerShipCollisions() -> void
 
 auto level_container::DoMineCollisions() -> void
 {
-  m_mines.DoCollisionsWithGeometry(m_playerShip, [this](auto& mine) -> void
-  {
-    m_playerShip->ApplyDamage(2);
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
-
-  m_mines.DoCollisionsWithGeometries(m_asteroids, [this](auto& mine, auto& asteroid)
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
-
-  m_mines.DoCollisionsWithGeometries(m_ductFans, [this](auto& mine, auto& ductFan)
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
-
-  m_mines.DoCollisionsWithPoints(m_bullets, [this](auto& mine, auto& bullet) -> void
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    bullet.Destroy();
-    m_updateEvents.mineExploded = true;
-  });
+  m_shipToMineCollision(m_playerShip, m_mines);
+  m_mineToAsteroidCollision(m_mines, m_asteroids);
+  m_mineToDuctFanCollision(m_mines, m_ductFans);
+  m_mineToBulletCollision(m_mines, m_bullets);
 }
 
 auto level_container::DoBulletCollisions() -> void
 {
-  m_asteroids.DoCollisionsWithPoints(m_bullets, [this](auto& asteroid, auto& bullet) -> void
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-    bullet.Destroy();
-  });
-
-  m_ductFans.DoCollisionsWithPoints(m_bullets, [this](auto& ductFan, auto& bullet) -> void
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-    bullet.Destroy();
-  });
-
-  m_targets.DoCollisionsWithPoints(m_bullets, [this](auto& target, auto& bullet) -> void
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-
-    if( !target.IsActivated() )
-    {
-      target.HitByBullet();
-
-      if( target.IsActivated() )
-      {
-        ++m_activatedTargetCount;
-        m_updateEvents.targetActivated = true;
-      }
-    }
-
-    bullet.Destroy();
-  });
+  m_asteroidToBulletCollision(m_asteroids, m_bullets);
+  m_ductFanToBulletCollision(m_ductFans, m_bullets);
+  m_targetToBulletCollision(m_targets, m_bullets);
 }
 
 auto level_container::DoExplosionParticleCollisions() -> void

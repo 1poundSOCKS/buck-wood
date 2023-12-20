@@ -16,6 +16,7 @@
 #include "bullet.h"
 #include "impact_particle.h"
 #include "geometry_collision.h"
+#include "point_collision.h"
 
 class level_container
 {
@@ -118,6 +119,70 @@ private:
     playerShip.ApplyFatalDamage();
     auto position = playerShip.PreviousPosition();
     CreateExplosion(position);
+  }};
+
+  geometry_collision<player_ship, mine> m_shipToMineCollision { [this](auto& playerShip, auto& mine)
+  {
+    playerShip.ApplyDamage(2);
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  }};
+
+  geometry_collision<mine, level_asteroid> m_mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  }};
+
+  geometry_collision<mine, duct_fan> m_mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
+  {
+    auto position = mine.PreviousPosition();
+    CreateExplosion(position);
+    mine.Destroy();
+    m_updateEvents.mineExploded = true;
+  }};
+
+  point_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
+  {
+    auto position = mine->PreviousPosition();
+    CreateExplosion(position);
+    mine->Destroy();
+    bullet.Destroy();
+    m_updateEvents.mineExploded = true;
+  }};
+
+  point_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
+  {
+    m_impactParticles.emplace_back(bullet.Position());
+    bullet.Destroy();
+  }};
+
+  point_collision<duct_fan, bullet> m_ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
+  {
+    m_impactParticles.emplace_back(bullet.Position());
+    bullet.Destroy();
+  }};
+
+  point_collision<level_target, bullet> m_targetToBulletCollision { [this](auto& target, auto& bullet)
+  {
+    m_impactParticles.emplace_back(bullet.Position());
+
+    if( !target->IsActivated() )
+    {
+      target->HitByBullet();
+
+      if( target->IsActivated() )
+      {
+        ++m_activatedTargetCount;
+        m_updateEvents.targetActivated = true;
+      }
+    }
+
+    bullet.Destroy();
   }};
 
 };
