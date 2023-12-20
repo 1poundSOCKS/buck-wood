@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "gamepad_reader.h"
+#include "log.h"
 
 auto gamepad_reader::create() -> void
 {
   destroy();
+  log::write(log::type::info, "creating gamepad reader");
   m_instance = new gamepad_reader {};
 }
 
@@ -11,6 +13,7 @@ auto gamepad_reader::destroy() -> void
 {
   if( m_instance )
   {
+    log::write(log::type::info, "destroying gamepad reader");
     delete m_instance;
     m_instance = nullptr;
   }
