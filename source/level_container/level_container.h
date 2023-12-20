@@ -19,6 +19,7 @@
 #include "particle_collision.h"
 #include "geometry_containment.h"
 #include "particle_containment.h"
+#include "level_collision_checks.h"
 
 class level_container
 {
@@ -74,6 +75,7 @@ private:
   auto UpdatePlayer(const level_input& input, float interval) -> void;
   auto DoCollisions() -> void;
   auto CreateExplosion(const game_point& position) -> void;
+  auto CreateImpactParticle(const game_point& position) -> void;
 
 private:
 
@@ -94,115 +96,9 @@ private:
   int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
 
-  geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
-  {
-    auto position = playerShip.PreviousPosition();
-    CreateExplosion(position);
-    playerShip.ApplyFatalDamage();
-  }};
-
-  geometry_collision<player_ship, level_target> m_shipToTargetCollision { [this](auto& playerShip, auto& target)
-  {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
-    CreateExplosion(position);
-  }};
-
-  geometry_collision<player_ship, duct_fan> m_shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
-  {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
-    CreateExplosion(position);
-  }};
-
-  geometry_collision<player_ship, mine> m_shipToMineCollision { [this](auto& playerShip, auto& mine)
-  {
-    playerShip.ApplyDamage(2);
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  }};
-
-  geometry_collision<mine, level_asteroid> m_mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  }};
-
-  geometry_collision<mine, duct_fan> m_mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
-  {
-    auto position = mine.PreviousPosition();
-    CreateExplosion(position);
-    mine.Destroy();
-    m_updateEvents.mineExploded = true;
-  }};
-
-  particle_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
-  {
-    auto position = mine->PreviousPosition();
-    CreateExplosion(position);
-    mine->Destroy();
-    bullet.Destroy();
-    m_updateEvents.mineExploded = true;
-  }};
-
-  particle_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-    bullet.Destroy();
-  }};
-
-  particle_collision<duct_fan, bullet> m_ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-    bullet.Destroy();
-  }};
-
-  particle_collision<level_target, bullet> m_targetToBulletCollision { [this](auto& target, auto& bullet)
-  {
-    m_impactParticles.emplace_back(bullet.Position());
-
-    if( !target->IsActivated() )
-    {
-      target->HitByBullet();
-
-      if( target->IsActivated() )
-      {
-        ++m_activatedTargetCount;
-        m_updateEvents.targetActivated = true;
-      }
-    }
-
-    bullet.Destroy();
-  }};
-
-  particle_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_collision<level_asteroid, explosion_particle> m_asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_collision<duct_fan, explosion_particle> m_ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_collision<level_asteroid, thrust_particle> m_asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  level_collision_checks m_collisionChecks {
+    [this](const auto& position) { CreateExplosion(position); },
+    [this](const auto& position) { CreateImpactParticle(position); }};
 
   geometry_containment<mine> m_mineContainment { [this](auto& mine)
   {

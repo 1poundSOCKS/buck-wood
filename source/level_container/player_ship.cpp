@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "player_ship.h"
-#include "math.h"
-#include "renderers.h"
-#include "directional_body_transform.h"
 
 player_ship::player_ship(const game_point& position) : m_body { position }
 {

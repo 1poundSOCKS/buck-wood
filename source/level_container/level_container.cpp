@@ -103,11 +103,11 @@ auto level_container::DoCollisions() -> void
       m_shipContainment(border.Geometry().Get(), m_playerShip);
     }
 
-    m_shipToAsteroidCollision(m_playerShip, m_asteroids);
-    m_shipToTargetCollision(m_playerShip, m_targets);
-    m_shipToDuctFanCollision(m_playerShip, m_ductFans);
-    m_shipToMineCollision(m_playerShip, m_mines);
-    m_shipToExplosionCollision(m_playerShip, m_explosionParticles);
+    m_collisionChecks(m_playerShip, m_asteroids);
+    m_collisionChecks(m_playerShip, m_targets);
+    m_collisionChecks(m_playerShip, m_ductFans);
+    m_collisionChecks(m_playerShip, m_mines);
+    m_collisionChecks(m_playerShip, m_explosionParticles);
   }
 
   if( m_blankObjects.size() )
@@ -119,23 +119,25 @@ auto level_container::DoCollisions() -> void
     m_bulletContainment(border.Geometry().Get(), m_bullets);
   }
 
-  m_mineToAsteroidCollision(m_mines, m_asteroids);
-  m_mineToDuctFanCollision(m_mines, m_ductFans);
-  m_mineToBulletCollision(m_mines, m_bullets);
-
-  m_asteroidToBulletCollision(m_asteroids, m_bullets);
-  m_asteroidToExplosionCollision(m_asteroids, m_explosionParticles);
-  m_asteroidToThrustCollision(m_asteroids, m_thrustParticles);
-
-  m_ductFanToBulletCollision(m_ductFans, m_bullets);
-  m_ductFanToExplosionCollision(m_ductFans, m_explosionParticles);
-  m_ductFanToThrustCollision(m_ductFans, m_thrustParticles);
-
-  m_targetToBulletCollision(m_targets, m_bullets);
+  m_collisionChecks(m_mines, m_asteroids);
+  m_collisionChecks(m_mines, m_ductFans);
+  m_collisionChecks(m_mines, m_bullets);
+  m_collisionChecks(m_asteroids, m_bullets);
+  m_collisionChecks(m_asteroids, m_explosionParticles);
+  m_collisionChecks(m_asteroids, m_thrustParticles);
+  m_collisionChecks(m_ductFans, m_bullets);
+  m_collisionChecks(m_ductFans, m_explosionParticles);
+  m_collisionChecks(m_ductFans, m_thrustParticles);
+  m_collisionChecks(m_targets, m_bullets);
 }
 
 auto level_container::CreateExplosion(const game_point& position) -> void
 {
   level_explosion levelExplosion { position };
   std::ranges::copy(levelExplosion, std::back_inserter(m_explosionParticles));
+}
+
+auto level_container::CreateImpactParticle(const game_point& position) -> void
+{
+  m_impactParticles.emplace_back(position);
 }

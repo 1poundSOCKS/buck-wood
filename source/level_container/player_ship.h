@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "dynamic_geometry.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "directional_body.h"
