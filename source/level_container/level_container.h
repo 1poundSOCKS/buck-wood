@@ -70,15 +70,8 @@ public:
 private:
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
-
   auto DoCollisions() -> void;
-  auto DoPlayerShipCollisions() -> void;
-  auto DoMineCollisions() -> void;
-  auto DoBulletCollisions() -> void;
-  auto DoExplosionParticleCollisions() -> void;
-  auto DoThrustParticleCollisions() -> void;
   auto DoBorderCollisions(const blank_object& border) -> void;
-
   auto CreateExplosion(const game_point& position) -> void;
 
 private:

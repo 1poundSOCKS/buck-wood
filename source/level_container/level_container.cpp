@@ -166,10 +166,6 @@ auto level_container::DoCollisions() -> void
   m_targetToBulletCollision(m_targets, m_bullets);
 }
 
-auto level_container::DoPlayerShipCollisions() -> void
-{
-}
-
 auto level_container::DoBorderCollisions(const blank_object& border) -> void
 {
   check_geometries_contained(m_mines, border, [this](auto& mine)
