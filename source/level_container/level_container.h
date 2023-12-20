@@ -77,8 +77,8 @@ private:
 
 private:
 
-  reload_timer m_reloadTimer { static_cast<float>(1) / static_cast<float>(20) };
-  reload_timer m_thrustEmmisionTimer { static_cast<float>(1) / static_cast<float>(10) };
+  reload_timer m_reloadTimer { 1.0f / 20.0f };
+  reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
 
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry() };
   target_collection m_targets;
