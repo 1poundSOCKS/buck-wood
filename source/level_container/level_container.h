@@ -17,6 +17,7 @@
 #include "impact_particle.h"
 #include "geometry_collision.h"
 #include "particle_collision.h"
+#include "geometry_containment.h"
 
 class level_container
 {
@@ -201,6 +202,21 @@ private:
   particle_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
+  }};
+
+  geometry_containment<mine> m_mineContainment { [this](auto& mine)
+  {
+    auto position = mine->PreviousPosition();
+    CreateExplosion(position);
+    mine->Destroy();
+    m_updateEvents.mineExploded = true;
+  }};
+
+  geometry_containment<player_ship> m_shipContainment { [this](auto& ship)
+  {
+    auto position = ship->PreviousPosition();
+    CreateExplosion(position);
+    ship->ApplyFatalDamage();
   }};
 
 };

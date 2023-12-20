@@ -125,20 +125,14 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
-  if( !m_playerShip->Destroyed() && m_blankObjects.size() )
-  {
-    const auto& border = m_blankObjects.front();
-
-    if( !is_geometry_contained(m_playerShip, border) )
-    {
-      auto position = m_playerShip->PreviousPosition();
-      CreateExplosion(position);
-      m_playerShip->ApplyFatalDamage();
-    }
-  }
-
   if( !m_playerShip->Destroyed() )
   {
+    if( m_blankObjects.size() )
+    {
+      auto& border = m_blankObjects.front();
+      m_shipContainment(border.Geometry().Get(), m_playerShip);
+    }
+
     m_shipToAsteroidCollision(m_playerShip, m_asteroids);
     m_shipToTargetCollision(m_playerShip, m_targets);
     m_shipToDuctFanCollision(m_playerShip, m_ductFans);
@@ -168,13 +162,7 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::DoBorderCollisions(const blank_object& border) -> void
 {
-  check_geometries_contained(m_mines, border, [this](auto& mine)
-  {
-    auto position = mine.Object().PreviousPosition();
-    CreateExplosion(position);
-    mine.Object().Destroy();
-    m_updateEvents.mineExploded = true;
-  });
+  m_mineContainment(border.Geometry().Get(), m_mines);
 
   check_points_contained(m_explosionParticles, border, [this](auto& particle)
   {
