@@ -185,6 +185,21 @@ private:
     bullet.Destroy();
   }};
 
+  point_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  point_collision<level_asteroid, explosion_particle> m_asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  point_collision<duct_fan, explosion_particle> m_ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
 };
 
 inline auto level_container::update_events::reset() -> void

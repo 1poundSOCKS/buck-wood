@@ -177,20 +177,9 @@ auto level_container::DoBulletCollisions() -> void
 
 auto level_container::DoExplosionParticleCollisions() -> void
 {
-  m_playerShip.DoCollisionsWithPoints(m_explosionParticles, [](auto& particle) -> void
-  {
-    particle.Destroy();
-  });
-
-  m_asteroids.DoCollisionsWithPoints(m_explosionParticles, [](auto& asteroid, auto& particle) -> void
-  {
-    particle.Destroy();
-  });
-
-  m_ductFans.DoCollisionsWithPoints(m_explosionParticles, [](auto& ductFan, auto& particle) -> void
-  {
-    particle.Destroy();
-  });
+  m_shipToExplosionCollision(m_playerShip, m_explosionParticles);
+  m_asteroidToExplosionCollision(m_asteroids, m_explosionParticles);
+  m_ductFanToExplosionCollision(m_ductFans, m_explosionParticles);
 }
 
 auto level_container::DoThrustParticleCollisions() -> void
