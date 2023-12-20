@@ -18,6 +18,7 @@
 #include "geometry_collision.h"
 #include "particle_collision.h"
 #include "geometry_containment.h"
+#include "particle_containment.h"
 
 class level_container
 {
@@ -72,7 +73,6 @@ private:
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
   auto DoCollisions() -> void;
-  auto DoBorderCollisions(const blank_object& border) -> void;
   auto CreateExplosion(const game_point& position) -> void;
 
 private:
@@ -219,6 +219,22 @@ private:
     ship->ApplyFatalDamage();
   }};
 
+  particle_containment<explosion_particle> m_explosionContainment { [this](auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  particle_containment<thrust_particle> m_thrustContainment { [this](auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  particle_containment<bullet> m_bulletContainment { [this](auto& bullet)
+  {
+    m_impactParticles.emplace_back(bullet.Position());
+    bullet.Destroy();
+  }};
+
 };
 
 inline auto level_container::update_events::reset() -> void
@@ -260,17 +276,47 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
   });
 }
 
-[[nodiscard]] inline auto level_container::PlayerAngle() const -> float
+inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
 {
   return m_playerShip->Angle();
 }
 
-[[nodiscard]] inline auto level_container::PlayerShields() const -> const player_ship::shield_status&
+inline [[nodiscard]] auto level_container::PlayerShields() const -> const player_ship::shield_status&
 {
   return m_playerShip->ShieldStatus();  
 }
 
-[[nodiscard]] inline auto level_container::UpdateEvents() const -> const update_events&
+inline [[nodiscard]] auto level_container::UpdateEvents() const -> const update_events&
 {
   return m_updateEvents;
+}
+
+inline[[nodiscard]] auto level_container::Targets() const -> const target_collection&
+{
+  return m_targets;
+}
+
+inline [[nodiscard]] auto level_container::PlayerPosition() const -> game_point
+{
+  return m_playerShip->Position();
+}
+
+inline [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
+{
+  return m_playerShip->ThrusterOn();
+}
+
+inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
+{
+  return m_playerShip->Destroyed();
+}
+
+inline [[nodiscard]] auto level_container::IsComplete() const -> bool
+{
+  return m_activatedTargetCount == m_targets.Size();
+}
+
+inline [[nodiscard]] auto level_container::HasFinished() const -> bool
+{
+  return PlayerDied() || IsComplete();
 }

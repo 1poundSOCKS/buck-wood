@@ -8,16 +8,6 @@
 #include "game_clock.h"
 #include "renderers.h"
 
-[[nodiscard]] auto level_container::IsComplete() const -> bool
-{
-  return m_activatedTargetCount == m_targets.Size();
-}
-
-[[nodiscard]] auto level_container::HasFinished() const -> bool
-{
-  return PlayerDied() || IsComplete();
-}
-
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
   auto interval = game_clock::getInterval(ticks);
@@ -103,26 +93,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_thrustParticles);
 }
 
-[[nodiscard]] auto level_container::Targets() const -> const target_collection&
-{
-  return m_targets;
-}
-
-[[nodiscard]] auto level_container::PlayerPosition() const -> game_point
-{
-  return m_playerShip->Position();
-}
-
-[[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
-{
-  return m_playerShip->ThrusterOn();
-}
-
-[[nodiscard]] auto level_container::PlayerDied() const -> bool
-{
-  return m_playerShip->Destroyed();
-}
-
 auto level_container::DoCollisions() -> void
 {
   if( !m_playerShip->Destroyed() )
@@ -142,7 +112,11 @@ auto level_container::DoCollisions() -> void
 
   if( m_blankObjects.size() )
   {
-    DoBorderCollisions(m_blankObjects.front());
+    const auto& border = m_blankObjects.front();
+    m_mineContainment(border.Geometry().Get(), m_mines);
+    m_explosionContainment(border.Geometry().Get(), m_explosionParticles);
+    m_thrustContainment(border.Geometry().Get(), m_thrustParticles);
+    m_bulletContainment(border.Geometry().Get(), m_bullets);
   }
 
   m_mineToAsteroidCollision(m_mines, m_asteroids);
@@ -158,27 +132,6 @@ auto level_container::DoCollisions() -> void
   m_ductFanToThrustCollision(m_ductFans, m_thrustParticles);
 
   m_targetToBulletCollision(m_targets, m_bullets);
-}
-
-auto level_container::DoBorderCollisions(const blank_object& border) -> void
-{
-  m_mineContainment(border.Geometry().Get(), m_mines);
-
-  check_points_contained(m_explosionParticles, border, [this](auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  check_points_contained(m_thrustParticles, border, [this](auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  check_points_contained(m_bullets, border, [this](auto& bullet)
-  {
-    m_impactParticles.emplace_back( impact_particle { bullet.Position() } );
-    bullet.Destroy();
-  });
 }
 
 auto level_container::CreateExplosion(const game_point& position) -> void
