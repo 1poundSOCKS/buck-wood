@@ -39,38 +39,6 @@ public:
     return &m_object;
   }
 
-  [[nodiscard]] auto HasCollidedWith(auto&& object) const -> bool
-  {
-    return m_geometry.HasCollidedWith(object.Geometry());
-  }
-
-  auto DoCollisionsWithPoints(std::ranges::input_range auto&& pointObjects, auto&& callable) -> void
-  {
-    for( auto& pointObject : pointObjects )
-    {
-      if( m_geometry.HasCollidedWith(pointObject.Position()) )
-      {
-        callable(pointObject);
-      }
-    }
-  }
-
-  [[nodiscard]] auto Contains(ID2D1Geometry* geometry) const -> bool
-  {
-    return m_geometry.Contains(geometry);
-  }
-
-  [[nodiscard]] auto Contains(std::ranges::input_range auto&& geometries, auto&& callable) -> void
-  {
-    for( auto& geometry : geometries )
-    {
-      if( m_geometry.Contains(geometry) )
-      {
-        callable(geometry);
-      }
-    }
-  }
-
 private:
 
   object_type m_object;

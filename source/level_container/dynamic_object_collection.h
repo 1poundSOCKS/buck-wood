@@ -59,50 +59,6 @@ public:
     }
   }
 
-  auto DoCollisionsWithGeometry(auto&& geometryObject, auto&& callable) -> void
-  {
-    for( auto& object : m_objectCollection )
-    {
-      if( object.Geometry().HasCollidedWith(geometryObject.Geometry()) )
-      {
-        callable(object.Object());
-      }
-    }
-  }
-
-  auto DoCollisionsWithGeometries(std::ranges::input_range auto&& geometryObjects, auto&& callable) -> void
-  {
-    for( auto& object1 : geometryObjects )
-    {
-      DoCollisionsWithGeometry(object1, [&object1, &callable](auto& object2) -> void
-      {
-        callable(object2, object1);
-      });
-    }
-  }
-
-  auto DoCollisionsWithPoint(auto&& pointObject, auto&& callable) -> void
-  {
-    for( auto& geometryObject : m_objectCollection )
-    {
-      if( have_geometry_and_point_collided(geometryObject, pointObject) )
-      {
-        callable(geometryObject.Object());
-      }
-    }
-  }
-
-  auto DoCollisionsWithPoints(std::ranges::input_range auto&& pointObjects, auto&& callable) -> void
-  {
-    for( auto& pointObject : pointObjects )
-    {
-      DoCollisionsWithPoint(pointObject, [&pointObject, &callable](auto& geometryObject) -> void
-      {
-        callable(geometryObject, pointObject);
-      });
-    }
-  }
-
 private:
 
   collection_type m_objectCollection;

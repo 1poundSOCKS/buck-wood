@@ -14,18 +14,9 @@ public:
   dynamic_geometry(const path_geometry& pathGeometry);
 
   [[nodiscard]] auto Get() const -> ID2D1TransformedGeometry*;
-
-  auto Transform(const D2D1::Matrix3x2F& transform) -> void;
-
   operator const transformed_path_geometry&() const;
 
-  [[nodiscard]] auto HasCollidedWith(const transformed_path_geometry& geometry) const -> bool;
-  [[nodiscard]] auto HasCollidedWith(const game_point& point) const -> bool;
-  
-  [[nodiscard]] auto Contains(ID2D1Geometry* geometry) const -> bool
-  {
-    return m_transformedGeometry.Contains(geometry);
-  }
+  auto Transform(const D2D1::Matrix3x2F& transform) -> void;
 
 private:
 
@@ -49,14 +40,4 @@ inline [[nodiscard]] auto dynamic_geometry::Get() const -> ID2D1TransformedGeome
 inline dynamic_geometry::operator const transformed_path_geometry&() const
 {
   return m_transformedGeometry;
-}
-
-inline [[nodiscard]] auto dynamic_geometry::HasCollidedWith(const transformed_path_geometry& geometry) const -> bool
-{
-  return m_transformedGeometry.HasCollidedWith(geometry);
-}
-
-inline [[nodiscard]] auto dynamic_geometry::HasCollidedWith(const game_point& point) const -> bool
-{
-  return m_transformedGeometry.HasCollidedWith(point);
 }
