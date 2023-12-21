@@ -101,7 +101,7 @@ private:
   level_collision_checks m_collisionChecks {
     [this](const auto& position) { CreateExplosion(position); },
     [this](const auto& position) { CreateImpactParticle(position); },
-    [this]() { m_updateEvents.targetActivated = true; },
+    [this]() { m_updateEvents.targetActivated = true; ++m_activatedTargetCount; },
     [this]() { m_updateEvents.mineExploded = true; }
   };
 
