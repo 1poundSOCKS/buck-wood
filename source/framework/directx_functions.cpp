@@ -91,7 +91,7 @@ auto CreateDirectSound(HWND window) -> winrt::com_ptr<IDirectSound8>
 {
   winrt::com_ptr<IDirectSound8> directSound;
 
-  HRESULT hr = DirectSoundCreate8(NULL, directSound.put(), NULL);
+  HRESULT hr = DirectSoundCreate8(&DSDEVID_DefaultPlayback, directSound.put(), NULL);
   com_logger::write(log::type::info, hr, "DirectSoundCreate8");
 
   if( SUCCEEDED(hr) && directSound )
