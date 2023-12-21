@@ -77,6 +77,8 @@ private:
   auto CreateExplosion(const game_point& position) -> void;
   auto CreateImpactParticle(const game_point& position) -> void;
 
+
+
 private:
 
   reload_timer m_reloadTimer { 1.0f / 20.0f };
@@ -98,7 +100,10 @@ private:
 
   level_collision_checks m_collisionChecks {
     [this](const auto& position) { CreateExplosion(position); },
-    [this](const auto& position) { CreateImpactParticle(position); }};
+    [this](const auto& position) { CreateImpactParticle(position); },
+    [this]() { m_updateEvents.targetActivated = true; },
+    [this]() { m_updateEvents.mineExploded = true; }
+  };
 
   geometry_containment<mine> m_mineContainment { [this](auto& mine)
   {

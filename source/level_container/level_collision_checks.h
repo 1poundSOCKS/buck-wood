@@ -22,14 +22,8 @@ class level_collision_checks
 
 public:
 
-  struct events
-  {
-    bool mineExploded { false };
-    bool targetActivated { false };
-    int activatedTargetCount { 0 };
-  };
-
-  level_collision_checks(auto&& createExplosion, auto&& createImpactParticle) : m_createExplosion { createExplosion }, m_createImpactParticle { createImpactParticle }
+  level_collision_checks(auto&& createExplosion, auto&& createImpactParticle, auto&& targetActivated, auto&& mineExploded) : 
+    m_createExplosion { createExplosion }, m_createImpactParticle { createImpactParticle }, m_targetActivated { targetActivated }, m_mineExploded { mineExploded }
   {
   }
 
@@ -112,8 +106,8 @@ private:
 
   std::function<void(const game_point&)> m_createExplosion;
   std::function<void(const game_point&)> m_createImpactParticle;
-
-  events m_events;
+  std::function<void()> m_targetActivated;
+  std::function<void()> m_mineExploded;
 
   geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
   {
@@ -142,7 +136,7 @@ private:
     auto position = mine.PreviousPosition();
     m_createExplosion(position);
     mine.Destroy();
-    m_events.mineExploded = true;
+    m_mineExploded();
   }};
 
   particle_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
@@ -155,7 +149,7 @@ private:
     auto position = mine.PreviousPosition();
     m_createExplosion(position);
     mine.Destroy();
-    m_events.mineExploded = true;
+    m_mineExploded();
   }};
 
   geometry_collision<mine, duct_fan> m_mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
@@ -163,7 +157,7 @@ private:
     auto position = mine.PreviousPosition();
     m_createExplosion(position);
     mine.Destroy();
-    m_events.mineExploded = true;
+    m_mineExploded();
   }};
 
   particle_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
@@ -172,7 +166,7 @@ private:
     m_createExplosion(position);
     mine->Destroy();
     bullet.Destroy();
-    m_events.mineExploded = true;
+    m_mineExploded();
   }};
 
   particle_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
@@ -197,8 +191,7 @@ private:
 
       if( target->IsActivated() )
       {
-        ++m_events.activatedTargetCount;
-        m_events.targetActivated = true;
+        m_targetActivated();
       }
     }
 
@@ -230,7 +223,7 @@ private:
     auto position = mine->PreviousPosition();
     m_createExplosion(position);
     mine->Destroy();
-    m_events.mineExploded = true;
+    m_mineExploded();
   }};
 
   geometry_containment<player_ship> m_shipContainment { [this](auto& ship)
