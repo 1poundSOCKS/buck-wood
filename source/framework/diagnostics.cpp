@@ -32,9 +32,13 @@ auto diagnostics::AddWindowData(const window_data& windowData) -> void
   inserter = std::format(L"client rect: {}, {}", windowData.clientRect.right, windowData.clientRect.bottom);
 }
 
-auto diagnostics::AddTimingData(int fps) -> void
+auto diagnostics::AddFPS() -> void
 {
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
+}
+
+auto diagnostics::AddTimingData(int fps) -> void
+{
   auto frameTime = performance_counter::QueryFrequency() / fps;
   m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
   m_diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsRenderTime)));

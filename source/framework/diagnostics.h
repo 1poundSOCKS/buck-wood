@@ -21,6 +21,7 @@ public:
   static auto addWindowData(const window_data& windowData) -> void;
   static auto setUpdateTime(int64_t ticks) -> void;
   static auto setRenderTime(int64_t ticks) -> void;
+  static auto addFPS() -> void;
   static auto addTimingData(int fps) -> void;
   static auto updateFrameData() -> void;
   static auto clear() -> void;
@@ -32,6 +33,7 @@ private:
 
   auto AddTime(std::wstring_view label, int64_t ticks, int fps) -> void;
   auto AddWindowData(const window_data& windowData) -> void;
+  auto AddFPS() -> void;
   auto AddTimingData(int fps) -> void;
   [[nodiscard]] auto Text() const -> std::wstring;
   static auto GetPercentageTime(int64_t frameTicks, int64_t elapsedTime) -> float;
@@ -69,6 +71,11 @@ inline auto diagnostics::setUpdateTime(int64_t ticks) -> void
 inline auto diagnostics::setRenderTime(int64_t ticks) -> void
 {
   m_instance->m_diagnosticsRenderTime = ticks;
+}
+
+inline auto diagnostics::addFPS() -> void
+{
+  m_instance->AddFPS();
 }
 
 inline auto diagnostics::addTimingData(int fps) -> void

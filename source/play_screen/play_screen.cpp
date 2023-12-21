@@ -70,6 +70,7 @@ auto play_screen::RenderDiagnostics() -> void
 {
   diagnostics::addWindowData(main_window::data());
   diagnostics::updateFrameData();
+  diagnostics::addFPS();
 
   auto framerate = game_settings::framerate();
 

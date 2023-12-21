@@ -43,7 +43,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
   game_settings::load();
 
-  game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(60));
+  game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(120));
   log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
 
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
