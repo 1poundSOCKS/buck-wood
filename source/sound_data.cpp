@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "sound_data.h"
+#include "log.h"
 
 sound_data* sound_data::m_soundData = nullptr;
 
@@ -23,6 +24,7 @@ constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
 auto sound_data::create(IDirectSound8* directSound, const std::wstring& path) -> void
 {
   destroy();
+  log::write(log::type::info, "creating sound data");
   m_soundData = new sound_data(directSound, path);
 }
 
@@ -56,6 +58,9 @@ auto sound_data::LoadSoundBuffers(IDirectSound8* directSound, const std::wstring
   std::transform(filenames.cbegin(), filenames.cend(), std::back_inserter(m_buffers), [this, directSound, soundFilePath](const auto soundDataItem)
   {
     auto [filename, index] = soundDataItem;
+
+    log::write(log::type::info, "loading sound file");
+
     index = m_buffers.size();
     std::filesystem::path fullFilename { soundFilePath };
     fullFilename /= filename;
