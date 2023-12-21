@@ -20,6 +20,8 @@
 #include "geometry_containment.h"
 #include "particle_containment.h"
 #include "level_collision_checks.h"
+#include "particle_collection.h"
+#include "level_explosion.h"
 
 class level_container
 {
@@ -44,10 +46,10 @@ public:
   using duct_fan_collection = dynamic_object_collection<duct_fan>;
   using asteroid_collection = dynamic_object_collection<level_asteroid>;
 
-  using bullet_collection = std::list<bullet>;  
-  using explosion_particle_collection  = std::list<explosion_particle>;
-  using impact_particle_collection  = std::list<impact_particle>;
-  using thrust_particle_collection = std::list<thrust_particle>;
+  using bullet_collection = particle_collection<bullet>;
+  using explosion_particle_collection  = particle_collection<explosion_particle>;
+  using impact_particle_collection  = particle_collection<impact_particle>;
+  using thrust_particle_collection = particle_collection<thrust_particle>;
 
   level_container() = default;
   level_container(const level_container& levelContainer) = delete;
@@ -74,10 +76,6 @@ private:
 
   auto UpdatePlayer(const level_input& input, float interval) -> void;
   auto DoCollisions() -> void;
-  auto CreateExplosion(const game_point& position) -> void;
-  auto CreateImpactParticle(const game_point& position) -> void;
-
-
 
 private:
 
@@ -99,8 +97,8 @@ private:
   update_events m_updateEvents;
 
   level_collision_checks m_collisionChecks {
-    [this](const auto& position) { CreateExplosion(position); },
-    [this](const auto& position) { CreateImpactParticle(position); },
+    [this](const auto& position) { m_explosionParticles.Create( level_explosion { position } ); },
+    [this](const auto& position) { m_impactParticles.Create(position); },
     [this]() { m_updateEvents.targetActivated = true; ++m_activatedTargetCount; },
     [this]() { m_updateEvents.mineExploded = true; }
   };
@@ -108,7 +106,7 @@ private:
   geometry_containment<mine> m_mineContainment { [this](auto& mine)
   {
     auto position = mine->PreviousPosition();
-    CreateExplosion(position);
+    m_explosionParticles.Create( level_explosion { position } );
     mine->Destroy();
     m_updateEvents.mineExploded = true;
   }};
@@ -116,7 +114,7 @@ private:
   geometry_containment<player_ship> m_shipContainment { [this](auto& ship)
   {
     auto position = ship->PreviousPosition();
-    CreateExplosion(position);
+    m_explosionParticles.Create( level_explosion { position } );
     ship->ApplyFatalDamage();
   }};
 
@@ -132,7 +130,7 @@ private:
 
   particle_containment<bullet> m_bulletContainment { [this](auto& bullet)
   {
-    m_impactParticles.emplace_back(bullet.Position());
+    m_impactParticles.Create(bullet.Position());
     bullet.Destroy();
   }};
 

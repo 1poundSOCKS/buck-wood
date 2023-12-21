@@ -112,7 +112,7 @@ inline auto const_level_explosion_iterator::operator==(const const_level_explosi
   }
 }
 
-auto const_level_explosion_iterator::GetRandomVelocity() const -> game_velocity
+inline auto const_level_explosion_iterator::GetRandomVelocity() const -> game_velocity
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
   auto velocity = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
@@ -123,12 +123,12 @@ inline level_explosion::level_explosion(const game_point& position) : m_position
 {
 }
 
-[[nodiscard]] inline auto level_explosion::begin() const -> const_level_explosion_iterator
+inline [[nodiscard]] auto level_explosion::begin() const -> const_level_explosion_iterator
 {
   return const_level_explosion_iterator { const_level_explosion_iterator::type::begin, m_position };
 }
 
-[[nodiscard]] inline auto level_explosion::end() const -> const_level_explosion_iterator
+inline [[nodiscard]] auto level_explosion::end() const -> const_level_explosion_iterator
 {
   return const_level_explosion_iterator { const_level_explosion_iterator::type::end, m_position };
 }

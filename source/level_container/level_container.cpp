@@ -2,9 +2,7 @@
 #include "level_container.h"
 #include "bullet.h"
 #include "explosion.h"
-#include "level_object_functions.h"
 #include "perlin_simplex_noise.h"
-#include "level_explosion.h"
 #include "game_clock.h"
 #include "renderers.h"
 
@@ -24,7 +22,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     if( m_reloadTimer.Update(interval) && input.ShootAngle() )
     {
-      m_bullets.emplace_back(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
+      m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
       m_updateEvents.playerShot = true;
     }
 
@@ -45,19 +43,17 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   m_targets.Update(interval);
   m_ductFans.Update(interval);
-  
-  update_all(m_bullets, interval);
-  update_all(m_explosionParticles, interval);
-  update_all(m_impactParticles, interval);
-  update_all(m_thrustParticles, interval);
+  m_bullets.Update(interval);
+  m_explosionParticles.Update(interval);
+  m_impactParticles.Update(interval);
+  m_thrustParticles.Update(interval);
 
   DoCollisions();
 
-  erase_destroyed(m_bullets);
-  erase_destroyed(m_explosionParticles);
-  erase_destroyed(m_impactParticles);
-  erase_destroyed(m_thrustParticles);
-
+  m_bullets.EraseDestroyed();
+  m_explosionParticles.EraseDestroyed();
+  m_impactParticles.EraseDestroyed();
+  m_thrustParticles.EraseDestroyed();
   m_mines.EraseDestroyed();
 }
 
@@ -70,7 +66,7 @@ auto level_container::UpdatePlayer(const level_input& input, float interval) -> 
     auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
     auto thrustAngle = m_playerShip->Angle() + 180;
     auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
-    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.3f);
+    m_thrustParticles.Create(thrustPosition, thrustVelocity, 0.3f);
   }
 }
 
@@ -129,15 +125,4 @@ auto level_container::DoCollisions() -> void
   m_collisionChecks(m_ductFans, m_explosionParticles);
   m_collisionChecks(m_ductFans, m_thrustParticles);
   m_collisionChecks(m_targets, m_bullets);
-}
-
-auto level_container::CreateExplosion(const game_point& position) -> void
-{
-  level_explosion levelExplosion { position };
-  std::ranges::copy(levelExplosion, std::back_inserter(m_explosionParticles));
-}
-
-auto level_container::CreateImpactParticle(const game_point& position) -> void
-{
-  m_impactParticles.emplace_back(position);
 }

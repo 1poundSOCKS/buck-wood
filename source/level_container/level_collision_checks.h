@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dynamic_object_collection.h"
+#include "particle_collection.h"
 
 #include "geometry_collision.h"
 #include "particle_collision.h"
@@ -47,7 +48,7 @@ public:
     m_shipToMineCollision(ship, mines);
   }
 
-  auto operator()(dynamic_object<player_ship>& ship, std::list<explosion_particle>& particles) -> void
+  auto operator()(dynamic_object<player_ship>& ship, particle_collection<explosion_particle>& particles) -> void
   {
     m_shipToExplosionCollision(ship, particles);
   }
@@ -62,42 +63,42 @@ public:
     m_mineToDuctFanCollision(mines, ductFans);
   }
 
-  auto operator()(dynamic_object_collection<mine>& mines, std::list<bullet>& bullets) -> void
+  auto operator()(dynamic_object_collection<mine>& mines, particle_collection<bullet>& bullets) -> void
   {
     m_mineToBulletCollision(mines, bullets);
   }
 
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, std::list<bullet>& bullets) -> void
+  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<bullet>& bullets) -> void
   {
     m_asteroidToBulletCollision(asteroids, bullets);
   }
 
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, std::list<bullet>& bullets) -> void
+  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<bullet>& bullets) -> void
   {
     m_ductFanToBulletCollision(ductFans, bullets);
   }
 
-  auto operator()(dynamic_object_collection<level_target>& targets, std::list<bullet>& bullets) -> void
+  auto operator()(dynamic_object_collection<level_target>& targets, particle_collection<bullet>& bullets) -> void
   {
     m_targetToBulletCollision(targets, bullets);
   }
 
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, std::list<explosion_particle>& particles) -> void
+  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<explosion_particle>& particles) -> void
   {
     m_asteroidToExplosionCollision(asteroids, particles);
   }
 
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, std::list<explosion_particle>& particles) -> void
+  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<explosion_particle>& particles) -> void
   {
     m_ductFanToExplosionCollision(ductFans, particles);
   }
 
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, std::list<thrust_particle>& particles) -> void
+  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<thrust_particle>& particles) -> void
   {
     m_asteroidToThrustCollision(asteroids, particles);
   }
 
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, std::list<thrust_particle>& particles) -> void
+  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<thrust_particle>& particles) -> void
   {
     m_ductFanToThrustCollision(ductFans, particles);
   }

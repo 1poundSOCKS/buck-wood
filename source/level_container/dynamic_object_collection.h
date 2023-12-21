@@ -11,7 +11,7 @@ public:
   using dynamic_object_type = dynamic_object<object_type>;
   using collection_type = std::vector<dynamic_object_type>;
 
-  template <typename...Args>auto Create(Args...args) -> void
+  template <typename...Args> auto Create(Args...args) -> void
   {
     m_objectCollection.emplace_back(std::forward<Args>(args)...);
   }
