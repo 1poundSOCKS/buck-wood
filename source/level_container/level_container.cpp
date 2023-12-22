@@ -60,7 +60,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
     m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
   }
 
-    return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
+  return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
