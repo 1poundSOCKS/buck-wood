@@ -1,27 +1,18 @@
 #pragma once
 
-#include "player_ship.h"
-#include "level_target.h"
-#include "explosion.h"
-#include "asteroid_container.h"
-#include "mine.h"
-#include "explosion_particle.h"
-#include "thrust_particle.h"
-#include "level_input.h"
+#include "level_geometries.h"
+#include "level_objects.h"
+#include "level_collisions.h"
+#include "collisions/level_containment.h"
+
 #include "solid_objects.h"
 #include "blank_objects.h"
-#include "duct_fan.h"
-#include "dynamic_object_collection.h"
-#include "level_geometries.h"
-#include "bullet.h"
-#include "impact_particle.h"
-#include "geometry_collision.h"
-#include "particle_collision.h"
-#include "geometry_containment.h"
-#include "particle_containment.h"
-#include "level_collision_checks.h"
-#include "particle_collection.h"
 #include "level_explosion.h"
+
+#include "dynamic_object_collection.h"
+#include "particle_collection.h"
+
+#include "level_input.h"
 
 class level_container
 {
@@ -103,36 +94,7 @@ private:
     [this]() { m_updateEvents.mineExploded = true; }
   };
 
-  geometry_containment<mine> m_mineContainment { [this](auto& mine)
-  {
-    auto position = mine->PreviousPosition();
-    m_explosionParticles.Create( level_explosion { position } );
-    mine->Destroy();
-    m_updateEvents.mineExploded = true;
-  }};
-
-  geometry_containment<player_ship> m_shipContainment { [this](auto& ship)
-  {
-    auto position = ship->PreviousPosition();
-    m_explosionParticles.Create( level_explosion { position } );
-    ship->ApplyFatalDamage();
-  }};
-
-  particle_containment<explosion_particle> m_explosionContainment { [this](auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_containment<thrust_particle> m_thrustContainment { [this](auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_containment<bullet> m_bulletContainment { [this](auto& bullet)
-  {
-    m_impactParticles.Create(bullet.Position());
-    bullet.Destroy();
-  }};
+  level_containment m_containmentChecks;
 
 };
 

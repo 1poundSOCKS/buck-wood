@@ -8,15 +8,8 @@
 #include "geometry_containment.h"
 #include "particle_containment.h"
 
-#include "player_ship.h"
-#include "level_target.h"
-#include "mine.h"
-#include "level_asteroid.h"
-#include "duct_fan.h"
-#include "bullet.h"
-#include "impact_particle.h"
-#include "explosion_particle.h"
-#include "thrust_particle.h"
+#include "level_objects.h"
+#include "collision_objects.h"
 
 class level_collision_checks
 {
@@ -110,12 +103,14 @@ private:
   std::function<void()> m_targetActivated;
   std::function<void()> m_mineExploded;
 
-  geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
-  {
-    auto position = playerShip.PreviousPosition();
-    m_createExplosion(position);
-    playerShip.ApplyFatalDamage();
-  }};
+  // geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
+  // {
+  //   auto position = playerShip.PreviousPosition();
+  //   m_createExplosion(position);
+  //   playerShip.ApplyFatalDamage();
+  // }};
+
+  collision_object::ship_to_asteroid m_shipToAsteroidCollision;
 
   geometry_collision<player_ship, level_target> m_shipToTargetCollision { [this](auto& playerShip, auto& target)
   {

@@ -96,7 +96,8 @@ auto level_container::DoCollisions() -> void
     if( m_blankObjects.size() )
     {
       auto& border = m_blankObjects.front();
-      m_shipContainment(border.Geometry().Get(), m_playerShip);
+      // m_shipContainment(border.Geometry().Get(), m_playerShip);
+      m_containmentChecks.shipContainment(border.Geometry().Get(), m_playerShip);
     }
 
     m_collisionChecks(m_playerShip, m_asteroids);
@@ -109,10 +110,14 @@ auto level_container::DoCollisions() -> void
   if( m_blankObjects.size() )
   {
     const auto& border = m_blankObjects.front();
-    m_mineContainment(border.Geometry().Get(), m_mines);
-    m_explosionContainment(border.Geometry().Get(), m_explosionParticles);
-    m_thrustContainment(border.Geometry().Get(), m_thrustParticles);
-    m_bulletContainment(border.Geometry().Get(), m_bullets);
+    // m_mineContainment(border.Geometry().Get(), m_mines);
+    // m_explosionContainment(border.Geometry().Get(), m_explosionParticles);
+    // m_thrustContainment(border.Geometry().Get(), m_thrustParticles);
+    // m_bulletContainment(border.Geometry().Get(), m_bullets);
+    m_containmentChecks.mineContainment(border.Geometry().Get(), m_mines);
+    m_containmentChecks.explosionContainment(border.Geometry().Get(), m_explosionParticles);
+    m_containmentChecks.thrustContainment(border.Geometry().Get(), m_thrustParticles);
+    m_containmentChecks.bulletContainment(border.Geometry().Get(), m_bullets);
   }
 
   m_collisionChecks(m_mines, m_asteroids);
@@ -125,4 +130,11 @@ auto level_container::DoCollisions() -> void
   m_collisionChecks(m_ductFans, m_explosionParticles);
   m_collisionChecks(m_ductFans, m_thrustParticles);
   m_collisionChecks(m_targets, m_bullets);
+
+  for( const auto& position : m_containmentChecks.Explosions() )
+  {
+    m_explosionParticles.Create( level_explosion { position } );
+  }
+
+  m_containmentChecks.Reset();
 }
