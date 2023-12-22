@@ -96,45 +96,56 @@ auto level_container::DoCollisions() -> void
     if( m_blankObjects.size() )
     {
       auto& border = m_blankObjects.front();
-      // m_shipContainment(border.Geometry().Get(), m_playerShip);
       m_containmentChecks.shipContainment(border.Geometry().Get(), m_playerShip);
     }
 
-    m_collisionChecks(m_playerShip, m_asteroids);
-    m_collisionChecks(m_playerShip, m_targets);
-    m_collisionChecks(m_playerShip, m_ductFans);
-    m_collisionChecks(m_playerShip, m_mines);
-    m_collisionChecks(m_playerShip, m_explosionParticles);
+    m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
+    m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
+    m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
+    m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
+    m_collisionChecks.shipToExplosionCollision(m_playerShip, m_explosionParticles);
   }
 
   if( m_blankObjects.size() )
   {
     const auto& border = m_blankObjects.front();
-    // m_mineContainment(border.Geometry().Get(), m_mines);
-    // m_explosionContainment(border.Geometry().Get(), m_explosionParticles);
-    // m_thrustContainment(border.Geometry().Get(), m_thrustParticles);
-    // m_bulletContainment(border.Geometry().Get(), m_bullets);
     m_containmentChecks.mineContainment(border.Geometry().Get(), m_mines);
     m_containmentChecks.explosionContainment(border.Geometry().Get(), m_explosionParticles);
     m_containmentChecks.thrustContainment(border.Geometry().Get(), m_thrustParticles);
     m_containmentChecks.bulletContainment(border.Geometry().Get(), m_bullets);
   }
 
-  m_collisionChecks(m_mines, m_asteroids);
-  m_collisionChecks(m_mines, m_ductFans);
-  m_collisionChecks(m_mines, m_bullets);
-  m_collisionChecks(m_asteroids, m_bullets);
-  m_collisionChecks(m_asteroids, m_explosionParticles);
-  m_collisionChecks(m_asteroids, m_thrustParticles);
-  m_collisionChecks(m_ductFans, m_bullets);
-  m_collisionChecks(m_ductFans, m_explosionParticles);
-  m_collisionChecks(m_ductFans, m_thrustParticles);
-  m_collisionChecks(m_targets, m_bullets);
+  m_collisionChecks.mineToAsteroidCollision(m_mines, m_asteroids);
+  m_collisionChecks.mineToDuctFanCollision(m_mines, m_ductFans);
+  m_collisionChecks.mineToBulletCollision(m_mines, m_bullets);
+  m_collisionChecks.asteroidToBulletCollision(m_asteroids, m_bullets);
+  m_collisionChecks.asteroidToExplosionCollision(m_asteroids, m_explosionParticles);
+  m_collisionChecks.asteroidToThrustCollision(m_asteroids, m_thrustParticles);
+  m_collisionChecks.ductFanToBulletCollision(m_ductFans, m_bullets);
+  m_collisionChecks.ductFanToExplosionCollision(m_ductFans, m_explosionParticles);
+  m_collisionChecks.ductFanToThrustCollision(m_ductFans, m_thrustParticles);
+  m_collisionChecks.targetToBulletCollision(m_targets, m_bullets);
 
   for( const auto& position : m_containmentChecks.Explosions() )
   {
     m_explosionParticles.Create( level_explosion { position } );
   }
 
+  for( const auto& position : m_collisionChecks.Explosions() )
+  {
+    m_explosionParticles.Create( level_explosion { position } );
+  }
+
+  for( const auto& position : m_containmentChecks.Impacts() )
+  {
+    m_impactParticles.Create(position);
+  }
+
+  for( const auto& position : m_collisionChecks.Impacts() )
+  {
+    m_impactParticles.Create(position);
+  }
+
+  m_collisionChecks.Reset();
   m_containmentChecks.Reset();
 }

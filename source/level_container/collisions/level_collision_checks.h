@@ -16,233 +16,131 @@ class level_collision_checks
 
 public:
 
-  level_collision_checks(auto&& createExplosion, auto&& createImpactParticle, auto&& targetActivated, auto&& mineExploded) : 
-    m_createExplosion { createExplosion }, m_createImpactParticle { createImpactParticle }, m_targetActivated { targetActivated }, m_mineExploded { mineExploded }
+  using explosion_collection = std::vector<game_point>;
+  using impact_collection = std::vector<game_point>;
+
+public:
+
+  geometry_collision<player_ship, level_asteroid> shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
   {
-  }
+    playerShip.ApplyFatalDamage();
+    m_explosions.emplace_back(playerShip.PreviousPosition());
+  }};
 
-  auto operator()(dynamic_object<player_ship>& ship, dynamic_object_collection<level_asteroid>& asteroids) -> void
+  geometry_collision<player_ship, level_target> shipToTargetCollision { [this](auto& playerShip, auto& target)
   {
-    m_shipToAsteroidCollision(ship, asteroids);
-  }
+    playerShip.ApplyFatalDamage();
+    m_explosions.emplace_back(playerShip.PreviousPosition());
+  }};
 
-  auto operator()(dynamic_object<player_ship>& ship, dynamic_object_collection<level_target>& targets) -> void
-  {
-    m_shipToTargetCollision(ship, targets);
-  }
-
-  auto operator()(dynamic_object<player_ship>& ship, dynamic_object_collection<duct_fan>& ductFans) -> void
-  {
-    m_shipToDuctFanCollision(ship, ductFans);
-  }
-
-  auto operator()(dynamic_object<player_ship>& ship, dynamic_object_collection<mine>& mines) -> void
-  {
-    m_shipToMineCollision(ship, mines);
-  }
-
-  auto operator()(dynamic_object<player_ship>& ship, particle_collection<explosion_particle>& particles) -> void
-  {
-    m_shipToExplosionCollision(ship, particles);
-  }
-
-  auto operator()(dynamic_object_collection<mine>& mines, dynamic_object_collection<level_asteroid>& asteroids) -> void
-  {
-    m_mineToAsteroidCollision(mines, asteroids);
-  }
-
-  auto operator()(dynamic_object_collection<mine>& mines, dynamic_object_collection<duct_fan>& ductFans) -> void
-  {
-    m_mineToDuctFanCollision(mines, ductFans);
-  }
-
-  auto operator()(dynamic_object_collection<mine>& mines, particle_collection<bullet>& bullets) -> void
-  {
-    m_mineToBulletCollision(mines, bullets);
-  }
-
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<bullet>& bullets) -> void
-  {
-    m_asteroidToBulletCollision(asteroids, bullets);
-  }
-
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<bullet>& bullets) -> void
-  {
-    m_ductFanToBulletCollision(ductFans, bullets);
-  }
-
-  auto operator()(dynamic_object_collection<level_target>& targets, particle_collection<bullet>& bullets) -> void
-  {
-    m_targetToBulletCollision(targets, bullets);
-  }
-
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<explosion_particle>& particles) -> void
-  {
-    m_asteroidToExplosionCollision(asteroids, particles);
-  }
-
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<explosion_particle>& particles) -> void
-  {
-    m_ductFanToExplosionCollision(ductFans, particles);
-  }
-
-  auto operator()(dynamic_object_collection<level_asteroid>& asteroids, particle_collection<thrust_particle>& particles) -> void
-  {
-    m_asteroidToThrustCollision(asteroids, particles);
-  }
-
-  auto operator()(dynamic_object_collection<duct_fan>& ductFans, particle_collection<thrust_particle>& particles) -> void
-  {
-    m_ductFanToThrustCollision(ductFans, particles);
-  }
-
-private:
-
-  std::function<void(const game_point&)> m_createExplosion;
-  std::function<void(const game_point&)> m_createImpactParticle;
-  std::function<void()> m_targetActivated;
-  std::function<void()> m_mineExploded;
-
-  // geometry_collision<player_ship, level_asteroid> m_shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
-  // {
-  //   auto position = playerShip.PreviousPosition();
-  //   m_createExplosion(position);
-  //   playerShip.ApplyFatalDamage();
-  // }};
-
-  collision_object::ship_to_asteroid m_shipToAsteroidCollision;
-
-  geometry_collision<player_ship, level_target> m_shipToTargetCollision { [this](auto& playerShip, auto& target)
+  geometry_collision<player_ship, duct_fan> shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
   {
     playerShip.ApplyFatalDamage();
     auto position = playerShip.PreviousPosition();
-    m_createExplosion(position);
+    m_explosions.emplace_back(playerShip.PreviousPosition());
   }};
 
-  geometry_collision<player_ship, duct_fan> m_shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
-  {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
-    m_createExplosion(position);
-  }};
-
-  geometry_collision<player_ship, mine> m_shipToMineCollision { [this](auto& playerShip, auto& mine)
+  geometry_collision<player_ship, mine> shipToMineCollision { [this](auto& playerShip, auto& mine)
   {
     playerShip.ApplyDamage(2);
-    auto position = mine.PreviousPosition();
-    m_createExplosion(position);
     mine.Destroy();
-    m_mineExploded();
+    m_explosions.emplace_back(mine.PreviousPosition());
   }};
 
-  particle_collision<player_ship, explosion_particle> m_shipToExplosionCollision { [this](auto& playerShip, auto& particle)
+  particle_collision<player_ship, explosion_particle> shipToExplosionCollision { [this](auto& playerShip, auto& particle)
   {
     particle.Destroy();
   }};
 
-  geometry_collision<mine, level_asteroid> m_mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
+  geometry_collision<mine, level_asteroid> mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
   {
     auto position = mine.PreviousPosition();
-    m_createExplosion(position);
     mine.Destroy();
-    m_mineExploded();
+    m_explosions.emplace_back(mine.PreviousPosition());
   }};
 
-  geometry_collision<mine, duct_fan> m_mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
+  geometry_collision<mine, duct_fan> mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
   {
     auto position = mine.PreviousPosition();
-    m_createExplosion(position);
     mine.Destroy();
-    m_mineExploded();
+    m_explosions.emplace_back(mine.PreviousPosition());
   }};
 
-  particle_collision<mine, bullet> m_mineToBulletCollision { [this](auto& mine, auto& bullet)
+  particle_collision<mine, bullet> mineToBulletCollision { [this](auto& mine, auto& bullet)
   {
-    auto position = mine->PreviousPosition();
-    m_createExplosion(position);
     mine->Destroy();
     bullet.Destroy();
-    m_mineExploded();
+    m_explosions.emplace_back(mine->Position());
   }};
 
-  particle_collision<level_asteroid, bullet> m_asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
+  particle_collision<level_asteroid, bullet> asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
   {
-    m_createImpactParticle(bullet.Position());
     bullet.Destroy();
+    m_impacts.emplace_back(bullet.Position());
   }};
 
-  particle_collision<duct_fan, bullet> m_ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
+  particle_collision<duct_fan, bullet> ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
   {
-    m_createImpactParticle(bullet.Position());
     bullet.Destroy();
+    m_impacts.emplace_back(bullet.Position());
   }};
 
-  particle_collision<level_target, bullet> m_targetToBulletCollision { [this](auto& target, auto& bullet)
+  particle_collision<level_target, bullet> targetToBulletCollision { [this](auto& target, auto& bullet)
   {
-    m_createImpactParticle(bullet.Position());
-
     if( !target->IsActivated() )
     {
       target->HitByBullet();
 
       if( target->IsActivated() )
       {
-        m_targetActivated();
+        // m_targetActivated();
       }
     }
 
     bullet.Destroy();
+
+    m_impacts.emplace_back(bullet.Position());
   }};
 
-  particle_collision<level_asteroid, explosion_particle> m_asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
+  particle_collision<level_asteroid, explosion_particle> asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
   }};
 
-  particle_collision<duct_fan, explosion_particle> m_ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
+  particle_collision<duct_fan, explosion_particle> ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
   }};
 
-  particle_collision<level_asteroid, thrust_particle> m_asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
+  particle_collision<level_asteroid, thrust_particle> asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
   {
     particle.Destroy();
   }};
 
-  particle_collision<duct_fan, thrust_particle> m_ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
+  particle_collision<duct_fan, thrust_particle> ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
   }};
 
-  geometry_containment<mine> m_mineContainment { [this](auto& mine)
+  [[nodiscard]] auto Explosions() const -> const explosion_collection&
   {
-    auto position = mine->PreviousPosition();
-    m_createExplosion(position);
-    mine->Destroy();
-    m_mineExploded();
-  }};
+    return m_explosions;
+  }
 
-  geometry_containment<player_ship> m_shipContainment { [this](auto& ship)
+  [[nodiscard]] auto Impacts() const -> const impact_collection&
   {
-    auto position = ship->PreviousPosition();
-    m_createExplosion(position);
-    ship->ApplyFatalDamage();
-  }};
+    return m_impacts;
+  }
 
-  particle_containment<explosion_particle> m_explosionContainment { [this](auto& particle)
+  auto Reset() -> void
   {
-    particle.Destroy();
-  }};
+    m_explosions.clear();
+    m_impacts.clear();
+  }
 
-  particle_containment<thrust_particle> m_thrustContainment { [this](auto& particle)
-  {
-    particle.Destroy();
-  }};
+private:
 
-  particle_containment<bullet> m_bulletContainment { [this](auto& bullet)
-  {
-    m_createImpactParticle(bullet.Position());
-    bullet.Destroy();
-  }};
+  explosion_collection m_explosions;
+  impact_collection m_impacts;
 
 };

@@ -87,13 +87,7 @@ private:
   int m_activatedTargetCount { 0 };
   update_events m_updateEvents;
 
-  level_collision_checks m_collisionChecks {
-    [this](const auto& position) { m_explosionParticles.Create( level_explosion { position } ); },
-    [this](const auto& position) { m_impactParticles.Create(position); },
-    [this]() { m_updateEvents.targetActivated = true; ++m_activatedTargetCount; },
-    [this]() { m_updateEvents.mineExploded = true; }
-  };
-
+  level_collision_checks m_collisionChecks;
   level_containment m_containmentChecks;
 
 };
