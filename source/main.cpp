@@ -147,24 +147,24 @@ auto destroy_input_devices() -> void
 
 auto create_directx_objects(HINSTANCE instance) -> void
 {
+  direct_sound::create(main_window::handle());
+  primary_sound_buffer::create(direct_sound::get_raw());
   create_d2d_render_target();
   dwrite_factory::create();
   level_geometries::create();
   renderer::create();
-  direct_sound::create(main_window::handle());
-  primary_sound_buffer::create(direct_sound::get_raw());
   create_input_devices(instance);
 }
 
 auto destroy_directx_objects() -> void
 {
   destroy_input_devices();
-  primary_sound_buffer::destroy();
-  direct_sound::destroy();
   renderer::destroy();
   level_geometries::destroy();
   dwrite_factory::destroy();
   destroy_d2d_render_target();
+  primary_sound_buffer::destroy();
+  direct_sound::destroy();
 }
 
 auto RunMainMenuScreen() -> void

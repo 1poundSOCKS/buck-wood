@@ -65,7 +65,7 @@ private:
   slider_control_renderer m_playerShieldsRenderer;
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
-  geometry_renderer m_ductFanRenderer { screen_render_brush_grey.CreateBrush(), 8 };
+  geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
 
 };
 

@@ -32,45 +32,32 @@ private:
   std::vector<game_point> m_ductFans;
 
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { 4, 0 },
-    boundary_build_command { 4, 4 },
-    boundary_build_command { 0, 4 },
-    boundary_build_command { -4, 4 },
-    boundary_build_command { -4, 0, boundary_build_command::type::portal },
-    boundary_build_command { -4, -4 },
-    boundary_build_command { 0, -4 }
-  };
-
-  inline static auto m_joinBoundaryBuildCommands = {
-    boundary_build_command { 0, 12 },
-    boundary_build_command { -4, 0, boundary_build_command::type::portal },
-    boundary_build_command { 0, -12 }
-  };
-
-  inline static auto m_endBoundaryBuildCommands = {
-    boundary_build_command { 4, 4 },
-    boundary_build_command { 0, 4 },
-    boundary_build_command { -4, 4 },
-    boundary_build_command { -4, 0 },
-    boundary_build_command { -4, -4 },
-    boundary_build_command { 0, -4 },
-    boundary_build_command { 4, -4 }
+    boundary_build_command { 8, 0 },
+    boundary_build_command { 8, 8 },
+    boundary_build_command { 0, 8 },
+    boundary_build_command { -8, 8 },
+    boundary_build_command { -8, 0 },
+    boundary_build_command { -8, -8 },
+    boundary_build_command { 0, -8 }
   };
 
   inline static auto m_targetPositions = {
-    cell { 0, 24 },
-    cell { -3, 27 }
+    cell { -2, -2 },
+    cell { -2, 2 },
+    cell { 2, -2 },
+    cell { 2, 2 }
   };
 
   inline static auto m_ductFanPositions = {
-    cell { 0, 12 }
+    cell { 0, 6 },
+    cell { 6, 0 },
+    cell { 0, -6 },
+    cell { -6, 0 }
   };
 
   inline static auto m_asteroidPositions = {
-    cell { 0, 1 },
-    cell { -3, 3 },
-    cell { 3, 26 },
-    cell { -1, 22 }
+    cell { 3, -6 },
+    cell { -3, 6 }
   };
 
 };
