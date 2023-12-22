@@ -36,7 +36,7 @@ auto play_scene::Update(__int64 ticks) -> bool
   auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
   auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
-  m_levelContainer->Update(levelInput, ticks, viewRect);
+  m_levelUpdateEvents = m_levelContainer->Update(levelInput, ticks, viewRect);
 
   return m_levelContainer->HasFinished() ? false : true;
 }
@@ -85,19 +85,19 @@ auto play_scene::PlaySoundEffects() const -> void
     sound_data::get(sound_data::thrust).Stop();
   }
 
-  if( m_levelContainer->UpdateEvents().playerShot )
+  if( m_levelUpdateEvents.playerShot )
   {
     sound_data::get(sound_data::shoot).Reset();
     sound_data::get(sound_data::shoot).Play(false);
   }
 
-  if( m_levelContainer->UpdateEvents().targetActivated )
+  if( m_levelUpdateEvents.targetActivated )
   {
     sound_data::get(sound_data::target_activated).Reset();
     sound_data::get(sound_data::target_activated).Play(false);
   }
 
-  if( m_levelContainer->UpdateEvents().mineExploded )
+  if( m_levelUpdateEvents.mineExploded )
   {
     sound_data::get(sound_data::mine_exploded).Reset();
     sound_data::get(sound_data::mine_exploded).Play(false);

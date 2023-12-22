@@ -5,7 +5,7 @@
 
 #include "level_objects.h"
 
-class level_containment
+class level_containment_checks
 {
 
 public:

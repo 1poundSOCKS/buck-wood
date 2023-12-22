@@ -3,7 +3,6 @@
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_collisions.h"
-#include "collisions/level_containment.h"
 
 #include "solid_objects.h"
 #include "blank_objects.h"
@@ -21,8 +20,6 @@ public:
 
   struct update_events
   {
-    auto reset() -> void;
-
     bool playerShot { false };
     bool targetActivated { false };
     bool mineExploded { false };
@@ -50,7 +47,7 @@ public:
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
-  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void;
+  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
@@ -61,7 +58,6 @@ public:
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
-  [[nodiscard]] auto UpdateEvents() const -> const update_events&;
 
 private:
 
@@ -85,19 +81,11 @@ private:
   blank_objects m_blankObjects;
 
   int m_activatedTargetCount { 0 };
-  update_events m_updateEvents;
 
   level_collision_checks m_collisionChecks;
-  level_containment m_containmentChecks;
+  level_containment_checks m_containmentChecks;
 
 };
-
-inline auto level_container::update_events::reset() -> void
-{
-  playerShot = false ;
-  targetActivated = false;
-  mineExploded = false;
-}
 
 auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -> void
 {
@@ -139,11 +127,6 @@ inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
 inline [[nodiscard]] auto level_container::PlayerShields() const -> const player_ship::shield_status&
 {
   return m_playerShip->ShieldStatus();  
-}
-
-inline [[nodiscard]] auto level_container::UpdateEvents() const -> const update_events&
-{
-  return m_updateEvents;
 }
 
 inline[[nodiscard]] auto level_container::Targets() const -> const target_collection&

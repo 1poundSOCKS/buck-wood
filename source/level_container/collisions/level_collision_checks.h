@@ -9,7 +9,6 @@
 #include "particle_containment.h"
 
 #include "level_objects.h"
-#include "collision_objects.h"
 
 class level_collision_checks
 {
@@ -90,15 +89,10 @@ public:
     if( !target->IsActivated() )
     {
       target->HitByBullet();
-
-      if( target->IsActivated() )
-      {
-        // m_targetActivated();
-      }
+      m_targetActivationCount += target->IsActivated() ? 1 : 0;
     }
 
     bullet.Destroy();
-
     m_impacts.emplace_back(bullet.Position());
   }};
 
@@ -132,15 +126,22 @@ public:
     return m_impacts;
   }
 
+  [[nodiscard]] auto TargetActivationCount() const -> int
+  {
+    return m_targetActivationCount;
+  }
+
   auto Reset() -> void
   {
     m_explosions.clear();
     m_impacts.clear();
+    m_targetActivationCount = 0;
   }
 
 private:
 
   explosion_collection m_explosions;
   impact_collection m_impacts;
+  int m_targetActivationCount { 0 };
 
 };

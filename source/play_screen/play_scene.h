@@ -38,6 +38,7 @@ protected:
 protected:
 
   level_container_ptr m_levelContainer;
+  level_container::update_events m_levelUpdateEvents;
   float m_cameraZoom { 1 };
 
 };

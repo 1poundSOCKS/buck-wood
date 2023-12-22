@@ -6,11 +6,11 @@
 #include "game_clock.h"
 #include "renderers.h"
 
-auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
   auto interval = game_clock::getInterval(ticks);
 
-  m_updateEvents.reset();
+  bool playerShot = false;
 
   if( m_playerShip->Destroyed() )
   {
@@ -22,8 +22,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
     if( m_reloadTimer.Update(interval) && input.ShootAngle() )
     {
-      m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
-      m_updateEvents.playerShot = true;
+      playerShot = true;
     }
 
     const auto& playerPosition = m_playerShip->Position();
@@ -55,6 +54,14 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   m_impactParticles.EraseDestroyed();
   m_thrustParticles.EraseDestroyed();
   m_mines.EraseDestroyed();
+
+  if( playerShot )
+  {
+    m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
+  }
+
+    return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
+    m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
 auto level_container::UpdatePlayer(const level_input& input, float interval) -> void
@@ -91,6 +98,9 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
+  m_collisionChecks.Reset();
+  m_containmentChecks.Reset();
+
   if( !m_playerShip->Destroyed() )
   {
     if( m_blankObjects.size() )
@@ -145,7 +155,4 @@ auto level_container::DoCollisions() -> void
   {
     m_impactParticles.Create(position);
   }
-
-  m_collisionChecks.Reset();
-  m_containmentChecks.Reset();
 }
