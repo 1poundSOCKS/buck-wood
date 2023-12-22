@@ -77,6 +77,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_clock::setMultiplier(1.6f);
 
+  swap_chain::get()->SetFullscreenState(game_settings::fullscreen() ? TRUE : FALSE, nullptr);
+
   RunMainMenuScreen();
 
   log::write(log::type::info, "app closing");
@@ -109,7 +111,8 @@ auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
   swapChainDesc.OutputWindow = main_window::handle();
   swapChainDesc.SampleDesc.Count = 1;
   swapChainDesc.SampleDesc.Quality = 0;
-  swapChainDesc.Windowed = game_settings::fullscreen() ? false : true;
+  // swapChainDesc.Windowed = game_settings::fullscreen() ? FALSE : TRUE;
+  swapChainDesc.Windowed = TRUE;
 }
 
 auto create_d2d_render_target() -> void
