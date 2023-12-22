@@ -24,14 +24,14 @@
 #pragma comment(lib,"gtest_main.lib")
 #endif
 
-auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void;
+auto RunMainMenuScreen() -> void;
+auto create_directx_objects(HINSTANCE instance) -> void;
+auto destroy_directx_objects() -> void;
 auto create_d2d_render_target() -> void;
 auto destroy_d2d_render_target() -> void;
 auto create_input_devices(HINSTANCE instance) -> void;
 auto destroy_input_devices() -> void;
-auto create_directx_objects(HINSTANCE instance) -> void;
-auto destroy_directx_objects() -> void;
-auto RunMainMenuScreen() -> void;
+auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void;
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
 {
@@ -97,22 +97,33 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   return 0;
 }
 
-auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
+auto RunMainMenuScreen() -> void
 {
-  ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-  swapChainDesc.BufferCount = 2;
-  swapChainDesc.BufferDesc.Width = 1920;
-  swapChainDesc.BufferDesc.Height = 1080;
-  swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  auto framerate = game_settings::framerate();
-  swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
-  swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDesc.OutputWindow = main_window::handle();
-  swapChainDesc.SampleDesc.Count = 1;
-  swapChainDesc.SampleDesc.Quality = 0;
-  // swapChainDesc.Windowed = game_settings::fullscreen() ? FALSE : TRUE;
-  swapChainDesc.Windowed = TRUE;
+  log::write(log::type::info, "opening main menu screen");
+  screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
+  windows_message_loop::run(mainMenu);  
+}
+
+auto create_directx_objects(HINSTANCE instance) -> void
+{
+  direct_sound::create(main_window::handle());
+  primary_sound_buffer::create(direct_sound::get_raw());
+  create_d2d_render_target();
+  dwrite_factory::create();
+  level_geometries::create();
+  renderer::create();
+  create_input_devices(instance);
+}
+
+auto destroy_directx_objects() -> void
+{
+  destroy_input_devices();
+  renderer::destroy();
+  level_geometries::destroy();
+  dwrite_factory::destroy();
+  destroy_d2d_render_target();
+  primary_sound_buffer::destroy();
+  direct_sound::destroy();
 }
 
 auto create_d2d_render_target() -> void
@@ -148,31 +159,19 @@ auto destroy_input_devices() -> void
   direct_input::destroy();
 }
 
-auto create_directx_objects(HINSTANCE instance) -> void
+auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
-  direct_sound::create(main_window::handle());
-  primary_sound_buffer::create(direct_sound::get_raw());
-  create_d2d_render_target();
-  dwrite_factory::create();
-  level_geometries::create();
-  renderer::create();
-  create_input_devices(instance);
-}
-
-auto destroy_directx_objects() -> void
-{
-  destroy_input_devices();
-  renderer::destroy();
-  level_geometries::destroy();
-  dwrite_factory::destroy();
-  destroy_d2d_render_target();
-  primary_sound_buffer::destroy();
-  direct_sound::destroy();
-}
-
-auto RunMainMenuScreen() -> void
-{
-  log::write(log::type::info, "opening main menu screen");
-  screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
-  windows_message_loop::run(mainMenu);  
+  ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+  swapChainDesc.BufferCount = 2;
+  swapChainDesc.BufferDesc.Width = 1920;
+  swapChainDesc.BufferDesc.Height = 1080;
+  swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  auto framerate = game_settings::framerate();
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
+  swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+  swapChainDesc.OutputWindow = main_window::handle();
+  swapChainDesc.SampleDesc.Count = 1;
+  swapChainDesc.SampleDesc.Quality = 0;
+  swapChainDesc.Windowed = TRUE;
 }
