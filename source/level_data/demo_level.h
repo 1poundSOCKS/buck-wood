@@ -45,14 +45,18 @@ private:
     cell { -2, -2 },
     cell { -2, 2 },
     cell { 2, -2 },
-    cell { 2, 2 }
+    cell { 2, 2 },
+    cell { -6, -6 },
+    cell { -6, 6 },
+    cell { 6, -6 },
+    cell { 6, 6 }
   };
 
   inline static auto m_ductFanPositions = {
-    cell { 0, 6 },
-    cell { 6, 0 },
-    cell { 0, -6 },
-    cell { -6, 0 }
+    cell { 0, 8 },
+    cell { 8, 0 },
+    cell { 0, -8 },
+    cell { -8, 0 }
   };
 
   inline static auto m_asteroidPositions = {

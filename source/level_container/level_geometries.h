@@ -25,10 +25,10 @@ private:
   static [[nodiscard]] auto GetDuctFanGeometryData(float size)
   {
     static constexpr auto ductFanGeometryData = std::array {
-      game_point { -0.05, -0.5 },
-      game_point { 0.05, -0.5 },
-      game_point { 0.05, 0.5 },
-      game_point { -0.05, 0.5 }
+      game_point { -0.5, -0.5 },
+      game_point { 0.5, -0.5 },
+      game_point { 0.5, 0.5 },
+      game_point { -0.5, 0.5 }
     };
 
     return ductFanGeometryData | std::ranges::views::transform([size](const game_point& gamePoint) -> game_point
@@ -59,7 +59,7 @@ private:
     return path_geometry { irregularShape };
   }
 
-  level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(300) }, m_playerShipGeometry { GetPlayerGeometryData() }
+  level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(200) }, m_playerShipGeometry { GetPlayerGeometryData() }
   {
   }
 
