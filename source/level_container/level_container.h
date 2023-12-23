@@ -60,8 +60,9 @@ public:
 
 private:
 
-  auto UpdatePlayer(const level_input& input, float interval, player_ship::update_events* updateEvents) -> void;
-  auto DoCollisions() -> void;
+  auto DoPlayerCollisions() -> void;
+  auto DoNonPlayerCollisions() -> void;
+  auto CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
 
 private:
 

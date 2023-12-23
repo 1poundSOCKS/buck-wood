@@ -13,7 +13,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
   player_ship::update_events playerUpdateEvents;
-  UpdatePlayer(input, interval, &playerUpdateEvents);
+  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, &playerUpdateEvents);
 
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
@@ -23,7 +23,15 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   m_impactParticles.Update(interval);
   m_thrustParticles.Update(interval);
 
-  DoCollisions();
+  m_collisionChecks.Reset();
+  m_containmentChecks.Reset();
+
+  if( !m_playerShip->Destroyed() )
+  {
+    DoPlayerCollisions();
+  }
+
+  DoNonPlayerCollisions();
 
   m_bullets.EraseDestroyed();
   m_explosionParticles.EraseDestroyed();
@@ -31,36 +39,15 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   m_thrustParticles.EraseDestroyed();
   m_mines.EraseDestroyed();
 
-  if( playerUpdateEvents.shot )
+  if( !m_playerShip->Destroyed() && playerUpdateEvents.shot )
   {
     m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
   }
 
-  if( playerPosition )
-  {
-    auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return target->CanShootAt(*playerPosition); });
-
-    for( const auto& target : shootingTargets )
-    {
-      m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
-    }
-  }
+  CreateNewObjects(interval, playerPosition);
 
   return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
-}
-
-auto level_container::UpdatePlayer(const level_input& input, float interval, player_ship::update_events* updateEvents) -> void
-{
-  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, updateEvents);
-
-  if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
-  {
-    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
-    auto thrustAngle = m_playerShip->Angle() + 180;
-    auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
-    m_thrustParticles.Create(thrustPosition, thrustVelocity, 0.3f);
-  }
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -82,21 +69,18 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_thrustParticles);
 }
 
-auto level_container::DoCollisions() -> void
+auto level_container::DoPlayerCollisions() -> void
 {
-  m_collisionChecks.Reset();
-  m_containmentChecks.Reset();
+  m_containmentChecks.shipContainment(m_boundary.Geometry().Get(), m_playerShip);
+  m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
+  m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
+  m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
+  m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
+  m_collisionChecks.shipToExplosionCollision(m_playerShip, m_explosionParticles);
+}
 
-  if( !m_playerShip->Destroyed() )
-  {
-    m_containmentChecks.shipContainment(m_boundary.Geometry().Get(), m_playerShip);
-    m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
-    m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
-    m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
-    m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
-    m_collisionChecks.shipToExplosionCollision(m_playerShip, m_explosionParticles);
-  }
-
+auto level_container::DoNonPlayerCollisions() -> void
+{
   m_containmentChecks.mineContainment(m_boundary.Geometry().Get(), m_mines);
   m_containmentChecks.explosionContainment(m_boundary.Geometry().Get(), m_explosionParticles);
   m_containmentChecks.thrustContainment(m_boundary.Geometry().Get(), m_thrustParticles);
@@ -112,6 +96,16 @@ auto level_container::DoCollisions() -> void
   m_collisionChecks.ductFanToExplosionCollision(m_ductFans, m_explosionParticles);
   m_collisionChecks.ductFanToThrustCollision(m_ductFans, m_thrustParticles);
   m_collisionChecks.targetToBulletCollision(m_targets, m_bullets);
+}
+
+auto level_container::CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void
+{
+  auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return playerPosition && target->CanShootAt(*playerPosition); });
+
+  for( const auto& target : shootingTargets )
+  {
+    m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
+  }
 
   for( const auto& position : m_containmentChecks.Explosions() )
   {
@@ -131,5 +125,13 @@ auto level_container::DoCollisions() -> void
   for( const auto& position : m_collisionChecks.Impacts() )
   {
     m_impactParticles.Create(position);
+  }
+
+  if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
+  {
+    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
+    auto thrustAngle = m_playerShip->Angle() + 180;
+    auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
+    m_thrustParticles.Create(thrustPosition, thrustVelocity, 0.3f);
   }
 }
