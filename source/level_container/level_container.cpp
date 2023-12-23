@@ -10,10 +10,10 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 {
   auto interval = game_clock::getInterval(ticks);
   
-  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-
   player_ship::update_events playerUpdateEvents;
   m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, &playerUpdateEvents);
+
+  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
@@ -72,6 +72,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 auto level_container::DoPlayerCollisions() -> void
 {
   m_containmentChecks.shipContainment(m_boundary.Geometry().Get(), m_playerShip);
+
   m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
   m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
   m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);

@@ -39,6 +39,8 @@ public:
   using impact_particle_collection  = particle_collection<impact_particle>;
   using thrust_particle_collection = particle_collection<thrust_particle>;
 
+public:
+
   level_container(std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
