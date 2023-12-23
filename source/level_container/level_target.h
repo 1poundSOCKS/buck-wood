@@ -13,7 +13,7 @@ public:
   [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto IsActivated() const -> bool;
-  [[nodiscard]] auto ShootAt(game_point position) const -> bool;
+  [[nodiscard]] auto CanShootAt(game_point position) const -> bool;
 
   auto HitByBullet() -> void;
   auto Activate() -> void;

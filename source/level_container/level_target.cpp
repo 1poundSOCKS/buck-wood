@@ -13,7 +13,7 @@ level_target::level_target(float x, float y) : m_position { x, y }
   return m_activated;
 }
 
-[[nodiscard]] auto level_target::ShootAt(game_point position) const -> bool
+[[nodiscard]] auto level_target::CanShootAt(game_point position) const -> bool
 {
   return !m_activated && m_reloaded && m_position.DistanceTo(position) < 1500;
 }

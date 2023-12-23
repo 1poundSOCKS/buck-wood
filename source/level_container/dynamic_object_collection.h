@@ -59,6 +59,11 @@ public:
     }
   }
 
+  auto back_inserter()
+  {
+    return std::back_inserter(m_objectCollection);
+  }
+
 private:
 
   collection_type m_objectCollection;

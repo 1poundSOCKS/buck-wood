@@ -14,6 +14,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   player_ship::update_events playerUpdateEvents;
   UpdatePlayer(input, interval, &playerUpdateEvents);
+
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
   m_ductFans.Update(interval);
@@ -37,12 +38,11 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   if( playerPosition )
   {
-    for( auto& target : m_targets )
+    auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return target->CanShootAt(*playerPosition); });
+
+    for( const auto& target : shootingTargets )
     {
-      if( target->ShootAt(*playerPosition) )
-      {
-        m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
-      }
+      m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
     }
   }
 
