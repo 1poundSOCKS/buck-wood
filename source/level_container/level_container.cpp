@@ -65,7 +65,7 @@ auto level_container::UpdatePlayer(const level_input& input, float interval, pla
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
-  renderer::render_all(m_blankObjects);
+  renderer::render(m_boundary);
   renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_mines);
@@ -89,12 +89,7 @@ auto level_container::DoCollisions() -> void
 
   if( !m_playerShip->Destroyed() )
   {
-    if( m_blankObjects.size() )
-    {
-      auto& border = m_blankObjects.front();
-      m_containmentChecks.shipContainment(border.Geometry().Get(), m_playerShip);
-    }
-
+    m_containmentChecks.shipContainment(m_boundary.Geometry().Get(), m_playerShip);
     m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
     m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
     m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
@@ -102,14 +97,10 @@ auto level_container::DoCollisions() -> void
     m_collisionChecks.shipToExplosionCollision(m_playerShip, m_explosionParticles);
   }
 
-  if( m_blankObjects.size() )
-  {
-    const auto& border = m_blankObjects.front();
-    m_containmentChecks.mineContainment(border.Geometry().Get(), m_mines);
-    m_containmentChecks.explosionContainment(border.Geometry().Get(), m_explosionParticles);
-    m_containmentChecks.thrustContainment(border.Geometry().Get(), m_thrustParticles);
-    m_containmentChecks.bulletContainment(border.Geometry().Get(), m_bullets);
-  }
+  m_containmentChecks.mineContainment(m_boundary.Geometry().Get(), m_mines);
+  m_containmentChecks.explosionContainment(m_boundary.Geometry().Get(), m_explosionParticles);
+  m_containmentChecks.thrustContainment(m_boundary.Geometry().Get(), m_thrustParticles);
+  m_containmentChecks.bulletContainment(m_boundary.Geometry().Get(), m_bullets);
 
   m_collisionChecks.mineToAsteroidCollision(m_mines, m_asteroids);
   m_collisionChecks.mineToDuctFanCollision(m_mines, m_ductFans);

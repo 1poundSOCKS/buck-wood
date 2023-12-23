@@ -67,6 +67,7 @@ private:
 
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
 
+  blank_object m_boundary;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry() };
   target_collection m_targets;
   mine_collection m_mines;
@@ -76,7 +77,6 @@ private:
   impact_particle_collection m_impactParticles;
   thrust_particle_collection m_thrustParticles;  
   asteroid_collection m_asteroids;
-  blank_objects m_blankObjects;
 
   int m_activatedTargetCount { 0 };
 
@@ -85,9 +85,8 @@ private:
 
 };
 
-level_container::level_container(std::ranges::input_range auto&& points)
+level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }
 {
-  m_blankObjects.emplace_back(points);
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
