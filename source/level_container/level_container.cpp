@@ -82,8 +82,8 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_blankObjects);
   renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);
-  renderer::render_all(m_targets);
   renderer::render_all(m_mines);
+  renderer::render_all(m_targets);
   renderer::render_all(m_ductFans);
   renderer::render_all(m_impactParticles);
   renderer::render_all(m_bullets);
