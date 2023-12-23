@@ -16,8 +16,9 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
 
   auto Destroy() -> void;
-  auto Update(float interval, float x, float y) -> void;
-  auto Update(float interval) -> void;
+  // auto Update(float interval, float x, float y) -> void;
+  auto Update(float interval, const std::optional<game_point>& playerPosition) -> void;
+  // auto Update(float interval) -> void;
 
 private:
 

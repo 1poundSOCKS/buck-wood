@@ -5,17 +5,24 @@ mine::mine(float x, float y) : m_body { game_point { x, y } }
 {
 }
 
-auto mine::Update(float interval, float x, float y) -> void
-{
-  auto position = m_body.Position();
-  auto angle = CalculateAngle(position.x, position.y, x, y);
-  m_body.SetAngle(angle);
-  Update(interval);
-}
+// auto mine::Update(float interval, float x, float y) -> void
+// {
+//   auto position = m_body.Position();
+//   auto angle = CalculateAngle(position.x, position.y, x, y);
+//   m_body.SetAngle(angle);
+//   Update(interval);
+// }
 
-auto mine::Update(float interval) -> void
+auto mine::Update(float interval, const std::optional<game_point>& playerPosition) -> void
 {
   m_previousState = m_body;
+
+  if( playerPosition )
+  {
+    auto position = m_body.Position();
+    auto angle = CalculateAngle(position.x, position.y, playerPosition->x, playerPosition->y);
+    m_body.SetAngle(angle);
+  }
 
   m_spin += m_spinRate * interval;
 
@@ -27,6 +34,21 @@ auto mine::Update(float interval) -> void
   m_body.Accelerate(m_thrustPower * interval);
   m_body.Update(interval);
 }
+
+// auto mine::Update(float interval) -> void
+// {
+//   m_previousState = m_body;
+
+//   m_spin += m_spinRate * interval;
+
+//   auto velocity = m_body.Velocity();
+//   float velocityChange = 1.0f - 0.1f * interval;
+//   velocity.Update(velocityChange, velocityChange);
+
+//   m_body.SetVelocity(velocity);
+//   m_body.Accelerate(m_thrustPower * interval);
+//   m_body.Update(interval);
+// }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool
 {

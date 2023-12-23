@@ -12,30 +12,21 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   player_ship::update_events playerUpdateEvents;
 
-  // std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
+  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
-  if( m_playerShip->Destroyed() )
+  if( playerPosition )
   {
-    m_mines.Update(interval);
-  }
-  else
-  {
-    UpdatePlayer(input, interval, &playerUpdateEvents);
-    const auto& playerPosition = m_playerShip->Position();
-
     for( auto& target : m_targets )
     {
-      auto targetPosition = target->Position();
-      
-      if( target->ShootAt(playerPosition) )
+      if( target->ShootAt(*playerPosition) )
       {
-        m_mines.Create(level_geometries::MineGeometry(), targetPosition.x, targetPosition.y);
+        m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
       }
     }
-
-    m_mines.Update(interval, playerPosition.x, playerPosition.y);
   }
 
+  UpdatePlayer(input, interval, &playerUpdateEvents);
+  m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
   m_ductFans.Update(interval);
   m_bullets.Update(interval);
