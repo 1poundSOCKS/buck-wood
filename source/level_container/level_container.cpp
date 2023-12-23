@@ -10,7 +10,9 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 {
   auto interval = game_clock::getInterval(ticks);
 
-  bool playerShot = false;
+  player_ship::update_events playerUpdateEvents;
+
+  // std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
   if( m_playerShip->Destroyed() )
   {
@@ -18,13 +20,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   }
   else
   {
-    UpdatePlayer(input, interval);
-
-    if( m_reloadTimer.Update(interval) && input.ShootAngle() )
-    {
-      playerShot = true;
-    }
-
+    UpdatePlayer(input, interval, &playerUpdateEvents);
     const auto& playerPosition = m_playerShip->Position();
 
     for( auto& target : m_targets )
@@ -55,18 +51,18 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   m_thrustParticles.EraseDestroyed();
   m_mines.EraseDestroyed();
 
-  if( playerShot )
+  if( playerUpdateEvents.shot )
   {
     m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
   }
 
-  return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
+  return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
-auto level_container::UpdatePlayer(const level_input& input, float interval) -> void
+auto level_container::UpdatePlayer(const level_input& input, float interval, player_ship::update_events* updateEvents) -> void
 {
-  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation());
+  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, updateEvents);
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
   {

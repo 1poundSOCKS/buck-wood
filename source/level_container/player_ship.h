@@ -8,12 +8,20 @@
 
 class player_ship
 {
+
 public:
 
   enum class state { alive, dead };
 
+  struct update_events
+  {
+    bool shot { false };
+  };
+
   using points_collection = std::vector<game_point>;
   using shield_status = std::shared_ptr<health_status>;
+
+public:
 
   player_ship() = default;
   player_ship(const game_point& position);
@@ -25,7 +33,7 @@ public:
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
 
-  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation) -> void;
+  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, bool shoot, update_events* updateEvents) -> void;
 
   [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto PreviousPosition() const -> const game_point&;
@@ -47,6 +55,7 @@ private:
   directional_body m_body;
   directional_body m_previousState;
   float m_thrust { 0 };
+  reload_timer m_reloadTimer { 1.0f / 20.0f };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 

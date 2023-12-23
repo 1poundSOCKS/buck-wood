@@ -61,12 +61,11 @@ public:
 
 private:
 
-  auto UpdatePlayer(const level_input& input, float interval) -> void;
+  auto UpdatePlayer(const level_input& input, float interval, player_ship::update_events* updateEvents) -> void;
   auto DoCollisions() -> void;
 
 private:
 
-  reload_timer m_reloadTimer { 1.0f / 20.0f };
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
 
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry() };
