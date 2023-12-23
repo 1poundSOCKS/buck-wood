@@ -39,10 +39,9 @@ public:
   using impact_particle_collection  = particle_collection<impact_particle>;
   using thrust_particle_collection = particle_collection<thrust_particle>;
 
-  level_container() = default;
+  level_container(std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddBlankObjects(std::ranges::input_range auto&& objects) -> void;
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
@@ -86,12 +85,9 @@ private:
 
 };
 
-auto level_container::AddBlankObjects(std::ranges::input_range auto&& objects) -> void
+level_container::level_container(std::ranges::input_range auto&& points)
 {
-  std::ranges::for_each(objects, [this](const auto& object)
-  {
-    m_blankObjects.push_back(object);
-  });
+  m_blankObjects.emplace_back(points);
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
