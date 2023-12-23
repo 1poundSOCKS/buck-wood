@@ -9,22 +9,10 @@
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
   auto interval = game_clock::getInterval(ticks);
-
-  player_ship::update_events playerUpdateEvents;
-
+  
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
-  if( playerPosition )
-  {
-    for( auto& target : m_targets )
-    {
-      if( target->ShootAt(*playerPosition) )
-      {
-        m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
-      }
-    }
-  }
-
+  player_ship::update_events playerUpdateEvents;
   UpdatePlayer(input, interval, &playerUpdateEvents);
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
@@ -45,6 +33,17 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   if( playerUpdateEvents.shot )
   {
     m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
+  }
+
+  if( playerPosition )
+  {
+    for( auto& target : m_targets )
+    {
+      if( target->ShootAt(*playerPosition) )
+      {
+        m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
+      }
+    }
   }
 
   return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
