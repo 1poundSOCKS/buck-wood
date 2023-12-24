@@ -17,7 +17,7 @@ public:
   static auto destroy() -> void;
 
   static auto add(std::wstring_view label, auto value) -> void;
-  static auto addTime(std::wstring_view label, int64_t ticks, int fps) -> void;
+  static auto addTime(std::wstring_view label, int64_t ticks, const std::optional<int>& fps) -> void;
   static auto addWindowData(const window_data& windowData) -> void;
   static auto setUpdateTime(int64_t ticks) -> void;
   static auto setRenderTime(int64_t ticks) -> void;
@@ -31,7 +31,7 @@ public:
 
 private:
 
-  auto AddTime(std::wstring_view label, int64_t ticks, int fps) -> void;
+  auto AddTime(std::wstring_view label, int64_t ticks, const std::optional<int>& fps) -> void;
   auto AddWindowData(const window_data& windowData) -> void;
   auto AddFPS() -> void;
   auto AddTimingData(int fps) -> void;
@@ -53,7 +53,7 @@ inline auto diagnostics::add(std::wstring_view label, auto value) -> void
   m_instance->m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, value));
 }
 
-inline auto diagnostics::addTime(std::wstring_view label, int64_t ticks, int fps) -> void
+inline auto diagnostics::addTime(std::wstring_view label, int64_t ticks, const std::optional<int>& fps) -> void
 {
   m_instance->AddTime(label, ticks, fps);
 }

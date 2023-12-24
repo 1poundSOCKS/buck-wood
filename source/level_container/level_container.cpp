@@ -3,20 +3,28 @@
 #include "explosion.h"
 #include "game_clock.h"
 #include "renderers.h"
+#include "game_settings.h"
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
   auto interval = game_clock::getInterval(ticks);
+
+  auto updateStart = performance_counter::QueryValue();
   
   player_ship::update_events playerUpdateEvents;
   m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, &playerUpdateEvents);
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-
   UpdateObjects(interval, playerPosition);
+
+  auto updateEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"update", updateEnd - updateStart, game_settings::framerate());
 
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
+
+  auto collisionsStart = performance_counter::QueryValue();
 
   if( !m_playerShip->Destroyed() )
   {
@@ -24,6 +32,10 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   }
 
   DoNonPlayerCollisions();
+
+  auto collisionsEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::framerate());
 
   EraseDestroyedObjects();
 
@@ -60,6 +72,8 @@ auto level_container::EraseDestroyedObjects() -> void
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
+  auto renderStart = performance_counter::QueryValue();
+
   renderer::render(m_boundary);
   renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);
@@ -75,6 +89,10 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   }
 
   renderer::render_all(m_thrustParticles);
+
+  auto renderEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::framerate());
 }
 
 auto level_container::DoPlayerCollisions() -> void
