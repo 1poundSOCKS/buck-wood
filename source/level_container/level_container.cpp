@@ -13,13 +13,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
-  m_mines.Update(interval, playerPosition);
-  m_targets.Update(interval);
-  m_ductFans.Update(interval);
-  m_bullets.Update(interval);
-  m_explosionParticles.Update(interval);
-  m_impactParticles.Update(interval);
-  m_thrustParticles.Update(interval);
+  UpdateObjects(interval, playerPosition);
 
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
@@ -31,11 +25,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   DoNonPlayerCollisions();
 
-  m_bullets.EraseDestroyed();
-  m_explosionParticles.EraseDestroyed();
-  m_impactParticles.EraseDestroyed();
-  m_thrustParticles.EraseDestroyed();
-  m_mines.EraseDestroyed();
+  EraseDestroyedObjects();
 
   if( !m_playerShip->Destroyed() && playerUpdateEvents.shot )
   {
@@ -46,6 +36,26 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
+}
+
+auto level_container::UpdateObjects(float interval, const std::optional<game_point>& playerPosition) -> void
+{
+  m_mines.Update(interval, playerPosition);
+  m_targets.Update(interval);
+  m_ductFans.Update(interval);
+  m_bullets.Update(interval);
+  m_explosionParticles.Update(interval);
+  m_impactParticles.Update(interval);
+  m_thrustParticles.Update(interval);  
+}
+
+auto level_container::EraseDestroyedObjects() -> void
+{
+  m_bullets.EraseDestroyed();
+  m_explosionParticles.EraseDestroyed();
+  m_impactParticles.EraseDestroyed();
+  m_thrustParticles.EraseDestroyed();
+  m_mines.EraseDestroyed();
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void

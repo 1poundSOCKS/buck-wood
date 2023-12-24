@@ -4,8 +4,6 @@
 #include "level_objects.h"
 #include "level_collisions.h"
 
-// #include "solid_objects.h"
-// #include "blank_objects.h"
 #include "level_explosion.h"
 
 #include "dynamic_object_collection.h"
@@ -62,6 +60,8 @@ public:
 
 private:
 
+  auto UpdateObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
+  auto EraseDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
