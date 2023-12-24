@@ -3,6 +3,7 @@
 #include "play_event.h"
 #include "path_geometry.h"
 #include "reload_timer.h"
+#include "game_scale.h"
 
 class level_target
 {
@@ -10,8 +11,10 @@ public:
 
   level_target(float x, float y);
 
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Position() const -> const game_point&;
+
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(game_point position) const -> bool;
 

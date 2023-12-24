@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transformed_path_geometry.h"
+#include "game_scale.h"
 
 class duct_fan
 {
@@ -16,8 +17,9 @@ public:
     m_angle += m_rotationSpeed * interval;
   }
 
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 0.5f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Position() const -> const game_point&;
 
 private:
 

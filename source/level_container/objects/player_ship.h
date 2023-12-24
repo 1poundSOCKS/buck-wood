@@ -5,6 +5,7 @@
 #include "reload_timer.h"
 #include "directional_body.h"
 #include "health_status.h"
+#include "game_scale.h"
 
 class player_ship
 {
@@ -35,9 +36,11 @@ public:
 
   auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, bool shoot, update_events* updateEvents) -> void;
 
-  [[nodiscard]] auto Position() const -> const game_point&;
-  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
+  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Position() const -> const game_point&;
+
+  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;

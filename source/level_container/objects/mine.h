@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "directional_body.h"
+#include "game_scale.h"
 
 class mine
 {
@@ -10,15 +11,15 @@ public:
 
   mine(float x, float y);
 
-  [[nodiscard]] auto Position() const -> const game_point&;
-  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
+  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Position() const -> const game_point&;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Destroy() -> void;
-  // auto Update(float interval, float x, float y) -> void;
   auto Update(float interval, const std::optional<game_point>& playerPosition) -> void;
-  // auto Update(float interval) -> void;
+  auto Destroy() -> void;
+
+  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
 
 private:
 
