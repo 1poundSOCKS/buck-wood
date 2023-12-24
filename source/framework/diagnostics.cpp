@@ -21,11 +21,8 @@ auto diagnostics::destroy() -> void
 
 auto diagnostics::AddTime(std::wstring_view label, int64_t ticks, const std::optional<int>& fps) -> void
 {
-  if( fps )
-  {
-    auto frameTime = performance_counter::QueryFrequency() / *fps;
-    m_diagnosticsData.emplace_back(std::format(L"{}: {:.1f}", label, GetPercentageTime(frameTime, ticks)));
-  }
+  auto time = fps ? std::format(L"{:.1f}", GetPercentageTime(performance_counter::QueryFrequency() / *fps, ticks)) : L"n/a";
+  m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, time));
 }
 
 auto diagnostics::AddWindowData(const window_data& windowData) -> void
@@ -38,13 +35,6 @@ auto diagnostics::AddWindowData(const window_data& windowData) -> void
 auto diagnostics::AddFPS() -> void
 {
   m_diagnosticsData.emplace_back(std::format(L"fps: {}", m_frameData.GetFPS()));
-}
-
-auto diagnostics::AddTimingData(int fps) -> void
-{
-  auto frameTime = performance_counter::QueryFrequency() / fps;
-  m_diagnosticsData.emplace_back(std::format(L"update time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsUpdateTime)));
-  m_diagnosticsData.emplace_back(std::format(L"render time: {:.1f}", GetPercentageTime(frameTime, m_diagnosticsRenderTime)));
 }
 
 [[nodiscard]] auto diagnostics::Text() const -> std::wstring
