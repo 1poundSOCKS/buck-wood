@@ -1,6 +1,6 @@
 #pragma once
 
-#include "player_ship.h"
+#include "objects/player_ship.h"
 
 class player_shields
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_asteroid.h"
+#include "objects/level_asteroid.h"
 #include "level_grid.h"
 
 using asteroid_row = std::list<level_asteroid>;

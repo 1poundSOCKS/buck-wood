@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_target.h"
+#include "objects/level_target.h"
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
 

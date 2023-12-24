@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bullet.h"
+#include "objects/bullet.h"
 #include "color_scale_brushes.h"
 
 class bullet_renderer

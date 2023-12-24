@@ -1,7 +1,7 @@
 #pragma once
 
-#include "explosion_particle.h"
 #include "framework.h"
+#include "objects/explosion_particle.h"
 
 class const_level_explosion_iterator
 {

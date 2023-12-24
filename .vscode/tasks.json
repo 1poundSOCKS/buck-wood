@@ -23,6 +23,7 @@
 				"${workspaceFolder}/source/play_screen/*.cpp",
 				"${workspaceFolder}/source/framework/*.cpp",
 				"${workspaceFolder}/source/level_container/*.cpp",
+				"${workspaceFolder}/source/level_container/objects/*.cpp",
 				"${workspaceFolder}/source/level_data/*.cpp",
 				"${workspaceFolder}/source/user_interface/*.cpp",
 				"${workspaceFolder}/source/renderers/*.cpp",

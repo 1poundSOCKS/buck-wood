@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "duct_fan.h"
+// #include "level_objects.h"
 
 class level_geometries
 {

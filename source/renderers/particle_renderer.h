@@ -1,7 +1,7 @@
 #pragma once
 
 #include "render_types.h"
-#include "particle.h"
+#include "objects/particle.h"
 #include "render_target.h"
 #include "color_scale_brushes.h"
 
