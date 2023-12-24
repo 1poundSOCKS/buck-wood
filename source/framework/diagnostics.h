@@ -1,5 +1,4 @@
-#ifndef _diagnostics_
-#define _diagnostics_
+#pragma once
 
 #include "frame_data.h"
 #include "window_data.h"
@@ -93,14 +92,12 @@ inline auto diagnostics::clear() -> void
   m_instance->m_diagnosticsData.clear();
 }
 
-[[nodiscard]] inline auto diagnostics::data() -> const diagnostics_data_collection&
+inline [[nodiscard]] auto diagnostics::data() -> const diagnostics_data_collection&
 {
   return m_instance->m_diagnosticsData;
 }
 
-[[nodiscard]] inline auto diagnostics::text() -> std::wstring
+inline [[nodiscard]] auto diagnostics::text() -> std::wstring
 {
   return m_instance->Text();
 }
-
-#endif
