@@ -26,7 +26,7 @@ public:
   template <typename...Args> auto Update(Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);
-    m_geometry.Transform(D2D1::Matrix3x2F::Rotation(m_object.Angle()) * D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y));
+    m_geometry.Transform(/*D2D1::Matrix3x2F::Scale(m_object.Scale()) * */D2D1::Matrix3x2F::Rotation(m_object.Angle()) * D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y));
   }
 
   auto operator->() const -> const object_type*

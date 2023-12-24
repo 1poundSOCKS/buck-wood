@@ -46,6 +46,8 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   CreateNewObjects(interval, playerPosition);
 
+  m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
+
   return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
