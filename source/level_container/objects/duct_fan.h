@@ -12,19 +12,21 @@ public:
   {
   }
 
-  auto Update(float interval) -> void
-  {
-    m_angle += m_rotationSpeed * interval;
-  }
-
-  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 0.5f, 1.0f }; };
+  [[nodiscard]] auto Scale() const -> game_scale { return m_scale; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> const game_point&;
 
+  auto Update(float interval) -> void
+  {
+    m_scale += game_scale { 0.002f, 0.0f };
+    m_angle += m_rotationSpeed * interval;
+  }
+
 private:
 
-  game_point m_position;
+  game_scale m_scale { 0.5f, 1.0f };
   game_angle m_angle;
+  game_point m_position;
   float m_rotationSpeed { 0 };
 
 };

@@ -18,6 +18,12 @@ public:
     return m_height;
   }
 
+  auto operator +=(game_scale increment) -> void
+  {
+    m_width += increment.m_width;
+    m_height += increment.m_height;
+  }
+
 private:
 
   float m_width { 1.0 };
