@@ -71,7 +71,7 @@ private:
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
 
   blank_object m_boundary;
-  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry() };
+  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };
   target_collection m_targets;
   mine_collection m_mines;
   duct_fan_collection m_ductFans;

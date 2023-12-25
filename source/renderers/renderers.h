@@ -2,16 +2,8 @@
 
 #include "dynamic_object.h"
 #include "level_objects.h"
-// #include "level_asteroid.h"
-// #include "solid_objects.h"
-// #include "blank_objects.h"
-// #include "explosion.h"
-// #include "mine.h"
-// #include "explosion_particle.h"
-// #include "impact_particle.h"
 #include "player_shields.h"
-// #include "duct_fan.h"
-// #include "thrust_particle.h"
+#include "hud_target.h"
 
 #include "level_target_renderer.h"
 #include "bullet_renderer.h"
@@ -49,10 +41,19 @@ private:
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const thrust_particle& particle) const -> void;
+  auto Render(const hud_target& hudTarget) const -> void;
 
 private:
 
   inline static renderer* m_instance { nullptr };
+
+  path_geometry m_targetGeometry { std::array
+  {
+    game_point { -50, -50 }, 
+    game_point { 50, -50 }, 
+    game_point { 50, 50 }, 
+    game_point { -50, 50 }
+  }};
 
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
@@ -67,6 +68,7 @@ private:
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
+  geometry_renderer m_hudTargetRenderer { screen_render_brush_white.CreateBrush(), 6 };
 
 };
 
@@ -161,4 +163,10 @@ inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_r
 inline auto renderer::Render(const thrust_particle& particle) const -> void
 {
   m_thrustParticleRenderer.Write(particle);
+}
+
+inline auto renderer::Render(const hud_target& hudTarget) const -> void
+{
+  transformed_path_geometry finalTargetGeometry { m_targetGeometry, D2D1::Matrix3x2F::Translation( { hudTarget.Position().x, hudTarget.Position().y } ) };
+  m_hudTargetRenderer.Write(finalTargetGeometry);
 }

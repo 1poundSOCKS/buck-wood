@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(const game_point& position) : m_body { position }
+player_ship::player_ship(const game_point& position) : m_body { position }, m_reloadTimer { 1.0f / 20.0f }
 {
 }
 

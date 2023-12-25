@@ -43,15 +43,25 @@ auto play_scene::Update(__int64 ticks) -> bool
 
 auto play_scene::Render() const -> void
 {
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, m_cameraZoom };
-  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
-  auto screenTransform = screen_transform { cameraTransform.Get() };
+  auto screenTransform = ScreenTransform();
   auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   render_target::get()->SetTransform(screenTransform.Get());
   m_levelContainer->Render(viewRect);
+}
+
+auto play_scene::ScreenTransform() const -> screen_transform
+{
+  auto playerPosition = m_levelContainer->PlayerPosition();
+  camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, m_cameraZoom };
+  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
+  return screen_transform { cameraTransform.Get() };
+}
+
+auto play_scene::LevelContainer() const -> level_container_ptr
+{
+  return m_levelContainer;
 }
 
 [[nodiscard]] auto play_scene::GetLevelInput() const -> level_input

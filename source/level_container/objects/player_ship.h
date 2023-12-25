@@ -24,8 +24,12 @@ public:
 
 public:
 
-  player_ship() = default;
   player_ship(const game_point& position);
+
+  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
+  [[nodiscard]] auto Angle() const -> float;
+  [[nodiscard]] auto Position() const -> const game_point&;
+  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, bool shoot, update_events* updateEvents) -> void;
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -34,11 +38,6 @@ public:
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
 
-  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, bool shoot, update_events* updateEvents) -> void;
-
-  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
-  [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> const game_point&;
 
   [[nodiscard]] auto PreviousPosition() const -> const game_point&;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
@@ -54,6 +53,8 @@ public:
 private:
 
   inline static const auto m_thrustPower { 400.0f };
+  // inline static constexpr reload_timer m_defaultReloadTImer { 1.0f / 20.0f };
+
   state m_state { state::alive };
   directional_body m_body;
   directional_body m_previousState;

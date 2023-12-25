@@ -5,7 +5,6 @@
 
 level_target::level_target(float x, float y) : m_position { x, y }
 {
-  m_reloadTimer = reload_timer { m_defaultReloadTime };
 }
 
 [[nodiscard]] auto level_target::IsActivated() const -> bool

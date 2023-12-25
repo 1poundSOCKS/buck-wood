@@ -20,7 +20,11 @@ public:
     keyboard_reader::update();
     gamepad_reader::update();
 
+#ifdef USE_FPS_FRAMETIME
     auto frameTime = m_fps ? m_timerFrequency / *m_fps : m_currentTime - m_previousTime;
+#else
+    auto frameTime = m_currentTime - m_previousTime;
+#endif
 
     if( m_toggleFullscreenKey && keyboard_reader::pressed(*m_toggleFullscreenKey) )
     {

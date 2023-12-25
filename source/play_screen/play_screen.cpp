@@ -6,6 +6,7 @@
 #include "opening_play_scene.h"
 #include "main_play_scene.h"
 #include "closing_play_scene.h"
+#include "hud_target.h"
 
 play_screen::play_screen()
 {
@@ -63,6 +64,15 @@ auto play_screen::RenderUI() -> void
   {
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
     m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
+  }
+  else
+  {
+    auto currentScene = static_cast<play_scene&>(m_sceneController.Current());
+    auto screenTransform = currentScene.ScreenTransform();
+    auto levelContainer = currentScene.LevelContainer();
+    auto screenPosition = screenTransform.Get().TransformPoint({levelContainer->PlayerPosition().x, levelContainer->PlayerPosition().y});
+    hud_target hudTarget { game_point { screenPosition.x, screenPosition.y } };
+    renderer::render(hudTarget);
   }
 }
 

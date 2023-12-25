@@ -29,6 +29,9 @@ public:
   auto Update(__int64 ticks) -> bool override;
   auto Render() const -> void override;
 
+  auto ScreenTransform() const -> screen_transform;
+  auto LevelContainer() const -> level_container_ptr;
+
 protected:
 
   [[nodiscard]] auto GetLevelInput() const -> level_input;

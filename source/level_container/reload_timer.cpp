@@ -1,18 +1,21 @@
 #include "pch.h"
 #include "reload_timer.h"
 
-reload_timer::reload_timer(float reloadTime) : m_reloadTime { reloadTime }
+reload_timer::reload_timer(float reloadTime) : m_reloadTime { reloadTime }, m_currentTime { 0.0f }
 {
 }
 
 auto reload_timer::Update(float interval) -> bool
 {
-  auto reloaded = ( m_currentTime += interval ) > m_reloadTime;
+  m_currentTime += interval;
+  
+  int reloadCount = 0;
 
   while( m_currentTime > m_reloadTime )
   {
+    ++reloadCount;
     m_currentTime -= m_reloadTime;
   }
 
-  return reloaded;
+  return reloadCount > 0;
 }
