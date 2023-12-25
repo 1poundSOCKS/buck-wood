@@ -29,7 +29,7 @@ public:
   auto Update(__int64 ticks) -> bool override;
   auto Render() const -> void override;
 
-  auto ScreenTransform() const -> screen_transform;
+  auto RenderTransform() const -> D2D1::Matrix3x2F;
   auto LevelContainer() const -> level_container_ptr;
 
 protected:
