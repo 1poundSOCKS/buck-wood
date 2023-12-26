@@ -164,3 +164,21 @@ auto level_container::CreateNewObjects(float interval, const std::optional<game_
     m_thrustParticles.Create(thrustPosition, thrustVelocity, 0.3f);
   }
 }
+
+auto level_container::CalculateTargettedMine() const -> std::optional<mine>
+{
+  std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& mine)
+  {
+    return nearest ? GetNearest(*nearest, mine.Object()) : nearest;
+  });
+
+  return nearestMine;
+}
+
+auto level_container::GetNearest(const mine& mine1, const mine& mine2) const -> const mine&
+{
+  auto playerPosition = m_playerShip.Object().Position();
+  auto mine1Distance = playerPosition.DistanceTo(mine1.Position());
+  auto mine2Distance = playerPosition.DistanceTo(mine2.Position());
+  return mine2Distance < mine1Distance ? mine2 : mine1;
+}

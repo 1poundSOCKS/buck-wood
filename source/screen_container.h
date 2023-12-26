@@ -10,7 +10,7 @@ public:
 
   screen_container(std::optional<int> fps, std::optional<int> toggleFullscreenKey) : 
     m_fps { fps }, m_toggleFullscreenKey { toggleFullscreenKey }, m_timerFrequency { performance_counter::QueryFrequency() }, 
-    m_previousTime { performance_counter::QueryValue() }, m_currentTime { m_previousTime }
+    m_currentTime { performance_counter::QueryValue() }, m_previousTime { m_currentTime }
   {
     log::write(log::type::info, "create screen container");
   }

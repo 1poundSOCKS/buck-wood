@@ -18,6 +18,16 @@ public:
     return m_object;
   }
 
+  [[nodiscard]] auto Object() const -> const object_type&
+  {
+    return m_object;
+  }
+
+  [[nodiscard]] auto Geometry() -> dynamic_geometry&
+  {
+    return m_geometry;
+  }
+
   [[nodiscard]] auto Geometry() const -> const dynamic_geometry&
   {
     return m_geometry;

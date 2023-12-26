@@ -57,6 +57,7 @@ public:
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
+  [[nodiscard]] auto CalculateTargettedMine() const -> std::optional<mine>;
 
 private:
 
@@ -65,6 +66,7 @@ private:
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
+  auto GetNearest(const mine& mine1, const mine& mine2) const -> const mine&;
 
 private:
 

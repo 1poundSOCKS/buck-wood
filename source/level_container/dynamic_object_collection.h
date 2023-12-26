@@ -10,6 +10,8 @@ public:
 
   using dynamic_object_type = dynamic_object<object_type>;
   using collection_type = std::vector<dynamic_object_type>;
+  using const_iterator = collection_type::const_iterator;
+  using iterator = collection_type::iterator;
 
   template <typename...Args> auto Create(Args...args) -> void
   {
