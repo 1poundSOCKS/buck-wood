@@ -42,10 +42,6 @@ private:
   };
 
   inline static auto m_targetPositions = {
-    cell { -2, -2 },
-    cell { -2, 2 },
-    cell { 2, -2 },
-    cell { 2, 2 },
     cell { -6, -6 },
     cell { -6, 6 },
     cell { 6, -6 },

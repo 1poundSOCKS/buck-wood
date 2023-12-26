@@ -20,7 +20,9 @@ public:
 
   auto Update(float interval) -> void
   {
+#ifdef DUCTFAN_DYNAMIC_SCALE
     m_scale += game_scale { 0.002f, 0.0f };
+#endif
     m_angle += m_rotationSpeed * interval;
   }
 
