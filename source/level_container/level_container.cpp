@@ -167,9 +167,9 @@ auto level_container::CreateNewObjects(float interval, const std::optional<game_
 
 auto level_container::CalculateTargettedMine() const -> std::optional<mine>
 {
-  std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& mine)
+  std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& nextMine)
   {
-    return nearest ? GetNearest(*nearest, mine.Object()) : nearest;
+    return nearest ? GetNearest(*nearest, nextMine.Object()) : nextMine.Object();
   });
 
   return nearestMine;

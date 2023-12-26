@@ -49,10 +49,10 @@ private:
 
   path_geometry m_targetGeometry { std::array
   {
-    game_point { -50, -50 }, 
-    game_point { 50, -50 }, 
-    game_point { 50, 50 }, 
-    game_point { -50, 50 }
+    game_point { -20, -20 }, 
+    game_point { 20, -20 }, 
+    game_point { 20, 20 }, 
+    game_point { -20, 20 }
   }};
 
   level_target_renderer m_levelTargetRenderer;
