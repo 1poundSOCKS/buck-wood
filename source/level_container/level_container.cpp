@@ -10,9 +10,13 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   auto interval = game_clock::getInterval(ticks);
 
   auto updateStart = performance_counter::QueryValue();
+
+  auto shootTarget = CalculateTargettedMine();
+  auto angleToTarget = shootTarget ? std::optional<float>(m_playerShip->Position().AngleTo(shootTarget->Position())) : std::nullopt;
+  auto shootAngle = input.ShootAngle() && angleToTarget ? angleToTarget : input.ShootAngle();
   
   player_ship::update_events playerUpdateEvents;
-  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), input.ShootAngle() ? true : false, &playerUpdateEvents);
+  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), shootAngle ? true : false, &playerUpdateEvents);
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
   UpdateObjects(interval, playerPosition);
@@ -39,16 +43,16 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   EraseDestroyedObjects();
 
-  if( !m_playerShip->Destroyed() && playerUpdateEvents.shot )
+  if( !m_playerShip->Destroyed() && shootAngle )
   {
-    m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *input.ShootAngle());
+    m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *shootAngle);
   }
 
   CreateNewObjects(interval, playerPosition);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
-  return update_events { playerUpdateEvents.shot, m_collisionChecks.TargetActivationCount() ? true : false, 
+  return update_events { shootAngle ? true : false, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
