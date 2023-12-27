@@ -13,6 +13,7 @@ public:
   auto Rotate(float angle) -> void;
   auto RotateClockwise(float angle) -> void;
   auto RotateAnticlockwise(float angle) -> void;
+  auto FacePosition(game_point position) -> void;
 
   auto Accelerate(float value) -> void;
 
@@ -67,6 +68,12 @@ inline auto directional_body::RotateAnticlockwise(float angle) -> void
   {
     m_angle += 360;
   }
+}
+
+inline auto directional_body::FacePosition(game_point position) -> void
+{
+  m_angle = m_position.AngleTo(position);
+  // m_angle = CalculateAngle(m_position.x, m_position.y, position.x, position.y);
 }
 
 inline auto directional_body::Accelerate(float amount) -> void

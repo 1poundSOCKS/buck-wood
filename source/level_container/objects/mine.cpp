@@ -11,12 +11,8 @@ auto mine::Update(float interval, const std::optional<game_point>& playerPositio
 
   if( playerPosition )
   {
-    auto position = m_body.Position();
-    auto angle = CalculateAngle(position.x, position.y, playerPosition->x, playerPosition->y);
-    m_body.SetAngle(angle);
+    m_body.FacePosition(*playerPosition);
   }
-
-  m_spin += m_spinRate * interval;
 
   auto velocity = m_body.Velocity();
   float velocityChange = 1.0f - 0.1f * interval;
@@ -25,6 +21,8 @@ auto mine::Update(float interval, const std::optional<game_point>& playerPositio
   m_body.SetVelocity(velocity);
   m_body.Accelerate(m_thrustPower * interval);
   m_body.Update(interval);
+
+  m_spin += m_spinRate * interval;
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool
