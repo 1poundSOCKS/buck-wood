@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "directional_body.h"
+#include "homing_object.h"
 #include "game_scale.h"
 
 class mine
@@ -25,8 +25,8 @@ private:
 
   inline static const float m_spinRate { 500.0f };
   inline static const float m_thrustPower { 100.0f };
-  directional_body m_body;
-  directional_body m_previousState;
+  homing_object m_body;
+  homing_object m_previousState;
   game_angle m_spin;
   bool m_destroyed { false };
 

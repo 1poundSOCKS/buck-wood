@@ -1,27 +1,14 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(float x, float y) : m_body { game_point { x, y } }
+mine::mine(float x, float y) : m_body { game_point { x, y }, m_thrustPower }, m_previousState { m_body }
 {
 }
 
 auto mine::Update(float interval, const std::optional<game_point>& playerPosition) -> void
 {
   m_previousState = m_body;
-
-  if( playerPosition )
-  {
-    m_body.FacePosition(*playerPosition);
-  }
-
-  auto velocity = m_body.Velocity();
-  float velocityChange = 1.0f - 0.1f * interval;
-  velocity.Update(velocityChange, velocityChange);
-
-  m_body.SetVelocity(velocity);
-  m_body.Accelerate(m_thrustPower * interval);
-  m_body.Update(interval);
-
+  m_body.Update(interval, playerPosition);
   m_spin += m_spinRate * interval;
 }
 
