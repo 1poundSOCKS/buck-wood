@@ -27,14 +27,10 @@ public:
 
 protected:
 
-  game_point m_position;// { 0, 0 };
-  game_velocity m_velocity;// { 0, 0 };
+  game_point m_position;
+  game_velocity m_velocity;
 
 };
-
-// inline moving_body::moving_body(const game_point& position) : m_position { position }
-// {
-// }
 
 inline moving_body::moving_body(game_point position, game_velocity velocity) : m_position { position }, m_velocity { velocity }
 {

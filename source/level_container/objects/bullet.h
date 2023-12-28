@@ -20,7 +20,7 @@ public:
 private:
 
   inline static const float m_bulletSpeed = 500.0f;
-  inline static const float m_thrust = 200.0f;
+  inline static const float m_thrust = 500.0f;
   inline static const float m_bulletRange = 2000.0f;
 
   game_point m_startPosition = { 0, 0 };

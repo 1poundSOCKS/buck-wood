@@ -12,3 +12,4 @@
 #include "objects/thrust_particle.h"
 #include "objects/impact_particle.h"
 #include "objects/bullet.h"
+#include "objects/homing_bullet.h"

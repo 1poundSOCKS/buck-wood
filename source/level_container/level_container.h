@@ -9,6 +9,8 @@
 #include "dynamic_object_collection.h"
 #include "particle_collection.h"
 
+#include "homing_bullet_collection.h"
+
 #include "level_input.h"
 
 class level_container
@@ -32,7 +34,7 @@ public:
   using duct_fan_collection = dynamic_object_collection<duct_fan>;
   using asteroid_collection = dynamic_object_collection<level_asteroid>;
 
-  using bullet_collection = particle_collection<bullet>;
+  using bullet_collection = particle_collection<homing_bullet>;
   using explosion_particle_collection  = particle_collection<explosion_particle>;
   using impact_particle_collection  = particle_collection<impact_particle>;
   using thrust_particle_collection = particle_collection<thrust_particle>;
@@ -88,6 +90,8 @@ private:
   level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
 
+  homing_bullet_collection m_homingBullets;
+  
 };
 
 level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }

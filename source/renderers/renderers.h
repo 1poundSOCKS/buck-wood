@@ -35,6 +35,7 @@ private:
   auto Render(const solid_object& solidObject) const -> void;
   auto Render(const dynamic_object<player_ship>& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
+  // auto Render(const homing_bullet& homingBullet) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
@@ -134,6 +135,11 @@ inline auto renderer::Render(const bullet& bulletInstance) const -> void
 {
   m_bulletRenderer.Write(bulletInstance);
 }
+
+// inline auto renderer::Render(const homing_bullet& homingBullet) const -> void
+// {
+//   m_bulletRenderer.Write(homingBullet);
+// }
 
 inline auto renderer::Render(const explosion_particle& particle) const -> void
 {

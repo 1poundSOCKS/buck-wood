@@ -47,8 +47,8 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   if( !m_playerShip->Destroyed() && shootAngle )
   {
-    game_velocity bulletVelocity { *shootAngle, 100.0f };
-    m_bullets.Create(m_playerShip->Position(), bulletVelocity);
+    game_velocity bulletVelocity { *shootAngle, 50.0f };
+    m_bullets.Create(m_playerShip->Position(), bulletVelocity, shootTarget);
   }
 
   CreateNewObjects(interval, playerPosition);
@@ -64,7 +64,7 @@ auto level_container::UpdateObjects(float interval, std::optional<game_point> pl
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
   m_ductFans.Update(interval);
-  m_bullets.Update(interval, targetPosition);
+  m_bullets.Update(interval);
   m_explosionParticles.Update(interval);
   m_impactParticles.Update(interval);
   m_thrustParticles.Update(interval);  
