@@ -3,15 +3,14 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(const game_point& position, const game_velocity& velocity, float angle) : 
-  m_startPosition { position }, m_movingBody { position, velocity }
+bullet::bullet(game_point position, game_velocity velocity) : 
+  m_startPosition { position }, m_homingObject { position, velocity, m_thrust }
 {
-  m_movingBody.Accelerate(game_velocity { game_angle { angle }, m_bulletSpeed });
 }
 
 [[nodiscard]] auto bullet::Position() const -> const game_point&
 {
-  return m_movingBody.Position();
+  return m_homingObject.Position();
 }
 
 [[nodiscard]] auto bullet::Destroyed() const -> bool
@@ -29,10 +28,10 @@ bullet::bullet(const game_point& position, const game_velocity& velocity, float 
   return m_range;
 }
 
-auto bullet::Update(float interval) -> void
+auto bullet::Update(float interval, std::optional<game_point> targetPosition) -> void
 {
-  m_movingBody.Update(interval);
-  m_distanceTravelled = m_startPosition.DistanceTo(m_movingBody.Position());
+  m_homingObject.Update(interval, targetPosition);
+  m_distanceTravelled = m_startPosition.DistanceTo(m_homingObject.Position());
   m_destroyed = m_distanceTravelled > m_range;
 }
 

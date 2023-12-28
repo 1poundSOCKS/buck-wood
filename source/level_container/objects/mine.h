@@ -9,7 +9,7 @@ class mine
 
 public:
 
-  mine(float x, float y);
+  mine(game_point position);
 
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -24,7 +24,7 @@ public:
 private:
 
   inline static constexpr float m_spinRate { 500.0f };
-  inline static constexpr float m_thrustPower { 100.0f };
+  inline static constexpr float m_thrustPower { 50.0f };
   
   homing_object m_body;
   homing_object m_previousState;

@@ -24,7 +24,7 @@ public:
 
 public:
 
-  player_ship(const game_point& position);
+  player_ship(game_point position);
 
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -58,7 +58,7 @@ private:
   directional_body m_body;
   directional_body m_previousState;
   float m_thrust { 0 };
-  reload_timer m_reloadTimer { 1.0f / 20.0f };
+  reload_timer m_reloadTimer;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 

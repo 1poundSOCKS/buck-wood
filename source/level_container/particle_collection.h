@@ -38,11 +38,11 @@ public:
     return std::end(m_particles);
   }
 
-  auto Update(float interval) -> void
+  template <typename...Args> auto Update(float interval, Args...args) -> void
   {
     for( auto& particle : m_particles )
     {
-      particle.Update(interval);
+      particle.Update(interval, std::forward<Args>(args)...);
     }
   }
 

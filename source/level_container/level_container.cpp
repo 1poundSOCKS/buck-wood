@@ -19,7 +19,9 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), shootAngle ? true : false, &playerUpdateEvents);
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-  UpdateObjects(interval, playerPosition);
+  std::optional<game_point> targetPosition = shootTarget ? std::optional<game_point>(shootTarget->Position()) : std::nullopt;
+
+  UpdateObjects(interval, playerPosition, targetPosition);
 
   auto updateEnd = performance_counter::QueryValue();
 
@@ -45,7 +47,8 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
   if( !m_playerShip->Destroyed() && shootAngle )
   {
-    m_bullets.Create(m_playerShip->Position(), m_playerShip->Velocity(), *shootAngle);
+    game_velocity bulletVelocity { *shootAngle, 100.0f };
+    m_bullets.Create(m_playerShip->Position(), bulletVelocity);
   }
 
   CreateNewObjects(interval, playerPosition);
@@ -56,12 +59,12 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
-auto level_container::UpdateObjects(float interval, const std::optional<game_point>& playerPosition) -> void
+auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition, std::optional<game_point> targetPosition) -> void
 {
   m_mines.Update(interval, playerPosition);
   m_targets.Update(interval);
   m_ductFans.Update(interval);
-  m_bullets.Update(interval);
+  m_bullets.Update(interval, targetPosition);
   m_explosionParticles.Update(interval);
   m_impactParticles.Update(interval);
   m_thrustParticles.Update(interval);  
@@ -137,7 +140,7 @@ auto level_container::CreateNewObjects(float interval, const std::optional<game_
 
   for( const auto& target : shootingTargets )
   {
-    m_mines.Create(level_geometries::MineGeometry(), target->Position().x, target->Position().y);
+    m_mines.Create(level_geometries::MineGeometry(), target->Position());
   }
 
   for( const auto& position : m_containmentChecks.Explosions() )

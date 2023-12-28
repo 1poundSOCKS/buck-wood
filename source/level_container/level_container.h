@@ -61,7 +61,7 @@ public:
 
 private:
 
-  auto UpdateObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
+  auto UpdateObjects(float interval, std::optional<game_point> playerPosition, std::optional<game_point> targetPosition) -> void;
   auto EraseDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
