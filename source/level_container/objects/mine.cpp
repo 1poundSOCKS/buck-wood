@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(float x, float y) : m_body { game_point { x, y }, m_thrustPower }, m_previousState { m_body }
+mine::mine(float x, float y) : m_body { game_point { x, y }, game_velocity { 0, 0 }, m_thrustPower }, m_previousState { m_body }
 {
 }
 

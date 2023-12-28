@@ -6,8 +6,7 @@ class directional_body : public moving_body
 {
 public:
 
-  directional_body() = default;
-  directional_body(const game_point& position);
+  directional_body(game_point position, game_velocity velocity, float angle);
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -26,7 +25,7 @@ private:
 
 };
 
-inline directional_body::directional_body(const game_point& position) : moving_body { position }
+inline directional_body::directional_body(game_point position, game_velocity velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
 {
 }
 

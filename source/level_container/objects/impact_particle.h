@@ -7,7 +7,6 @@ class impact_particle : public particle
 
 public:
 
-  impact_particle() = default;
   impact_particle(const game_point& position);
   
   auto operator=(const impact_particle& particle) -> impact_particle& = default;

@@ -23,8 +23,9 @@ public:
 
 private:
 
-  inline static const float m_spinRate { 500.0f };
-  inline static const float m_thrustPower { 100.0f };
+  inline static constexpr float m_spinRate { 500.0f };
+  inline static constexpr float m_thrustPower { 100.0f };
+  
   homing_object m_body;
   homing_object m_previousState;
   game_angle m_spin;

@@ -28,15 +28,17 @@ private:
 
   const_level_explosion_iterator(type iteratorType, const game_point& position);
 
-  auto GetRandomVelocity() const -> game_velocity;
+  static auto GetRandomVelocity() -> game_velocity;
+
+private:
+
+  inline static std::uniform_int_distribution<int> m_angleDist { 0, 359 };
+  inline static std::uniform_int_distribution<int> m_velocityDist { 200, 300 };
 
   type m_type { type::none };
   game_point m_position;
   int m_count { 0 };
-  explosion_particle m_particle;
-
-  inline static std::uniform_int_distribution<int> m_angleDist { 0, 359 };
-  inline static std::uniform_int_distribution<int> m_velocityDist { 200, 300 };
+  explosion_particle m_particle { game_point { 0, 0}, game_velocity{ 0, 0 }, 0 };
 
 };
 
@@ -56,9 +58,9 @@ private:
 
 };
 
-inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, const game_point& position) : m_type { iteratorType }, m_position { position }
+inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, const game_point& position) : 
+  m_type { iteratorType }, m_position { position }, m_particle { position, GetRandomVelocity(), 5 }
 {
-  m_particle = explosion_particle { m_position, GetRandomVelocity(), 5 };
 }
 
 inline auto const_level_explosion_iterator::operator++() -> const_level_explosion_iterator&
@@ -112,7 +114,7 @@ inline auto const_level_explosion_iterator::operator==(const const_level_explosi
   }
 }
 
-inline auto const_level_explosion_iterator::GetRandomVelocity() const -> game_velocity
+inline auto const_level_explosion_iterator::GetRandomVelocity() -> game_velocity
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
   auto velocity = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));

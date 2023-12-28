@@ -53,7 +53,6 @@ public:
 private:
 
   inline static const auto m_thrustPower { 400.0f };
-  // inline static constexpr reload_timer m_defaultReloadTImer { 1.0f / 20.0f };
 
   state m_state { state::alive };
   directional_body m_body;
