@@ -1,6 +1,6 @@
 #pragma once
 
-namespace dynamic_object_functions
+namespace particle_functions
 {
 
   template <typename...Args>auto update(std::ranges::input_range auto&& objects, Args...args) -> void
@@ -13,7 +13,7 @@ namespace dynamic_object_functions
 
   auto erase_destroyed(std::ranges::input_range auto&& objects) -> void
   {
-    std::erase_if(objects, [](const auto& object) -> bool { return object->Destroyed(); });
+    std::erase_if(objects, [](const auto& object) -> bool { return object.Destroyed(); });
   }
 
 }

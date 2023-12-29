@@ -5,6 +5,7 @@
 #include "renderers.h"
 #include "game_settings.h"
 #include "dynamic_object_functions.h"
+#include "particle_functions.h"
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
@@ -108,7 +109,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 auto level_container::DoPlayerCollisions() -> void
 {
   m_containmentChecks.shipContainment(m_boundary.Geometry().Get(), m_playerShip);
-
   m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
   m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
   m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
@@ -122,7 +122,6 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_containmentChecks.explosionContainment(m_boundary.Geometry().Get(), m_explosionParticles);
   m_containmentChecks.thrustContainment(m_boundary.Geometry().Get(), m_thrustParticles);
   m_containmentChecks.bulletContainment(m_boundary.Geometry().Get(), m_bullets);
-
   m_collisionChecks.mineToAsteroidCollision(m_mines, m_asteroids);
   m_collisionChecks.mineToDuctFanCollision(m_mines, m_ductFans);
   m_collisionChecks.mineToBulletCollision(m_mines, m_bullets);
