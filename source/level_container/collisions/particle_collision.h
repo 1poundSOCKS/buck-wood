@@ -29,7 +29,7 @@ public:
     }
   }
 
-  auto operator()(dynamic_object_collection<geometry_object_type>& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void
+  auto operator()(std::ranges::input_range auto&& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void
   {
     for( auto& geometryObject : geometryObjectCollection )
     {

@@ -29,7 +29,8 @@ public:
   using mine_object = dynamic_object<mine>;
   using duct_fan_object = dynamic_object<duct_fan>;
 
-  using target_collection = dynamic_object_collection<level_target>;
+  // using target_collection = dynamic_object_collection<level_target>;
+  using target_collection = std::vector<dynamic_object<level_target>>;
   using mine_collection = dynamic_object_collection<mine>;
   using duct_fan_collection = dynamic_object_collection<duct_fan>;
   using asteroid_collection = dynamic_object_collection<level_asteroid>;
@@ -102,7 +103,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.Create(level_geometries::TargetGeometry(), position.x, position.y);
+    m_targets.emplace_back(level_geometries::TargetGeometry(), position.x, position.y);
   });
 }
 
@@ -154,7 +155,8 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return m_activatedTargetCount == m_targets.Size();
+  // return m_activatedTargetCount == m_targets.Size();
+  return m_activatedTargetCount == m_targets.size();
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool

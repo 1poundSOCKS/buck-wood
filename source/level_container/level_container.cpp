@@ -4,6 +4,7 @@
 #include "game_clock.h"
 #include "renderers.h"
 #include "game_settings.h"
+#include "dynamic_object_functions.h"
 
 auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
@@ -62,7 +63,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition, std::optional<game_point> targetPosition) -> void
 {
   m_mines.Update(interval, playerPosition);
-  m_targets.Update(interval);
+  dynamic_object_functions::update(m_targets, interval);
   m_ductFans.Update(interval);
   m_bullets.Update(interval);
   m_explosionParticles.Update(interval);

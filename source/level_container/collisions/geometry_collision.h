@@ -37,7 +37,7 @@ public:
     }
   }
 
-  auto operator()(dynamic_object<object_type_1>& object1, dynamic_object_collection<object_type_2>& object2Collection) -> void
+  auto operator()(dynamic_object<object_type_1>& object1, std::ranges::input_range auto&& object2Collection) -> void
   {
     for( auto& object2 : object2Collection )
     {
@@ -45,7 +45,7 @@ public:
     }
   }
 
-  auto operator()(dynamic_object_collection<object_type_1>& object1Collection, dynamic_object_collection<object_type_2>& object2Collection) -> void
+  auto operator()(std::ranges::input_range auto&& object1Collection, std::ranges::input_range auto&& object2Collection) -> void
   {
     for( auto& object1 : object1Collection )
     {
