@@ -6,11 +6,6 @@
 
 #include "level_explosion.h"
 
-#include "dynamic_object_collection.h"
-#include "particle_collection.h"
-
-#include "homing_bullet_collection.h"
-
 #include "level_input.h"
 
 class level_container
@@ -26,19 +21,19 @@ public:
   };
 
   using target_object = dynamic_object<level_target>;
-  using mine_object = dynamic_object<mine>;
   using duct_fan_object = dynamic_object<duct_fan>;
+  using asteroid_object = dynamic_object<level_asteroid>;
+  using mine_object = dynamic_object<mine>;
 
-  // using target_collection = dynamic_object_collection<level_target>;
-  using target_collection = std::vector<dynamic_object<level_target>>;
-  using mine_collection = dynamic_object_collection<mine>;
-  using duct_fan_collection = dynamic_object_collection<duct_fan>;
-  using asteroid_collection = dynamic_object_collection<level_asteroid>;
+  using target_collection = std::vector<target_object>;
+  using duct_fan_collection = std::vector<duct_fan_object>;
+  using asteroid_collection = std::vector<asteroid_object>;
+  using mine_collection = std::list<mine_object>;
 
-  using bullet_collection = particle_collection<homing_bullet>;
-  using explosion_particle_collection  = particle_collection<explosion_particle>;
-  using impact_particle_collection  = particle_collection<impact_particle>;
-  using thrust_particle_collection = particle_collection<thrust_particle>;
+  using bullet_collection = std::list<homing_bullet>;
+  using explosion_particle_collection  = std::list<explosion_particle>;
+  using impact_particle_collection  = std::list<impact_particle>;
+  using thrust_particle_collection = std::list<thrust_particle>;
 
 public:
 
@@ -90,8 +85,6 @@ private:
 
   level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
-
-  homing_bullet_collection m_homingBullets;
   
 };
 
@@ -111,7 +104,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.Create(level_geometries::DuctFanGeometry(), position.x, position.y, 30.0f);
+    m_ductFans.emplace_back(level_geometries::DuctFanGeometry(), position.x, position.y, 30.0f);
   });
 }
 
@@ -119,7 +112,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.Create(level_geometries::AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
+    m_asteroids.emplace_back(level_geometries::AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
   });
 }
 

@@ -35,7 +35,7 @@ public:
     }
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, dynamic_object_collection<contained_object_type>& containedObjectCollection) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& containedObjectCollection) -> void
   {
     for( auto& containedObject : containedObjectCollection )
     {

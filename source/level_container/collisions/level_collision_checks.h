@@ -1,8 +1,5 @@
 #pragma once
 
-#include "dynamic_object_collection.h"
-#include "particle_collection.h"
-
 #include "geometry_collision.h"
 #include "particle_collision.h"
 #include "geometry_containment.h"

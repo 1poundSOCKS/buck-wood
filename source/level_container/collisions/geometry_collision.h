@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dynamic_object_collection.h"
+#include "dynamic_object.h"
 
 template <typename object_type_1, typename object_type_2>
 class geometry_collision

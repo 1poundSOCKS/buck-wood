@@ -49,7 +49,7 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
   if( !m_playerShip->Destroyed() && shootAngle )
   {
     game_velocity bulletVelocity { *shootAngle, 50.0f };
-    m_bullets.Create(m_playerShip->Position(), bulletVelocity, shootTarget);
+    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, shootTarget);
   }
 
   CreateNewObjects(interval, playerPosition);
@@ -62,22 +62,22 @@ auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_
 
 auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition, std::optional<game_point> targetPosition) -> void
 {
-  m_mines.Update(interval, playerPosition);
+  dynamic_object_functions::update(m_mines, interval, playerPosition);
   dynamic_object_functions::update(m_targets, interval);
-  m_ductFans.Update(interval);
-  m_bullets.Update(interval);
-  m_explosionParticles.Update(interval);
-  m_impactParticles.Update(interval);
-  m_thrustParticles.Update(interval);  
+  dynamic_object_functions::update(m_ductFans, interval);
+  dynamic_object_functions::update(m_bullets, interval);
+  dynamic_object_functions::update(m_explosionParticles, interval);
+  dynamic_object_functions::update(m_impactParticles, interval);
+  dynamic_object_functions::update(m_thrustParticles, interval);
 }
 
 auto level_container::EraseDestroyedObjects() -> void
 {
-  m_bullets.EraseDestroyed();
-  m_explosionParticles.EraseDestroyed();
-  m_impactParticles.EraseDestroyed();
-  m_thrustParticles.EraseDestroyed();
-  m_mines.EraseDestroyed();
+  dynamic_object_functions::erase_destroyed(m_mines);
+  particle_functions::erase_destroyed(m_bullets);
+  particle_functions::erase_destroyed(m_explosionParticles);
+  particle_functions::erase_destroyed(m_impactParticles);
+  particle_functions::erase_destroyed(m_thrustParticles);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -141,27 +141,27 @@ auto level_container::CreateNewObjects(float interval, const std::optional<game_
 
   for( const auto& target : shootingTargets )
   {
-    m_mines.Create(level_geometries::MineGeometry(), target->Position());
+    m_mines.emplace_back(level_geometries::MineGeometry(), target->Position());
   }
 
   for( const auto& position : m_containmentChecks.Explosions() )
   {
-    m_explosionParticles.Create( level_explosion { position } );
+    std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
   }
 
   for( const auto& position : m_collisionChecks.Explosions() )
   {
-    m_explosionParticles.Create( level_explosion { position } );
+    std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
   }
 
   for( const auto& position : m_containmentChecks.Impacts() )
   {
-    m_impactParticles.Create(position);
+    m_impactParticles.emplace_back(position);
   }
 
   for( const auto& position : m_collisionChecks.Impacts() )
   {
-    m_impactParticles.Create(position);
+    m_impactParticles.emplace_back(position);
   }
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
@@ -169,7 +169,7 @@ auto level_container::CreateNewObjects(float interval, const std::optional<game_
     auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
     auto thrustAngle = m_playerShip->Angle() + 180;
     auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
-    m_thrustParticles.Create(thrustPosition, thrustVelocity, 0.3f);
+    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.3f);
   }
 }
 
