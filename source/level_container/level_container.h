@@ -59,13 +59,12 @@ public:
 
 private:
 
-  auto UpdateObjects(float interval, std::optional<game_point> playerPosition) -> void;
+  auto UpdateObjects(float interval) -> void;
   auto EraseDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
-  auto CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
+  auto CreateNewObjects(float interval) -> void;
   auto GetNearest(const mine& mine1, const mine& mine2) const -> const mine&;
-  [[nodiscard]] auto GetLevelInput() const -> level_input;
 
 private:
 

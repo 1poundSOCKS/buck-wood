@@ -13,17 +13,10 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
   auto updateStart = performance_counter::QueryValue();
 
-  auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
-
-  auto targettedObject = CalculateTargettedMine();
-  auto playerShot = gamepad_reader::right_trigger() > 0 ? true : false;
-  
   player_ship::update_events playerUpdateEvents;
-  m_playerShip.Update(interval, levelInput.Thrust(), levelInput.Angle(), levelInput.Rotation(), &playerUpdateEvents);
+  m_playerShip.Update(interval, &playerUpdateEvents);
 
-  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-
-  UpdateObjects(interval, playerPosition);
+  UpdateObjects(interval);
 
   auto updateEnd = performance_counter::QueryValue();
 
@@ -47,25 +40,28 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
   EraseDestroyedObjects();
 
-  auto createBullet = !m_playerShip->Destroyed() && playerShot && targettedObject;
+  auto targettedObject = CalculateTargettedMine();
+  auto playerShot = playerUpdateEvents.shot && gamepad_reader::right_trigger() > 0 && targettedObject ? true : false;
 
-  if( createBullet )
+  if( playerShot )
   {
     auto angleToTarget = m_playerShip->Position().AngleTo(targettedObject->Position());
     game_velocity bulletVelocity { angleToTarget, 50.0f };
     m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, targettedObject);
   }
 
-  CreateNewObjects(interval, playerPosition);
+  CreateNewObjects(interval);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
-  return update_events { createBullet, m_collisionChecks.TargetActivationCount() ? true : false, 
+  return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
-auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition) -> void
+auto level_container::UpdateObjects(float interval) -> void
 {
+  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
+
   dynamic_object_functions::update(m_mines, interval, playerPosition);
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
@@ -137,8 +133,10 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_collisionChecks.targetToBulletCollision(m_targets, m_bullets);
 }
 
-auto level_container::CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void
+auto level_container::CreateNewObjects(float interval) -> void
 {
+  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
+
   auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return playerPosition && target->CanShootAt(*playerPosition); });
 
   for( const auto& target : shootingTargets )
@@ -191,24 +189,4 @@ auto level_container::GetNearest(const mine& mine1, const mine& mine2) const -> 
   auto mine1Distance = playerPosition.DistanceTo(mine1.Position());
   auto mine2Distance = playerPosition.DistanceTo(mine2.Position());
   return mine2Distance < mine1Distance ? mine2 : mine1;
-}
-
-[[nodiscard]] auto level_container::GetLevelInput() const -> level_input
-{
-  if( gamepad_reader::connected() )
-  {
-    diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
-    diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
-    diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
-
-    auto rotation = gamepad_reader::thumb_lx() * 10.0f;
-    auto thrust = gamepad_reader::left_trigger();
-    std::optional<float> shootAngle = gamepad_reader::right_trigger() > 0 ? std::optional<float>(PlayerAngle()) : std::nullopt;
-
-    return { std::nullopt, rotation, thrust, shootAngle };
-  }
-  else
-  {
-    return { std::nullopt, std::nullopt, 0, std::nullopt };
-  }
 }

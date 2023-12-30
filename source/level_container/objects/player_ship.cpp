@@ -5,18 +5,22 @@ player_ship::player_ship(game_point position) : m_body { position, game_velocity
 {
 }
 
-auto player_ship::Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, update_events* updateEvents) -> void
+auto player_ship::Update(float interval, update_events* updateEvents) -> void
 {
   if( m_state == state::alive )
   {
+    diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
+    diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
+    diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
+
+    auto rotation = gamepad_reader::thumb_lx() * 10.0f;
+    auto thrust = gamepad_reader::left_trigger();
+
     m_previousState = m_body;
 
     updateEvents->shot = m_reloadTimer.Update(interval);
 
-    auto realAngle = angle ? *angle : m_body.Angle();
-    m_body.SetAngle(realAngle);
-
-    auto realRotation = rotation ? *rotation : 0;
+    auto realRotation = rotation ? rotation : 0;
     m_body.Rotate(realRotation * interval * 20.0f);
 
     SetThrust(thrust);
