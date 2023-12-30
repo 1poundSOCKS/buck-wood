@@ -7,18 +7,20 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
-auto level_container::Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events
+auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_events
 {
   auto interval = game_clock::getInterval(ticks);
 
   auto updateStart = performance_counter::QueryValue();
 
+  auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
+
   auto shootTarget = CalculateTargettedMine();
   auto angleToTarget = shootTarget ? std::optional<float>(m_playerShip->Position().AngleTo(shootTarget->Position())) : std::nullopt;
-  auto shootAngle = input.ShootAngle() && angleToTarget ? angleToTarget : input.ShootAngle();
+  auto shootAngle = levelInput.ShootAngle() && angleToTarget ? angleToTarget : levelInput.ShootAngle();
   
   player_ship::update_events playerUpdateEvents;
-  m_playerShip.Update(interval, input.Thrust(), input.Angle(), input.Rotation(), shootAngle ? true : false, &playerUpdateEvents);
+  m_playerShip.Update(interval, levelInput.Thrust(), levelInput.Angle(), levelInput.Rotation(), shootAngle ? true : false, &playerUpdateEvents);
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
   std::optional<game_point> targetPosition = shootTarget ? std::optional<game_point>(shootTarget->Position()) : std::nullopt;
@@ -188,4 +190,24 @@ auto level_container::GetNearest(const mine& mine1, const mine& mine2) const -> 
   auto mine1Distance = playerPosition.DistanceTo(mine1.Position());
   auto mine2Distance = playerPosition.DistanceTo(mine2.Position());
   return mine2Distance < mine1Distance ? mine2 : mine1;
+}
+
+[[nodiscard]] auto level_container::GetLevelInput() const -> level_input
+{
+  if( gamepad_reader::connected() )
+  {
+    diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
+    diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
+    diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
+
+    auto rotation = gamepad_reader::thumb_lx() * 10.0f;
+    auto thrust = gamepad_reader::left_trigger();
+    std::optional<float> shootAngle = gamepad_reader::right_trigger() > 0 ? std::optional<float>(PlayerAngle()) : std::nullopt;
+
+    return { std::nullopt, rotation, thrust, shootAngle };
+  }
+  else
+  {
+    return { std::nullopt, std::nullopt, 0, std::nullopt };
+  }
 }

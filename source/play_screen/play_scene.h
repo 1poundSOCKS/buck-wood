@@ -34,7 +34,6 @@ public:
 
 protected:
 
-  [[nodiscard]] auto GetLevelInput() const -> level_input;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
 

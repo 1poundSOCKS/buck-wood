@@ -44,7 +44,7 @@ public:
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
-  auto Update(const level_input& input, int64_t ticks, D2D1_RECT_F viewRect) -> update_events;
+  auto Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_events;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
@@ -65,6 +65,7 @@ private:
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval, const std::optional<game_point>& playerPosition) -> void;
   auto GetNearest(const mine& mine1, const mine& mine2) const -> const mine&;
+  [[nodiscard]] auto GetLevelInput() const -> level_input;
 
 private:
 
@@ -81,11 +82,11 @@ private:
   thrust_particle_collection m_thrustParticles;  
   asteroid_collection m_asteroids;
 
-  int m_activatedTargetCount { 0 };
-
   level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
   
+  int m_activatedTargetCount { 0 };
+
 };
 
 level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }
@@ -148,7 +149,6 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  // return m_activatedTargetCount == m_targets.Size();
   return m_activatedTargetCount == m_targets.size();
 }
 

@@ -35,8 +35,7 @@ auto play_scene::Update(__int64 ticks) -> bool
   auto screenTransform = screen_transform { cameraTransform.Get() };
   auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
 
-  auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
-  m_levelUpdateEvents = m_levelContainer->Update(levelInput, ticks, viewRect);
+  m_levelUpdateEvents = m_levelContainer->Update(ticks, viewRect);
 
   return m_levelContainer->HasFinished() ? false : true;
 }
@@ -62,26 +61,6 @@ auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
 auto play_scene::LevelContainer() const -> level_container_ptr
 {
   return m_levelContainer;
-}
-
-[[nodiscard]] auto play_scene::GetLevelInput() const -> level_input
-{
-  if( gamepad_reader::connected() )
-  {
-    diagnostics::add(L"Left thumb X", gamepad_reader::thumb_lx());
-    diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
-    diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
-
-    auto rotation = gamepad_reader::thumb_lx() * 10.0f;
-    auto thrust = gamepad_reader::left_trigger();
-    std::optional<float> shootAngle = gamepad_reader::right_trigger() > 0 ? std::optional<float>(m_levelContainer->PlayerAngle()) : std::nullopt;
-
-    return { std::nullopt, rotation, thrust, shootAngle };
-  }
-  else
-  {
-    return { std::nullopt, std::nullopt, 0, std::nullopt };
-  }
 }
 
 auto play_scene::PlaySoundEffects() const -> void
