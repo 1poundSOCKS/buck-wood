@@ -29,7 +29,7 @@ public:
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> const game_point&;
-  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, bool shoot, update_events* updateEvents) -> void;
+  auto Update(float interval, float thrust, std::optional<float> angle, std::optional<float> rotation, update_events* updateEvents) -> void;
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;

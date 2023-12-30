@@ -15,17 +15,15 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
   auto levelInput = ticks ? GetLevelInput() : level_input { std::nullopt, std::nullopt, 0, std::nullopt };
 
-  auto shootTarget = CalculateTargettedMine();
-  auto angleToTarget = shootTarget ? std::optional<float>(m_playerShip->Position().AngleTo(shootTarget->Position())) : std::nullopt;
-  auto shootAngle = levelInput.ShootAngle() && angleToTarget ? angleToTarget : levelInput.ShootAngle();
+  auto targettedObject = CalculateTargettedMine();
+  auto playerShot = gamepad_reader::right_trigger() > 0 ? true : false;
   
   player_ship::update_events playerUpdateEvents;
-  m_playerShip.Update(interval, levelInput.Thrust(), levelInput.Angle(), levelInput.Rotation(), shootAngle ? true : false, &playerUpdateEvents);
+  m_playerShip.Update(interval, levelInput.Thrust(), levelInput.Angle(), levelInput.Rotation(), &playerUpdateEvents);
 
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-  std::optional<game_point> targetPosition = shootTarget ? std::optional<game_point>(shootTarget->Position()) : std::nullopt;
 
-  UpdateObjects(interval, playerPosition, targetPosition);
+  UpdateObjects(interval, playerPosition);
 
   auto updateEnd = performance_counter::QueryValue();
 
@@ -49,21 +47,24 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
   EraseDestroyedObjects();
 
-  if( !m_playerShip->Destroyed() && shootAngle )
+  auto createBullet = !m_playerShip->Destroyed() && playerShot && targettedObject;
+
+  if( createBullet )
   {
-    game_velocity bulletVelocity { *shootAngle, 50.0f };
-    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, shootTarget);
+    auto angleToTarget = m_playerShip->Position().AngleTo(targettedObject->Position());
+    game_velocity bulletVelocity { angleToTarget, 50.0f };
+    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, targettedObject);
   }
 
   CreateNewObjects(interval, playerPosition);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
-  return update_events { shootAngle ? true : false, m_collisionChecks.TargetActivationCount() ? true : false, 
+  return update_events { createBullet, m_collisionChecks.TargetActivationCount() ? true : false, 
     m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
-auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition, std::optional<game_point> targetPosition) -> void
+auto level_container::UpdateObjects(float interval, std::optional<game_point> playerPosition) -> void
 {
   dynamic_object_functions::update(m_mines, interval, playerPosition);
   dynamic_object_functions::update(m_targets, interval);
