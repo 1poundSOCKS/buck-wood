@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "play_camera_transform.h"
-#include "screen_transform.h"
 
 play_camera_transform::play_camera_transform(float centreX, float centreY, float angle, float scale, D2D1_SIZE_F renderTargetSize)
 {

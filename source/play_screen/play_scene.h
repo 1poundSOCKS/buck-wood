@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "base_scene.h"
-#include "screen_transform.h"
 #include "sound_data.h"
 #include "diagnostics.h"
 #include "game_level_data_loader.h"
@@ -36,6 +35,8 @@ protected:
 
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
+  auto GetRenderTargetView() const -> D2D1_RECT_F;
+  static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
 
 protected:
 

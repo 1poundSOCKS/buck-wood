@@ -28,26 +28,16 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, 1 };
-  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
-  auto screenTransform = screen_transform { cameraTransform.Get() };
-  auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
-
-  m_levelUpdateEvents = m_levelContainer->Update(ticks, viewRect);
-
+  m_levelUpdateEvents = m_levelContainer->Update(ticks, GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
 
 auto play_scene::Render() const -> void
 {
-  auto screenTransform = screen_transform { RenderTransform() };
-  auto viewRect = screenTransform.GetViewRect(render_target::get()->GetSize());
-
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
-  render_target::get()->SetTransform(screenTransform.Get());
-  m_levelContainer->Render(viewRect);
+  auto transform = RenderTransform();
+  render_target::get()->SetTransform(transform);
+  m_levelContainer->Render(GetRenderTargetView(transform));
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
@@ -96,4 +86,27 @@ auto play_scene::PlaySoundEffects() const -> void
 auto play_scene::SetCameraZoom(float value) -> void
 {
   m_cameraZoom = value;
+}
+
+auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
+{
+  return GetRenderTargetView(RenderTransform());
+}
+
+auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
+{
+  auto renderTargetSize = render_target::get()->GetSize();
+  auto renderTargetTopLeft  = D2D1_POINT_2F { 0, 0 };
+  auto renderTargetBottomRight  = D2D1_POINT_2F { renderTargetSize.width - 1.0f, renderTargetSize.height - 1.0f };
+
+  transform.Invert();
+  auto topLeft = transform.TransformPoint(renderTargetTopLeft);
+  auto bottomRight = transform.TransformPoint(renderTargetBottomRight);
+  auto bottomLeft = transform.TransformPoint({renderTargetTopLeft.x, renderTargetTopLeft.y});
+  auto topRight = transform.TransformPoint({renderTargetTopLeft.x, renderTargetTopLeft.y});
+
+  auto [minX, maxX] = std::minmax({topLeft.x, bottomRight.x, bottomLeft.x, topRight.x});
+  auto [minY, maxY] = std::minmax({topLeft.y, bottomRight.y, bottomLeft.y, topRight.y});
+
+  return { minX, minY, maxX, maxY };
 }
