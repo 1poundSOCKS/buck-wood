@@ -26,6 +26,6 @@ private:
   scene_controller m_sceneController;
   play_menu_controller m_menuController;
   play_events m_playEvents;
-  game_level_data_loader m_gameLevelDataLoader { m_playEvents };
+  game_level_data_loader m_gameLevelDataLoader;
 
 };

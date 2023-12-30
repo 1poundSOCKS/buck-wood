@@ -2,6 +2,7 @@
 
 #include "level_container.h"
 #include "play_events.h"
+#include "demo_level.h"
 
 class game_level_data_loader
 {
@@ -9,15 +10,32 @@ public:
 
   using level_ptr = std::unique_ptr<level_container>;
 
-  game_level_data_loader(play_events playEvents);
+  game_level_data_loader() = default;
 
-  auto LoadLevel() -> level_ptr;
+  template <typename...Args> auto LoadLevel(Args...args) -> level_ptr;
   [[nodiscard]] auto NextLevel() -> bool;
 
 private:
 
-  play_events m_playEvents;
   int m_levelIndex { -1 };
   inline static int m_levelCount { 1 };
 
 };
+
+template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -> std::unique_ptr<level_container>
+{
+  demo_level demoLevel;
+
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(demoLevel.BoundaryPoints(), std::forward<Args>(args)...);
+
+  levelContainer->AddTargets(demoLevel.TargetPositions());
+  levelContainer->AddAsteroids(demoLevel.AsteroidPositions());
+  levelContainer->AddDuctFans(demoLevel.DuctFanPositions());
+
+  return levelContainer;
+}
+
+inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
+{
+  return ++m_levelIndex < m_levelCount;
+}

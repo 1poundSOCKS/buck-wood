@@ -31,7 +31,7 @@ public:
 
 public:
 
-  level_container(play_events playEvents, std::ranges::input_range auto&& points);
+  level_container(std::ranges::input_range auto&& points, play_events playEvents);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
@@ -64,8 +64,8 @@ private:
 private:
 
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
-  play_events m_playEvents;
   blank_object m_boundary;
+  play_events m_playEvents;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };
   target_collection m_targets;
   mine_collection m_mines;
@@ -84,7 +84,7 @@ private:
 
 };
 
-level_container::level_container(play_events playEvents, std::ranges::input_range auto&& points) : m_playEvents { playEvents }, m_boundary { points }
+level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents) : m_boundary { points }, m_playEvents { playEvents }
 {
 }
 

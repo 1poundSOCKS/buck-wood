@@ -93,7 +93,7 @@ auto play_screen::LoadNextLevel() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
-    play_scene::level_container_ptr levelContainer = m_gameLevelDataLoader.LoadLevel();
+    play_scene::level_container_ptr levelContainer = m_gameLevelDataLoader.LoadLevel(m_playEvents);
 
     m_sceneController.Clear();
     #ifdef PREVIEW_LEVEL
