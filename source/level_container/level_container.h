@@ -64,6 +64,7 @@ private:
 private:
 
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
+  reload_timer m_playerReloaded { 1.0f / 10.0f };
   blank_object m_boundary;
   play_events m_playEvents;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };

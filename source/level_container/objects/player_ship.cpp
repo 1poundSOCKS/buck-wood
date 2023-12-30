@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(game_point position) : m_body { position, game_velocity { 0, 0 }, 0 }, m_previousState { m_body }, m_reloadTimer { 1.0f / 2.0f }
+player_ship::player_ship(game_point position) : m_body { position, game_velocity { 0, 0 }, 0 }, m_previousState { m_body }
 {
 }
 
-auto player_ship::Update(float interval, update_events* updateEvents) -> void
+auto player_ship::Update(float interval) -> void
 {
   if( m_state == state::alive )
   {
@@ -17,8 +17,6 @@ auto player_ship::Update(float interval, update_events* updateEvents) -> void
     auto thrust = gamepad_reader::left_trigger();
 
     m_previousState = m_body;
-
-    updateEvents->shot = m_reloadTimer.Update(interval);
 
     auto realRotation = rotation ? rotation : 0;
     m_body.Rotate(realRotation * interval * 20.0f);

@@ -14,11 +14,6 @@ public:
 
   enum class state { alive, dead };
 
-  struct update_events
-  {
-    bool shot { false };
-  };
-
   using points_collection = std::vector<game_point>;
   using shield_status = std::shared_ptr<health_status>;
 
@@ -29,7 +24,7 @@ public:
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> const game_point&;
-  auto Update(float interval, update_events* updateEvents) -> void;
+  auto Update(float interval) -> void;
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -58,7 +53,6 @@ private:
   directional_body m_body;
   directional_body m_previousState;
   float m_thrust { 0 };
-  reload_timer m_reloadTimer;
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
 

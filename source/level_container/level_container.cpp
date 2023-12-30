@@ -12,15 +12,7 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
   auto interval = game_clock::getInterval(ticks);
 
   auto updateStart = performance_counter::QueryValue();
-
-  player_ship::update_events playerUpdateEvents;
-  m_playerShip.Update(interval, &playerUpdateEvents);
-
   UpdateObjects(interval);
-
-  auto updateEnd = performance_counter::QueryValue();
-
-  diagnostics::addTime(L"update", updateEnd - updateStart, game_settings::framerate());
 
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
@@ -42,23 +34,17 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   m_targettedObject = GetTargettedObject();
 
-  auto playerShot = playerUpdateEvents.shot && gamepad_reader::right_trigger() > 0 && m_targettedObject ? true : false;
-
-  if( playerShot )
-  {
-    auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
-    game_velocity bulletVelocity { angleToTarget, 50.0f };
-    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, m_targettedObject);
-    m_playEvents.SetEvent(play_events::event_type::shot, true);
-  }
-
   CreateNewObjects(interval);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
+
+  auto updateEnd = performance_counter::QueryValue();
+  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::framerate());
 }
 
 auto level_container::UpdateObjects(float interval) -> void
 {
+  m_playerShip.Update(interval);
   dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
@@ -132,6 +118,14 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::CreateNewObjects(float interval) -> void
 {
+  if( m_playerReloaded.Update(interval) && gamepad_reader::right_trigger() > 0 && m_targettedObject )
+  {
+    auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
+    game_velocity bulletVelocity { angleToTarget, 50.0f };
+    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, m_targettedObject);
+    m_playEvents.SetEvent(play_events::event_type::shot, true);
+  }
+
   std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
 
   auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return playerPosition && target->CanShootAt(*playerPosition); });
