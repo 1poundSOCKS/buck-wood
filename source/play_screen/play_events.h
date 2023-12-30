@@ -23,7 +23,7 @@ public:
     }
   }
 
-  [[nodiscard]] auto operator[](event_type eventType) -> bool
+  [[nodiscard]] auto operator[](event_type eventType) const -> bool
   {
     switch( eventType )
     {
@@ -33,6 +33,8 @@ public:
         return m_data->m_explosion;
       case event_type::target_activated:
         return m_data->m_targetActivated;
+      default:
+        return false;
     }
   }
 

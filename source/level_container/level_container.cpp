@@ -7,7 +7,7 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
-auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_events
+auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 {
   auto interval = game_clock::getInterval(ticks);
 
@@ -49,14 +49,12 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
     auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
     game_velocity bulletVelocity { angleToTarget, 50.0f };
     m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, m_targettedObject);
+    m_playEvents.SetEvent(play_events::event_type::shot, true);
   }
 
   CreateNewObjects(interval);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
-
-  return update_events { playerShot, m_collisionChecks.TargetActivationCount() ? true : false, 
-    m_collisionChecks.Explosions().size() || m_containmentChecks.Explosions().size() ? true : false };
 }
 
 auto level_container::UpdateObjects(float interval) -> void
@@ -146,11 +144,13 @@ auto level_container::CreateNewObjects(float interval) -> void
   for( const auto& position : m_containmentChecks.Explosions() )
   {
     std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
+    m_playEvents.SetEvent(play_events::event_type::explosion, true);
   }
 
   for( const auto& position : m_collisionChecks.Explosions() )
   {
     std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
+    m_playEvents.SetEvent(play_events::event_type::explosion, true);
   }
 
   for( const auto& position : m_containmentChecks.Impacts() )

@@ -7,18 +7,12 @@
 #include "level_explosion.h"
 
 #include "level_input.h"
+#include "play_events.h"
 
 class level_container
 {
 
 public:
-
-  struct update_events
-  {
-    bool playerShot { false };
-    bool targetActivated { false };
-    bool mineExploded { false };
-  };
 
   using target_object = dynamic_object<level_target>;
   using duct_fan_object = dynamic_object<duct_fan>;
@@ -37,14 +31,14 @@ public:
 
 public:
 
-  level_container(std::ranges::input_range auto&& points);
+  level_container(play_events playEvents, std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
-  auto Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_events;
+  auto Update(int64_t ticks, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
@@ -70,7 +64,7 @@ private:
 private:
 
   reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
-
+  play_events m_playEvents;
   blank_object m_boundary;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };
   target_collection m_targets;
@@ -90,7 +84,7 @@ private:
 
 };
 
-level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }
+level_container::level_container(play_events playEvents, std::ranges::input_range auto&& points) : m_playEvents { playEvents }, m_boundary { points }
 {
 }
 

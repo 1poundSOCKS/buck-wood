@@ -28,7 +28,8 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-  m_levelUpdateEvents = m_levelContainer->Update(ticks, GetRenderTargetView());
+  m_playEvents.Reset();
+  m_levelContainer->Update(ticks, GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
 
@@ -64,19 +65,19 @@ auto play_scene::PlaySoundEffects() const -> void
     sound_data::get(sound_data::thrust).Stop();
   }
 
-  if( m_levelUpdateEvents.playerShot )
+  if( m_playEvents[play_events::event_type::shot] )
   {
     sound_data::get(sound_data::shoot).Reset();
     sound_data::get(sound_data::shoot).Play(false);
   }
 
-  if( m_levelUpdateEvents.targetActivated )
+  if( m_playEvents[play_events::event_type::target_activated] )
   {
     sound_data::get(sound_data::target_activated).Reset();
     sound_data::get(sound_data::target_activated).Play(false);
   }
 
-  if( m_levelUpdateEvents.mineExploded )
+  if( m_playEvents[play_events::event_type::explosion] )
   {
     sound_data::get(sound_data::mine_exploded).Reset();
     sound_data::get(sound_data::mine_exploded).Play(false);

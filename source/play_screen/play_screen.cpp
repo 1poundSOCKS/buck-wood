@@ -22,8 +22,6 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t ticks) -> bool
 {
-  m_playEvents.Reset();
-
   if( PausePressed() )
   {
     m_sceneController.TogglePause();
