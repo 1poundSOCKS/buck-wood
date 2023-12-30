@@ -22,6 +22,8 @@ auto play_screen::Refresh(int64_t ticks) -> bool
 
 auto play_screen::Update(int64_t ticks) -> bool
 {
+  m_playEvents.Reset();
+
   if( PausePressed() )
   {
     m_sceneController.TogglePause();
@@ -99,9 +101,9 @@ auto play_screen::LoadNextLevel() -> bool
     #ifdef PREVIEW_LEVEL
     m_sceneController.AddScene<show_level_play_scene>(levelContainer);
     #endif
-    m_sceneController.AddScene<opening_play_scene>(levelContainer);
-    m_sceneController.AddScene<main_play_scene>(levelContainer);
-    m_sceneController.AddScene<closing_play_scene>(levelContainer);
+    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playEvents);
+    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playEvents);
+    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents);
     m_sceneController.Begin();
 
     return true;

@@ -7,7 +7,7 @@ class show_level_play_scene : public play_scene
 
 public:
 
-  show_level_play_scene(const level_container_ptr& levelContainer) : play_scene { levelContainer }
+  show_level_play_scene(const level_container_ptr& levelContainer, play_events playEvents) : play_scene(levelContainer, playEvents)
   {
   }
 

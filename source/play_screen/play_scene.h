@@ -10,6 +10,7 @@
 #include "play_camera_transform.h"
 #include "level_radar.h"
 #include "player_shields.h"
+#include "play_events.h"
 
 class play_scene : public base_scene
 {
@@ -18,7 +19,7 @@ public:
 
   using level_container_ptr = std::shared_ptr<level_container>;
 
-  play_scene(const level_container_ptr& levelContainer);
+  play_scene(const level_container_ptr& levelContainer, play_events playEvents);
   virtual ~play_scene();
 
   auto Begin() -> void override;
@@ -41,6 +42,7 @@ protected:
 protected:
 
   level_container_ptr m_levelContainer;
+  play_events m_playEvents;
   level_container::update_events m_levelUpdateEvents;
   float m_cameraZoom { 1 };
 

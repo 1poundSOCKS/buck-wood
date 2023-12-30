@@ -79,7 +79,7 @@ private:
   bullet_collection m_bullets;
   explosion_particle_collection m_explosionParticles;
   impact_particle_collection m_impactParticles;
-  thrust_particle_collection m_thrustParticles;  
+  thrust_particle_collection m_thrustParticles;
   asteroid_collection m_asteroids;
 
   level_collision_checks m_collisionChecks;

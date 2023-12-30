@@ -8,7 +8,7 @@ class main_play_scene : public play_scene
 
 public:
 
-  main_play_scene(const level_container_ptr& levelContainer) : play_scene { levelContainer }
+  main_play_scene(const level_container_ptr& levelContainer, play_events playEvents) : play_scene(levelContainer, playEvents)
   {
     m_playerShields.Attach(m_levelContainer->PlayerShields());
   }

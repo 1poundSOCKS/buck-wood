@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "play_scene.h"
 
-play_scene::play_scene(const level_container_ptr& levelContainer) : m_levelContainer { levelContainer }
+play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
 {
 }
 
