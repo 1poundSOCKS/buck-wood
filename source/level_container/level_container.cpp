@@ -40,14 +40,15 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
   EraseDestroyedObjects();
 
-  auto targettedObject = CalculateTargettedMine();
-  auto playerShot = playerUpdateEvents.shot && gamepad_reader::right_trigger() > 0 && targettedObject ? true : false;
+  m_targettedObject = GetTargettedObject();
+
+  auto playerShot = playerUpdateEvents.shot && gamepad_reader::right_trigger() > 0 && m_targettedObject ? true : false;
 
   if( playerShot )
   {
-    auto angleToTarget = m_playerShip->Position().AngleTo(targettedObject->Position());
+    auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
     game_velocity bulletVelocity { angleToTarget, 50.0f };
-    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, targettedObject);
+    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, m_targettedObject);
   }
 
   CreateNewObjects(interval);
@@ -60,9 +61,7 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> update_even
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
-
-  dynamic_object_functions::update(m_mines, interval, playerPosition);
+  dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
   dynamic_object_functions::update(m_bullets, interval);
@@ -173,7 +172,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   }
 }
 
-auto level_container::CalculateTargettedMine() const -> std::optional<mine>
+auto level_container::GetTargettedObject() const -> std::optional<mine>
 {
   std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& nextMine)
   {

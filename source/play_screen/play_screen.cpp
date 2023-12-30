@@ -69,11 +69,11 @@ auto play_screen::RenderUI() -> void
   {
     auto currentScene = static_cast<play_scene&>(m_sceneController.Current());
     auto renderTransform = currentScene.RenderTransform();
-    auto targettedMine = currentScene.LevelContainer()->CalculateTargettedMine();
+    auto targettedObject = currentScene.LevelContainer()->TargettedObject();
 
-    if( targettedMine )
+    if( targettedObject )
     {
-      auto screenPosition = renderTransform.TransformPoint( { targettedMine->Position().x, targettedMine->Position().y } );
+      auto screenPosition = renderTransform.TransformPoint( { targettedObject->Position().x, targettedObject->Position().y } );
       hud_target hudTarget { game_point { screenPosition.x, screenPosition.y } };
       renderer::render(hudTarget);
     }
