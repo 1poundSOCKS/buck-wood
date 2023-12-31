@@ -1,7 +1,6 @@
 #pragma once
 
-#include "play_event.h"
-#include "homing_object.h"
+#include "moving_body.h"
 
 class bullet
 {
@@ -24,7 +23,7 @@ private:
   inline static const float m_bulletRange = 2000.0f;
 
   game_point m_startPosition = { 0, 0 };
-  homing_object m_homingObject;
+  moving_body m_body;
   float m_range = 1000;
   float m_distanceTravelled { 0 };
   bool m_destroyed = false;

@@ -4,13 +4,13 @@
 #include "clock_frequency.h"
 
 bullet::bullet(game_point position, game_velocity velocity) : 
-  m_startPosition { position }, m_homingObject { position, velocity, m_thrust }
+  m_startPosition { position }, m_body { position, velocity }
 {
 }
 
 [[nodiscard]] auto bullet::Position() const -> const game_point&
 {
-  return m_homingObject.Position();
+  return m_body.Position();
 }
 
 [[nodiscard]] auto bullet::Destroyed() const -> bool
@@ -30,8 +30,8 @@ bullet::bullet(game_point position, game_velocity velocity) :
 
 auto bullet::Update(float interval, std::optional<game_point> targetPosition) -> void
 {
-  m_homingObject.Update(interval, targetPosition);
-  m_distanceTravelled = m_startPosition.DistanceTo(m_homingObject.Position());
+  m_body.Update(interval);
+  m_distanceTravelled = m_startPosition.DistanceTo(m_body.Position());
   m_destroyed = m_distanceTravelled > m_range;
 }
 

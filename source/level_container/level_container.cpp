@@ -121,8 +121,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   if( m_playerReloaded.Update(interval) && gamepad_reader::right_trigger() > 0 && m_targettedObject )
   {
     auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
-    game_velocity bulletVelocity { angleToTarget, 50.0f };
-    m_bullets.emplace_back(m_playerShip->Position(), bulletVelocity, m_targettedObject);
+    m_bullets.emplace_back(m_playerShip->Position(), game_velocity { angleToTarget, 400.0f }, m_targettedObject);
     m_playEvents.SetEvent(play_events::event_type::shot, true);
   }
 
