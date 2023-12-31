@@ -25,7 +25,7 @@ private:
 
   struct data
   {
-    data(game_point position);
+    data(game_point position) : m_body { position, game_velocity { 0, 0 }, m_thrustPower }, m_previousState { m_body } {}
     auto Update(float interval, std::optional<game_point> playerPosition) -> void;
 
     homing_object m_body;
@@ -38,7 +38,6 @@ private:
 
   inline static constexpr float m_spinRate { 500.0f };
   inline static constexpr float m_thrustPower { 50.0f };
-
   std::shared_ptr<data> m_data;
   
 };

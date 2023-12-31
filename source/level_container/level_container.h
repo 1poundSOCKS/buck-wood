@@ -95,7 +95,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.emplace_back(level_geometries::TargetGeometry(), position.x, position.y);
+    m_targets.emplace_back(level_geometries::TargetGeometry(), position);
   });
 }
 

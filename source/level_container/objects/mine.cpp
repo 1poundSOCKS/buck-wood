@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::data::data(game_point position) : m_body { position, game_velocity { 0, 0 }, m_thrustPower }, m_previousState { m_body }
-{
-}
-
 auto mine::data::Update(float interval, std::optional<game_point> playerPosition) -> void
 {
   m_previousState = m_body;
