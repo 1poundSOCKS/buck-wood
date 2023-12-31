@@ -177,10 +177,10 @@ auto level_container::GetTargettedObject() const -> targetted_object_type
   return nearestMine;
 }
 
-auto level_container::GetNearest(const mine& mine1, const mine& mine2) const -> const mine&
-{
-  auto playerPosition = m_playerShip.Object().Position();
-  auto mine1Distance = playerPosition.DistanceTo(mine1.Position());
-  auto mine2Distance = playerPosition.DistanceTo(mine2.Position());
-  return mine2Distance < mine1Distance ? mine2 : mine1;
-}
+// auto level_container::GetNearest(const mine& mine1, const mine& mine2) const -> const mine&
+// {
+//   auto playerPosition = m_playerShip.Object().Position();
+//   auto mine1Distance = playerPosition.DistanceTo(mine1.Position());
+//   auto mine2Distance = playerPosition.DistanceTo(mine2.Position());
+//   return mine2Distance < mine1Distance ? mine2 : mine1;
+// }
