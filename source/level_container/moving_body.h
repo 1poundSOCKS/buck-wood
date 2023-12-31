@@ -18,8 +18,9 @@ public:
   auto Accelerate(float amount, float direction) -> void;
   auto SetDirection(float direction) -> void;
 
-  [[nodiscard]] auto Position() const -> const game_point&;
-  [[nodiscard]] auto Velocity() const -> const game_velocity&;
+  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Velocity() const -> game_velocity;
+  [[nodiscard]] auto Direction() const -> float;
 
   auto Update(float interval) -> void;
 
@@ -72,14 +73,19 @@ inline auto moving_body::Accelerate(float amount, float direction) -> void
   m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
 }
 
-[[nodiscard]] inline auto moving_body::Position() const -> const game_point&
+inline [[nodiscard]] auto moving_body::Position() const -> game_point
 {
   return m_position;
 }
 
-[[nodiscard]] inline auto moving_body::Velocity() const -> const game_velocity&
+inline [[nodiscard]] auto moving_body::Velocity() const -> game_velocity
 {
   return m_velocity;
+}
+
+inline [[nodiscard]] auto moving_body::Direction() const -> float
+{
+  return m_velocity.Direction();
 }
 
 inline auto moving_body::Update(float interval) -> void

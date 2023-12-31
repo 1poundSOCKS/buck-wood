@@ -14,6 +14,7 @@ struct game_velocity
   [[nodiscard]] auto x() const -> float;
   [[nodiscard]] auto y() const -> float;
   [[nodiscard]] auto Speed() const -> float;
+  [[nodiscard]] auto Direction() const -> float;
 
   auto Accelerate(float cx, float cy) -> void;
 
@@ -60,6 +61,11 @@ inline [[nodiscard]] auto game_velocity::y() const -> float
 inline [[nodiscard]] auto game_velocity::Speed() const -> float
 {
   return sqrt(m_x * m_x + m_y * m_y);
+}
+
+inline [[nodiscard]] auto game_velocity::Direction() const -> float
+{
+  return CalculateAngle(0, 0, m_x, m_y);
 }
 
 inline auto game_velocity::Accelerate(float cx, float cy) -> void

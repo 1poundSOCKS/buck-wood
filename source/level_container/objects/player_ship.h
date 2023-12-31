@@ -23,7 +23,7 @@ public:
 
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Position() const -> game_point;
   auto Update(float interval) -> void;
 
   auto SetAngle(float angle) -> void;
@@ -34,7 +34,7 @@ public:
   auto Destroy() -> void;
 
 
-  [[nodiscard]] auto PreviousPosition() const -> const game_point&;
+  [[nodiscard]] auto PreviousPosition() const -> game_point;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
@@ -92,12 +92,12 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-inline [[nodiscard]] auto player_ship::Position() const -> const game_point&
+inline [[nodiscard]] auto player_ship::Position() const -> game_point
 {
   return m_body.Position();
 }
 
-inline [[nodiscard]] auto player_ship::PreviousPosition() const -> const game_point&
+inline [[nodiscard]] auto player_ship::PreviousPosition() const -> game_point
 {
   return m_previousState.Position();
 }

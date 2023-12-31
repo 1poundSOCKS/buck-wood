@@ -8,7 +8,7 @@ public:
 
   bullet(game_point position, game_velocity velocity);
 
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto DistanceTravelled() const -> float;
   [[nodiscard]] auto Range() const -> float;

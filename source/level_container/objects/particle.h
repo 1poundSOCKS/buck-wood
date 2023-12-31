@@ -14,7 +14,7 @@ public:
 
   [[nodiscard]] auto Age() const -> float;
   [[nodiscard]] auto Lifespan() const -> float;
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Position() const -> game_point;
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:
@@ -56,7 +56,7 @@ inline auto particle::Destroy() -> void
   return m_lifespan;
 }
 
-[[nodiscard]] inline auto particle::Position() const -> const game_point&
+[[nodiscard]] inline auto particle::Position() const -> game_point
 {
   return m_movingBody.Position();
 }
