@@ -45,6 +45,8 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 auto level_container::UpdateObjects(float interval) -> void
 {
   m_playerShip.Update(interval);
+  m_playerReloadCounter.Update(interval);
+  m_thrustEmmisionCounter.Update(interval);
   dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
@@ -118,7 +120,7 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::CreateNewObjects(float interval) -> void
 {
-  if( m_playerReloaded.Update(interval) && gamepad_reader::right_trigger() > 0 && m_targettedObject )
+  if( m_targettedObject && gamepad_reader::right_trigger() > 0 && m_playerReloadCounter.Get(1) == 1 )
   {
     auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
     m_bullets.emplace_back(m_playerShip->Position(), game_velocity { angleToTarget, 400.0f }, m_targettedObject);
@@ -156,7 +158,7 @@ auto level_container::CreateNewObjects(float interval) -> void
     m_impactParticles.emplace_back(position);
   }
 
-  if( m_playerShip->ThrusterOn() && m_thrustEmmisionTimer.Update(interval) )
+  if( m_playerShip->ThrusterOn() && m_thrustEmmisionCounter.Get(1) == 1 )
   {
     auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
     auto thrustAngle = m_playerShip->Angle() + 180;

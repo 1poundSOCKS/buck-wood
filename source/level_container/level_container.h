@@ -3,11 +3,9 @@
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_collisions.h"
-
 #include "level_explosion.h"
-
-#include "level_input.h"
 #include "play_events.h"
+#include "reload_counter.h"
 
 class level_container
 {
@@ -63,8 +61,8 @@ private:
 
 private:
 
-  reload_timer m_thrustEmmisionTimer { 1.0f / 10.0f };
-  reload_timer m_playerReloaded { 1.0f / 10.0f };
+  reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
+  reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   blank_object m_boundary;
   play_events m_playEvents;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };
