@@ -50,7 +50,7 @@ public:
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
-  [[nodiscard]] auto TargettedObject() const -> std::optional<mine>;
+  [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
 
 private:
 
@@ -60,7 +60,6 @@ private:
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
   auto GetTargettedObject() const -> targetted_object_type;
-  // auto GetNearest(const mine& mine1, const mine& mine2) const -> const mine&;
   auto GetNearest(const auto& mine1, const auto& mine2) const -> const auto&;
 
 private:
@@ -155,7 +154,7 @@ inline [[nodiscard]] auto level_container::HasFinished() const -> bool
   return PlayerDied() || IsComplete();
 }
 
-inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<mine>
+inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_object_type
 {
   return m_targettedObject;
 }

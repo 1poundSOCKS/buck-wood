@@ -1,13 +1,14 @@
 #pragma once
 
 #include "bullet.h"
+#include "targetted_object.h"
 
 class homing_bullet : public bullet
 {
 
 public:
 
-  homing_bullet(game_point position, game_velocity velocity, std::optional<mine> target) : bullet(position, velocity), m_target { target }
+  homing_bullet(game_point position, game_velocity velocity, std::optional<targetted_object> target) : bullet(position, velocity), m_target { target }
   {
   }
 
@@ -18,6 +19,6 @@ public:
 
 private:
 
-  std::optional<mine> m_target;
+  std::optional<targetted_object> m_target;
 
 };

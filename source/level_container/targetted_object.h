@@ -11,18 +11,35 @@ public:
   {
   }
 
-  operator mine() const
-  {
-    return m_object;
-  }
-
   [[nodiscard]] auto Position() const -> game_point
   {
-    return m_object.Position();
+    struct visitor
+    {
+      [[nodiscard]] auto operator()(const mine& object) -> game_point
+      {
+        return object.Position();
+      }
+    };
+
+    return std::visit(visitor {}, m_object);
+  }
+
+  [[nodiscard]] auto Destroyed() const -> bool
+  {
+    struct visitor
+    {
+      [[nodiscard]] auto operator()(const mine& object) -> bool
+      {
+        return object.Destroyed();
+      }
+    };
+
+    return std::visit(visitor {}, m_object);
   }
 
 private:
 
-  mine m_object;
+  using object_type = std::variant<mine>;
+  object_type m_object;
 
 };
