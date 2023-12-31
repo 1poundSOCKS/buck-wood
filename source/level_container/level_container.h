@@ -6,6 +6,7 @@
 #include "level_explosion.h"
 #include "play_events.h"
 #include "reload_counter.h"
+#include "targetted_object.h"
 
 class level_container
 {
@@ -26,6 +27,8 @@ public:
   using explosion_particle_collection  = std::list<explosion_particle>;
   using impact_particle_collection  = std::list<impact_particle>;
   using thrust_particle_collection = std::list<thrust_particle>;
+
+  using targetted_object_type = std::optional<targetted_object>;
 
 public:
 
@@ -56,7 +59,7 @@ private:
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
-  auto GetTargettedObject() const -> std::optional<mine>;
+  auto GetTargettedObject() const -> targetted_object_type;
   auto GetNearest(const mine& mine1, const mine& mine2) const -> const mine&;
 
 private:
@@ -79,7 +82,7 @@ private:
   level_containment_checks m_containmentChecks;
   
   int m_activatedTargetCount { 0 };
-  std::optional<mine> m_targettedObject;
+  targetted_object_type m_targettedObject;
 
 };
 

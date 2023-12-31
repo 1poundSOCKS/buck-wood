@@ -167,7 +167,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   }
 }
 
-auto level_container::GetTargettedObject() const -> std::optional<mine>
+auto level_container::GetTargettedObject() const -> targetted_object_type
 {
   std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& nextMine)
   {
