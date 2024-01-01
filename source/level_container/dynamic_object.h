@@ -23,6 +23,16 @@ public:
     return m_object;
   }
 
+  [[nodiscard]] auto ObjectPtr() -> object_type*
+  {
+    return &m_object;
+  }
+
+  [[nodiscard]] auto ObjectPtr() const -> const object_type*
+  {
+    return &m_object;
+  }
+
   [[nodiscard]] auto Geometry() -> dynamic_geometry&
   {
     return m_geometry;

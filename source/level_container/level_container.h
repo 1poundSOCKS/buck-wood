@@ -59,8 +59,8 @@ private:
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
-  auto GetTargettedObject() const -> targetted_object_type;
-  auto GetNearest(const auto& mine1, const auto& mine2) const -> const auto&;
+  auto GetTargettedObject() -> targetted_object_type;
+  auto GetNearest(auto* mine1, auto* mine2) const -> auto*;
 
 private:
 
@@ -159,10 +159,10 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_
   return m_targettedObject;
 }
 
-auto level_container::GetNearest(const auto& object1, const auto& object2) const -> const auto&
+auto level_container::GetNearest(auto* object1, auto* object2) const -> auto*
 {
   auto playerPosition = m_playerShip.Object().Position();
-  auto object1Distance = playerPosition.DistanceTo(object1.Position());
-  auto object2Distance = playerPosition.DistanceTo(object2.Position());
+  auto object1Distance = playerPosition.DistanceTo(object1->Position());
+  auto object2Distance = playerPosition.DistanceTo(object2->Position());
   return object2Distance < object1Distance ? object2 : object1;
 }

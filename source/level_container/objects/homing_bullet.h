@@ -17,6 +17,11 @@ public:
     bullet::Update(interval, m_target && !m_target->Destroyed() ? std::optional<game_point>(m_target->Position()) : std::nullopt);
   }
 
+  auto ValidateTarget() -> void
+  {
+    m_target = m_target && m_target->Destroyed() ? std::nullopt : m_target;
+  }
+
 private:
 
   std::optional<targetted_object> m_target;

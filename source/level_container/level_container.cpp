@@ -30,11 +30,16 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::framerate());
 
+  for( auto& bullet : m_bullets )
+  {
+    bullet.ValidateTarget();
+  }
+
   EraseDestroyedObjects();
 
-  m_targettedObject = GetTargettedObject();
-
   CreateNewObjects(interval);
+
+  m_targettedObject = GetTargettedObject();
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
@@ -167,17 +172,12 @@ auto level_container::CreateNewObjects(float interval) -> void
   }
 }
 
-auto level_container::GetTargettedObject() const -> targetted_object_type
+auto level_container::GetTargettedObject() -> targetted_object_type
 {
-  std::optional<mine> nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), std::optional<mine>(), [this](const auto& nearest, const auto& nextMine)
+  mine* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine*>(nullptr), [this](mine* nearest, dynamic_object<mine>& nextMine) -> mine*
   {
-    return nearest ? GetNearest(*nearest, nextMine.Object()) : nextMine.Object();
+    return nearest ? GetNearest(nearest, nextMine.ObjectPtr()) : nextMine.ObjectPtr();
   });
 
-  std::optional<level_target> nearestTarget = std::accumulate(std::begin(m_targets), std::end(m_targets), std::optional<level_target>(), [this](const auto& nearest, const auto& nextTarget)
-  {
-    return nearest ? GetNearest(*nearest, nextTarget.Object()) : nextTarget.Object();
-  });
-
-  return nearestMine;
+  return nearestMine ? std::optional<mine*>(nearestMine) : std::nullopt;
 }

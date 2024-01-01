@@ -7,7 +7,7 @@ class targetted_object
 
 public:
 
-  targetted_object(mine object) : m_object { object }
+  targetted_object(mine* object) : m_object { object }
   {
   }
 
@@ -15,9 +15,9 @@ public:
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine& object) -> game_point
+      [[nodiscard]] auto operator()(const mine* object) -> game_point
       {
-        return object.Position();
+        return object->Position();
       }
     };
 
@@ -28,9 +28,9 @@ public:
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine& object) -> bool
+      [[nodiscard]] auto operator()(const mine* object) -> bool
       {
-        return object.Destroyed();
+        return object->Destroyed();
       }
     };
 
@@ -39,7 +39,7 @@ public:
 
 private:
 
-  using object_type = std::variant<mine>;
+  using object_type = std::variant<mine*>;
   object_type m_object;
 
 };
