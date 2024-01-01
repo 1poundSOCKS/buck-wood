@@ -44,7 +44,7 @@ public:
 
       [[nodiscard]] auto operator()(const level_target* object) -> game_scale
       {
-        return { 2.0f, 2.0f };
+        return { 2.7f, 2.7f };
       }
     };
 
