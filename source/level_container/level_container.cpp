@@ -174,10 +174,33 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::GetTargettedObject() -> targetted_object_type
 {
-  mine* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine*>(nullptr), [this](mine* nearest, dynamic_object<mine>& nextMine) -> mine*
+  mine* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine*>(nullptr), [this](mine* nearest, dynamic_object<mine>& next) -> mine*
   {
-    return nearest ? GetNearest(nearest, nextMine.ObjectPtr()) : nextMine.ObjectPtr();
+    return nearest ? GetNearest(nearest, next.ObjectPtr()) : next.ObjectPtr();
   });
 
-  return nearestMine ? std::optional<mine*>(nearestMine) : std::nullopt;
+  level_target* nearestTarget = std::accumulate(std::begin(m_targets), std::end(m_targets), static_cast<level_target*>(nullptr), [this](level_target* nearest, dynamic_object<level_target>& next) -> level_target*
+  {
+    return nearest ? GetNearest(nearest, next.ObjectPtr()) : next.ObjectPtr();
+  });
+
+  if( nearestMine && nearestTarget )
+  {
+    auto playerPosition = m_playerShip.Object().Position();
+    auto mineDistance = playerPosition.DistanceTo(nearestMine->Position());
+    auto targetDistance = playerPosition.DistanceTo(nearestTarget->Position());
+    return ( targetDistance < mineDistance ) ? targetted_object { nearestTarget } : targetted_object { nearestMine };
+  }
+  else if( nearestMine )
+  {
+    return nearestMine;
+  }
+  else if( nearestTarget )
+  {
+    return nearestTarget;
+  }
+  else
+  {
+    return std::nullopt;
+  }
 }
