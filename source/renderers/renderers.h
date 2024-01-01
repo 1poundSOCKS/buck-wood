@@ -167,6 +167,8 @@ inline auto renderer::Render(const thrust_particle& particle) const -> void
 
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
 {
-  transformed_path_geometry finalTargetGeometry { m_targetGeometry, D2D1::Matrix3x2F::Translation( { hudTarget.Position().x, hudTarget.Position().y } ) };
+  transformed_path_geometry finalTargetGeometry { 
+    m_targetGeometry, D2D1::Matrix3x2F::Scale(hudTarget.Scale().width(), hudTarget.Scale().height()) * D2D1::Matrix3x2F::Translation( { hudTarget.Position().x, hudTarget.Position().y } ) };
+
   m_hudTargetRenderer.Write(finalTargetGeometry);
 }

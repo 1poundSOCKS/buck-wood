@@ -69,12 +69,13 @@ auto play_screen::RenderUI() -> void
   {
     auto currentScene = static_cast<play_scene&>(m_sceneController.Current());
     auto renderTransform = currentScene.RenderTransform();
+    
     auto targettedObject = currentScene.LevelContainer()->TargettedObject();
 
     if( targettedObject )
     {
       auto screenPosition = renderTransform.TransformPoint( { targettedObject->Position().x, targettedObject->Position().y } );
-      hud_target hudTarget { game_point { screenPosition.x, screenPosition.y } };
+      hud_target hudTarget { game_point { screenPosition.x, screenPosition.y }, targettedObject->Scale() };
       renderer::render(hudTarget);
     }
   }

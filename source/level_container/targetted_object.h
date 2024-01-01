@@ -33,6 +33,24 @@ public:
     return std::visit(visitor {}, m_object);
   }
 
+  [[nodiscard]] auto Scale() const -> game_scale
+  {
+    struct visitor
+    {
+      [[nodiscard]] auto operator()(const mine* object) -> game_scale
+      {
+        return { 1.0f, 1.0f };
+      }
+
+      [[nodiscard]] auto operator()(const level_target* object) -> game_scale
+      {
+        return { 2.0f, 2.0f };
+      }
+    };
+
+    return std::visit(visitor {}, m_object);
+  }
+
   [[nodiscard]] auto Destroyed() const -> bool
   {
     struct visitor

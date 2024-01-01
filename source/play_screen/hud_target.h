@@ -7,7 +7,7 @@ class hud_target
 
 public:
 
-  hud_target(const game_point& position) : m_position { position }
+  hud_target(game_point position, game_scale scale) : m_position { position }, m_scale { scale }
   {
   }
 
@@ -16,8 +16,14 @@ public:
     return m_position;
   }
 
+  [[nodiscard]] auto Scale() const -> game_scale
+  {
+    return m_scale;
+  }
+
 private:
 
   game_point m_position;
+  game_scale m_scale;
 
 };
