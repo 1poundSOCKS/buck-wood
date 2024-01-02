@@ -60,25 +60,23 @@ auto play_screen::Render() -> void
 
 auto play_screen::RenderUI() -> void
 {
+  auto currentScene = static_cast<play_scene&>(m_sceneController.Current());
+  auto renderTransform = currentScene.RenderTransform();
+  
+  auto targettedObject = currentScene.LevelContainer()->TargettedObject();
+
+  if( targettedObject )
+  {
+    auto screenPosition = renderTransform.TransformPoint( { targettedObject->Position().x, targettedObject->Position().y } );
+    auto bounds = targettedObject->Bounds(renderTransform);
+    hud_target hudTarget { game_point { screenPosition.x, screenPosition.y }, bounds };
+    renderer::render(hudTarget);
+  }
+
   if( m_sceneController.Paused() )
   {
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
     m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
-  }
-  else
-  {
-    auto currentScene = static_cast<play_scene&>(m_sceneController.Current());
-    auto renderTransform = currentScene.RenderTransform();
-    
-    auto targettedObject = currentScene.LevelContainer()->TargettedObject();
-
-    if( targettedObject )
-    {
-      auto screenPosition = renderTransform.TransformPoint( { targettedObject->Position().x, targettedObject->Position().y } );
-      auto bounds = targettedObject->Bounds(renderTransform);
-      hud_target hudTarget { game_point { screenPosition.x, screenPosition.y }, bounds };
-      renderer::render(hudTarget);
-    }
   }
 }
 

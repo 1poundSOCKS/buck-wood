@@ -54,16 +54,18 @@ public:
 
       [[nodiscard]] auto operator()(const target_object* object) -> D2D1_RECT_F
       {
+        auto transform = D2D1::Matrix3x2F::Scale({object->Object().Scale().width(), object->Object().Scale().height()}) * D2D1::Matrix3x2F::Translation({object->Object().Position().x, object->Object().Position().y});
+        transformed_path_geometry geometry { object->Geometry().GetSource().get(), transform };
         D2D1_RECT_F bounds;
-        object->Geometry()->GetBounds(m_transform, &bounds);
+        geometry.Get()->GetBounds(m_transform, &bounds);
         return Bounds(bounds);
       }
 
       static [[nodiscard]] auto Bounds(D2D1_RECT_F rect) -> D2D1_RECT_F
       {
         auto size = Size(rect);
-        auto widthAdjustment = size.width * 0.1f;
-        auto heightAdjustment = size.height * 0.1f;
+        auto widthAdjustment = size.width * 0.2f;
+        auto heightAdjustment = size.height * 0.2f;
         return { rect.left - widthAdjustment, rect.top - heightAdjustment, rect.right + widthAdjustment, rect.bottom + heightAdjustment };
       }
 
