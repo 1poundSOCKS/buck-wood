@@ -49,14 +49,27 @@ public:
       {
         D2D1_RECT_F bounds;
         object->Geometry()->GetBounds(m_transform, &bounds);
-        return bounds;
+        return Bounds(bounds);
       }
 
       [[nodiscard]] auto operator()(const target_object* object) -> D2D1_RECT_F
       {
         D2D1_RECT_F bounds;
         object->Geometry()->GetBounds(m_transform, &bounds);
-        return bounds;
+        return Bounds(bounds);
+      }
+
+      static [[nodiscard]] auto Bounds(D2D1_RECT_F rect) -> D2D1_RECT_F
+      {
+        auto size = Size(rect);
+        auto widthAdjustment = size.width * 0.1f;
+        auto heightAdjustment = size.height * 0.1f;
+        return { rect.left - widthAdjustment, rect.top - heightAdjustment, rect.right + widthAdjustment, rect.bottom + heightAdjustment };
+      }
+
+      static [[nodiscard]] auto Size(D2D1_RECT_F rect) -> D2D1_SIZE_F
+      {
+        return { rect.right - rect.left, rect.bottom - rect.top };
       }
 
       D2D1::Matrix3x2F m_transform;

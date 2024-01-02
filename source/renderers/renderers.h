@@ -168,5 +168,5 @@ inline auto renderer::Render(const thrust_particle& particle) const -> void
 
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
 {
-  render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudBrush.get(), 2.0f);
+  render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudBrush.get(), 3.0f);
 }
