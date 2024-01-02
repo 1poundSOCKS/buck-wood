@@ -30,12 +30,9 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::framerate());
 
-  for( auto& bullet : m_bullets )
-  {
-    bullet.ValidateTarget();
-  }
+  ValidateObjects();
 
-  EraseDestroyedObjects();
+  RemoveDestroyedObjects();
 
   CreateNewObjects(interval);
 
@@ -61,7 +58,15 @@ auto level_container::UpdateObjects(float interval) -> void
   dynamic_object_functions::update(m_thrustParticles, interval);
 }
 
-auto level_container::EraseDestroyedObjects() -> void
+auto level_container::ValidateObjects() -> void
+{
+  for( auto& bullet : m_bullets )
+  {
+    bullet.ValidateTarget();
+  }
+}
+
+auto level_container::RemoveDestroyedObjects() -> void
 {
   dynamic_object_functions::erase_destroyed(m_mines);
   particle_functions::erase_destroyed(m_bullets);
@@ -174,15 +179,15 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::GetTargettedObject() -> targetted_object_type
 {
-  mine* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine*>(nullptr), [this](mine* nearest, dynamic_object<mine>& next) -> mine*
+  mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this](auto* nearest, auto& next) -> mine_object*
   {
-    return nearest ? GetNearestToPlayer(nearest, next.ObjectPtr()) : next.ObjectPtr();
+    return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
   });
 
-  level_target* nearestTarget = std::accumulate(std::begin(m_targets), std::end(m_targets), static_cast<level_target*>(nullptr), [this](level_target* nearest, dynamic_object<level_target>& next) -> level_target*
+  target_object* nearestTarget = std::accumulate(std::begin(m_targets), std::end(m_targets), static_cast<target_object*>(nullptr), [this](auto* nearest, auto& next) -> target_object*
   {
-    return nearest ? GetNearestToPlayer(nearest, next.ObjectPtr()) : next.ObjectPtr();
+    return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
   });
 
-  return GetNearestTarget(nearestMine, nearestTarget);
+  return GetNearestTargetObject(nearestMine, nearestTarget);
 }

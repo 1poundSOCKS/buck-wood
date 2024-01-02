@@ -75,7 +75,8 @@ auto play_screen::RenderUI() -> void
     if( targettedObject )
     {
       auto screenPosition = renderTransform.TransformPoint( { targettedObject->Position().x, targettedObject->Position().y } );
-      hud_target hudTarget { game_point { screenPosition.x, screenPosition.y }, targettedObject->Scale() };
+      auto bounds = targettedObject->Bounds(renderTransform);
+      hud_target hudTarget { game_point { screenPosition.x, screenPosition.y }, bounds };
       renderer::render(hudTarget);
     }
   }

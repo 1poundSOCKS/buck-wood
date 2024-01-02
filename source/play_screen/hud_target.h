@@ -7,7 +7,7 @@ class hud_target
 
 public:
 
-  hud_target(game_point position, game_scale scale) : m_position { position }, m_scale { scale }
+  hud_target(game_point position, D2D1_RECT_F bounds) : m_position { position }, m_bounds { bounds }
   {
   }
 
@@ -16,14 +16,14 @@ public:
     return m_position;
   }
 
-  [[nodiscard]] auto Scale() const -> game_scale
+  [[nodiscard]] auto Bounds() const -> D2D1_RECT_F
   {
-    return m_scale;
+    return m_bounds;
   }
 
 private:
 
   game_point m_position;
-  game_scale m_scale;
+  D2D1_RECT_F m_bounds;
 
 };

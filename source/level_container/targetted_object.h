@@ -1,17 +1,21 @@
 #pragma once
 
 #include "level_objects.h"
+#include "dynamic_object.h"
 
 class targetted_object
 {
 
 public:
 
-  targetted_object(mine* object) : m_object { object }
+  using mine_object = dynamic_object<mine>;
+  using target_object = dynamic_object<level_target>;
+
+  targetted_object(mine_object* object) : m_object { object }
   {
   }
 
-  targetted_object(level_target* object) : m_object { object }
+  targetted_object(target_object* object) : m_object { object }
   {
   }
 
@@ -19,48 +23,58 @@ public:
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine* object) -> game_point
+      [[nodiscard]] auto operator()(const mine_object* object) -> game_point
       {
-        return object->Position();
+        return object->Object().Position();
       }
 
-      [[nodiscard]] auto operator()(const level_target* object) -> game_point
+      [[nodiscard]] auto operator()(const target_object* object) -> game_point
       {
-        return object->Position();
+        return object->Object().Position();
       }
     };
 
     return std::visit(visitor {}, m_object);
   }
 
-  [[nodiscard]] auto Scale() const -> game_scale
+  [[nodiscard]] auto Bounds(D2D1::Matrix3x2F transform) const -> D2D1_RECT_F
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine* object) -> game_scale
+      visitor(D2D1::Matrix3x2F transform) : m_transform { transform }
       {
-        return { 1.0f, 1.0f };
+
+      }
+      [[nodiscard]] auto operator()(const mine_object* object) -> D2D1_RECT_F
+      {
+        D2D1_RECT_F bounds;
+        object->Geometry()->GetBounds(m_transform, &bounds);
+        return bounds;
       }
 
-      [[nodiscard]] auto operator()(const level_target* object) -> game_scale
+      [[nodiscard]] auto operator()(const target_object* object) -> D2D1_RECT_F
       {
-        return { 2.7f, 2.7f };
+        D2D1_RECT_F bounds;
+        object->Geometry()->GetBounds(m_transform, &bounds);
+        return bounds;
       }
+
+      D2D1::Matrix3x2F m_transform;
     };
 
-    return std::visit(visitor {}, m_object);
+    return std::visit(visitor { transform }, m_object);
   }
 
   [[nodiscard]] auto Destroyed() const -> bool
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine* object) -> bool
+      [[nodiscard]] auto operator()(const mine_object* object) -> bool
       {
-        return object->Destroyed();
+        return object->Object().Destroyed();
       }
 
-      [[nodiscard]] auto operator()(const level_target* object) -> bool
+      [[nodiscard]] auto operator()(const target_object* object) -> bool
       {
         return false;
       }
@@ -71,7 +85,7 @@ public:
 
 private:
 
-  using object_type = std::variant<mine*,level_target*>;
+  using object_type = std::variant<mine_object*,target_object*>;
   object_type m_object;
 
 };
