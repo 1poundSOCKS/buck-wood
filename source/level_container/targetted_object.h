@@ -41,14 +41,14 @@ public:
   {
     struct visitor
     {
-      visitor(D2D1::Matrix3x2F transform) : m_transform { transform }
-      {
+      visitor(D2D1::Matrix3x2F transform) : m_transform { transform } {}
 
-      }
       [[nodiscard]] auto operator()(const mine_object* object) -> D2D1_RECT_F
       {
+        auto transform = D2D1::Matrix3x2F::Scale({object->Object().Scale().width(), object->Object().Scale().height()}) * D2D1::Matrix3x2F::Translation({object->Object().Position().x, object->Object().Position().y});
+        transformed_path_geometry geometry { object->Geometry().GetSource().get(), transform };
         D2D1_RECT_F bounds;
-        object->Geometry()->GetBounds(m_transform, &bounds);
+        geometry.Get()->GetBounds(m_transform, &bounds);
         return Bounds(bounds);
       }
 

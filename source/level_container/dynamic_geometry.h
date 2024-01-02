@@ -20,6 +20,11 @@ public:
 
   auto Transform(const D2D1::Matrix3x2F& transform) -> void;
 
+  [[nodiscard]] auto GetSource() const -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_transformedGeometry.GetSource();
+  }
+
 private:
 
   transformed_path_geometry m_transformedGeometry;
