@@ -30,13 +30,11 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::framerate());
 
-  ValidateObjects();
-
   RemoveDestroyedObjects();
 
-  CreateNewObjects(interval);
-
   m_targettedObject = GetTargettedObject();
+
+  CreateNewObjects(interval);
 
   m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
@@ -68,6 +66,8 @@ auto level_container::ValidateObjects() -> void
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
+  ValidateObjects();
+
   dynamic_object_functions::erase_destroyed(m_mines);
   particle_functions::erase_destroyed(m_bullets);
   particle_functions::erase_destroyed(m_explosionParticles);
