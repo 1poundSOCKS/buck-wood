@@ -58,7 +58,6 @@ public:
   {
     m_object.Update(std::forward<Args>(args)...);
     m_transform = CalculateObjectTransform();
-    // m_geometry.Transform(m_transform);
     m_geometry = CreateTransformedGeometry(d2d_factory::get_raw(), GetSourceGeometry(m_geometry.get()).get(), m_transform);
   }
 
@@ -84,7 +83,6 @@ private:
 private:
 
   object_type m_object;
-  // dynamic_geometry m_geometry;
   winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
   D2D1::Matrix3x2F m_transform;
 
