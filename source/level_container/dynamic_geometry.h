@@ -25,6 +25,11 @@ public:
     return m_transformedGeometry.GetSource();
   }
 
+  operator ID2D1TransformedGeometry*() const
+  {
+    return m_transformedGeometry.Get();
+  }
+
 private:
 
   transformed_path_geometry m_transformedGeometry;

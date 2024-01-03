@@ -20,6 +20,11 @@ public:
   [[nodiscard]] auto Get() const -> ID2D1TransformedGeometry*;
   [[nodiscard]] auto GetSource() const -> winrt::com_ptr<ID2D1Geometry>;
 
+  operator ID2D1TransformedGeometry*() const
+  {
+    return m_geometry.get();
+  }
+
 private:
 
   winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;

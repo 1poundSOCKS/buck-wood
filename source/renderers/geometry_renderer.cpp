@@ -14,28 +14,41 @@ geometry_renderer::geometry_renderer(const render_brush& drawBrush, float drawWi
 {
 }
 
-auto geometry_renderer::Write(const path_geometry& geometry) const -> void
+auto geometry_renderer::Write(ID2D1Geometry* geometry) const -> void
 {
   if( m_fillBrush )
   {
-    render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
+    render_target::get()->FillGeometry(geometry, m_fillBrush.get());
   }
 
   if( m_drawBrush )
   {
-    render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
+    render_target::get()->DrawGeometry(geometry, m_drawBrush.get(), m_drawWidth);
   }
 }
 
-auto geometry_renderer::Write(const transformed_path_geometry& geometry) const -> void
-{
-  if( m_fillBrush )
-  {
-    render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
-  }
+// auto geometry_renderer::Write(const path_geometry& geometry) const -> void
+// {
+//   if( m_fillBrush )
+//   {
+//     render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
+//   }
 
-  if( m_drawBrush )
-  {
-    render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
-  }
-}
+//   if( m_drawBrush )
+//   {
+//     render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
+//   }
+// }
+
+// auto geometry_renderer::Write(const transformed_path_geometry& geometry) const -> void
+// {
+//   if( m_fillBrush )
+//   {
+//     render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
+//   }
+
+//   if( m_drawBrush )
+//   {
+//     render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
+//   }
+// }

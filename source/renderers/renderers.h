@@ -109,7 +109,8 @@ inline auto renderer::Render(const dynamic_object<level_asteroid>& asteroid) con
 
 inline auto renderer::Render(const blank_object& blankObject) const -> void
 {
-  m_blankRenderer.Write(blankObject.Geometry());
+  // m_blankRenderer.Write(blankObject.Geometry());
+  m_blankRenderer.Write(static_cast<ID2D1PathGeometry*>(blankObject));
 }
 
 inline auto renderer::Render(const solid_object& solidObject) const -> void
