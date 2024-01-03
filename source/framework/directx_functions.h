@@ -20,14 +20,13 @@ auto LoadPathGeometry(ID2D1PathGeometry* geometry, std::ranges::input_range auto
 {
   winrt::com_ptr<ID2D1GeometrySink> sink;
   geometry->Open(sink.put());
-  auto begin = std::cbegin(points);
-  auto firstPoint = *begin;
-  sink->BeginFigure({ firstPoint.x, firstPoint.y }, D2D1_FIGURE_BEGIN_FILLED);
+  auto begin = std::ranges::begin(points);
 
-  for( auto next = std::next(begin); next != std::cend(points); ++next )
+  sink->BeginFigure({ (*begin).x, (*begin).y }, D2D1_FIGURE_BEGIN_FILLED);
+
+  for( auto next = std::ranges::next(begin); next != std::ranges::end(points); ++next )
   {
-    auto nextPoint = *next;
-    sink->AddLine({ nextPoint.x, nextPoint.y });
+    sink->AddLine({ (*next).x, (*next).y });
   }
 
   sink->EndFigure(D2D1_FIGURE_END_CLOSED);
