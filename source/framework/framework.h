@@ -19,8 +19,6 @@
 
 #include "render_guard.h"
 #include "text_renderer.h"
-#include "path_geometry.h"
-#include "transformed_path_geometry.h"
 
 #include "direct_sound.h"
 #include "primary_sound_buffer.h"

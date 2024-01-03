@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-// #include "level_objects.h"
 
 class level_geometries
 {
@@ -37,7 +36,7 @@ private:
     });
   }
 
-  static [[nodiscard]] auto CreateAsteroidGeometry(float x, float y, float maxWidth, float maxHeight) -> path_geometry
+  static [[nodiscard]] auto CreateAsteroidGeometry(float x, float y, float maxWidth, float maxHeight) -> winrt::com_ptr<ID2D1PathGeometry>
   {
     auto xRatioNoise = psn::GetNoise(x / 7, y / 7);
     auto yRatioNoise = psn::GetNoise(x / 13, y / 13);
@@ -56,10 +55,12 @@ private:
       return game_point { point.x * noise, point.y * noise };
     });
 
-    return path_geometry { irregularShape };
+    return CreatePathGeometry(d2d_factory::get_raw(), irregularShape);
   }
 
-  level_geometries() : m_ductFanGeometry { GetDuctFanGeometryData(200) }, m_playerShipGeometry { GetPlayerGeometryData() }
+  level_geometries() : 
+    m_ductFanGeometry { CreatePathGeometry(d2d_factory::get_raw(), GetDuctFanGeometryData(200)) }, 
+    m_playerShipGeometry { CreatePathGeometry(d2d_factory::get_raw(), GetPlayerGeometryData()) }
   {
   }
 
@@ -80,37 +81,37 @@ public:
     }
   }
 
-  static [[nodiscard]] auto PlayerShipGeometry() -> const path_geometry&
+  static [[nodiscard]] auto PlayerShipGeometry() -> ID2D1PathGeometry*
   {
-    return m_instance->m_playerShipGeometry;
+    return m_instance->m_playerShipGeometry.get();
   }
 
-  static [[nodiscard]] auto MineGeometry() -> const path_geometry&
+  static [[nodiscard]] auto MineGeometry() -> ID2D1PathGeometry*
   {
-    return m_instance->m_mineGeometry;
+    return m_instance->m_mineGeometry.get();
   }
 
-  static [[nodiscard]] auto TargetGeometry() -> const path_geometry&
+  static [[nodiscard]] auto TargetGeometry() -> ID2D1PathGeometry*
   {
-    return m_instance->m_targetGeometry;
+    return m_instance->m_targetGeometry.get();
   }
 
-  static [[nodiscard]] auto AsteroidGeometry() -> const path_geometry&
+  static [[nodiscard]] auto AsteroidGeometry() -> ID2D1PathGeometry*
   {
-    return m_instance->m_asteroidGeometry;
+    return m_instance->m_asteroidGeometry.get();
   }
 
-  static [[nodiscard]] auto DuctFanGeometry() -> const path_geometry&
+  static [[nodiscard]] auto DuctFanGeometry() -> ID2D1PathGeometry*
   {
-    return m_instance->m_ductFanGeometry;
+    return m_instance->m_ductFanGeometry.get();
   }
 
 private:
 
-  path_geometry m_playerShipGeometry;
-  path_geometry m_mineGeometry { shape_generator { 0, 0, 40, 40, 3 } };
-  path_geometry m_targetGeometry { shape_generator { 0, 0, 100, 100, 6 } };
-  path_geometry m_asteroidGeometry { CreateAsteroidGeometry(0, 0, 200, 200) };
-  path_geometry m_ductFanGeometry;
+  winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
+  winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 40, 40, 3 }) };
+  winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }) };
+  winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { CreateAsteroidGeometry(0, 0, 200, 200) };
+  winrt::com_ptr<ID2D1PathGeometry> m_ductFanGeometry;
 
 };

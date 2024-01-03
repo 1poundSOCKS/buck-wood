@@ -1,7 +1,5 @@
 #pragma once
 
-#include "transformed_path_geometry.h"
-
 class solid_object
 {
 

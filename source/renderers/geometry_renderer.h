@@ -1,8 +1,6 @@
 #pragma once
 
 #include "render_types.h"
-#include "transformed_path_geometry.h"
-#include "render_types.h"
 
 class geometry_renderer
 {

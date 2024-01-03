@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "transformed_path_geometry.h"
 #include "game_scale.h"
 
 class duct_fan
