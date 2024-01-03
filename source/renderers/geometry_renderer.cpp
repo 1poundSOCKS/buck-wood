@@ -26,29 +26,3 @@ auto geometry_renderer::Write(ID2D1Geometry* geometry) const -> void
     render_target::get()->DrawGeometry(geometry, m_drawBrush.get(), m_drawWidth);
   }
 }
-
-// auto geometry_renderer::Write(const path_geometry& geometry) const -> void
-// {
-//   if( m_fillBrush )
-//   {
-//     render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
-//   }
-
-//   if( m_drawBrush )
-//   {
-//     render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
-//   }
-// }
-
-// auto geometry_renderer::Write(const transformed_path_geometry& geometry) const -> void
-// {
-//   if( m_fillBrush )
-//   {
-//     render_target::get()->FillGeometry(geometry.Get(), m_fillBrush.get());
-//   }
-
-//   if( m_drawBrush )
-//   {
-//     render_target::get()->DrawGeometry(geometry.Get(), m_drawBrush.get(), m_drawWidth);
-//   }
-// }

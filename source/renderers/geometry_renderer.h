@@ -14,10 +14,6 @@ public:
   geometry_renderer(const render_brush& drawBrush, float drawWidth);
 
   auto Write(ID2D1Geometry* geometry) const -> void;
-  // auto Write(ID2D1PathGeometry* geometry) const -> void;
-
-  // auto Write(const path_geometry& geometry) const -> void;
-  // auto Write(const transformed_path_geometry& geometry) const -> void;
 
 private:
 
