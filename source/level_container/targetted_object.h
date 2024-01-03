@@ -45,33 +45,18 @@ public:
 
       [[nodiscard]] auto operator()(const mine_object* object) -> D2D1_RECT_F
       {
-        auto transform = D2D1::Matrix3x2F::Scale({object->Object().Scale().width(), object->Object().Scale().height()}) * D2D1::Matrix3x2F::Translation({object->Object().Position().x, object->Object().Position().y});
-        transformed_path_geometry geometry { object->Geometry().GetSource().get(), transform };
-        D2D1_RECT_F bounds;
-        geometry.Get()->GetBounds(m_transform, &bounds);
-        return Bounds(bounds);
+        auto transform = object->Transform() * m_transform;
+        auto topLeft = transform.TransformPoint({-100, -100});
+        auto bottomRight = transform.TransformPoint({100, 100});
+        return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
       }
 
       [[nodiscard]] auto operator()(const target_object* object) -> D2D1_RECT_F
       {
-        auto transform = D2D1::Matrix3x2F::Scale({object->Object().Scale().width(), object->Object().Scale().height()}) * D2D1::Matrix3x2F::Translation({object->Object().Position().x, object->Object().Position().y});
-        transformed_path_geometry geometry { object->Geometry().GetSource().get(), transform };
-        D2D1_RECT_F bounds;
-        geometry.Get()->GetBounds(m_transform, &bounds);
-        return Bounds(bounds);
-      }
-
-      static [[nodiscard]] auto Bounds(D2D1_RECT_F rect) -> D2D1_RECT_F
-      {
-        auto size = Size(rect);
-        auto widthAdjustment = size.width * 0.2f;
-        auto heightAdjustment = size.height * 0.2f;
-        return { rect.left - widthAdjustment, rect.top - heightAdjustment, rect.right + widthAdjustment, rect.bottom + heightAdjustment };
-      }
-
-      static [[nodiscard]] auto Size(D2D1_RECT_F rect) -> D2D1_SIZE_F
-      {
-        return { rect.right - rect.left, rect.bottom - rect.top };
+        auto transform = object->Transform() * m_transform;
+        auto topLeft = transform.TransformPoint({-100, -100});
+        auto bottomRight = transform.TransformPoint({100, 100});
+        return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
       }
 
       D2D1::Matrix3x2F m_transform;

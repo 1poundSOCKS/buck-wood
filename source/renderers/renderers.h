@@ -47,14 +47,6 @@ private:
 
   inline static renderer* m_instance { nullptr };
 
-  // path_geometry m_targetGeometry { std::array
-  // {
-  //   game_point { -20, -20 }, 
-  //   game_point { 20, -20 }, 
-  //   game_point { 20, 20 }, 
-  //   game_point { -20, 20 }
-  // }};
-
   level_target_renderer m_levelTargetRenderer;
   geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
   geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
@@ -68,7 +60,6 @@ private:
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
-  // geometry_renderer m_hudTargetRenderer { screen_render_brush_white.CreateBrush(), 6 };
   render_brush m_hudBrush { screen_render_brush_white.CreateBrush() };
 
 };

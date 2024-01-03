@@ -43,13 +43,19 @@ public:
     return m_geometry;
   }
 
+  [[nodiscard]] auto Transform() const -> const D2D1::Matrix3x2F&
+  {
+    return m_transform;
+  }
+
   template <typename...Args> auto Update(Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);
-    m_geometry.Transform(D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().width(), m_object.Scale().height() }) * 
-      D2D1::Matrix3x2F::Rotation(m_object.Angle()) * 
-      D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y));
+    m_transform = CalculateObjectTransform();
+    m_geometry.Transform(m_transform);
   }
+
+
 
   auto operator->() const -> const object_type*
   {
@@ -63,7 +69,17 @@ public:
 
 private:
 
+  [[nodiscard]] auto CalculateObjectTransform() const -> D2D1::Matrix3x2F
+  {
+    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().width(), m_object.Scale().height() }) * 
+      D2D1::Matrix3x2F::Rotation(m_object.Angle()) * 
+      D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
+  }
+
+private:
+
   object_type m_object;
   dynamic_geometry m_geometry;
+  D2D1::Matrix3x2F m_transform;
 
 };
