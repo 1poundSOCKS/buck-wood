@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework.h"
+#include "game_scale.h"
 
 class level_asteroid
 {
@@ -9,14 +10,19 @@ public:
 
   level_asteroid(float x, float y, float maxWidth, float maxHeight);
 
-  [[nodiscard]] auto Position() const -> const game_point&
+  [[nodiscard]] auto Scale() const -> game_scale
   {
-    return m_position;
+    return { 1.0f, 1.0f };
   }
 
   [[nodiscard]] auto Angle() const -> float
   {
     return 0;
+  }
+
+  [[nodiscard]] auto Position() const -> const game_point&
+  {
+    return m_position;
   }
 
 private:

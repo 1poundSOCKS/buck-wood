@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dynamic_geometry.h"
+#include "framework.h"
 
 template <typename object_type>
 class dynamic_object
@@ -8,14 +8,10 @@ class dynamic_object
 
 public:
 
-  // template <typename...Args> dynamic_object(const path_geometry& baseGeometry, Args...args) : 
-  //   m_object { std::forward<Args>(args)... }, m_geometry { baseGeometry, D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y) }
-  // {
-  // }
-
   template <typename...Args> dynamic_object(ID2D1Geometry* sourceGeometry, Args...args) : 
     m_object { std::forward<Args>(args)... }, 
-    m_geometry { CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y)) }
+    m_transform { CalculateObjectTransform() },
+    m_geometry { CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) }
   {
   }
 
@@ -83,7 +79,7 @@ private:
 private:
 
   object_type m_object;
-  winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
   D2D1::Matrix3x2F m_transform;
+  winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
 
 };
