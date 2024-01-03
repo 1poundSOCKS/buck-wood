@@ -50,6 +50,12 @@ public:
     return m_transform;
   }
 
+  [[nodiscard]] auto CreateUnrotatedTransform() const -> D2D1::Matrix3x2F
+  {
+    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().width(), m_object.Scale().height() }) * 
+      D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
+  }
+
   template <typename...Args> auto Update(Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);

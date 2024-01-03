@@ -45,17 +45,17 @@ public:
 
       [[nodiscard]] auto operator()(const mine_object* object) -> D2D1_RECT_F
       {
-        auto transform = object->Transform() * m_transform;
-        auto topLeft = transform.TransformPoint({-100, -100});
-        auto bottomRight = transform.TransformPoint({100, 100});
+        auto transform = object->CreateUnrotatedTransform() * m_transform;
+        auto topLeft = transform.TransformPoint({-40, -40});
+        auto bottomRight = transform.TransformPoint({40, 40});
         return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
       }
 
       [[nodiscard]] auto operator()(const target_object* object) -> D2D1_RECT_F
       {
-        auto transform = object->Transform() * m_transform;
-        auto topLeft = transform.TransformPoint({-100, -100});
-        auto bottomRight = transform.TransformPoint({100, 100});
+        auto transform = object->CreateUnrotatedTransform() * m_transform;
+        auto topLeft = transform.TransformPoint({-90, -90});
+        auto bottomRight = transform.TransformPoint({90, 90});
         return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
       }
 
