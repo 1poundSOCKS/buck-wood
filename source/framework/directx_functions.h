@@ -39,3 +39,10 @@ auto LoadPathGeometry(ID2D1PathGeometry* geometry, std::ranges::input_range auto
   LoadPathGeometry(geometry.get(), points);
   return geometry;
 }
+
+inline [[nodiscard]] auto GetSourceGeometry(ID2D1TransformedGeometry* geometry) -> winrt::com_ptr<ID2D1Geometry>
+{
+  winrt::com_ptr<ID2D1Geometry> sourceGeometry;
+  geometry->GetSourceGeometry(sourceGeometry.put());
+  return sourceGeometry;
+}

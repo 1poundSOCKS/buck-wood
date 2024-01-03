@@ -13,7 +13,7 @@ public:
   auto operator()(dynamic_object<geometry_object_type>& geometryObject, particle_object_type& particleObject) -> void
   {
     BOOL collision = FALSE;
-    HRESULT hr = geometryObject.Geometry().Get()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
+    HRESULT hr = geometryObject.Geometry()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
 
     if( SUCCEEDED(hr) && collision )
     {

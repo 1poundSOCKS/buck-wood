@@ -15,7 +15,7 @@ public:
   auto operator()(dynamic_object<object_type_1>& object1, dynamic_object<object_type_2>& object2) -> void
   {
     D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
-    HRESULT hr = object1.Geometry().Get()->CompareWithGeometry(object2.Geometry().Get(), D2D1::Matrix3x2F::Identity(), &relation);
+    HRESULT hr = object1.Geometry()->CompareWithGeometry(object2.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
 
     bool collided = false;
 
