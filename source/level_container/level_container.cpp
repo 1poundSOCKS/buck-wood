@@ -191,5 +191,5 @@ auto level_container::GetTargettedObject() -> targetted_object_type
     return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
   });
 
-  return GetNearestTargetObject(nearestMine, nearestTarget);
+  return GetNearestObject(nearestMine, nearestTarget, 500.0f);
 }

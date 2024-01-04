@@ -61,7 +61,8 @@ private:
   auto DoNonPlayerCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
-  auto GetNearestTargetObject(auto* object1, auto* object2) -> targetted_object_type;
+  auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
+  auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
   auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromPlayer(auto&& object) const -> float;
 
@@ -162,26 +163,31 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_
   return m_targettedObject;
 }
 
-auto level_container::GetNearestTargetObject(auto* object1, auto* object2) -> targetted_object_type
+auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
+{
+  auto [nearestObject, distance] = GetNearestObject(object1, object2);
+  return distance < maxRange ? nearestObject : std::nullopt;
+}
+
+auto level_container::GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>
 {
   if( object1 && object2 )
   {
-    auto playerPosition = m_playerShip.Object().Position();
-    auto distance1 = playerPosition.DistanceTo(object1->Object().Position());
-    auto distance2 = playerPosition.DistanceTo(object2->Object().Position());
-    return ( distance2 < distance1 ) ? targetted_object { object2 } : targetted_object { object1 };
+    auto distance1 = DistanceFromPlayer(*object1);
+    auto distance2 = DistanceFromPlayer(*object2);
+    return distance2 < distance1 ? std::tuple<targetted_object_type, float> { targetted_object { object2 }, distance2 } : std::tuple<targetted_object_type, float> { targetted_object { object1 }, distance1 };
   }
   else if( object1 )
   {
-    return object1;
+    return { object1, DistanceFromPlayer(*object1) };
   }
   else if( object2 )
   {
-    return object2;
+    return { object2, DistanceFromPlayer(*object2) };
   }
   else
   {
-    return std::nullopt;
+    return { std::nullopt, 0.0f };
   }
 }
 
