@@ -184,7 +184,9 @@ auto level_container::GetTargettedObject() -> targetted_object_type
     return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
   });
 
-  target_object* nearestTarget = std::accumulate(std::begin(m_targets), std::end(m_targets), static_cast<target_object*>(nullptr), [this](auto* nearest, auto& next) -> target_object*
+  auto activeTargets = std::ranges::views::filter(m_targets, [](const auto& target) { return target->IsActivated() ? false : true; });
+
+  target_object* nearestTarget = std::accumulate(std::ranges::begin(activeTargets), std::ranges::end(activeTargets), static_cast<target_object*>(nullptr), [this](auto* nearest, auto& next) -> target_object*
   {
     return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
   });
