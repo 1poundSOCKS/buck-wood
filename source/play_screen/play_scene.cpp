@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "play_scene.h"
+#include "hud_target.h"
+#include "renderers.h"
 
 play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
 {
@@ -39,6 +41,14 @@ auto play_scene::Render() const -> void
   auto transform = RenderTransform();
   render_target::get()->SetTransform(transform);
   m_levelContainer->Render(GetRenderTargetView(transform));
+
+  auto targettedObject = m_levelContainer->TargettedObject();
+  if( targettedObject )
+  {
+    auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
+    hud_target hudTarget { bounds };
+    renderer::render(hudTarget);
+  }
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
