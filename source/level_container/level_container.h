@@ -63,6 +63,7 @@ private:
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestTargetObject(auto* object1, auto* object2) -> targetted_object_type;
   auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
+  auto DistanceFromPlayer(auto&& object) const -> float;
 
 private:
 
@@ -186,8 +187,10 @@ auto level_container::GetNearestTargetObject(auto* object1, auto* object2) -> ta
 
 auto level_container::GetNearestToPlayer(auto& object1, auto& object2) const -> auto&
 {
-  auto playerPosition = m_playerShip.Object().Position();
-  auto object1Distance = playerPosition.DistanceTo(object1->Position());
-  auto object2Distance = playerPosition.DistanceTo(object2->Position());
-  return object2Distance < object1Distance ? object2 : object1;
+  return DistanceFromPlayer(object2) < DistanceFromPlayer(object1) ? object2 : object1;
+}
+
+auto level_container::DistanceFromPlayer(auto&& object) const -> float
+{
+  return m_playerShip->Position().DistanceTo(object->Position());
 }
