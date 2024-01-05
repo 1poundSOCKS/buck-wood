@@ -12,12 +12,18 @@ public:
 
   auto operator()(dynamic_object<geometry_object_type>& geometryObject, particle_object_type& particleObject) -> void
   {
-    BOOL collision = FALSE;
-    HRESULT hr = geometryObject.Geometry()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
+    auto position1 = geometryObject->Position();
+    auto position2 = particleObject.Position();
 
-    if( SUCCEEDED(hr) && collision )
+    if( position1.DistanceTo(position2) < 500 )
     {
-      m_callable(geometryObject, particleObject);
+      BOOL collision = FALSE;
+      HRESULT hr = geometryObject.Geometry()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
+
+      if( SUCCEEDED(hr) && collision )
+      {
+        m_callable(geometryObject, particleObject);
+      }
     }
   }
 

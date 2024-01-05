@@ -14,26 +14,32 @@ public:
 
   auto operator()(dynamic_object<object_type_1>& object1, dynamic_object<object_type_2>& object2) -> void
   {
-    D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
-    HRESULT hr = object1.Geometry()->CompareWithGeometry(object2.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
+    auto position1 = object1->Position();
+    auto position2 = object2->Position();
 
-    bool collided = false;
-
-    if( SUCCEEDED(hr) )
+    if( position1.DistanceTo(position2) < 500 )
     {
-      switch( relation )
+      D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
+      HRESULT hr = object1.Geometry()->CompareWithGeometry(object2.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
+
+      bool collided = false;
+
+      if( SUCCEEDED(hr) )
       {
-        case D2D1_GEOMETRY_RELATION_IS_CONTAINED:
-        case D2D1_GEOMETRY_RELATION_CONTAINS:
-        case D2D1_GEOMETRY_RELATION_OVERLAP:
-          collided = true;
-          break;
+        switch( relation )
+        {
+          case D2D1_GEOMETRY_RELATION_IS_CONTAINED:
+          case D2D1_GEOMETRY_RELATION_CONTAINS:
+          case D2D1_GEOMETRY_RELATION_OVERLAP:
+            collided = true;
+            break;
+        }
       }
-    }
 
-    if( collided )
-    {
-      m_callable(object1.Object(), object2.Object());
+      if( collided )
+      {
+        m_callable(object1.Object(), object2.Object());
+      }
     }
   }
 
