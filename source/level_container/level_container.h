@@ -8,6 +8,8 @@
 #include "reload_counter.h"
 #include "targetted_object.h"
 
+#include "collisions/particle_collision_results.h"
+
 class level_container
 {
 
@@ -59,6 +61,7 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
+  auto ProcessCollisionResults() -> void;
   auto CreateNewObjects(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
@@ -84,7 +87,9 @@ private:
 
   level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
-  
+
+  particle_collision_results<level_asteroid, explosion_particle> m_asteroidExplosionCollisionResults;
+
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
 

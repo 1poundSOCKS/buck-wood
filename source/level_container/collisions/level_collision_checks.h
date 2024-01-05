@@ -93,11 +93,6 @@ public:
     m_impacts.emplace_back(bullet.Position());
   }};
 
-  particle_collision<level_asteroid, explosion_particle> asteroidToExplosionCollision { [this](auto& asteroid, auto& particle)
-  {
-    particle.Destroy();
-  }};
-
   particle_collision<duct_fan, explosion_particle> ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
   {
     particle.Destroy();
@@ -140,5 +135,4 @@ private:
   explosion_collection m_explosions;
   impact_collection m_impacts;
   int m_targetActivationCount { 0 };
-
 };

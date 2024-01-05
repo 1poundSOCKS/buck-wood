@@ -16,6 +16,7 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
+  m_asteroidExplosionCollisionResults.Clear();
 
   auto collisionsStart = performance_counter::QueryValue();
 
@@ -25,6 +26,8 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
   }
 
   DoNonPlayerCollisions();
+
+  ProcessCollisionResults();
 
   auto collisionsEnd = performance_counter::QueryValue();
 
@@ -120,12 +123,21 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_collisionChecks.mineToDuctFanCollision(m_mines, m_ductFans);
   m_collisionChecks.mineToBulletCollision(m_mines, m_bullets);
   m_collisionChecks.asteroidToBulletCollision(m_asteroids, m_bullets);
-  m_collisionChecks.asteroidToExplosionCollision(m_asteroids, m_explosionParticles);
   m_collisionChecks.asteroidToThrustCollision(m_asteroids, m_thrustParticles);
   m_collisionChecks.ductFanToBulletCollision(m_ductFans, m_bullets);
   m_collisionChecks.ductFanToExplosionCollision(m_ductFans, m_explosionParticles);
   m_collisionChecks.ductFanToThrustCollision(m_ductFans, m_thrustParticles);
   m_collisionChecks.targetToBulletCollision(m_targets, m_bullets);
+
+  m_asteroidExplosionCollisionResults(m_asteroids, m_explosionParticles);
+}
+
+auto level_container::ProcessCollisionResults() -> void
+{
+  m_asteroidExplosionCollisionResults.Process([](auto& object, auto& particle)
+  {
+    particle.Destroy();
+  });
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
