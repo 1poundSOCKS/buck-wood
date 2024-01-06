@@ -22,6 +22,11 @@ public:
     m_collisionTests(objects, particles);
   }
 
+  auto operator()(dynamic_object<object_type>& object, std::ranges::input_range auto&& particles) -> void
+  {
+    m_collisionTests(object, particles);
+  }
+
   [[nodiscard]] auto Get() const -> const collision_results_collection
   {
     return m_results;
