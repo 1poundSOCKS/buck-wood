@@ -131,6 +131,7 @@ auto level_container::DoPlayerCollisions() -> void
 auto level_container::DoNonPlayerCollisions() -> void
 {
   m_containmentChecks.mineContainment(m_boundary, m_mines);
+  
   m_containmentChecks.explosionContainment(m_boundary, m_explosionParticles);
   m_containmentChecks.thrustContainment(m_boundary, m_thrustParticles);
   m_containmentChecks.bulletContainment(m_boundary, m_bullets);

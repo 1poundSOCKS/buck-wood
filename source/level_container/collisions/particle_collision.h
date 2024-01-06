@@ -37,13 +37,13 @@ public:
 
   auto operator()(std::ranges::input_range auto&& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void
   {
-    for( auto& geometryObject : geometryObjectCollection )
+    std::for_each(std::execution::par_unseq, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection](auto& geometryObject)
     {
       for( auto& particleObject : particleObjectCollection )
       {
         (*this)(geometryObject, particleObject);
       }
-    }
+    });
   }
 
 private:

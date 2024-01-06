@@ -13,7 +13,12 @@ public:
 
 public:
 
-  particle_collision_results() : m_collisionTests { [this](auto& object, auto& particle) { m_results.emplace_back(object.Object(), particle); } }
+  particle_collision_results() : 
+    m_collisionTests { [this](auto& object, auto& particle)
+    {
+      std::lock_guard<std::mutex> guard(m_mutex);
+      m_results.emplace_back(object.Object(), particle);
+    }}
   {
   }
 
@@ -50,5 +55,6 @@ private:
 
   particle_collision<object_type, particle_type> m_collisionTests;
   collision_results_collection m_results;
+  std::mutex m_mutex;
 
 };
