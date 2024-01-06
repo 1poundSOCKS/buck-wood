@@ -125,7 +125,6 @@ auto level_container::DoPlayerCollisions() -> void
   m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
   m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
 
-  // m_collisionChecks.shipToExplosionCollision(m_playerShip, m_explosionParticles);
   m_shipToExplosionCollisionResults(m_playerShip, m_explosionParticles);
 }
 
