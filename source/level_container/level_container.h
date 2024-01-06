@@ -32,6 +32,9 @@ public:
 
   using targetted_object_type = std::optional<targetted_object>;
 
+  using explosion_collection = std::vector<game_point>;
+  using impact_collection = std::vector<game_point>;
+
 public:
 
   level_container(std::ranges::input_range auto&& points, play_events playEvents);
@@ -89,6 +92,16 @@ private:
   level_containment_checks m_containmentChecks;
 
   particle_collision_results<level_asteroid, explosion_particle> m_asteroidExplosionCollisionResults;
+  particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
+  particle_collision_results<level_asteroid, bullet> m_asteroidToBulletCollisionResults;
+  particle_collision_results<duct_fan, bullet> m_ductFanToBulletCollisionResults;
+  particle_collision_results<level_target, bullet> m_targetToBulletCollisionResults;
+  particle_collision_results<duct_fan, explosion_particle> m_ductFanToExplosionCollisionResults;
+  particle_collision_results<level_asteroid, thrust_particle> m_asteroidToThrustCollisionResults;
+  particle_collision_results<duct_fan, thrust_particle> m_ductFanToThrustCollisionResults;
+
+  explosion_collection m_explosions;
+  impact_collection m_impacts;
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;

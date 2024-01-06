@@ -16,7 +16,18 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
 
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
+
   m_asteroidExplosionCollisionResults.Clear();
+  m_mineToBulletCollisionResults.Clear();
+  m_asteroidToBulletCollisionResults.Clear();
+  m_ductFanToBulletCollisionResults.Clear();
+  m_targetToBulletCollisionResults.Clear();
+  m_ductFanToExplosionCollisionResults.Clear();
+  m_asteroidToThrustCollisionResults.Clear();
+  m_ductFanToThrustCollisionResults.Clear();
+
+  m_explosions.clear();
+  m_impacts.clear();
 
   auto collisionsStart = performance_counter::QueryValue();
 
@@ -135,6 +146,52 @@ auto level_container::DoNonPlayerCollisions() -> void
 auto level_container::ProcessCollisionResults() -> void
 {
   m_asteroidExplosionCollisionResults.Process([](auto& object, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  m_mineToBulletCollisionResults.Process([this](auto& object, auto& particle)
+  {
+    object.Destroy();
+    particle.Destroy();
+    m_explosions.emplace_back(object.Position());
+  });
+
+  m_asteroidToBulletCollisionResults.Process([this](auto& object, auto& particle)
+  {
+    particle.Destroy();
+    m_impacts.emplace_back(object.Position());
+  });
+
+  m_ductFanToBulletCollisionResults.Process([this](auto& object, auto& particle)
+  {
+    particle.Destroy();
+    m_impacts.emplace_back(object.Position());
+  });
+
+  m_targetToBulletCollisionResults.Process([this](auto& object, auto& particle)
+  {
+    if( !object.IsActivated() )
+    {
+      object.HitByBullet();
+      m_activatedTargetCount += object.IsActivated() ? 1 : 0;
+    }
+
+    particle.Destroy();
+    m_impacts.emplace_back(object.Position());
+  });
+
+  m_ductFanToExplosionCollisionResults.Process([](auto& object, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  m_asteroidToThrustCollisionResults.Process([](auto& object, auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  m_ductFanToThrustCollisionResults.Process([](auto& object, auto& particle)
   {
     particle.Destroy();
   });
