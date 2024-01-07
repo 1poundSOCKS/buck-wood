@@ -53,13 +53,13 @@ public:
 
   auto operator()(std::ranges::input_range auto&& object1Collection, std::ranges::input_range auto&& object2Collection) -> void
   {
-    for( auto& object1 : object1Collection )
+    std::for_each(std::execution::par_unseq, std::begin(object1Collection), std::end(object1Collection), [this,&object2Collection](auto& object1)
     {
       for( auto& object2 : object2Collection )
       {
         (*this)(object1, object2);
       }
-    }
+    });
   }
 
 private:
