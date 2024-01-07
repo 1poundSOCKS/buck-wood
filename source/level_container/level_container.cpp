@@ -17,6 +17,8 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
   m_collisionChecks.Reset();
   m_containmentChecks.Reset();
 
+  m_shipToAsteroidCollisionResults.Clear();
+
   m_shipToExplosionCollisionResults.Clear();
   
   m_asteroidExplosionCollisionResults.Clear();
@@ -120,7 +122,8 @@ auto level_container::DoPlayerCollisions() -> void
 {
   m_containmentChecks.shipContainment(m_boundary, m_playerShip);
 
-  m_collisionChecks.shipToAsteroidCollision(m_playerShip, m_asteroids);
+  m_shipToAsteroidCollisionResults(m_playerShip, m_asteroids);
+
   m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
   m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
   m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
@@ -151,6 +154,12 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::ProcessCollisionResults() -> void
 {
+  m_shipToAsteroidCollisionResults.Process([this](auto& playerShip, auto& asteroid)
+  {
+    playerShip.ApplyFatalDamage();
+    m_explosions.emplace_back(playerShip.PreviousPosition());
+  });
+
   m_shipToExplosionCollisionResults.Process([](auto& object, auto& particle)
   {
     particle.Destroy();

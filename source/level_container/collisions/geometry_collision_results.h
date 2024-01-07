@@ -17,7 +17,7 @@ public:
     m_collisionTests { [this](auto& object1, auto& object2)
     {
       std::lock_guard<std::mutex> guard(m_mutex);
-      m_results.emplace_back(object1.Object(), object2.Object());
+      m_results.emplace_back(object1, object2);
     }}
   {
   }

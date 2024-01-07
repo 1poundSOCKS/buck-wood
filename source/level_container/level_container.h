@@ -92,6 +92,8 @@ private:
   level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
 
+  geometry_collision_results<player_ship, level_asteroid> m_shipToAsteroidCollisionResults;
+
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
   particle_collision_results<level_asteroid, explosion_particle> m_asteroidExplosionCollisionResults;
   particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
