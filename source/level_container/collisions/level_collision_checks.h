@@ -17,96 +17,96 @@ public:
 
 public:
 
-  geometry_collision<player_ship, level_asteroid> shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
-  {
-    playerShip.ApplyFatalDamage();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  }};
+  // geometry_collision<player_ship, level_asteroid> shipToAsteroidCollision { [this](auto& playerShip, auto& asteroid)
+  // {
+  //   playerShip.ApplyFatalDamage();
+  //   m_explosions.emplace_back(playerShip.PreviousPosition());
+  // }};
 
-  geometry_collision<player_ship, level_target> shipToTargetCollision { [this](auto& playerShip, auto& target)
-  {
-    playerShip.ApplyFatalDamage();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  }};
+  // geometry_collision<player_ship, level_target> shipToTargetCollision { [this](auto& playerShip, auto& target)
+  // {
+  //   playerShip.ApplyFatalDamage();
+  //   m_explosions.emplace_back(playerShip.PreviousPosition());
+  // }};
 
-  geometry_collision<player_ship, duct_fan> shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
-  {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  }};
+  // geometry_collision<player_ship, duct_fan> shipToDuctFanCollision { [this](auto& playerShip, auto& ductFan)
+  // {
+  //   playerShip.ApplyFatalDamage();
+  //   auto position = playerShip.PreviousPosition();
+  //   m_explosions.emplace_back(playerShip.PreviousPosition());
+  // }};
 
-  geometry_collision<player_ship, mine> shipToMineCollision { [this](auto& playerShip, auto& mine)
-  {
-    playerShip.ApplyDamage(2);
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  }};
+  // geometry_collision<player_ship, mine> shipToMineCollision { [this](auto& playerShip, auto& mine)
+  // {
+  //   playerShip.ApplyDamage(2);
+  //   mine.Destroy();
+  //   m_explosions.emplace_back(mine.PreviousPosition());
+  // }};
 
-  particle_collision<player_ship, explosion_particle> shipToExplosionCollision { [this](auto& playerShip, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  // particle_collision<player_ship, explosion_particle> shipToExplosionCollision { [this](auto& playerShip, auto& particle)
+  // {
+  //   particle.Destroy();
+  // }};
 
-  geometry_collision<mine, level_asteroid> mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
-  {
-    auto position = mine.PreviousPosition();
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  }};
+  // geometry_collision<mine, level_asteroid> mineToAsteroidCollision { [this](auto& mine, auto& asteroid)
+  // {
+  //   auto position = mine.PreviousPosition();
+  //   mine.Destroy();
+  //   m_explosions.emplace_back(mine.PreviousPosition());
+  // }};
 
-  geometry_collision<mine, duct_fan> mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
-  {
-    auto position = mine.PreviousPosition();
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  }};
+  // geometry_collision<mine, duct_fan> mineToDuctFanCollision { [this](auto& mine, auto& ductFan)
+  // {
+  //   auto position = mine.PreviousPosition();
+  //   mine.Destroy();
+  //   m_explosions.emplace_back(mine.PreviousPosition());
+  // }};
 
-  particle_collision<mine, bullet> mineToBulletCollision { [this](auto& mine, auto& bullet)
-  {
-    mine->Destroy();
-    bullet.Destroy();
-    m_explosions.emplace_back(mine->Position());
-  }};
+  // particle_collision<mine, bullet> mineToBulletCollision { [this](auto& mine, auto& bullet)
+  // {
+  //   mine->Destroy();
+  //   bullet.Destroy();
+  //   m_explosions.emplace_back(mine->Position());
+  // }};
 
-  particle_collision<level_asteroid, bullet> asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
-  {
-    bullet.Destroy();
-    m_impacts.emplace_back(bullet.Position());
-  }};
+  // particle_collision<level_asteroid, bullet> asteroidToBulletCollision { [this](auto& asteroid, auto& bullet)
+  // {
+  //   bullet.Destroy();
+  //   m_impacts.emplace_back(bullet.Position());
+  // }};
 
-  particle_collision<duct_fan, bullet> ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
-  {
-    bullet.Destroy();
-    m_impacts.emplace_back(bullet.Position());
-  }};
+  // particle_collision<duct_fan, bullet> ductFanToBulletCollision { [this](auto& ductFan, auto& bullet)
+  // {
+  //   bullet.Destroy();
+  //   m_impacts.emplace_back(bullet.Position());
+  // }};
 
-  particle_collision<level_target, bullet> targetToBulletCollision { [this](auto& target, auto& bullet)
-  {
-    if( !target->IsActivated() )
-    {
-      target->HitByBullet();
-      m_targetActivationCount += target->IsActivated() ? 1 : 0;
-    }
+  // particle_collision<level_target, bullet> targetToBulletCollision { [this](auto& target, auto& bullet)
+  // {
+  //   if( !target->IsActivated() )
+  //   {
+  //     target->HitByBullet();
+  //     m_targetActivationCount += target->IsActivated() ? 1 : 0;
+  //   }
 
-    bullet.Destroy();
-    m_impacts.emplace_back(bullet.Position());
-  }};
+  //   bullet.Destroy();
+  //   m_impacts.emplace_back(bullet.Position());
+  // }};
 
-  particle_collision<duct_fan, explosion_particle> ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  // particle_collision<duct_fan, explosion_particle> ductFanToExplosionCollision { [this](auto& ductFan, auto& particle)
+  // {
+  //   particle.Destroy();
+  // }};
 
-  particle_collision<level_asteroid, thrust_particle> asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  // particle_collision<level_asteroid, thrust_particle> asteroidToThrustCollision { [this](auto& asteroid, auto& particle)
+  // {
+  //   particle.Destroy();
+  // }};
 
-  particle_collision<duct_fan, thrust_particle> ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  // particle_collision<duct_fan, thrust_particle> ductFanToThrustCollision { [this](auto& ductFan, auto& particle)
+  // {
+  //   particle.Destroy();
+  // }};
 
   [[nodiscard]] auto Explosions() const -> const explosion_collection&
   {

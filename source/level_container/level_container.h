@@ -89,10 +89,15 @@ private:
   thrust_particle_collection m_thrustParticles;
   asteroid_collection m_asteroids;
 
-  level_collision_checks m_collisionChecks;
   level_containment_checks m_containmentChecks;
 
   geometry_collision_results<player_ship, level_asteroid> m_shipToAsteroidCollisionResults;
+  geometry_collision_results<player_ship, level_target> m_shipToTargetCollisionResults;
+  geometry_collision_results<player_ship, duct_fan> m_shipToDuctFanCollisionResults;
+  geometry_collision_results<player_ship, mine> m_shipToMineCollisionResults;
+
+  geometry_collision_results<mine, level_asteroid> m_mineToAsteroidCollisionResults;
+  geometry_collision_results<mine, duct_fan> m_mineToDuctFanCollisionResults;
 
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
   particle_collision_results<level_asteroid, explosion_particle> m_asteroidExplosionCollisionResults;

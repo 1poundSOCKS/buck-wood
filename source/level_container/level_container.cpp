@@ -14,13 +14,18 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  m_collisionChecks.Reset();
   m_containmentChecks.Reset();
 
   m_shipToAsteroidCollisionResults.Clear();
+  m_shipToTargetCollisionResults.Clear();
+  m_shipToDuctFanCollisionResults.Clear();
+  m_shipToMineCollisionResults.Clear();
 
   m_shipToExplosionCollisionResults.Clear();
-  
+
+  m_mineToAsteroidCollisionResults.Clear();
+  m_mineToDuctFanCollisionResults.Clear();
+
   m_asteroidExplosionCollisionResults.Clear();
   m_mineToBulletCollisionResults.Clear();
   m_asteroidToBulletCollisionResults.Clear();
@@ -53,8 +58,6 @@ auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
   m_targettedObject = GetTargettedObject();
 
   CreateNewObjects(interval);
-
-  m_activatedTargetCount += m_collisionChecks.TargetActivationCount();
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::framerate());
@@ -123,10 +126,9 @@ auto level_container::DoPlayerCollisions() -> void
   m_containmentChecks.shipContainment(m_boundary, m_playerShip);
 
   m_shipToAsteroidCollisionResults(m_playerShip, m_asteroids);
-
-  m_collisionChecks.shipToTargetCollision(m_playerShip, m_targets);
-  m_collisionChecks.shipToDuctFanCollision(m_playerShip, m_ductFans);
-  m_collisionChecks.shipToMineCollision(m_playerShip, m_mines);
+  m_shipToTargetCollisionResults(m_playerShip, m_targets);
+  m_shipToDuctFanCollisionResults(m_playerShip, m_ductFans);
+  m_shipToMineCollisionResults(m_playerShip, m_mines);
 
   m_shipToExplosionCollisionResults(m_playerShip, m_explosionParticles);
 }
@@ -139,8 +141,8 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_containmentChecks.thrustContainment(m_boundary, m_thrustParticles);
   m_containmentChecks.bulletContainment(m_boundary, m_bullets);
 
-  m_collisionChecks.mineToAsteroidCollision(m_mines, m_asteroids);
-  m_collisionChecks.mineToDuctFanCollision(m_mines, m_ductFans);
+  m_mineToAsteroidCollisionResults(m_mines, m_asteroids);
+  m_mineToDuctFanCollisionResults(m_mines, m_ductFans);
 
   m_asteroidExplosionCollisionResults(m_asteroids, m_explosionParticles);
   m_mineToBulletCollisionResults(m_mines, m_bullets);
@@ -160,11 +162,45 @@ auto level_container::ProcessCollisionResults() -> void
     m_explosions.emplace_back(playerShip.PreviousPosition());
   });
 
+  m_shipToTargetCollisionResults.Process([this](auto& playerShip, auto& target)
+  {
+    playerShip.ApplyFatalDamage();
+    m_explosions.emplace_back(playerShip.PreviousPosition());
+  });
+
+  m_shipToDuctFanCollisionResults.Process([this](auto& playerShip, auto& ductFan)
+  {
+    playerShip.ApplyFatalDamage();
+    auto position = playerShip.PreviousPosition();
+    m_explosions.emplace_back(playerShip.PreviousPosition());
+  });
+
+  m_shipToMineCollisionResults.Process([this](auto& playerShip, auto& mine)
+  {
+    playerShip.ApplyDamage(2);
+    mine.Destroy();
+    m_explosions.emplace_back(mine.PreviousPosition());
+  });
+
   m_shipToExplosionCollisionResults.Process([](auto& object, auto& particle)
   {
     particle.Destroy();
   });
-  
+
+  m_mineToAsteroidCollisionResults.Process([this](auto& mine, auto& asteroid)
+  {
+    auto position = mine.PreviousPosition();
+    mine.Destroy();
+    m_explosions.emplace_back(mine.PreviousPosition());
+  });
+
+  m_mineToDuctFanCollisionResults.Process([this](auto& mine, auto& ductFan)
+  {
+    auto position = mine.PreviousPosition();
+    mine.Destroy();
+    m_explosions.emplace_back(mine.PreviousPosition());
+  });
+
   m_asteroidExplosionCollisionResults.Process([](auto& object, auto& particle)
   {
     particle.Destroy();
@@ -242,12 +278,6 @@ auto level_container::CreateNewObjects(float interval) -> void
     m_playEvents.SetEvent(play_events::event_type::explosion, true);
   }
 
-  for( const auto& position : m_collisionChecks.Explosions() )
-  {
-    std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
-    m_playEvents.SetEvent(play_events::event_type::explosion, true);
-  }
-
   for( const auto& position : m_explosions )
   {
     std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
@@ -255,11 +285,6 @@ auto level_container::CreateNewObjects(float interval) -> void
   }
 
   for( const auto& position : m_containmentChecks.Impacts() )
-  {
-    m_impactParticles.emplace_back(position);
-  }
-
-  for( const auto& position : m_collisionChecks.Impacts() )
   {
     m_impactParticles.emplace_back(position);
   }
