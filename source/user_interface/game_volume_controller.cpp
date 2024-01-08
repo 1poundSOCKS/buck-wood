@@ -35,8 +35,8 @@ auto game_volume_controller::maxVolume() -> int
 
 auto game_volume_controller::setEffectsVolume(int value) -> int
 {
-  value = max(value, minVolume());
-  value = min(value, maxVolume());
+  value = std::max(value, minVolume());
+  value = std::min(value, maxVolume());
   int volume = game_settings::setEffectsVolume(value);
   if( m_instance ) m_instance->SetEffectsVolume(volume);
   return volume;
@@ -44,8 +44,8 @@ auto game_volume_controller::setEffectsVolume(int value) -> int
 
 auto game_volume_controller::setMusicVolume(int value) -> int
 {
-  value = max(value, minVolume());
-  value = min(value, maxVolume());
+  value = std::max(value, minVolume());
+  value = std::min(value, maxVolume());
   int volume = game_settings::setMusicVolume(value);
   if( m_instance ) m_instance->SetMusicVolume(volume);
   return volume;

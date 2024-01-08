@@ -18,7 +18,7 @@ public:
 
   [[nodiscard]] auto Get(int count) -> int
   {
-    return std::exchange(m_count, m_count - min(count, m_count));
+    return std::exchange(m_count, m_count - std::min(count, m_count));
   }
 
 private:

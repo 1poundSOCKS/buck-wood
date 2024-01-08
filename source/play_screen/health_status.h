@@ -26,7 +26,7 @@ inline health_status::health_status(int maxValue) : m_maxValue { maxValue }
 inline auto health_status::ApplyDamage(int value) -> int
 {
   m_value += value;
-  m_value = min(m_value, m_maxValue);
+  m_value = std::min(m_value, m_maxValue);
   return m_maxValue - m_value;
 }
 

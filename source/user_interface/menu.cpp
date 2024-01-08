@@ -47,7 +47,7 @@ auto menu::Render(D2D1_RECT_F viewRect) const -> void
 
 auto menu::ResizeItems() -> void
 {
-  render_target_area menuArea { m_rect, render_target_area::constraint_centred(0.5, min(m_items.size() * 0.15f, 0.8f)) };
+  render_target_area menuArea { m_rect, render_target_area::constraint_centred(0.5, std::min(m_items.size() * 0.15f, 0.8f)) };
   column_def columnDefs { menuArea.GetRect(), m_items.size() };
   auto columnDef = std::begin(columnDefs);
   

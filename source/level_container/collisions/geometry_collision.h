@@ -17,7 +17,7 @@ public:
     auto position1 = object1->Position();
     auto position2 = object2->Position();
 
-    if( position1.DistanceTo(position2) < 500 )
+    if( position1.DistanceTo(position2) < object1.GeometryRadius() + object2.GeometryRadius() )
     {
       D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
       HRESULT hr = object1.Geometry()->CompareWithGeometry(object2.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
@@ -45,10 +45,10 @@ public:
 
   auto operator()(dynamic_object<object_type_1>& object1, std::ranges::input_range auto&& object2Collection) -> void
   {
-    for( auto& object2 : object2Collection )
+    std::for_each(std::execution::par_unseq, std::begin(object2Collection), std::end(object2Collection), [this,&object1](auto& object2)
     {
       (*this)(object1, object2);
-    }
+    });
   }
 
   auto operator()(std::ranges::input_range auto&& object1Collection, std::ranges::input_range auto&& object2Collection) -> void

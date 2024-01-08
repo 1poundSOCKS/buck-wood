@@ -11,7 +11,7 @@ const_shape_iterator::const_shape_iterator(const shape_generator* shapeGenerator
 auto const_shape_iterator::operator++() -> const_shape_iterator&
 {
   m_currentAngle += m_shapeGenerator->m_angleIncrement;
-  m_currentAngle = min(m_currentAngle, 360);
+  m_currentAngle = std::min(m_currentAngle, 360);
   if( m_currentAngle < 360 ) m_point = GetCurrentPoint();
   return *this;
 }
@@ -20,7 +20,7 @@ auto const_shape_iterator::operator++(int) -> const_shape_iterator
 {
   const_shape_iterator tmp = *this;
   m_currentAngle += m_shapeGenerator->m_angleIncrement;
-  m_currentAngle = min(m_currentAngle, 360);
+  m_currentAngle = std::min(m_currentAngle, 360);
   if( m_currentAngle < 360 ) m_point = GetCurrentPoint();
   return tmp;
 }

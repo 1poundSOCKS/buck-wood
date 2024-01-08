@@ -46,3 +46,28 @@ inline [[nodiscard]] auto GetSourceGeometry(ID2D1TransformedGeometry* geometry) 
   geometry->GetSourceGeometry(sourceGeometry.put());
   return sourceGeometry;
 }
+
+namespace direct2d
+{
+  inline auto GetDistanceBetweenPoints(D2D1_POINT_2F point1, D2D1_POINT_2F point2) -> float
+  {
+    float cx = point2.x - point1.x;
+    float cy = point2.y - point1.y;
+    return sqrt( cx * cx + cy * cy );
+  }
+
+  inline auto GetRadiusFromBounds(D2D1_RECT_F bounds) -> float
+  {
+    float topLeft = GetDistanceBetweenPoints({0, 0}, {bounds.left, bounds.top});
+    float topRight = GetDistanceBetweenPoints({0, 0}, {bounds.right, bounds.top});
+    float bottomLeft = GetDistanceBetweenPoints({0, 0}, {bounds.left, bounds.bottom});
+    float bottomRight = GetDistanceBetweenPoints({0, 0}, {bounds.right, bounds.bottom});
+    return std::max({topLeft, topRight, bottomLeft, bottomRight});
+  }
+
+  inline auto GetGeometryRadius(ID2D1Geometry* geometry) -> float
+  {
+    D2D1_RECT_F bounds;
+    return SUCCEEDED(geometry->GetBounds(NULL, &bounds)) ? GetRadiusFromBounds(bounds) : 0;
+  }
+}

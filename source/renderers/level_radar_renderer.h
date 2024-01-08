@@ -48,7 +48,7 @@ auto level_radar_renderer::Write(const level_radar& levelRadar, std::ranges::inp
     D2D1::Matrix3x2F transform = D2D1::Matrix3x2F::Rotation(radarTarget.angle) * D2D1::Matrix3x2F::Translation(centreX, centreY);
     auto renderPoint = transform.TransformPoint(targetPoint);
     D2D1_RECT_F renderRect = { renderPoint.x - 5, renderPoint.y - 5, renderPoint.x + 5, renderPoint.y + 5 };
-    auto distanceRatio = min(1.0f, radarTarget.distance / 5000.0f);
+    auto distanceRatio = std::min(1.0f, radarTarget.distance / 5000.0f);
     render_target::get()->FillRectangle(renderRect, m_brushes[distanceRatio].get());
   }
 }

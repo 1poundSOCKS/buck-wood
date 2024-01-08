@@ -11,7 +11,8 @@ public:
   template <typename...Args> dynamic_object(ID2D1Geometry* sourceGeometry, Args...args) : 
     m_object { std::forward<Args>(args)... }, 
     m_transform { CalculateObjectTransform() },
-    m_geometry { CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) }
+    m_geometry { CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) },
+    m_geometryRadius { direct2d::GetGeometryRadius(m_geometry.get()) }
   {
   }
 
@@ -43,6 +44,11 @@ public:
   [[nodiscard]] auto Geometry() const -> ID2D1TransformedGeometry*
   {
     return m_geometry.get();
+  }
+
+  [[nodiscard]] auto GeometryRadius() const -> float
+  {
+    return m_geometryRadius;
   }
 
   [[nodiscard]] auto Transform() const -> const D2D1::Matrix3x2F&
@@ -87,5 +93,6 @@ private:
   object_type m_object;
   D2D1::Matrix3x2F m_transform;
   winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
+  float m_geometryRadius;
 
 };

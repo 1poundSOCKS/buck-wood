@@ -125,12 +125,12 @@ auto level_container::DoPlayerCollisions() -> void
 {
   m_containmentChecks.shipContainment(m_boundary, m_playerShip);
 
-  m_shipToAsteroidCollisionResults(m_playerShip, m_asteroids);
-  m_shipToTargetCollisionResults(m_playerShip, m_targets);
-  m_shipToDuctFanCollisionResults(m_playerShip, m_ductFans);
-  m_shipToMineCollisionResults(m_playerShip, m_mines);
+  m_shipToAsteroidCollisionResults.Fetch(m_playerShip, m_asteroids);
+  m_shipToTargetCollisionResults.Fetch(m_playerShip, m_targets);
+  m_shipToDuctFanCollisionResults.Fetch(m_playerShip, m_ductFans);
+  m_shipToMineCollisionResults.Fetch(m_playerShip, m_mines);
 
-  m_shipToExplosionCollisionResults(m_playerShip, m_explosionParticles);
+  m_shipToExplosionCollisionResults.Fetch(m_playerShip, m_explosionParticles);
 }
 
 auto level_container::DoNonPlayerCollisions() -> void
@@ -141,17 +141,17 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_containmentChecks.thrustContainment(m_boundary, m_thrustParticles);
   m_containmentChecks.bulletContainment(m_boundary, m_bullets);
 
-  m_mineToAsteroidCollisionResults(m_mines, m_asteroids);
-  m_mineToDuctFanCollisionResults(m_mines, m_ductFans);
+  m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
+  m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
 
-  m_asteroidExplosionCollisionResults(m_asteroids, m_explosionParticles);
-  m_mineToBulletCollisionResults(m_mines, m_bullets);
-  m_asteroidToBulletCollisionResults(m_asteroids, m_bullets);
-  m_asteroidToThrustCollisionResults(m_asteroids, m_thrustParticles);
-  m_ductFanToBulletCollisionResults(m_ductFans, m_bullets);
-  m_ductFanToExplosionCollisionResults(m_ductFans, m_explosionParticles);
-  m_ductFanToThrustCollisionResults(m_ductFans, m_thrustParticles);
-  m_targetToBulletCollisionResults(m_targets, m_bullets);
+  m_asteroidExplosionCollisionResults.Fetch(m_asteroids, m_explosionParticles);
+  m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
+  m_asteroidToBulletCollisionResults.Fetch(m_asteroids, m_bullets);
+  m_asteroidToThrustCollisionResults.Fetch(m_asteroids, m_thrustParticles);
+  m_ductFanToBulletCollisionResults.Fetch(m_ductFans, m_bullets);
+  m_ductFanToExplosionCollisionResults.Fetch(m_ductFans, m_explosionParticles);
+  m_ductFanToThrustCollisionResults.Fetch(m_ductFans, m_thrustParticles);
+  m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
 }
 
 auto level_container::ProcessCollisionResults() -> void

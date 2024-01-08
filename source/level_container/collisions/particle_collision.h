@@ -15,7 +15,7 @@ public:
     auto position1 = geometryObject->Position();
     auto position2 = particleObject.Position();
 
-    if( position1.DistanceTo(position2) < 500 )
+    if( position1.DistanceTo(position2) < geometryObject.GeometryRadius() )
     {
       BOOL collision = FALSE;
       HRESULT hr = geometryObject.Geometry()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
@@ -29,10 +29,10 @@ public:
 
   auto operator()(dynamic_object<geometry_object_type>& geometryObject, std::ranges::input_range auto && particleObjectCollection) -> void
   {
-    for( auto& particleObject : particleObjectCollection )
+    std::for_each(std::execution::par_unseq, std::begin(particleObjectCollection), std::end(particleObjectCollection), [this,&geometryObject](auto& particleObject)
     {
       (*this)(geometryObject, particleObject);
-    }
+    });
   }
 
   auto operator()(std::ranges::input_range auto&& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void

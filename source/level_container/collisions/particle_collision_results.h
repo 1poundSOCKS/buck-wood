@@ -22,12 +22,12 @@ public:
   {
   }
 
-  auto operator()(std::ranges::input_range auto&& objects, std::ranges::input_range auto&& particles) -> void
+  auto Fetch(std::ranges::input_range auto&& objects, std::ranges::input_range auto&& particles) -> void
   {
     m_collisionTests(objects, particles);
   }
 
-  auto operator()(dynamic_object<object_type>& object, std::ranges::input_range auto&& particles) -> void
+  auto Fetch(dynamic_object<object_type>& object, std::ranges::input_range auto&& particles) -> void
   {
     m_collisionTests(object, particles);
   }

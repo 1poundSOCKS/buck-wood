@@ -4,5 +4,4 @@
 #include "collisions/particle_collision.h"
 #include "collisions/geometry_containment.h"
 #include "collisions/particle_containment.h"
-#include "collisions/level_collision_checks.h"
 #include "collisions/level_containment_checks.h"
