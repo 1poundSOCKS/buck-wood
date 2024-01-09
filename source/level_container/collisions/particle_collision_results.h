@@ -8,8 +8,8 @@ class particle_collision_results
 
 public:
 
-  using collision_result = std::tuple<object_type&, particle_type&>;
-  using collision_results_collection = std::vector<collision_result>;
+  using collision = std::tuple<object_type&, particle_type&>;
+  using collision_collection = std::vector<collision>;
 
 public:
 
@@ -32,7 +32,7 @@ public:
     m_collisionTests(object, particles);
   }
 
-  [[nodiscard]] auto Get() const -> const collision_results_collection
+  [[nodiscard]] auto Get() const -> const collision_collection
   {
     return m_results;
   }
@@ -40,6 +40,11 @@ public:
   auto Clear() -> void
   {
     m_results.clear();
+  }
+
+  [[nodiscard]] auto Count() const -> collision_collection::size_type
+  {
+    return m_results.size();
   }
 
   auto Process(auto&& binary_op) -> void
@@ -54,7 +59,7 @@ public:
 private:
 
   particle_collision<object_type, particle_type> m_collisionTests;
-  collision_results_collection m_results;
+  collision_collection m_results;
   std::mutex m_mutex;
 
 };

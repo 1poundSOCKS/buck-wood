@@ -72,6 +72,7 @@ private:
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
   auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromPlayer(auto&& object) const -> float;
+  auto GetMaxCollisionCount(int currentMaxCollisionCount) const -> int;
 
 private:
 
@@ -114,6 +115,8 @@ private:
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
+
+  int m_maxCollisionCount { 0 };
 
 };
 

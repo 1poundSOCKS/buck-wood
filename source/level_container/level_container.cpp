@@ -44,6 +44,9 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   DoNonPlayerCollisions();
 
+  m_maxCollisionCount = GetMaxCollisionCount(m_maxCollisionCount);
+  diagnostics::add(L"max collision count", std::format(L"{}", m_maxCollisionCount));
+
   ProcessCollisionResults();
 
   auto collisionsEnd = performance_counter::QueryValue();
@@ -132,10 +135,10 @@ auto level_container::DoPlayerCollisions() -> void
 
 auto level_container::DoNonPlayerCollisions() -> void
 {
-  m_containmentChecks.mineContainment(m_boundary, m_mines);
-  
-  m_containmentChecks.explosionContainment(m_boundary, m_explosionParticles);
+  m_containmentChecks.mineContainment(m_boundary, m_mines);  
+
   m_containmentChecks.thrustContainment(m_boundary, m_thrustParticles);
+  m_containmentChecks.explosionContainment(m_boundary, m_explosionParticles);
   m_containmentChecks.bulletContainment(m_boundary, m_bullets);
 
   m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
@@ -315,4 +318,23 @@ auto level_container::GetTargettedObject() -> targetted_object_type
   });
 
   return GetNearestObject(nearestMine, nearestTarget, 500.0f);
+}
+
+auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -> int
+{
+  return std::max(currentMaxCollisionCount, static_cast<int>(m_shipToAsteroidCollisionResults.Count() + 
+    m_shipToTargetCollisionResults.Count() +
+    m_shipToDuctFanCollisionResults.Count() +
+    m_shipToMineCollisionResults.Count() +
+    m_shipToExplosionCollisionResults.Count() +
+    m_mineToAsteroidCollisionResults.Count() +
+    m_mineToDuctFanCollisionResults.Count() +
+    m_asteroidExplosionCollisionResults.Count() +
+    m_mineToBulletCollisionResults.Count() +
+    m_asteroidToBulletCollisionResults.Count() +
+    m_ductFanToBulletCollisionResults.Count() +
+    m_targetToBulletCollisionResults.Count() +
+    m_ductFanToExplosionCollisionResults.Count() +
+    m_asteroidToThrustCollisionResults.Count() +
+    m_ductFanToThrustCollisionResults.Count()));  
 }

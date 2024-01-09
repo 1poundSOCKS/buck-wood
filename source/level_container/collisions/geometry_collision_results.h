@@ -42,6 +42,11 @@ public:
     m_results.clear();
   }
 
+  [[nodiscard]] auto Count() const -> collision_collection::size_type
+  {
+    return m_results.size();
+  }
+
   auto Process(auto&& binary_op) -> void
   {
     for( const auto& result : m_results )
