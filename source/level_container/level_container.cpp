@@ -1,16 +1,13 @@
 #include "pch.h"
 #include "level_container.h"
 #include "explosion.h"
-#include "game_clock.h"
 #include "renderers.h"
 #include "game_settings.h"
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
-auto level_container::Update(int64_t ticks, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  auto interval = game_clock::getInterval(ticks);
-
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 

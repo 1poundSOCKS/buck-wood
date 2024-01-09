@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "play_scene.h"
+#include "game_clock.h"
 #include "hud_target.h"
 #include "renderers.h"
 
@@ -31,7 +32,7 @@ auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
   m_playEvents.Reset();
-  m_levelContainer->Update(ticks, GetRenderTargetView());
+  m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
 

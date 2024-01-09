@@ -45,7 +45,7 @@ public:
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
 
-  auto Update(int64_t ticks, D2D1_RECT_F viewRect) -> void;
+  auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
