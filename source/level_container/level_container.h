@@ -11,6 +11,7 @@
 #include "collisions/particle_collision_results.h"
 #include "collisions/geometry_collision_results.h"
 #include "collisions/particle_containment_results.h"
+#include "collisions/geometry_containment_results.h"
 
 class level_container
 {
@@ -91,11 +92,12 @@ private:
   thrust_particle_collection m_thrustParticles;
   asteroid_collection m_asteroids;
 
-  level_containment_checks m_containmentChecks;
-
   particle_containment_results<explosion_particle> m_explosionContainmentResults;
   particle_containment_results<thrust_particle> m_thrustContainmentResults;
   particle_containment_results<bullet> m_bulletContainmentResults;
+
+  geometry_containment_results<mine> m_mineContainmentResults;
+  geometry_containment_results<player_ship> m_shipContainmentResults;
 
   geometry_collision_results<player_ship, level_asteroid> m_shipToAsteroidCollisionResults;
   geometry_collision_results<player_ship, level_target> m_shipToTargetCollisionResults;
