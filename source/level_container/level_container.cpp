@@ -13,6 +13,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_containmentChecks.Reset();
 
+  m_explosionContainmentResults.Clear();
+  m_thrustContainmentResults.Clear();
+  m_bulletContainmentResults.Clear();
+
   m_shipToAsteroidCollisionResults.Clear();
   m_shipToTargetCollisionResults.Clear();
   m_shipToDuctFanCollisionResults.Clear();
@@ -137,9 +141,9 @@ auto level_container::DoNonPlayerCollisions() -> void
 {
   m_containmentChecks.mineContainment(m_boundary, m_mines);  
 
-  m_containmentChecks.thrustContainment(m_boundary, m_thrustParticles);
-  m_containmentChecks.explosionContainment(m_boundary, m_explosionParticles);
-  m_containmentChecks.bulletContainment(m_boundary, m_bullets);
+  m_thrustContainmentResults.Fetch(m_boundary, m_thrustParticles);
+  m_bulletContainmentResults.Fetch(m_boundary, m_bullets);
+  m_explosionContainmentResults.Fetch(m_boundary, m_explosionParticles);
 
   m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
   m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
@@ -156,6 +160,22 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::ProcessCollisionResults() -> void
 {
+  m_explosionContainmentResults.Process([this](auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  m_thrustContainmentResults.Process([this](auto& particle)
+  {
+    particle.Destroy();
+  });
+
+  m_bulletContainmentResults.Process([this](auto& bullet)
+  {
+    m_impacts.emplace_back(bullet.Position());
+    bullet.Destroy();
+  });
+
   m_shipToAsteroidCollisionResults.Process([this](auto& playerShip, auto& asteroid)
   {
     playerShip.ApplyFatalDamage();

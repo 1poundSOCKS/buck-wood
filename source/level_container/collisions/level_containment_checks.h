@@ -27,22 +27,6 @@ public:
     ship->ApplyFatalDamage();
   }};
 
-  particle_containment<explosion_particle> explosionContainment { [this](auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_containment<thrust_particle> thrustContainment { [this](auto& particle)
-  {
-    particle.Destroy();
-  }};
-
-  particle_containment<bullet> bulletContainment { [this](auto& bullet)
-  {
-    m_impacts.emplace_back(bullet.Position());
-    bullet.Destroy();
-  }};
-
   [[nodiscard]] auto Explosions() const -> const explosion_collection&
   {
     return m_explosions;
