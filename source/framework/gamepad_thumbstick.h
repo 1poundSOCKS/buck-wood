@@ -69,7 +69,6 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone
 
 [[nodiscard]] inline auto gamepad_thumbstick::Angle() const -> float
 {
-  // return game_point { 0, 0 }.AngleTo(game_point { static_cast<float>(m_x), static_cast<float>(-m_y) });
   return direct2d::GetAngleBetween({ 0, 0 } , { static_cast<float>(m_x), static_cast<float>(-m_y) });
 }
 

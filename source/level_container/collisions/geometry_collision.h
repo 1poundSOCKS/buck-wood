@@ -17,7 +17,6 @@ public:
     auto position1 = object1->Position();
     auto position2 = object2->Position();
 
-    // if( position1.DistanceTo(position2) < object1.GeometryRadius() + object2.GeometryRadius() )
     if( direct2d::GetDistanceBetweenPoints(position1, position2) < object1.GeometryRadius() + object2.GeometryRadius() )
     {
       D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;

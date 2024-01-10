@@ -15,7 +15,6 @@ public:
     auto position1 = geometryObject->Position();
     auto position2 = particleObject.Position();
 
-    // if( position1.DistanceTo(position2) < geometryObject.GeometryRadius() )
     if( direct2d::GetDistanceBetweenPoints(position1, position2) < geometryObject.GeometryRadius() )
     {
       BOOL collision = FALSE;

@@ -235,6 +235,5 @@ auto level_container::GetNearestToPlayer(auto& object1, auto& object2) const -> 
 
 auto level_container::DistanceFromPlayer(auto&& object) const -> float
 {
-  // return m_playerShip->Position().DistanceTo(object->Position());
   return direct2d::GetDistanceBetweenPoints(m_playerShip->Position(), object->Position());
 }

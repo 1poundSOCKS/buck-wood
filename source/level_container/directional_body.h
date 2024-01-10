@@ -71,7 +71,6 @@ inline auto directional_body::RotateAnticlockwise(float angle) -> void
 
 inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 {
-  // m_angle = m_position.AngleTo(position);
   m_angle = direct2d::GetAngleBetween(m_position, position);
 }
 

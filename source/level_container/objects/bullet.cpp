@@ -30,10 +30,8 @@ bullet::bullet(D2D1_POINT_2F position, game_velocity velocity) :
 
 auto bullet::Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
 {
-  // m_body.SetDirection(targetPosition ? m_body.Position().AngleTo(*targetPosition) : m_body.Direction());
   m_body.SetDirection(targetPosition ? direct2d::GetAngleBetween(m_body.Position(), *targetPosition) : m_body.Direction());
   m_body.Update(interval);
-  // m_distanceTravelled = m_startPosition.DistanceTo(m_body.Position());
   m_distanceTravelled = direct2d::GetDistanceBetweenPoints(m_startPosition, m_body.Position());
   m_destroyed = m_distanceTravelled > m_range;
 }
