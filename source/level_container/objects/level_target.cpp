@@ -3,7 +3,7 @@
 #include "renderers.h"
 #include "shape_generator.h"
 
-level_target::level_target(game_point position) : m_position { position }
+level_target::level_target(D2D1_POINT_2F position) : m_position { position }
 {
 }
 
@@ -12,9 +12,10 @@ level_target::level_target(game_point position) : m_position { position }
   return m_activated;
 }
 
-[[nodiscard]] auto level_target::CanShootAt(game_point position) const -> bool
+[[nodiscard]] auto level_target::CanShootAt(D2D1_POINT_2F position) const -> bool
 {
-  return !m_activated && m_reloaded && m_position.DistanceTo(position) < 1500;
+  // return !m_activated && m_reloaded && m_position.DistanceTo(position) < 1500;
+  return !m_activated && m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
 }
 
 auto level_target::HitByBullet() -> void

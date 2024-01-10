@@ -1,6 +1,5 @@
 #pragma once
 
-#include "game_point.h"
 #include "perlin_simplex_noise.h"
 
 class const_shape_iterator
@@ -12,21 +11,21 @@ public:
 
   const_shape_iterator() = default;
   using difference_type = std::ptrdiff_t;
-  using value_type = game_point;
+  using value_type = D2D1_POINT_2F;
 
   auto operator++() -> const_shape_iterator&;
   auto operator++(int) -> const_shape_iterator;
-  auto operator*() const -> const game_point&;
+  auto operator*() const -> D2D1_POINT_2F;
   auto operator==(const const_shape_iterator&) const -> bool;
 
 private:
   
   const_shape_iterator(const shape_generator* shapeGenerator, int initialAngle);
-  auto GetCurrentPoint() const -> game_point;
+  auto GetCurrentPoint() const -> D2D1_POINT_2F;
 
   const shape_generator* m_shapeGenerator { nullptr };
   int m_currentAngle { 0 };
-  game_point m_point { 0, 0 };
+  D2D1_POINT_2F m_point { 0, 0 };
 };
 
 class shape_generator

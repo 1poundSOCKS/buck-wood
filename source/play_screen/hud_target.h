@@ -1,7 +1,5 @@
 #pragma once
 
-#include "game_point.h"
-
 class hud_target
 {
 

@@ -14,16 +14,16 @@ public:
 
   enum class state { alive, dead };
 
-  using points_collection = std::vector<game_point>;
+  using points_collection = std::vector<D2D1_POINT_2F>;
   using shield_status = std::shared_ptr<health_status>;
 
 public:
 
-  player_ship(game_point position);
+  player_ship(D2D1_POINT_2F position);
 
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   auto Update(float interval) -> void;
 
   auto SetAngle(float angle) -> void;
@@ -34,14 +34,14 @@ public:
   auto Destroy() -> void;
 
 
-  [[nodiscard]] auto PreviousPosition() const -> game_point;
+  [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> const game_velocity&;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
-  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
+  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F;
   [[nodiscard]] auto RelativeVelocity(float angle, float value) const -> game_velocity;
 
 private:
@@ -91,12 +91,12 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-inline [[nodiscard]] auto player_ship::Position() const -> game_point
+inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
 {
   return m_body.Position();
 }
 
-inline [[nodiscard]] auto player_ship::PreviousPosition() const -> game_point
+inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
 {
   return m_previousState.Position();
 }
@@ -131,7 +131,7 @@ inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
   return m_destroyed;
 }
 
-inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, float cy) const -> game_point
+inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F
 {
   return m_body.RelativePosition(angle, cx, cy);
 }

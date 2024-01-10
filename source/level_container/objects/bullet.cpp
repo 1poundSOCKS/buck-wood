@@ -3,12 +3,12 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(game_point position, game_velocity velocity) : 
+bullet::bullet(D2D1_POINT_2F position, game_velocity velocity) : 
   m_startPosition { position }, m_body { position, velocity }
 {
 }
 
-[[nodiscard]] auto bullet::Position() const -> game_point
+[[nodiscard]] auto bullet::Position() const -> D2D1_POINT_2F
 {
   return m_body.Position();
 }
@@ -28,11 +28,13 @@ bullet::bullet(game_point position, game_velocity velocity) :
   return m_range;
 }
 
-auto bullet::Update(float interval, std::optional<game_point> targetPosition) -> void
+auto bullet::Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
 {
-  m_body.SetDirection(targetPosition ? m_body.Position().AngleTo(*targetPosition) : m_body.Direction());
+  // m_body.SetDirection(targetPosition ? m_body.Position().AngleTo(*targetPosition) : m_body.Direction());
+  m_body.SetDirection(targetPosition ? direct2d::GetAngleBetween(m_body.Position(), *targetPosition) : m_body.Direction());
   m_body.Update(interval);
-  m_distanceTravelled = m_startPosition.DistanceTo(m_body.Position());
+  // m_distanceTravelled = m_startPosition.DistanceTo(m_body.Position());
+  m_distanceTravelled = direct2d::GetDistanceBetweenPoints(m_startPosition, m_body.Position());
   m_destroyed = m_distanceTravelled > m_range;
 }
 

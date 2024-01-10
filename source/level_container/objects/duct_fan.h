@@ -8,14 +8,14 @@ class duct_fan
 
 public:
 
-  duct_fan(float x, float y, float rotationSpeed) : 
-    m_angle { static_cast<float>(m_angleDist(pseudo_random_generator::get())) }, m_position { x , y }, m_rotationSpeed { rotationSpeed }
+  duct_fan(D2D1_POINT_2F position, float rotationSpeed) : 
+    m_angle { static_cast<float>(m_angleDist(pseudo_random_generator::get())) }, m_position { position }, m_rotationSpeed { rotationSpeed }
   {
   }
 
   [[nodiscard]] auto Scale() const -> game_scale { return m_scale; };
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> const game_point&;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
 
   auto Update(float interval) -> void
   {
@@ -31,12 +31,12 @@ private:
 
   game_scale m_scale { 0.5f, 1.0f };
   game_angle m_angle;
-  game_point m_position;
+  D2D1_POINT_2F m_position;
   float m_rotationSpeed { 0 };
 
 };
 
-inline [[nodiscard]] auto duct_fan::Position() const -> const game_point&
+inline [[nodiscard]] auto duct_fan::Position() const -> D2D1_POINT_2F
 {
   return m_position;
 }

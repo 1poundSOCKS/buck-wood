@@ -7,19 +7,19 @@ class particle
 
 public:
 
-  particle(const game_point& position, const game_velocity& velocity, float lifespan);
+  particle(D2D1_POINT_2F position, const game_velocity& velocity, float lifespan);
 
   auto Update(float interval) -> void;
   auto Destroy() -> void;
 
   [[nodiscard]] auto Age() const -> float;
   [[nodiscard]] auto Lifespan() const -> float;
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
 private:
 
-  game_point m_startPosition;
+  D2D1_POINT_2F m_startPosition;
   moving_body m_movingBody;
   float m_lifespan { 0 };
   float m_age { 0 };
@@ -27,7 +27,7 @@ private:
 
 };
 
-inline particle::particle(const game_point& position, const game_velocity& velocity, float lifespan) :
+inline particle::particle(D2D1_POINT_2F position, const game_velocity& velocity, float lifespan) :
   m_startPosition { position }, m_movingBody { position, velocity }, m_lifespan { lifespan }
 {
 }
@@ -56,7 +56,7 @@ inline auto particle::Destroy() -> void
   return m_lifespan;
 }
 
-[[nodiscard]] inline auto particle::Position() const -> game_point
+[[nodiscard]] inline auto particle::Position() const -> D2D1_POINT_2F
 {
   return m_movingBody.Position();
 }

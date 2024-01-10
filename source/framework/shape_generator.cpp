@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "shape_generator.h"
 #include "game_angle.h"
+#include "directx_functions.h"
 
 const_shape_iterator::const_shape_iterator(const shape_generator* shapeGenerator, int initialAngle) : 
   m_shapeGenerator(shapeGenerator), m_currentAngle(initialAngle)
@@ -30,12 +31,12 @@ auto const_shape_iterator::operator==(const const_shape_iterator& i) const -> bo
   return m_currentAngle == i.m_currentAngle;
 }
 
-auto const_shape_iterator::operator*() const -> const game_point&
+auto const_shape_iterator::operator*() const -> D2D1_POINT_2F
 {
   return m_point;
 }
 
-auto const_shape_iterator::GetCurrentPoint() const -> game_point
+auto const_shape_iterator::GetCurrentPoint() const -> D2D1_POINT_2F
 {
   auto radiusX = m_shapeGenerator->m_width / 2;
   auto radiusY = m_shapeGenerator->m_height / 2;

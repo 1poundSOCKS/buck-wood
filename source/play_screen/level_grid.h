@@ -56,7 +56,7 @@ public:
   [[nodiscard]] auto TopBorder() const -> int;
   [[nodiscard]] auto RightBorder() const -> int;
   [[nodiscard]] auto BottomBorder() const -> int;
-  [[nodiscard]] auto Centre() const -> game_point;
+  [[nodiscard]] auto Centre() const -> D2D1_POINT_2F;
 
   auto begin() const -> const_level_grid_iterator;
   auto end() const -> const_level_grid_iterator;
@@ -94,7 +94,7 @@ private:
   return m_bottomRow * m_rowHeight + m_rowHeight / 2;
 }
 
-[[nodiscard]] inline auto level_grid::Centre() const -> game_point
+[[nodiscard]] inline auto level_grid::Centre() const -> D2D1_POINT_2F
 {
   auto x = ( static_cast<float>(LeftBorder()) + static_cast<float>(RightBorder()) ) / 2;
   auto y = ( static_cast<float>(TopBorder()) + static_cast<float>(BottomBorder()) ) / 2;

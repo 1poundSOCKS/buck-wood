@@ -1,5 +1,9 @@
 #pragma once
 
+#define PI 3.14159265f
+#define DEGTORAD(D)((D * PI) / 180.0f)
+#define RADTODEG(R)((180.0f * R) / PI)
+
 using d3d_device_and_swap_chain = std::tuple<winrt::com_ptr<ID3D11Device>, winrt::com_ptr<IDXGISwapChain>>;
 
 [[nodiscard]] auto CreateDeviceAndSwapChain(DXGI_SWAP_CHAIN_DESC& swapChainDesc, D3D_FEATURE_LEVEL featureLevels[]) -> d3d_device_and_swap_chain;
@@ -69,5 +73,12 @@ namespace direct2d
   {
     D2D1_RECT_F bounds;
     return SUCCEEDED(geometry->GetBounds(NULL, &bounds)) ? GetRadiusFromBounds(bounds) : 0;
+  }
+
+  inline auto GetAngleBetween(D2D1_POINT_2F startPoint, D2D1_POINT_2F endPoint) -> float
+  {
+    float radians = atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
+    float degrees = RADTODEG(radians);
+    return degrees + 90.0f;
   }
 }

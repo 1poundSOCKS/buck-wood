@@ -15,7 +15,8 @@ public:
     auto position1 = geometryObject->Position();
     auto position2 = particleObject.Position();
 
-    if( position1.DistanceTo(position2) < geometryObject.GeometryRadius() )
+    // if( position1.DistanceTo(position2) < geometryObject.GeometryRadius() )
+    if( direct2d::GetDistanceBetweenPoints(position1, position2) < geometryObject.GeometryRadius() )
     {
       BOOL collision = FALSE;
       HRESULT hr = geometryObject.Geometry()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);

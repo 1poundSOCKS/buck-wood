@@ -6,18 +6,18 @@ class directional_body : public moving_body
 {
 public:
 
-  directional_body(game_point position, game_velocity velocity, float angle);
+  directional_body(D2D1_POINT_2F position, game_velocity velocity, float angle);
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
   auto RotateClockwise(float angle) -> void;
   auto RotateAnticlockwise(float angle) -> void;
-  auto FacePosition(game_point position) -> void;
+  auto FacePosition(D2D1_POINT_2F position) -> void;
 
   auto Accelerate(float value) -> void;
 
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> game_point;
+  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F;
 
 private:
 
@@ -25,7 +25,7 @@ private:
 
 };
 
-inline directional_body::directional_body(game_point position, game_velocity velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
+inline directional_body::directional_body(D2D1_POINT_2F position, game_velocity velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
 {
 }
 
@@ -69,9 +69,10 @@ inline auto directional_body::RotateAnticlockwise(float angle) -> void
   }
 }
 
-inline auto directional_body::FacePosition(game_point position) -> void
+inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 {
-  m_angle = m_position.AngleTo(position);
+  // m_angle = m_position.AngleTo(position);
+  m_angle = direct2d::GetAngleBetween(m_position, position);
 }
 
 inline auto directional_body::Accelerate(float amount) -> void
@@ -84,7 +85,7 @@ inline auto directional_body::Accelerate(float amount) -> void
   return m_angle;
 }
 
-inline [[nodiscard]] auto directional_body::RelativePosition(float angle, float cx, float cy) const -> game_point
+inline [[nodiscard]] auto directional_body::RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F
 {
   game_angle relativeAngle { m_angle };
   relativeAngle += angle;

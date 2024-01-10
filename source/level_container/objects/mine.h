@@ -9,17 +9,17 @@ class mine
 
 public:
 
-  mine(game_point position);
+  mine(D2D1_POINT_2F position);
 
   [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Update(float interval, std::optional<game_point> playerPosition) -> void;
+  auto Update(float interval, std::optional<D2D1_POINT_2F> playerPosition) -> void;
   auto Destroy() -> void;
 
-  [[nodiscard]] auto PreviousPosition() const -> game_point;
+  [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
 
 private:
 
@@ -35,12 +35,12 @@ private:
 
 };
 
-inline [[nodiscard]] auto mine::Position() const -> game_point
+inline [[nodiscard]] auto mine::Position() const -> D2D1_POINT_2F
 {
   return m_body.Position();
 }
 
-inline [[nodiscard]] auto mine::PreviousPosition() const -> game_point
+inline [[nodiscard]] auto mine::PreviousPosition() const -> D2D1_POINT_2F
 {
   return m_previousState.Position();
 }

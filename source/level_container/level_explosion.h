@@ -26,7 +26,7 @@ private:
 
   inline static const int m_maxCount { 50 };
 
-  const_level_explosion_iterator(type iteratorType, const game_point& position);
+  const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position);
 
   static auto GetRandomVelocity() -> game_velocity;
 
@@ -36,9 +36,9 @@ private:
   inline static std::uniform_int_distribution<int> m_velocityDist { 200, 300 };
 
   type m_type { type::none };
-  game_point m_position;
+  D2D1_POINT_2F m_position;
   int m_count { 0 };
-  explosion_particle m_particle { game_point { 0, 0}, game_velocity{ 0, 0 }, 0 };
+  explosion_particle m_particle { D2D1_POINT_2F { 0, 0}, game_velocity{ 0, 0 }, 0 };
 
 };
 
@@ -47,18 +47,18 @@ class level_explosion
 
 public:
 
-  level_explosion(const game_point& position);
+  level_explosion(D2D1_POINT_2F position);
 
   [[nodiscard]] auto begin() const -> const_level_explosion_iterator;
   [[nodiscard]] auto end() const -> const_level_explosion_iterator;
 
 private:
 
-  game_point m_position;
+  D2D1_POINT_2F m_position;
 
 };
 
-inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, const game_point& position) : 
+inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position) : 
   m_type { iteratorType }, m_position { position }, m_particle { position, GetRandomVelocity(), 5 }
 {
 }
@@ -121,7 +121,7 @@ inline auto const_level_explosion_iterator::GetRandomVelocity() -> game_velocity
   return { game_angle { angle }, velocity };
 }
 
-inline level_explosion::level_explosion(const game_point& position) : m_position { position }
+inline level_explosion::level_explosion(D2D1_POINT_2F position) : m_position { position }
 {
 }
 

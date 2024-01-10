@@ -1,5 +1,6 @@
 #pragma once
 
+#include "framework.h"
 #include "game_angle.h"
 
 struct game_velocity
@@ -65,7 +66,8 @@ inline [[nodiscard]] auto game_velocity::Speed() const -> float
 
 inline [[nodiscard]] auto game_velocity::Direction() const -> float
 {
-  return CalculateAngle(0, 0, m_x, m_y);
+  // return CalculateAngle(0, 0, m_x, m_y);
+  return direct2d::GetAngleBetween({0, 0}, {m_x, m_y});
 }
 
 inline auto game_velocity::Accelerate(float cx, float cy) -> void

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "game_point.h"
 #include "game_velocity.h"
 
 class moving_body
@@ -8,9 +7,9 @@ class moving_body
 
 public:
 
-  moving_body(game_point position, game_velocity velocity);
+  moving_body(D2D1_POINT_2F position, game_velocity velocity);
 
-  auto SetPosition(const game_point& position) -> void;
+  auto SetPosition(D2D1_POINT_2F position) -> void;
   auto SetVelocity(const game_velocity& velocity) -> void;
   auto SetVelocity(float speed, float direction) -> void;
   auto Accelerate(const game_velocity& amount) -> void;
@@ -18,7 +17,7 @@ public:
   auto Accelerate(float amount, float direction) -> void;
   auto SetDirection(float direction) -> void;
 
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> game_velocity;
   [[nodiscard]] auto Direction() const -> float;
 
@@ -28,16 +27,16 @@ public:
 
 protected:
 
-  game_point m_position;
+  D2D1_POINT_2F m_position;
   game_velocity m_velocity;
 
 };
 
-inline moving_body::moving_body(game_point position, game_velocity velocity) : m_position { position }, m_velocity { velocity }
+inline moving_body::moving_body(D2D1_POINT_2F position, game_velocity velocity) : m_position { position }, m_velocity { velocity }
 {
 }
 
-inline auto moving_body::SetPosition(const game_point& position) -> void
+inline auto moving_body::SetPosition(D2D1_POINT_2F position) -> void
 {
   m_position = position;
 }
@@ -73,7 +72,7 @@ inline auto moving_body::Accelerate(float amount, float direction) -> void
   m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
 }
 
-inline [[nodiscard]] auto moving_body::Position() const -> game_point
+inline [[nodiscard]] auto moving_body::Position() const -> D2D1_POINT_2F
 {
   return m_position;
 }

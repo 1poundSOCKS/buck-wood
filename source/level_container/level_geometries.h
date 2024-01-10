@@ -15,22 +15,22 @@ private:
     constexpr float height { 10 };
 
     return std::array {
-      game_point { 0, -height },
-      game_point { width, height },
-      game_point { -width, height }
+      D2D1_POINT_2F { 0, -height },
+      D2D1_POINT_2F { width, height },
+      D2D1_POINT_2F { -width, height }
     };
   }
 
   static [[nodiscard]] auto GetDuctFanGeometryData(float size)
   {
     static constexpr auto ductFanGeometryData = std::array {
-      game_point { -0.5, -0.5 },
-      game_point { 0.5, -0.5 },
-      game_point { 0.5, 0.5 },
-      game_point { -0.5, 0.5 }
+      D2D1_POINT_2F { -0.5, -0.5 },
+      D2D1_POINT_2F { 0.5, -0.5 },
+      D2D1_POINT_2F { 0.5, 0.5 },
+      D2D1_POINT_2F { -0.5, 0.5 }
     };
 
-    return ductFanGeometryData | std::ranges::views::transform([size](const game_point& gamePoint) -> game_point
+    return ductFanGeometryData | std::ranges::views::transform([size](D2D1_POINT_2F gamePoint) -> D2D1_POINT_2F
     {
       return { gamePoint.x * size, gamePoint.y * size  };
     });
@@ -52,7 +52,7 @@ private:
     auto irregularShape = shapeGenerator | std::ranges::views::transform([x, y](auto point)
     {
       auto noise = 0.7f + ( psn::GetNoise(x + point.x, y + point.y) + 1 ) * 0.1f;
-      return game_point { point.x * noise, point.y * noise };
+      return D2D1_POINT_2F { point.x * noise, point.y * noise };
     });
 
     return CreatePathGeometry(d2d_factory::get_raw(), irregularShape);

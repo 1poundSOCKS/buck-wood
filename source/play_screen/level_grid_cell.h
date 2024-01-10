@@ -1,7 +1,5 @@
 #pragma once
 
-#include "game_point.h"
-
 class level_grid_cell
 {
 public:
@@ -10,7 +8,7 @@ public:
   level_grid_cell(const level_grid_cell&) = default;
   level_grid_cell(float x, float y, float width, float height);
 
-  auto Position() const -> const game_point&;
+  auto Position() const -> D2D1_POINT_2F;
   auto Width() const -> float;
   auto Height() const -> float;
   auto Left() const -> float;
@@ -22,7 +20,7 @@ public:
 
 private:
 
-  game_point m_position { 0, 0 };
+  D2D1_POINT_2F m_position { 0, 0 };
   float m_width { 0 };
   float m_height { 0 };
 

@@ -8,13 +8,13 @@ class homing_bullet : public bullet
 
 public:
 
-  homing_bullet(game_point position, game_velocity velocity, std::optional<targetted_object> target) : bullet(position, velocity), m_target { target }
+  homing_bullet(D2D1_POINT_2F position, game_velocity velocity, std::optional<targetted_object> target) : bullet(position, velocity), m_target { target }
   {
   }
 
   auto Update(float interval) -> void
   {
-    bullet::Update(interval, m_target && !m_target->Destroyed() ? std::optional<game_point>(m_target->Position()) : std::nullopt);
+    bullet::Update(interval, m_target && !m_target->Destroyed() ? std::optional<D2D1_POINT_2F>(m_target->Position()) : std::nullopt);
   }
 
   auto ValidateTarget() -> void

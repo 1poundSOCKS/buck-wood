@@ -35,8 +35,8 @@ public:
 
   using targetted_object_type = std::optional<targetted_object>;
 
-  using explosion_collection = std::vector<game_point>;
-  using impact_collection = std::vector<game_point>;
+  using explosion_collection = std::vector<D2D1_POINT_2F>;
+  using impact_collection = std::vector<D2D1_POINT_2F>;
 
 public:
 
@@ -51,7 +51,7 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
-  [[nodiscard]] auto PlayerPosition() const -> game_point;
+  [[nodiscard]] auto PlayerPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto PlayerAngle() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
@@ -82,7 +82,7 @@ private:
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   blank_object m_boundary;
   play_events m_playEvents;
-  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), game_point { 0, 0 } };
+  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), D2D1_POINT_2F { 0, 0 } };
   target_collection m_targets;
   mine_collection m_mines;
   duct_fan_collection m_ductFans;
@@ -143,7 +143,7 @@ auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> 
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_ductFans.emplace_back(level_geometries::DuctFanGeometry(), position.x, position.y, 30.0f);
+    m_ductFans.emplace_back(level_geometries::DuctFanGeometry(), position, 30.0f);
   });
 }
 
@@ -151,7 +151,7 @@ auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) ->
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_asteroids.emplace_back(level_geometries::AsteroidGeometry(), position.x, position.y, 200.0f, 200.0f);
+    m_asteroids.emplace_back(level_geometries::AsteroidGeometry(), position, 200.0f, 200.0f);
   });
 }
 
@@ -170,7 +170,7 @@ inline[[nodiscard]] auto level_container::Targets() const -> const target_collec
   return m_targets;
 }
 
-inline [[nodiscard]] auto level_container::PlayerPosition() const -> game_point
+inline [[nodiscard]] auto level_container::PlayerPosition() const -> D2D1_POINT_2F
 {
   return m_playerShip->Position();
 }
@@ -235,5 +235,6 @@ auto level_container::GetNearestToPlayer(auto& object1, auto& object2) const -> 
 
 auto level_container::DistanceFromPlayer(auto&& object) const -> float
 {
-  return m_playerShip->Position().DistanceTo(object->Position());
+  // return m_playerShip->Position().DistanceTo(object->Position());
+  return direct2d::GetDistanceBetweenPoints(m_playerShip->Position(), object->Position());
 }

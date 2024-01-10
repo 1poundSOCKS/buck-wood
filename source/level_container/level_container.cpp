@@ -73,7 +73,7 @@ auto level_container::UpdateObjects(float interval) -> void
   m_playerShip.Update(interval);
   m_playerReloadCounter.Update(interval);
   m_thrustEmmisionCounter.Update(interval);
-  dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position()));
+  dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
   dynamic_object_functions::update(m_bullets, interval);
@@ -291,12 +291,13 @@ auto level_container::CreateNewObjects(float interval) -> void
 {
   if( m_targettedObject && gamepad_reader::right_trigger() > 0 && m_playerReloadCounter.Get(1) == 1 )
   {
-    auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
+    // auto angleToTarget = m_playerShip->Position().AngleTo(m_targettedObject->Position());
+    auto angleToTarget = direct2d::GetAngleBetween(m_playerShip->Position(), m_targettedObject->Position());
     m_bullets.emplace_back(m_playerShip->Position(), game_velocity { angleToTarget, 500.0f }, m_targettedObject);
     m_playEvents.SetEvent(play_events::event_type::shot, true);
   }
 
-  std::optional<game_point> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<game_point>(m_playerShip->Position());
+  std::optional<D2D1_POINT_2F> playerPosition = m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position());
 
   auto shootingTargets = m_targets | std::ranges::views::filter([&playerPosition](const auto& target) -> bool { return playerPosition && target->CanShootAt(*playerPosition); });
 

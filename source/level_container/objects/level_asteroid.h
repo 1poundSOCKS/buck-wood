@@ -8,7 +8,7 @@ class level_asteroid
 
 public:
 
-  level_asteroid(float x, float y, float maxWidth, float maxHeight);
+  level_asteroid(D2D1_POINT_2F position, float maxWidth, float maxHeight);
 
   [[nodiscard]] auto Scale() const -> game_scale
   {
@@ -20,13 +20,13 @@ public:
     return 0;
   }
 
-  [[nodiscard]] auto Position() const -> const game_point&
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F
   {
     return m_position;
   }
 
 private:
 
-  game_point m_position { 0, 0 };
+  D2D1_POINT_2F m_position;
 
 };

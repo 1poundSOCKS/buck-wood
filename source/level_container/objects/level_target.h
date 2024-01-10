@@ -9,15 +9,15 @@ class level_target
 
 public:
 
-  level_target(game_point position);
+  level_target(D2D1_POINT_2F position);
 
   [[nodiscard]] auto Scale() const -> game_scale;
   [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> game_point;
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   auto Update(float interval) -> void;
 
   [[nodiscard]] auto IsActivated() const -> bool;
-  [[nodiscard]] auto CanShootAt(game_point position) const -> bool;
+  [[nodiscard]] auto CanShootAt(D2D1_POINT_2F position) const -> bool;
 
   auto HitByBullet() -> void;
   auto Activate() -> void;
@@ -30,7 +30,7 @@ private:
 
 private:
 
-  game_point m_position { 0, 0 };
+  D2D1_POINT_2F m_position { 0, 0 };
   bool m_activated = false;
   reload_timer m_reloadTimer { m_defaultReloadTime };
   bool m_reloaded { false };
@@ -48,7 +48,7 @@ inline [[nodiscard]] auto level_target::Angle() const -> float
   return 0;
 }
 
-inline [[nodiscard]] auto level_target::Position() const -> game_point
+inline [[nodiscard]] auto level_target::Position() const -> D2D1_POINT_2F
 {
   return m_position;
 }

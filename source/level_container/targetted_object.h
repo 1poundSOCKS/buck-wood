@@ -19,16 +19,16 @@ public:
   {
   }
 
-  [[nodiscard]] auto Position() const -> game_point
+  [[nodiscard]] auto Position() const -> D2D1_POINT_2F
   {
     struct visitor
     {
-      [[nodiscard]] auto operator()(const mine_object* object) -> game_point
+      [[nodiscard]] auto operator()(const mine_object* object) -> D2D1_POINT_2F
       {
         return object->Object().Position();
       }
 
-      [[nodiscard]] auto operator()(const target_object* object) -> game_point
+      [[nodiscard]] auto operator()(const target_object* object) -> D2D1_POINT_2F
       {
         return object->Object().Position();
       }

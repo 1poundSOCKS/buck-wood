@@ -1,27 +1,27 @@
 #pragma once
 
-#include "game_point.h"
-
 class level_radar
 {
 public:
 
-  level_radar(const game_point& position) : m_position { position }
+  level_radar(D2D1_POINT_2F position) : m_position { position }
   {
   }
 
-  [[nodiscard]] auto AngleTo(const game_point& target) const -> float
+  [[nodiscard]] auto AngleTo(D2D1_POINT_2F target) const -> float
   {
-    return m_position.AngleTo(target);
+    // return m_position.AngleTo(target);
+    return direct2d::GetAngleBetween(m_position, target);
   }
 
-  [[nodiscard]] auto DistanceTo(const game_point& target) const -> float
+  [[nodiscard]] auto DistanceTo(D2D1_POINT_2F target) const -> float
   {
-    return m_position.DistanceTo(target);
+    // return m_position.DistanceTo(target);
+    return direct2d::GetDistanceBetweenPoints(m_position, target);
   }
 
 private:
 
-  game_point m_position;
+  D2D1_POINT_2F m_position;
   
 };

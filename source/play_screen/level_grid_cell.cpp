@@ -5,7 +5,7 @@ level_grid_cell::level_grid_cell(float x, float y, float width, float height) : 
 {
 }
 
-auto level_grid_cell::Position() const -> const game_point&
+auto level_grid_cell::Position() const -> D2D1_POINT_2F
 {
   return m_position;
 }
