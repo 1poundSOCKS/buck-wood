@@ -14,11 +14,7 @@ public:
 public:
 
   geometry_collision_results() : 
-    m_collisionTests { [this](auto& object1, auto& object2)
-    {
-      std::lock_guard<std::mutex> guard(m_mutex);
-      m_results.emplace_back(object1, object2);
-    }}
+    m_collisionTests { [this](auto& object1, auto& object2) { m_results.emplace_back(object1, object2); }}
   {
   }
 
@@ -60,6 +56,5 @@ private:
 
   geometry_collision<object_type_1, object_type_2> m_collisionTests;
   collision_collection m_results;
-  std::mutex m_mutex;
 
 };

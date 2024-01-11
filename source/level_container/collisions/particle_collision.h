@@ -22,6 +22,7 @@ public:
 
       if( SUCCEEDED(hr) && collision )
       {
+        std::lock_guard<std::mutex> guard(m_mutex);
         m_callable(geometryObject, particleObject);
       }
     }
@@ -49,5 +50,6 @@ public:
 private:
 
   std::function<void(dynamic_object<geometry_object_type>&, particle_object_type&)> m_callable;
+  std::mutex m_mutex;
 
 };

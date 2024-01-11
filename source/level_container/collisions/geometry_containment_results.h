@@ -12,12 +12,7 @@ public:
 
 public:
 
-  geometry_containment_results() : 
-    m_containmentTests { [this](auto& object)
-    {
-      std::lock_guard<std::mutex> guard(m_mutex);
-      m_results.emplace_back(object.Object());
-    }}
+  geometry_containment_results() : m_containmentTests { [this](auto& object) { m_results.emplace_back(object.Object()); }}
   {
   }
 
@@ -58,6 +53,5 @@ private:
 
   geometry_containment<object_type> m_containmentTests;
   collision_collection m_results;
-  std::mutex m_mutex;
 
 };

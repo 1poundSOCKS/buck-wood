@@ -47,6 +47,7 @@ public:
   {
     std::for_each(std::execution::par_unseq, std::begin(object2Collection), std::end(object2Collection), [this,&object1](auto& object2)
     {
+      std::lock_guard<std::mutex> guard(m_mutex);
       (*this)(object1, object2);
     });
   }
@@ -57,6 +58,7 @@ public:
     {
       for( auto& object2 : object2Collection )
       {
+        std::lock_guard<std::mutex> guard(m_mutex);
         (*this)(object1, object2);
       }
     });
@@ -65,5 +67,6 @@ public:
 private:
 
   std::function<void(object_type_1&, object_type_2&)> m_callable;
+  std::mutex m_mutex;
 
 };

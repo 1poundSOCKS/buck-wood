@@ -14,11 +14,7 @@ public:
 public:
 
   particle_containment_results() : 
-    m_containmentTests { [this](auto& particle)
-    {
-      std::lock_guard<std::mutex> guard(m_mutex);
-      m_results.emplace_back(particle);
-    }}
+    m_containmentTests { [this](auto& particle) { m_results.emplace_back(particle); }}
   {
   }
 
@@ -54,6 +50,5 @@ private:
 
   particle_containment<particle_type> m_containmentTests;
   containment_collection m_results;
-  std::mutex m_mutex;
 
 };

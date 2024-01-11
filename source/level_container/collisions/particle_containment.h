@@ -24,14 +24,16 @@ public:
 
   auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& containedParticles) -> void
   {
-    for( auto& particle : containedParticles )
+    std::for_each(std::execution::par_unseq, std::begin(containedParticles), std::end(containedParticles), [this,containmentGeometry](auto& particle)
     {
+      std::lock_guard<std::mutex> guard(m_mutex);
       (*this)(containmentGeometry, particle);
-    }
+    });
   }
 
 private:
 
   std::function<void(contained_particle_type&)> m_callable;
+  std::mutex m_mutex;
 
 };

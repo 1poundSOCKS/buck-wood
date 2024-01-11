@@ -31,20 +31,23 @@ public:
 
     if( !contained )
     {
+      std::lock_guard<std::mutex> guard(m_mutex);
       m_callable(containedObject);
     }
   }
 
   auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& containedObjectCollection) -> void
   {
-    for( auto& containedObject : containedObjectCollection )
+    // for( auto& containedObject : containedObjectCollection )
+    std::for_each(std::execution::par_unseq, std::begin(containedObjectCollection), std::end(containedObjectCollection), [this,containmentGeometry](auto& containedObject)
     {
       (*this)(containmentGeometry, containedObject);
-    }
+    });
   }
 
 private:
 
   std::function<void(dynamic_object<contained_object_type>&)> m_callable;
+  std::mutex m_mutex;
 
 };
