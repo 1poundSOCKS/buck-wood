@@ -47,6 +47,17 @@ public:
     });
   }
 
+  // auto Process(std::ranges::input_range auto&& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void
+  // {
+  //   std::for_each(std::execution::par_unseq, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection](auto& geometryObject)
+  //   {
+  //     for( auto& particleObject : particleObjectCollection )
+  //     {
+  //       (*this)(geometryObject, particleObject);
+  //     }
+  //   });
+  // }
+
 private:
 
   std::function<void(dynamic_object<geometry_object_type>&, particle_object_type&)> m_callable;

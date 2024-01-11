@@ -12,6 +12,7 @@
 #include "collisions/geometry_collision_results.h"
 #include "collisions/particle_containment_results.h"
 #include "collisions/geometry_containment_results.h"
+#include "collisions/particle_destruction_collision.h"
 
 class level_container
 {
@@ -108,14 +109,15 @@ private:
   geometry_collision_results<mine, duct_fan> m_mineToDuctFanCollisionResults;
 
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
-  particle_collision_results<level_asteroid, explosion_particle> m_asteroidExplosionCollisionResults;
   particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
   particle_collision_results<level_asteroid, bullet> m_asteroidToBulletCollisionResults;
   particle_collision_results<duct_fan, bullet> m_ductFanToBulletCollisionResults;
   particle_collision_results<level_target, bullet> m_targetToBulletCollisionResults;
-  particle_collision_results<duct_fan, explosion_particle> m_ductFanToExplosionCollisionResults;
-  particle_collision_results<level_asteroid, thrust_particle> m_asteroidToThrustCollisionResults;
-  particle_collision_results<duct_fan, thrust_particle> m_ductFanToThrustCollisionResults;
+
+  particle_destruction_collision<duct_fan, explosion_particle> m_destroyExplosionParticlesOnDuctFans;
+  particle_destruction_collision<level_asteroid, thrust_particle> m_destroyExplosionParticlesOnAsteroids;
+  particle_destruction_collision<level_asteroid, thrust_particle> m_destroyThrustParticlesOnAsteroids;
+  particle_destruction_collision<duct_fan, thrust_particle> m_destroyThrustParticlesOnDuctFans;
 
   explosion_collection m_explosions;
   impact_collection m_impacts;

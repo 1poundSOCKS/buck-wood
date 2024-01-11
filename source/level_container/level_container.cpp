@@ -28,14 +28,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_mineToAsteroidCollisionResults.Clear();
   m_mineToDuctFanCollisionResults.Clear();
 
-  m_asteroidExplosionCollisionResults.Clear();
   m_mineToBulletCollisionResults.Clear();
   m_asteroidToBulletCollisionResults.Clear();
   m_ductFanToBulletCollisionResults.Clear();
   m_targetToBulletCollisionResults.Clear();
-  m_ductFanToExplosionCollisionResults.Clear();
-  m_asteroidToThrustCollisionResults.Clear();
-  m_ductFanToThrustCollisionResults.Clear();
 
   m_explosions.clear();
   m_impacts.clear();
@@ -149,13 +145,9 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
   m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
 
-  m_asteroidExplosionCollisionResults.Fetch(m_asteroids, m_explosionParticles);
   m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
   m_asteroidToBulletCollisionResults.Fetch(m_asteroids, m_bullets);
-  m_asteroidToThrustCollisionResults.Fetch(m_asteroids, m_thrustParticles);
   m_ductFanToBulletCollisionResults.Fetch(m_ductFans, m_bullets);
-  m_ductFanToExplosionCollisionResults.Fetch(m_ductFans, m_explosionParticles);
-  m_ductFanToThrustCollisionResults.Fetch(m_ductFans, m_thrustParticles);
   m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
 }
 
@@ -234,11 +226,6 @@ auto level_container::ProcessCollisionResults() -> void
     m_explosions.emplace_back(mine.PreviousPosition());
   });
 
-  m_asteroidExplosionCollisionResults.Process([](auto& object, auto& particle)
-  {
-    particle.Destroy();
-  });
-
   m_mineToBulletCollisionResults.Process([this](auto& object, auto& particle)
   {
     object.Destroy();
@@ -271,20 +258,10 @@ auto level_container::ProcessCollisionResults() -> void
     m_impacts.emplace_back(object.Position());
   });
 
-  m_ductFanToExplosionCollisionResults.Process([](auto& object, auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  m_asteroidToThrustCollisionResults.Process([](auto& object, auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  m_ductFanToThrustCollisionResults.Process([](auto& object, auto& particle)
-  {
-    particle.Destroy();
-  });
+  m_destroyExplosionParticlesOnDuctFans(m_ductFans, m_explosionParticles);
+  m_destroyExplosionParticlesOnAsteroids(m_asteroids, m_thrustParticles);
+  m_destroyThrustParticlesOnAsteroids(m_asteroids, m_thrustParticles);
+  m_destroyThrustParticlesOnDuctFans(m_ductFans, m_thrustParticles);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
@@ -351,12 +328,9 @@ auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -
     m_shipToExplosionCollisionResults.Count() +
     m_mineToAsteroidCollisionResults.Count() +
     m_mineToDuctFanCollisionResults.Count() +
-    m_asteroidExplosionCollisionResults.Count() +
     m_mineToBulletCollisionResults.Count() +
     m_asteroidToBulletCollisionResults.Count() +
     m_ductFanToBulletCollisionResults.Count() +
-    m_targetToBulletCollisionResults.Count() +
-    m_ductFanToExplosionCollisionResults.Count() +
-    m_asteroidToThrustCollisionResults.Count() +
-    m_ductFanToThrustCollisionResults.Count()));  
+    m_targetToBulletCollisionResults.Count()
+    ));  
 }
