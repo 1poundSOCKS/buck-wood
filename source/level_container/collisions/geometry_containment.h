@@ -38,7 +38,6 @@ public:
 
   auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& containedObjectCollection) -> void
   {
-    // for( auto& containedObject : containedObjectCollection )
     std::for_each(std::execution::par_unseq, std::begin(containedObjectCollection), std::end(containedObjectCollection), [this,containmentGeometry](auto& containedObject)
     {
       (*this)(containmentGeometry, containedObject);

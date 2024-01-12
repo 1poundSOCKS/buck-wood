@@ -11,10 +11,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  m_explosionContainmentResults.Clear();
-  m_thrustContainmentResults.Clear();
-  m_bulletContainmentResults.Clear();
-
   m_mineContainmentResults.Clear();
   m_shipContainmentResults.Clear();
 
@@ -138,10 +134,6 @@ auto level_container::DoNonPlayerCollisions() -> void
 {
   m_mineContainmentResults.Fetch(m_boundary, m_mines);
 
-  m_thrustContainmentResults.Fetch(m_boundary, m_thrustParticles);
-  m_bulletContainmentResults.Fetch(m_boundary, m_bullets);
-  m_explosionContainmentResults.Fetch(m_boundary, m_explosionParticles);
-
   m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
   m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
 
@@ -163,22 +155,6 @@ auto level_container::ProcessCollisionResults() -> void
   {
     m_explosions.emplace_back(ship.PreviousPosition());
     ship.ApplyFatalDamage();
-  });
-
-  m_explosionContainmentResults.Process([this](auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  m_thrustContainmentResults.Process([this](auto& particle)
-  {
-    particle.Destroy();
-  });
-
-  m_bulletContainmentResults.Process([this](auto& bullet)
-  {
-    m_impacts.emplace_back(bullet.Position());
-    bullet.Destroy();
   });
 
   m_shipToAsteroidCollisionResults.Process([this](auto& playerShip, auto& asteroid)
@@ -253,10 +229,14 @@ auto level_container::ProcessCollisionResults() -> void
       m_activatedTargetCount += object.IsActivated() ? 1 : 0;
     }
 
+    m_impacts.emplace_back(particle.Position());
     particle.Destroy();
-
-    m_impacts.emplace_back(object.Position());
   });
+
+  m_destroyBulletsAtBoundary(m_boundary, m_bullets);
+
+  m_destroyExplosionParticlesAtBoundary(m_boundary, m_explosionParticles);
+  m_destroyThrustParticlesAtBoundary(m_boundary, m_thrustParticles);
 
   m_destroyExplosionParticlesOnDuctFans(m_ductFans, m_explosionParticles);
   m_destroyExplosionParticlesOnAsteroids(m_asteroids, m_thrustParticles);
