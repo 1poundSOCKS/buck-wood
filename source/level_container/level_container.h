@@ -16,6 +16,7 @@
 #include "collisions/particle_destruction_collision.h"
 #include "collisions/particle_destruction_containment.h"
 #include "collisions/impact_particle_destruction_containment.h"
+#include "collisions/impact_particle_collision.h"
 
 class level_container
 {
@@ -93,7 +94,6 @@ private:
 
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
   particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
-  particle_collision_results<level_asteroid, bullet> m_asteroidToBulletCollisionResults;
   particle_collision_results<duct_fan, bullet> m_ductFanToBulletCollisionResults;
   particle_collision_results<level_target, bullet> m_targetToBulletCollisionResults;
 
@@ -106,6 +106,7 @@ private:
   particle_destruction_containment<thrust_particle> m_destroyThrustParticlesAtBoundary;
 
   impact_particle_destruction_containment<bullet, std::back_insert_iterator<impact_collection>> m_destroyBulletsAtBoundary { std::back_inserter(m_impacts) };
+  impact_particle_collision<level_asteroid, bullet, std::back_insert_iterator<impact_collection>> m_destroyBulletsOnAsteroids { std::back_inserter(m_impacts) };
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
