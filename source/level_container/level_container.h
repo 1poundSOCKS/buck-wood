@@ -58,6 +58,7 @@ private:
   auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromPlayer(auto&& object) const -> float;
   auto GetMaxCollisionCount(int currentMaxCollisionCount) const -> int;
+  template <typename particle_object_type> auto DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles);
 
 private:
 
@@ -96,14 +97,6 @@ private:
   particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
   particle_collision_results<duct_fan, bullet> m_ductFanToBulletCollisionResults;
   particle_collision_results<level_target, bullet> m_targetToBulletCollisionResults;
-
-  particle_destruction_collision<duct_fan, explosion_particle> m_destroyExplosionParticlesOnDuctFans;
-  particle_destruction_collision<level_asteroid, thrust_particle> m_destroyExplosionParticlesOnAsteroids;
-  particle_destruction_collision<level_asteroid, thrust_particle> m_destroyThrustParticlesOnAsteroids;
-  particle_destruction_collision<duct_fan, thrust_particle> m_destroyThrustParticlesOnDuctFans;
-
-  particle_destruction_containment<explosion_particle> m_destroyExplosionParticlesAtBoundary;
-  particle_destruction_containment<thrust_particle> m_destroyThrustParticlesAtBoundary;
 
   impact_particle_destruction_containment<bullet, std::back_insert_iterator<impact_collection>> m_destroyBulletsAtBoundary { std::back_inserter(m_impacts) };
   impact_particle_collision<level_asteroid, bullet, std::back_insert_iterator<impact_collection>> m_destroyBulletsOnAsteroids { std::back_inserter(m_impacts) };
@@ -224,4 +217,15 @@ auto level_container::GetNearestToPlayer(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromPlayer(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(m_playerShip->Position(), object->Position());
+}
+
+template <typename particle_object_type> auto level_container::DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles)
+{
+  particle_destruction_containment<particle_object_type> m_destroyParticlesAtBoundary;
+  particle_destruction_collision<level_asteroid, particle_object_type> m_destroyParticlesOnAsteroids;
+  particle_destruction_collision<duct_fan, particle_object_type> m_destroyParticlesOnDuctFans;
+
+  m_destroyParticlesAtBoundary(m_boundary, particles);
+  m_destroyParticlesOnAsteroids(m_asteroids, particles);
+  m_destroyParticlesOnDuctFans(m_ductFans, particles);
 }

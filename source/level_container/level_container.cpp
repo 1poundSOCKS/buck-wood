@@ -228,13 +228,8 @@ auto level_container::ProcessCollisionResults() -> void
   m_destroyBulletsAtBoundary(m_boundary, m_bullets);
   m_destroyBulletsOnAsteroids(m_asteroids, m_bullets);
 
-  m_destroyExplosionParticlesAtBoundary(m_boundary, m_explosionParticles);
-  m_destroyThrustParticlesAtBoundary(m_boundary, m_thrustParticles);
-
-  m_destroyExplosionParticlesOnDuctFans(m_ductFans, m_explosionParticles);
-  m_destroyExplosionParticlesOnAsteroids(m_asteroids, m_thrustParticles);
-  m_destroyThrustParticlesOnAsteroids(m_asteroids, m_thrustParticles);
-  m_destroyThrustParticlesOnDuctFans(m_ductFans, m_thrustParticles);
+  DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
+  DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
