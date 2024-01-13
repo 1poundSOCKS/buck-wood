@@ -13,10 +13,6 @@
 #include "collisions/geometry_collision_results.h"
 #include "collisions/particle_containment_results.h"
 #include "collisions/geometry_containment_results.h"
-#include "collisions/particle_destruction_collision.h"
-#include "collisions/particle_destruction_containment.h"
-#include "collisions/impact_particle_destruction_containment.h"
-#include "collisions/impact_particle_collision.h"
 
 class level_container
 {

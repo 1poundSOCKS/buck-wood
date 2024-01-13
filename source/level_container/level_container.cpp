@@ -251,9 +251,21 @@ auto level_container::GetTargettedObject() -> targetted_object_type
 
 auto level_container::DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void
 {
-  impact_particle_destruction_containment<bullet, std::back_insert_iterator<impact_collection>> destroyBulletsAtBoundary { std::back_inserter(m_impacts) };
-  impact_particle_collision<level_asteroid, bullet, std::back_insert_iterator<impact_collection>> destroyBulletsOnAsteroids { std::back_inserter(m_impacts) };
-  impact_particle_collision<duct_fan, bullet, std::back_insert_iterator<impact_collection>> destroyBulletsOnDuctFans { std::back_inserter(m_impacts) };
+  auto unaryFunction = [this](auto& particle)
+  {
+    m_impacts.emplace_back(particle.Position());
+    particle.Destroy();
+  };
+
+  auto binaryFunction =  [this](auto& geometry, auto& particle)
+  {
+    m_impacts.emplace_back(particle.Position());
+    particle.Destroy();
+  };
+
+  particle_containment<bullet> destroyBulletsAtBoundary { unaryFunction };
+  particle_collision<level_asteroid, bullet> destroyBulletsOnAsteroids { binaryFunction };
+  particle_collision<duct_fan, bullet> destroyBulletsOnDuctFans { binaryFunction };
 
   destroyBulletsAtBoundary(m_boundary, bullets);
   destroyBulletsOnAsteroids(m_asteroids, bullets);
