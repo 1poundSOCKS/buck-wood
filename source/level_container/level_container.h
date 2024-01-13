@@ -215,9 +215,20 @@ auto level_container::DistanceFromPlayer(auto&& object) const -> float
 
 template <typename particle_object_type> auto level_container::DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles) -> void
 {
-  particle_destruction_containment<particle_object_type> destroyParticlesAtBoundary;
-  particle_destruction_collision<level_asteroid, particle_object_type> destroyParticlesOnAsteroids;
-  particle_destruction_collision<duct_fan, particle_object_type> destroyParticlesOnDuctFans;
+  particle_containment<particle_object_type> destroyParticlesAtBoundary { [this](auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  particle_collision<level_asteroid, particle_object_type> destroyParticlesOnAsteroids { [this](auto& asteroid, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
+  particle_collision<duct_fan, particle_object_type> destroyParticlesOnDuctFans { [this](auto& ductFan, auto& particle)
+  {
+    particle.Destroy();
+  }};
 
   destroyParticlesAtBoundary(m_boundary, particles);
   destroyParticlesOnAsteroids(m_asteroids, particles);
