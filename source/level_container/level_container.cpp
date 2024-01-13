@@ -25,7 +25,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_mineToDuctFanCollisionResults.Clear();
 
   m_mineToBulletCollisionResults.Clear();
-  m_ductFanToBulletCollisionResults.Clear();
   m_targetToBulletCollisionResults.Clear();
 
   m_explosions.clear();
@@ -137,7 +136,6 @@ auto level_container::DoNonPlayerCollisions() -> void
   m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
 
   m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
-  m_ductFanToBulletCollisionResults.Fetch(m_ductFans, m_bullets);
   m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
 }
 
@@ -207,12 +205,6 @@ auto level_container::ProcessCollisionResults() -> void
     m_explosions.emplace_back(object.Position());
   });
 
-  m_ductFanToBulletCollisionResults.Process([this](auto& object, auto& particle)
-  {
-    particle.Destroy();
-    m_impacts.emplace_back(object.Position());
-  });
-
   m_targetToBulletCollisionResults.Process([this](auto& object, auto& particle)
   {
     if( !object.IsActivated() )
@@ -225,11 +217,9 @@ auto level_container::ProcessCollisionResults() -> void
     particle.Destroy();
   });
 
-  m_destroyBulletsAtBoundary(m_boundary, m_bullets);
-  m_destroyBulletsOnAsteroids(m_asteroids, m_bullets);
-
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
   DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);
+  DestroyBulletsOnGeometryCollision(m_bullets);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
@@ -287,6 +277,17 @@ auto level_container::GetTargettedObject() -> targetted_object_type
   return GetNearestObject(nearestMine, nearestTarget, 500.0f);
 }
 
+auto level_container::DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void
+{
+  impact_particle_destruction_containment<bullet, std::back_insert_iterator<impact_collection>> destroyBulletsAtBoundary { std::back_inserter(m_impacts) };
+  impact_particle_collision<level_asteroid, bullet, std::back_insert_iterator<impact_collection>> destroyBulletsOnAsteroids { std::back_inserter(m_impacts) };
+  impact_particle_collision<duct_fan, bullet, std::back_insert_iterator<impact_collection>> destroyBulletsOnDuctFans { std::back_inserter(m_impacts) };
+
+  destroyBulletsAtBoundary(m_boundary, bullets);
+  destroyBulletsOnAsteroids(m_asteroids, bullets);
+  destroyBulletsOnDuctFans(m_ductFans, bullets);
+}
+
 auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -> int
 {
   return std::max(currentMaxCollisionCount, 
@@ -298,6 +299,5 @@ auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -
       m_mineToAsteroidCollisionResults.Count() +
       m_mineToDuctFanCollisionResults.Count() +
       m_mineToBulletCollisionResults.Count() +
-      m_ductFanToBulletCollisionResults.Count() +
       m_targetToBulletCollisionResults.Count()));
 }
