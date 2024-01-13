@@ -11,7 +11,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  m_mineContainmentResults.Clear();
   m_shipContainmentResults.Clear();
 
   m_shipToAsteroidCollisionResults.Clear();
@@ -20,9 +19,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_shipToMineCollisionResults.Clear();
 
   m_shipToExplosionCollisionResults.Clear();
-
-  m_mineToAsteroidCollisionResults.Clear();
-  m_mineToDuctFanCollisionResults.Clear();
 
   m_mineToBulletCollisionResults.Clear();
   m_targetToBulletCollisionResults.Clear();
@@ -130,23 +126,12 @@ auto level_container::DoPlayerCollisions() -> void
 
 auto level_container::DoNonPlayerCollisions() -> void
 {
-  m_mineContainmentResults.Fetch(m_boundary, m_mines);
-
-  m_mineToAsteroidCollisionResults.Fetch(m_mines, m_asteroids);
-  m_mineToDuctFanCollisionResults.Fetch(m_mines, m_ductFans);
-
   m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
   m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
 }
 
 auto level_container::ProcessCollisionResults() -> void
 {
-  m_mineContainmentResults.Process([this](auto& mine)
-  {
-    m_explosions.emplace_back(mine.PreviousPosition());
-    mine.Destroy();
-  });
-
   m_shipContainmentResults.Process([this](auto& ship)
   {
     m_explosions.emplace_back(ship.PreviousPosition());
@@ -184,20 +169,6 @@ auto level_container::ProcessCollisionResults() -> void
     particle.Destroy();
   });
 
-  m_mineToAsteroidCollisionResults.Process([this](auto& mine, auto& asteroid)
-  {
-    auto position = mine.PreviousPosition();
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  });
-
-  m_mineToDuctFanCollisionResults.Process([this](auto& mine, auto& ductFan)
-  {
-    auto position = mine.PreviousPosition();
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  });
-
   m_mineToBulletCollisionResults.Process([this](auto& object, auto& particle)
   {
     object.Destroy();
@@ -217,6 +188,7 @@ auto level_container::ProcessCollisionResults() -> void
     particle.Destroy();
   });
 
+  DestroyObjectsOnGeometryCollision<mine>(m_mines);
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
   DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);
   DestroyBulletsOnGeometryCollision(m_bullets);
@@ -296,8 +268,6 @@ auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -
       m_shipToDuctFanCollisionResults.Count() +
       m_shipToMineCollisionResults.Count() +
       m_shipToExplosionCollisionResults.Count() +
-      m_mineToAsteroidCollisionResults.Count() +
-      m_mineToDuctFanCollisionResults.Count() +
       m_mineToBulletCollisionResults.Count() +
       m_targetToBulletCollisionResults.Count()));
 }
