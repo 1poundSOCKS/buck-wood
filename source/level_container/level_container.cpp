@@ -11,11 +11,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  m_shipContainmentResults.Clear();
-
-  m_shipToAsteroidCollisionResults.Clear();
   m_shipToTargetCollisionResults.Clear();
-  m_shipToDuctFanCollisionResults.Clear();
   m_shipToMineCollisionResults.Clear();
 
   m_shipToExplosionCollisionResults.Clear();
@@ -34,9 +30,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   }
 
   DoNonPlayerCollisions();
-
-  m_maxCollisionCount = GetMaxCollisionCount(m_maxCollisionCount);
-  diagnostics::add(L"max collision count", std::format(L"{}", m_maxCollisionCount));
 
   ProcessCollisionResults();
 
@@ -114,11 +107,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoPlayerCollisions() -> void
 {
-  m_shipContainmentResults.Fetch(m_boundary, m_playerShip);
-
-  m_shipToAsteroidCollisionResults.Fetch(m_playerShip, m_asteroids);
   m_shipToTargetCollisionResults.Fetch(m_playerShip, m_targets);
-  m_shipToDuctFanCollisionResults.Fetch(m_playerShip, m_ductFans);
   m_shipToMineCollisionResults.Fetch(m_playerShip, m_mines);
 
   m_shipToExplosionCollisionResults.Fetch(m_playerShip, m_explosionParticles);
@@ -132,28 +121,11 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::ProcessCollisionResults() -> void
 {
-  m_shipContainmentResults.Process([this](auto& ship)
-  {
-    m_explosions.emplace_back(ship.PreviousPosition());
-    ship.ApplyFatalDamage();
-  });
-
-  m_shipToAsteroidCollisionResults.Process([this](auto& playerShip, auto& asteroid)
-  {
-    playerShip.ApplyFatalDamage();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  });
+  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 
   m_shipToTargetCollisionResults.Process([this](auto& playerShip, auto& target)
   {
     playerShip.ApplyFatalDamage();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  });
-
-  m_shipToDuctFanCollisionResults.Process([this](auto& playerShip, auto& ductFan)
-  {
-    playerShip.ApplyFatalDamage();
-    auto position = playerShip.PreviousPosition();
     m_explosions.emplace_back(playerShip.PreviousPosition());
   });
 
@@ -270,16 +242,4 @@ auto level_container::DestroyBulletsOnGeometryCollision(std::ranges::input_range
   destroyBulletsAtBoundary(m_boundary, bullets);
   destroyBulletsOnAsteroids(m_asteroids, bullets);
   destroyBulletsOnDuctFans(m_ductFans, bullets);
-}
-
-auto level_container::GetMaxCollisionCount(int currentMaxCollisionCount) const -> int
-{
-  return std::max(currentMaxCollisionCount, 
-    static_cast<int>(m_shipToAsteroidCollisionResults.Count() + 
-      m_shipToTargetCollisionResults.Count() +
-      m_shipToDuctFanCollisionResults.Count() +
-      m_shipToMineCollisionResults.Count() +
-      m_shipToExplosionCollisionResults.Count() +
-      m_mineToBulletCollisionResults.Count() +
-      m_targetToBulletCollisionResults.Count()));
 }

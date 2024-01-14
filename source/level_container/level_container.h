@@ -53,8 +53,8 @@ private:
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
   auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromPlayer(auto&& object) const -> float;
-  auto GetMaxCollisionCount(int currentMaxCollisionCount) const -> int;
   template <typename geometry_object_type> auto DestroyObjectsOnGeometryCollision(std::ranges::input_range auto&& objects) -> void;
+  template <typename geometry_object_type> auto DestroyObjectOnGeometryCollision(auto& object) -> void;
   template <typename particle_object_type> auto DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles) -> void;
   auto DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void;
 
@@ -77,14 +77,7 @@ private:
   explosion_collection m_explosions;
   impact_collection m_impacts;
 
-  particle_containment_results<thrust_particle> m_thrustContainmentResults;
-  particle_containment_results<bullet> m_bulletContainmentResults;
-
-  geometry_containment_results<player_ship> m_shipContainmentResults;
-
-  geometry_collision_results<player_ship, level_asteroid> m_shipToAsteroidCollisionResults;
   geometry_collision_results<player_ship, level_target> m_shipToTargetCollisionResults;
-  geometry_collision_results<player_ship, duct_fan> m_shipToDuctFanCollisionResults;
   geometry_collision_results<player_ship, mine> m_shipToMineCollisionResults;
 
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
@@ -254,4 +247,29 @@ template <typename geometry_object_type> auto level_container::DestroyObjectsOnG
   destroyObjectsAtBoundary(m_boundary, objects);
   destroyObjectsOnAsteroids(m_asteroids, objects);
   destroyObjectsOnDuctFans(m_ductFans, objects);
+}
+
+template <typename geometry_object_type> auto level_container::DestroyObjectOnGeometryCollision(auto& object) -> void
+{
+  geometry_containment<geometry_object_type> destroyObjectAtBoundary { [this](auto& object)
+  {
+    m_explosions.emplace_back(object->PreviousPosition());
+    object->Destroy();
+  }};
+
+  geometry_collision<geometry_object_type, level_asteroid> destroyObjectOnAsteroids { [this](auto& object, auto& asteroid)
+  {
+    m_explosions.emplace_back(object.PreviousPosition());
+    object.Destroy();
+  }};
+
+  geometry_collision<geometry_object_type, duct_fan> destroyObjectOnDuctFans { [this](auto& object, auto& ductFan)
+  {
+    m_explosions.emplace_back(object.PreviousPosition());
+    object.Destroy();
+  }};
+
+  destroyObjectAtBoundary(m_boundary, object);
+  destroyObjectOnAsteroids(object, m_asteroids);
+  destroyObjectOnDuctFans(object, m_ductFans);
 }
