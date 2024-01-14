@@ -49,9 +49,13 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  m_playerShip.Update(interval);
-  m_playerReloadCounter.Update(interval);
-  m_thrustEmmisionCounter.Update(interval);
+  if( !m_playerShip->Destroyed() )
+  {
+    m_playerShip.Update(interval);
+    m_playerReloadCounter.Update(interval);
+    m_thrustEmmisionCounter.Update(interval);
+  }
+
   dynamic_object_functions::update(m_mines, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, interval);
   dynamic_object_functions::update(m_ductFans, interval);
@@ -111,6 +115,8 @@ auto level_container::DoPlayerCollisions() -> void
   m_shipToMineCollisionResults.Fetch(m_playerShip, m_mines);
 
   m_shipToExplosionCollisionResults.Fetch(m_playerShip, m_explosionParticles);
+
+  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
 
 auto level_container::DoNonPlayerCollisions() -> void
@@ -121,8 +127,6 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::ProcessCollisionResults() -> void
 {
-  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
-
   m_shipToTargetCollisionResults.Process([this](auto& playerShip, auto& target)
   {
     playerShip.ApplyFatalDamage();
