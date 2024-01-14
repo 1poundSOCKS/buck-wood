@@ -46,7 +46,6 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;
-  auto ProcessCollisionResults() -> void;
   auto CreateNewObjects(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;

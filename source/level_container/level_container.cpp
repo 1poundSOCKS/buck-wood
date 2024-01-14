@@ -19,9 +19,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_mineToBulletCollisionResults.Clear();
   m_targetToBulletCollisionResults.Clear();
 
-  m_explosions.clear();
-  m_impacts.clear();
-
   auto collisionsStart = performance_counter::QueryValue();
 
   if( !m_playerShip->Destroyed() )
@@ -30,8 +27,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   }
 
   DoNonPlayerCollisions();
-
-  ProcessCollisionResults();
 
   auto collisionsEnd = performance_counter::QueryValue();
 
@@ -116,17 +111,6 @@ auto level_container::DoPlayerCollisions() -> void
 
   m_shipToExplosionCollisionResults.Fetch(m_playerShip, m_explosionParticles);
 
-  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
-}
-
-auto level_container::DoNonPlayerCollisions() -> void
-{
-  m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
-  m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
-}
-
-auto level_container::ProcessCollisionResults() -> void
-{
   m_shipToTargetCollisionResults.Process([this](auto& playerShip, auto& target)
   {
     playerShip.ApplyFatalDamage();
@@ -144,6 +128,14 @@ auto level_container::ProcessCollisionResults() -> void
   {
     particle.Destroy();
   });
+
+  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
+}
+
+auto level_container::DoNonPlayerCollisions() -> void
+{
+  m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
+  m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
 
   m_mineToBulletCollisionResults.Process([this](auto& object, auto& particle)
   {
@@ -194,10 +186,14 @@ auto level_container::CreateNewObjects(float interval) -> void
     m_playEvents.SetEvent(play_events::event_type::explosion, true);
   }
 
+  m_explosions.clear();
+
   for( const auto& position : m_impacts )
   {
     m_impactParticles.emplace_back(position);
   }
+
+  m_impacts.clear();
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionCounter.Get(1) == 1 )
   {
