@@ -4,6 +4,7 @@
 #include "level_objects.h"
 #include "player_shields.h"
 #include "hud_target.h"
+#include "player_destination.h"
 
 #include "level_target_renderer.h"
 #include "bullet_renderer.h"
@@ -41,6 +42,7 @@ private:
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
+  auto Render(const player_destination& playerDestination) const -> void;
 
 private:
 
@@ -154,4 +156,9 @@ inline auto renderer::Render(const thrust_particle& particle) const -> void
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
 {
   render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudBrush.get(), 3.0f);
+}
+
+inline auto renderer::Render(const player_destination& playerDestination) const -> void
+{
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 100, 100), m_hudBrush.get(), 3.0f);
 }

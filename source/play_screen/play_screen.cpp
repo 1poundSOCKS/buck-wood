@@ -7,6 +7,7 @@
 #include "main_play_scene.h"
 #include "closing_play_scene.h"
 #include "hud_target.h"
+#include "player_destination.h"
 
 play_screen::play_screen()
 {

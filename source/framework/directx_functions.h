@@ -81,4 +81,11 @@ namespace direct2d
     float degrees = RADTODEG(radians);
     return degrees + 90.0f;
   }
+
+  inline auto GetRectAtPosition(D2D1_POINT_2F position, float cx, float cy) -> D2D1_RECT_F
+  {
+    auto halfWidth = cx / 2;
+    auto halfHeight = cy / 2;
+    return { position.x - halfWidth, position.y - halfHeight, position.x + halfWidth, position.y + halfHeight };
+  }
 }

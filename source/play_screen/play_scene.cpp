@@ -50,6 +50,8 @@ auto play_scene::Render() const -> void
     hud_target hudTarget { bounds };
     renderer::render(hudTarget);
   }
+
+  renderer::render(player_destination { m_levelContainer->PlayerPosition() });
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
