@@ -16,9 +16,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_shipToExplosionCollisionResults.Clear();
 
-  m_mineToBulletCollisionResults.Clear();
-  m_targetToBulletCollisionResults.Clear();
-
   auto collisionsStart = performance_counter::QueryValue();
 
   if( !m_playerShip->Destroyed() )
@@ -134,27 +131,28 @@ auto level_container::DoPlayerCollisions() -> void
 
 auto level_container::DoNonPlayerCollisions() -> void
 {
-  m_mineToBulletCollisionResults.Fetch(m_mines, m_bullets);
-  m_targetToBulletCollisionResults.Fetch(m_targets, m_bullets);
-
-  m_mineToBulletCollisionResults.Process([this](auto& object, auto& particle)
+  particle_collision<level_target, bullet> destroyBulletsAndDamageTarget { [this](auto& target, auto& bullet)
   {
-    object.Destroy();
-    particle.Destroy();
-    m_explosions.emplace_back(object.Position());
-  });
-
-  m_targetToBulletCollisionResults.Process([this](auto& object, auto& particle)
-  {
-    if( !object.IsActivated() )
+    if( !target->IsActivated() )
     {
-      object.HitByBullet();
-      m_activatedTargetCount += object.IsActivated() ? 1 : 0;
+      target->HitByBullet();
+      m_activatedTargetCount += target->IsActivated() ? 1 : 0;
     }
 
-    m_impacts.emplace_back(particle.Position());
-    particle.Destroy();
-  });
+    m_impacts.emplace_back(bullet.Position());
+    bullet.Destroy();
+  }};
+
+  destroyBulletsAndDamageTarget(m_targets, m_bullets);
+
+  particle_collision<mine, bullet> destroyBulletsAndMinesOnCollision { [this](auto& mine, auto& bullet)
+  {
+    bullet.Destroy();
+    mine->Destroy();
+    m_explosions.emplace_back(mine->Position());
+  }};
+
+  destroyBulletsAndMinesOnCollision(m_mines, m_bullets);
 
   DestroyObjectsOnGeometryCollision<mine>(m_mines);
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);

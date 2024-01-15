@@ -78,10 +78,7 @@ private:
 
   geometry_collision_results<player_ship, level_target> m_shipToTargetCollisionResults;
   geometry_collision_results<player_ship, mine> m_shipToMineCollisionResults;
-
   particle_collision_results<player_ship, explosion_particle> m_shipToExplosionCollisionResults;
-  particle_collision_results<mine, bullet> m_mineToBulletCollisionResults;
-  particle_collision_results<level_target, bullet> m_targetToBulletCollisionResults;
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
