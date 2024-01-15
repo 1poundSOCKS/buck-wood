@@ -17,7 +17,7 @@ public:
     bullet::Update(interval, m_target && !m_target->Destroyed() ? std::optional<D2D1_POINT_2F>(m_target->Position()) : std::nullopt);
   }
 
-  auto ValidateTarget() -> void
+  auto ValidateTargetPointer() -> void
   {
     m_target = m_target && m_target->Destroyed() ? std::nullopt : m_target;
   }

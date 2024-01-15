@@ -42,7 +42,7 @@ public:
 private:
 
   auto UpdateObjects(float interval) -> void;
-  auto ValidateObjects() -> void;
+  auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoPlayerCollisions() -> void;
   auto DoNonPlayerCollisions() -> void;

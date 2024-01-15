@@ -52,17 +52,17 @@ auto level_container::UpdateObjects(float interval) -> void
   dynamic_object_functions::update(m_thrustParticles, interval);
 }
 
-auto level_container::ValidateObjects() -> void
+auto level_container::ValidateObjectPointers() -> void
 {
   for( auto& bullet : m_bullets )
   {
-    bullet.ValidateTarget();
+    bullet.ValidateTargetPointer();
   }
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
-  ValidateObjects();
+  ValidateObjectPointers();
 
   dynamic_object_functions::erase_destroyed(m_mines);
   particle_functions::erase_destroyed(m_bullets);
