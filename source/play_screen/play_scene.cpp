@@ -51,7 +51,10 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  renderer::render(player_destination { m_levelContainer->PlayerPosition() });
+  auto cx = gamepad_reader::thumb_lx() * 400;
+  auto cy = gamepad_reader::thumb_ly() * -400;
+
+  renderer::render(player_destination { direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cx, cy) });
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F

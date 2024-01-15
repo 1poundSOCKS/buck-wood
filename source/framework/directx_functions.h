@@ -88,4 +88,9 @@ namespace direct2d
     auto halfHeight = cy / 2;
     return { position.x - halfWidth, position.y - halfHeight, position.x + halfWidth, position.y + halfHeight };
   }
+
+  inline auto ShiftPosition(D2D1_POINT_2F position, float cx, float cy) -> D2D1_POINT_2F
+  {
+    return { position.x + cx, position.y + cy  };
+  }
 }
