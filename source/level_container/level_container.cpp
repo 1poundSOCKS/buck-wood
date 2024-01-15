@@ -11,11 +11,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  m_shipToTargetCollisionResults.Clear();
-  m_shipToMineCollisionResults.Clear();
-
-  m_shipToExplosionCollisionResults.Clear();
-
   auto collisionsStart = performance_counter::QueryValue();
 
   if( !m_playerShip->Destroyed() )
@@ -103,29 +98,21 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoPlayerCollisions() -> void
 {
-  m_shipToTargetCollisionResults.Fetch(m_playerShip, m_targets);
-  m_shipToMineCollisionResults.Fetch(m_playerShip, m_mines);
-
-  m_shipToExplosionCollisionResults.Fetch(m_playerShip, m_explosionParticles);
-
-  m_shipToTargetCollisionResults.Process([this](auto& playerShip, auto& target)
+  geometry_collision<player_ship, level_target> destroyShipOnTargetCollision { [this](auto& ship, auto& target)
   {
-    playerShip.ApplyFatalDamage();
-    m_explosions.emplace_back(playerShip.PreviousPosition());
-  });
+    ship.ApplyFatalDamage();
+    m_explosions.emplace_back(ship.PreviousPosition());
+  }};
 
-  m_shipToMineCollisionResults.Process([this](auto& playerShip, auto& mine)
+  geometry_collision<player_ship, mine> damageShipOnMineCollision { [this](auto ship, auto& mine)
   {
-    playerShip.ApplyDamage(2);
+    ship.ApplyDamage(2);
     mine.Destroy();
     m_explosions.emplace_back(mine.PreviousPosition());
-  });
+  }};
 
-  m_shipToExplosionCollisionResults.Process([](auto& object, auto& particle)
-  {
-    particle.Destroy();
-  });
-
+  destroyShipOnTargetCollision(m_playerShip, m_targets);
+  damageShipOnMineCollision(m_playerShip, m_mines);
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
 
@@ -143,8 +130,6 @@ auto level_container::DoNonPlayerCollisions() -> void
     bullet.Destroy();
   }};
 
-  destroyBulletsAndDamageTarget(m_targets, m_bullets);
-
   particle_collision<mine, bullet> destroyBulletsAndMinesOnCollision { [this](auto& mine, auto& bullet)
   {
     bullet.Destroy();
@@ -152,8 +137,8 @@ auto level_container::DoNonPlayerCollisions() -> void
     m_explosions.emplace_back(mine->Position());
   }};
 
+  destroyBulletsAndDamageTarget(m_targets, m_bullets);
   destroyBulletsAndMinesOnCollision(m_mines, m_bullets);
-
   DestroyObjectsOnGeometryCollision<mine>(m_mines);
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
   DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);
