@@ -9,11 +9,6 @@
 #include "reload_counter.h"
 #include "targetted_object.h"
 
-#include "collisions/particle_collision_results.h"
-#include "collisions/geometry_collision_results.h"
-#include "collisions/particle_containment_results.h"
-#include "collisions/geometry_containment_results.h"
-
 class level_container
 {
 
