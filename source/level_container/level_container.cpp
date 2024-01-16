@@ -6,6 +6,11 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
+auto level_container::SetPlayerDestination(D2D1_POINT_2F position) -> void
+{
+  m_playerShip->SetDestination(position);
+}
+
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();

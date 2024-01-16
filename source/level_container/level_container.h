@@ -20,6 +20,7 @@ public:
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
+  auto SetPlayerDestination(D2D1_POINT_2F position) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
