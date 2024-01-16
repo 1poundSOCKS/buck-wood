@@ -15,12 +15,14 @@ auto player_ship::Update(float interval) -> void
     diagnostics::add(L"Left thumb Y", gamepad_reader::thumb_ly());
     diagnostics::add(L"Left trigger", gamepad_reader::left_trigger());
 
-    auto destinationDistance = direct2d::GetDistanceBetweenPoints(m_body.Position(), m_destination);
-    SetThrust(destinationDistance > 10 ? destinationDistance / 400 : 0);
+    constexpr float deadzone = 100.0f;
 
-    auto playerAngle = destinationDistance > 10 ? direct2d::GetAngleBetween(m_body.Position(), m_destination) : m_body.Angle();
+    auto destinationDistance = direct2d::GetDistanceBetweenPoints(m_body.Position(), m_destination);
+    SetThrust(destinationDistance > deadzone ? ( destinationDistance - deadzone ) / 400 : 0);
+
+    auto playerAngle = destinationDistance > deadzone ? direct2d::GetAngleBetween(m_body.Position(), m_destination) : m_body.Angle();
     m_body.SetAngle(playerAngle);
-    
+
     m_body.Accelerate(m_thrust * interval);
     m_body.Update(interval);
   }

@@ -61,7 +61,8 @@ private:
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
-  render_brush m_hudBrush { screen_render_brush_yellow.CreateBrush() };
+  render_brush m_hudTargetBrush { screen_render_brush_yellow.CreateBrush() };
+  render_brush m_hudDestinationBrush { screen_render_brush_grey.CreateBrush() };
 
 };
 
@@ -155,10 +156,10 @@ inline auto renderer::Render(const thrust_particle& particle) const -> void
 
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
 {
-  render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudBrush.get(), 3.0f);
+  render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudTargetBrush.get(), 3.0f);
 }
 
 inline auto renderer::Render(const player_destination& playerDestination) const -> void
 {
-  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 100, 100), m_hudBrush.get(), 3.0f);
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 100, 100), m_hudDestinationBrush.get(), 3.0f);
 }
