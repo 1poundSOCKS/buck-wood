@@ -116,6 +116,11 @@ auto level_container::DoPlayerCollisions() -> void
     m_explosions.emplace_back(mine.PreviousPosition());
   }};
 
+  particle_collision<player_ship, thrust_particle> destroythrustParticleOnCollision { [this](auto ship, auto& particle)
+  {
+    particle.Destroy();
+  }};
+
   destroyShipOnTargetCollision(m_playerShip, m_targets);
   damageShipOnMineCollision(m_playerShip, m_mines);
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
@@ -185,10 +190,10 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionCounter.Get(1) == 1 )
   {
-    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -15);
+    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -20);
     auto thrustAngle = m_playerShip->Angle() + 180;
-    auto thrustVelocity = m_playerShip->RelativeVelocity(thrustAngle, 100);
-    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.3f);
+    auto thrustVelocity = direct2d::CombineVelocities({ m_playerShip->Velocity().x(), m_playerShip->Velocity().y() }, direct2d::CalculateVelocity(2.0f, thrustAngle));
+    m_thrustParticles.emplace_back(thrustPosition, game_velocity { thrustVelocity.x, thrustVelocity.y } , 0.1f);
   }
 }
 

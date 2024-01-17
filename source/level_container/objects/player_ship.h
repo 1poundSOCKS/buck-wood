@@ -35,7 +35,7 @@ public:
   auto SetDestination(D2D1_POINT_2F value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
-  [[nodiscard]] auto Velocity() const -> const game_velocity&;
+  [[nodiscard]] auto Velocity() const -> game_velocity;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
@@ -112,7 +112,7 @@ inline [[nodiscard]] auto player_ship::Angle() const -> float
   return m_body.Angle();
 }
 
-inline [[nodiscard]] auto player_ship::Velocity() const -> const game_velocity&
+inline [[nodiscard]] auto player_ship::Velocity() const -> game_velocity
 {
   return m_body.Velocity();
 }
