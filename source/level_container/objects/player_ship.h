@@ -144,6 +144,5 @@ inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, f
 
 inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float speed) const -> direct2d::VELOCITY_2F
 {
-  // return m_body.Velocity() + game_velocity { game_angle { angle }, value };
   return direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(speed, angle));
 }

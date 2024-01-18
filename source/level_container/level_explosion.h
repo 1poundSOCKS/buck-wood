@@ -118,7 +118,6 @@ inline auto const_level_explosion_iterator::GetRandomVelocity() -> direct2d::VEL
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
   auto speed = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
-  // return { game_angle { angle }, velocity };
   return direct2d::CalculateVelocity(speed, angle);
 }
 

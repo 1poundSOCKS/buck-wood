@@ -53,28 +53,22 @@ inline auto moving_body::SetVelocity(float speed, float direction) -> void
 
 inline auto moving_body::Accelerate(direct2d::VELOCITY_2F amount) -> void
 {
-  // m_velocity.x += amount.x;
-  // m_velocity.y += amount.y;
   m_velocity = direct2d::CombineVelocities(m_velocity, amount);
 }
 
 inline auto moving_body::Accelerate(float amount) -> void
 {
-  // m_velocity.Accelerate(m_velocity.x() * amount, m_velocity.y() * amount);
   m_velocity = direct2d::MultiplyVelocity(m_velocity, amount);
 }
 
 inline auto moving_body::SetDirection(float direction) -> void
 {
-  // auto speed = m_velocity.Speed();
   auto speed = direct2d::CalculateSpeed(m_velocity);
-  // SetVelocity(speed, direction);
   m_velocity = direct2d::CalculateVelocity(speed, direction);
 }
 
 inline auto moving_body::Accelerate(float amount, float direction) -> void
 {
-  // m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
   m_velocity = direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(amount, direction));
 }
 
@@ -90,14 +84,11 @@ inline [[nodiscard]] auto moving_body::Velocity() const -> direct2d::VELOCITY_2F
 
 inline [[nodiscard]] auto moving_body::Direction() const -> float
 {
-  // return m_velocity.Direction();
   return direct2d::CalculateDirection(m_velocity);
 }
 
 inline auto moving_body::Update(float interval) -> void
 {
-  // m_position.x += m_velocity.x() * interval;
-  // m_position.y += m_velocity.y() * interval;
   m_position.x += m_velocity.x * interval;
   m_position.y += m_velocity.y * interval;
 }

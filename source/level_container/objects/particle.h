@@ -7,7 +7,6 @@ class particle
 
 public:
 
-  // particle(D2D1_POINT_2F position, const game_velocity& velocity, float lifespan);
   particle(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float lifespan);
 
   auto Update(float interval) -> void;
