@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "homing_object.h"
 #include "game_scale.h"
+#include "game_angle.h"
 
 class mine
 {

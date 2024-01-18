@@ -55,12 +55,12 @@ private:
       return D2D1_POINT_2F { point.x * noise, point.y * noise };
     });
 
-    return CreatePathGeometry(d2d_factory::get_raw(), irregularShape);
+    return direct2d::CreatePathGeometry(d2d_factory::get_raw(), irregularShape);
   }
 
   level_geometries() : 
-    m_ductFanGeometry { CreatePathGeometry(d2d_factory::get_raw(), GetDuctFanGeometryData(200)) }, 
-    m_playerShipGeometry { CreatePathGeometry(d2d_factory::get_raw(), GetPlayerGeometryData()) }
+    m_ductFanGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), GetDuctFanGeometryData(200)) }, 
+    m_playerShipGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), GetPlayerGeometryData()) }
   {
   }
 
@@ -109,8 +109,8 @@ public:
 private:
 
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
-  winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 40, 40, 3 }) };
-  winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }) };
+  winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 40, 40, 3 }) };
+  winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }) };
   winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { CreateAsteroidGeometry(0, 0, 200, 200) };
   winrt::com_ptr<ID2D1PathGeometry> m_ductFanGeometry;
 

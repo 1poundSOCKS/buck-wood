@@ -1,12 +1,13 @@
 #pragma once
 
 #include "moving_body.h"
+#include "game_angle.h"
 
 class directional_body : public moving_body
 {
 public:
 
-  directional_body(D2D1_POINT_2F position, game_velocity velocity, float angle);
+  directional_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float angle);
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -25,7 +26,7 @@ private:
 
 };
 
-inline directional_body::directional_body(D2D1_POINT_2F position, game_velocity velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
+inline directional_body::directional_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
 {
 }
 
@@ -76,7 +77,7 @@ inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 
 inline auto directional_body::Accelerate(float amount) -> void
 {
-  moving_body::Accelerate( game_velocity { game_angle { m_angle }, amount } );
+  moving_body::Accelerate(amount, m_angle);
 }
 
 [[nodiscard]] inline auto directional_body::Angle() const -> float

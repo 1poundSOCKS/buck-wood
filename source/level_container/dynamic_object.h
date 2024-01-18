@@ -11,7 +11,7 @@ public:
   template <typename...Args> dynamic_object(ID2D1Geometry* sourceGeometry, Args...args) : 
     m_object { std::forward<Args>(args)... }, 
     m_transform { CalculateObjectTransform() },
-    m_geometry { CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) },
+    m_geometry { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) },
     m_geometryRadius { direct2d::GetGeometryRadius(m_geometry.get()) }
   {
   }
@@ -66,7 +66,7 @@ public:
   {
     m_object.Update(std::forward<Args>(args)...);
     m_transform = CalculateObjectTransform();
-    m_geometry = CreateTransformedGeometry(d2d_factory::get_raw(), GetSourceGeometry(m_geometry.get()).get(), m_transform);
+    m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), direct2d::GetSourceGeometry(m_geometry.get()).get(), m_transform);
   }
 
   auto operator->() const -> const object_type*

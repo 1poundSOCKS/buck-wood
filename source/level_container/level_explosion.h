@@ -28,7 +28,7 @@ private:
 
   const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position);
 
-  static auto GetRandomVelocity() -> game_velocity;
+  static auto GetRandomVelocity() -> direct2d::VELOCITY_2F;
 
 private:
 
@@ -38,7 +38,7 @@ private:
   type m_type { type::none };
   D2D1_POINT_2F m_position;
   int m_count { 0 };
-  explosion_particle m_particle { D2D1_POINT_2F { 0, 0}, game_velocity{ 0, 0 }, 0 };
+  explosion_particle m_particle { D2D1_POINT_2F { 0, 0}, { 0, 0 }, 0 };
 
 };
 
@@ -114,11 +114,12 @@ inline auto const_level_explosion_iterator::operator==(const const_level_explosi
   }
 }
 
-inline auto const_level_explosion_iterator::GetRandomVelocity() -> game_velocity
+inline auto const_level_explosion_iterator::GetRandomVelocity() -> direct2d::VELOCITY_2F
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
-  auto velocity = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
-  return { game_angle { angle }, velocity };
+  auto speed = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
+  // return { game_angle { angle }, velocity };
+  return direct2d::CalculateVelocity(speed, angle);
 }
 
 inline level_explosion::level_explosion(D2D1_POINT_2F position) : m_position { position }

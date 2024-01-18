@@ -6,7 +6,7 @@ class bullet
 {
 public:
 
-  bullet(D2D1_POINT_2F position, game_velocity velocity);
+  bullet(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity);
 
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;

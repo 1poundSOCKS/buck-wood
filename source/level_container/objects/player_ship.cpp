@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(D2D1_POINT_2F position) : m_body { position, game_velocity { 0, 0 }, 0 }, m_previousState { m_body }
+player_ship::player_ship(D2D1_POINT_2F position) : m_body { position, { 0, 0 }, 0 }, m_previousState { m_body }
 {
 }
 

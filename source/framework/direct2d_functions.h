@@ -4,6 +4,43 @@
 
 namespace direct2d
 {
+  [[nodiscard]] auto CreateD2DFactory() -> winrt::com_ptr<ID2D1Factory>;
+  [[nodiscard]] auto CreateRenderTarget(IDXGISwapChain* swapChain, ID2D1Factory* d2dFactory) -> winrt::com_ptr<ID2D1RenderTarget>;
+  [[nodiscard]] auto CreatePathGeometry(ID2D1Factory* d2dFactory) -> winrt::com_ptr<ID2D1PathGeometry>;
+  [[nodiscard]] auto CreateTransformedGeometry(ID2D1Factory* d2dFactory, ID2D1Geometry* geometry, const D2D1_MATRIX_3X2_F& transform) -> winrt::com_ptr<ID2D1TransformedGeometry>;
+  [[nodiscard]] auto CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color) -> winrt::com_ptr<ID2D1SolidColorBrush>;
+
+  auto LoadPathGeometry(ID2D1PathGeometry* geometry, std::ranges::input_range auto&& points) -> void
+  {
+    winrt::com_ptr<ID2D1GeometrySink> sink;
+    geometry->Open(sink.put());
+    auto begin = std::ranges::begin(points);
+
+    sink->BeginFigure({ (*begin).x, (*begin).y }, D2D1_FIGURE_BEGIN_FILLED);
+
+    for( auto next = std::ranges::next(begin); next != std::ranges::end(points); ++next )
+    {
+      sink->AddLine({ (*next).x, (*next).y });
+    }
+
+    sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+    sink->Close();
+  }
+
+  [[nodiscard]] auto CreatePathGeometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    winrt::com_ptr<ID2D1PathGeometry> geometry { CreatePathGeometry(d2dFactory) };
+    LoadPathGeometry(geometry.get(), points);
+    return geometry;
+  }
+
+  inline [[nodiscard]] auto GetSourceGeometry(ID2D1TransformedGeometry* geometry) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    winrt::com_ptr<ID2D1Geometry> sourceGeometry;
+    geometry->GetSourceGeometry(sourceGeometry.put());
+    return sourceGeometry;
+  }
+
   struct VELOCITY_2F
   {
     float x;
@@ -59,5 +96,20 @@ namespace direct2d
   inline auto CombineVelocities(VELOCITY_2F velocity1, VELOCITY_2F velocity2) -> VELOCITY_2F
   {
     return { velocity1.x + velocity2.x, velocity1.y + velocity2.y };
+  }
+
+  inline auto MultiplyVelocity(VELOCITY_2F velocity, float amount) -> VELOCITY_2F
+  {
+    return { velocity.x * amount, velocity.y * amount };
+  }
+
+  inline auto CalculateSpeed(VELOCITY_2F velocity) -> float
+  {
+    return sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+  }
+
+  inline auto CalculateDirection(VELOCITY_2F velocity) -> float
+  {
+    return direct2d::GetAngleBetween({0, 0}, {velocity.x, velocity.y});
   }
 }

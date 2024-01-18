@@ -7,7 +7,7 @@ class homing_object : public moving_body
 
 public:
 
-  homing_object(D2D1_POINT_2F position, game_velocity velocity, float thrust) : moving_body { position, velocity }, m_thrust { thrust }
+  homing_object(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float thrust) : moving_body { position, velocity }, m_thrust { thrust }
   {
   }
 
@@ -15,8 +15,8 @@ public:
   {
     auto angleToTarget= targetPosition ? direct2d::GetAngleBetween(m_position, *targetPosition) : 0;
     float speedChange = m_thrust * interval;
-    game_velocity velocityChange = targetPosition ? game_velocity { angleToTarget, speedChange } : game_velocity { 0, 0 };
-    m_velocity += velocityChange;
+    auto velocityChange = targetPosition ? direct2d::CalculateVelocity(speedChange, angleToTarget) : direct2d::VELOCITY_2F { 0, 0 };
+    m_velocity = direct2d::CombineVelocities(m_velocity, velocityChange);
     moving_body::Update(interval);
   }
 

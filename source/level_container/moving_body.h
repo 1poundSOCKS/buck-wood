@@ -1,24 +1,24 @@
 #pragma once
 
-#include "game_velocity.h"
+#include "direct2d_functions.h"
 
 class moving_body
 {
 
 public:
 
-  moving_body(D2D1_POINT_2F position, game_velocity velocity);
+  moving_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity);
 
   auto SetPosition(D2D1_POINT_2F position) -> void;
-  auto SetVelocity(const game_velocity& velocity) -> void;
+  auto SetVelocity(direct2d::VELOCITY_2F velocity) -> void;
   auto SetVelocity(float speed, float direction) -> void;
-  auto Accelerate(const game_velocity& amount) -> void;
+  auto Accelerate(direct2d::VELOCITY_2F amount) -> void;
   auto Accelerate(float amount) -> void;
   auto Accelerate(float amount, float direction) -> void;
   auto SetDirection(float direction) -> void;
 
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
-  [[nodiscard]] auto Velocity() const -> game_velocity;
+  [[nodiscard]] auto Velocity() const -> direct2d::VELOCITY_2F;
   [[nodiscard]] auto Direction() const -> float;
 
   auto Update(float interval) -> void;
@@ -28,11 +28,11 @@ public:
 protected:
 
   D2D1_POINT_2F m_position;
-  game_velocity m_velocity;
+  direct2d::VELOCITY_2F m_velocity;
 
 };
 
-inline moving_body::moving_body(D2D1_POINT_2F position, game_velocity velocity) : m_position { position }, m_velocity { velocity }
+inline moving_body::moving_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }
 {
 }
 
@@ -41,35 +41,41 @@ inline auto moving_body::SetPosition(D2D1_POINT_2F position) -> void
   m_position = position;
 }
 
-inline auto moving_body::SetVelocity(const game_velocity& velocity) -> void
+inline auto moving_body::SetVelocity(direct2d::VELOCITY_2F velocity) -> void
 {
   m_velocity = velocity;
 }
 
 inline auto moving_body::SetVelocity(float speed, float direction) -> void
 {
-  m_velocity = game_velocity { game_angle { direction }, speed };
+  m_velocity = direct2d::CalculateVelocity(speed, direction);
 }
 
-inline auto moving_body::Accelerate(const game_velocity& amount) -> void
+inline auto moving_body::Accelerate(direct2d::VELOCITY_2F amount) -> void
 {
-  m_velocity += amount;
+  // m_velocity.x += amount.x;
+  // m_velocity.y += amount.y;
+  m_velocity = direct2d::CombineVelocities(m_velocity, amount);
 }
 
 inline auto moving_body::Accelerate(float amount) -> void
 {
-  m_velocity.Accelerate(m_velocity.x() * amount, m_velocity.y() * amount);
+  // m_velocity.Accelerate(m_velocity.x() * amount, m_velocity.y() * amount);
+  m_velocity = direct2d::MultiplyVelocity(m_velocity, amount);
 }
 
 inline auto moving_body::SetDirection(float direction) -> void
 {
-  auto speed = m_velocity.Speed();
-  SetVelocity(speed, direction);
+  // auto speed = m_velocity.Speed();
+  auto speed = direct2d::CalculateSpeed(m_velocity);
+  // SetVelocity(speed, direction);
+  m_velocity = direct2d::CalculateVelocity(speed, direction);
 }
 
 inline auto moving_body::Accelerate(float amount, float direction) -> void
 {
-  m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
+  // m_velocity.Accelerate(amount * sin(DEGTORAD(direction)), amount * cos(DEGTORAD(direction)));
+  m_velocity = direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(amount, direction));
 }
 
 inline [[nodiscard]] auto moving_body::Position() const -> D2D1_POINT_2F
@@ -77,20 +83,23 @@ inline [[nodiscard]] auto moving_body::Position() const -> D2D1_POINT_2F
   return m_position;
 }
 
-inline [[nodiscard]] auto moving_body::Velocity() const -> game_velocity
+inline [[nodiscard]] auto moving_body::Velocity() const -> direct2d::VELOCITY_2F
 {
   return m_velocity;
 }
 
 inline [[nodiscard]] auto moving_body::Direction() const -> float
 {
-  return m_velocity.Direction();
+  // return m_velocity.Direction();
+  return direct2d::CalculateDirection(m_velocity);
 }
 
 inline auto moving_body::Update(float interval) -> void
 {
-  m_position.x += m_velocity.x() * interval;
-  m_position.y += m_velocity.y() * interval;
+  // m_position.x += m_velocity.x() * interval;
+  // m_position.y += m_velocity.y() * interval;
+  m_position.x += m_velocity.x * interval;
+  m_position.y += m_velocity.y * interval;
 }
 
 inline [[nodiscard]] auto moving_body::Transform() const -> D2D1::Matrix3x2F

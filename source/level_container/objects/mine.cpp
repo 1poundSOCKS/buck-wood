@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(D2D1_POINT_2F position) : m_body { position, game_velocity { 0, 0 }, m_thrustPower }, m_previousState { m_body }
+mine::mine(D2D1_POINT_2F position) : m_body { position, { 0, 0 }, m_thrustPower }, m_previousState { m_body }
 {
 }
 

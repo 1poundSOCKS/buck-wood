@@ -160,7 +160,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   if( m_targettedObject && gamepad_reader::right_trigger() > 0 && m_playerReloadCounter.Get(1) == 1 )
   {
     auto angleToTarget = direct2d::GetAngleBetween(m_playerShip->Position(), m_targettedObject->Position());
-    m_bullets.emplace_back(m_playerShip->Position(), game_velocity { angleToTarget, 500.0f }, m_targettedObject);
+    m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), m_targettedObject);
     m_playEvents.SetEvent(play_events::event_type::shot, true);
   }
 
@@ -192,8 +192,9 @@ auto level_container::CreateNewObjects(float interval) -> void
   {
     auto thrustPosition = m_playerShip->RelativePosition(180, 0, -20);
     auto thrustAngle = m_playerShip->Angle() + 180;
-    auto thrustVelocity = direct2d::CombineVelocities({ m_playerShip->Velocity().x(), m_playerShip->Velocity().y() }, direct2d::CalculateVelocity(2.0f, thrustAngle));
-    m_thrustParticles.emplace_back(thrustPosition, game_velocity { thrustVelocity.x, thrustVelocity.y } , 0.1f);
+    // auto thrustVelocity = direct2d::CombineVelocities({ m_playerShip->Velocity().x(), m_playerShip->Velocity().y() }, direct2d::CalculateVelocity(1000.0f, thrustAngle));
+    auto thrustVelocity = direct2d::CalculateVelocity(1000.0f, thrustAngle);
+    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
   }
 }
 
