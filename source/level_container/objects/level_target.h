@@ -26,7 +26,7 @@ public:
 
 private:
 
-  inline static constexpr float m_defaultReloadTime { 4 };
+  inline static constexpr float m_defaultReloadTime { 10 };
 
 private:
 

@@ -16,10 +16,12 @@ public:
   auto Accelerate(float amount) -> void;
   auto Accelerate(float amount, float direction) -> void;
   auto SetDirection(float direction) -> void;
+  auto SetSpeed(float value) -> void;
 
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> direct2d::VELOCITY_2F;
   [[nodiscard]] auto Direction() const -> float;
+  [[nodiscard]] auto Speed() const -> float;
 
   auto Update(float interval) -> void;
 
@@ -49,6 +51,11 @@ inline auto moving_body::SetVelocity(direct2d::VELOCITY_2F velocity) -> void
 inline auto moving_body::SetVelocity(float speed, float direction) -> void
 {
   m_velocity = direct2d::CalculateVelocity(speed, direction);
+}
+
+inline auto moving_body::SetSpeed(float value) -> void
+{
+  m_velocity = direct2d::CalculateVelocity(value, Direction());
 }
 
 inline auto moving_body::Accelerate(direct2d::VELOCITY_2F amount) -> void
@@ -91,6 +98,11 @@ inline auto moving_body::Update(float interval) -> void
 {
   m_position.x += m_velocity.x * interval;
   m_position.y += m_velocity.y * interval;
+}
+
+inline [[nodiscard]] auto moving_body::Speed() const -> float
+{
+  return direct2d::CalculateSpeed(m_velocity);
 }
 
 inline [[nodiscard]] auto moving_body::Transform() const -> D2D1::Matrix3x2F

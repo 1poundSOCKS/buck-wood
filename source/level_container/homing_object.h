@@ -13,15 +13,17 @@ public:
 
   auto Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
   {
-    auto angleToTarget= targetPosition ? direct2d::GetAngleBetween(m_position, *targetPosition) : 0;
-    float speedChange = m_thrust * interval;
-    auto velocityChange = targetPosition ? direct2d::CalculateVelocity(speedChange, angleToTarget) : direct2d::VELOCITY_2F { 0, 0 };
-    m_velocity = direct2d::CombineVelocities(m_velocity, velocityChange);
+    float maxSpeed = m_maxSpeed * interval;
+    float newSpeed = std::min(moving_body::Speed() + m_thrust * interval, maxSpeed);
+    auto angleToTarget = targetPosition ? direct2d::GetAngleBetween(m_position, *targetPosition) : moving_body::Direction();
+    moving_body::SetDirection(angleToTarget);
+    moving_body::SetSpeed(newSpeed);
     moving_body::Update(interval);
   }
 
 private:
 
+  static constexpr float m_maxSpeed { 20000 };
   float m_thrust;
 
 };
