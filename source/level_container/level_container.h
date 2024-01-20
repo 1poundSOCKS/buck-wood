@@ -21,7 +21,7 @@ public:
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
   auto SetPlayerDestination(D2D1_POINT_2F position) -> void;
-  auto SetTargetPosition(D2D1_POINT_2F position) -> void;
+  auto SetTargetPosition(std::optional<D2D1_POINT_2F> position) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -77,7 +77,7 @@ private:
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
-  D2D1_POINT_2F m_targetPosition { m_playerShip->Position() };
+  std::optional<D2D1_POINT_2F> m_targetPosition;
 
   int m_maxCollisionCount { 0 };
 
@@ -191,7 +191,7 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
-  return direct2d::GetDistanceBetweenPoints(m_targetPosition, object->Position());
+  return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
 }
 
 template <typename particle_object_type> auto level_container::DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles) -> void

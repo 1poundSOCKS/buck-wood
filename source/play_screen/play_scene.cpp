@@ -61,11 +61,14 @@ auto play_scene::Render() const -> void
   auto cxRight = gamepad_reader::thumb_rx() * m_targetRange;
   auto cyRight = gamepad_reader::thumb_ry() * -m_targetRange;
 
-  auto targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight);
+  auto targetPosition = cxRight || cyRight ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight)) : std::nullopt;
 
   m_levelContainer->SetTargetPosition(targetPosition);
 
-  renderer::render(player_destination { targetPosition });
+  if( targetPosition )
+  {
+    renderer::render(player_destination { *targetPosition });
+  }
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
