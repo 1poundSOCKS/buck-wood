@@ -7,7 +7,8 @@ class homing_object : public moving_body
 
 public:
 
-  homing_object(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float thrust) : moving_body { position, velocity }, m_thrust { thrust }
+  homing_object(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float thrust, float maxSpeed)
+    : moving_body { position, velocity }, m_thrust { thrust }, m_maxSpeed { maxSpeed }
   {
   }
 
@@ -23,7 +24,7 @@ public:
 
 private:
 
-  static constexpr float m_maxSpeed { 20000 };
+  float m_maxSpeed;
   float m_thrust;
 
 };

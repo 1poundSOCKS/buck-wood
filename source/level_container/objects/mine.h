@@ -24,8 +24,9 @@ public:
 
 private:
 
-  inline static constexpr float m_spinRate { 500.0f };
-  inline static constexpr float m_thrustPower { 500.0f };
+  inline static constexpr float m_spinRate { 300 };
+  inline static constexpr float m_thrustPower { 200 };
+  inline static constexpr float m_maxSpeed { 20000 };
 
 private:
 
