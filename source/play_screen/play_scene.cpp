@@ -51,13 +51,21 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  auto cx = gamepad_reader::thumb_lx() * 400;
-  auto cy = gamepad_reader::thumb_ly() * -400;
-  auto playerDestination = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cx, cy);
+  auto cxLeft = gamepad_reader::thumb_lx() * m_playerDestinationRange;
+  auto cyLeft = gamepad_reader::thumb_ly() * -m_playerDestinationRange;
+
+  auto playerDestination = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxLeft, cyLeft);
 
   m_levelContainer->SetPlayerDestination(playerDestination);
 
-  renderer::render(player_destination { playerDestination });
+  auto cxRight = gamepad_reader::thumb_rx() * m_targetRange;
+  auto cyRight = gamepad_reader::thumb_ry() * -m_targetRange;
+
+  auto targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight);
+
+  m_levelContainer->SetTargetPosition(targetPosition);
+
+  renderer::render(player_destination { targetPosition });
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F

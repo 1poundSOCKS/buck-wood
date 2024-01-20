@@ -21,6 +21,7 @@ public:
   auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
   auto SetPlayerDestination(D2D1_POINT_2F position) -> void;
+  auto SetTargetPosition(D2D1_POINT_2F position) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -46,14 +47,16 @@ private:
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
-  auto GetNearestToPlayer(auto& mine1, auto& mine2) const -> auto&;
-  auto DistanceFromPlayer(auto&& object) const -> float;
+  auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
+  auto DistanceFromTarget(auto&& object) const -> float;
   template <typename geometry_object_type> auto DestroyObjectsOnGeometryCollision(std::ranges::input_range auto&& objects) -> void;
   template <typename geometry_object_type> auto DestroyObjectOnGeometryCollision(auto& object) -> void;
   template <typename particle_object_type> auto DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles) -> void;
   auto DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void;
 
 private:
+
+  static constexpr float m_maxTargetRange { 100.0f };
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
@@ -74,6 +77,7 @@ private:
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
+  D2D1_POINT_2F m_targetPosition { m_playerShip->Position() };
 
   int m_maxCollisionCount { 0 };
 
@@ -162,17 +166,17 @@ auto level_container::GetNearestObject(auto* object1, auto* object2) const -> st
 {
   if( object1 && object2 )
   {
-    auto distance1 = DistanceFromPlayer(*object1);
-    auto distance2 = DistanceFromPlayer(*object2);
+    auto distance1 = DistanceFromTarget(*object1);
+    auto distance2 = DistanceFromTarget(*object2);
     return distance2 < distance1 ? std::tuple<targetted_object_type, float> { targetted_object { object2 }, distance2 } : std::tuple<targetted_object_type, float> { targetted_object { object1 }, distance1 };
   }
   else if( object1 )
   {
-    return { object1, DistanceFromPlayer(*object1) };
+    return { object1, DistanceFromTarget(*object1) };
   }
   else if( object2 )
   {
-    return { object2, DistanceFromPlayer(*object2) };
+    return { object2, DistanceFromTarget(*object2) };
   }
   else
   {
@@ -180,14 +184,14 @@ auto level_container::GetNearestObject(auto* object1, auto* object2) const -> st
   }
 }
 
-auto level_container::GetNearestToPlayer(auto& object1, auto& object2) const -> auto&
+auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
 {
-  return DistanceFromPlayer(object2) < DistanceFromPlayer(object1) ? object2 : object1;
+  return DistanceFromTarget(object2) < DistanceFromTarget(object1) ? object2 : object1;
 }
 
-auto level_container::DistanceFromPlayer(auto&& object) const -> float
+auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
-  return direct2d::GetDistanceBetweenPoints(m_playerShip->Position(), object->Position());
+  return direct2d::GetDistanceBetweenPoints(m_targetPosition, object->Position());
 }
 
 template <typename particle_object_type> auto level_container::DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles) -> void

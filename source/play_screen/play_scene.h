@@ -39,6 +39,11 @@ protected:
   auto GetRenderTargetView() const -> D2D1_RECT_F;
   static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
 
+private:
+
+  static constexpr float m_playerDestinationRange { 400 };
+  static constexpr float m_targetRange { 600 };
+
 protected:
 
   level_container_ptr m_levelContainer;

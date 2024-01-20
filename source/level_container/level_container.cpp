@@ -11,6 +11,11 @@ auto level_container::SetPlayerDestination(D2D1_POINT_2F position) -> void
   m_playerShip->SetDestination(position);
 }
 
+auto level_container::SetTargetPosition(D2D1_POINT_2F position) -> void
+{
+  m_targetPosition = position;
+}
+
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
@@ -201,17 +206,17 @@ auto level_container::GetTargettedObject() -> targetted_object_type
 {
   mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this](auto* nearest, auto& next) -> mine_object*
   {
-    return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
+    return nearest ? &GetNearestToTarget(*nearest, next) : &next;
   });
 
   auto activeTargets = std::ranges::views::filter(m_targets, [](const auto& target) { return target->IsActivated() ? false : true; });
 
   target_object* nearestTarget = std::accumulate(std::ranges::begin(activeTargets), std::ranges::end(activeTargets), static_cast<target_object*>(nullptr), [this](auto* nearest, auto& next) -> target_object*
   {
-    return nearest ? &GetNearestToPlayer(*nearest, next) : &next;
+    return nearest ? &GetNearestToTarget(*nearest, next) : &next;
   });
 
-  return GetNearestObject(nearestMine, nearestTarget, 500.0f);
+  return GetNearestObject(nearestMine, nearestTarget, m_maxTargetRange);
 }
 
 auto level_container::DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void
