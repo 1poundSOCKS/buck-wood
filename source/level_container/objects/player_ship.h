@@ -32,7 +32,7 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
-  auto SetDestination(D2D1_POINT_2F value) -> void;
+  auto SetDestination(std::optional<D2D1_POINT_2F> value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> direct2d::VELOCITY_2F;
@@ -46,7 +46,7 @@ public:
 
 private:
 
-  inline static const auto m_thrustPower { 400.0f };
+  static constexpr float m_thrustPower { 400.0f };
 
   state m_state { state::alive };
   directional_body m_body;
@@ -54,7 +54,7 @@ private:
   float m_thrust { 0 };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
-  D2D1_POINT_2F m_destination { 0, 0 };
+  std::optional<D2D1_POINT_2F> m_destination;
 
 };
 
@@ -92,7 +92,7 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-inline auto player_ship::SetDestination(D2D1_POINT_2F value) -> void
+inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> void
 {
   m_destination = value;
 }

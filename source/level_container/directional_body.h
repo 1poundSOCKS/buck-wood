@@ -77,7 +77,14 @@ inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 
 inline auto directional_body::Accelerate(float amount) -> void
 {
-  moving_body::Accelerate(amount, m_angle);
+  if( amount > 0 )
+  {
+    moving_body::Accelerate(amount, m_angle);
+  }
+  else
+  {
+    moving_body::Accelerate(amount);
+  }
 }
 
 [[nodiscard]] inline auto directional_body::Angle() const -> float

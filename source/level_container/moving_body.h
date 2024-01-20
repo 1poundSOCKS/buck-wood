@@ -65,7 +65,8 @@ inline auto moving_body::Accelerate(direct2d::VELOCITY_2F amount) -> void
 
 inline auto moving_body::Accelerate(float amount) -> void
 {
-  m_velocity = direct2d::MultiplyVelocity(m_velocity, amount);
+  auto velocityChange = direct2d::MultiplyVelocity(m_velocity, amount);
+  m_velocity = direct2d::CombineVelocities(m_velocity, velocityChange);
 }
 
 inline auto moving_body::SetDirection(float direction) -> void
