@@ -23,7 +23,7 @@ auto player_ship::Update(float interval) -> void
     auto playerAngle = destinationDistance > deadzone ? direct2d::GetAngleBetween(m_body.Position(), *m_destination) : m_body.Angle();
 
     m_body.SetAngle(playerAngle);
-    m_body.Accelerate(m_thrust ? m_thrust * interval : -0.01f);
+    m_body.Accelerate(m_thrust ? m_thrust * interval : -0.5f * interval);
     m_body.Update(interval);
   }
 }
