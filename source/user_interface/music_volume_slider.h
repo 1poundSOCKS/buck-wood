@@ -60,10 +60,10 @@ inline auto music_volume_slider::Decrement() -> int
 
 inline auto music_volume_slider::Select() -> void
 {
-  sound_data::get(sound_data::menu_theme).Play(true);
+  sound_data::get(sound_data::main_theme).Play(true);
 }
 
 inline auto music_volume_slider::Unselect() -> void
 {
-  sound_data::get(sound_data::menu_theme).Stop();  
+  sound_data::get(sound_data::main_theme).Stop();  
 }

@@ -68,7 +68,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   {
     log::write(log::type::info, "play a sound to avoid any glitches when the game starts");
-    sound_buffer_player player { sound_data::get(sound_data::menu_theme) };
+    sound_buffer_player player { sound_data::get(sound_data::main_theme) };
     player.Play();
   }
 

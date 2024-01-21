@@ -15,31 +15,31 @@ public:
 
   ~main_play_scene()
   {
-    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::main_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
   }
 
   auto Begin() -> void override
   {
     SetCameraZoom(1);
-    sound_data::get(sound_data::menu_theme).Play(true);
+    sound_data::get(sound_data::main_theme).Play(true);
   }
 
   auto End() -> void override
   {
-    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::main_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
   }
 
   auto Pause() -> void override
   {
-    sound_data::get(sound_data::menu_theme).Stop();
+    sound_data::get(sound_data::main_theme).Stop();
     sound_data::get(sound_data::thrust).Stop();
   }
 
   auto Resume() -> void override
   {
-    sound_data::get(sound_data::menu_theme).Play(true);
+    sound_data::get(sound_data::main_theme).Play(true);
   }
 
   auto Update(int64_t ticks) -> bool override
