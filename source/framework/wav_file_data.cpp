@@ -42,3 +42,16 @@ auto wav_file_data::GetSize() const -> int
 {
   return data->size;
 }
+
+[[nodiscard]] auto GetWaveFormatFromWavFile(const wav_file_data_format& dataFormat) -> WAVEFORMATEX
+{
+  WAVEFORMATEX waveFormat;
+  waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+	waveFormat.nSamplesPerSec = dataFormat.sampleRate;
+	waveFormat.wBitsPerSample = dataFormat.bitsPerSample;
+	waveFormat.nChannels = dataFormat.numChannels;
+	waveFormat.nBlockAlign = dataFormat.blockAlign;
+	waveFormat.nAvgBytesPerSec = dataFormat.bytesPerSecond;
+	waveFormat.cbSize = 0;
+  return waveFormat;
+}

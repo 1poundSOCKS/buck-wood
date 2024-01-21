@@ -38,3 +38,5 @@ struct wav_file_data
   std::unique_ptr<wav_file_chunk> data;
   wav_file_data_format dataFormat;
 };
+
+[[nodiscard]] auto GetWaveFormatFromWavFile(const wav_file_data_format& dataFormat) -> WAVEFORMATEX;

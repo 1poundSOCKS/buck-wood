@@ -3,14 +3,7 @@
 
 auto sound_buffer::Create(IDirectSound8* directSound, const wav_file_data& data) -> void
 {
-  WAVEFORMATEX waveFormat;
-  waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-	waveFormat.nSamplesPerSec = data.dataFormat.sampleRate;
-	waveFormat.wBitsPerSample = data.dataFormat.bitsPerSample;
-	waveFormat.nChannels = data.dataFormat.numChannels;
-	waveFormat.nBlockAlign = data.dataFormat.blockAlign;
-	waveFormat.nAvgBytesPerSec = data.dataFormat.bytesPerSecond;
-	waveFormat.cbSize = 0;
+  WAVEFORMATEX waveFormat = GetWaveFormatFromWavFile(data.dataFormat);
 
   DSBUFFERDESC bufferDesc;
   bufferDesc.dwSize = sizeof(DSBUFFERDESC);
