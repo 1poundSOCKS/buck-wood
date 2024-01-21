@@ -7,19 +7,19 @@ class moving_body
 
 public:
 
-  moving_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity);
+  moving_body(D2D1_POINT_2F position, VELOCITY_2F velocity);
 
   auto SetPosition(D2D1_POINT_2F position) -> void;
-  auto SetVelocity(direct2d::VELOCITY_2F velocity) -> void;
+  auto SetVelocity(VELOCITY_2F velocity) -> void;
   auto SetVelocity(float speed, float direction) -> void;
-  auto Accelerate(direct2d::VELOCITY_2F amount) -> void;
+  auto Accelerate(VELOCITY_2F amount) -> void;
   auto Accelerate(float amount) -> void;
   auto Accelerate(float amount, float direction) -> void;
   auto SetDirection(float direction) -> void;
   auto SetSpeed(float value) -> void;
 
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
-  [[nodiscard]] auto Velocity() const -> direct2d::VELOCITY_2F;
+  [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto Direction() const -> float;
   [[nodiscard]] auto Speed() const -> float;
 
@@ -30,11 +30,11 @@ public:
 protected:
 
   D2D1_POINT_2F m_position;
-  direct2d::VELOCITY_2F m_velocity;
+  VELOCITY_2F m_velocity;
 
 };
 
-inline moving_body::moving_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }
+inline moving_body::moving_body(D2D1_POINT_2F position, VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }
 {
 }
 
@@ -43,7 +43,7 @@ inline auto moving_body::SetPosition(D2D1_POINT_2F position) -> void
   m_position = position;
 }
 
-inline auto moving_body::SetVelocity(direct2d::VELOCITY_2F velocity) -> void
+inline auto moving_body::SetVelocity(VELOCITY_2F velocity) -> void
 {
   m_velocity = velocity;
 }
@@ -58,7 +58,7 @@ inline auto moving_body::SetSpeed(float value) -> void
   m_velocity = direct2d::CalculateVelocity(value, Direction());
 }
 
-inline auto moving_body::Accelerate(direct2d::VELOCITY_2F amount) -> void
+inline auto moving_body::Accelerate(VELOCITY_2F amount) -> void
 {
   m_velocity = direct2d::CombineVelocities(m_velocity, amount);
 }
@@ -85,7 +85,7 @@ inline [[nodiscard]] auto moving_body::Position() const -> D2D1_POINT_2F
   return m_position;
 }
 
-inline [[nodiscard]] auto moving_body::Velocity() const -> direct2d::VELOCITY_2F
+inline [[nodiscard]] auto moving_body::Velocity() const -> VELOCITY_2F
 {
   return m_velocity;
 }

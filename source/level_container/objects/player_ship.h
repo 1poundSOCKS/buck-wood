@@ -35,14 +35,14 @@ public:
   auto SetDestination(std::optional<D2D1_POINT_2F> value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
-  [[nodiscard]] auto Velocity() const -> direct2d::VELOCITY_2F;
+  [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
   [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F;
-  [[nodiscard]] auto RelativeVelocity(float angle, float speed) const -> direct2d::VELOCITY_2F;
+  [[nodiscard]] auto RelativeVelocity(float angle, float speed) const -> VELOCITY_2F;
 
 private:
 
@@ -112,7 +112,7 @@ inline [[nodiscard]] auto player_ship::Angle() const -> float
   return m_body.Angle();
 }
 
-inline [[nodiscard]] auto player_ship::Velocity() const -> direct2d::VELOCITY_2F
+inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
 {
   return m_body.Velocity();
 }
@@ -142,7 +142,7 @@ inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, f
   return m_body.RelativePosition(angle, cx, cy);
 }
 
-inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float speed) const -> direct2d::VELOCITY_2F
+inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float speed) const -> VELOCITY_2F
 {
   return direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(speed, angle));
 }

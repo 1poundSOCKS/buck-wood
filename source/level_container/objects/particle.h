@@ -7,7 +7,7 @@ class particle
 
 public:
 
-  particle(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float lifespan);
+  particle(D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan);
 
   auto Update(float interval) -> void;
   auto Destroy() -> void;
@@ -27,7 +27,7 @@ private:
 
 };
 
-inline particle::particle(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float lifespan) :
+inline particle::particle(D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan) :
   m_startPosition { position }, m_movingBody { position, velocity }, m_lifespan { lifespan }
 {
 }

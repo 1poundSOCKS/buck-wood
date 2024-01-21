@@ -7,15 +7,14 @@ class homing_object : public moving_body
 
 public:
 
-  homing_object(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float thrust, float maxSpeed)
+  homing_object(D2D1_POINT_2F position, VELOCITY_2F velocity, float thrust, float maxSpeed)
     : moving_body { position, velocity }, m_thrust { thrust }, m_maxSpeed { maxSpeed }
   {
   }
 
   auto Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
   {
-    float maxSpeed = m_maxSpeed * interval;
-    float newSpeed = std::min(moving_body::Speed() + m_thrust * interval, maxSpeed);
+    float newSpeed = std::min(moving_body::Speed() + m_thrust, m_maxSpeed);
     auto angleToTarget = targetPosition ? direct2d::GetAngleBetween(m_position, *targetPosition) : moving_body::Direction();
     moving_body::SetDirection(angleToTarget);
     moving_body::SetSpeed(newSpeed);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "directx_functions.h"
+#include "basic_data_types.h"
 
 namespace direct2d
 {
@@ -40,12 +41,6 @@ namespace direct2d
     geometry->GetSourceGeometry(sourceGeometry.put());
     return sourceGeometry;
   }
-
-  struct VELOCITY_2F
-  {
-    float x;
-    float y;
-  };
 
   inline auto GetDistanceBetweenPoints(D2D1_POINT_2F point1, D2D1_POINT_2F point2) -> float
   {

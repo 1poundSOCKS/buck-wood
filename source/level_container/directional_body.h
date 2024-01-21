@@ -7,7 +7,7 @@ class directional_body : public moving_body
 {
 public:
 
-  directional_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float angle);
+  directional_body(D2D1_POINT_2F position, VELOCITY_2F velocity, float angle);
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -26,7 +26,7 @@ private:
 
 };
 
-inline directional_body::directional_body(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
+inline directional_body::directional_body(D2D1_POINT_2F position, VELOCITY_2F velocity, float angle) : moving_body { position, velocity }, m_angle { angle }
 {
 }
 

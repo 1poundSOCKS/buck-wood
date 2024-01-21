@@ -3,7 +3,7 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(D2D1_POINT_2F position, direct2d::VELOCITY_2F velocity) : 
+bullet::bullet(D2D1_POINT_2F position, VELOCITY_2F velocity) : 
   m_startPosition { position }, m_body { position, velocity }
 {
 }

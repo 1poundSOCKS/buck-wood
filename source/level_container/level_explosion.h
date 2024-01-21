@@ -28,7 +28,7 @@ private:
 
   const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position);
 
-  static auto GetRandomVelocity() -> direct2d::VELOCITY_2F;
+  static auto GetRandomVelocity() -> VELOCITY_2F;
 
 private:
 
@@ -114,7 +114,7 @@ inline auto const_level_explosion_iterator::operator==(const const_level_explosi
   }
 }
 
-inline auto const_level_explosion_iterator::GetRandomVelocity() -> direct2d::VELOCITY_2F
+inline auto const_level_explosion_iterator::GetRandomVelocity() -> VELOCITY_2F
 {
   auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
   auto speed = static_cast<float>(m_velocityDist(pseudo_random_generator::get()));
