@@ -17,6 +17,7 @@ game_volume_controller::game_volume_controller()
 
   auto musicBuffers = std::array
   {
+    sound_data::get(sound_data::menu_theme),
     sound_data::get(sound_data::main_theme)
   };
 

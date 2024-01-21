@@ -4,6 +4,7 @@
 
 sound_data* sound_data::m_soundData = nullptr;
 
+size_t sound_data::menu_theme { 0 };
 size_t sound_data::main_theme { 0 };
 size_t sound_data::shoot { 0 };
 size_t sound_data::thrust { 0 };
@@ -13,6 +14,7 @@ size_t sound_data::mine_exploded { 0 };
 constexpr [[nodiscard]] auto sound_data::GetWavFilenames()
 {
   return std::array {
+    sound_data_item { L"menu_theme.wav", menu_theme }, 
     sound_data_item { L"main_theme.wav", main_theme }, 
     sound_data_item { L"shoot_effect.wav", shoot },
     sound_data_item { L"thrust_effect.wav", thrust },

@@ -6,6 +6,7 @@ class sound_data
 {
 public:
 
+  static size_t menu_theme;
   static size_t main_theme;
   static size_t shoot;
   static size_t thrust;
