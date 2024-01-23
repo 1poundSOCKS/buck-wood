@@ -2,6 +2,7 @@
 
 #include "setting_slider.h"
 #include "game_volume_controller.h"
+#include "audio_events.h"
 
 class music_volume_slider : public setting_slider
 {
@@ -60,10 +61,12 @@ inline auto music_volume_slider::Decrement() -> int
 
 inline auto music_volume_slider::Select() -> void
 {
-  sound_data::get(sound_data::main_theme).Play(true);
+  // sound_data::get(sound_data::main_theme).Play(true);
+  audio_events::StartGameplayTheme();
 }
 
 inline auto music_volume_slider::Unselect() -> void
 {
-  sound_data::get(sound_data::main_theme).Stop();  
+  // sound_data::get(sound_data::main_theme).Stop();
+  audio_events::StopGameplayTheme();
 }
