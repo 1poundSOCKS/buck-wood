@@ -31,6 +31,7 @@
 
 #include "xaudio2_engine.h"
 #include "xaudio2_masteringvoice.h"
+#include "xaudio2_source_voice.h"
 
 #include "enum_collection.h"
 #include "shape_generator.h"
