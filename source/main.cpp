@@ -59,6 +59,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   // sound_data::create(direct_sound::get_raw(), L"data");
   audio_data::create(L"data");
+  audio_events::create();
 
   // game_volume_controller::create();
 
@@ -87,6 +88,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_volume_controller::destroy();
   // sound_data::destroy();
+  audio_events::destroy();
   audio_data::destroy();
   diagnostics::destroy();
 
