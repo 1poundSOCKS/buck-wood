@@ -61,12 +61,10 @@ inline auto music_volume_slider::Decrement() -> int
 
 inline auto music_volume_slider::Select() -> void
 {
-  // sound_data::get(sound_data::main_theme).Play(true);
   audio_events::StartGameplayTheme();
 }
 
 inline auto music_volume_slider::Unselect() -> void
 {
-  // sound_data::get(sound_data::main_theme).Stop();
   audio_events::StopGameplayTheme();
 }
