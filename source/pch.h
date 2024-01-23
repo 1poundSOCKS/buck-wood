@@ -47,6 +47,7 @@
 #include <dinput.h>
 #include <dsound.h>
 #include <xinput.h>
+#include <xaudio2.h>
 
 #if 0
 #include "json.h"

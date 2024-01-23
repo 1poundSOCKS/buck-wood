@@ -7,6 +7,7 @@
 #include "game_clock.h"
 #include "screen_container.h"
 #include "main_menu_screen.h"
+#include "audio_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -56,24 +57,25 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   diagnostics::create();
 
-  sound_data::create(direct_sound::get_raw(), L"data");
+  // sound_data::create(direct_sound::get_raw(), L"data");
+  audio_data::create(L"data");
 
-  game_volume_controller::create();
+  // game_volume_controller::create();
 
-  auto savedEffectsVolume = game_settings::effectsVolume();
-  auto savedMusicVolume = game_settings::musicVolume();
+  // auto savedEffectsVolume = game_settings::effectsVolume();
+  // auto savedMusicVolume = game_settings::musicVolume();
 
-  game_volume_controller::setEffectsVolume(0);
-  game_volume_controller::setMusicVolume(0);
+  // game_volume_controller::setEffectsVolume(0);
+  // game_volume_controller::setMusicVolume(0);
 
-  {
-    log::write(log::type::info, "play a sound to avoid any glitches when the game starts");
-    sound_buffer_player player { sound_data::get(sound_data::main_theme) };
-    player.Play();
-  }
+  // {
+  //   log::write(log::type::info, "play a sound to avoid any glitches when the game starts");
+  //   sound_buffer_player player { sound_data::get(sound_data::main_theme) };
+  //   player.Play();
+  // }
 
-  game_volume_controller::setEffectsVolume(savedEffectsVolume);
-  game_volume_controller::setMusicVolume(savedMusicVolume);
+  // game_volume_controller::setEffectsVolume(savedEffectsVolume);
+  // game_volume_controller::setMusicVolume(savedMusicVolume);
 
   game_clock::setMultiplier(1.6f);
 
@@ -84,7 +86,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   log::write(log::type::info, "app closing");
 
   game_volume_controller::destroy();
-  sound_data::destroy();
+  // sound_data::destroy();
+  audio_data::destroy();
   diagnostics::destroy();
 
   destroy_directx_objects();
@@ -106,10 +109,12 @@ auto RunMainMenuScreen() -> void
 
 auto create_directx_objects(HINSTANCE instance) -> void
 {
-  direct_sound::create(main_window::handle());
-  primary_sound_buffer::create(direct_sound::get_raw());
+  // direct_sound::create(main_window::handle());
+  // primary_sound_buffer::create(direct_sound::get_raw());
   create_d2d_render_target();
   dwrite_factory::create();
+  xaudio2_engine::create();
+  xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
   level_geometries::create();
   renderer::create();
   create_input_devices(instance);
@@ -120,10 +125,12 @@ auto destroy_directx_objects() -> void
   destroy_input_devices();
   renderer::destroy();
   level_geometries::destroy();
+  xaudio2_masteringvoice::destroy();
+  xaudio2_engine::destroy();
   dwrite_factory::destroy();
   destroy_d2d_render_target();
-  primary_sound_buffer::destroy();
-  direct_sound::destroy();
+  // primary_sound_buffer::destroy();
+  // direct_sound::destroy();
 }
 
 auto create_d2d_render_target() -> void

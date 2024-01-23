@@ -5,11 +5,13 @@
 #include "play_screen.h"
 #include "screen_container.h"
 #include "game_settings.h"
+#include "audio_events.h"
 
 main_menu_screen::main_menu_screen()
 {
   m_menuController.OpenRoot();
-  sound_data::get(sound_data::menu_theme).Play(true);
+  // sound_data::get(sound_data::menu_theme).Play(true);
+  audio_events::StartMainMenuTheme();
 }
 
 auto main_menu_screen::Refresh(int64_t ticks) -> bool
@@ -48,8 +50,10 @@ auto main_menu_screen::Render() const -> void
 
 auto main_menu_screen::StartPlay() -> void
 {
-  sound_data::get(sound_data::menu_theme).Stop();
+  // sound_data::get(sound_data::menu_theme).Stop();
+  audio_events::StopMainMenuTheme();
   screen_container<play_screen> playScreen { game_settings::framerate(), DIK_F12 };
   windows_message_loop::run(playScreen);
-  sound_data::get(sound_data::menu_theme).Play(true);
+  // sound_data::get(sound_data::menu_theme).Play(true);
+  audio_events::StartMainMenuTheme();
 }

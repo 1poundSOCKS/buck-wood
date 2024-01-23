@@ -3,6 +3,7 @@
 #include "game_clock.h"
 #include "hud_target.h"
 #include "renderers.h"
+#include "audio_events.h"
 
 play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
 {
@@ -88,29 +89,34 @@ auto play_scene::PlaySoundEffects() const -> void
 {
   if( m_levelContainer->PlayerHasThrusterOn() )
   {
-    sound_data::get(sound_data::thrust).Play(true);
+    // sound_data::get(sound_data::thrust).Play(true);
+    audio_events::StartPlayerThruster();
   }
   else
   {
-    sound_data::get(sound_data::thrust).Stop();
+    // sound_data::get(sound_data::thrust).Stop();
+    audio_events::StopPlayerThruster();
   }
 
   if( m_playEvents[play_events::event_type::shot] )
   {
-    sound_data::get(sound_data::shoot).Reset();
-    sound_data::get(sound_data::shoot).Play(false);
+    // sound_data::get(sound_data::shoot).Reset();
+    // sound_data::get(sound_data::shoot).Play(false);
+    audio_events::PlayerShot();
   }
 
   if( m_playEvents[play_events::event_type::target_activated] )
   {
-    sound_data::get(sound_data::target_activated).Reset();
-    sound_data::get(sound_data::target_activated).Play(false);
+    // sound_data::get(sound_data::target_activated).Reset();
+    // sound_data::get(sound_data::target_activated).Play(false);
+    audio_events::TargetActivated();
   }
 
   if( m_playEvents[play_events::event_type::explosion] )
   {
-    sound_data::get(sound_data::mine_exploded).Reset();
-    sound_data::get(sound_data::mine_exploded).Play(false);
+    // sound_data::get(sound_data::mine_exploded).Reset();
+    // sound_data::get(sound_data::mine_exploded).Play(false);
+    audio_events::Explosion();
   }
 }
 

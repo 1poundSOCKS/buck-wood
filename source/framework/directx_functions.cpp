@@ -113,7 +113,7 @@ auto CreateKeyboard(IDirectInput8* directInput, HWND window) -> winrt::com_ptr<I
     hr = keyboard->SetCooperativeLevel(window, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
     com_logger::fatal(log::type::info, hr, "[IDirectInputDevice8] SetCooperativeLevel (KEYBOARD)");
     hr = keyboard->Acquire();
-    com_logger::fatal(log::type::info, hr, "[IDirectInputDevice8] Acquire (KEYBOARD)");
+    com_logger::write(log::type::info, hr, "[IDirectInputDevice8] Acquire (KEYBOARD)");
   }
 
   return keyboard;

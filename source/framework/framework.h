@@ -29,4 +29,9 @@
 #include "gamepad_reader.h"
 #include "gamepad_thumbstick.h"
 
+#include "xaudio2_engine.h"
+#include "xaudio2_masteringvoice.h"
+
+#include "enum_collection.h"
 #include "shape_generator.h"
+#include "wav_file_data.h"

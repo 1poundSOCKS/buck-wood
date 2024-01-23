@@ -2,6 +2,7 @@
 
 #include "play_scene.h"
 #include "renderers.h"
+#include "audio_events.h"
 
 class main_play_scene : public play_scene
 {
@@ -21,25 +22,31 @@ public:
 
   auto Begin() -> void override
   {
-    SetCameraZoom(1);
-    sound_data::get(sound_data::main_theme).Play(true);
+    // SetCameraZoom(1);
+    // sound_data::get(sound_data::main_theme).Play(true);
+    audio_events::StartGameplayTheme();
   }
 
   auto End() -> void override
   {
-    sound_data::get(sound_data::main_theme).Stop();
-    sound_data::get(sound_data::thrust).Stop();
+    // sound_data::get(sound_data::main_theme).Stop();
+    // sound_data::get(sound_data::thrust).Stop();
+    audio_events::StopPlayerThruster();
+    audio_events::StopGameplayTheme();
   }
 
   auto Pause() -> void override
   {
-    sound_data::get(sound_data::main_theme).Stop();
-    sound_data::get(sound_data::thrust).Stop();
+    // sound_data::get(sound_data::main_theme).Stop();
+    // sound_data::get(sound_data::thrust).Stop();
+    audio_events::StopPlayerThruster();
+    audio_events::StopGameplayTheme();
   }
 
   auto Resume() -> void override
   {
-    sound_data::get(sound_data::main_theme).Play(true);
+    // sound_data::get(sound_data::main_theme).Play(true);
+    audio_events::StartGameplayTheme();
   }
 
   auto Update(int64_t ticks) -> bool override
