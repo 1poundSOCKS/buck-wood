@@ -40,58 +40,6 @@ auto CreateScreenRenderTextFormat(IDWriteFactory* writeFactory, LPCWSTR fontFami
   return textFormat;
 }
 
-auto CreateDirectSound(HWND window) -> winrt::com_ptr<IDirectSound8>
-{
-  winrt::com_ptr<IDirectSound8> directSound;
-
-  HRESULT hr = DirectSoundCreate8(&DSDEVID_DefaultPlayback, directSound.put(), NULL);
-  com_logger::write(log::type::info, hr, "DirectSoundCreate8");
-
-  if( SUCCEEDED(hr) && directSound )
-  {
-    hr = directSound->SetCooperativeLevel(window, DSSCL_PRIORITY);
-    com_logger::write(log::type::info, hr, "[DirectSoundCreate8] SetCooperativeLevel");
-  }
-
-  return directSound;
-}
-
-auto CreatePrimarySoundBuffer(IDirectSound8* directSound) -> winrt::com_ptr<IDirectSoundBuffer>
-{
-  winrt::com_ptr<IDirectSoundBuffer> primaryBuffer;
-  
-  if( directSound )
-  {
-    DSBUFFERDESC bufferDesc;
-    bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-    bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
-    bufferDesc.dwBufferBytes = 0;
-    bufferDesc.dwReserved = 0;
-    bufferDesc.lpwfxFormat = NULL;
-    bufferDesc.guid3DAlgorithm = GUID_NULL;
-
-    HRESULT hr = directSound->CreateSoundBuffer(&bufferDesc, primaryBuffer.put(), NULL);
-    com_logger::write(log::type::info, hr, "[IDirectSound8] CreateSoundBuffer (PRIMARY)");
-
-    if( primaryBuffer )
-    {
-      WAVEFORMATEX waveFormat;
-      waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-      waveFormat.nSamplesPerSec = 44100;
-      waveFormat.wBitsPerSample = 16;
-      waveFormat.nChannels = 2;
-      waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
-      waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
-      waveFormat.cbSize = 0;
-
-      hr = primaryBuffer->SetFormat(&waveFormat);
-      com_logger::write(log::type::info, hr, "[IDirectSoundBuffer] SetFormat");
-    }
-  }
-  
-  return primaryBuffer;
-}
-
 auto CreateDirectInput(HINSTANCE instance) -> winrt::com_ptr<IDirectInput8>
 {
   winrt::com_ptr<IDirectInput8> directInput;

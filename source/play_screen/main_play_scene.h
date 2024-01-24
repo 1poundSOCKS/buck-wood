@@ -16,36 +16,30 @@ public:
 
   ~main_play_scene()
   {
-    sound_data::get(sound_data::main_theme).Stop();
-    sound_data::get(sound_data::thrust).Stop();
+    audio_events::StopPlayerThruster();
+    audio_events::StopGameplayTheme();
   }
 
   auto Begin() -> void override
   {
-    // SetCameraZoom(1);
-    // sound_data::get(sound_data::main_theme).Play(true);
+    SetCameraZoom(1);
     audio_events::StartGameplayTheme();
   }
 
   auto End() -> void override
   {
-    // sound_data::get(sound_data::main_theme).Stop();
-    // sound_data::get(sound_data::thrust).Stop();
     audio_events::StopPlayerThruster();
     audio_events::StopGameplayTheme();
   }
 
   auto Pause() -> void override
   {
-    // sound_data::get(sound_data::main_theme).Stop();
-    // sound_data::get(sound_data::thrust).Stop();
     audio_events::StopPlayerThruster();
     audio_events::StopGameplayTheme();
   }
 
   auto Resume() -> void override
   {
-    // sound_data::get(sound_data::main_theme).Play(true);
     audio_events::StartGameplayTheme();
   }
 

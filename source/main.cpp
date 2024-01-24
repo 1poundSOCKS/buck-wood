@@ -16,7 +16,6 @@
 #pragma comment(lib,"Dinput8.lib")
 #pragma comment(lib,"Xinput.lib")
 #pragma comment(lib,"dxguid.lib")
-#pragma comment(lib,"dsound.lib")
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"Shell32.lib")
 

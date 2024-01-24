@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "game_volume_controller.h"
-#include "sound_data.h"
 #include "game_settings.h"
 
 auto game_volume_controller::minVolume() -> int

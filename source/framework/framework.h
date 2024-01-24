@@ -21,10 +21,6 @@
 #include "render_guard.h"
 #include "text_renderer.h"
 
-#include "direct_sound.h"
-#include "primary_sound_buffer.h"
-#include "sound_buffer_player.h"
-
 #include "keyboard_reader.h"
 #include "gamepad_reader.h"
 #include "gamepad_thumbstick.h"
