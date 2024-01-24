@@ -23,10 +23,22 @@ public:
 
   static auto SetMusicVolume(float value) -> void
   {
+    HRESULT hr = m_instance->m_menuTheme->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_menuTheme->SetVolume");
+    hr = m_instance->m_mainTheme->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_mainTheme->SetVolume");
   }
 
   static auto SetEffectsVolume(float value) -> void
   {
+    HRESULT hr = m_instance->m_playerThruster->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_playerThruster->SetVolume");
+    hr = m_instance->m_playerShot->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_playerShot->SetVolume");
+    hr = m_instance->m_targetActivated->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_targetActivated->SetVolume");
+    hr = m_instance->m_explosion->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_explosion->SetVolume");
   }
 
   static auto StartMainMenuTheme() -> void
