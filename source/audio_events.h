@@ -59,27 +59,33 @@ public:
 
   static auto PlayerShot() -> void
   {
-
+    HRESULT hr = m_instance->m_playerShot->Stop();
+    hr = m_instance->m_playerShot->Start(0, 0);
+    com_logger::write(log::type::debug, hr, "[audio_events] PlayerShot");
   }
 
   static auto TargetActivated() -> void
   {
-
+    HRESULT hr = m_instance->m_targetActivated->Stop();
+    hr = m_instance->m_targetActivated->Start(0, 0);
+    com_logger::write(log::type::debug, hr, "[audio_events] TargetActivated");
   }
 
   static auto Explosion() -> void
   {
-
+    HRESULT hr = m_instance->m_explosion->Stop();
+    hr = m_instance->m_explosion->Start(0, 0);
+    com_logger::write(log::type::debug, hr, "[audio_events] Explosion");
   }
 
 private:
 
   inline static audio_events* m_instance { nullptr };
-  audio_player m_menuTheme { audio_data_item::menu_theme };
-  audio_player m_mainTheme { audio_data_item::main_theme };
-  audio_player m_playerThruster { audio_data_item::thruster };
-  audio_player m_playerShot { audio_data_item::shoot };
-  audio_player m_targetActivated { audio_data_item::target_activated };
-  audio_player m_explosion { audio_data_item::explosion };
+  audio_player m_menuTheme { audio_data_item::menu_theme, audio_player::type::music };
+  audio_player m_mainTheme { audio_data_item::main_theme, audio_player::type::music };
+  audio_player m_playerThruster { audio_data_item::thruster, audio_player::type::music };
+  audio_player m_playerShot { audio_data_item::shoot, audio_player::type::effect };
+  audio_player m_targetActivated { audio_data_item::target_activated, audio_player::type::effect };
+  audio_player m_explosion { audio_data_item::explosion, audio_player::type::effect };
 
 };
