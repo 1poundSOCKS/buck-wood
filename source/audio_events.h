@@ -33,8 +33,17 @@ public:
     com_logger::write(log::type::debug, hr, "[audio_events] StopMainMenuTheme");
   }
 
-  static auto StartGameplayTheme() -> void {}
-  static auto StopGameplayTheme() -> void {}
+  static auto StartGameplayTheme() -> void
+  {
+    HRESULT hr = m_instance->m_mainTheme->Start(0, 0);
+    com_logger::write(log::type::debug, hr, "[audio_events] StartGameplayTheme");
+  }
+
+  static auto StopGameplayTheme() -> void
+  {
+    HRESULT hr = m_instance->m_mainTheme->Stop();
+    com_logger::write(log::type::debug, hr, "[audio_events] StopGameplayTheme");
+  }
 
   static auto StartPlayerThruster() -> void {}
   static auto StopPlayerThruster() -> void {}
@@ -46,5 +55,6 @@ private:
 
   inline static audio_events* m_instance { nullptr };
   audio_player m_menuTheme { audio_data_item::menu_theme };
+  audio_player m_mainTheme { audio_data_item::main_theme };
 
 };
