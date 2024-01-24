@@ -2,14 +2,14 @@
 
 #include "framework.h"
 
-enum class sound_data_item { menu_theme=0, main_theme, explosion, shoot, target_activated, thruster };
+enum class audio_data_item { menu_theme=0, main_theme, explosion, shoot, target_activated, thruster };
 
 class audio_data
 {
 
 public:
 
-  struct _data
+  struct buffer
   {
     WAVEFORMATEX format;
     uint32_t size;
@@ -27,14 +27,14 @@ public:
     delete m_instance;
   }
   
-  [[nodiscard]] static auto get(sound_data_item item) -> const _data&
+  [[nodiscard]] static auto get(audio_data_item item) -> const buffer&
   {
     return m_instance->m_items[item];
   }
 
 private:
 
-  [[nodiscard]] auto LoadWavFileData(std::wstring_view filename) -> _data
+  [[nodiscard]] auto LoadWavFileData(std::wstring_view filename) -> buffer
   {
     std::filesystem::path fullFilename = m_folder;
     fullFilename /= L"sound";
@@ -46,12 +46,12 @@ private:
   [[nodiscard]] auto LoadAllWavFileData()
   {
     return std::array {
-      std::tuple<sound_data_item, _data>(sound_data_item::menu_theme, LoadWavFileData(L"menu_theme.wav")),
-      std::tuple<sound_data_item, _data>(sound_data_item::main_theme, LoadWavFileData(L"main_theme.wav")),
-      std::tuple<sound_data_item, _data>(sound_data_item::explosion, LoadWavFileData(L"mine_exploded.wav")),
-      std::tuple<sound_data_item, _data>(sound_data_item::shoot, LoadWavFileData(L"shoot_effect.wav")),
-      std::tuple<sound_data_item, _data>(sound_data_item::target_activated, LoadWavFileData(L"target_activated.wav")),
-      std::tuple<sound_data_item, _data>(sound_data_item::thruster, LoadWavFileData(L"thrust_effect.wav"))
+      std::tuple<audio_data_item, buffer>(audio_data_item::menu_theme, LoadWavFileData(L"menu_theme.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::main_theme, LoadWavFileData(L"main_theme.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::explosion, LoadWavFileData(L"mine_exploded.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::shoot, LoadWavFileData(L"shoot_effect.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::target_activated, LoadWavFileData(L"target_activated.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::thruster, LoadWavFileData(L"thrust_effect.wav"))
     };
   }
 
@@ -63,6 +63,6 @@ private:
 
   inline static audio_data* m_instance { nullptr };
   std::wstring m_folder;
-  enum_collection<sound_data_item, _data> m_items;
+  enum_collection<audio_data_item, buffer> m_items;
 
 };

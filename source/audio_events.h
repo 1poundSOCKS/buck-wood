@@ -27,7 +27,11 @@ public:
     com_logger::write(log::type::debug, hr, "[audio_events] StartMainMenuTheme");
   }
 
-  static auto StopMainMenuTheme() -> void {}
+  static auto StopMainMenuTheme() -> void
+  {
+    HRESULT hr = m_instance->m_menuTheme->Stop();
+    com_logger::write(log::type::debug, hr, "[audio_events] StopMainMenuTheme");
+  }
 
   static auto StartGameplayTheme() -> void {}
   static auto StopGameplayTheme() -> void {}
@@ -40,21 +44,27 @@ public:
 
 private:
 
-  audio_events() : m_menuTheme { xaudio2_engine::get_raw(), audio_data::get(sound_data_item::menu_theme).format }
+  audio_events() : 
+    m_menuTheme { xaudio2_engine::get_raw(), audio_data::get(audio_data_item::menu_theme).format }
   {
-    const auto& data = audio_data::get(sound_data_item::menu_theme);
-    XAUDIO2_BUFFER buffer;
-    buffer.Flags = 0;
-    buffer.AudioBytes = data.size;
-    buffer.pAudioData = data.data.get();
-    buffer.PlayBegin = 0;
-    buffer.PlayLength = 0;
-    buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
-    buffer.LoopBegin = 0;
-    buffer.LoopLength = 0;
-    buffer.pContext = nullptr;
-    HRESULT hr = m_menuTheme.SubmitSourceBuffer(&buffer, nullptr);
+    auto xaudio2Buffer = GetMusicBuffer(audio_data::get(audio_data_item::menu_theme));
+    HRESULT hr = m_menuTheme.SubmitSourceBuffer(&xaudio2Buffer, nullptr);
     com_logger::write(log::type::debug, hr, "[audio_events] SubmitSourceBuffer");
+  }
+
+  static [[nodiscard]] auto GetMusicBuffer(audio_data::buffer audioBuffer) -> XAUDIO2_BUFFER
+  {
+    XAUDIO2_BUFFER xaudio2Buffer;
+    xaudio2Buffer.Flags = 0;
+    xaudio2Buffer.AudioBytes = audioBuffer.size;
+    xaudio2Buffer.pAudioData = audioBuffer.data.get();
+    xaudio2Buffer.PlayBegin = 0;
+    xaudio2Buffer.PlayLength = 0;
+    xaudio2Buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+    xaudio2Buffer.LoopBegin = 0;
+    xaudio2Buffer.LoopLength = 0;
+    xaudio2Buffer.pContext = nullptr;
+    return xaudio2Buffer;
   }
 
 private:
