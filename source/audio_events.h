@@ -23,8 +23,7 @@ public:
 
   static auto StartMainMenuTheme() -> void
   {
-    HRESULT hr = m_instance->m_menuTheme->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] StartMainMenuTheme");
+    m_instance->m_menuTheme.Start();
   }
 
   static auto StopMainMenuTheme() -> void
@@ -35,8 +34,7 @@ public:
 
   static auto StartGameplayTheme() -> void
   {
-    HRESULT hr = m_instance->m_mainTheme->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] StartGameplayTheme");
+    m_instance->m_mainTheme.Start();
   }
 
   static auto StopGameplayTheme() -> void
@@ -47,8 +45,7 @@ public:
 
   static auto StartPlayerThruster() -> void
   {
-    HRESULT hr = m_instance->m_playerThruster->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] StartPlayerThruster");
+    m_instance->m_playerThruster.Start();
   }
 
   static auto StopPlayerThruster() -> void
@@ -59,23 +56,17 @@ public:
 
   static auto PlayerShot() -> void
   {
-    HRESULT hr = m_instance->m_playerShot->Stop();
-    hr = m_instance->m_playerShot->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] PlayerShot");
+    m_instance->m_playerShot.Start();
   }
 
   static auto TargetActivated() -> void
   {
-    HRESULT hr = m_instance->m_targetActivated->Stop();
-    hr = m_instance->m_targetActivated->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] TargetActivated");
+    m_instance->m_targetActivated.Start();
   }
 
   static auto Explosion() -> void
   {
-    HRESULT hr = m_instance->m_explosion->Stop();
-    hr = m_instance->m_explosion->Start(0, 0);
-    com_logger::write(log::type::debug, hr, "[audio_events] Explosion");
+    m_instance->m_explosion.Start();
   }
 
 private:
