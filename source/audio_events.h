@@ -44,14 +44,7 @@ public:
 
 private:
 
-  audio_events() : 
-    m_menuTheme { audio_data_item::menu_theme }
-  {
-  }
-
-private:
-
   inline static audio_events* m_instance { nullptr };
-  audio_player m_menuTheme;
+  audio_player m_menuTheme { audio_data_item::menu_theme };
 
 };
