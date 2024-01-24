@@ -45,16 +45,41 @@ public:
     com_logger::write(log::type::debug, hr, "[audio_events] StopGameplayTheme");
   }
 
-  static auto StartPlayerThruster() -> void {}
-  static auto StopPlayerThruster() -> void {}
-  static auto PlayerShot() -> void {}
-  static auto TargetActivated() -> void {}
-  static auto Explosion() -> void {}
+  static auto StartPlayerThruster() -> void
+  {
+    HRESULT hr = m_instance->m_playerThruster->Start(0, 0);
+    com_logger::write(log::type::debug, hr, "[audio_events] StartPlayerThruster");
+  }
+
+  static auto StopPlayerThruster() -> void
+  {
+    HRESULT hr = m_instance->m_playerThruster->Stop();
+    com_logger::write(log::type::debug, hr, "[audio_events] StopPlayerThruster");
+  }
+
+  static auto PlayerShot() -> void
+  {
+
+  }
+
+  static auto TargetActivated() -> void
+  {
+
+  }
+
+  static auto Explosion() -> void
+  {
+
+  }
 
 private:
 
   inline static audio_events* m_instance { nullptr };
   audio_player m_menuTheme { audio_data_item::menu_theme };
   audio_player m_mainTheme { audio_data_item::main_theme };
+  audio_player m_playerThruster { audio_data_item::thruster };
+  audio_player m_playerShot { audio_data_item::shoot };
+  audio_player m_targetActivated { audio_data_item::target_activated };
+  audio_player m_explosion { audio_data_item::explosion };
 
 };
