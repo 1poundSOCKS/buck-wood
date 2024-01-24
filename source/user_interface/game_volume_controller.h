@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "volume_controller.h"
+#include "audio_events.h"
 
 class game_volume_controller
 {
@@ -24,16 +24,12 @@ private:
 
   static auto GetFractionalVolume(int value) -> float;
 
-  game_volume_controller();
-
   auto SetEffectsVolume(int value) -> void;
   auto SetMusicVolume(int value) -> void;
 
 private:
 
   inline static game_volume_controller* m_instance { nullptr };
-  // volume_controller m_effectsVolumeController;
-  // volume_controller m_musicVolumeController;
 
 };
 
@@ -60,11 +56,11 @@ inline auto game_volume_controller::GetFractionalVolume(int value) -> float
 inline auto game_volume_controller::SetEffectsVolume(int value) -> void
 {
   log::write(log::type::info, "setting effects volume to {}", value);
-  // m_effectsVolumeController.SetVolume(GetFractionalVolume(value));
+  audio_events::SetEffectsVolume(GetFractionalVolume(value));
 }
 
 inline auto game_volume_controller::SetMusicVolume(int value) -> void
 {
   log::write(log::type::info, "setting music volume to {}", value);
-  // m_musicVolumeController.SetVolume(GetFractionalVolume(value));
+  audio_events::SetMusicVolume(GetFractionalVolume(value));
 }

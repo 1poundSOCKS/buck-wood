@@ -21,6 +21,14 @@ public:
     m_instance = nullptr;
   }
 
+  static auto SetMusicVolume(float value) -> void
+  {
+  }
+
+  static auto SetEffectsVolume(float value) -> void
+  {
+  }
+
   static auto StartMainMenuTheme() -> void
   {
     m_instance->m_menuTheme.Start();
