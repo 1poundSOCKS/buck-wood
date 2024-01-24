@@ -5,23 +5,23 @@
 
 game_volume_controller::game_volume_controller()
 {
-  auto effectBuffers = std::array
-  {
-    sound_data::get(sound_data::shoot),
-    sound_data::get(sound_data::thrust),
-    sound_data::get(sound_data::target_activated),
-    sound_data::get(sound_data::mine_exploded)
-  };
+  // auto effectBuffers = std::array
+  // {
+  //   sound_data::get(sound_data::shoot),
+  //   sound_data::get(sound_data::thrust),
+  //   sound_data::get(sound_data::target_activated),
+  //   sound_data::get(sound_data::mine_exploded)
+  // };
   
-  m_effectsVolumeController = volume_controller { effectBuffers };
+  // m_effectsVolumeController = volume_controller { effectBuffers };
 
-  auto musicBuffers = std::array
-  {
-    sound_data::get(sound_data::menu_theme),
-    sound_data::get(sound_data::main_theme)
-  };
+  // auto musicBuffers = std::array
+  // {
+  //   sound_data::get(sound_data::menu_theme),
+  //   sound_data::get(sound_data::main_theme)
+  // };
 
-  m_musicVolumeController = volume_controller { musicBuffers };
+  // m_musicVolumeController = volume_controller { musicBuffers };
 }
 
 auto game_volume_controller::minVolume() -> int

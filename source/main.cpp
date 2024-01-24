@@ -60,20 +60,18 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   audio_data::create(L"data");
   audio_events::create();
 
-  // game_volume_controller::create();
+  game_volume_controller::create();
 
-  // auto savedEffectsVolume = game_settings::effectsVolume();
-  // auto savedMusicVolume = game_settings::musicVolume();
+  auto savedEffectsVolume = game_settings::effectsVolume();
+  auto savedMusicVolume = game_settings::musicVolume();
 
-  // game_volume_controller::setEffectsVolume(0);
-  // game_volume_controller::setMusicVolume(0);
+  game_volume_controller::setEffectsVolume(0);
+  game_volume_controller::setMusicVolume(0);
 
-  // game_volume_controller::setEffectsVolume(savedEffectsVolume);
-  // game_volume_controller::setMusicVolume(savedMusicVolume);
+  game_volume_controller::setEffectsVolume(savedEffectsVolume);
+  game_volume_controller::setMusicVolume(savedMusicVolume);
 
   game_clock::setMultiplier(1.6f);
-
-  swap_chain::get()->SetFullscreenState(game_settings::fullscreen() ? TRUE : FALSE, nullptr);
 
   RunMainMenuScreen();
 
@@ -170,5 +168,5 @@ auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
   swapChainDesc.OutputWindow = main_window::handle();
   swapChainDesc.SampleDesc.Count = 1;
   swapChainDesc.SampleDesc.Quality = 0;
-  swapChainDesc.Windowed = FALSE;
+  swapChainDesc.Windowed = game_settings::fullscreen() ? FALSE : TRUE;
 }
