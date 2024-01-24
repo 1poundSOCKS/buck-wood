@@ -16,12 +16,12 @@ public:
     return m_voice->SubmitSourceBuffer(buffer, bufferWMA);
   }
 
-  [[nodiscard]] auto get() -> IXAudio2SourceVoice*
+  [[nodiscard]] auto get() const -> IXAudio2SourceVoice*
   {
     return m_voice;
   }
 
-  [[nodiscard]]auto operator->() -> IXAudio2SourceVoice*
+  [[nodiscard]]auto operator->() const -> IXAudio2SourceVoice*
   {
     return m_voice;
   }
