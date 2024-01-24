@@ -139,6 +139,7 @@ auto level_container::DoNonPlayerCollisions() -> void
     {
       target->HitByBullet();
       m_activatedTargetCount += target->IsActivated() ? 1 : 0;
+      m_playEvents.SetEvent(play_events::event_type::target_activated, target->IsActivated());
     }
 
     m_impacts.emplace_back(bullet.Position());

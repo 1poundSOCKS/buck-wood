@@ -89,33 +89,25 @@ auto play_scene::PlaySoundEffects() const -> void
 {
   if( m_levelContainer->PlayerHasThrusterOn() )
   {
-    // sound_data::get(sound_data::thrust).Play(true);
     audio_events::StartPlayerThruster();
   }
   else
   {
-    // sound_data::get(sound_data::thrust).Stop();
     audio_events::StopPlayerThruster();
   }
 
   if( m_playEvents[play_events::event_type::shot] )
   {
-    // sound_data::get(sound_data::shoot).Reset();
-    // sound_data::get(sound_data::shoot).Play(false);
     audio_events::PlayerShot();
   }
 
   if( m_playEvents[play_events::event_type::target_activated] )
   {
-    // sound_data::get(sound_data::target_activated).Reset();
-    // sound_data::get(sound_data::target_activated).Play(false);
     audio_events::TargetActivated();
   }
 
   if( m_playEvents[play_events::event_type::explosion] )
   {
-    // sound_data::get(sound_data::mine_exploded).Reset();
-    // sound_data::get(sound_data::mine_exploded).Play(false);
     audio_events::Explosion();
   }
 }
