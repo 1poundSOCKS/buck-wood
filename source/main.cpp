@@ -57,7 +57,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   diagnostics::create();
 
-  // sound_data::create(direct_sound::get_raw(), L"data");
   audio_data::create(L"data");
   audio_events::create();
 
@@ -68,12 +67,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   // game_volume_controller::setEffectsVolume(0);
   // game_volume_controller::setMusicVolume(0);
-
-  // {
-  //   log::write(log::type::info, "play a sound to avoid any glitches when the game starts");
-  //   sound_buffer_player player { sound_data::get(sound_data::main_theme) };
-  //   player.Play();
-  // }
 
   // game_volume_controller::setEffectsVolume(savedEffectsVolume);
   // game_volume_controller::setMusicVolume(savedMusicVolume);
@@ -87,7 +80,6 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   log::write(log::type::info, "app closing");
 
   game_volume_controller::destroy();
-  // sound_data::destroy();
   audio_events::destroy();
   audio_data::destroy();
   diagnostics::destroy();
@@ -111,8 +103,6 @@ auto RunMainMenuScreen() -> void
 
 auto create_directx_objects(HINSTANCE instance) -> void
 {
-  // direct_sound::create(main_window::handle());
-  // primary_sound_buffer::create(direct_sound::get_raw());
   create_d2d_render_target();
   dwrite_factory::create();
   xaudio2_engine::create();
@@ -131,8 +121,6 @@ auto destroy_directx_objects() -> void
   xaudio2_engine::destroy();
   dwrite_factory::destroy();
   destroy_d2d_render_target();
-  // primary_sound_buffer::destroy();
-  // direct_sound::destroy();
 }
 
 auto create_d2d_render_target() -> void
@@ -182,5 +170,5 @@ auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
   swapChainDesc.OutputWindow = main_window::handle();
   swapChainDesc.SampleDesc.Count = 1;
   swapChainDesc.SampleDesc.Quality = 0;
-  swapChainDesc.Windowed = TRUE;
+  swapChainDesc.Windowed = FALSE;
 }
