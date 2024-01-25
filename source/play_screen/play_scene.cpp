@@ -37,6 +37,10 @@ auto play_scene::Update(__int64 ticks) -> bool
   m_playerDestination.x += gamepad_reader::thumb_lx() * 200;
   m_playerDestination.y -= gamepad_reader::thumb_ly() * 200;
   m_levelContainer->SetPlayerDestination(m_playerDestination);
+  auto cxRight = gamepad_reader::thumb_rx() * 400 * game_clock::getInterval(ticks);
+  auto cyRight = gamepad_reader::thumb_ry() * -400 * game_clock::getInterval(ticks);
+  m_targetOffset = direct2d::ShiftPosition(m_targetOffset, cxRight, cyRight);
+  m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
@@ -56,18 +60,9 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  auto cxRight = gamepad_reader::thumb_rx() * m_targetRange;
-  auto cyRight = gamepad_reader::thumb_ry() * -m_targetRange;
+  m_levelContainer->SetTargetPosition(m_targetPosition);
 
-  auto targetPosition = cxRight || cyRight ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight)) : std::nullopt;
-
-  m_levelContainer->SetTargetPosition(targetPosition);
-
-  if( targetPosition )
-  {
-    renderer::render(target_position { *targetPosition });
-  }
-
+  renderer::render(target_position { m_targetPosition });
   renderer::render(player_destination { m_playerDestination });
 }
 
