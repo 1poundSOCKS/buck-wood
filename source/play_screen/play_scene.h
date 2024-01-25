@@ -48,5 +48,6 @@ protected:
   level_container_ptr m_levelContainer;
   play_events m_playEvents;
   float m_cameraZoom { 1 };
+  D2D1_POINT_2F m_playerDestination { 0 , 0 };
 
 };

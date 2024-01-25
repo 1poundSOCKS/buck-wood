@@ -4,6 +4,7 @@
 #include "level_objects.h"
 #include "player_shields.h"
 #include "hud_target.h"
+#include "target_position.h"
 #include "player_destination.h"
 
 #include "level_target_renderer.h"
@@ -43,6 +44,8 @@ private:
   auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
   auto Render(const player_destination& playerDestination) const -> void;
+  auto Render(const target_position& targetPosition) const -> void;
+  
 
 private:
 
@@ -62,7 +65,8 @@ private:
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
   render_brush m_hudTargetBrush { screen_render_brush_yellow.CreateBrush() };
-  render_brush m_hudDestinationBrush { screen_render_brush_grey.CreateBrush() };
+  render_brush m_targetPositionBrush { screen_render_brush_red.CreateBrush() };
+  render_brush m_playerDestinationBrush { screen_render_brush_green.CreateBrush() };
 
 };
 
@@ -159,7 +163,12 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
   render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudTargetBrush.get(), 3.0f);
 }
 
+inline auto renderer::Render(const target_position& targetPosition) const -> void
+{
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(targetPosition.Position(), 100, 100), m_targetPositionBrush.get(), 5.0f);
+}
+
 inline auto renderer::Render(const player_destination& playerDestination) const -> void
 {
-  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 100, 100), m_hudDestinationBrush.get(), 3.0f);
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 50, 50), m_playerDestinationBrush.get(), 5.0f);
 }

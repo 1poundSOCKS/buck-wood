@@ -83,6 +83,11 @@ namespace direct2d
     return { position.x + cx, position.y + cy  };
   }
 
+  inline auto ShiftPosition(D2D1_POINT_2F position, D2D1_POINT_2F value) -> D2D1_POINT_2F
+  {
+    return { position.x + value.x, position.y + value.y  };
+  }
+
   inline auto CalculateVelocity(float speed, float direction) -> VELOCITY_2F
   {
     return { speed * sin(DEGTORAD(direction)), -speed * cos(DEGTORAD(direction)) };

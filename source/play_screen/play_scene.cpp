@@ -33,6 +33,10 @@ auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
   m_playEvents.Reset();
+  m_playerDestination = m_levelContainer->PlayerPosition();
+  m_playerDestination.x += gamepad_reader::thumb_lx() * 200;
+  m_playerDestination.y -= gamepad_reader::thumb_ly() * 200;
+  m_levelContainer->SetPlayerDestination(m_playerDestination);
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
@@ -52,13 +56,6 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  auto cxLeft = gamepad_reader::thumb_lx() * m_playerDestinationRange;
-  auto cyLeft = gamepad_reader::thumb_ly() * -m_playerDestinationRange;
-
-  auto playerDestination = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxLeft, cyLeft);
-
-  m_levelContainer->SetPlayerDestination(playerDestination);
-
   auto cxRight = gamepad_reader::thumb_rx() * m_targetRange;
   auto cyRight = gamepad_reader::thumb_ry() * -m_targetRange;
 
@@ -68,8 +65,10 @@ auto play_scene::Render() const -> void
 
   if( targetPosition )
   {
-    renderer::render(player_destination { *targetPosition });
+    renderer::render(target_position { *targetPosition });
   }
+
+  renderer::render(player_destination { m_playerDestination });
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
