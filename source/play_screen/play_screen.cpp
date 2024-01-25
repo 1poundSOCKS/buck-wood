@@ -55,7 +55,11 @@ auto play_screen::Render() -> void
   m_sceneController.RenderScene();
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderUI();
-  RenderDiagnostics();
+
+  if( game_settings::showDiagnostics() )
+  {
+    RenderDiagnostics();
+  }
 }
 
 auto play_screen::RenderUI() -> void

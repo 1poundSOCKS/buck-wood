@@ -41,13 +41,14 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   log::write(log::type::info, "app started");
 
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
-  game_settings::load();
 
+  game_settings::load();
   game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(120));
   log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
-
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
   log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
+  game_settings::setShowDiagnostics(command_line::contains(L"-d"));
+  log::write(log::type::info, "diagnostics {}", game_settings::showDiagnostics() ? "ON" : "OFF");
 
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
@@ -60,15 +61,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   audio_events::create();
 
   game_volume_controller::create();
-
-  auto savedEffectsVolume = game_settings::effectsVolume();
-  auto savedMusicVolume = game_settings::musicVolume();
-
-  game_volume_controller::setEffectsVolume(0);
-  game_volume_controller::setMusicVolume(0);
-
-  game_volume_controller::setEffectsVolume(savedEffectsVolume);
-  game_volume_controller::setMusicVolume(savedMusicVolume);
+  game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
+  game_volume_controller::setMusicVolume(game_settings::musicVolume());
 
   game_clock::setMultiplier(1.6f);
 
