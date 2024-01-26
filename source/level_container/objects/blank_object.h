@@ -7,7 +7,7 @@ class blank_object
 
 public:
 
-  blank_object(std::ranges::input_range auto&& points) : m_geometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), points) } {}
+  blank_object(std::ranges::input_range auto&& points) : m_geometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), points, D2D1_FIGURE_END_CLOSED) } {}
 
   [[nodiscard]] auto Geometry() const -> winrt::com_ptr<ID2D1PathGeometry>
   {

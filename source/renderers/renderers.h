@@ -165,10 +165,10 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
 
 inline auto renderer::Render(const target_position& targetPosition) const -> void
 {
-  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(targetPosition.Position(), 100, 100), m_targetPositionBrush.get(), 5.0f);
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(targetPosition.Position(), 100, 100), m_targetPositionBrush.get(), 3.0f);
 }
 
 inline auto renderer::Render(const player_destination& playerDestination) const -> void
 {
-  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 50, 50), m_playerDestinationBrush.get(), 5.0f);
+  render_target::get()->DrawRectangle(direct2d::GetRectAtPosition(playerDestination.Position(), 50, 50), m_playerDestinationBrush.get(), 3.0f);
 }

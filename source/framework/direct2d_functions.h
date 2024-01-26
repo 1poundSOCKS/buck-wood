@@ -11,7 +11,7 @@ namespace direct2d
   [[nodiscard]] auto CreateTransformedGeometry(ID2D1Factory* d2dFactory, ID2D1Geometry* geometry, const D2D1_MATRIX_3X2_F& transform) -> winrt::com_ptr<ID2D1TransformedGeometry>;
   [[nodiscard]] auto CreateScreenRenderBrush(ID2D1RenderTarget* renderTarget, D2D1::ColorF color) -> winrt::com_ptr<ID2D1SolidColorBrush>;
 
-  auto LoadPathGeometry(ID2D1PathGeometry* geometry, std::ranges::input_range auto&& points) -> void
+  auto LoadPathGeometry(ID2D1PathGeometry* geometry, std::ranges::input_range auto&& points, D2D1_FIGURE_END figureEnd) -> void
   {
     winrt::com_ptr<ID2D1GeometrySink> sink;
     geometry->Open(sink.put());
@@ -24,14 +24,14 @@ namespace direct2d
       sink->AddLine({ (*next).x, (*next).y });
     }
 
-    sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+    sink->EndFigure(figureEnd);
     sink->Close();
   }
 
-  [[nodiscard]] auto CreatePathGeometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points) -> winrt::com_ptr<ID2D1PathGeometry>
+  [[nodiscard]] auto CreatePathGeometry(ID2D1Factory* d2dFactory, std::ranges::input_range auto&& points, D2D1_FIGURE_END figureEnd) -> winrt::com_ptr<ID2D1PathGeometry>
   {
     winrt::com_ptr<ID2D1PathGeometry> geometry { CreatePathGeometry(d2dFactory) };
-    LoadPathGeometry(geometry.get(), points);
+    LoadPathGeometry(geometry.get(), points, figureEnd);
     return geometry;
   }
 
