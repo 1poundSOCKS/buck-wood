@@ -150,9 +150,9 @@ auto destroy_input_devices() -> void
 auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-  swapChainDesc.BufferCount = 2;
-  swapChainDesc.BufferDesc.Width = 1920;
-  swapChainDesc.BufferDesc.Height = 1080;
+  swapChainDesc.BufferCount = 3;
+  swapChainDesc.BufferDesc.Width = 2560;
+  swapChainDesc.BufferDesc.Height = 1440;
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   auto framerate = game_settings::framerate();
   swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
