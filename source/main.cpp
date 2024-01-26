@@ -44,14 +44,24 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   game_settings::load();
   game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(120));
-  log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
-  log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
   game_settings::setShowDiagnostics(command_line::contains(L"-d"));
+
+  log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
+  log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
   log::write(log::type::info, "diagnostics {}", game_settings::showDiagnostics() ? "ON" : "OFF");
 
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
+
+  int width = GetSystemMetrics(SM_CXSCREEN);
+  int height = GetSystemMetrics(SM_CYSCREEN);
+
+  game_settings::setRenderTargetWidth(width);
+  game_settings::setRenderTargetHeight(height);
+
+  log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
+  log::write(log::type::info, "render target height {}", game_settings::renderTargetHeight());
 
   create_directx_objects(instance);
 

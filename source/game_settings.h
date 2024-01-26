@@ -9,12 +9,16 @@ public:
   static auto save() -> void;
 
   static auto setFramerate(std::optional<int> value) -> void;
+  static auto setRenderTargetWidth(int value) -> void;
+  static auto setRenderTargetHeight(int value) -> void;
   static auto setFullscreen(bool value) -> void;
   static auto setShowDiagnostics(bool value) -> void;
   static auto setEffectsVolume(int value) -> int;
   static auto setMusicVolume(int value) -> int;
 
   static [[nodiscard]] auto framerate() -> std::optional<int>;
+  static [[nodiscard]] auto renderTargetWidth() -> int;
+  static [[nodiscard]] auto renderTargetHeight() -> int;
   static [[nodiscard]] auto fullscreen() -> bool;
   static [[nodiscard]] auto showDiagnostics() -> bool;
   static [[nodiscard]] auto effectsVolume() -> int;
@@ -32,8 +36,10 @@ private:
   std::optional<int> m_framerate { 60 };
   bool m_fullscreen { true };
   bool m_showDiagnostics { false };
-  int m_effectsVolume { 10 };
-  int m_musicVolume { 10 };
+  int m_effectsVolume { 6 };
+  int m_musicVolume { 7 };
+  int m_renderTargetWidth { 2560 };
+  int m_renderTargetHeight { 1440 };
 
 };
 
@@ -63,6 +69,16 @@ inline auto game_settings::setFramerate(std::optional<int> value) -> void
   m_instance->m_framerate = value;
 }
 
+inline auto game_settings::setRenderTargetWidth(int value) -> void
+{
+  m_instance->m_renderTargetWidth = value;
+}
+
+inline auto game_settings::setRenderTargetHeight(int value) -> void
+{
+  m_instance->m_renderTargetHeight = value;
+}
+
 inline auto game_settings::setFullscreen(bool value) -> void
 {
   m_instance->m_fullscreen = value;
@@ -86,6 +102,16 @@ inline auto game_settings::setMusicVolume(int value) -> int
 inline [[nodiscard]] auto game_settings::framerate() -> std::optional<int>
 {
   return m_instance->m_framerate;
+}
+
+inline [[nodiscard]] auto game_settings::renderTargetWidth() -> int
+{
+  return m_instance->m_renderTargetWidth;
+}
+
+inline [[nodiscard]] auto game_settings::renderTargetHeight() -> int
+{
+  return m_instance->m_renderTargetHeight;
 }
 
 inline [[nodiscard]] auto game_settings::fullscreen() -> bool
