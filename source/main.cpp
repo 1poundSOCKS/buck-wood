@@ -42,26 +42,24 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   pseudo_random_generator::seed(static_cast<unsigned int>(performance_counter::QueryValue()));
 
+  int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+  int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
   game_settings::load();
   game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(120));
+  game_settings::setRenderTargetWidth(screenWidth);
+  game_settings::setRenderTargetHeight(screenHeight);
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
   game_settings::setShowDiagnostics(command_line::contains(L"-d"));
 
   log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
   log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
   log::write(log::type::info, "diagnostics {}", game_settings::showDiagnostics() ? "ON" : "OFF");
+  log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
+  log::write(log::type::info, "render target height {}", game_settings::renderTargetHeight());
 
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
-
-  int width = GetSystemMetrics(SM_CXSCREEN);
-  int height = GetSystemMetrics(SM_CYSCREEN);
-
-  game_settings::setRenderTargetWidth(width);
-  game_settings::setRenderTargetHeight(height);
-
-  log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
-  log::write(log::type::info, "render target height {}", game_settings::renderTargetHeight());
 
   create_directx_objects(instance);
 
@@ -161,8 +159,8 @@ auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
   swapChainDesc.BufferCount = 3;
-  swapChainDesc.BufferDesc.Width = 2560;
-  swapChainDesc.BufferDesc.Height = 1440;
+  swapChainDesc.BufferDesc.Width = game_settings::renderTargetWidth();
+  swapChainDesc.BufferDesc.Height = game_settings::renderTargetHeight();
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   auto framerate = game_settings::framerate();
   swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
