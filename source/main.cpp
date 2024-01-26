@@ -97,7 +97,7 @@ auto RunMainMenuScreen() -> void
 {
   log::write(log::type::info, "opening main menu screen");
   screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
-  windows_message_loop::run(mainMenu);  
+  windows_message_loop::run(mainMenu);
 }
 
 auto create_directx_objects(HINSTANCE instance) -> void
