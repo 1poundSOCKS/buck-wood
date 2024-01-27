@@ -35,11 +35,11 @@ private:
 
   std::optional<int> m_framerate { 60 };
   bool m_fullscreen { true };
+  int m_renderTargetWidth { 2560 };
+  int m_renderTargetHeight { 1440 };
   bool m_showDiagnostics { false };
   int m_effectsVolume { 6 };
   int m_musicVolume { 7 };
-  int m_renderTargetWidth { 2560 };
-  int m_renderTargetHeight { 1440 };
 
 };
 
