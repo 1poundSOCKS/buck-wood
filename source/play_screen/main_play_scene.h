@@ -36,10 +36,12 @@ public:
   {
     audio_events::StopPlayerThruster();
     audio_events::StopGameplayTheme();
+    audio_events::StartMainMenuTheme();
   }
 
   auto Resume() -> void override
   {
+    audio_events::StopMainMenuTheme();
     audio_events::StartGameplayTheme();
   }
 
