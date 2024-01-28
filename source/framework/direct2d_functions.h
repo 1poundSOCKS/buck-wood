@@ -64,7 +64,7 @@ namespace direct2d
     return SUCCEEDED(geometry->GetBounds(NULL, &bounds)) ? GetRadiusFromBounds(bounds) : 0;
   }
 
-  inline auto GetAngleBetween(D2D1_POINT_2F startPoint, D2D1_POINT_2F endPoint) -> float
+  inline auto GetAngleBetweenPoints(D2D1_POINT_2F startPoint, D2D1_POINT_2F endPoint) -> float
   {
     float radians = atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
     float degrees = RADTODEG(radians);
@@ -110,6 +110,13 @@ namespace direct2d
 
   inline auto CalculateDirection(VELOCITY_2F velocity) -> float
   {
-    return direct2d::GetAngleBetween({0, 0}, {velocity.x, velocity.y});
+    return direct2d::GetAngleBetweenPoints({0, 0}, {velocity.x, velocity.y});
+  }
+
+  inline auto GetAngleDifference(float referenceAngle, float bearing) -> float
+  {
+    auto angleDifference = bearing - referenceAngle;
+    angleDifference = angleDifference > 180 ? angleDifference - 360 : angleDifference;
+    return angleDifference < -180 ? angleDifference + 360 : angleDifference;
   }
 }

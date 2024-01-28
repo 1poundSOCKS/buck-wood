@@ -14,7 +14,7 @@ public:
   auto RotateClockwise(float angle) -> void;
   auto RotateAnticlockwise(float angle) -> void;
   auto FacePosition(D2D1_POINT_2F position) -> void;
-
+  auto Move(float distance) -> void;
   auto Accelerate(float value) -> void;
 
   [[nodiscard]] auto Angle() const -> float;
@@ -72,7 +72,14 @@ inline auto directional_body::RotateAnticlockwise(float angle) -> void
 
 inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 {
-  m_angle = direct2d::GetAngleBetween(m_position, position);
+  m_angle = direct2d::GetAngleBetweenPoints(m_position, position);
+}
+
+inline auto directional_body::Move(float distance) -> void
+{
+  auto moveDistance = direct2d::CalculateVelocity(distance, m_angle);
+  m_position.x += moveDistance.x;
+  m_position.y += moveDistance.y;
 }
 
 inline auto directional_body::Accelerate(float amount) -> void

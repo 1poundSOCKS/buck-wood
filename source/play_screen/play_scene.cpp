@@ -32,16 +32,23 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
+  
   m_playEvents.Reset();
+  
   m_playerDestination = m_levelContainer->PlayerPosition();
-  m_playerDestination.x += gamepad_reader::thumb_lx() * 200;
-  m_playerDestination.y -= gamepad_reader::thumb_ly() * 200;
-  m_levelContainer->SetPlayerDestination(m_playerDestination);
+  m_playerDestination.x += gamepad_reader::thumb_lx() * 500;
+  m_playerDestination.y -= gamepad_reader::thumb_ly() * 500;
+  
+  if( gamepad_reader::pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) ) m_levelContainer->SetPlayerDestination(m_playerDestination);
+
   auto cxRight = gamepad_reader::thumb_rx() * 400 * game_clock::getInterval(ticks);
   auto cyRight = gamepad_reader::thumb_ry() * -400 * game_clock::getInterval(ticks);
+
   m_targetOffset = direct2d::ShiftPosition(m_targetOffset, cxRight, cyRight);
   m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
+
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
+
   return m_levelContainer->HasFinished() ? false : true;
 }
 

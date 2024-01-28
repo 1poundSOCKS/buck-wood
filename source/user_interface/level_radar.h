@@ -10,7 +10,7 @@ public:
 
   [[nodiscard]] auto AngleTo(D2D1_POINT_2F target) const -> float
   {
-    return direct2d::GetAngleBetween(m_position, target);
+    return direct2d::GetAngleBetweenPoints(m_position, target);
   }
 
   [[nodiscard]] auto DistanceTo(D2D1_POINT_2F target) const -> float

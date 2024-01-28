@@ -69,7 +69,7 @@ inline gamepad_thumbstick::gamepad_thumbstick(SHORT lx, SHORT ly, SHORT deadzone
 
 [[nodiscard]] inline auto gamepad_thumbstick::Angle() const -> float
 {
-  return direct2d::GetAngleBetween({ 0, 0 } , { static_cast<float>(m_x), static_cast<float>(-m_y) });
+  return direct2d::GetAngleBetweenPoints({ 0, 0 } , { static_cast<float>(m_x), static_cast<float>(-m_y) });
 }
 
 [[nodiscard]] inline auto gamepad_thumbstick::Distance() const -> float

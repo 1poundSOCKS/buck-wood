@@ -15,7 +15,7 @@ public:
   auto Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
   {
     float newSpeed = std::min(moving_body::Speed() + m_thrust, m_maxSpeed);
-    auto angleToTarget = targetPosition ? direct2d::GetAngleBetween(m_position, *targetPosition) : moving_body::Direction();
+    auto angleToTarget = targetPosition ? direct2d::GetAngleBetweenPoints(m_position, *targetPosition) : moving_body::Direction();
     moving_body::SetDirection(angleToTarget);
     moving_body::SetSpeed(newSpeed);
     moving_body::Update(interval);
