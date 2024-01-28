@@ -30,7 +30,16 @@ auto player_ship::Update(float interval) -> void
     if( angleDifference >= -rotationSpeed && angleDifference <= rotationSpeed )
     {
       m_body.SetAngle(angleToDestination);
-      m_body.Move(1);
+      auto distanceToGo = m_destination ? direct2d::GetDistanceBetweenPoints(m_body.Position(), *m_destination) : 0;
+
+      if( distanceToGo < 5 )
+      {
+        m_body.SetPosition(m_destination ? *m_destination : m_body.Position());
+      }
+      else
+      {
+        m_body.Move(m_destination ? 5.0f : 0);
+      }
     }
     else
     {
