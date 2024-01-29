@@ -77,9 +77,9 @@ inline auto directional_body::FacePosition(D2D1_POINT_2F position) -> void
 
 inline auto directional_body::Move(float distance) -> void
 {
-  auto moveDistance = direct2d::CalculateVelocity(distance, m_angle);
-  m_position.x += moveDistance.x;
-  m_position.y += moveDistance.y;
+  auto relativePosition = direct2d::CalculatePosition(distance, m_angle);
+  relativePosition.x += relativePosition.x;
+  relativePosition.y += relativePosition.y;
 }
 
 inline auto directional_body::Accelerate(float amount) -> void
