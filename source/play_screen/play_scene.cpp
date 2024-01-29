@@ -35,17 +35,23 @@ auto play_scene::Update(__int64 ticks) -> bool
   
   m_playEvents.Reset();
   
-  m_playerDestination = m_levelContainer->PlayerPosition();
-  m_playerDestination.x += gamepad_reader::thumb_lx() * 500;
-  m_playerDestination.y -= gamepad_reader::thumb_ly() * 500;
+  auto thumbLX = gamepad_reader::thumb_lx();
+  auto thumbLY = -gamepad_reader::thumb_ly();
+
+  std::optional<D2D1_POINT_2F> leftThumbstickPosition = thumbLX || thumbLY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbLX, thumbLY } } : std::nullopt;
+
+  m_playerDestination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *leftThumbstickPosition)) : std::nullopt;
   
-  if( gamepad_reader::pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) ) m_levelContainer->SetPlayerDestination(m_playerDestination);
+  m_levelContainer->SetPlayerDestination(m_playerDestination);
 
-  auto cxRight = gamepad_reader::thumb_rx() * 400 * game_clock::getInterval(ticks);
-  auto cyRight = gamepad_reader::thumb_ry() * -400 * game_clock::getInterval(ticks);
+  auto cxRight = gamepad_reader::thumb_rx() * 200;
+  auto cyRight = gamepad_reader::thumb_ry() * -200;
 
-  m_targetOffset = direct2d::ShiftPosition(m_targetOffset, cxRight, cyRight);
+  m_targetOffset = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight);
+
   m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
+  m_levelContainer->SetTargetPosition(m_targetPosition);
+  m_levelContainer->SetTargetDirection(direct2d::GetAngleBetweenPoints(m_levelContainer->PlayerPosition(), m_targetPosition));
 
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
 
@@ -60,6 +66,7 @@ auto play_scene::Render() const -> void
   m_levelContainer->Render(GetRenderTargetView(transform));
 
   auto targettedObject = m_levelContainer->TargettedObject();
+
   if( targettedObject )
   {
     auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
@@ -67,10 +74,8 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  m_levelContainer->SetTargetPosition(m_targetPosition);
-
   renderer::render(target_position { m_targetPosition });
-  renderer::render(player_destination { m_playerDestination });
+  if( m_playerDestination ) renderer::render(player_destination { *m_playerDestination });
 }
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F

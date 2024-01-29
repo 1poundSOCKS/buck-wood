@@ -46,8 +46,12 @@ public:
 
 private:
 
-  static constexpr float m_thrustPower { 400.0f };
+  static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float;
+  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, D2D1_POINT_2F destination) -> D2D1_POINT_2F;
 
+private:
+
+  static constexpr float m_thrustPower { 400.0f };
   state m_state { state::alive };
   directional_body m_body;
   directional_body m_previousState;

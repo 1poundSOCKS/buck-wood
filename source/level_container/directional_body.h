@@ -80,6 +80,7 @@ inline auto directional_body::Move(float distance) -> void
   auto relativePosition = direct2d::CalculatePosition(distance, m_angle);
   relativePosition.x += relativePosition.x;
   relativePosition.y += relativePosition.y;
+  SetPosition(relativePosition);
 }
 
 inline auto directional_body::Accelerate(float amount) -> void
