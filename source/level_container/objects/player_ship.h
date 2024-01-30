@@ -56,6 +56,7 @@ private:
   directional_body m_body;
   directional_body m_previousState;
   float m_thrust { 0 };
+  bool m_thrusterOn { false };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
@@ -128,7 +129,7 @@ inline [[nodiscard]] auto player_ship::State() const -> state
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
-  return m_thrust > 0 ? true : false;
+  return m_thrusterOn;
 }
 
 inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_status&

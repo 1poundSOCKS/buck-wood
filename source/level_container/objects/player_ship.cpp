@@ -13,6 +13,7 @@ auto player_ship::Update(float interval) -> void
     m_body.SetAngle(m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_body.Angle());
     m_body.SetVelocity(m_destination ? direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(1, m_body.Angle())) : m_body.Velocity());
     m_body.SetPosition(GetUpdatedPosition(Position(), m_body.Velocity(), m_body.Angle(), interval));
+    m_thrusterOn = m_destination ? true : false;
   }
 }
 
