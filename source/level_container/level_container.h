@@ -22,7 +22,6 @@ public:
   auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
   auto SetPlayerDestination(std::optional<D2D1_POINT_2F> position) -> void;
   auto SetTargetPosition(std::optional<D2D1_POINT_2F> position) -> void;
-  auto SetTargetDirection(float value) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
@@ -79,7 +78,6 @@ private:
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
   std::optional<D2D1_POINT_2F> m_targetPosition;
-  float m_targetDirection { 0 };
 
   int m_maxCollisionCount { 0 };
 

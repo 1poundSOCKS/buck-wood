@@ -38,20 +38,24 @@ auto play_scene::Update(__int64 ticks) -> bool
   auto thumbLX = gamepad_reader::thumb_lx();
   auto thumbLY = -gamepad_reader::thumb_ly();
 
+  auto thumbRX = gamepad_reader::thumb_rx();
+  auto thumbRY = -gamepad_reader::thumb_ry();
+
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = thumbLX || thumbLY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbLX, thumbLY } } : std::nullopt;
+  std::optional<D2D1_POINT_2F> rightThumbstickPosition = thumbRX || thumbRY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbRX, thumbRY } } : std::nullopt;
 
   m_playerDestination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *leftThumbstickPosition)) : std::nullopt;
   
   m_levelContainer->SetPlayerDestination(m_playerDestination);
 
-  auto cxRight = gamepad_reader::thumb_rx() * 200;
-  auto cyRight = gamepad_reader::thumb_ry() * -200;
+  // m_targetOffset = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), );
 
-  m_targetOffset = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), cxRight, cyRight);
+  // m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
 
-  m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
+  m_targetPosition = rightThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *rightThumbstickPosition)) : std::nullopt;
+
   m_levelContainer->SetTargetPosition(m_targetPosition);
-  m_levelContainer->SetTargetDirection(direct2d::GetAngleBetweenPoints(m_levelContainer->PlayerPosition(), m_targetPosition));
+  // m_levelContainer->SetTargetDirection(direct2d::GetAngleBetweenPoints(m_levelContainer->PlayerPosition(), m_targetPosition));
 
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
 
@@ -74,7 +78,7 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  renderer::render(target_position { m_targetPosition });
+  if( m_targetPosition ) renderer::render(target_position { *m_targetPosition });
   if( m_playerDestination ) renderer::render(player_destination { *m_playerDestination });
 }
 

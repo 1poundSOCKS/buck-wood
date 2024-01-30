@@ -16,11 +16,6 @@ auto level_container::SetTargetPosition(std::optional<D2D1_POINT_2F> position) -
   m_targetPosition = position;
 }
 
-auto level_container::SetTargetDirection(float value) -> void
-{
-  m_targetDirection = value;
-}
-
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
@@ -212,14 +207,14 @@ auto level_container::GetTargettedObject() -> targetted_object_type
 {
   if( m_targetPosition )
   {
-    // auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), *m_targetPosition);
+    auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), *m_targetPosition);
 
     constexpr auto angleSpan = 20.0f;
 
-    mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this](auto* nearest, auto& next) -> mine_object*
+    mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this, targetAngle](auto* nearest, auto& next) -> mine_object*
     {
       auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), next->Position());
-      auto angleDifference = direct2d::GetAngleDifference(m_targetDirection, mineAngle);
+      auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
       if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
       else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
     });

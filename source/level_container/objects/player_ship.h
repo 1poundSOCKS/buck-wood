@@ -47,7 +47,7 @@ public:
 private:
 
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float;
-  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, D2D1_POINT_2F destination) -> D2D1_POINT_2F;
+  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float direction, float interval) -> D2D1_POINT_2F;
 
 private:
 
