@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "gamepad_reader.h"
+#include "direct2d_functions.h"
 #include "log.h"
 
 auto gamepad_reader::create() -> void
@@ -94,6 +95,20 @@ auto gamepad_reader::set_stick_deadzone(float value) -> void
   m_instance->m_stickDeadzone = value;
 }
 
+auto gamepad_reader::invert_y_axis() -> void
+{
+  m_instance->m_yAxisInverted = !m_instance->m_yAxisInverted;
+}
+
+[[nodiscard]] auto gamepad_reader::left_thumbstick() -> thumbstick_position
+{
+  auto thumbLX = ToFloat(m_instance->m_currentState->ThumbLX());
+  auto thumbLY = m_instance->m_yAxisInverted ? -ToFloat(m_instance->m_currentState->ThumbLY()) : ToFloat(m_instance->m_currentState->ThumbLY());
+  auto angle = direct2d::GetAngleBetweenPoints({0,0}, {thumbLX, thumbLY});
+  auto distance = direct2d::GetDistanceBetweenPoints({0,0}, {thumbLX, thumbLY});
+  return distance < m_instance->m_stickDeadzone ? std::nullopt : thumbstick_position(GetStickCoordinates(angle, distance - m_instance->m_stickDeadzone));
+}
+
 gamepad_reader::gamepad_reader() : m_currentState { std::make_unique<gamepad_state>() }, m_previousState { std::make_unique<gamepad_state>() }
 {
 }
@@ -152,4 +167,10 @@ auto gamepad_reader::Update() -> void
   auto range = 1.0f - deadzone;
   auto zeroShiftedValue = ( floatValue > 0 ) ? ( floatValue - deadzone ) : ( floatValue + deadzone );
   return zeroShiftedValue / range;
+}
+
+[[nodiscard]] auto gamepad_reader::GetStickCoordinates(float angle, float distance) -> D2D1_POINT_2F
+{
+  auto position = direct2d::CalculatePosition(distance, angle);
+  return { position.x, position.y };
 }

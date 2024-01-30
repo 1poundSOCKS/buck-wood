@@ -35,13 +35,10 @@ auto play_scene::Update(__int64 ticks) -> bool
   
   m_playEvents.Reset();
   
-  auto thumbLX = gamepad_reader::thumb_lx();
-  auto thumbLY = -gamepad_reader::thumb_ly();
-
   auto thumbRX = gamepad_reader::thumb_rx();
   auto thumbRY = -gamepad_reader::thumb_ry();
 
-  std::optional<D2D1_POINT_2F> leftThumbstickPosition = thumbLX || thumbLY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbLX, thumbLY } } : std::nullopt;
+  std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = thumbRX || thumbRY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbRX, thumbRY } } : std::nullopt;
 
   m_playerDestination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *leftThumbstickPosition)) : std::nullopt;

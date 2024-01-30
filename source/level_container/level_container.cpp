@@ -209,9 +209,9 @@ auto level_container::GetTargettedObject() -> targetted_object_type
 
   if( m_targetPosition )
   {
-    auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), *m_targetPosition);
+    auto targetAngle = m_playerShip->Angle();
 
-    constexpr auto angleSpan = 20.0f;
+    constexpr auto angleSpan = 10.0f;
 
     mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this, targetAngle](auto* nearest, auto& next) -> mine_object*
     {
@@ -223,8 +223,11 @@ auto level_container::GetTargettedObject() -> targetted_object_type
 
     auto activeTargets = std::ranges::views::filter(m_targets, [](const auto& target) { return target->IsActivated() ? false : true; });
 
-    target_object* nearestTarget = std::accumulate(std::ranges::begin(activeTargets), std::ranges::end(activeTargets), static_cast<target_object*>(nullptr), [this](auto* nearest, auto& next) -> target_object*
+    target_object* nearestTarget = std::accumulate(std::ranges::begin(activeTargets), std::ranges::end(activeTargets), static_cast<target_object*>(nullptr), [this, targetAngle](auto* nearest, auto& next) -> target_object*
     {
+      auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), next->Position());
+      auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
+      if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
       return nearest ? &GetNearestToTarget(*nearest, next) : &next;
     });
 

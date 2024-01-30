@@ -49,7 +49,6 @@ protected:
   play_events m_playEvents;
   float m_cameraZoom { 1 };
   std::optional<D2D1_POINT_2F> m_playerDestination;
-  // D2D1_POINT_2F m_targetOffset { 0 , 0 };
   std::optional<D2D1_POINT_2F> m_targetPosition;
 
 };

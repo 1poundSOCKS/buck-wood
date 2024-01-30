@@ -7,6 +7,8 @@ class gamepad_reader
 
 public:
 
+  using thumbstick_position = std::optional<D2D1_POINT_2F>;
+
   static auto create() -> void;
   static auto destroy() -> void;
 
@@ -30,6 +32,9 @@ public:
   static [[nodiscard]] auto buttons() -> WORD;
 
   static auto set_stick_deadzone(float value) -> void;
+  static auto invert_y_axis() -> void;
+
+  static [[nodiscard]] auto left_thumbstick() -> thumbstick_position;
 
 private:
 
@@ -47,10 +52,13 @@ private:
   static [[nodiscard]] auto ToFloat(BYTE value) -> float;
   static [[nodiscard]] auto ScaleToLivezone(float floatValue, float deadzone) -> float;
 
+  static [[nodiscard]] auto GetStickCoordinates(float angle, float distance) -> D2D1_POINT_2F;
+
 private:
 
   inline static gamepad_reader* m_instance { nullptr };
   std::unique_ptr<gamepad_state> m_currentState;
   std::unique_ptr<gamepad_state> m_previousState;
-  float m_stickDeadzone { 0.1 };
+  float m_stickDeadzone { 0.2 };
+  bool m_yAxisInverted { false };
 };

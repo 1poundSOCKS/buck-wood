@@ -72,6 +72,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
   game_volume_controller::setMusicVolume(game_settings::musicVolume());
 
+  gamepad_reader::invert_y_axis();
+
   game_clock::setMultiplier(1.6f);
 
   RunMainMenuScreen();
