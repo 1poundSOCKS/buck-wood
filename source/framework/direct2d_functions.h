@@ -124,4 +124,9 @@ namespace direct2d
     angleDifference = angleDifference > 180 ? angleDifference - 360 : angleDifference;
     return angleDifference < -180 ? angleDifference + 360 : angleDifference;
   }
+
+  inline auto CalculatePosition(D2D1_POINT_2F position, float angle, float distance) -> D2D1_POINT_2F
+  {
+    return ShiftPosition(position, CalculatePosition(distance, angle));
+  }
 }

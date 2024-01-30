@@ -205,6 +205,8 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::GetTargettedObject() -> targetted_object_type
 {
+  m_targetPosition = direct2d::CalculatePosition(m_playerShip->Position(), m_playerShip->Angle(), 100);
+
   if( m_targetPosition )
   {
     auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), *m_targetPosition);
