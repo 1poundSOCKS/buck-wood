@@ -45,18 +45,10 @@ auto play_scene::Update(__int64 ticks) -> bool
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = thumbRX || thumbRY  ? std::optional<D2D1_POINT_2F> { D2D1_POINT_2F { thumbRX, thumbRY } } : std::nullopt;
 
   m_playerDestination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *leftThumbstickPosition)) : std::nullopt;
-  
-  m_levelContainer->SetPlayerDestination(m_playerDestination);
-
-  // m_targetOffset = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), );
-
-  // m_targetPosition = direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), m_targetOffset);
-
   m_targetPosition = rightThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *rightThumbstickPosition)) : std::nullopt;
 
+  m_levelContainer->SetPlayerDestination(m_playerDestination);
   m_levelContainer->SetTargetPosition(m_targetPosition);
-  // m_levelContainer->SetTargetDirection(direct2d::GetAngleBetweenPoints(m_levelContainer->PlayerPosition(), m_targetPosition));
-
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
 
   return m_levelContainer->HasFinished() ? false : true;
