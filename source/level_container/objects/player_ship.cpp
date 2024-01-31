@@ -12,7 +12,7 @@ auto player_ship::Update(float interval) -> void
     auto rightTriggerValue = gamepad_reader::right_trigger();
     m_previousState = m_body;
     m_body.SetAngle(m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_body.Angle());
-    m_body.SetVelocity(rightTriggerValue > 0 ? direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(1, m_body.Angle())) : m_body.Velocity());
+    m_body.SetVelocity(rightTriggerValue > 0 ? direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(rightTriggerValue * m_thrustPower * interval, m_body.Angle())) : m_body.Velocity());
     m_body.SetPosition(GetUpdatedPosition(Position(), m_body.Velocity(), m_body.Angle(), interval));
     m_thrusterOn = rightTriggerValue ? true : false;
     m_triggerDown = gamepad_reader::button_down(XINPUT_GAMEPAD_A);
