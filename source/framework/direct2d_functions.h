@@ -125,6 +125,23 @@ namespace direct2d
     return angleDifference < -180 ? angleDifference + 360 : angleDifference;
   }
 
+  inline auto RotateAngle(float angle, float rotation) -> float
+  {
+    angle += rotation;
+    
+    while( angle < 0 )
+    {
+      angle += 360;
+    }
+    
+    while( angle >= 360 )
+    {
+      angle -= 360;
+    }
+
+    return angle;
+  }
+
   inline auto CalculatePosition(D2D1_POINT_2F position, float angle, float distance) -> D2D1_POINT_2F
   {
     return ShiftPosition(position, CalculatePosition(distance, angle));

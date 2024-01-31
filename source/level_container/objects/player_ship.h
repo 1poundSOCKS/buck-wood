@@ -3,7 +3,6 @@
 #include "framework.h"
 #include "play_event.h"
 #include "reload_timer.h"
-#include "directional_body.h"
 #include "health_status.h"
 #include "game_scale.h"
 
@@ -42,20 +41,20 @@ public:
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
-  [[nodiscard]] auto RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F;
-  [[nodiscard]] auto RelativeVelocity(float angle, float speed) const -> VELOCITY_2F;
 
 private:
 
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float;
-  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float direction, float interval) -> D2D1_POINT_2F;
+  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
 
 private:
 
   static constexpr float m_thrustPower { 400.0f };
   state m_state { state::alive };
-  directional_body m_body;
-  directional_body m_previousState;
+  D2D1_POINT_2F m_position { 0, 0 };
+  D2D1_POINT_2F m_previousPosition { 0, 0 };
+  float m_angle { 0 };
+  VELOCITY_2F m_velocity { 0, 0 };
   float m_thrust { 0 };
   bool m_thrusterOn { false };
   bool m_triggerDown { false };
@@ -67,12 +66,12 @@ private:
 
 inline auto player_ship::SetAngle(float angle) -> void
 {
-  m_body.SetAngle(angle);
+  m_angle = angle;
 }
 
 inline auto player_ship::Rotate(float angle) -> void
 {
-  m_body.Rotate(angle);
+  m_angle = direct2d::RotateAngle(m_angle, angle);
 }
 
 inline auto player_ship::SetThrust(float value) -> void
@@ -106,22 +105,22 @@ inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> v
 
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
 {
-  return m_body.Position();
+  return m_position;
 }
 
 inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
 {
-  return m_previousState.Position();
+  return m_previousPosition;
 }
 
 inline [[nodiscard]] auto player_ship::Angle() const -> float
 {
-  return m_body.Angle();
+  return m_angle;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
 {
-  return m_body.Velocity();
+  return m_velocity;
 }
 
 inline [[nodiscard]] auto player_ship::State() const -> state
@@ -147,14 +146,4 @@ inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_stat
 inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
 {
   return m_destroyed;
-}
-
-inline [[nodiscard]] auto player_ship::RelativePosition(float angle, float cx, float cy) const -> D2D1_POINT_2F
-{
-  return m_body.RelativePosition(angle, cx, cy);
-}
-
-inline [[nodiscard]] auto player_ship::RelativeVelocity(float angle, float speed) const -> VELOCITY_2F
-{
-  return direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(speed, angle));
 }

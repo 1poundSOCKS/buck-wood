@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(D2D1_POINT_2F position) : m_body { position, { 0, 0 }, 0 }, m_previousState { m_body }
+player_ship::player_ship(D2D1_POINT_2F position)
 {
 }
 
@@ -10,10 +10,10 @@ auto player_ship::Update(float interval) -> void
   if( m_state == state::alive )
   {
     auto rightTriggerValue = gamepad_reader::right_trigger();
-    m_previousState = m_body;
-    m_body.SetAngle(m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_body.Angle());
-    m_body.SetVelocity(rightTriggerValue > 0 ? direct2d::CombineVelocities(m_body.Velocity(), direct2d::CalculateVelocity(rightTriggerValue * m_thrustPower * interval, m_body.Angle())) : m_body.Velocity());
-    m_body.SetPosition(GetUpdatedPosition(Position(), m_body.Velocity(), m_body.Angle(), interval));
+    m_previousPosition = m_position;
+    m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_angle;
+    m_velocity = rightTriggerValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(rightTriggerValue * m_thrustPower * interval, m_angle)) : m_velocity;
+    m_position = GetUpdatedPosition(Position(), m_velocity, interval);
     m_thrusterOn = rightTriggerValue ? true : false;
     m_triggerDown = gamepad_reader::button_down(XINPUT_GAMEPAD_A);
   }
@@ -32,7 +32,7 @@ auto player_ship::Update(float interval) -> void
   return updatedAngle < 360 ? updatedAngle : updatedAngle - 360;
 }
 
-[[nodiscard]] auto player_ship::GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float direction, float interval) -> D2D1_POINT_2F
+[[nodiscard]] auto player_ship::GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F
 {
   return { position.x + velocity.x * interval, position.y + velocity.y * interval };
 }

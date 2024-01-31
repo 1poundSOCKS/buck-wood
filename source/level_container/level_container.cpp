@@ -196,8 +196,8 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   if( m_playerShip->ThrusterOn() && m_thrustEmmisionCounter.Get(1) == 1 )
   {
-    auto thrustPosition = m_playerShip->RelativePosition(180, 0, -20);
-    auto thrustAngle = m_playerShip->Angle() + 180;
+    auto thrustAngle = direct2d::RotateAngle(m_playerShip->Angle(), 180);
+    auto thrustPosition = direct2d::CalculatePosition(m_playerShip->Position(), thrustAngle, 20);
     auto thrustVelocity = direct2d::CombineVelocities(m_playerShip->Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
     m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
   }
