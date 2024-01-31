@@ -16,7 +16,8 @@ public:
 
   static auto update() -> void;
   
-  static [[nodiscard]] auto pressed(int button) -> bool;  
+  static [[nodiscard]] auto button_down(int button) -> bool;
+  static [[nodiscard]] auto button_pressed(int button) -> bool;
   static [[nodiscard]] auto up_pressed() -> bool;
   static [[nodiscard]] auto down_pressed() -> bool;
   static [[nodiscard]] auto left_pressed() -> bool;
@@ -41,7 +42,7 @@ private:
   gamepad_reader();
   auto Update() -> void;
 
-  [[nodiscard]] auto Pressed(int button) const -> bool;
+  [[nodiscard]] auto ButtonPressed(int button) const -> bool;
   [[nodiscard]] auto UpPressed() -> bool;
   [[nodiscard]] auto DownPressed() -> bool;
   [[nodiscard]] auto LetfPressed() -> bool;

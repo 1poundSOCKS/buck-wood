@@ -105,5 +105,5 @@ auto play_screen::LoadNextLevel() -> bool
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
-  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::pressed(XINPUT_GAMEPAD_BACK);
+  return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::button_pressed(XINPUT_GAMEPAD_BACK);
 }

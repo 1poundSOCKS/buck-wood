@@ -163,7 +163,7 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::CreateNewObjects(float interval) -> void
 {
-  if( m_targettedObject && m_playerReloadCounter.Get(1) == 1 && gamepad_reader::right_trigger() > 0 )
+  if( m_targettedObject && m_playerReloadCounter.Get(1) == 1 && m_playerShip->TriggerDown() )
   {
     auto angleToTarget = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), m_targettedObject->Position());
     m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), m_targettedObject);

@@ -30,9 +30,14 @@ auto gamepad_reader::update() -> void
   m_instance->Update();
 }
 
-[[nodiscard]] auto gamepad_reader::pressed(int button) -> bool
+[[nodiscard]] auto gamepad_reader::button_down(int button) -> bool
 {
-  return m_instance->Pressed(button);
+  return m_instance->m_currentState->Down(button);
+}
+
+[[nodiscard]] auto gamepad_reader::button_pressed(int button) -> bool
+{
+  return m_instance->ButtonPressed(button);
 }
 
 [[nodiscard]] auto gamepad_reader::up_pressed() -> bool
@@ -119,29 +124,29 @@ auto gamepad_reader::Update() -> void
   m_currentState->Update();
 }
 
-[[nodiscard]] auto gamepad_reader::Pressed(int button) const -> bool
+[[nodiscard]] auto gamepad_reader::ButtonPressed(int button) const -> bool
 {
   return m_currentState->Down(button) && !m_previousState->Down(button);
 }
 
 [[nodiscard]] auto gamepad_reader::UpPressed() -> bool
 {
-  return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_UP);
+  return m_instance->ButtonPressed(XINPUT_GAMEPAD_DPAD_UP);
 }
 
 [[nodiscard]] auto gamepad_reader::DownPressed() -> bool
 {
-  return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_DOWN);
+  return m_instance->ButtonPressed(XINPUT_GAMEPAD_DPAD_DOWN);
 }
 
 [[nodiscard]] auto gamepad_reader::LetfPressed() -> bool
 {
-  return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_LEFT);
+  return m_instance->ButtonPressed(XINPUT_GAMEPAD_DPAD_LEFT);
 }
 
 [[nodiscard]] auto gamepad_reader::RightPressed() -> bool
 {
-  return m_instance->Pressed(XINPUT_GAMEPAD_DPAD_RIGHT);
+  return m_instance->ButtonPressed(XINPUT_GAMEPAD_DPAD_RIGHT);
 }
 
 [[nodiscard]] auto gamepad_reader::ToFloat(SHORT value, float deadzone) -> float

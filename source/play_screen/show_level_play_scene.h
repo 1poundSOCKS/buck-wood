@@ -14,7 +14,7 @@ public:
   auto Update(int64_t ticks) -> bool override
   {
     SetCameraZoom(0.1f);
-    return gamepad_reader::pressed(XINPUT_GAMEPAD_A) ? false : true;
+    return gamepad_reader::button_pressed(XINPUT_GAMEPAD_A) ? false : true;
   }
 
 };
