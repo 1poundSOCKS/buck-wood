@@ -1,6 +1,6 @@
 #pragma once
 
-#include "moving_body.h"
+#include "direct2d_functions.h"
 
 class bullet
 {
@@ -23,7 +23,9 @@ private:
   inline static const float m_bulletRange = 2000.0f;
 
   D2D1_POINT_2F m_startPosition;
-  moving_body m_body;
+  D2D1_POINT_2F m_position;
+  VELOCITY_2F m_velocity;
+  float m_direction;
   float m_range = 1000;
   float m_distanceTravelled { 0 };
   bool m_destroyed = false;
