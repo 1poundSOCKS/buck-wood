@@ -98,6 +98,11 @@ namespace direct2d
     return { distance * sin(DEGTORAD(direction)), -distance * cos(DEGTORAD(direction)) };
   }
 
+  inline auto CalculatePosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F
+  {
+    return { position.x + velocity.x * interval, position.y + velocity.y * interval };
+  }
+
   inline auto CombineVelocities(VELOCITY_2F velocity1, VELOCITY_2F velocity2) -> VELOCITY_2F
   {
     return { velocity1.x + velocity2.x, velocity1.y + velocity2.y };
