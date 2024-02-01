@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "game_scale.h"
 
 class level_asteroid
 {
@@ -10,7 +9,7 @@ public:
 
   level_asteroid(D2D1_POINT_2F position, float maxWidth, float maxHeight);
 
-  [[nodiscard]] auto Scale() const -> game_scale
+  [[nodiscard]] auto Scale() const -> SCALE_2F
   {
     return { 1.0f, 1.0f };
   }

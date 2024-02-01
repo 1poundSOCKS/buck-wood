@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "game_scale.h"
 
 class duct_fan
 {
@@ -13,22 +12,19 @@ public:
   {
   }
 
-  [[nodiscard]] auto Scale() const -> game_scale { return m_scale; };
+  [[nodiscard]] auto Scale() const -> SCALE_2F { return m_scale; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
 
   auto Update(float interval) -> void
   {
-#ifdef DUCTFAN_DYNAMIC_SCALE
-    m_scale += game_scale { 0.002f, 0.0f };
-#endif
     m_angle = direct2d::RotateAngle(m_angle, m_rotationSpeed * interval);
   }
 
 private:
 
   inline static std::uniform_int_distribution<int> m_angleDist { 0, 359 };
-  game_scale m_scale { 0.5f, 1.0f };
+  SCALE_2F m_scale { 0.5f, 1.0f };
   float m_angle { 0 };
   D2D1_POINT_2F m_position;
   float m_rotationSpeed { 0 };

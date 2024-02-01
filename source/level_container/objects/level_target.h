@@ -2,7 +2,6 @@
 
 #include "play_event.h"
 #include "reload_timer.h"
-#include "game_scale.h"
 
 class level_target
 {
@@ -11,7 +10,7 @@ public:
 
   level_target(D2D1_POINT_2F position);
 
-  [[nodiscard]] auto Scale() const -> game_scale;
+  [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   auto Update(float interval) -> void;
@@ -38,9 +37,9 @@ private:
 
 };
 
-inline [[nodiscard]] auto level_target::Scale() const -> game_scale
+inline [[nodiscard]] auto level_target::Scale() const -> SCALE_2F
 {
-  return game_scale { 1.0f, 1.0f };
+  return { 1.0f, 1.0f };
 }
 
 inline [[nodiscard]] auto level_target::Angle() const -> float

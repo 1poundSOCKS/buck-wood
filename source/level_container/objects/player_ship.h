@@ -4,7 +4,6 @@
 #include "play_event.h"
 #include "reload_timer.h"
 #include "health_status.h"
-#include "game_scale.h"
 
 class player_ship
 {
@@ -20,7 +19,7 @@ public:
 
   player_ship(D2D1_POINT_2F position);
 
-  [[nodiscard]] auto Scale() const -> game_scale { return game_scale { 1.0f, 1.0f }; };
+  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   auto Update(float interval) -> void;

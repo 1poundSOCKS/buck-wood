@@ -58,7 +58,7 @@ public:
 
   [[nodiscard]] auto CreateUnrotatedTransform() const -> D2D1::Matrix3x2F
   {
-    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().width(), m_object.Scale().height() }) * 
+    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().x, m_object.Scale().y }) * 
       D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
   }
 
@@ -83,7 +83,7 @@ private:
 
   [[nodiscard]] auto CalculateObjectTransform() const -> D2D1::Matrix3x2F
   {
-    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().width(), m_object.Scale().height() }) * 
+    return D2D1::Matrix3x2F::Scale(D2D1_SIZE_F { m_object.Scale().x, m_object.Scale().y }) * 
       D2D1::Matrix3x2F::Rotation(m_object.Angle()) * 
       D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
   }
