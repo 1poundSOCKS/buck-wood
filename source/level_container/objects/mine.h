@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "game_scale.h"
-#include "game_angle.h"
 
 class mine
 {
@@ -32,8 +31,8 @@ private:
   D2D1_POINT_2F m_position;
   D2D1_POINT_2F m_previousPosition;
   VELOCITY_2F m_velocity;
-  float m_direction {};
-  game_angle m_spin;
+  float m_direction { 0 };
+  float m_spin { 0 };
   bool m_destroyed { false };
 
 };

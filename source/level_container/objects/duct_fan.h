@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "game_scale.h"
+#include "game_angle.h"
 
 class duct_fan
 {
