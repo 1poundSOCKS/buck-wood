@@ -53,10 +53,10 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   game_settings::setShowDiagnostics(command_line::contains(L"-d"));
 
   log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
-  log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
-  log::write(log::type::info, "diagnostics {}", game_settings::showDiagnostics() ? "ON" : "OFF");
   log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
   log::write(log::type::info, "render target height {}", game_settings::renderTargetHeight());
+  log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
+  log::write(log::type::info, "diagnostics {}", game_settings::showDiagnostics() ? "ON" : "OFF");
 
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
