@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "homing_object.h"
 #include "game_scale.h"
 #include "game_angle.h"
 
@@ -30,8 +29,10 @@ private:
 
 private:
 
-  homing_object m_body;
-  homing_object m_previousState;
+  D2D1_POINT_2F m_position;
+  D2D1_POINT_2F m_previousPosition;
+  VELOCITY_2F m_velocity;
+  float m_direction {};
   game_angle m_spin;
   bool m_destroyed { false };
 
@@ -39,12 +40,12 @@ private:
 
 inline [[nodiscard]] auto mine::Position() const -> D2D1_POINT_2F
 {
-  return m_body.Position();
+  return m_position;
 }
 
 inline [[nodiscard]] auto mine::PreviousPosition() const -> D2D1_POINT_2F
 {
-  return m_previousState.Position();
+  return m_previousPosition;
 }
 
 inline [[nodiscard]] auto mine::Angle() const -> float
