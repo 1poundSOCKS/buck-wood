@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "shape_generator.h"
-#include "game_angle.h"
 #include "directx_functions.h"
 
 const_shape_iterator::const_shape_iterator(const shape_generator* shapeGenerator, int initialAngle) : 
