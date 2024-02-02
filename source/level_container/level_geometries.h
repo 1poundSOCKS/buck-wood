@@ -58,10 +58,20 @@ private:
     return direct2d::CreatePathGeometry(d2d_factory::get_raw(), irregularShape, D2D1_FIGURE_END_CLOSED);
   }
 
+  static constexpr auto GetHudTargetTopLeftGeometryData()
+  {
+    return std::array {
+      D2D1_POINT_2F { -1, -0.7 },
+      D2D1_POINT_2F { -1, -1 },
+      D2D1_POINT_2F { -0.7, -1 }
+    };
+  }
+
   level_geometries() : 
     m_ductFanGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), GetDuctFanGeometryData(200), D2D1_FIGURE_END_CLOSED) }, 
     m_playerShipGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), GetPlayerGeometryData(), D2D1_FIGURE_END_CLOSED) }
   {
+    LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
   }
 
 public:
@@ -106,6 +116,22 @@ public:
     return m_instance->m_ductFanGeometry.get();
   }
 
+  static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&
+  {
+    return m_instance->m_hudTargetGeometries;
+  }
+
+private:
+
+  static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void
+  {
+    auto topLeftGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), GetHudTargetTopLeftGeometryData(), D2D1_FIGURE_END_OPEN);
+    geometryInserter = topLeftGeometry;
+    geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(90));
+    geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(180));
+    geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(270));
+  }
+
 private:
 
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
@@ -113,5 +139,6 @@ private:
   winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }, D2D1_FIGURE_END_CLOSED) };
   winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { CreateAsteroidGeometry(0, 0, 200, 200) };
   winrt::com_ptr<ID2D1PathGeometry> m_ductFanGeometry;
+  std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
 
 };

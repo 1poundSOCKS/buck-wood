@@ -14,6 +14,7 @@
 #include "slider_control_renderer.h"
 #include "diagnostics_renderer.h"
 #include "level_radar_renderer.h"
+#include "level_geometries.h"
 
 class renderer
 {
@@ -65,7 +66,7 @@ private:
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
-  render_brush m_hudTargetBrush { screen_render_brush_yellow.CreateBrush() };
+  geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
   render_brush m_targetPositionBrush { screen_render_brush_red.CreateBrush() };
   render_brush m_playerDestinationBrush { screen_render_brush_green.CreateBrush() };
 
@@ -161,7 +162,12 @@ inline auto renderer::Render(const thrust_particle& particle) const -> void
 
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
 {
-  render_target::get()->DrawRectangle(hudTarget.Bounds(), m_hudTargetBrush.get(), 3.0f);
+  for( const auto& geometry : level_geometries::HudTargetGeometries() )
+  {
+    auto bounds = hudTarget.Bounds();
+    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), D2D1::Matrix3x2F::Scale({bounds.right - bounds.left, bounds.bottom - bounds.top}) * D2D1::Matrix3x2F::Translation({bounds.left, bounds.top}));
+    m_hudTargetRenderer.Write(transformedGeometry.get());
+  }
 }
 
 inline auto renderer::Render(const target_position& targetPosition) const -> void
