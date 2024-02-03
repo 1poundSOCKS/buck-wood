@@ -49,7 +49,7 @@ public:
     {
       std::for_each(std::execution::seq, std::begin(objectCollection), std::end(objectCollection), [this, &object1](auto& object2)
       {
-        if( &object1 != &object2 )
+        if( !object1->Destroyed() && !object2->Destroyed() && &object1 != &object2 )
         {
           std::lock_guard<std::mutex> guard(m_mutex);
           (*this)(object1, object2);
