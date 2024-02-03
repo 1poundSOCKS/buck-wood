@@ -165,7 +165,9 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
   for( const auto& geometry : level_geometries::HudTargetGeometries() )
   {
     auto bounds = hudTarget.Bounds();
-    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), D2D1::Matrix3x2F::Scale({bounds.right - bounds.left, bounds.bottom - bounds.top}) * D2D1::Matrix3x2F::Translation({bounds.left, bounds.top}));
+    D2D1_SIZE_F position = { (bounds.left + bounds.right) / 2, (bounds.bottom + bounds.top) / 2 };
+    auto transform = D2D1::Matrix3x2F::Scale({bounds.right - bounds.left, bounds.bottom - bounds.top}) * D2D1::Matrix3x2F::Translation(position);
+    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), transform);
     m_hudTargetRenderer.Write(transformedGeometry.get());
   }
 }
