@@ -211,7 +211,7 @@ auto level_container::GetTargettedObject() -> targetted_object_type
   {
     auto targetAngle = m_playerShip->Angle();
 
-    constexpr auto angleSpan = 10.0f;
+    constexpr auto angleSpan = 20.0f;
 
     mine_object* nearestMine = std::accumulate(std::begin(m_mines), std::end(m_mines), static_cast<mine_object*>(nullptr), [this, targetAngle](auto* nearest, auto& next) -> mine_object*
     {
