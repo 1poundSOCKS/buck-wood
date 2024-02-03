@@ -61,9 +61,9 @@ private:
   static constexpr auto GetHudTargetTopLeftGeometryData()
   {
     return std::array {
-      D2D1_POINT_2F { -0.5, -0.4 },
+      D2D1_POINT_2F { -0.5, -0.3 },
       D2D1_POINT_2F { -0.5, -0.5 },
-      D2D1_POINT_2F { -0.4, -0.5 }
+      D2D1_POINT_2F { -0.3, -0.5 }
     };
   }
 

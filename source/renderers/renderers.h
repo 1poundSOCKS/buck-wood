@@ -44,9 +44,6 @@ private:
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
-  auto Render(const player_destination& playerDestination) const -> void;
-  auto Render(const target_position& targetPosition) const -> void;
-  auto RenderTarget(D2D1_POINT_2F position, float size, ID2D1SolidColorBrush* brush) const -> void;
   
 
 private:
@@ -67,8 +64,6 @@ private:
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
   geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
-  render_brush m_targetPositionBrush { screen_render_brush_red.CreateBrush() };
-  render_brush m_playerDestinationBrush { screen_render_brush_green.CreateBrush() };
 
 };
 
@@ -170,33 +165,4 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
     auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), transform);
     m_hudTargetRenderer.Write(transformedGeometry.get());
   }
-}
-
-inline auto renderer::Render(const target_position& targetPosition) const -> void
-{
-  RenderTarget(targetPosition.Position(), 100, m_targetPositionBrush.get());
-}
-
-inline auto renderer::Render(const player_destination& playerDestination) const -> void
-{
-  RenderTarget(playerDestination.Position(), 50, m_playerDestinationBrush.get());
-}
-
-inline auto renderer::RenderTarget(D2D1_POINT_2F position, float size, ID2D1SolidColorBrush* brush) const -> void
-{
-  auto rect = direct2d::GetRectAtPosition(position, size, size);
-
-  auto lineLength = size / 5;
-
-  render_target::get()->DrawLine({ rect.left, rect.top + lineLength }, { rect.left, rect.top }, brush, 4.0f);
-  render_target::get()->DrawLine({ rect.left, rect.top }, { rect.left + lineLength, rect.top }, brush, 4.0f);
-
-  render_target::get()->DrawLine({ rect.right - lineLength, rect.top }, { rect.right, rect.top }, brush, 4.0f);
-  render_target::get()->DrawLine({ rect.right, rect.top }, { rect.right, rect.top + lineLength }, brush, 4.0f);
-
-  render_target::get()->DrawLine({ rect.right, rect.bottom - lineLength }, { rect.right, rect.bottom }, brush, 4.0f);
-  render_target::get()->DrawLine({ rect.right, rect.bottom }, { rect.right - lineLength, rect.bottom }, brush, 4.0f);
-
-  render_target::get()->DrawLine({ rect.left + lineLength, rect.bottom }, { rect.left, rect.bottom }, brush, 4.0f);
-  render_target::get()->DrawLine({ rect.left, rect.bottom }, { rect.left, rect.bottom - lineLength }, brush, 4.0f);
 }
