@@ -149,12 +149,21 @@ auto level_container::DoNonPlayerCollisions() -> void
   particle_collision<mine, bullet> destroyBulletsAndMinesOnCollision { [this](auto& mine, auto& bullet)
   {
     bullet.Destroy();
+    m_explosions.emplace_back(mine->PreviousPosition());
     mine->Destroy();
-    m_explosions.emplace_back(mine->Position());
+  }};
+
+  collision<mine> destroyMineOnMineCollision { [this](auto& mine1, auto& mine2)
+  {
+    m_explosions.emplace_back(mine1.PreviousPosition());
+    m_explosions.emplace_back(mine2.PreviousPosition());
+    mine1.Destroy();
+    mine2.Destroy();
   }};
 
   destroyBulletsAndDamageTarget(m_targets, m_bullets);
   destroyBulletsAndMinesOnCollision(m_mines, m_bullets);
+  destroyMineOnMineCollision(m_mines);
   DestroyObjectsOnGeometryCollision<mine>(m_mines);
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
   DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);

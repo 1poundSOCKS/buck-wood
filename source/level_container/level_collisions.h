@@ -4,3 +4,4 @@
 #include "collisions/particle_collision.h"
 #include "collisions/geometry_containment.h"
 #include "collisions/particle_containment.h"
+#include "collisions/collision.h"
