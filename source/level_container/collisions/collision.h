@@ -45,9 +45,11 @@ public:
 
   auto operator()(std::ranges::input_range auto&& objectCollection) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(objectCollection), std::end(objectCollection), [this, &objectCollection](auto& object1)
+    for( auto objects = std::begin(objectCollection); objects != std::end(objectCollection); ++objects )
     {
-      std::for_each(std::execution::seq, std::begin(objectCollection), std::end(objectCollection), [this, &object1](auto& object2)
+      auto& object1 = *objects;
+
+      std::for_each(std::execution::par_unseq, std::next(objects), std::end(objectCollection), [this, &object1](auto& object2)
       {
         if( !object1->Destroyed() && !object2->Destroyed() && &object1 != &object2 )
         {
@@ -55,7 +57,7 @@ public:
           (*this)(object1, object2);
         }
       });
-    });
+    }
   }
 
 private:
