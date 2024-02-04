@@ -133,7 +133,7 @@ inline [[nodiscard]] auto level_container::PlayerPosition() const -> D2D1_POINT_
 
 inline [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
 {
-  return m_playerShip->ThrusterOn();
+  return !m_playerShip->Destroyed() && m_playerShip->ThrusterOn();
 }
 
 inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
