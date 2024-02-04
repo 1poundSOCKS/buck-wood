@@ -64,6 +64,7 @@ private:
   level_radar_renderer m_levelRadarRenderer;
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
   geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_playerShieldsBrush { screen_render_brush_white.CreateBrush() };
 
 };
 
@@ -118,6 +119,8 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
 {
   m_playerShipRenderer.Write(playerShip.Geometry());
+  auto ellipse = D2D1::Ellipse(playerShip->Position(), 50, 50);
+  render_target::get()->DrawEllipse(ellipse, m_playerShieldsBrush.get(), 5);
 }
 
 inline auto renderer::Render(const bullet& bulletInstance) const -> void
