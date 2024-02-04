@@ -26,8 +26,11 @@ public:
   {
     std::for_each(std::execution::par_unseq, std::begin(containedParticles), std::end(containedParticles), [this,containmentGeometry](auto& particle)
     {
-      std::lock_guard<std::mutex> guard(m_mutex);
-      (*this)(containmentGeometry, particle);
+      if( !particle.Destroyed() )
+      {
+        std::lock_guard<std::mutex> guard(m_mutex);
+        (*this)(containmentGeometry, particle);
+      }
     });
   }
 

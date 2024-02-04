@@ -15,6 +15,7 @@ public:
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   auto Update(float interval) -> void;
 
+  constexpr [[nodiscard]] auto Destroyed() const -> bool { return false; }
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(D2D1_POINT_2F position) const -> bool;
 

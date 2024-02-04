@@ -40,7 +40,10 @@ public:
   {
     std::for_each(std::execution::par_unseq, std::begin(containedObjectCollection), std::end(containedObjectCollection), [this,containmentGeometry](auto& containedObject)
     {
-      (*this)(containmentGeometry, containedObject);
+      if( !containedObject->Destroyed() )
+      {
+        (*this)(containmentGeometry, containedObject);
+      }
     });
   }
 

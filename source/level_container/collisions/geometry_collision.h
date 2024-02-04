@@ -45,21 +45,33 @@ public:
 
   auto operator()(dynamic_object<object_type_1>& object1, std::ranges::input_range auto&& object2Collection) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(object2Collection), std::end(object2Collection), [this,&object1](auto& object2)
+    if( !object1->Destroyed() )
     {
-      std::lock_guard<std::mutex> guard(m_mutex);
-      (*this)(object1, object2);
-    });
+      std::for_each(std::execution::par_unseq, std::begin(object2Collection), std::end(object2Collection), [this,&object1](auto& object2)
+      {
+        if( !object2->Destroyed() )
+        {
+          std::lock_guard<std::mutex> guard(m_mutex);
+          (*this)(object1, object2);
+        }
+      });
+    }
   }
 
   auto operator()(std::ranges::input_range auto&& object1Collection, std::ranges::input_range auto&& object2Collection) -> void
   {
     std::for_each(std::execution::par_unseq, std::begin(object1Collection), std::end(object1Collection), [this,&object2Collection](auto& object1)
     {
-      for( auto& object2 : object2Collection )
+      if( !object1->Destroyed() )
       {
-        std::lock_guard<std::mutex> guard(m_mutex);
-        (*this)(object1, object2);
+        for( auto& object2 : object2Collection )
+        {
+          if( !object2->Destroyed() )
+          {
+            std::lock_guard<std::mutex> guard(m_mutex);
+            (*this)(object1, object2);
+          }
+        }
       }
     });
   }

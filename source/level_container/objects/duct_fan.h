@@ -15,6 +15,7 @@ public:
   [[nodiscard]] auto Scale() const -> SCALE_2F { return m_scale; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
+  constexpr [[nodiscard]] auto Destroyed() const -> bool { return false; }
 
   auto Update(float interval) -> void
   {

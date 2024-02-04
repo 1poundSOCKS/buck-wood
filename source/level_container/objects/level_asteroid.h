@@ -24,6 +24,8 @@ public:
     return m_position;
   }
 
+  constexpr [[nodiscard]] auto Destroyed() const -> bool { return false; }
+
 private:
 
   D2D1_POINT_2F m_position;

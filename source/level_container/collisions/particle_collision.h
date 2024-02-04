@@ -40,9 +40,15 @@ public:
   {
     std::for_each(std::execution::par_unseq, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection](auto& geometryObject)
     {
-      for( auto& particleObject : particleObjectCollection )
+      if( !geometryObject->Destroyed() )
       {
-        (*this)(geometryObject, particleObject);
+        for( auto& particleObject : particleObjectCollection )
+        {
+          if( !particleObject.Destroyed() )
+          {
+            (*this)(geometryObject, particleObject);
+          }
+        }
       }
     });
   }
