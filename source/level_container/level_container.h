@@ -8,11 +8,25 @@
 #include "play_events.h"
 #include "reload_counter.h"
 #include "targetted_object.h"
+#include "default_geometry_selector.h"
 
 class level_container
 {
 
 public:
+
+  using target_collection = std::vector<target_object>;
+  using duct_fan_collection = std::vector<duct_fan_object>;
+  using asteroid_collection = std::vector<asteroid_object>;
+  using mine_collection = std::list<mine_object>;
+
+  using bullet_collection = std::list<homing_bullet>;
+  using explosion_particle_collection  = std::list<explosion_particle>;
+  using impact_particle_collection  = std::list<impact_particle>;
+  using thrust_particle_collection = std::list<thrust_particle>;
+
+  using explosion_collection = std::vector<D2D1_POINT_2F>;
+  using impact_collection = std::vector<D2D1_POINT_2F>;
 
   level_container(std::ranges::input_range auto&& points, play_events playEvents);
   level_container(const level_container& levelContainer) = delete;
@@ -57,6 +71,8 @@ private:
 private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
+
+  static inline default_geometry_selector m_geometrySelector;
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };

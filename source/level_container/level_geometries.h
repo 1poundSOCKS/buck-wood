@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework.h"
+#include "level_objects.h"
 
 class level_geometries
 {
@@ -132,6 +133,11 @@ public:
     return m_instance->m_hudTargetGeometries;
   }
 
+  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_instance->Get(object);
+  }
+
 private:
 
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void
@@ -141,6 +147,31 @@ private:
     geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(90));
     geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(180));
     geometryInserter = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), topLeftGeometry.get(), D2D1::Matrix3x2F::Rotation(270));
+  }
+
+  [[nodiscard]] auto Get(const player_ship& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_playerShipGeometry;
+  }
+
+  [[nodiscard]] auto Get(const level_asteroid& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_asteroidGeometry;
+  }
+
+  [[nodiscard]] auto Get(const level_target& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_targetGeometry;
+  }
+
+  [[nodiscard]] auto Get(const mine& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_mineGeometry;
+  }
+
+  [[nodiscard]] auto Get(const duct_fan& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_ductFanGeometry;
   }
 
 private:

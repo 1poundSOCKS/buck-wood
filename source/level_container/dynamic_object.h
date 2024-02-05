@@ -36,12 +36,7 @@ public:
     return &m_object;
   }
 
-  [[nodiscard]] auto Geometry() -> ID2D1TransformedGeometry*
-  {
-    return m_geometry.get();
-  }
-
-  [[nodiscard]] auto Geometry() const -> ID2D1TransformedGeometry*
+  [[nodiscard]] auto Geometry() const -> ID2D1Geometry*
   {
     return m_geometry.get();
   }
@@ -62,11 +57,12 @@ public:
       D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
   }
 
-  template <typename...Args> auto Update(Args...args)
+  template <typename geometry_selector_type, typename...Args> auto Update(geometry_selector_type geometrySelector, Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);
     m_transform = CalculateObjectTransform();
-    m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), direct2d::GetSourceGeometry(m_geometry.get()).get(), m_transform);
+    auto baseGeometry = geometrySelector.get(m_object);
+    m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), m_transform);
   }
 
   auto operator->() const -> const object_type*
@@ -92,7 +88,7 @@ private:
 
   object_type m_object;
   D2D1::Matrix3x2F m_transform;
-  winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
+  winrt::com_ptr<ID2D1Geometry> m_geometry;
   float m_geometryRadius;
 
 };
