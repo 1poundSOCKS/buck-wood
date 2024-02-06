@@ -119,7 +119,7 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 
 inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
 {
-  auto transform = D2D1::Matrix3x2F::Translation({ playerShip->Position().x, playerShip->Position().y });  
+  auto transform = playerShip.Transform();
 
   if( playerShip->ShieldsUp() )
   {
