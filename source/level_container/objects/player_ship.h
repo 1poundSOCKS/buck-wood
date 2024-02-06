@@ -4,6 +4,7 @@
 #include "play_event.h"
 #include "reload_timer.h"
 #include "health_status.h"
+#include "reload_counter.h"
 
 class player_ship
 {
@@ -40,6 +41,7 @@ public:
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto ShieldsUp() const -> bool;
+  [[nodiscard]] auto CanShoot() -> bool;
 
 private:
 
@@ -58,6 +60,7 @@ private:
   bool m_thrusterOn { false };
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
+  reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
@@ -151,4 +154,9 @@ inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_stat
 inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 {
   return m_shieldsUp;
+}
+
+inline [[nodiscard]] auto player_ship::CanShoot() -> bool
+{
+  return m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1) == 1;
 }
