@@ -65,7 +65,7 @@ private:
   geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
   geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerShieldsBrush { screen_render_brush_white.CreateBrush() };
-  geometry_renderer m_playerShieldRenderer { screen_render_brush_white.CreateBrush(), 5 };
+  geometry_renderer m_playerShieldRenderer { screen_render_brush_grey.CreateBrush(), 5 };
 
 };
 
@@ -123,8 +123,9 @@ inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) cons
 
   if( playerShip->ShieldsUp() )
   {
-    auto playerShieldGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShieldGeometry(), transform);
-    m_playerShieldRenderer.Write(playerShieldGeometry.get());
+    auto playerShipGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShipGeometry(), transform);
+    m_playerShipRenderer.Write(playerShipGeometry.get());
+    m_playerShieldRenderer.Write(playerShip.Geometry());
   }
   else
   {
