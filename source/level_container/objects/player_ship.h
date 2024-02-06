@@ -106,7 +106,7 @@ inline auto player_ship::SetThrust(float value) -> void
 
 inline auto player_ship::ApplyDamage(int value) -> void
 {
-  if( m_shieldStatus->ApplyDamage(value) == 0 )
+  if( !m_shieldsUp && m_shieldStatus->ApplyDamage(value) == 0 )
   {
     Destroy();
   }
