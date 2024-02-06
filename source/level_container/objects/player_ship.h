@@ -40,7 +40,6 @@ public:
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto ShieldsUp() const -> bool;
-  // [[nodiscard]] auto CanShoot() const -> bool;
 
 private:
 
