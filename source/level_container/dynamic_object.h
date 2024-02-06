@@ -57,12 +57,11 @@ public:
       D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
   }
 
-  template <typename geometry_selector_type, typename...Args> auto Update(geometry_selector_type geometrySelector, Args...args)
+  template <typename...Args> auto Update(ID2D1Geometry* sourceGeometry, Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);
     m_transform = CalculateObjectTransform();
-    auto baseGeometry = geometrySelector.get(m_object);
-    m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), m_transform);
+    m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform);
   }
 
   auto operator->() const -> const object_type*

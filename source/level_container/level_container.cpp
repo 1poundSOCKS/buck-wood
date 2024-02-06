@@ -48,14 +48,14 @@ auto level_container::UpdateObjects(float interval) -> void
 {
   if( !m_playerShip->Destroyed() )
   {
-    m_playerShip.Update(m_geometrySelector, interval);
+    m_playerShip.Update(level_geometries::PlayerShipGeometry(), interval);
     m_playerReloadCounter.Update(interval);
     m_thrustEmmisionCounter.Update(interval);
   }
 
-  dynamic_object_functions::update(m_mines, m_geometrySelector, interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
-  dynamic_object_functions::update(m_targets, m_geometrySelector, interval);
-  dynamic_object_functions::update(m_ductFans, m_geometrySelector, interval);
+  dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
+  dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
+  dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
   dynamic_object_functions::update(m_bullets, interval);
   dynamic_object_functions::update(m_explosionParticles, interval);
   dynamic_object_functions::update(m_impactParticles, interval);
