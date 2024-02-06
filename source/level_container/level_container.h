@@ -78,7 +78,7 @@ private:
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   blank_object m_boundary;
   play_events m_playEvents;
-  dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), D2D1_POINT_2F { 0, 0 } };
+  dynamic_object<player_ship> m_playerShip { m_geometrySelector.CreatePlayerShip(D2D1_POINT_2F { 0, 0 }) };
   target_collection m_targets;
   mine_collection m_mines;
   duct_fan_collection m_ductFans;

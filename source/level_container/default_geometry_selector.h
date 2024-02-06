@@ -10,4 +10,10 @@ public:
   {
     return level_geometries::get(object);
   }
+
+  template <typename...Args> [[nodiscard]] auto CreatePlayerShip(Args...args) -> dynamic_object<player_ship>
+  {
+    return dynamic_object<player_ship>(level_geometries::PlayerShipGeometry(), std::forward<Args>(args)...);
+  }
+
 };
