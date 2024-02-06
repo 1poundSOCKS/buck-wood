@@ -22,6 +22,7 @@ public:
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
+  [[nodiscard]] auto Destroyed() const -> bool;
   auto Update(float interval) -> void;
 
   auto SetAngle(float angle) -> void;
@@ -38,8 +39,8 @@ public:
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
-  [[nodiscard]] auto Destroyed() const -> bool;
-  [[nodiscard]] auto CanShoot() -> bool;
+  [[nodiscard]] auto ShieldsUp() const -> bool;
+  // [[nodiscard]] auto CanShoot() const -> bool;
 
 private:
 
@@ -57,11 +58,37 @@ private:
   float m_thrust { 0 };
   bool m_thrusterOn { false };
   bool m_triggerDown { false };
+  bool m_shieldsUp { false };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
 
 };
+
+inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
+{
+  return m_position;
+}
+
+inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
+{
+  return m_previousPosition;
+}
+
+inline [[nodiscard]] auto player_ship::Angle() const -> float
+{
+  return m_angle;
+}
+
+inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
+{
+  return m_velocity;
+}
+
+inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
+{
+  return m_destroyed;
+}
 
 inline auto player_ship::SetAngle(float angle) -> void
 {
@@ -102,26 +129,6 @@ inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> v
   m_destination = value;
 }
 
-inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
-{
-  return m_position;
-}
-
-inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
-{
-  return m_previousPosition;
-}
-
-inline [[nodiscard]] auto player_ship::Angle() const -> float
-{
-  return m_angle;
-}
-
-inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
-{
-  return m_velocity;
-}
-
 inline [[nodiscard]] auto player_ship::State() const -> state
 {
   return m_state;
@@ -142,7 +149,7 @@ inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_stat
   return m_shieldStatus;
 }
 
-inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
+inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 {
-  return m_destroyed;
+  return m_shieldsUp;
 }

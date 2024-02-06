@@ -119,10 +119,17 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 
 inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
 {
-  m_playerShipRenderer.Write(playerShip.Geometry());
-  auto transform = D2D1::Matrix3x2F::Translation({ playerShip->Position().x, playerShip->Position().y });
-  auto playerShieldGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShieldGeometry(), transform);
-  m_playerShieldRenderer.Write(playerShieldGeometry.get());
+  auto transform = D2D1::Matrix3x2F::Translation({ playerShip->Position().x, playerShip->Position().y });  
+
+  if( playerShip->ShieldsUp() )
+  {
+    auto playerShieldGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShieldGeometry(), transform);
+    m_playerShieldRenderer.Write(playerShieldGeometry.get());
+  }
+  else
+  {
+    m_playerShipRenderer.Write(playerShip.Geometry());
+  }
 }
 
 inline auto renderer::Render(const bullet& bulletInstance) const -> void

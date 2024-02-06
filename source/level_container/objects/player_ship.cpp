@@ -16,6 +16,7 @@ auto player_ship::Update(float interval) -> void
     m_position = GetUpdatedPosition(Position(), m_velocity, interval);
     m_thrusterOn = rightTriggerValue ? true : false;
     m_triggerDown = gamepad_reader::button_down(XINPUT_GAMEPAD_A);
+    m_shieldsUp = gamepad_reader::button_down(XINPUT_GAMEPAD_LEFT_SHOULDER);
   }
 }
 

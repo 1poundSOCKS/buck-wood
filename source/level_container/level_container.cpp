@@ -48,7 +48,7 @@ auto level_container::UpdateObjects(float interval) -> void
 {
   if( !m_playerShip->Destroyed() )
   {
-    m_playerShip.Update(level_geometries::PlayerShipGeometry(), interval);
+    m_playerShip.Update(m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry()), interval);
     m_playerReloadCounter.Update(interval);
     m_thrustEmmisionCounter.Update(interval);
   }
