@@ -9,9 +9,9 @@ auto player_ship::Update(float interval) -> void
 {
   if( m_state == state::alive )
   {
-    auto thrustControlValue = gamepad_reader::right_trigger();
-    auto shieldControlOn = gamepad_reader::button_down(XINPUT_GAMEPAD_B);
-    auto triggerControlOn = gamepad_reader::button_down(XINPUT_GAMEPAD_A);
+    auto thrustControlValue = gamepad_reader::left_trigger();
+    auto shieldControlOn = gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER);
+    auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
 
     m_previousPosition = m_position;
     m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_angle;
