@@ -7,7 +7,7 @@ player_ship::player_ship(D2D1_POINT_2F position)
 
 auto player_ship::Update(float interval) -> void
 {
-  if( m_state == state::alive )
+  if( !m_destroyed )
   {
     auto thrustControlValue = gamepad_reader::left_trigger();
     auto shieldControlOn = gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER);

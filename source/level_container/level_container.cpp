@@ -113,9 +113,9 @@ auto level_container::DoPlayerCollisions() -> void
     m_explosions.emplace_back(ship.PreviousPosition());
   }};
 
-  geometry_collision<player_ship, mine> damageShipOnMineCollision { [this](auto ship, auto& mine)
+  geometry_collision<player_ship, mine> destroyShipOnMineCollision { [this](auto ship, auto& mine)
   {
-    ship.ApplyDamage(2);
+    ship.ApplyFatalDamage();
     mine.Destroy();
     m_explosions.emplace_back(mine.PreviousPosition());
   }};
@@ -126,7 +126,7 @@ auto level_container::DoPlayerCollisions() -> void
   }};
 
   destroyShipOnTargetCollision(m_playerShip, m_targets);
-  damageShipOnMineCollision(m_playerShip, m_mines);
+  destroyShipOnMineCollision(m_playerShip, m_mines);
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
 
@@ -171,7 +171,6 @@ auto level_container::DoNonPlayerCollisions() -> void
 
 auto level_container::CreateNewObjects(float interval) -> void
 {
-  // if( m_targettedObject && m_playerReloadCounter.Get(1) == 1 && m_playerShip->TriggerDown() )
   if( m_targettedObject && m_playerShip->CanShoot() )
   {
     auto angleToTarget = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), m_targettedObject->Position());

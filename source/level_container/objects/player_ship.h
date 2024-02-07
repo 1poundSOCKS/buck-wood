@@ -11,7 +11,7 @@ class player_ship
 
 public:
 
-  enum class state { alive, dead };
+  // enum class state { alive, dead };
 
   using points_collection = std::vector<D2D1_POINT_2F>;
   using shield_status = std::shared_ptr<health_status>;
@@ -36,7 +36,7 @@ public:
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
-  [[nodiscard]] auto State() const -> state;
+  // [[nodiscard]] auto State() const -> state;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
@@ -51,7 +51,7 @@ private:
 private:
 
   static constexpr float m_thrustPower { 400.0f };
-  state m_state { state::alive };
+  // state m_state { state::alive };
   D2D1_POINT_2F m_position { 0, 0 };
   D2D1_POINT_2F m_previousPosition { 0, 0 };
   float m_angle { 0 };
@@ -111,6 +111,7 @@ inline auto player_ship::ApplyDamage(int value) -> void
 {
   if( !m_shieldsUp && m_shieldStatus->ApplyDamage(value) == 0 )
   {
+    // m_state = state::dead;
     Destroy();
   }
 }
@@ -118,6 +119,7 @@ inline auto player_ship::ApplyDamage(int value) -> void
 inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus->ApplyFatalDamage();
+  // m_state = state::dead;
   Destroy();
 }
 
@@ -131,10 +133,10 @@ inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> v
   m_destination = value;
 }
 
-inline [[nodiscard]] auto player_ship::State() const -> state
-{
-  return m_state;
-}
+// inline [[nodiscard]] auto player_ship::State() const -> state
+// {
+//   return m_state;
+// }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
