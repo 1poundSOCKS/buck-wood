@@ -2,7 +2,7 @@
 
 namespace level_geometry_functions
 {
-  inline constexpr auto GetPlayerGeometryData()
+  inline constexpr [[nodiscard]] auto GetPlayerGeometryData()
   {
     constexpr float width { 7 };
     constexpr float height { 10 };
@@ -14,7 +14,7 @@ namespace level_geometry_functions
     };
   }
 
-  inline [[nodiscard]] auto GetDuctFanGeometryData(float size)
+  inline auto [[nodiscard]] GetDuctFanGeometryData(float size)
   {
     static constexpr auto ductFanGeometryData = std::array {
       D2D1_POINT_2F { -0.5, -0.5 },
