@@ -32,14 +32,8 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-  
-  m_playEvents.Reset();
-  
-  std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  m_playerDestination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_levelContainer->PlayerPosition(), *leftThumbstickPosition)) : std::nullopt;
-  m_levelContainer->SetPlayerDestination(m_playerDestination);
+  m_playEvents.Reset();  
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-
   return m_levelContainer->HasFinished() ? false : true;
 }
 
