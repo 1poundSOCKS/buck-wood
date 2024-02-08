@@ -50,7 +50,10 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 400.0f };
+  static constexpr float m_thrustPower { 200.0f };
+
+private:
+
   D2D1_POINT_2F m_position { 0, 0 };
   D2D1_POINT_2F m_previousPosition { 0, 0 };
   float m_angle { 0 };
