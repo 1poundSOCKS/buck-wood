@@ -6,16 +6,6 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
-auto level_container::SetPlayerDestination(std::optional<D2D1_POINT_2F> position) -> void
-{
-  m_playerShip->SetDestination(position);
-}
-
-auto level_container::SetTargetPosition(std::optional<D2D1_POINT_2F> position) -> void
-{
-  m_targetPosition = position;
-}
-
 auto level_container::SetPlayerActive(bool value) -> void
 {
   m_playerActive = value;

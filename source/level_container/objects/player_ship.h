@@ -30,7 +30,7 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
-  auto SetDestination(std::optional<D2D1_POINT_2F> value) -> void;
+  // auto SetDestination(std::optional<D2D1_POINT_2F> value) -> void;
   auto SetPlayerActive(bool value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
@@ -128,10 +128,10 @@ inline auto player_ship::Destroy() -> void
   m_destroyed = true;
 }
 
-inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> void
-{
-  m_destination = value;
-}
+// inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> void
+// {
+//   m_destination = value;
+// }
 
 inline auto player_ship::SetPlayerActive(bool value) -> void
 {
