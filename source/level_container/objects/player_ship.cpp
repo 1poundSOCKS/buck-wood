@@ -5,24 +5,30 @@ player_ship::player_ship(D2D1_POINT_2F position)
 {
 }
 
-auto player_ship::Update(float interval) -> void
+auto player_ship::Update(float interval, bool enableControl) -> void
 {
-  if( !m_destroyed )
-  {
-    auto thrustControlValue = gamepad_reader::left_trigger();
-    auto shieldControlOn = gamepad_reader::button_down(XINPUT_GAMEPAD_A);
-    auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
+  m_destroyed ? UpdateWhenDestoyed(interval, enableControl) : UpdateWhenActive(interval, enableControl);
+}
 
-    m_previousPosition = m_position;
-    m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_angle;
-    m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
-    m_position = GetUpdatedPosition(Position(), m_velocity, interval);
+auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
+{
+  auto thrustControlValue = enableControl ? gamepad_reader::left_trigger() : 0;
+  auto shieldControlOn = enableControl ? gamepad_reader::button_down(XINPUT_GAMEPAD_A) : false;
+  auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
 
-    m_thrusterOn = thrustControlValue > 0 ? true : false;
-    m_shieldsUp = shieldControlOn;
-    m_triggerDown = triggerControlOn;
-    m_playerReloadCounter.Update(interval);
-  }
+  m_previousPosition = m_position;
+  m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_angle;
+  m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
+  m_position = GetUpdatedPosition(Position(), m_velocity, interval);
+
+  m_thrusterOn = thrustControlValue > 0 ? true : false;
+  m_shieldsUp = shieldControlOn;
+  m_triggerDown = triggerControlOn;
+  m_playerReloadCounter.Update(interval);
+}
+
+auto player_ship::UpdateWhenDestoyed(float interval, bool enableControl) -> void
+{
 }
 
 [[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float

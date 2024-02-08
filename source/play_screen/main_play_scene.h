@@ -24,10 +24,12 @@ public:
   {
     SetCameraZoom(1);
     audio_events::StartGameplayTheme();
+    m_levelContainer->SetPlayerActive(true);
   }
 
   auto End() -> void override
   {
+    m_levelContainer->SetPlayerActive(false);
     audio_events::StopPlayerThruster();
     audio_events::StopGameplayTheme();
   }

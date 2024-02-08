@@ -22,7 +22,7 @@ public:
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
-  auto Update(float interval) -> void;
+  auto Update(float interval, bool enableControl) -> void;
 
   auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
@@ -31,6 +31,7 @@ public:
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
   auto SetDestination(std::optional<D2D1_POINT_2F> value) -> void;
+  auto SetPlayerActive(bool value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
@@ -42,6 +43,8 @@ public:
 
 private:
 
+  auto UpdateWhenDestoyed(float interval, bool enableControl) -> void;
+  auto UpdateWhenActive(float interval, bool enableControl) -> void;
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
 
@@ -60,7 +63,7 @@ private:
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
-
+  bool m_playerActive { false };
 };
 
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
@@ -128,6 +131,11 @@ inline auto player_ship::Destroy() -> void
 inline auto player_ship::SetDestination(std::optional<D2D1_POINT_2F> value) -> void
 {
   m_destination = value;
+}
+
+inline auto player_ship::SetPlayerActive(bool value) -> void
+{
+  m_playerActive = value;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool

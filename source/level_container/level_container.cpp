@@ -16,6 +16,11 @@ auto level_container::SetTargetPosition(std::optional<D2D1_POINT_2F> position) -
   m_targetPosition = position;
 }
 
+auto level_container::SetPlayerActive(bool value) -> void
+{
+  m_playerActive = value;
+}
+
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
@@ -46,11 +51,9 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  if( !m_playerShip->Destroyed() )
-  {
-    m_playerShip.Update(m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry()), interval);
-    m_thrustEmmisionCounter.Update(interval);
-  }
+  auto playerCollisionGeometry = m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry());
+  m_playerShip.Update(playerCollisionGeometry, interval, m_playerActive);
+  m_thrustEmmisionCounter.Update(interval);
 
   dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
