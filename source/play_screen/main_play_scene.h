@@ -22,7 +22,7 @@ public:
 
   auto Begin() -> void override
   {
-    SetCameraZoom(1);
+    SetCameraZoom(0.6f);
     audio_events::StartGameplayTheme();
     m_levelContainer->SetPlayerActive(true);
   }

@@ -56,8 +56,7 @@ auto play_scene::Render() const -> void
 
 auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
 {
-  auto playerPosition = m_levelContainer->PlayerPosition();
-  camera_sequence::camera_position cameraPosition { playerPosition.x, playerPosition.y, m_cameraZoom };
+  camera_sequence::camera_position cameraPosition { 0, 0, m_cameraZoom };
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
   return cameraTransform.Get();
 }
