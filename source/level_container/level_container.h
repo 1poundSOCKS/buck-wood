@@ -69,7 +69,6 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
   blank_object m_boundary;
   play_events m_playEvents;
   dynamic_object<player_ship> m_playerShip { level_geometries::PlayerShipGeometry(), D2D1_POINT_2F { 0, 0 } };

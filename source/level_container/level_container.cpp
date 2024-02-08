@@ -43,7 +43,6 @@ auto level_container::UpdateObjects(float interval) -> void
 {
   auto playerCollisionGeometry = m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry());
   m_playerShip.Update(playerCollisionGeometry, interval, m_playerActive);
-  m_thrustEmmisionCounter.Update(interval);
 
   dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
   dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
@@ -195,7 +194,7 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   m_impacts.clear();
 
-  if( m_playerShip->ThrusterOn() && m_thrustEmmisionCounter.Get(1) == 1 )
+  if( m_playerShip->EmitThrustParticle() )
   {
     auto thrustAngle = direct2d::RotateAngle(m_playerShip->Angle(), 180);
     auto thrustPosition = direct2d::CalculatePosition(m_playerShip->Position(), thrustAngle, 20);

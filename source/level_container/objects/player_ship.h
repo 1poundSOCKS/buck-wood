@@ -39,6 +39,7 @@ public:
   [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
   [[nodiscard]] auto ShieldsUp() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
+  [[nodiscard]] auto EmitThrustParticle() -> bool;
 
 private:
 
@@ -59,6 +60,7 @@ private:
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
+  reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
@@ -155,4 +157,9 @@ inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
   return m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1) == 1;
+}
+
+inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
+{
+  return m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
 }

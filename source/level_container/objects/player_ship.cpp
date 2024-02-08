@@ -28,6 +28,7 @@ auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
   m_shieldsUp = shieldControlOn;
   m_triggerDown = triggerControlOn;
   m_playerReloadCounter.Update(interval);
+  m_thrustEmmisionCounter.Update(interval);
 }
 
 auto player_ship::UpdateWhenDestoyed(float interval, bool enableControl) -> void
