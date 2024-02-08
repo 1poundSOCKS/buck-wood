@@ -7,7 +7,7 @@ demo_level::demo_level()
 
   m_boundary.AddGeometry(m_startBoundaryBuildCommands);
   
-  m_boundary.Build(-4, -12, std::back_inserter(boundaryPoints));
+  m_boundary.Build(-14, -12, std::back_inserter(boundaryPoints));
 
   std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [](geometry_builder::point point) -> D2D1_POINT_2F
   {
