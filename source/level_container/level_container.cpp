@@ -113,7 +113,7 @@ auto level_container::DoPlayerCollisions() -> void
     m_explosions.emplace_back(ship.PreviousPosition());
   }};
 
-  geometry_collision<player_ship, mine> destroyShipOnMineCollision { [this](auto ship, auto& mine)
+  geometry_collision<player_ship, mine> destroyShipOnMineCollision { [this](auto& ship, auto& mine)
   {
     ship.ApplyFatalDamage();
     mine.Destroy();
