@@ -128,8 +128,10 @@ auto level_container::DoNonPlayerCollisions() -> void
   {
     if( !target->IsActivated() )
     {
+#ifdef TARGETS_ARE_TARGETS
       target->HitByBullet();
       m_activatedTargetCount += target->IsActivated() ? 1 : 0;
+#endif
       m_playEvents.SetEvent(play_events::event_type::target_activated, target->IsActivated());
     }
 
@@ -221,6 +223,7 @@ auto level_container::GetTargettedObject() -> targetted_object_type
       else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
     });
 
+#ifdef TARGETS_ARE_TARGETS
     auto activeTargets = std::ranges::views::filter(m_targets, [](const auto& target) { return target->IsActivated() ? false : true; });
 
     target_object* nearestTarget = std::accumulate(std::ranges::begin(activeTargets), std::ranges::end(activeTargets), static_cast<target_object*>(nullptr), [this, targetAngle](auto* nearest, auto& next) -> target_object*
@@ -230,6 +233,9 @@ auto level_container::GetTargettedObject() -> targetted_object_type
       if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
       return nearest ? &GetNearestToTarget(*nearest, next) : &next;
     });
+#else
+  target_object* nearestTarget = nullptr;
+#endif
 
     return GetNearestObject(nearestMine, nearestTarget, m_maxTargetRange);
   }
