@@ -26,12 +26,14 @@ public:
 
 private:
 
-  inline static constexpr float m_defaultReloadTime { 5 };
+  inline static constexpr float m_defaultIncreaseReloadSpeedTime { 20 };
+  inline static constexpr float m_defaultReloadTime { 10 };
 
 private:
 
   D2D1_POINT_2F m_position { 0, 0 };
   bool m_activated = false;
+  reload_timer m_increaseReloadSpeedTimer { m_defaultIncreaseReloadSpeedTime };
   reload_timer m_reloadTimer { m_defaultReloadTime };
   bool m_reloaded { false };
   int m_hitPoints { 10 };

@@ -33,6 +33,11 @@ auto level_target::Activate() -> void
 auto level_target::Update(float interval) -> void
 {
   m_reloaded = m_reloadTimer.Update(interval);
+
+  if( m_increaseReloadSpeedTimer.Update(interval ) )
+  {
+    m_reloadTimer = reload_timer { m_reloadTimer.Interval() / 2 };
+  }
 }
 
 [[nodiscard]] auto level_target::Reloaded() const -> bool
