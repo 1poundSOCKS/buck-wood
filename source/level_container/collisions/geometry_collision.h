@@ -43,35 +43,31 @@ public:
     }
   }
 
-  auto operator()(dynamic_object<object_type_1>& object1, std::ranges::input_range auto&& object2Collection) -> void
+  auto operator()(dynamic_object<object_type_1>& object, std::ranges::input_range auto&& objectCollection) -> void
   {
-    if( !object1->Destroyed() )
+    if( !object->Destroyed() )
     {
-      std::for_each(std::execution::par_unseq, std::begin(object2Collection), std::end(object2Collection), [this,&object1](auto& object2)
+      auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
+
+      std::for_each(std::execution::par_unseq, std::begin(objectCollection), std::end(objectCollection), [this,&object](auto& collectionObject)
       {
-        if( !object2->Destroyed() )
-        {
-          std::lock_guard<std::mutex> guard(m_mutex);
-          (*this)(object1, object2);
-        }
+        std::lock_guard<std::mutex> guard(m_mutex);
+        (*this)(object, collectionObject);
       });
     }
   }
 
-  auto operator()(std::ranges::input_range auto&& object1Collection, std::ranges::input_range auto&& object2Collection) -> void
+  auto operator()(std::ranges::input_range auto&& objectCollection1, std::ranges::input_range auto&& objectCollection2) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(object1Collection), std::end(object1Collection), [this,&object2Collection](auto& object1)
+    auto activeObjects1 = std::ranges::views::filter(objectCollection1, [](const auto& object) { return object->Destroyed() ? false : true; });
+    auto activeObjects2 = std::ranges::views::filter(objectCollection2, [](const auto& object) { return object->Destroyed() ? false : true; });
+
+    std::for_each(std::execution::par_unseq, std::begin(activeObjects1), std::end(activeObjects1), [this,&activeObjects2](auto& object1)
     {
-      if( !object1->Destroyed() )
+      for( auto& object2 : activeObjects2 )
       {
-        for( auto& object2 : object2Collection )
-        {
-          if( !object2->Destroyed() )
-          {
-            std::lock_guard<std::mutex> guard(m_mutex);
-            (*this)(object1, object2);
-          }
-        }
+        std::lock_guard<std::mutex> guard(m_mutex);
+        (*this)(object1, object2);
       }
     });
   }
