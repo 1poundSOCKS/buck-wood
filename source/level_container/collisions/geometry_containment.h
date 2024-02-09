@@ -36,14 +36,13 @@ public:
     }
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& containedObjectCollection) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& objectCollection) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(containedObjectCollection), std::end(containedObjectCollection), [this,containmentGeometry](auto& containedObject)
+    auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
+
+    std::for_each(std::execution::par_unseq, std::begin(activeObjects), std::end(activeObjects), [this,containmentGeometry](auto& object)
     {
-      if( !containedObject->Destroyed() )
-      {
-        (*this)(containmentGeometry, containedObject);
-      }
+      (*this)(containmentGeometry, object);
     });
   }
 
