@@ -21,7 +21,7 @@ auto diagnostics::destroy() -> void
 
 auto diagnostics::AddTime(std::wstring_view label, int64_t ticks, const std::optional<int>& fps) -> void
 {
-  auto time = fps ? std::format(L"{:.1f}", GetPercentageTime(performance_counter::QueryFrequency() / *fps, ticks)) : L"n/a";
+  auto time = fps && *fps ? std::format(L"{:.1f}", GetPercentageTime(performance_counter::QueryFrequency() / *fps, ticks)) : L"n/a";
   m_diagnosticsData.emplace_back(std::format(L"{}: {}", label, time));
 }
 

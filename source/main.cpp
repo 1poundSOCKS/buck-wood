@@ -45,8 +45,11 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   int screenWidth = GetSystemMetrics(SM_CXSCREEN);
   int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
+  DEVMODEA deviceMode;
+  DWORD refreshRate = EnumDisplaySettingsA(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) ? deviceMode.dmDisplayFrequency : 0;
+
   game_settings::load();
-  game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(120));
+  game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(refreshRate));
   game_settings::setRenderTargetWidth(screenWidth);
   game_settings::setRenderTargetHeight(screenHeight);
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
