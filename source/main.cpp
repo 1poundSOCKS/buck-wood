@@ -49,13 +49,14 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   DWORD refreshRate = EnumDisplaySettingsA(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) ? deviceMode.dmDisplayFrequency : 0;
 
   game_settings::load();
-  game_settings::setFramerate(command_line::contains(L"-u") ? std::nullopt : std::optional<int>(refreshRate));
   game_settings::setRenderTargetWidth(screenWidth);
   game_settings::setRenderTargetHeight(screenHeight);
+  game_settings::setSwapChainRefreshRate(refreshRate);
+  command_line::contains(L"-u") ? game_settings::setFramerateUncapped() : game_settings::setFramerateCapped();
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
   game_settings::setShowDiagnostics(command_line::contains(L"-d"));
 
-  log::write(log::type::info, "framerate {}", game_settings::framerate() ? std::format("{}", *game_settings::framerate()) : "UNCAPPED");
+  log::write(log::type::info, "framerate {}", game_settings::framerateCapped() ? std::format("{}", game_settings::swapChainRefreshRate()) : "UNCAPPED");
   log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
   log::write(log::type::info, "render target height {}", game_settings::renderTargetHeight());
   log::write(log::type::info, "app is {}", game_settings::fullscreen() ? "FULLSCREEN" : "WINDOWED");
@@ -101,7 +102,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 auto RunMainMenuScreen() -> void
 {
   log::write(log::type::info, "opening main menu screen");
-  screen_container<main_menu_screen> mainMenu { game_settings::framerate(), DIK_F12 };
+  screen_container<main_menu_screen> mainMenu { game_settings::swapChainRefreshRate(), DIK_F12 };
   windows_message_loop::run(mainMenu);
 }
 
@@ -167,8 +168,7 @@ auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
   swapChainDesc.BufferDesc.Width = game_settings::renderTargetWidth();
   swapChainDesc.BufferDesc.Height = game_settings::renderTargetHeight();
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  auto framerate = game_settings::framerate();
-  swapChainDesc.BufferDesc.RefreshRate.Numerator = framerate ? *framerate : 60;
+  swapChainDesc.BufferDesc.RefreshRate.Numerator = game_settings::swapChainRefreshRate();
   swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
   swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
   swapChainDesc.OutputWindow = main_window::handle();

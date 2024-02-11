@@ -5,10 +5,14 @@ class game_settings
 
 public:
 
+  enum frame_rate_type { capped, uncapped };
+
   static auto load() -> void;
   static auto save() -> void;
 
-  static auto setFramerate(std::optional<int> value) -> void;
+  static auto setFramerateCapped() -> void;
+  static auto setFramerateUncapped() -> void;
+  static auto setSwapChainRefreshRate(int value) -> void;
   static auto setRenderTargetWidth(int value) -> void;
   static auto setRenderTargetHeight(int value) -> void;
   static auto setFullscreen(bool value) -> void;
@@ -16,7 +20,9 @@ public:
   static auto setEffectsVolume(int value) -> int;
   static auto setMusicVolume(int value) -> int;
 
-  static [[nodiscard]] auto framerate() -> std::optional<int>;
+  static [[nodiscard]] auto framerateCapped() -> bool;
+  static [[nodiscard]] auto framerateUncapped() -> bool;
+  static [[nodiscard]] auto swapChainRefreshRate() -> int;
   static [[nodiscard]] auto renderTargetWidth() -> int;
   static [[nodiscard]] auto renderTargetHeight() -> int;
   static [[nodiscard]] auto fullscreen() -> bool;
@@ -33,10 +39,11 @@ private:
 
   static game_settings* m_instance;
 
-  std::optional<int> m_framerate { 60 };
+  frame_rate_type m_frameRateType { capped };
   bool m_fullscreen { true };
-  int m_renderTargetWidth { 2560 };
-  int m_renderTargetHeight { 1440 };
+  int m_swapChainRefreshRate { 60 };
+  int m_renderTargetWidth { 1920 };
+  int m_renderTargetHeight { 1080 };
   bool m_showDiagnostics { false };
   int m_effectsVolume { 2 };
   int m_musicVolume { 2 };
@@ -64,9 +71,19 @@ inline auto game_settings::save() -> void
   }
 }
 
-inline auto game_settings::setFramerate(std::optional<int> value) -> void
+inline auto game_settings::setFramerateCapped() -> void
 {
-  m_instance->m_framerate = value;
+  m_instance->m_frameRateType = frame_rate_type::capped;
+}
+
+inline auto game_settings::setFramerateUncapped() -> void
+{
+  m_instance->m_frameRateType = frame_rate_type::uncapped;
+}
+
+inline auto game_settings::setSwapChainRefreshRate(int value) -> void
+{
+  m_instance->m_swapChainRefreshRate = value;
 }
 
 inline auto game_settings::setRenderTargetWidth(int value) -> void
@@ -99,9 +116,19 @@ inline auto game_settings::setMusicVolume(int value) -> int
   return m_instance ? m_instance->m_musicVolume = value : value;
 }
 
-inline [[nodiscard]] auto game_settings::framerate() -> std::optional<int>
+inline [[nodiscard]] auto game_settings::framerateCapped() -> bool
 {
-  return m_instance->m_framerate;
+  return m_instance->m_frameRateType == frame_rate_type::capped;
+}
+
+inline [[nodiscard]] auto game_settings::framerateUncapped() -> bool
+{
+  return m_instance->m_frameRateType == frame_rate_type::uncapped;
+}
+
+inline auto game_settings::swapChainRefreshRate() -> int
+{
+  return m_instance->m_swapChainRefreshRate;
 }
 
 inline [[nodiscard]] auto game_settings::renderTargetWidth() -> int

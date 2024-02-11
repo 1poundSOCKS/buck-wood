@@ -27,7 +27,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto collisionsEnd = performance_counter::QueryValue();
 
-  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::framerate());
+  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
 
   RemoveDestroyedObjects();
 
@@ -36,7 +36,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   CreateNewObjects(interval);
 
   auto updateEnd = performance_counter::QueryValue();
-  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::framerate());
+  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
 
 auto level_container::UpdateObjects(float interval) -> void
@@ -94,7 +94,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
   auto renderEnd = performance_counter::QueryValue();
 
-  diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::framerate());
+  diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
 }
 
 auto level_container::DoPlayerCollisions() -> void

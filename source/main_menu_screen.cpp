@@ -10,7 +10,6 @@
 main_menu_screen::main_menu_screen()
 {
   m_menuController.OpenRoot();
-  // sound_data::get(sound_data::menu_theme).Play(true);
   audio_events::StartMainMenuTheme();
 }
 
@@ -50,10 +49,8 @@ auto main_menu_screen::Render() const -> void
 
 auto main_menu_screen::StartPlay() -> void
 {
-  // sound_data::get(sound_data::menu_theme).Stop();
   audio_events::StopMainMenuTheme();
-  screen_container<play_screen> playScreen { game_settings::framerate(), DIK_F12 };
+  screen_container<play_screen> playScreen { game_settings::swapChainRefreshRate(), DIK_F12 };
   windows_message_loop::run(playScreen);
-  // sound_data::get(sound_data::menu_theme).Play(true);
   audio_events::StartMainMenuTheme();
 }
