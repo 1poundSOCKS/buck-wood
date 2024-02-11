@@ -102,7 +102,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 auto RunMainMenuScreen() -> void
 {
   log::write(log::type::info, "opening main menu screen");
-  screen_container<main_menu_screen> mainMenu { game_settings::swapChainRefreshRate(), DIK_F12 };
+  screen_container<main_menu_screen> mainMenu { game_settings::framerateCapped(), DIK_F12 };
   windows_message_loop::run(mainMenu);
 }
 

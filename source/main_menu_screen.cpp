@@ -50,7 +50,7 @@ auto main_menu_screen::Render() const -> void
 auto main_menu_screen::StartPlay() -> void
 {
   audio_events::StopMainMenuTheme();
-  screen_container<play_screen> playScreen { game_settings::swapChainRefreshRate(), DIK_F12 };
+  screen_container<play_screen> playScreen { game_settings::framerateCapped(), DIK_F12 };
   windows_message_loop::run(playScreen);
   audio_events::StartMainMenuTheme();
 }
