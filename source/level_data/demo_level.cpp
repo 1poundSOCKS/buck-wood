@@ -22,19 +22,23 @@ demo_level::demo_level()
     return D2D1_POINT_2F { x, y };
   });
 
+#ifdef ENABLE_ASTEROIDS
   std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [](const cell& asteroidCell)
   {
     auto x = static_cast<float>(asteroidCell.x * m_cellSize);
     auto y = static_cast<float>(asteroidCell.y * m_cellSize);
     return D2D1_POINT_2F { x, y };
   });
+#endif
 
+#ifdef ENABLE_DUCT_FANS
   std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [](const cell& targetCell)
   {
     auto x = static_cast<float>(targetCell.x * m_cellSize);
     auto y = static_cast<float>(targetCell.y * m_cellSize);
     return D2D1_POINT_2F { x, y };
   });
+#endif
 }
 
 [[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&
