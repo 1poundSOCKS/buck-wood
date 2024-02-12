@@ -16,7 +16,6 @@ private:
 
   auto Update(int64_t ticks) -> bool;
   auto Render() -> void;
-  auto RenderUI() -> void;
   auto RenderDiagnostics() -> void;
   auto LoadNextLevel() -> bool;
   [[nodiscard]] auto PausePressed() -> bool;

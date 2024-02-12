@@ -48,6 +48,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   DEVMODEA deviceMode;
   DWORD refreshRate = EnumDisplaySettingsA(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) ? deviceMode.dmDisplayFrequency : 0;
 
+  game_settings::create();
   game_settings::load();
   game_settings::setRenderTargetWidth(screenWidth);
   game_settings::setRenderTargetHeight(screenHeight);
@@ -93,6 +94,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
   windows_message_loop::destroy();
   main_window::destroy();
+  game_settings::destroy();
   log::destroy();
   command_line::destroy();
 

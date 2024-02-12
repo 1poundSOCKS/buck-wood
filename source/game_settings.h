@@ -7,6 +7,9 @@ public:
 
   enum frame_rate_type { capped, uncapped };
 
+  static auto create() -> void;
+  static auto destroy() -> void;
+
   static auto load() -> void;
   static auto save() -> void;
 
@@ -50,13 +53,20 @@ private:
 
 };
 
+inline auto game_settings::create() -> void
+{
+  destroy();
+  m_instance = new game_settings();
+}
+
+inline auto game_settings::destroy() -> void
+{
+  delete m_instance;
+  m_instance = nullptr;
+}
+
 inline auto game_settings::load() -> void
 {
-  if( m_instance == nullptr )
-  {
-    m_instance = new game_settings();
-  }
-
   if( m_instance )
   {
     m_instance->Load();

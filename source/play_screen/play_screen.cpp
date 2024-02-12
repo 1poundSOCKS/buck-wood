@@ -54,20 +54,16 @@ auto play_screen::Render() -> void
   render_guard renderGuard { render_target::get() };
   m_sceneController.RenderScene();
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-  RenderUI();
 
-  if( game_settings::showDiagnostics() )
-  {
-    RenderDiagnostics();
-  }
-}
-
-auto play_screen::RenderUI() -> void
-{
   if( m_sceneController.Paused() )
   {
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
     m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
+  }
+
+  if( game_settings::showDiagnostics() )
+  {
+    RenderDiagnostics();
   }
 }
 
