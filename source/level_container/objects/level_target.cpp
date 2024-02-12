@@ -3,7 +3,7 @@
 #include "renderers.h"
 #include "shape_generator.h"
 
-level_target::level_target(D2D1_POINT_2F position) : m_position { position }
+level_target::level_target(D2D1_POINT_2F position, float reloadTime) : m_position { position }, m_reloadTimer { reloadTime }
 {
 }
 
@@ -33,11 +33,6 @@ auto level_target::Activate() -> void
 auto level_target::Update(float interval) -> void
 {
   m_reloaded = m_reloadTimer.Update(interval);
-
-  if( m_increaseReloadSpeedTimer.Update(interval ) )
-  {
-    m_reloadTimer = reload_timer { m_reloadTimer.Interval() / 2 };
-  }
 }
 
 [[nodiscard]] auto level_target::Reloaded() const -> bool

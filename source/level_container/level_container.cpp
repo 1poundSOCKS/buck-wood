@@ -178,7 +178,7 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   for( const auto& target : shootingTargets )
   {
-    m_mines.emplace_back(level_geometries::MineGeometry(), target->Position());
+    m_mines.emplace_back(level_geometries::MineGeometry(), target->Position(), 10.0f, 100.0f);
   }
 
   for( const auto& position : m_explosions )

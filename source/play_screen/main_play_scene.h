@@ -57,7 +57,9 @@ public:
     play_scene::Render();
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     renderer::render(m_playerShields);
+  #ifdef RENDER_RADAR
     renderer::render(level_radar { m_levelContainer->PlayerPosition() }, m_levelContainer->Targets());
+  #endif
   }
 
 private:

@@ -7,7 +7,7 @@ class mine
 
 public:
 
-  mine(D2D1_POINT_2F position);
+  mine(D2D1_POINT_2F position, float thrust, float maxSpeed);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -22,14 +22,15 @@ public:
 private:
 
   static constexpr float m_spinRate { 400 };
-  static constexpr float m_thrustPower { 10 };
-  static constexpr float m_maxSpeed { 100 };
-
+  
 private:
 
   D2D1_POINT_2F m_position;
+  float m_thrust;
+  float m_maxSpeed;
+
   D2D1_POINT_2F m_previousPosition;
-  VELOCITY_2F m_velocity;
+  VELOCITY_2F m_velocity { 0, 0 };
   float m_direction { 0 };
   float m_spin { 0 };
   bool m_destroyed { false };

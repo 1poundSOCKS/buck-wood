@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(D2D1_POINT_2F position) : m_position { position }, m_velocity { 0, 0 }, m_previousPosition { position }
+mine::mine(D2D1_POINT_2F position, float thrust, float maxSpeed) : m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }
 {
 }
 
@@ -10,7 +10,7 @@ auto mine::Update(float interval, std::optional<D2D1_POINT_2F> playerPosition) -
   m_previousPosition = m_position;
 
   m_direction = playerPosition ? direct2d::GetAngleBetweenPoints(m_position, *playerPosition) : m_direction;
-  auto speed = std::min(direct2d::CalculateSpeed(m_velocity) + m_thrustPower, m_maxSpeed);
+  auto speed = std::min(direct2d::CalculateSpeed(m_velocity) + m_thrust, m_maxSpeed);
   m_velocity = direct2d::CalculateVelocity(speed, m_direction);
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
   m_spin = direct2d::RotateAngle(m_spin, m_spinRate * interval);

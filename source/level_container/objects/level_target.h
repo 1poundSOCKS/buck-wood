@@ -8,7 +8,7 @@ class level_target
 
 public:
 
-  level_target(D2D1_POINT_2F position);
+  level_target(D2D1_POINT_2F position, float reloadTime);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
@@ -26,15 +26,10 @@ public:
 
 private:
 
-  inline static constexpr float m_defaultIncreaseReloadSpeedTime { 20 };
-  inline static constexpr float m_defaultReloadTime { 10 };
-
-private:
-
-  D2D1_POINT_2F m_position { 0, 0 };
+  float m_reloadTime;
+  D2D1_POINT_2F m_position;
   bool m_activated = false;
-  reload_timer m_increaseReloadSpeedTimer { m_defaultIncreaseReloadSpeedTime };
-  reload_timer m_reloadTimer { m_defaultReloadTime };
+  reload_timer m_reloadTimer;
   bool m_reloaded { false };
   int m_hitPoints { 10 };
 
