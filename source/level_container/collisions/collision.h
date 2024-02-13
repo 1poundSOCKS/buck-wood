@@ -47,14 +47,12 @@ public:
   {
     auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
 
-    for( auto objects = std::begin(activeObjects); objects != std::end(activeObjects); ++objects )
+    for( auto object1 = std::begin(activeObjects); object1 != std::end(activeObjects); ++object1 )
     {
-      auto& object1 = *objects;
-
-      std::for_each(std::execution::par_unseq, std::next(objects), std::end(activeObjects), [this, &object1](auto& object2)
+      std::for_each(std::execution::par, std::next(object1), std::end(activeObjects), [this, &object1](auto& object2)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
-        (*this)(object1, object2);
+        (*this)(*object1, object2);
       });
     }
   }
