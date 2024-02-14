@@ -120,11 +120,11 @@ inline auto player_ship::ApplyDamage(int value) -> void
 
 inline auto player_ship::ApplyFatalDamage() -> void
 {
-  if( !m_shieldsUp )
-  {
+  // if( !m_shieldsUp )
+  // {
     m_shieldStatus->ApplyFatalDamage();
     m_destroyed = true;
-  }
+  // }
 }
 
 inline auto player_ship::Destroy() -> void

@@ -107,7 +107,11 @@ auto level_container::DoPlayerCollisions() -> void
 
   geometry_collision<player_ship, mine> destroyShipOnMineCollision { [this](auto& ship, auto& mine)
   {
-    ship.ApplyFatalDamage();
+    if( ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::soft || !ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::tough )
+    {      
+      ship.ApplyFatalDamage();
+    }
+
     mine.Destroy();
     m_explosions.emplace_back(mine.PreviousPosition());
   }};
