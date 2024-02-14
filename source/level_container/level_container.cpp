@@ -178,7 +178,8 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   for( const auto& target : shootingTargets )
   {
-    m_mines.emplace_back(level_geometries::MineGeometry(), target->Position(), 10.0f, 100.0f);
+    auto [thrust, maxSpeed, hardnessType] = m_stage.MineParameters();
+    m_mines.emplace_back(level_geometries::MineGeometry(), target->Position(), thrust, maxSpeed, hardnessType);
   }
 
   for( const auto& position : m_explosions )

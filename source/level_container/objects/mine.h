@@ -7,7 +7,9 @@ class mine
 
 public:
 
-  mine(D2D1_POINT_2F position, float thrust, float maxSpeed);
+  enum hardness_type { soft, tough };
+
+  mine(D2D1_POINT_2F position, float thrust, float maxSpeed, hardness_type hardnessType);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -17,6 +19,7 @@ public:
   auto Update(float interval, std::optional<D2D1_POINT_2F> playerPosition) -> void;
   auto Destroy() -> void;
 
+  [[nodiscard]] auto HardnessType() const -> hardness_type;
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
 
 private:
@@ -25,6 +28,7 @@ private:
   
 private:
 
+  hardness_type m_hardnessType;
   D2D1_POINT_2F m_position;
   float m_thrust;
   float m_maxSpeed;
@@ -50,4 +54,9 @@ inline [[nodiscard]] auto mine::PreviousPosition() const -> D2D1_POINT_2F
 inline [[nodiscard]] auto mine::Angle() const -> float
 {
   return m_spin;
+}
+
+inline [[nodiscard]] auto mine::HardnessType() const -> hardness_type
+{
+  return m_hardnessType;
 }

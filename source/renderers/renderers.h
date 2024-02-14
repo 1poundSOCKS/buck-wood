@@ -8,12 +8,16 @@
 #include "player_destination.h"
 
 #include "level_target_renderer.h"
+#include "mine_renderer.h"
+
 #include "bullet_renderer.h"
 #include "particle_renderer.h"
+
 #include "menu_renderer.h"
 #include "slider_control_renderer.h"
 #include "diagnostics_renderer.h"
 #include "level_radar_renderer.h"
+
 #include "level_geometries.h"
 
 class renderer
@@ -51,7 +55,7 @@ private:
   inline static renderer* m_instance { nullptr };
 
   level_target_renderer m_levelTargetRenderer;
-  geometry_renderer m_mineRenderer { screen_render_brush_red.CreateBrush(), 6 };
+  mine_renderer m_mineRenderer;
   geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
@@ -99,7 +103,7 @@ inline auto renderer::Render(const dynamic_object<level_target>& targetObject) c
 
 inline auto renderer::Render(const dynamic_object<mine>& mineObject) const -> void
 {
-  m_mineRenderer.Write(mineObject.Geometry());
+  m_mineRenderer.Write(mineObject);
 }
 
 inline auto renderer::Render(const dynamic_object<duct_fan>& ductFan) const -> void

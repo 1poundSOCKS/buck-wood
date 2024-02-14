@@ -7,6 +7,7 @@
 #include "level_explosion.h"
 #include "play_events.h"
 #include "targetted_object.h"
+#include "level_stage.h"
 
 class level_container
 {
@@ -90,6 +91,8 @@ private:
 
   int m_maxCollisionCount { 0 };
   bool m_playerActive { false };
+
+  level_stage m_stage;
 
 };
 

@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(D2D1_POINT_2F position, float thrust, float maxSpeed) : m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }
+mine::mine(D2D1_POINT_2F position, float thrust, float maxSpeed, hardness_type hardnessType) : 
+  m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }, m_hardnessType { hardnessType }
 {
 }
 
