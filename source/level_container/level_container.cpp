@@ -142,8 +142,12 @@ auto level_container::DoNonPlayerCollisions() -> void
   particle_collision<mine, bullet> destroyBulletsAndMinesOnCollision { [this](auto& mine, auto& bullet)
   {
     bullet.Destroy();
-    m_explosions.emplace_back(mine->PreviousPosition());
-    mine->Destroy();
+
+    if( mine->HardnessType() == mine::hardness_type::soft )
+    {
+      m_explosions.emplace_back(mine->PreviousPosition());
+      mine->Destroy();
+    }
   }};
 
   collision<mine> destroyMineOnMineCollision { [this](auto& mine1, auto& mine2)
