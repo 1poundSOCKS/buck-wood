@@ -6,6 +6,8 @@
 #include "collisions/particle_containment.h"
 #include "collisions/collision.h"
 
+#include "level_objects.h"
+
 template <typename visitor_type>
 class level_collision_handler
 {
@@ -25,6 +27,12 @@ public:
 
     mine.Destroy();
     m_visitor.CreateExplosion(mine.PreviousPosition());
+  }
+
+  auto operator()(player_ship& ship, level_target& target) -> void
+  {
+    ship.ApplyFatalDamage();
+    m_visitor.CreateExplosion(ship.PreviousPosition());
   }
 
 private:

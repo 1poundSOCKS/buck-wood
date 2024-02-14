@@ -101,15 +101,10 @@ auto level_container::DoPlayerCollisions() -> void
 {
   level_collision_handler<level_container> collisionHandler { *this };
 
-  geometry_collision<player_ship, level_target> destroyShipOnTargetCollision { [this](auto& ship, auto& target)
-  {
-    ship.ApplyFatalDamage();
-    m_explosions.emplace_back(ship.PreviousPosition());
-  }};
-
+  geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
   geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
 
-  destroyShipOnTargetCollision(m_playerShip, m_targets);
+  shipOnTargetCollision(m_playerShip, m_targets);
   shipOnMineCollision(m_playerShip, m_mines);
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
