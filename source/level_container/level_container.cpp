@@ -99,30 +99,18 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoPlayerCollisions() -> void
 {
+  level_collision_handler<level_container> collisionHandler { *this };
+
   geometry_collision<player_ship, level_target> destroyShipOnTargetCollision { [this](auto& ship, auto& target)
   {
     ship.ApplyFatalDamage();
     m_explosions.emplace_back(ship.PreviousPosition());
   }};
 
-  geometry_collision<player_ship, mine> destroyShipOnMineCollision { [this](auto& ship, auto& mine)
-  {
-    if( ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::soft || !ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::tough )
-    {      
-      ship.ApplyFatalDamage();
-    }
-
-    mine.Destroy();
-    m_explosions.emplace_back(mine.PreviousPosition());
-  }};
-
-  particle_collision<player_ship, thrust_particle> destroythrustParticleOnCollision { [this](auto ship, auto& particle)
-  {
-    particle.Destroy();
-  }};
+  geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
 
   destroyShipOnTargetCollision(m_playerShip, m_targets);
-  destroyShipOnMineCollision(m_playerShip, m_mines);
+  shipOnMineCollision(m_playerShip, m_mines);
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
 

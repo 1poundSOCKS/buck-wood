@@ -48,6 +48,8 @@ public:
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
 
+  auto CreateExplosion(D2D1_POINT_2F position) -> void;
+
 private:
 
   auto UpdateObjects(float interval) -> void;
@@ -167,6 +169,11 @@ inline [[nodiscard]] auto level_container::HasFinished() const -> bool
 inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_object_type
 {
   return m_targettedObject;
+}
+
+inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
+{
+  m_explosions.emplace_back(position);
 }
 
 auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
