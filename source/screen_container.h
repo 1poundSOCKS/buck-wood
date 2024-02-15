@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework.h"
+#include "game_settings.h"
 
 template <typename screen_state_type>
 class screen_container
@@ -10,7 +11,7 @@ public:
 
   screen_container(bool enableVSync, std::optional<int> toggleFullscreenKey) : 
     m_enableVsync { enableVSync }, m_toggleFullscreenKey { toggleFullscreenKey }, m_timerFrequency { performance_counter::QueryFrequency() }, 
-    m_currentTime { performance_counter::QueryValue() }, m_previousTime { m_currentTime }
+    m_currentTime { performance_counter::QueryValue() }, m_previousTime { m_currentTime }, m_vsyncFrameTime { performance_counter::QueryFrequency() / game_settings::swapChainRefreshRate() }
   {
     log::write(log::type::info, "create screen container");
   }
@@ -20,7 +21,7 @@ public:
     keyboard_reader::update();
     gamepad_reader::update();
 
-    auto frameTime = m_currentTime - m_previousTime;
+    auto frameTime = m_enableVsync ? m_vsyncFrameTime : m_currentTime - m_previousTime;
 
     if( m_toggleFullscreenKey && keyboard_reader::pressed(*m_toggleFullscreenKey) )
     {
@@ -42,10 +43,11 @@ public:
 private:
 
   bool m_enableVsync;
+  __int64 m_vsyncFrameTime;
   std::optional<int> m_toggleFullscreenKey;
-  __int64 m_timerFrequency { 0 };
-  __int64 m_currentTime { 0 };
-  __int64 m_previousTime { 0 };
+  __int64 m_timerFrequency;
+  __int64 m_currentTime;
+  __int64 m_previousTime;
   screen_state_type screenState;
 
 };
