@@ -40,7 +40,7 @@ public:
   {
     auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
 
-    std::for_each(std::execution::par_unseq, std::begin(activeObjects), std::end(activeObjects), [this,containmentGeometry](auto& object)
+    std::for_each(std::execution::par, std::begin(activeObjects), std::end(activeObjects), [this,containmentGeometry](auto& object)
     {
       (*this)(containmentGeometry, object);
     });

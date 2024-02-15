@@ -49,7 +49,7 @@ public:
     {
       auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
 
-      std::for_each(std::execution::par_unseq, std::begin(objectCollection), std::end(objectCollection), [this,&object](auto& collectionObject)
+      std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,&object](auto& collectionObject)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
         (*this)(object, collectionObject);
@@ -62,7 +62,7 @@ public:
     auto activeObjects1 = std::ranges::views::filter(objectCollection1, [](const auto& object) { return object->Destroyed() ? false : true; });
     auto activeObjects2 = std::ranges::views::filter(objectCollection2, [](const auto& object) { return object->Destroyed() ? false : true; });
 
-    std::for_each(std::execution::par_unseq, std::begin(activeObjects1), std::end(activeObjects1), [this,&activeObjects2](auto& object1)
+    std::for_each(std::execution::par, std::begin(activeObjects1), std::end(activeObjects1), [this,&activeObjects2](auto& object1)
     {
       for( auto& object2 : activeObjects2 )
       {

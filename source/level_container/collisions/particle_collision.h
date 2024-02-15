@@ -30,7 +30,7 @@ public:
 
   auto operator()(dynamic_object<geometry_object_type>& geometryObject, std::ranges::input_range auto && particleObjectCollection) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(particleObjectCollection), std::end(particleObjectCollection), [this,&geometryObject](auto& particleObject)
+    std::for_each(std::execution::par, std::begin(particleObjectCollection), std::end(particleObjectCollection), [this,&geometryObject](auto& particleObject)
     {
       (*this)(geometryObject, particleObject);
     });
@@ -38,7 +38,7 @@ public:
 
   auto operator()(std::ranges::input_range auto&& geometryObjectCollection, std::ranges::input_range auto && particleObjectCollection) -> void
   {
-    std::for_each(std::execution::par_unseq, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection](auto& geometryObject)
+    std::for_each(std::execution::par, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection](auto& geometryObject)
     {
       if( !geometryObject->Destroyed() )
       {
