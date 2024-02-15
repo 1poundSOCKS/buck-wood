@@ -4,7 +4,7 @@
 		{
 			"type": "cppbuild",
 			"label": "build app",
-			"command": "cl.exe",
+			"command": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx64/x64/cl.exe",
 			"args": [
 				"/Zi",
 				"/EHsc",
@@ -60,7 +60,7 @@
 		{
 			"type": "cppbuild",
 			"label": "build pch",
-			"command": "cl.exe",
+			"command": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx64/x64/cl.exe",
 			"args": [
 				"/Zi",
 				"/EHsc",
@@ -99,7 +99,7 @@
 		{
 			"type": "cppbuild",
 			"label": "build tests",
-			"command": "cl.exe",
+			"command": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.39.33519/bin/Hostx64/x64/cl.exe",
 			"args": [
 				"/Zi",
 				"/EHsc",
