@@ -14,8 +14,10 @@ public:
   auto Begin() -> void override
   {
     auto playerPosition = m_levelContainer->PlayerPosition();
+    auto playCameraZoom = GetPlayCameraZoom();
+    
     m_cameraSequence = camera_sequence::camera_position { 0, 0, 0.1f };
-    m_cameraSequence.AddMove( { 0, 0, 0.6f }, performance_counter::CalculateTicks(2) );
+    m_cameraSequence.AddMove( { 0, 0, playCameraZoom }, performance_counter::CalculateTicks(2) );
     SetCameraZoom(m_cameraSequence.GetScale(0));
   }
 

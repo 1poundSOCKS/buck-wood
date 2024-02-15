@@ -34,9 +34,6 @@ auto play_scene::Update(__int64 ticks) -> bool
   PlaySoundEffects();
   m_playEvents.Reset();
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  auto levelSize = m_levelContainer->LevelSize();
-  auto renderTargetSize = render_target::get()->GetSize();
-  SetCameraZoom(renderTargetSize.height / levelSize.height);
   return m_levelContainer->HasFinished() ? false : true;
 }
 
@@ -99,6 +96,13 @@ auto play_scene::PlaySoundEffects() const -> void
 auto play_scene::SetCameraZoom(float value) -> void
 {
   m_cameraZoom = value;
+}
+
+[[nodiscard]] auto play_scene::GetPlayCameraZoom() const -> float
+{
+  auto levelSize = m_levelContainer->LevelSize();
+  auto renderTargetSize = render_target::get()->GetSize();
+  return renderTargetSize.height / levelSize.height;
 }
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F

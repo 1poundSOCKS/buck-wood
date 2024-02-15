@@ -14,7 +14,7 @@ public:
 
   auto Begin() -> void override
   {
-    SetCameraZoom(0.6f);
+    SetCameraZoom(GetPlayCameraZoom());
   }
 
   auto Update(int64_t ticks) -> bool override
