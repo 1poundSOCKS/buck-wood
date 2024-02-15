@@ -32,8 +32,11 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-  m_playEvents.Reset();  
+  m_playEvents.Reset();
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
+  auto levelSize = m_levelContainer->LevelSize();
+  auto renderTargetSize = render_target::get()->GetSize();
+  SetCameraZoom(renderTargetSize.height / levelSize.height);
   return m_levelContainer->HasFinished() ? false : true;
 }
 

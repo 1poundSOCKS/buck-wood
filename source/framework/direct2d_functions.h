@@ -71,6 +71,17 @@ namespace direct2d
     return SUCCEEDED(geometry->GetBounds(NULL, &bounds)) ? GetRadiusFromBounds(bounds) : 0;
   }
 
+  inline [[nodiscard]] auto GetSizeFromBounds(D2D1_RECT_F bounds) -> D2D1_SIZE_F
+  {
+    return { bounds.right - bounds.left, bounds.bottom - bounds.top };
+  }
+  
+  inline [[nodiscard]] auto GetGeometrySize(ID2D1Geometry* geometry) -> D2D1_SIZE_F
+  {
+    D2D1_RECT_F bounds;
+    return SUCCEEDED(geometry->GetBounds(NULL, &bounds)) ? GetSizeFromBounds(bounds) : D2D1_SIZE_F { 0, 0 };
+  }
+
   inline [[nodiscard]] auto GetAngleBetweenPoints(D2D1_POINT_2F startPoint, D2D1_POINT_2F endPoint) -> float
   {
     float radians = atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);

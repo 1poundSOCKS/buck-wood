@@ -47,6 +47,7 @@ public:
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
+  [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
@@ -166,6 +167,11 @@ inline [[nodiscard]] auto level_container::HasFinished() const -> bool
 inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_object_type
 {
   return m_targettedObject;
+}
+
+inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
+{
+  return direct2d::GetGeometrySize(m_boundary);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
