@@ -45,7 +45,7 @@ private:
 
   auto UpdateWhenDestoyed(float interval, bool enableControl) -> void;
   auto UpdateWhenActive(float interval, bool enableControl) -> void;
-  static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float;
+  static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
 
 private:

@@ -20,7 +20,7 @@ auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
   auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
 
   m_previousPosition = m_position;
-  m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination) : m_angle;
+  m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_angle;
   m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
   m_position = GetUpdatedPosition(Position(), m_velocity, interval);
 
@@ -35,14 +35,15 @@ auto player_ship::UpdateWhenDestoyed(float interval, bool enableControl) -> void
 {
 }
 
-[[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination) -> float
+[[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float
 {
-  constexpr float rotationSpeed = 3.0f;
+  constexpr float rotationSpeed = 360.0f;
+  auto rotationAmount = rotationSpeed * interval;
 
   auto angleToDestination = direct2d::GetAngleBetweenPoints(position, destination);
   auto angleDifference = direct2d::GetAngleDifference(direction, angleToDestination);
 
-  auto rotationAngle = angleDifference < 0 ? -rotationSpeed : rotationSpeed;
+  auto rotationAngle = angleDifference < 0 ? -rotationAmount : rotationAmount;
   auto updatedAngle = direction + rotationAngle;
   updatedAngle = updatedAngle < 0 ? updatedAngle + 360 : updatedAngle;
   return updatedAngle < 360 ? updatedAngle : updatedAngle - 360;
