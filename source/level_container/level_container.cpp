@@ -18,12 +18,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto collisionsStart = performance_counter::QueryValue();
 
-  if( !m_playerShip->Destroyed() )
-  {
-    DoPlayerCollisions();
-  }
-
-  DoNonPlayerCollisions();
+  DoCollisions();
 
   auto collisionsEnd = performance_counter::QueryValue();
 
@@ -97,22 +92,20 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
 }
 
-auto level_container::DoPlayerCollisions() -> void
+auto level_container::DoCollisions() -> void
 {
   level_collision_handler<level_container> collisionHandler { *this };
   
-  geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
-  shipOnTargetCollision(m_playerShip, m_targets);
+  if( !m_playerShip->Destroyed() )
+  {
+    geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
+    shipOnTargetCollision(m_playerShip, m_targets);
 
-  geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
-  shipOnMineCollision(m_playerShip, m_mines);
+    geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
+    shipOnMineCollision(m_playerShip, m_mines);
 
-  DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
-}
-
-auto level_container::DoNonPlayerCollisions() -> void
-{
-  level_collision_handler<level_container> collisionHandler { *this };
+    collisionHandler.DestroyObjectOnGeometryCollision<player_ship>(m_playerShip, m_boundary, m_asteroids, m_ductFans);
+  }  
 
   particle_collision<level_target, bullet> bulletOnTargetCollision { collisionHandler };
   bulletOnTargetCollision(m_targets, m_bullets);
@@ -123,10 +116,10 @@ auto level_container::DoNonPlayerCollisions() -> void
   collision<mine> mineOnMineCollision { collisionHandler };
   mineOnMineCollision(m_mines);
 
-  DestroyObjectsOnGeometryCollision<mine>(m_mines);
-  DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
-  DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);
-  DestroyBulletsOnGeometryCollision(m_bullets);
+  collisionHandler.DestroyObjectsOnGeometryCollision<mine>(m_mines, m_boundary, m_asteroids, m_ductFans);
+  collisionHandler.DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles, m_boundary, m_asteroids, m_ductFans);
+  collisionHandler.DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles, m_boundary, m_asteroids, m_ductFans);
+  collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
@@ -210,27 +203,4 @@ auto level_container::GetTargettedObject() -> targetted_object_type
   {
     return std::nullopt;
   }
-}
-
-auto level_container::DestroyBulletsOnGeometryCollision(std::ranges::input_range auto&& bullets) -> void
-{
-  auto unaryFunction = [this](auto& particle)
-  {
-    m_impacts.emplace_back(particle.Position());
-    particle.Destroy();
-  };
-
-  auto binaryFunction =  [this](auto& geometry, auto& particle)
-  {
-    m_impacts.emplace_back(particle.Position());
-    particle.Destroy();
-  };
-
-  particle_containment<bullet> destroyBulletsAtBoundary { unaryFunction };
-  particle_collision<level_asteroid, bullet> destroyBulletsOnAsteroids { binaryFunction };
-  particle_collision<duct_fan, bullet> destroyBulletsOnDuctFans { binaryFunction };
-
-  destroyBulletsAtBoundary(m_boundary, bullets);
-  destroyBulletsOnAsteroids(m_asteroids, bullets);
-  destroyBulletsOnDuctFans(m_ductFans, bullets);
 }
