@@ -100,54 +100,29 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 auto level_container::DoPlayerCollisions() -> void
 {
   level_collision_handler<level_container> collisionHandler { *this };
-
+  
   geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
-  geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
-
   shipOnTargetCollision(m_playerShip, m_targets);
+
+  geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
   shipOnMineCollision(m_playerShip, m_mines);
+
   DestroyObjectOnGeometryCollision<player_ship>(m_playerShip);
 }
 
 auto level_container::DoNonPlayerCollisions() -> void
 {
-  particle_collision<level_target, bullet> destroyBulletsAndDamageTarget { [this](auto& target, auto& bullet)
-  {
-    if( !target->IsActivated() )
-    {
-#ifdef TARGETS_ARE_TARGETS
-      target->HitByBullet();
-      m_activatedTargetCount += target->IsActivated() ? 1 : 0;
-#endif
-      m_playEvents.SetEvent(play_events::event_type::target_activated, target->IsActivated());
-    }
+  level_collision_handler<level_container> collisionHandler { *this };
 
-    m_impacts.emplace_back(bullet.Position());
-    bullet.Destroy();
-  }};
+  particle_collision<level_target, bullet> bulletOnTargetCollision { collisionHandler };
+  bulletOnTargetCollision(m_targets, m_bullets);
 
-  particle_collision<mine, bullet> destroyBulletsAndMinesOnCollision { [this](auto& mine, auto& bullet)
-  {
-    bullet.Destroy();
+  particle_collision<mine, bullet> bulletOnMineCollision { collisionHandler };
+  bulletOnMineCollision(m_mines, m_bullets);
 
-    if( mine->HardnessType() == mine::hardness_type::soft )
-    {
-      m_explosions.emplace_back(mine->PreviousPosition());
-      mine->Destroy();
-    }
-  }};
+  collision<mine> mineOnMineCollision { collisionHandler };
+  mineOnMineCollision(m_mines);
 
-  collision<mine> destroyMineOnMineCollision { [this](auto& mine1, auto& mine2)
-  {
-    m_explosions.emplace_back(mine1.PreviousPosition());
-    m_explosions.emplace_back(mine2.PreviousPosition());
-    mine1.Destroy();
-    mine2.Destroy();
-  }};
-
-  destroyBulletsAndDamageTarget(m_targets, m_bullets);
-  destroyBulletsAndMinesOnCollision(m_mines, m_bullets);
-  destroyMineOnMineCollision(m_mines);
   DestroyObjectsOnGeometryCollision<mine>(m_mines);
   DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles);
   DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles);

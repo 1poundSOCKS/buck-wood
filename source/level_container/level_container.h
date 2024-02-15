@@ -49,6 +49,8 @@ public:
   [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
+  auto CreateImpact(D2D1_POINT_2F position) -> void;
+  auto TargetActivated() -> void;
 
 private:
 
@@ -174,6 +176,16 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
 {
   m_explosions.emplace_back(position);
+}
+
+inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
+{
+  m_impacts.emplace_back(position);
+}
+
+inline auto level_container::TargetActivated() -> void
+{
+  m_playEvents.SetEvent(play_events::event_type::target_activated, true);
 }
 
 auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
