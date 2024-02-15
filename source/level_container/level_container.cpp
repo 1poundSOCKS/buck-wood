@@ -105,7 +105,7 @@ auto level_container::DoCollisions() -> void
     shipOnMineCollision(m_playerShip, m_mines);
 
     collisionHandler.DestroyObjectOnGeometryCollision<player_ship>(m_playerShip, m_boundary, m_asteroids, m_ductFans);
-  }  
+  }
 
   particle_collision<level_target, bullet> bulletOnTargetCollision { collisionHandler };
   bulletOnTargetCollision(m_targets, m_bullets);
