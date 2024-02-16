@@ -12,3 +12,6 @@ inline auto screen_render_brush_yellow = render_brush_def(D2D1::ColorF(1.0f, 1.0
 inline auto screen_render_brush_cyan = render_brush_def(D2D1::ColorF(0.0f, 1.0f, 1.0f, 1.0f));
 inline auto screen_render_brush_brown = render_brush_def(D2D1::ColorF(0.6f, 0.3f, 0.0f, 1.0f));
 inline auto screen_render_brush_blue = render_brush_def(D2D1::ColorF(0.0, 0.0f, 1.0f, 1.0f));
+
+inline auto screen_render_brush_type_one { screen_render_brush_red };
+inline auto screen_render_brush_type_two { screen_render_brush_blue };

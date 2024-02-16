@@ -16,15 +16,12 @@ private:
 
 private:
 
-  static const D2D1_RECT_F m_bulletRect;
-  color_scale_brushes m_modeOneBrushes { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
-  color_scale_brushes m_modeTwoBrushes { color_scale { D2D1::ColorF(0.0f, 0.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
-  render_brush m_modeOneBrush { screen_render_brush_red.CreateBrush() };
-  render_brush m_modeTwoBrush { screen_render_brush_blue.CreateBrush() };
+  inline static const D2D1_RECT_F m_bulletRect { -5, -5, 5, 5 };
+
+  color_scale_brushes m_modeOneBrushes { color_scale { screen_render_brush_type_one.Get(), screen_render_brush_black.Get(), 10 } };
+  color_scale_brushes m_modeTwoBrushes { color_scale { screen_render_brush_type_two.Get(), screen_render_brush_black.Get(), 10 } };
 
 };
-
-inline const D2D1_RECT_F bullet_renderer::m_bulletRect { -5, -5, 5, 5 };
 
 inline auto bullet_renderer::Write(const bullet& bullet) const -> void
 {
