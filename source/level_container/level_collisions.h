@@ -60,7 +60,8 @@ public:
   {
     bullet.Destroy();
 
-    if( mine->HardnessType() == mine::hardness_type::soft )
+    if( mine->HardnessType() == mine::hardness_type::soft && bullet.DamageMode() == bullet::damage_mode::two || 
+        mine->HardnessType() == mine::hardness_type::tough && bullet.DamageMode() == bullet::damage_mode::one )
     {
       m_visitor.CreateExplosion(mine->PreviousPosition());
       mine->Destroy();
