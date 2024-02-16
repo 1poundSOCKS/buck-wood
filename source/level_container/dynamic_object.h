@@ -41,6 +41,11 @@ public:
     return m_geometry.get();
   }
 
+  [[nodiscard]] auto GeometryPtr() const -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return m_geometry;
+  }
+
   [[nodiscard]] auto GeometryRadius() const -> float
   {
     return m_geometryRadius;

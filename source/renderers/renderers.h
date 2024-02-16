@@ -7,6 +7,7 @@
 #include "target_position.h"
 #include "player_destination.h"
 
+#include "player_ship_renderer.h"
 #include "level_target_renderer.h"
 #include "mine_renderer.h"
 
@@ -56,7 +57,8 @@ private:
 
   level_target_renderer m_levelTargetRenderer;
   mine_renderer m_mineRenderer;
-  geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
+  // geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
+  player_ship_renderer m_playerShipRenderer;
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
@@ -123,18 +125,19 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 
 inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
 {
-  auto transform = playerShip.Transform();
+  m_playerShipRenderer.Write(playerShip);
+  // auto transform = playerShip.Transform();
 
-  if( playerShip->ShieldsUp() )
-  {
-    auto playerShipGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShipGeometry(), transform);
-    m_playerShipRenderer.Write(playerShipGeometry.get());
-    m_playerShieldRenderer.Write(playerShip.Geometry());
-  }
-  else
-  {
-    m_playerShipRenderer.Write(playerShip.Geometry());
-  }
+  // if( playerShip->ShieldsUp() )
+  // {
+  //   auto playerShipGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShipGeometry(), transform);
+  //   m_playerShipRenderer.Write(playerShipGeometry.get());
+  //   m_playerShieldRenderer.Write(playerShip.Geometry());
+  // }
+  // else
+  // {
+  //   m_playerShipRenderer.Write(playerShip.Geometry());
+  // }
 }
 
 inline auto renderer::Render(const bullet& bulletInstance) const -> void
