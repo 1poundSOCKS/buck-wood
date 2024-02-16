@@ -124,10 +124,12 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::CreateNewObjects(float interval) -> void
 {
-  if( m_targettedObject && m_playerShip->CanShoot() )
+  auto damageMode = ConvertFireModeToDamageMode(m_playerShip->FireMode());
+  
+  if( m_targettedObject && m_playerShip->CanShoot() && damageMode )
   {
     auto angleToTarget = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), m_targettedObject->Position());
-    m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), m_targettedObject);
+    m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), *damageMode, m_targettedObject);
     m_playEvents.SetEvent(play_events::event_type::shot, true);
   }
 

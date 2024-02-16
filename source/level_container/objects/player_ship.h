@@ -13,6 +13,7 @@ public:
 
   using points_collection = std::vector<D2D1_POINT_2F>;
   using shield_status = std::shared_ptr<health_status>;
+  enum class fire_mode { none, one, two };
 
 public:
 
@@ -40,6 +41,7 @@ public:
   [[nodiscard]] auto ShieldsUp() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
   [[nodiscard]] auto EmitThrustParticle() -> bool;
+  [[nodiscard]] auto FireMode() const -> fire_mode;
 
 private:
 
@@ -47,6 +49,7 @@ private:
   auto UpdateWhenActive(float interval, bool enableControl) -> void;
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
+  static [[nodiscard]] auto SwitchFireMode(fire_mode fireMode) -> fire_mode;
 
 private:
 
@@ -58,16 +61,23 @@ private:
   D2D1_POINT_2F m_previousPosition { 0, 0 };
   float m_angle { 0 };
   VELOCITY_2F m_velocity { 0, 0 };
+  
   float m_thrust { 0 };
   bool m_thrusterOn { false };
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
+
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
+  fire_mode m_fireMode { fire_mode::one };
+
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
+  
   shield_status m_shieldStatus { std::make_shared<health_status>(10) };
+  
   bool m_destroyed { false };
   std::optional<D2D1_POINT_2F> m_destination;
   bool m_playerActive { false };
+
 };
 
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
@@ -162,4 +172,22 @@ inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
   return m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
+}
+
+inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode
+{
+  return m_fireMode;
+}
+
+inline [[nodiscard]] auto player_ship::SwitchFireMode(fire_mode fireMode) -> fire_mode
+{
+  switch( fireMode )
+  {
+    case fire_mode::one:
+      return fire_mode::two;
+    case fire_mode::two:
+      return fire_mode::one;
+    default:
+      return fire_mode::none;
+  }
 }

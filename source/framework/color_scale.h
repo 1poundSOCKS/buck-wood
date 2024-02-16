@@ -27,7 +27,7 @@ private:
 
   const color_scale* m_colorScale { nullptr };
   type m_type { type::none };
-  int m_currentStep { 0 };
+  size_t m_currentStep { 0 };
   D2D_COLOR_F m_currentValue { 1, 1, 1, 1 };
 
 };

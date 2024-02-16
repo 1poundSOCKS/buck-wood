@@ -8,7 +8,8 @@ class homing_bullet : public bullet
 
 public:
 
-  homing_bullet(D2D1_POINT_2F position, VELOCITY_2F velocity, std::optional<targetted_object> target) : bullet(position, velocity), m_target { target }
+  homing_bullet(D2D1_POINT_2F position, VELOCITY_2F velocity, damage_mode damageMode , std::optional<targetted_object> target) : 
+    bullet { position, velocity, damageMode }, m_target { target }
   {
   }
 

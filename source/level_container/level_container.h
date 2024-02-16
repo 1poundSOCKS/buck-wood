@@ -65,6 +65,7 @@ private:
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
+  static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
 
 private:
 
@@ -225,4 +226,17 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
+}
+
+inline [[nodiscard]] auto level_container::ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>
+{
+  switch( fireMode )
+  {
+    case player_ship::fire_mode::one:
+      return bullet::damage_mode::one;
+    case player_ship::fire_mode::two:
+      return bullet::damage_mode::two;
+    default:
+      return std::nullopt;
+  }
 }

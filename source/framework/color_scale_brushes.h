@@ -4,6 +4,7 @@
 
 class color_scale_brushes
 {
+
 public:
 
   using brush_ptr = winrt::com_ptr<ID2D1SolidColorBrush>;
@@ -16,4 +17,5 @@ public:
 private:
 
   brush_collection m_brushes;
+
 };

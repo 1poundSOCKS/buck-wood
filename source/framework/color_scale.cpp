@@ -3,6 +3,7 @@
 
 const_color_scale_iterator::const_color_scale_iterator(const color_scale* colorScale, type t) : m_colorScale { colorScale}, m_type { t }
 {
+  UpdateCurrentColor();
 }
 
 auto const_color_scale_iterator::operator++() -> const_color_scale_iterator&

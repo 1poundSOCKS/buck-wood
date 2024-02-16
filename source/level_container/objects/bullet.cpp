@@ -3,8 +3,8 @@
 #include "render_text_format_def.h"
 #include "clock_frequency.h"
 
-bullet::bullet(D2D1_POINT_2F position, VELOCITY_2F velocity) : 
-  m_startPosition { position }, m_position { position }, m_velocity { velocity }
+bullet::bullet(D2D1_POINT_2F position, VELOCITY_2F velocity, damage_mode damageMode) : 
+  m_startPosition { position }, m_position { position }, m_velocity { velocity }, m_damageMode { damageMode }
 {
 }
 
@@ -20,12 +20,17 @@ bullet::bullet(D2D1_POINT_2F position, VELOCITY_2F velocity) :
 
 [[nodiscard]] auto bullet::DistanceTravelled() const -> float
 {
-  return m_distanceTravelled;
+  return direct2d::GetDistanceBetweenPoints(m_startPosition, m_position);
 }
 
 [[nodiscard]] auto bullet::Range() const -> float
 {
   return m_range;
+}
+
+[[nodiscard]] auto bullet::DamageMode() const -> damage_mode
+{
+  return m_damageMode;
 }
 
 auto bullet::Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
@@ -34,7 +39,7 @@ auto bullet::Update(float interval, std::optional<D2D1_POINT_2F> targetPosition)
   m_direction = direction ? *direction : m_direction;
   m_velocity = direct2d::CalculateVelocity(m_bulletSpeed, m_direction);
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
-  m_destroyed = direct2d::GetDistanceBetweenPoints(m_startPosition, m_position) > m_range;
+  m_destroyed = DistanceTravelled() > m_range;
 }
 
 auto bullet::Destroy() -> void
