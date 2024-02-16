@@ -36,7 +36,7 @@ private:
       winrt::com_ptr<ID2D1Geometry> { object.GeometryPtr() };
   }
 
-  geometry_renderer m_rendererOne { screen_render_brush_type_one.CreateBrush(), screen_render_brush_white.CreateBrush(), 2 };
-  geometry_renderer m_rendererTwo { screen_render_brush_type_two.CreateBrush(), screen_render_brush_white.CreateBrush(), 2 };
+  geometry_renderer m_rendererOne { screen_render_brush_type_one.CreateBrush() };
+  geometry_renderer m_rendererTwo { screen_render_brush_type_two.CreateBrush() };
 
 };

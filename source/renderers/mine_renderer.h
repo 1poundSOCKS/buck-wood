@@ -24,7 +24,7 @@ public:
 
 private:
 
-  geometry_renderer m_softRenderer { screen_render_brush_red.CreateBrush(), 6 };
-  geometry_renderer m_toughRenderer { screen_render_brush_blue.CreateBrush(), 6 };
+  geometry_renderer m_softRenderer { screen_render_brush_type_one.CreateBrush(), 6 };
+  geometry_renderer m_toughRenderer { screen_render_brush_type_two.CreateBrush(), 6 };
 
 };

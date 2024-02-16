@@ -18,7 +18,7 @@ auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
   auto thrustControlValue = enableControl ? gamepad_reader::left_trigger() : 0;
   auto shieldControlOn = enableControl ? gamepad_reader::button_down(XINPUT_GAMEPAD_A) : false;
   auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
-  auto switchFireMode = enableControl ? gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER) : false;
+  auto switchFireMode = enableControl ? gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) : false;
 
   m_previousPosition = m_position;
   m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_angle;
