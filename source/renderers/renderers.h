@@ -50,7 +50,6 @@ private:
   auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
   
-
 private:
 
   inline static renderer* m_instance { nullptr };
@@ -62,7 +61,7 @@ private:
   geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   particle_renderer m_particleRenderer { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
-  particle_renderer m_thrustParticleRenderer { color_scale { D2D1::ColorF(1.0f, 0.0f, 0.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
+  particle_renderer m_thrustParticleRenderer { color_scale { screen_render_brush_thrust_particles.Get(), screen_render_brush_black.Get(), 10 } };
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
   diagnostics_renderer m_diagnosticsRenderer;
