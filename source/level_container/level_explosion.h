@@ -25,6 +25,7 @@ public:
 private:
 
   inline static const int m_maxCount { 50 };
+  inline static const float m_particleLifespan { 2.0f };
 
   const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position);
 
@@ -59,7 +60,7 @@ private:
 };
 
 inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position) : 
-  m_type { iteratorType }, m_position { position }, m_particle { position, GetRandomVelocity(), 5 }
+  m_type { iteratorType }, m_position { position }, m_particle { position, GetRandomVelocity(), m_particleLifespan }
 {
 }
 
@@ -71,7 +72,7 @@ inline auto const_level_explosion_iterator::operator++() -> const_level_explosio
   }
   else
   {
-    m_particle = explosion_particle { m_position, GetRandomVelocity(), 5 };
+    m_particle = explosion_particle { m_position, GetRandomVelocity(), m_particleLifespan };
   }
 
   return *this;
@@ -87,7 +88,7 @@ inline auto const_level_explosion_iterator::operator++(int) -> const_level_explo
   }
   else
   {
-    m_particle = explosion_particle { m_position, GetRandomVelocity(), 5 };
+    m_particle = explosion_particle { m_position, GetRandomVelocity(), m_particleLifespan };
   }
 
   return tmp;

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "level_container.h"
-#include "explosion.h"
 #include "renderers.h"
 #include "game_settings.h"
 #include "dynamic_object_functions.h"
