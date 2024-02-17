@@ -20,7 +20,8 @@ private:
 
 };
 
-template <class... Args> particle_renderer::particle_renderer(Args&&... args) : m_brushes(std::forward<Args>(args)...)
+template <class... Args> particle_renderer::particle_renderer(Args&&... args) : 
+  m_brushes(std::forward<Args>(args)...)
 {
 }
 

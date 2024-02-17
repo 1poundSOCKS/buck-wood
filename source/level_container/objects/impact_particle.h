@@ -21,7 +21,7 @@ private:
 };
 
 inline impact_particle::impact_particle(D2D1_POINT_2F position) :
-  particle { position, { 0, 0 }, m_defaultLifespan }
+  particle { particle::type::impact, position, { 0, 0 }, m_defaultLifespan }
 {
 }
 

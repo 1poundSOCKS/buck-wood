@@ -57,7 +57,6 @@ private:
 
   level_target_renderer m_levelTargetRenderer;
   mine_renderer m_mineRenderer;
-  // geometry_renderer m_playerShipRenderer { screen_render_brush_white.CreateBrush(), 4 };
   player_ship_renderer m_playerShipRenderer;
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };

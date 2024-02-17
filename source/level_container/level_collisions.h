@@ -20,11 +20,7 @@ public:
 
   auto operator()(player_ship& ship, mine& mine) -> void
   {
-    if( ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::soft || !ship.ShieldsUp() && mine.HardnessType() == mine::hardness_type::tough )
-    {      
-      ship.ApplyFatalDamage();
-    }
-
+    ship.ApplyFatalDamage();
     mine.Destroy();
     m_visitor.CreateExplosion(mine.PreviousPosition());
   }

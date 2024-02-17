@@ -7,14 +7,14 @@ class thrust_particle : public particle
 
 public:
 
-  thrust_particle() = default;
-  thrust_particle(D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan);
+  // thrust_particle() = default;
+  
+  thrust_particle(D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan) :
+    particle { particle::type::thrust, position, velocity, lifespan }
+  {
+  }
   
   auto operator=(const thrust_particle& particle) -> thrust_particle& = default;
 
 };
 
-inline thrust_particle::thrust_particle(D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan) :
-  particle { position, velocity, lifespan }
-{
-}
