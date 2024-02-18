@@ -42,8 +42,6 @@ private:
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const dynamic_object<player_ship>& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
-  auto Render(const explosion_particle& particle) const -> void;
-  auto Render(const impact_particle& particle) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
@@ -61,7 +59,8 @@ private:
   bullet_renderer m_bulletRenderer;
   geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
-  particle_renderer m_particleRenderer { color_scale { D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f), D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f), 10 } };
+  particle_renderer m_particleRenderer { color_scale { screen_render_brush_particles.Get(), screen_render_brush_black.Get(), 10 } };
+  particle_renderer m_impactParticleRenderer { color_scale { screen_render_brush_impact_particles.Get(), screen_render_brush_black.Get(), 10 } };
   particle_renderer m_thrustParticleRenderer { color_scale { screen_render_brush_thrust_particles.Get(), screen_render_brush_black.Get(), 10 } };
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
@@ -132,19 +131,17 @@ inline auto renderer::Render(const bullet& bulletInstance) const -> void
   m_bulletRenderer.Write(bulletInstance);
 }
 
-inline auto renderer::Render(const explosion_particle& particle) const -> void
-{
-  m_particleRenderer.Write(particle);
-}
-
-inline auto renderer::Render(const impact_particle& particle) const -> void
-{
-  m_particleRenderer.Write(particle);
-}
-
 inline auto renderer::Render(const particle& particle) const -> void
 {
-  m_particleRenderer.Write(particle);
+  switch( particle.Type() )
+  {
+    case particle::type::thrust:
+      return m_thrustParticleRenderer.Write(particle);
+    case particle::type::impact:
+      return m_impactParticleRenderer.Write(particle);
+    default:
+      return m_particleRenderer.Write(particle);
+  }
 }
 
 inline auto renderer::Render(const player_shields& playerShields) const -> void

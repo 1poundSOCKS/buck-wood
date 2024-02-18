@@ -15,4 +15,7 @@ inline auto screen_render_brush_blue = render_brush_def(D2D1::ColorF(0.0, 0.0f, 
 
 inline auto screen_render_brush_type_one { screen_render_brush_green };
 inline auto screen_render_brush_type_two { screen_render_brush_red };
+
+inline auto screen_render_brush_particles { screen_render_brush_white };
+inline auto screen_render_brush_impact_particles { screen_render_brush_red };
 inline auto screen_render_brush_thrust_particles { screen_render_brush_yellow };
