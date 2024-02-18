@@ -15,4 +15,3 @@ public:
   auto operator=(const thrust_particle& particle) -> thrust_particle& = default;
 
 };
-

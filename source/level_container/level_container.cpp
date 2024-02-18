@@ -42,9 +42,7 @@ auto level_container::UpdateObjects(float interval) -> void
   dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
   dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
   dynamic_object_functions::update(m_bullets, interval);
-  dynamic_object_functions::update(m_explosionParticles, interval);
-  dynamic_object_functions::update(m_impactParticles, interval);
-  dynamic_object_functions::update(m_thrustParticles, interval);
+  dynamic_object_functions::update(m_particles, interval);
 }
 
 auto level_container::ValidateObjectPointers() -> void
@@ -61,9 +59,7 @@ auto level_container::RemoveDestroyedObjects() -> void
 
   dynamic_object_functions::erase_destroyed(m_mines);
   particle_functions::erase_destroyed(m_bullets);
-  particle_functions::erase_destroyed(m_explosionParticles);
-  particle_functions::erase_destroyed(m_impactParticles);
-  particle_functions::erase_destroyed(m_thrustParticles);
+  particle_functions::erase_destroyed(m_particles);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -71,20 +67,17 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   auto renderStart = performance_counter::QueryValue();
 
   renderer::render(m_boundary);
-  renderer::render_all(m_explosionParticles);
   renderer::render_all(m_asteroids);
   renderer::render_all(m_mines);
   renderer::render_all(m_targets);
   renderer::render_all(m_ductFans);
-  renderer::render_all(m_impactParticles);
   renderer::render_all(m_bullets);
+  renderer::render_all(m_particles);
 
   if( !m_playerShip->Destroyed() )
   {
     renderer::render(m_playerShip);
   }
-
-  renderer::render_all(m_thrustParticles);
 
   auto renderEnd = performance_counter::QueryValue();
 
@@ -116,8 +109,7 @@ auto level_container::DoCollisions() -> void
   mineOnMineCollision(m_mines);
 
   collisionHandler.DestroyObjectsOnGeometryCollision<mine>(m_mines, m_boundary, m_asteroids, m_ductFans);
-  collisionHandler.DestroyParticlesOnGeometryCollision<explosion_particle>(m_explosionParticles, m_boundary, m_asteroids, m_ductFans);
-  collisionHandler.DestroyParticlesOnGeometryCollision<thrust_particle>(m_thrustParticles, m_boundary, m_asteroids, m_ductFans);
+  collisionHandler.DestroyParticlesOnGeometryCollision<particle>(m_particles, m_boundary, m_asteroids, m_ductFans);
   collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
 }
 
@@ -144,7 +136,7 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   for( const auto& position : m_explosions )
   {
-    std::ranges::copy(level_explosion { position }, std::back_inserter(m_explosionParticles));
+    std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
     m_playEvents.SetEvent(play_events::event_type::explosion, true);
   }
 
@@ -152,7 +144,7 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   for( const auto& position : m_impacts )
   {
-    m_impactParticles.emplace_back(position);
+    m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
   }
 
   m_impacts.clear();
@@ -162,7 +154,7 @@ auto level_container::CreateNewObjects(float interval) -> void
     auto thrustAngle = direct2d::RotateAngle(m_playerShip->Angle(), 180);
     auto thrustPosition = direct2d::CalculatePosition(m_playerShip->Position(), thrustAngle, 20);
     auto thrustVelocity = direct2d::CombineVelocities(m_playerShip->Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
-    m_thrustParticles.emplace_back(thrustPosition, thrustVelocity, 0.5f);
+    m_particles.emplace_back(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
   }
 }
 

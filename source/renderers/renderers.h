@@ -44,6 +44,7 @@ private:
   auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const explosion_particle& particle) const -> void;
   auto Render(const impact_particle& particle) const -> void;
+  auto Render(const particle& particle) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
@@ -137,6 +138,11 @@ inline auto renderer::Render(const explosion_particle& particle) const -> void
 }
 
 inline auto renderer::Render(const impact_particle& particle) const -> void
+{
+  m_particleRenderer.Write(particle);
+}
+
+inline auto renderer::Render(const particle& particle) const -> void
 {
   m_particleRenderer.Write(particle);
 }

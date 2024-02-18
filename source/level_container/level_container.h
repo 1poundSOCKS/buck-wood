@@ -24,6 +24,8 @@ public:
   using impact_particle_collection  = std::list<impact_particle>;
   using thrust_particle_collection = std::list<thrust_particle>;
 
+  using particle_collection = std::list<particle>;
+
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
@@ -78,10 +80,8 @@ private:
   mine_collection m_mines;
   duct_fan_collection m_ductFans;
   bullet_collection m_bullets;
-  explosion_particle_collection m_explosionParticles;
-  impact_particle_collection m_impactParticles;
-  thrust_particle_collection m_thrustParticles;
   asteroid_collection m_asteroids;
+  particle_collection m_particles;
 
   explosion_collection m_explosions;
   impact_collection m_impacts;
