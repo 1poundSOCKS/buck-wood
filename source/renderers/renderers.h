@@ -21,6 +21,8 @@
 
 #include "level_geometries.h"
 
+#include "game_score_renderer.h"
+
 class renderer
 {
 
@@ -48,6 +50,7 @@ private:
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
+  auto Render(const game_score& gameScore) const -> void;
   
 private:
 
@@ -70,6 +73,7 @@ private:
   geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerShieldsBrush { screen_render_brush_white.CreateBrush() };
   geometry_renderer m_playerShieldRenderer { screen_render_brush_grey.CreateBrush(), 5 };
+  game_score_renderer m_gameScoreRenderer;
 
 };
 
@@ -175,4 +179,9 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
     auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), transform);
     m_hudTargetRenderer.Write(transformedGeometry.get());
   }
+}
+
+inline auto renderer::Render(const game_score& gameScore) const -> void
+{
+  m_gameScoreRenderer.Write(gameScore);
 }

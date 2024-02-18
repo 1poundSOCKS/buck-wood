@@ -5,7 +5,8 @@
 #include "renderers.h"
 #include "audio_events.h"
 
-play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
+play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_levelContainer { levelContainer }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
 }
 

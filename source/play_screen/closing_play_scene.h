@@ -8,7 +8,8 @@ class closing_play_scene : public play_scene
 
 public:
 
-  closing_play_scene(const level_container_ptr& levelContainer, play_events playEvents) : play_scene(levelContainer, playEvents)
+  closing_play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+    play_scene(levelContainer, playEvents, gameScore)
   {
   }
 

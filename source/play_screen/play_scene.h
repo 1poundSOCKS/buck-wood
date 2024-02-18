@@ -10,6 +10,7 @@
 #include "level_radar.h"
 #include "player_shields.h"
 #include "play_events.h"
+#include "game_score.h"
 
 class play_scene : public base_scene
 {
@@ -18,7 +19,7 @@ public:
 
   using level_container_ptr = std::shared_ptr<level_container>;
 
-  play_scene(const level_container_ptr& levelContainer, play_events playEvents);
+  play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore);
   virtual ~play_scene();
 
   auto Begin() -> void override;
@@ -51,5 +52,6 @@ protected:
   float m_cameraZoom { 1 };
   std::optional<D2D1_POINT_2F> m_playerDestination;
   std::optional<D2D1_POINT_2F> m_targetPosition;
+  std::shared_ptr<game_score> m_gameScore;
 
 };

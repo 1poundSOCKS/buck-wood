@@ -8,7 +8,7 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen()
+play_screen::play_screen() : m_gameScore { std::make_shared<game_score>() }
 {
   m_menuController.OpenRoot();
   LoadNextLevel();
@@ -88,9 +88,9 @@ auto play_screen::LoadNextLevel() -> bool
     #ifdef PREVIEW_LEVEL
     m_sceneController.AddScene<show_level_play_scene>(levelContainer);
     #endif
-    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playEvents);
-    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playEvents);
-    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents);
+    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playEvents, m_gameScore);
+    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playEvents, m_gameScore);
+    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents, m_gameScore);
     m_sceneController.Begin();
 
     return true;

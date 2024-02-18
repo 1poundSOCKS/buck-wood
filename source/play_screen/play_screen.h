@@ -4,6 +4,7 @@
 #include "scene_controller.h"
 #include "play_scene.h"
 #include "play_events.h"
+#include "game_score.h"
 
 class play_screen
 {
@@ -26,5 +27,6 @@ private:
   play_menu_controller m_menuController;
   play_events m_playEvents;
   game_level_data_loader m_gameLevelDataLoader;
+  std::shared_ptr<game_score> m_gameScore;
 
 };

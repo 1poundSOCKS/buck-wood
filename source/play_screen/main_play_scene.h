@@ -9,7 +9,8 @@ class main_play_scene : public play_scene
 
 public:
 
-  main_play_scene(const level_container_ptr& levelContainer, play_events playEvents) : play_scene(levelContainer, playEvents)
+  main_play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+    play_scene(levelContainer, playEvents, gameScore)
   {
     m_playerShields.Attach(m_levelContainer->PlayerShields());
   }
@@ -57,6 +58,7 @@ public:
     play_scene::Render();
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     renderer::render(m_playerShields);
+    renderer::render(*m_gameScore);
   #ifdef RENDER_RADAR
     renderer::render(level_radar { m_levelContainer->PlayerPosition() }, m_levelContainer->Targets());
   #endif
