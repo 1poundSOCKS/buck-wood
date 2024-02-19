@@ -5,8 +5,8 @@
 #include "renderers.h"
 #include "audio_events.h"
 
-play_scene::play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_levelContainer { levelContainer }, m_playEvents { playEvents }, m_gameScore { gameScore }
+play_scene::play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents) : 
+  m_levelContainer { levelContainer }, m_playEvents { playEvents }
 {
 }
 
@@ -62,7 +62,7 @@ auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
   return cameraTransform.Get();
 }
 
-auto play_scene::LevelContainer() const -> level_container_ptr
+auto play_scene::LevelContainer() const -> std::shared_ptr<level_container>
 {
   return m_levelContainer;
 }

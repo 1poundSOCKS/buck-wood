@@ -2,7 +2,6 @@
 #include "play_screen.h"
 #include "diagnostics.h"
 #include "game_settings.h"
-#include "show_level_play_scene.h"
 #include "opening_play_scene.h"
 #include "main_play_scene.h"
 #include "closing_play_scene.h"
@@ -82,15 +81,12 @@ auto play_screen::LoadNextLevel() -> bool
 {
   if( m_gameLevelDataLoader.NextLevel() )
   {
-    play_scene::level_container_ptr levelContainer = m_gameLevelDataLoader.LoadLevel(m_playEvents);
+    std::shared_ptr<level_container> levelContainer = m_gameLevelDataLoader.LoadLevel(m_playEvents, m_gameScore);
 
     m_sceneController.Clear();
-    #ifdef PREVIEW_LEVEL
-    m_sceneController.AddScene<show_level_play_scene>(levelContainer);
-    #endif
-    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playEvents, m_gameScore);
-    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playEvents, m_gameScore);
-    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents, m_gameScore);
+    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playEvents);
+    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playEvents);
+    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents);
     m_sceneController.Begin();
 
     return true;

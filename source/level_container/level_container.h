@@ -8,6 +8,7 @@
 #include "play_events.h"
 #include "targetted_object.h"
 #include "level_stage.h"
+#include "game_score.h"
 
 class level_container
 {
@@ -23,7 +24,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(std::ranges::input_range auto&& points, play_events playEvents);
+  level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
@@ -88,10 +89,12 @@ private:
   bool m_playerActive { false };
 
   level_stage m_stage;
+  std::shared_ptr<game_score> m_gameScore;
 
 };
 
-level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents) : m_boundary { points }, m_playEvents { playEvents }
+level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_boundary { points }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
 }
 

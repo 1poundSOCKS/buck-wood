@@ -8,11 +8,9 @@ class game_level_data_loader
 {
 public:
 
-  using level_ptr = std::unique_ptr<level_container>;
-
   game_level_data_loader() = default;
 
-  template <typename...Args> auto LoadLevel(Args...args) -> level_ptr;
+  template <typename...Args> auto LoadLevel(Args...args) -> std::unique_ptr<level_container>;
   [[nodiscard]] auto NextLevel() -> bool;
 
 private:

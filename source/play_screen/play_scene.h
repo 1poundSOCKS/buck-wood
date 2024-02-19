@@ -17,9 +17,7 @@ class play_scene : public base_scene
 
 public:
 
-  using level_container_ptr = std::shared_ptr<level_container>;
-
-  play_scene(const level_container_ptr& levelContainer, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents);
   virtual ~play_scene();
 
   auto Begin() -> void override;
@@ -30,7 +28,7 @@ public:
   auto Render() const -> void override;
 
   auto RenderTransform() const -> D2D1::Matrix3x2F;
-  auto LevelContainer() const -> level_container_ptr;
+  auto LevelContainer() const -> std::shared_ptr<level_container>;
 
 protected:
 
@@ -47,7 +45,7 @@ private:
 
 protected:
 
-  level_container_ptr m_levelContainer;
+  std::shared_ptr<level_container> m_levelContainer;
   play_events m_playEvents;
   float m_cameraZoom { 1 };
   std::optional<D2D1_POINT_2F> m_playerDestination;
