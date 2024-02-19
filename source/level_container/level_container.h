@@ -45,10 +45,12 @@ public:
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
+  [[nodiscard]] auto GameScore() const -> const game_score&;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto TargetActivated() -> void;
+  auto MineDestroyed() -> void;
 
 private:
 
@@ -172,6 +174,11 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
   return direct2d::GetGeometrySize(m_boundary);
 }
 
+inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
+{
+  return *m_gameScore;
+}
+
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
 {
   m_explosions.emplace_back(position);
@@ -185,6 +192,11 @@ inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 inline auto level_container::TargetActivated() -> void
 {
   m_playEvents.SetEvent(play_events::event_type::target_activated, true);
+}
+
+inline auto level_container::MineDestroyed() -> void
+{
+  m_gameScore->Add(10);
 }
 
 auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type

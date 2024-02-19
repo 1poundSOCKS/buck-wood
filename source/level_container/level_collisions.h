@@ -61,6 +61,7 @@ public:
     {
       m_visitor.CreateExplosion(mine->PreviousPosition());
       mine->Destroy();
+      m_visitor.MineDestroyed();
     }
   }
 

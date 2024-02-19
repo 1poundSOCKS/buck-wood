@@ -50,6 +50,5 @@ protected:
   float m_cameraZoom { 1 };
   std::optional<D2D1_POINT_2F> m_playerDestination;
   std::optional<D2D1_POINT_2F> m_targetPosition;
-  std::shared_ptr<game_score> m_gameScore;
 
 };
