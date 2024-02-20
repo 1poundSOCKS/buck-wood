@@ -16,6 +16,7 @@ public:
   }
 
   [[nodiscard]] auto Get() const -> const object_type& { return m_object; }
+  [[nodiscard]] auto Get() -> object_type& { return m_object; }
 
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;

@@ -27,7 +27,8 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_targettedObject = GetTargettedObject();
 
-  CreateNewObjects(interval);
+  // CreateNewObjects(interval);
+  CreateNewObjects2(interval);
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
@@ -41,7 +42,7 @@ auto level_container::UpdateObjects(float interval) -> void
   // dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
   // dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
   // dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
-  // dynamic_object_functions::update(m_bullets, interval);
+  dynamic_object_functions::update(m_bullets, interval);
   dynamic_object_functions::update(m_particles, interval);
 
   // dynamic_object_functions::update(m_defaultObjects, level_geometries::TargetGeometry(), interval);
@@ -192,6 +193,58 @@ auto level_container::CreateNewObjects(float interval) -> void
     auto thrustPosition = direct2d::CalculatePosition(m_playerShip->Position(), thrustAngle, 20);
     auto thrustVelocity = direct2d::CombineVelocities(m_playerShip->Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
     m_particles.emplace_back(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+  }
+}
+
+auto level_container::CreateNewObjects2(float interval) -> void
+{
+  for( const auto& position : m_explosions )
+  {
+    std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
+    m_playEvents.SetEvent(play_events::event_type::explosion, true);
+  }
+
+  m_explosions.clear();
+
+  struct visitor
+  {
+    level_container& m_levelContainer;
+
+    auto operator()(level_target& object)
+    {
+    }
+
+    auto operator()(player_ship& object)
+    {
+      auto damageMode = ConvertFireModeToDamageMode(object.FireMode());
+      
+      // if( m_targettedObject && m_playerShip->CanShoot() && damageMode )
+      if( object.CanShoot() && damageMode )
+      {
+        // auto angleToTarget = direct2d::GetAngleBetweenPoints(object.Position(), m_targettedObject->Position());
+        // m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), *damageMode, m_targettedObject);
+        m_levelContainer.CreateBullet(object.Position(), direct2d::CalculateVelocity(500, object.Angle()), *damageMode, std::nullopt);
+        m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
+      }
+
+      if( object.EmitThrustParticle() )
+      {
+        auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
+        auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
+        auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+        m_levelContainer.CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+      }
+    }
+  };
+
+  for( auto& object : m_staticObjects )
+  {
+    std::visit(visitor { *this }, object.Object().Get());
+  }
+
+  for( auto& object : m_movingObjects )
+  {
+    std::visit(visitor { *this }, object.Object().Get());
   }
 }
 

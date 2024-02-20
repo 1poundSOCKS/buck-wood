@@ -51,9 +51,12 @@ public:
   [[nodiscard]] auto GameScore() const -> const game_score&;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
+  auto CreateParticle(auto&&...args) -> void;
+  auto CreateBullet(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto TargetActivated() -> void;
   auto MineDestroyed() -> void;
+  auto SetPlayEvent(auto&&...args) -> void;
 
 private:
 
@@ -62,6 +65,7 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
+  auto CreateNewObjects2(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
@@ -192,6 +196,16 @@ inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
   m_explosions.emplace_back(position);
 }
 
+auto level_container::CreateParticle(auto&&...args) -> void
+{
+  m_particles.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateBullet(auto&&...args) -> void
+{
+  m_bullets.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
 inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 {
   m_impacts.emplace_back(position);
@@ -205,6 +219,11 @@ inline auto level_container::TargetActivated() -> void
 inline auto level_container::MineDestroyed() -> void
 {
   m_gameScore->Add(10);
+}
+
+auto level_container::SetPlayEvent(auto&&...args) -> void
+{
+  m_playEvents.SetEvent(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
