@@ -24,7 +24,8 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  using default_object_collection = std::list<dynamic_object<default_object>>;
+  using static_object_collection = std::vector<dynamic_object<default_object>>;
+  using moving_object_collection = std::list<dynamic_object<default_object>>;
 
   level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
@@ -82,7 +83,8 @@ private:
   asteroid_collection m_asteroids;
   particle_collection m_particles;
 
-  default_object_collection m_defaultObjects;
+  static_object_collection m_staticObjects;
+  moving_object_collection m_movingObjects;
 
   explosion_collection m_explosions;
   impact_collection m_impacts;
@@ -102,7 +104,7 @@ private:
 level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
   m_boundary { points }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
-    m_defaultObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, POINT_2F { 0 , 0 });
+    m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, POINT_2F { 0 , 0 });
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
@@ -110,7 +112,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   std::ranges::for_each(positions, [this](const auto& position)
   {
     // m_targets.emplace_back(level_geometries::TargetGeometry(), position, 5.0f);
-    m_defaultObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, 5.0f);
+    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, 5.0f);
   });
 }
 

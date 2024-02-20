@@ -62,7 +62,12 @@ auto level_container::UpdateObjects(float interval) -> void
     }
   };
 
-  for( auto& object : m_defaultObjects )
+  for( auto& object : m_staticObjects )
+  {
+    std::visit(visitor { object, interval }, object->Get());
+  }
+
+  for( auto& object : m_movingObjects )
   {
     std::visit(visitor { object, interval }, object->Get());
   }
@@ -95,7 +100,8 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   // renderer::render_all(m_targets);
   // renderer::render_all(m_ductFans);
 
-  renderer::render_all(m_defaultObjects);
+  renderer::render_all(m_staticObjects);
+  renderer::render_all(m_movingObjects);
 
   renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
