@@ -222,7 +222,6 @@ auto level_container::CreateNewObjects2(float interval) -> void
       if( object.CanShoot() && damageMode )
       {
         // auto angleToTarget = direct2d::GetAngleBetweenPoints(object.Position(), m_targettedObject->Position());
-        // m_bullets.emplace_back(m_playerShip->Position(), direct2d::CalculateVelocity(500, angleToTarget), *damageMode, m_targettedObject);
         m_levelContainer.CreateBullet(object.Position(), direct2d::CalculateVelocity(500, object.Angle()), *damageMode, std::nullopt);
         m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
       }
