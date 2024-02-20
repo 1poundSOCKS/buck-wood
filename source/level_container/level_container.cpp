@@ -42,7 +42,7 @@ auto level_container::UpdateObjects(float interval) -> void
   // dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
   // dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
   // dynamic_object_functions::update(m_bullets, interval);
-  // dynamic_object_functions::update(m_particles, interval);
+  dynamic_object_functions::update(m_particles, interval);
 
   // dynamic_object_functions::update(m_defaultObjects, level_geometries::TargetGeometry(), interval);
 
