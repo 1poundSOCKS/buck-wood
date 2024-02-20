@@ -43,6 +43,8 @@ auto level_container::UpdateObjects(float interval) -> void
   dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
   dynamic_object_functions::update(m_bullets, interval);
   dynamic_object_functions::update(m_particles, interval);
+
+  dynamic_object_functions::update(m_defaultObjects, level_geometries::TargetGeometry(), interval);
 }
 
 auto level_container::ValidateObjectPointers() -> void
@@ -71,6 +73,9 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render_all(m_mines);
   renderer::render_all(m_targets);
   renderer::render_all(m_ductFans);
+
+  renderer::render_all(m_defaultObjects);
+
   renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
 

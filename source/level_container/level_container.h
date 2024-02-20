@@ -24,6 +24,8 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
+  using default_object_collection = std::list<dynamic_object<default_object>>;
+
   level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
@@ -80,6 +82,8 @@ private:
   asteroid_collection m_asteroids;
   particle_collection m_particles;
 
+  default_object_collection m_defaultObjects;
+
   explosion_collection m_explosions;
   impact_collection m_impacts;
 
@@ -104,7 +108,8 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_targets.emplace_back(level_geometries::TargetGeometry(), position, 5.0f);
+    // m_targets.emplace_back(level_geometries::TargetGeometry(), position, 5.0f);
+    m_defaultObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, 5.0f);
   });
 }
 
@@ -156,7 +161,7 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return m_activatedTargetCount == m_targets.size();
+  return false;
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool

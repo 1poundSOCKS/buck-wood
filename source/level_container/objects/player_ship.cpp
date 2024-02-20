@@ -10,6 +10,11 @@ auto player_ship::Update(float interval, bool enableControl) -> void
   m_destroyed ? UpdateWhenDestoyed(interval, enableControl) : UpdateWhenActive(interval, enableControl);
 }
 
+auto player_ship::Update(float interval) -> void
+{
+  Update(interval, true);
+}
+
 auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
 {
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();

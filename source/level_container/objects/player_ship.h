@@ -23,6 +23,8 @@ public:
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
+  auto Update(float interval) -> void;
+
   auto Update(float interval, bool enableControl) -> void;
 
   auto SetAngle(float angle) -> void;

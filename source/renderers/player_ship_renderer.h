@@ -26,6 +26,20 @@ public:
     }
   }
 
+  auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
+  {
+    switch( object.FireMode() )
+    {
+      case player_ship::fire_mode::two:
+        m_rendererTwo.Write(geometry);
+        return;
+
+      default:
+        m_rendererOne.Write(geometry);
+        return;
+    }
+  }
+
 private:
 
   static [[nodiscard]] auto GetGeometry(const dynamic_object<player_ship>& object) -> winrt::com_ptr<ID2D1Geometry>

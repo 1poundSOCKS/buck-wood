@@ -84,7 +84,8 @@
     "ranges": "cpp",
     "span": "cpp",
     "variant": "cpp",
-    "future": "cpp"
+    "future": "cpp",
+    "default_object": "cpp"
   },
   "cmake.configureOnOpen": false
 }
