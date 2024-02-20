@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "objects/explosion_particle.h"
+#include "objects/particle.h"
 
 class const_level_explosion_iterator
 {
@@ -13,13 +13,13 @@ public:
   enum class type { none, begin, end };
 
   using difference_type = std::ptrdiff_t;
-  using value_type = explosion_particle;
+  using value_type = particle;
 
   const_level_explosion_iterator() = default;
 
   auto operator++() -> const_level_explosion_iterator&;
   auto operator++(int) -> const_level_explosion_iterator;
-  auto operator*() const -> const explosion_particle&;
+  auto operator*() const -> const particle&;
   auto operator==(const const_level_explosion_iterator& i) const -> bool;
 
 private:
@@ -39,7 +39,7 @@ private:
   type m_type { type::none };
   D2D1_POINT_2F m_position;
   int m_count { 0 };
-  explosion_particle m_particle { D2D1_POINT_2F { 0, 0}, { 0, 0 }, 0 };
+  particle m_particle { particle::type::explosion, D2D1_POINT_2F { 0, 0}, { 0, 0 }, 0 };
 
 };
 
@@ -60,7 +60,7 @@ private:
 };
 
 inline const_level_explosion_iterator::const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position) : 
-  m_type { iteratorType }, m_position { position }, m_particle { position, GetRandomVelocity(), m_particleLifespan }
+  m_type { iteratorType }, m_position { position }, m_particle { particle::type::explosion, position, GetRandomVelocity(), m_particleLifespan }
 {
 }
 
@@ -72,7 +72,7 @@ inline auto const_level_explosion_iterator::operator++() -> const_level_explosio
   }
   else
   {
-    m_particle = explosion_particle { m_position, GetRandomVelocity(), m_particleLifespan };
+    m_particle = particle { particle::type::explosion, m_position, GetRandomVelocity(), m_particleLifespan };
   }
 
   return *this;
@@ -88,13 +88,13 @@ inline auto const_level_explosion_iterator::operator++(int) -> const_level_explo
   }
   else
   {
-    m_particle = explosion_particle { m_position, GetRandomVelocity(), m_particleLifespan };
+    m_particle = particle { particle::type::explosion, m_position, GetRandomVelocity(), m_particleLifespan };
   }
 
   return tmp;
 }
 
-inline auto const_level_explosion_iterator::operator*() const -> const explosion_particle&
+inline auto const_level_explosion_iterator::operator*() const -> const particle&
 {
   return m_particle;
 }

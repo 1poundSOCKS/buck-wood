@@ -48,7 +48,6 @@ private:
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
-  auto Render(const thrust_particle& particle) const -> void;
   auto Render(const hud_target& hudTarget) const -> void;
   auto Render(const game_score& gameScore) const -> void;
   
@@ -161,11 +160,6 @@ inline auto renderer::Render(const menu_item& menuItem) const -> void
 inline auto renderer::Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void
 {
   m_levelRadarRenderer.Write(levelRadar, objects);
-}
-
-inline auto renderer::Render(const thrust_particle& particle) const -> void
-{
-  m_thrustParticleRenderer.Write(particle);
 }
 
 inline auto renderer::Render(const hud_target& hudTarget) const -> void
