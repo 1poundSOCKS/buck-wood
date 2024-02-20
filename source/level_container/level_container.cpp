@@ -85,9 +85,11 @@ auto level_container::RemoveDestroyedObjects() -> void
 {
   ValidateObjectPointers();
 
-  dynamic_object_functions::erase_destroyed(m_mines);
+  // dynamic_object_functions::erase_destroyed(m_mines);
   particle_functions::erase_destroyed(m_bullets);
   particle_functions::erase_destroyed(m_particles);
+
+  dynamic_object_functions::erase_destroyed(m_movingObjects);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -118,7 +120,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
-  // level_collision_handler<level_container> collisionHandler { *this };
+  level_collision_handler<level_container> collisionHandler { *this };
   
   // if( !m_playerShip->Destroyed() )
   // {
@@ -143,6 +145,9 @@ auto level_container::DoCollisions() -> void
   // collisionHandler.DestroyObjectsOnGeometryCollision<mine>(m_mines, m_boundary, m_asteroids, m_ductFans);
   // collisionHandler.DestroyParticlesOnGeometryCollision<particle>(m_particles, m_boundary, m_asteroids, m_ductFans);
   // collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
+
+  geometry_collision<default_object, default_object> collisionRunner { collisionHandler };
+  collisionRunner(m_staticObjects, m_movingObjects);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void

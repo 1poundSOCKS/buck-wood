@@ -23,6 +23,7 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
 
   auto Update(float interval) -> void;
+  auto Destroy() -> void;
 
 private:
 
@@ -115,4 +116,20 @@ inline auto default_object::Update(float interval) -> void
   };
 
   return std::visit(visitor{ interval }, m_object);
+}
+
+inline auto default_object::Destroy() -> void
+{
+  struct visitor
+  {
+    auto operator()(level_target& object)
+    {
+    }
+    auto operator()(player_ship& object)
+    {
+      return object.Destroy();
+    }
+  };
+
+  return std::visit(visitor {}, m_object);
 }

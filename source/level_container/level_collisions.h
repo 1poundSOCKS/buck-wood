@@ -18,6 +18,15 @@ public:
   {
   }
 
+  auto operator()(default_object& object1, default_object& object2) -> void
+  {
+    object1.Destroy();
+    object2.Destroy();
+
+    if( object1.Destroyed() ) m_visitor.CreateExplosion(object1.Position());
+    if( object2.Destroyed() ) m_visitor.CreateExplosion(object2.Position());
+  }
+
   auto operator()(player_ship& ship, mine& mine) -> void
   {
     ship.ApplyFatalDamage();
