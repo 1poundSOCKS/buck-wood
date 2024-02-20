@@ -102,6 +102,7 @@ private:
 level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
   m_boundary { points }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
+    m_defaultObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, POINT_2F { 0 , 0 });
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void

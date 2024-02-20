@@ -35,16 +35,37 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  auto playerCollisionGeometry = m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry());
-  m_playerShip.Update(playerCollisionGeometry, interval, m_playerActive);
+  // auto playerCollisionGeometry = m_playerShip->ShieldsUp() ? static_cast<ID2D1Geometry*>(level_geometries::PlayerShieldGeometry()) : static_cast<ID2D1Geometry*>(level_geometries::PlayerShipGeometry());
+  // m_playerShip.Update(playerCollisionGeometry, interval, m_playerActive);
 
-  dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
-  dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
-  dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
-  dynamic_object_functions::update(m_bullets, interval);
-  dynamic_object_functions::update(m_particles, interval);
+  // dynamic_object_functions::update(m_mines, level_geometries::MineGeometry(), interval, m_playerShip->Destroyed() ? std::nullopt : std::optional<D2D1_POINT_2F>(m_playerShip->Position()));
+  // dynamic_object_functions::update(m_targets, level_geometries::TargetGeometry(), interval);
+  // dynamic_object_functions::update(m_ductFans, level_geometries::DuctFanGeometry(), interval);
+  // dynamic_object_functions::update(m_bullets, interval);
+  // dynamic_object_functions::update(m_particles, interval);
 
-  dynamic_object_functions::update(m_defaultObjects, level_geometries::TargetGeometry(), interval);
+  // dynamic_object_functions::update(m_defaultObjects, level_geometries::TargetGeometry(), interval);
+
+  struct visitor
+  {
+    dynamic_object<default_object>& m_dynamicObject;
+    float m_interval;
+
+    auto operator()(const level_target& object)
+    {
+      m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval);
+    }
+
+    auto operator()(const player_ship& object)
+    {
+      m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval);
+    }
+  };
+
+  for( auto& object : m_defaultObjects )
+  {
+    std::visit(visitor { object, interval }, object->Get());
+  }
 }
 
 auto level_container::ValidateObjectPointers() -> void
@@ -69,20 +90,20 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   auto renderStart = performance_counter::QueryValue();
 
   renderer::render(m_boundary);
-  renderer::render_all(m_asteroids);
-  renderer::render_all(m_mines);
-  renderer::render_all(m_targets);
-  renderer::render_all(m_ductFans);
+  // renderer::render_all(m_asteroids);
+  // renderer::render_all(m_mines);
+  // renderer::render_all(m_targets);
+  // renderer::render_all(m_ductFans);
 
   renderer::render_all(m_defaultObjects);
 
   renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
 
-  if( !m_playerShip->Destroyed() )
-  {
-    renderer::render(m_playerShip);
-  }
+  // if( !m_playerShip->Destroyed() )
+  // {
+  //   renderer::render(m_playerShip);
+  // }
 
   auto renderEnd = performance_counter::QueryValue();
 
@@ -91,31 +112,31 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
-  level_collision_handler<level_container> collisionHandler { *this };
+  // level_collision_handler<level_container> collisionHandler { *this };
   
-  if( !m_playerShip->Destroyed() )
-  {
-    geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
-    shipOnTargetCollision(m_playerShip, m_targets);
+  // if( !m_playerShip->Destroyed() )
+  // {
+  //   geometry_collision<player_ship, level_target> shipOnTargetCollision { collisionHandler };
+  //   shipOnTargetCollision(m_playerShip, m_targets);
 
-    geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
-    shipOnMineCollision(m_playerShip, m_mines);
+  //   geometry_collision<player_ship, mine> shipOnMineCollision { collisionHandler };
+  //   shipOnMineCollision(m_playerShip, m_mines);
 
-    collisionHandler.DestroyObjectOnGeometryCollision<player_ship>(m_playerShip, m_boundary, m_asteroids, m_ductFans);
-  }
+  //   collisionHandler.DestroyObjectOnGeometryCollision<player_ship>(m_playerShip, m_boundary, m_asteroids, m_ductFans);
+  // }
 
-  particle_collision<level_target, bullet> bulletOnTargetCollision { collisionHandler };
-  bulletOnTargetCollision(m_targets, m_bullets);
+  // particle_collision<level_target, bullet> bulletOnTargetCollision { collisionHandler };
+  // bulletOnTargetCollision(m_targets, m_bullets);
 
-  particle_collision<mine, bullet> bulletOnMineCollision { collisionHandler };
-  bulletOnMineCollision(m_mines, m_bullets);
+  // particle_collision<mine, bullet> bulletOnMineCollision { collisionHandler };
+  // bulletOnMineCollision(m_mines, m_bullets);
 
-  collision<mine> mineOnMineCollision { collisionHandler };
-  mineOnMineCollision(m_mines);
+  // collision<mine> mineOnMineCollision { collisionHandler };
+  // mineOnMineCollision(m_mines);
 
-  collisionHandler.DestroyObjectsOnGeometryCollision<mine>(m_mines, m_boundary, m_asteroids, m_ductFans);
-  collisionHandler.DestroyParticlesOnGeometryCollision<particle>(m_particles, m_boundary, m_asteroids, m_ductFans);
-  collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
+  // collisionHandler.DestroyObjectsOnGeometryCollision<mine>(m_mines, m_boundary, m_asteroids, m_ductFans);
+  // collisionHandler.DestroyParticlesOnGeometryCollision<particle>(m_particles, m_boundary, m_asteroids, m_ductFans);
+  // collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
