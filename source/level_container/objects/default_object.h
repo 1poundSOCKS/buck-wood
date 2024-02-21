@@ -24,7 +24,7 @@ public:
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Update(float interval) -> void;
+  auto Update(float interval, std::optional<POINT_2F> playerPosition) -> void;
   auto Destroy() -> void;
 
 private:
@@ -117,11 +117,12 @@ inline [[nodiscard]] auto default_object::Destroyed() const -> bool
   return std::visit(visitor{}, m_object);
 }
 
-inline auto default_object::Update(float interval) -> void
+inline auto default_object::Update(float interval, std::optional<POINT_2F> playerPosition) -> void
 {
   struct visitor
   {
     float m_interval;
+    std::optional<POINT_2F> m_playerPosition;
 
     auto operator()(level_target& object)
     {
@@ -133,11 +134,11 @@ inline auto default_object::Update(float interval) -> void
     }
     auto operator()(mine& object)
     {
-      return object.Update(m_interval, std::nullopt);
+      return object.Update(m_interval, m_playerPosition);
     }
   };
 
-  return std::visit(visitor{ interval }, m_object);
+  return std::visit(visitor{ interval, playerPosition }, m_object);
 }
 
 inline auto default_object::Destroy() -> void

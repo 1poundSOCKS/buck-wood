@@ -9,7 +9,7 @@ public:
 
   enum hardness_type { soft, tough };
 
-  mine(D2D1_POINT_2F position, float thrust, float maxSpeed, hardness_type hardnessType);
+  mine(POINT_2F position, float thrust, float maxSpeed, hardness_type hardnessType);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;

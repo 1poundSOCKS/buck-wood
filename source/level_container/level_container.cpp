@@ -55,16 +55,16 @@ auto level_container::UpdateObjects(float interval) -> void
 
     auto operator()(const level_target& object)
     {
-      m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval);
+      m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_levelContainer.PlayerPosition());
     }
     auto operator()(const player_ship& object)
     {
-      m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval);
+      m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
       m_levelContainer.SetPlayerPosition(object.Position());
     }
     auto operator()(const mine& object)
     {
-      m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval);
+      m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_levelContainer.PlayerPosition());
     }
   };
 
