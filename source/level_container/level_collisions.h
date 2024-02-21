@@ -31,15 +31,15 @@ public:
     if( object2.Destroyed() ) m_visitor.CreateExplosion(object2.Position());
   }
 
-  auto operator()(dynamic_object<default_object>& object, bullet& bullet) -> void
+  auto operator()(default_object& object, bullet& bullet) -> void
   {
     bullet.Destroy();
 
     // if( mine->HardnessType() == mine::hardness_type::soft && bullet.DamageMode() == bullet::damage_mode::two || 
     //     mine->HardnessType() == mine::hardness_type::tough && bullet.DamageMode() == bullet::damage_mode::one )
     // {
-      m_visitor.CreateExplosion(object->Position());
-      object->Destroy();
+      // m_visitor.CreateExplosion(object->Position());
+      // object.Destroy();
       // m_visitor.MineDestroyed();
     // }
   }

@@ -159,6 +159,7 @@ auto level_container::DoCollisions() -> void
   movingCollisionRunner(m_movingObjects);
 
   particle_collision<default_object, bullet> bulletCollisionRunner { collisionHandler };
+  bulletCollisionRunner(m_staticObjects, m_bullets);
   bulletCollisionRunner(m_movingObjects, m_bullets);
 
 }
