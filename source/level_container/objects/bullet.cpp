@@ -36,8 +36,7 @@ bullet::bullet(D2D1_POINT_2F position, VELOCITY_2F velocity, damage_mode damageM
 auto bullet::Update(float interval, std::optional<D2D1_POINT_2F> targetPosition) -> void
 {
   auto direction = targetPosition ? std::optional<float>(direct2d::GetAngleBetweenPoints(m_position, *targetPosition)) : std::nullopt;
-  m_direction = direction ? *direction : m_direction;
-  m_velocity = direct2d::CalculateVelocity(m_bulletSpeed, m_direction);
+  m_velocity = direction ? direct2d::CalculateVelocity(m_bulletSpeed, *direction) : m_velocity;
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
   m_destroyed = DistanceTravelled() > m_range;
 }

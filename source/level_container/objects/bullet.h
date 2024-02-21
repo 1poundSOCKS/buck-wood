@@ -31,7 +31,6 @@ private:
   D2D1_POINT_2F m_startPosition;
   D2D1_POINT_2F m_position;
   VELOCITY_2F m_velocity;
-  float m_direction;
   float m_range = 1000;
   bool m_destroyed = false;
   damage_mode m_damageMode;
