@@ -2,13 +2,14 @@
 
 #include "level_target.h"
 #include "player_ship.h"
+#include "mine.h"
 
 class default_object
 {
 
 public:
 
-  using object_type = std::variant<level_target, player_ship>;
+  using object_type = std::variant<level_target, player_ship, mine>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
     m_object { variantType, std::forward<Args>(args)... }
@@ -44,6 +45,10 @@ inline [[nodiscard]] auto default_object::Scale() const -> SCALE_2F
     {
       return object.Scale();
     }
+    auto operator()(const mine& object)
+    {
+      return object.Scale();
+    }
   };
 
   return std::visit(visitor{}, m_object);
@@ -58,6 +63,10 @@ inline [[nodiscard]] auto default_object::Angle() const -> float
       return object.Angle();
     }
     auto operator()(const player_ship& object)
+    {
+      return object.Angle();
+    }
+    auto operator()(const mine& object)
     {
       return object.Angle();
     }
@@ -78,6 +87,10 @@ inline [[nodiscard]] auto default_object::Position() const -> D2D1_POINT_2F
     {
       return object.Position();
     }
+    auto operator()(const mine& object)
+    {
+      return object.Position();
+    }
   };
 
   return std::visit(visitor{}, m_object);
@@ -92,6 +105,10 @@ inline [[nodiscard]] auto default_object::Destroyed() const -> bool
       return object.Destroyed();
     }
     auto operator()(const player_ship& object)
+    {
+      return object.Destroyed();
+    }
+    auto operator()(const mine& object)
     {
       return object.Destroyed();
     }
@@ -114,6 +131,10 @@ inline auto default_object::Update(float interval) -> void
     {
       return object.Update(m_interval);
     }
+    auto operator()(mine& object)
+    {
+      return object.Update(m_interval, std::nullopt);
+    }
   };
 
   return std::visit(visitor{ interval }, m_object);
@@ -127,6 +148,10 @@ inline auto default_object::Destroy() -> void
     {
     }
     auto operator()(player_ship& object)
+    {
+      return object.Destroy();
+    }
+    auto operator()(mine& object)
     {
       return object.Destroy();
     }

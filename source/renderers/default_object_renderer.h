@@ -16,6 +16,7 @@ private:
   geometry_renderer m_deactivatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
   geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
   player_ship_renderer m_playerShipRenderer;
+  mine_renderer m_mineRenderer;
 
 };
 
@@ -26,6 +27,7 @@ inline auto default_object_renderer::Write(const default_object& object, ID2D1Ge
     const geometry_renderer& m_deactivatedRenderer;
     const geometry_renderer& m_activatedRenderer;
     const player_ship_renderer& m_playerShipRenderer;
+    const mine_renderer& m_mineRenderer;
     ID2D1Geometry* m_geometry;
 
     auto operator()(const level_target& object)
@@ -36,7 +38,11 @@ inline auto default_object_renderer::Write(const default_object& object, ID2D1Ge
     {
       m_playerShipRenderer.Write(object, m_geometry);
     }
+    auto operator()(const mine& object)
+    {
+      m_mineRenderer.Write(object, m_geometry);
+    }
   };
 
-  std::visit(visitor { m_deactivatedRenderer, m_activatedRenderer, m_playerShipRenderer, geometry }, object.Get());
+  std::visit(visitor { m_deactivatedRenderer, m_activatedRenderer, m_playerShipRenderer, m_mineRenderer, geometry }, object.Get());
 }

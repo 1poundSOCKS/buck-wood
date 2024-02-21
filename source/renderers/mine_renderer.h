@@ -22,6 +22,19 @@ public:
     }
   }
 
+  auto Write(const mine& object, ID2D1Geometry* geometry) const -> void
+  {
+    switch( object.HardnessType() )
+    {
+      case mine::hardness_type::soft:
+        m_softRenderer.Write(geometry);
+        return;
+      case mine::hardness_type::tough:
+        m_toughRenderer.Write(geometry);
+        return;
+    }
+  }
+
 private:
 
   geometry_renderer m_softRenderer { screen_render_brush_type_one.CreateBrush(), 6 };

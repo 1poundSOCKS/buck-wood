@@ -39,7 +39,7 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Targets() const -> const target_collection&;
-  [[nodiscard]] auto PlayerPosition() const -> D2D1_POINT_2F;
+  [[nodiscard]] auto PlayerPosition() const -> std::optional<POINT_2F>;
   [[nodiscard]] auto PlayerAngle() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
@@ -49,14 +49,17 @@ public:
   [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
+  [[nodiscard]] auto MineParameters();
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreateBullet(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
+  auto CreateMovingObject(auto&&...args) -> void;
   auto TargetActivated() -> void;
   auto MineDestroyed() -> void;
   auto SetPlayEvent(auto&&...args) -> void;
+  auto SetPlayerPosition(std::optional<POINT_2F> value) -> void;
 
 private:
 
@@ -92,6 +95,8 @@ private:
 
   explosion_collection m_explosions;
   impact_collection m_impacts;
+
+  std::optional<POINT_2F> m_playerPosition;
 
   int m_activatedTargetCount { 0 };
   targetted_object_type m_targettedObject;
@@ -151,9 +156,10 @@ inline[[nodiscard]] auto level_container::Targets() const -> const target_collec
   return m_targets;
 }
 
-inline [[nodiscard]] auto level_container::PlayerPosition() const -> D2D1_POINT_2F
+inline [[nodiscard]] auto level_container::PlayerPosition() const -> std::optional<POINT_2F>
 {
-  return m_playerShip->Position();
+  // return m_playerShip->Position();
+  return m_playerPosition;
 }
 
 inline [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
@@ -191,6 +197,11 @@ inline [[nodiscard]] auto level_container::GameScore() const -> const game_score
   return *m_gameScore;
 }
 
+inline [[nodiscard]] auto level_container::MineParameters()
+{
+  return m_stage.MineParameters();
+}
+
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
 {
   m_explosions.emplace_back(position);
@@ -211,6 +222,11 @@ inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
   m_impacts.emplace_back(position);
 }
 
+auto level_container::CreateMovingObject(auto&&...args) -> void
+{
+  m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
 inline auto level_container::TargetActivated() -> void
 {
   m_playEvents.SetEvent(play_events::event_type::target_activated, true);
@@ -224,6 +240,11 @@ inline auto level_container::MineDestroyed() -> void
 auto level_container::SetPlayEvent(auto&&...args) -> void
 {
   m_playEvents.SetEvent(std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::SetPlayerPosition(std::optional<POINT_2F> value) -> void
+{
+  m_playerPosition = value;
 }
 
 auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
