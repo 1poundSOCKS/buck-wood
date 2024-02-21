@@ -31,8 +31,8 @@ public:
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
-  auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
-  auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
+  // auto AddAsteroids(std::ranges::input_range auto&& asteroids) -> void;
+  // auto AddDuctFans(std::ranges::input_range auto&& asteroids) -> void;
   auto SetPlayerActive(bool value) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -67,8 +67,8 @@ private:
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
+  // auto CreateNewObjects(float interval) -> void;
   auto CreateNewObjects(float interval) -> void;
-  auto CreateNewObjects2(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
   auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
@@ -125,21 +125,21 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   });
 }
 
-auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> void
-{
-  std::ranges::for_each(positions, [this](const auto& position)
-  {
-    m_ductFans.emplace_back(level_geometries::DuctFanGeometry(), position, 30.0f);
-  });
-}
+// auto level_container::AddDuctFans(std::ranges::input_range auto&& positions) -> void
+// {
+//   std::ranges::for_each(positions, [this](const auto& position)
+//   {
+//     m_ductFans.emplace_back(level_geometries::DuctFanGeometry(), position, 30.0f);
+//   });
+// }
 
-auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
-{
-  std::ranges::for_each(positions, [this](const auto& position)
-  {
-    m_asteroids.emplace_back(level_geometries::AsteroidGeometry(), position, 200.0f, 200.0f);
-  });
-}
+// auto level_container::AddAsteroids(std::ranges::input_range auto&& positions) -> void
+// {
+//   std::ranges::for_each(positions, [this](const auto& position)
+//   {
+//     m_asteroids.emplace_back(level_geometries::AsteroidGeometry(), position, 200.0f, 200.0f);
+//   });
+// }
 
 inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
 {
