@@ -20,7 +20,8 @@ public:
 
   auto operator()(default_object& object1, default_object& object2) -> void
   {
-    if( !(std::holds_alternative<mine>(object1.Get()) || std::holds_alternative<mine>(object2.Get())) )
+    if( !(std::holds_alternative<mine>(object1.Get()) && std::holds_alternative<level_target>(object2.Get()) ||
+        std::holds_alternative<level_target>(object1.Get()) && std::holds_alternative<mine>(object2.Get())) )
     {
       object1.Destroy();
       object2.Destroy();

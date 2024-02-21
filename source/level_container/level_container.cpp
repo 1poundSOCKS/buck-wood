@@ -152,8 +152,11 @@ auto level_container::DoCollisions() -> void
   // collisionHandler.DestroyParticlesOnGeometryCollision<particle>(m_particles, m_boundary, m_asteroids, m_ductFans);
   // collisionHandler.DestroyBulletsOnGeometryCollision(m_bullets, m_boundary, m_asteroids, m_ductFans);
 
-  geometry_collision<default_object, default_object> collisionRunner { collisionHandler };
-  collisionRunner(m_staticObjects, m_movingObjects);
+  geometry_collision<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
+  staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
+
+  collision<default_object> movingCollisionRunner { collisionHandler };
+  movingCollisionRunner(m_movingObjects);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
