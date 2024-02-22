@@ -29,9 +29,9 @@ public:
     if( object2.Destroyed() ) m_visitor.CreateExplosion(object2.Position());
   }
 
-  auto operator()(default_object& object, bullet& bullet) -> void
+  auto operator()(default_object& object, particle& particle) -> void
   {
-    bullet.Destroy();
+    particle.Destroy();
 
     // if( mine->HardnessType() == mine::hardness_type::soft && bullet.DamageMode() == bullet::damage_mode::two || 
     //     mine->HardnessType() == mine::hardness_type::tough && bullet.DamageMode() == bullet::damage_mode::one )
@@ -48,16 +48,10 @@ public:
     object.Destroy();
   }
 
-  auto operator()(particle& object)
+  auto operator()(particle& particle)
   {
-    m_visitor.CreateImpact(object.Position());
-    object.Destroy();
-  }
-
-  auto operator()(bullet& object)
-  {
-    m_visitor.CreateImpact(object.Position());
-    object.Destroy();
+    m_visitor.CreateImpact(particle.Position());
+    particle.Destroy();
   }
 
 private:

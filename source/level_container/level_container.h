@@ -1,6 +1,5 @@
 #pragma once
 
-// #include "level_data_types.h"
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_collisions.h"
@@ -18,7 +17,6 @@ public:
   using static_object_collection = std::vector<dynamic_object<default_object>>;
   using moving_object_collection = std::list<dynamic_object<default_object>>;
 
-  using bullet_collection = std::list<homing_bullet>;
   using particle_collection = std::list<particle>;
 
   using explosion_collection = std::vector<D2D1_POINT_2F>;
@@ -47,7 +45,6 @@ public:
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateParticle(auto&&...args) -> void;
-  auto CreateBullet(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto TargetActivated() -> void;
@@ -75,7 +72,6 @@ private:
   blank_object m_boundary;
   play_events m_playEvents;
   std::optional<player_ship> m_playerShip;
-  bullet_collection m_bullets;
   particle_collection m_particles;
 
   static_object_collection m_staticObjects;
@@ -175,11 +171,6 @@ inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
 auto level_container::CreateParticle(auto&&...args) -> void
 {
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateBullet(auto&&...args) -> void
-{
-  m_bullets.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void

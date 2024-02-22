@@ -47,7 +47,7 @@ struct create_new_objects_visitor
     {
       auto targetPosition = m_levelContainer.TargettedObject() ? std::optional<POINT_2F>(m_levelContainer.TargettedObject()->Position()) : std::nullopt;
       auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-      m_levelContainer.CreateBullet(object.Position(), direct2d::CalculateVelocity(500, bulletAngle), *damageMode, std::nullopt);
+      m_levelContainer.CreateParticle(particle::type::bullet, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
       m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
     }
 
@@ -95,7 +95,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  dynamic_object_functions::update(m_bullets, interval);
   dynamic_object_functions::update(m_particles, interval);
 
   for( auto& object : m_staticObjects )
@@ -109,18 +108,8 @@ auto level_container::UpdateObjects(float interval) -> void
   }
 }
 
-auto level_container::ValidateObjectPointers() -> void
-{
-  for( auto& bullet : m_bullets )
-  {
-    bullet.ValidateTargetPointer();
-  }
-}
-
 auto level_container::RemoveDestroyedObjects() -> void
 {
-  ValidateObjectPointers();
-  particle_functions::erase_destroyed(m_bullets);
   particle_functions::erase_destroyed(m_particles);
   dynamic_object_functions::erase_destroyed(m_movingObjects);
 }
@@ -132,7 +121,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render(m_boundary);
   renderer::render_all(m_staticObjects);
   renderer::render_all(m_movingObjects);
-  renderer::render_all(m_bullets);
+  // renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
 
   auto renderEnd = performance_counter::QueryValue();
@@ -150,18 +139,15 @@ auto level_container::DoCollisions() -> void
   particle_containment<particle> particleContainmentRunner { collisionHandler };
   particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
 
-  particle_containment<bullet> bulletContainmentRunner { collisionHandler };
-  bulletContainmentRunner(m_boundary.Geometry().get(), m_bullets);
-
   geometry_collision<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
 
   collision<default_object> movingCollisionRunner { collisionHandler };
   movingCollisionRunner(m_movingObjects);
 
-  particle_collision<default_object, bullet> bulletCollisionRunner { collisionHandler };
-  bulletCollisionRunner(m_staticObjects, m_bullets);
-  bulletCollisionRunner(m_movingObjects, m_bullets);
+  particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
+  particleCollisionRunner(m_staticObjects, m_particles);
+  particleCollisionRunner(m_movingObjects, m_particles);
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
