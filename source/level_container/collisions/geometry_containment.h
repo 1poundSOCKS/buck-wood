@@ -32,7 +32,7 @@ public:
     if( !contained )
     {
       std::lock_guard<std::mutex> guard(m_mutex);
-      m_callable(containedObject);
+      m_callable(containedObject.Object());
     }
   }
 
@@ -48,7 +48,7 @@ public:
 
 private:
 
-  std::function<void(dynamic_object<contained_object_type>&)> m_callable;
+  std::function<void(contained_object_type&)> m_callable;
   std::mutex m_mutex;
 
 };
