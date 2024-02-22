@@ -111,6 +111,18 @@ auto level_container::DoCollisions() -> void
 
   geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
 
+  auto unaryFunction = [this](auto& particle)
+  {
+    CreateImpact(particle.Position());
+    particle.Destroy();
+  };
+
+  particle_containment<particle> particleContainmentRunner { unaryFunction };
+  particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
+
+  particle_containment<bullet> bulletContainmentRunner { unaryFunction };
+  bulletContainmentRunner(m_boundary.Geometry().get(), m_bullets);
+
   level_collision_handler<level_container> collisionHandler { *this };
   
   geometry_collision<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
