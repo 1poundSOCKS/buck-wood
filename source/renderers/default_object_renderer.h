@@ -3,6 +3,9 @@
 #include "level_objects.h"
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
+#include "player_ship_renderer.h"
+#include "level_target_renderer.h"
+#include "mine_renderer.h"
 
 class default_object_renderer
 {

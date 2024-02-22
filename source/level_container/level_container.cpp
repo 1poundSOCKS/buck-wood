@@ -81,10 +81,8 @@ auto level_container::ValidateObjectPointers() -> void
 auto level_container::RemoveDestroyedObjects() -> void
 {
   ValidateObjectPointers();
-
   particle_functions::erase_destroyed(m_bullets);
   particle_functions::erase_destroyed(m_particles);
-
   dynamic_object_functions::erase_destroyed(m_movingObjects);
 }
 
@@ -93,10 +91,8 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   auto renderStart = performance_counter::QueryValue();
 
   renderer::render(m_boundary);
-
   renderer::render_all(m_staticObjects);
   renderer::render_all(m_movingObjects);
-
   renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
 

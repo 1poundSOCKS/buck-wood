@@ -25,11 +25,7 @@ template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -
   demo_level demoLevel;
 
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(demoLevel.BoundaryPoints(), std::forward<Args>(args)...);
-
   levelContainer->AddTargets(demoLevel.TargetPositions());
-  // levelContainer->AddAsteroids(demoLevel.AsteroidPositions());
-  // levelContainer->AddDuctFans(demoLevel.DuctFanPositions());
-
   return levelContainer;
 }
 

@@ -6,8 +6,6 @@
 #include "collisions/particle_containment.h"
 #include "collisions/collision.h"
 
-#include "level_data_types.h"
-
 template <typename visitor_type>
 class level_collision_handler
 {
@@ -43,61 +41,6 @@ public:
       // m_visitor.MineDestroyed();
     // }
   }
-
-  // auto operator()(player_ship& ship, mine& mine) -> void
-  // {
-  //   ship.ApplyFatalDamage();
-  //   mine.Destroy();
-  //   m_visitor.CreateExplosion(mine.PreviousPosition());
-  // }
-
-  // auto operator()(player_ship& ship, level_target& target) -> void
-  // {
-  //   ship.ApplyFatalDamage();
-  //   m_visitor.CreateExplosion(ship.PreviousPosition());
-  // }
-
-//   auto operator()(target_object& target, bullet& bullet) -> void
-//   {
-//     auto targetActivated = target->IsActivated();
-
-//     if( !targetActivated )
-//     {
-// #ifdef TARGETS_ARE_TARGETS
-//       target->HitByBullet();
-//       m_activatedTargetCount += target->IsActivated() ? 1 : 0;
-// #endif
-//     }
-
-//     if( !targetActivated && target->IsActivated() )
-//     {
-//       m_visitor.TargetActivated();
-//     }
-
-//     m_visitor.CreateImpact(bullet.Position());
-//     bullet.Destroy();
-//   }
-
-  // auto operator()(mine_object& mine, bullet& bullet) -> void
-  // {
-  //   bullet.Destroy();
-
-  //   if( mine->HardnessType() == mine::hardness_type::soft && bullet.DamageMode() == bullet::damage_mode::two || 
-  //       mine->HardnessType() == mine::hardness_type::tough && bullet.DamageMode() == bullet::damage_mode::one )
-  //   {
-  //     m_visitor.CreateExplosion(mine->PreviousPosition());
-  //     mine->Destroy();
-  //     m_visitor.MineDestroyed();
-  //   }
-  // }
-
-  // auto operator()(mine& mine1, mine& mine2) -> void
-  // {
-  //   m_visitor.CreateExplosion(mine1.PreviousPosition());
-  //   m_visitor.CreateExplosion(mine2.PreviousPosition());
-  //   mine1.Destroy();
-  //   mine2.Destroy();
-  // }
 
   // template <typename particle_object_type> auto DestroyParticlesOnGeometryCollision(std::ranges::input_range auto&& particles, ID2D1Geometry* boundary, std::ranges::input_range auto&& asteroids, std::ranges::input_range auto&& ductFans) -> void;
   // template <typename geometry_object_type> auto DestroyObjectsOnGeometryCollision(std::ranges::input_range auto&& objects, ID2D1Geometry* boundary, std::ranges::input_range auto&& asteroids, std::ranges::input_range auto&& ductFans) -> void;

@@ -7,9 +7,7 @@
 #include "target_position.h"
 #include "player_destination.h"
 
-#include "player_ship_renderer.h"
-#include "level_target_renderer.h"
-#include "mine_renderer.h"
+#include "default_object_renderer.h"
 
 #include "bullet_renderer.h"
 #include "particle_renderer.h"
@@ -22,8 +20,6 @@
 #include "level_geometries.h"
 
 #include "game_score_renderer.h"
-
-#include "default_object_renderer.h"
 
 class renderer
 {
@@ -39,12 +35,8 @@ public:
 
 private:
 
-  auto Render(const dynamic_object<level_target>& targetObject) const -> void;
-  auto Render(const dynamic_object<mine>& mineObject) const -> void;
-  auto Render(const dynamic_object<duct_fan>& ductFan) const -> void;
-  auto Render(const dynamic_object<level_asteroid>& asteroid) const -> void;
+  auto Render(const dynamic_object<default_object>& object) const -> void;  
   auto Render(const blank_object& blankObject) const -> void;
-  auto Render(const dynamic_object<player_ship>& playerShip) const -> void;
   auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
@@ -53,8 +45,6 @@ private:
   auto Render(const hud_target& hudTarget) const -> void;
   auto Render(const game_score& gameScore) const -> void;
 
-  auto Render(const dynamic_object<default_object>& object) const -> void;
-  
 private:
 
   inline static renderer* m_instance { nullptr };
@@ -105,34 +95,9 @@ inline auto renderer::renderDiagnostics() -> void
   m_instance->m_diagnosticsRenderer.Write();
 }
 
-inline auto renderer::Render(const dynamic_object<level_target>& targetObject) const -> void
-{
-  m_levelTargetRenderer.Write(targetObject);
-}
-
-inline auto renderer::Render(const dynamic_object<mine>& mineObject) const -> void
-{
-  m_mineRenderer.Write(mineObject);
-}
-
-inline auto renderer::Render(const dynamic_object<duct_fan>& ductFan) const -> void
-{
-  m_ductFanRenderer.Write(ductFan.Geometry());
-}
-
-inline auto renderer::Render(const dynamic_object<level_asteroid>& asteroid) const -> void
-{
-  m_asteroidRenderer.Write(asteroid.Geometry());
-}
-
 inline auto renderer::Render(const blank_object& blankObject) const -> void
 {
   m_blankRenderer.Write(static_cast<ID2D1PathGeometry*>(blankObject));
-}
-
-inline auto renderer::Render(const dynamic_object<player_ship>& playerShip) const -> void
-{
-  m_playerShipRenderer.Write(playerShip);
 }
 
 inline auto renderer::Render(const bullet& bulletInstance) const -> void

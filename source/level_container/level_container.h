@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_data_types.h"
+// #include "level_data_types.h"
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_collisions.h"
@@ -40,7 +40,7 @@ public:
   [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
-  [[nodiscard]] auto TargettedObject() const -> targetted_object_type;
+  [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
   [[nodiscard]] auto MineParameters();
@@ -62,7 +62,7 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
-  auto GetTargettedObject() -> targetted_object_type;
+  auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
   static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
@@ -146,7 +146,7 @@ inline [[nodiscard]] auto level_container::HasFinished() const -> bool
   return PlayerDied() || IsComplete();
 }
 
-inline [[nodiscard]] auto level_container::TargettedObject() const -> targetted_object_type
+inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
 {
   return m_targettedObject;
 }
