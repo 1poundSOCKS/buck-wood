@@ -63,10 +63,8 @@ private:
   auto DoCollisions() -> void;
   auto CreateNewObjects(float interval) -> void;
   auto GetTargettedObject() -> targetted_object_type;
-  // auto GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type;
-  // auto GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>;
-  // auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
-  // auto DistanceFromTarget(auto&& object) const -> float;
+  auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
+  auto DistanceFromTarget(auto&& object) const -> float;
   static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
 
 private:
@@ -87,7 +85,7 @@ private:
 
   int m_activatedTargetCount { 0 };
   
-  targetted_object_type m_targettedObject;
+  std::optional<targetted_object> m_targettedObject;
   std::optional<D2D1_POINT_2F> m_targetPosition;
 
   int m_maxCollisionCount { 0 };
@@ -213,43 +211,15 @@ inline auto level_container::UpdatePlayer(player_ship playerShip) -> void
   m_playerShip = playerShip;
 }
 
-// auto level_container::GetNearestObject(auto* object1, auto* object2, float maxRange) const -> targetted_object_type
-// {
-//   auto [nearestObject, distance] = GetNearestObject(object1, object2);
-//   return distance < maxRange ? nearestObject : std::nullopt;
-// }
+auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
+{
+  return DistanceFromTarget(object2) < DistanceFromTarget(object1) ? object2 : object1;
+}
 
-// auto level_container::GetNearestObject(auto* object1, auto* object2) const -> std::tuple<targetted_object_type, float>
-// {
-//   if( object1 && object2 )
-//   {
-//     auto distance1 = DistanceFromTarget(*object1);
-//     auto distance2 = DistanceFromTarget(*object2);
-//     return distance2 < distance1 ? std::tuple<targetted_object_type, float> { targetted_object { object2 }, distance2 } : std::tuple<targetted_object_type, float> { targetted_object { object1 }, distance1 };
-//   }
-//   else if( object1 )
-//   {
-//     return { object1, DistanceFromTarget(*object1) };
-//   }
-//   else if( object2 )
-//   {
-//     return { object2, DistanceFromTarget(*object2) };
-//   }
-//   else
-//   {
-//     return { std::nullopt, 0.0f };
-//   }
-// }
-
-// auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
-// {
-//   return DistanceFromTarget(object2) < DistanceFromTarget(object1) ? object2 : object1;
-// }
-
-// auto level_container::DistanceFromTarget(auto&& object) const -> float
-// {
-//   return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
-// }
+auto level_container::DistanceFromTarget(auto&& object) const -> float
+{
+  return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
+}
 
 inline [[nodiscard]] auto level_container::ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>
 {
