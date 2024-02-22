@@ -9,7 +9,6 @@
 
 #include "default_object_renderer.h"
 
-#include "bullet_renderer.h"
 #include "particle_renderer.h"
 
 #include "menu_renderer.h"
