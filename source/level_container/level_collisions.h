@@ -31,15 +31,20 @@ public:
 
   auto operator()(default_object& object, particle& particle) -> void
   {
-    particle.Destroy();
+    auto& objectVar = object.Get();
+    auto* mineObject = std::get_if<mine>(&objectVar);
 
-    // if( mine->HardnessType() == mine::hardness_type::soft && bullet.DamageMode() == bullet::damage_mode::two || 
-    //     mine->HardnessType() == mine::hardness_type::tough && bullet.DamageMode() == bullet::damage_mode::one )
-    // {
-      // m_visitor.CreateExplosion(object->Position());
-      // object.Destroy();
-      // m_visitor.MineDestroyed();
-    // }
+    if( mineObject )
+    {
+      if( mineObject->HardnessType() == mine::hardness_type::soft && particle.Type() == particle::type::bullet_two || 
+          mineObject->HardnessType() == mine::hardness_type::tough && particle.Type() == particle::type::bullet_one )
+      {
+        m_visitor.CreateExplosion(object.Position());
+        object.Destroy();
+      }
+    }
+
+    particle.Destroy();
   }
 
   auto operator()(default_object& object)
