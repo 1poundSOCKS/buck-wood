@@ -55,6 +55,8 @@ public:
   auto SetPlayEvent(auto&&...args) -> void;
   auto UpdatePlayer(player_ship playerShip) -> void;
 
+  static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
+
 private:
 
   auto UpdateObjects(float interval) -> void;
@@ -65,7 +67,6 @@ private:
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
-  static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
 
 private:
 

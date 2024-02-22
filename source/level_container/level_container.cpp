@@ -5,6 +5,45 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
+struct create_new_objects_visitor
+{
+  level_container& m_levelContainer;
+
+  auto operator()(level_target& object)
+  {
+    if( m_levelContainer.PlayerPosition() && object.CanShootAt(*m_levelContainer.PlayerPosition()) )
+    {
+      auto [thrust, maxSpeed, hardnessType] = m_levelContainer.MineParameters();
+      m_levelContainer.CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, object.Position(), thrust, maxSpeed, hardnessType);
+    }
+  }
+
+  auto operator()(player_ship& object)
+  {
+    auto damageMode = level_container::ConvertFireModeToDamageMode(object.FireMode());
+    
+    if( object.CanShoot() && damageMode )
+    {
+      auto targetPosition = m_levelContainer.TargettedObject() ? std::optional<POINT_2F>(m_levelContainer.TargettedObject()->Position()) : std::nullopt;
+      auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
+      m_levelContainer.CreateBullet(object.Position(), direct2d::CalculateVelocity(500, bulletAngle), *damageMode, std::nullopt);
+      m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
+    }
+
+    if( object.EmitThrustParticle() )
+    {
+      auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
+      auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
+      auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+      m_levelContainer.CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+    }
+  }
+
+  auto operator()(mine& object)
+  {
+  }
+};
+
 auto level_container::SetPlayerActive(bool value) -> void
 {
   m_playerActive = value;
@@ -103,28 +142,17 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
-  geometry_containment<default_object> geometryContainmentRunner { [this](auto& object)
-  {
-    CreateExplosion(object.Position());
-    object.Destroy();
-  }};
-
-  geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
-
-  auto unaryFunction = [this](auto& particle)
-  {
-    CreateImpact(particle.Position());
-    particle.Destroy();
-  };
-
-  particle_containment<particle> particleContainmentRunner { unaryFunction };
-  particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
-
-  particle_containment<bullet> bulletContainmentRunner { unaryFunction };
-  bulletContainmentRunner(m_boundary.Geometry().get(), m_bullets);
-
   level_collision_handler<level_container> collisionHandler { *this };
   
+  geometry_containment<default_object> geometryContainmentRunner { collisionHandler };
+  geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
+
+  particle_containment<particle> particleContainmentRunner { collisionHandler };
+  particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
+
+  particle_containment<bullet> bulletContainmentRunner { collisionHandler };
+  bulletContainmentRunner(m_boundary.Geometry().get(), m_bullets);
+
   geometry_collision<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
 
@@ -153,53 +181,14 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   m_impacts.clear();
 
-  struct visitor
-  {
-    level_container& m_levelContainer;
-
-    auto operator()(level_target& object)
-    {
-      if( m_levelContainer.PlayerPosition() && object.CanShootAt(*m_levelContainer.PlayerPosition()) )
-      {
-        auto [thrust, maxSpeed, hardnessType] = m_levelContainer.MineParameters();
-        m_levelContainer.CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, object.Position(), thrust, maxSpeed, hardnessType);
-      }
-    }
-
-    auto operator()(player_ship& object)
-    {
-      auto damageMode = ConvertFireModeToDamageMode(object.FireMode());
-      
-      if( object.CanShoot() && damageMode )
-      {
-        auto targetPosition = m_levelContainer.TargettedObject() ? std::optional<POINT_2F>(m_levelContainer.TargettedObject()->Position()) : std::nullopt;
-        auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-        m_levelContainer.CreateBullet(object.Position(), direct2d::CalculateVelocity(500, bulletAngle), *damageMode, std::nullopt);
-        m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
-      }
-
-      if( object.EmitThrustParticle() )
-      {
-        auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
-        auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
-        auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
-        m_levelContainer.CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
-      }
-    }
-
-    auto operator()(mine& object)
-    {
-    }
-  };
-
   for( auto& object : m_staticObjects )
   {
-    std::visit(visitor { *this }, object.Object().Get());
+    std::visit(create_new_objects_visitor { *this }, object.Object().Get());
   }
 
   for( auto& object : m_movingObjects )
   {
-    std::visit(visitor { *this }, object.Object().Get());
+    std::visit(create_new_objects_visitor { *this }, object.Object().Get());
   }
 }
 
