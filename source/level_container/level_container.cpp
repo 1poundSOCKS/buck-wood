@@ -41,13 +41,12 @@ struct create_new_objects_visitor
 
   auto operator()(player_ship& object)
   {
-    auto damageMode = level_container::ConvertFireModeToDamageMode(object.FireMode());
-    
-    if( object.CanShoot() && damageMode )
+    if( object.CanShoot() )
     {
       auto targetPosition = m_levelContainer.TargettedObject() ? std::optional<POINT_2F>(m_levelContainer.TargettedObject()->Position()) : std::nullopt;
       auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-      m_levelContainer.CreateParticle(particle::type::bullet, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
+      auto particleType = level_container::ConvertFireModeToParticleType(object.FireMode());
+      m_levelContainer.CreateParticle(particleType, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
       m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
     }
 

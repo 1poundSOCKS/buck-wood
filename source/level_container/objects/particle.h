@@ -5,7 +5,7 @@ class particle
 
 public:
 
-  enum class type { explosion, thrust, impact, bullet };
+  enum class type { explosion, thrust, impact, bullet_one, bullet_two };
 
   particle(type particleType, D2D1_POINT_2F position, VELOCITY_2F velocity, float lifespan);
 
