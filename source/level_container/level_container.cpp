@@ -5,6 +5,27 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
+struct update_objects_visitor
+{
+  level_container& m_levelContainer;
+  dynamic_object<default_object>& m_dynamicObject;
+  float m_interval;
+
+  auto operator()(const level_target& object)
+  {
+    m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_levelContainer.PlayerPosition());
+  }
+  auto operator()(const player_ship& object)
+  {
+    m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
+    m_levelContainer.UpdatePlayer(object);
+  }
+  auto operator()(const mine& object)
+  {
+    m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_levelContainer.PlayerPosition());
+  }
+};
+
 struct create_new_objects_visitor
 {
   level_container& m_levelContainer;
@@ -77,35 +98,14 @@ auto level_container::UpdateObjects(float interval) -> void
   dynamic_object_functions::update(m_bullets, interval);
   dynamic_object_functions::update(m_particles, interval);
 
-  struct visitor
-  {
-    level_container& m_levelContainer;
-    dynamic_object<default_object>& m_dynamicObject;
-    float m_interval;
-
-    auto operator()(const level_target& object)
-    {
-      m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_levelContainer.PlayerPosition());
-    }
-    auto operator()(const player_ship& object)
-    {
-      m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
-      m_levelContainer.UpdatePlayer(object);
-    }
-    auto operator()(const mine& object)
-    {
-      m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_levelContainer.PlayerPosition());
-    }
-  };
-
   for( auto& object : m_staticObjects )
   {
-    std::visit(visitor { *this, object, interval }, object->Get());
+    std::visit(update_objects_visitor { *this, object, interval }, object->Get());
   }
 
   for( auto& object : m_movingObjects )
   {
-    std::visit(visitor { *this, object, interval }, object->Get());
+    std::visit(update_objects_visitor { *this, object, interval }, object->Get());
   }
 }
 
