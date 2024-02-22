@@ -37,7 +37,6 @@ private:
 
   auto Render(const dynamic_object<default_object>& object) const -> void;  
   auto Render(const blank_object& blankObject) const -> void;
-  // auto Render(const bullet& bulletInstance) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const player_shields& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
@@ -49,11 +48,6 @@ private:
 
   inline static renderer* m_instance { nullptr };
 
-  level_target_renderer m_levelTargetRenderer;
-  mine_renderer m_mineRenderer;
-  player_ship_renderer m_playerShipRenderer;
-  // bullet_renderer m_bulletRenderer;
-  geometry_renderer m_asteroidRenderer { screen_render_brush_cyan.CreateBrush(), 8 };
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   particle_renderer m_particleRenderer { color_scale { screen_render_brush_particles.Get(), screen_render_brush_black.Get(), 10 } };
   particle_renderer m_impactParticleRenderer { color_scale { screen_render_brush_impact_particles.Get(), screen_render_brush_black.Get(), 10 } };
@@ -99,11 +93,6 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 {
   m_blankRenderer.Write(static_cast<ID2D1PathGeometry*>(blankObject));
 }
-
-// inline auto renderer::Render(const bullet& bulletInstance) const -> void
-// {
-//   m_bulletRenderer.Write(bulletInstance);
-// }
 
 inline auto renderer::Render(const particle& particle) const -> void
 {

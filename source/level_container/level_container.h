@@ -52,7 +52,6 @@ public:
   auto SetPlayEvent(auto&&...args) -> void;
   auto UpdatePlayer(player_ship playerShip) -> void;
 
-  // static [[nodiscard]] auto ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>;
   static [[nodiscard]] auto ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type;
 
 private:
@@ -213,19 +212,6 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
 }
-
-// inline [[nodiscard]] auto level_container::ConvertFireModeToDamageMode(player_ship::fire_mode fireMode) -> std::optional<bullet::damage_mode>
-// {
-//   switch( fireMode )
-//   {
-//     case player_ship::fire_mode::one:
-//       return bullet::damage_mode::one;
-//     case player_ship::fire_mode::two:
-//       return bullet::damage_mode::two;
-//     default:
-//       return std::nullopt;
-//   }
-// }
 
 inline [[nodiscard]] auto level_container::ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type
 {
