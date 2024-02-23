@@ -45,14 +45,17 @@ public:
 
   auto operator()(std::ranges::input_range auto&& objectCollection) -> void
   {
-    auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
-
-    for( auto object1 = std::begin(activeObjects); object1 != std::end(activeObjects); ++object1 )
+    for( auto objectIt = std::begin(objectCollection); objectIt != std::end(objectCollection); ++objectIt )
     {
-      std::for_each(std::execution::par, std::next(object1), std::end(activeObjects), [this, &object1](auto& object2)
+      auto& object1 = *objectIt;
+      
+      std::for_each(std::execution::par, std::next(objectIt), std::end(objectCollection), [this, &object1](auto& object2)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
-        (*this)(*object1, object2);
+        if( !object1->Destroyed() && !object2->Destroyed() )
+        {
+          (*this)(object1, object2);
+        }
       });
     }
   }
