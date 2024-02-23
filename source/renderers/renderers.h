@@ -2,7 +2,7 @@
 
 #include "dynamic_object.h"
 #include "level_objects.h"
-#include "player_shields.h"
+// #include "player_shields.h"
 #include "hud_target.h"
 #include "target_position.h"
 #include "player_destination.h"
@@ -37,7 +37,7 @@ private:
   auto Render(const dynamic_object<default_object>& object) const -> void;  
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const particle& particle) const -> void;
-  auto Render(const player_shields& playerShields) const -> void;
+  auto Render(const health_status& playerShields) const -> void;
   auto Render(const menu_item& menuItem) const -> void;
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const hud_target& hudTarget) const -> void;
@@ -95,7 +95,7 @@ inline auto renderer::Render(const particle& particle) const -> void
   m_particleRenderer.Write(particle);
 }
 
-inline auto renderer::Render(const player_shields& playerShields) const -> void
+inline auto renderer::Render(const health_status& playerShields) const -> void
 {
   m_playerShieldsRenderer.Write(playerShields);
 }

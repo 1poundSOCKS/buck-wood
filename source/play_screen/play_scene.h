@@ -8,7 +8,7 @@
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
 #include "level_radar.h"
-#include "player_shields.h"
+// #include "player_shields.h"
 #include "play_events.h"
 #include "game_score.h"
 

@@ -18,7 +18,6 @@ struct update_objects_visitor
   auto operator()(const player_ship& object)
   {
     m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
-    m_levelContainer.UpdatePlayer(object);
   }
   auto operator()(const mine& object)
   {
@@ -178,11 +177,11 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
-  m_targetPosition = direct2d::CalculatePosition(m_playerShip->Position(), m_playerShip->Angle(), 100);
+  m_targetPosition = direct2d::CalculatePosition(m_playerState->m_position, m_playerState->m_angle, 100);
 
   if( m_targetPosition )
   {
-    auto targetAngle = m_playerShip->Angle();
+    auto targetAngle = m_playerState->m_angle;
 
     constexpr auto angleSpan = 20.0f;
 
@@ -190,7 +189,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
     static_cast<dynamic_object<default_object>*>(nullptr), 
     [this, targetAngle](auto* nearest, auto& next) -> dynamic_object<default_object>*
     {
-      auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerShip->Position(), next->Position());
+      auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerState->m_position, next->Position());
       auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
       if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
       else return nearest ? &GetNearestToTarget(*nearest, next) : &next;

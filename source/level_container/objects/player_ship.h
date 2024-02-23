@@ -6,18 +6,29 @@
 #include "health_status.h"
 #include "reload_counter.h"
 
+struct player_state
+{
+  D2D1_POINT_2F m_position { 0, 0 };
+  D2D1_POINT_2F m_previousPosition { 0, 0 };
+  float m_angle { 0 };
+  VELOCITY_2F m_velocity { 0, 0 };
+  bool m_destroyed { false };
+  bool m_thrusterOn { false };
+  health_status m_shieldStatus { 10 };
+};
+
 class player_ship
 {
 
 public:
 
   using points_collection = std::vector<D2D1_POINT_2F>;
-  using shield_status = std::shared_ptr<health_status>;
+  // using shield_status = std::shared_ptr<health_status>;
   enum class fire_mode { none, one, two };
 
 public:
 
-  player_ship(D2D1_POINT_2F position);
+  player_ship(std::shared_ptr<player_state> state);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -39,7 +50,7 @@ public:
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
-  [[nodiscard]] auto ShieldStatus() const -> const shield_status&;
+  [[nodiscard]] auto ShieldStatus() const -> const health_status&;
   [[nodiscard]] auto ShieldsUp() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
   [[nodiscard]] auto EmitThrustParticle() -> bool;
@@ -59,13 +70,14 @@ private:
 
 private:
 
-  D2D1_POINT_2F m_position { 0, 0 };
-  D2D1_POINT_2F m_previousPosition { 0, 0 };
-  float m_angle { 0 };
-  VELOCITY_2F m_velocity { 0, 0 };
+  // D2D1_POINT_2F m_position { 0, 0 };
+  // D2D1_POINT_2F m_previousPosition { 0, 0 };
+  // float m_angle { 0 };
+  // VELOCITY_2F m_velocity { 0, 0 };
+
+  std::shared_ptr<player_state> m_state;
   
   float m_thrust { 0 };
-  bool m_thrusterOn { false };
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
 
@@ -73,10 +85,7 @@ private:
   fire_mode m_fireMode { fire_mode::one };
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
-  
-  shield_status m_shieldStatus { std::make_shared<health_status>(10) };
-  
-  bool m_destroyed { false };
+    
   std::optional<D2D1_POINT_2F> m_destination;
   bool m_playerActive { false };
 
@@ -84,37 +93,37 @@ private:
 
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
 {
-  return m_position;
+  return m_state->m_position;
 }
 
 inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
 {
-  return m_previousPosition;
+  return m_state->m_previousPosition;
 }
 
 inline [[nodiscard]] auto player_ship::Angle() const -> float
 {
-  return m_angle;
+  return m_state->m_angle;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
 {
-  return m_velocity;
+  return m_state->m_velocity;
 }
 
 inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
 {
-  return m_destroyed;
+  return m_state->m_destroyed;
 }
 
 inline auto player_ship::SetAngle(float angle) -> void
 {
-  m_angle = angle;
+  m_state->m_angle = angle;
 }
 
 inline auto player_ship::Rotate(float angle) -> void
 {
-  m_angle = direct2d::RotateAngle(m_angle, angle);
+  m_state->m_angle = direct2d::RotateAngle(m_state->m_angle, angle);
 }
 
 inline auto player_ship::SetThrust(float value) -> void
@@ -124,21 +133,21 @@ inline auto player_ship::SetThrust(float value) -> void
 
 inline auto player_ship::ApplyDamage(int value) -> void
 {
-  if( !m_shieldsUp && m_shieldStatus->ApplyDamage(value) == 0 )
+  if( !m_shieldsUp && m_state->m_shieldStatus.ApplyDamage(value) == 0 )
   {
-    m_destroyed = true;
+    m_state->m_destroyed = true;
   }
 }
 
 inline auto player_ship::ApplyFatalDamage() -> void
 {
-  m_shieldStatus->ApplyFatalDamage();
-  m_destroyed = true;
+  m_state->m_shieldStatus.ApplyFatalDamage();
+  m_state->m_destroyed = true;
 }
 
 inline auto player_ship::Destroy() -> void
 {
-  m_destroyed = true;
+  m_state->m_destroyed = true;
 }
 
 inline auto player_ship::SetPlayerActive(bool value) -> void
@@ -148,7 +157,7 @@ inline auto player_ship::SetPlayerActive(bool value) -> void
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
-  return m_thrusterOn;
+  return m_state->m_thrusterOn;
 }
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
@@ -156,9 +165,9 @@ inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
   return m_triggerDown;
 }
 
-inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const shield_status&
+inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_status&
 {
-  return m_shieldStatus;
+  return m_state->m_shieldStatus;
 }
 
 inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
@@ -173,7 +182,7 @@ inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
-  return m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
+  return m_state->m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode

@@ -35,7 +35,7 @@ public:
   [[nodiscard]] auto PlayerAngle() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
   [[nodiscard]] auto PlayerDied() const -> bool;
-  [[nodiscard]] auto PlayerShields() const -> const player_ship::shield_status&;
+  [[nodiscard]] auto PlayerShields() const -> const health_status&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
@@ -50,7 +50,6 @@ public:
   auto TargetActivated() -> void;
   auto MineDestroyed() -> void;
   auto SetPlayEvent(auto&&...args) -> void;
-  auto UpdatePlayer(player_ship playerShip) -> void;
 
   static [[nodiscard]] auto ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type;
 
@@ -71,8 +70,10 @@ private:
 
   blank_object m_boundary;
   play_events m_playEvents;
-  std::optional<player_ship> m_playerShip;
+  // std::optional<player_ship> m_playerShip;
   particle_collection m_particles;
+
+  std::shared_ptr<player_state> m_playerState;
 
   static_object_collection m_staticObjects;
   moving_object_collection m_movingObjects;
@@ -94,10 +95,9 @@ private:
 };
 
 level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_boundary { points }, m_playEvents { playEvents }, m_gameScore { gameScore }
+  m_boundary { points }, m_playerState { std::make_shared<player_state>() }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
-  m_playerShip = player_ship { POINT_2F { 0 , 0 } };
-  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, POINT_2F { 0 , 0 });
+  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
@@ -110,27 +110,27 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 
 inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
 {
-  return m_playerShip->Angle();
+  return m_playerState->m_angle;
 }
 
-inline [[nodiscard]] auto level_container::PlayerShields() const -> const player_ship::shield_status&
+inline [[nodiscard]] auto level_container::PlayerShields() const -> const health_status&
 {
-  return m_playerShip->ShieldStatus();  
+  return m_playerState->m_shieldStatus;
 }
 
 inline [[nodiscard]] auto level_container::PlayerPosition() const -> std::optional<POINT_2F>
 {
-  return m_playerShip->Position();
+  return m_playerState->m_position;
 }
 
 inline [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
 {
-  return !m_playerShip->Destroyed() && m_playerShip->ThrusterOn();
+  return !m_playerState->m_destroyed && m_playerState->m_thrusterOn;
 }
 
 inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 {
-  return m_playerShip->Destroyed();
+  return m_playerState->m_destroyed;
 }
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
@@ -196,11 +196,6 @@ inline auto level_container::MineDestroyed() -> void
 auto level_container::SetPlayEvent(auto&&...args) -> void
 {
   m_playEvents.SetEvent(std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::UpdatePlayer(player_ship playerShip) -> void
-{
-  m_playerShip = playerShip;
 }
 
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&

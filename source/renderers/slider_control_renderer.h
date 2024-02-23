@@ -2,14 +2,14 @@
 
 #include "render_types.h"
 #include "slider_control.h"
-#include "player_shields.h"
+// #include "player_shields.h"
 
 class slider_control_renderer
 {
 
 public:
 
-  auto Write(const player_shields& playerShields) const -> void;
+  auto Write(const health_status& playerShields) const -> void;
 
 private:
 
@@ -18,7 +18,7 @@ private:
 
 };
 
-inline auto slider_control_renderer::Write(const player_shields& playerShields) const -> void
+inline auto slider_control_renderer::Write(const health_status& playerShields) const -> void
 {
   auto shieldRemaining = 100.0f - playerShields.GetDamagePercentage();
   slider_control damageSlider = { render_rect { 50, 500, 100, 800 } };
