@@ -39,8 +39,8 @@ struct create_new_objects_visitor
   {
     if( m_levelContainer.PlayerPosition() && object.CanShootAt(*m_levelContainer.PlayerPosition()) )
     {
-      auto [thrust, maxSpeed, hardnessType] = m_levelContainer.MineParameters();
-      m_levelContainer.CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, object.Position(), thrust, maxSpeed, hardnessType);
+      auto [thrust, maxSpeed, type] = m_levelContainer.MineParameters();
+      m_levelContainer.CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, object.Position(), thrust, maxSpeed, type);
     }
   }
 

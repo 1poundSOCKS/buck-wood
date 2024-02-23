@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(POINT_2F position, float thrust, float maxSpeed, hardness_type hardnessType) : 
-  m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }, m_hardnessType { hardnessType }
+mine::mine(POINT_2F position, float thrust, float maxSpeed, type type) : 
+  m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }, m_type { type }
 {
 }
 

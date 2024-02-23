@@ -37,8 +37,8 @@ public:
 
     if( mineObject )
     {
-      if( mineObject->HardnessType() == mine::hardness_type::soft && particle.Type() == particle::type::bullet_two || 
-          mineObject->HardnessType() == mine::hardness_type::tough && particle.Type() == particle::type::bullet_one )
+      if( mineObject->Type() == mine::type::one && particle.Type() == particle::type::bullet_two || 
+          mineObject->Type() == mine::type::two && particle.Type() == particle::type::bullet_one )
       {
         m_visitor.CreateExplosion(object.Position());
         object.Destroy();

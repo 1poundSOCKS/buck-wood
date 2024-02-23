@@ -10,20 +10,20 @@ public:
 
   auto Write(const mine& object, ID2D1Geometry* geometry) const -> void
   {
-    switch( object.HardnessType() )
+    switch( object.Type() )
     {
-      case mine::hardness_type::soft:
-        m_softRenderer.Write(geometry);
+      case mine::type::one:
+        m_rendererOne.Write(geometry);
         return;
-      case mine::hardness_type::tough:
-        m_toughRenderer.Write(geometry);
+      case mine::type::two:
+        m_rendererTwo.Write(geometry);
         return;
     }
   }
 
 private:
 
-  geometry_renderer m_softRenderer { screen_render_brush_type_one.CreateBrush(), 6 };
-  geometry_renderer m_toughRenderer { screen_render_brush_type_two.CreateBrush(), 6 };
+  geometry_renderer m_rendererOne { screen_render_brush_type_one.CreateBrush(), 6 };
+  geometry_renderer m_rendererTwo { screen_render_brush_type_two.CreateBrush(), 6 };
 
 };
