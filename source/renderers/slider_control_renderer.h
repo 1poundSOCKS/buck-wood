@@ -2,7 +2,6 @@
 
 #include "render_types.h"
 #include "slider_control.h"
-// #include "player_shields.h"
 
 class slider_control_renderer
 {

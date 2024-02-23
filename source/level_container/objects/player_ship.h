@@ -23,7 +23,6 @@ class player_ship
 public:
 
   using points_collection = std::vector<D2D1_POINT_2F>;
-  // using shield_status = std::shared_ptr<health_status>;
   enum class fire_mode { none, one, two };
 
 public:
@@ -69,11 +68,6 @@ private:
   static constexpr float m_thrustPower { 200.0f };
 
 private:
-
-  // D2D1_POINT_2F m_position { 0, 0 };
-  // D2D1_POINT_2F m_previousPosition { 0, 0 };
-  // float m_angle { 0 };
-  // VELOCITY_2F m_velocity { 0, 0 };
 
   std::shared_ptr<player_state> m_state;
   

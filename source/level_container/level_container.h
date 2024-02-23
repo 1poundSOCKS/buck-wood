@@ -70,7 +70,6 @@ private:
 
   blank_object m_boundary;
   play_events m_playEvents;
-  // std::optional<player_ship> m_playerShip;
   particle_collection m_particles;
 
   std::shared_ptr<player_state> m_playerState;

@@ -2,7 +2,6 @@
 
 #include "dynamic_object.h"
 #include "level_objects.h"
-// #include "player_shields.h"
 #include "hud_target.h"
 #include "target_position.h"
 #include "player_destination.h"
