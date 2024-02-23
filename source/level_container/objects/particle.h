@@ -18,6 +18,11 @@ public:
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F { return m_position; }
   [[nodiscard]] auto Destroyed() const -> bool { return m_destroyed; }
 
+  [[nodiscard]] auto IsBullet() const -> bool
+  {
+    return m_type == type::bullet_one || m_type == type::bullet_two;
+  }
+
 private:
 
   type m_type;

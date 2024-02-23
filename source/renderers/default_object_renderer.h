@@ -7,26 +7,8 @@
 #include "level_target_renderer.h"
 #include "mine_renderer.h"
 
-class default_object_renderer
+struct default_object_renderer_visitor
 {
-
-public:
-
-  auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
-
-private:
-
-  geometry_renderer m_deactivatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
-  geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
-  player_ship_renderer m_playerShipRenderer;
-  mine_renderer m_mineRenderer;
-
-};
-
-inline auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
-{
-  struct visitor
-  {
     const geometry_renderer& m_deactivatedRenderer;
     const geometry_renderer& m_activatedRenderer;
     const player_ship_renderer& m_playerShipRenderer;
@@ -45,7 +27,26 @@ inline auto default_object_renderer::Write(const default_object& object, ID2D1Ge
     {
       m_mineRenderer.Write(object, m_geometry);
     }
-  };
+};
 
-  std::visit(visitor { m_deactivatedRenderer, m_activatedRenderer, m_playerShipRenderer, m_mineRenderer, geometry }, object.Get());
+class default_object_renderer
+{
+
+public:
+
+  auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
+
+private:
+
+  geometry_renderer m_deactivatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
+  geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
+  player_ship_renderer m_playerShipRenderer;
+  mine_renderer m_mineRenderer;
+
+};
+
+inline auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
+{
+  default_object_renderer_visitor visitor { m_deactivatedRenderer, m_activatedRenderer, m_playerShipRenderer, m_mineRenderer, geometry };
+  std::visit(visitor, object.Get());
 }

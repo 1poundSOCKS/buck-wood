@@ -55,7 +55,6 @@ private:
   slider_control_renderer m_playerShieldsRenderer;
   diagnostics_renderer m_diagnosticsRenderer;
   level_radar_renderer m_levelRadarRenderer;
-  geometry_renderer m_ductFanRenderer { screen_render_brush_white.CreateBrush(), 10 };
   geometry_renderer m_hudTargetRenderer { screen_render_brush_yellow.CreateBrush(), 5 };
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerShieldsBrush { screen_render_brush_white.CreateBrush() };
   geometry_renderer m_playerShieldRenderer { screen_render_brush_grey.CreateBrush(), 5 };

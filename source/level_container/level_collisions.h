@@ -32,6 +32,7 @@ public:
   auto operator()(default_object& object, particle& particle) -> void
   {
     auto& objectVar = object.Get();
+
     auto* mineObject = std::get_if<mine>(&objectVar);
 
     if( mineObject )
@@ -44,7 +45,12 @@ public:
       }
     }
 
-    particle.Destroy();
+    auto* playerShipObject = std::get_if<player_ship>(&objectVar);
+
+    if( playerShipObject == nullptr || !particle.IsBullet() )
+    {
+      particle.Destroy();
+    }
   }
 
   auto operator()(default_object& object)
