@@ -42,6 +42,7 @@ public:
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
   [[nodiscard]] auto MineParameters();
+  [[nodiscard]] auto MinesRemaining() const -> int;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateParticle(auto&&...args) -> void;
@@ -163,6 +164,11 @@ inline [[nodiscard]] auto level_container::GameScore() const -> const game_score
 inline [[nodiscard]] auto level_container::MineParameters()
 {
   return m_stage.MineParameters();
+}
+
+inline [[nodiscard]] auto level_container::MinesRemaining() const -> int
+{
+  return m_minesRemaining;
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
