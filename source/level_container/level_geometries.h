@@ -55,10 +55,10 @@ public:
     return m_instance->m_targetGeometry.get();
   }
 
-  // static [[nodiscard]] auto AsteroidGeometry() -> ID2D1PathGeometry*
-  // {
-  //   return m_instance->m_asteroidGeometry.get();
-  // }
+  static [[nodiscard]] auto AsteroidGeometry() -> ID2D1PathGeometry*
+  {
+    return m_instance->m_asteroidGeometry.get();
+  }
 
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&
   {
@@ -86,11 +86,6 @@ private:
     return m_playerShipGeometry;
   }
 
-  // [[nodiscard]] auto Get(const level_asteroid& object) -> winrt::com_ptr<ID2D1Geometry>
-  // {
-  //   return m_asteroidGeometry;
-  // }
-
   [[nodiscard]] auto Get(const level_target& object) -> winrt::com_ptr<ID2D1Geometry>
   {
     return m_targetGeometry;
@@ -106,7 +101,7 @@ private:
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 40, 40, 3 }, D2D1_FIGURE_END_CLOSED) };
   winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }, D2D1_FIGURE_END_CLOSED) };
-  // winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { level_geometry_functions::CreateAsteroidGeometry(0, 0, 200, 200) };
+  winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { level_geometry_functions::CreateAsteroidGeometry(0, 0, 200, 200) };
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
   winrt::com_ptr<ID2D1EllipseGeometry> m_playerShieldGeometry;
 
