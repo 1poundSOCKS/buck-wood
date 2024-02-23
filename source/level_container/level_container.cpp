@@ -15,13 +15,19 @@ struct update_objects_visitor
   {
     m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_levelContainer.PlayerPosition());
   }
+
   auto operator()(const player_ship& object)
   {
     m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
   }
+
   auto operator()(const mine& object)
   {
     m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_levelContainer.PlayerPosition());
+  }
+
+  auto operator()(const auto& object)
+  {
   }
 };
 
@@ -58,7 +64,7 @@ struct create_new_objects_visitor
     }
   }
 
-  auto operator()(mine& object)
+  auto operator()(auto& object)
   {
   }
 };
