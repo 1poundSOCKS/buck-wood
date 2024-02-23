@@ -12,6 +12,11 @@ public:
     return { 10.0f, 100.0f, mineTypeValue > 5 ? mine::type::two : mine::type::one };
   }
 
+  [[nodiscard]] auto MineCount() const -> int
+  {
+    return 10;
+  }
+
 private:
 
   std::uniform_int_distribution<int> m_dist { 1, 10 };

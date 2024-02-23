@@ -91,10 +91,12 @@ private:
   level_stage m_stage;
   std::shared_ptr<game_score> m_gameScore;
 
+  int m_minesRemaining;
+
 };
 
 level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_boundary { points }, m_playerState { std::make_shared<player_state>() }, m_playEvents { playEvents }, m_gameScore { gameScore }
+  m_boundary { points }, m_playerState { std::make_shared<player_state>() }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
 }
@@ -134,7 +136,7 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return false;
+  return !(m_minesRemaining > 0);
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
@@ -180,6 +182,11 @@ inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 auto level_container::CreateMovingObject(auto&&...args) -> void
 {
   m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
+
+  if( std::holds_alternative<mine>(m_movingObjects.back()->Get()) )
+  {
+    --m_minesRemaining;
+  }
 }
 
 inline auto level_container::TargetActivated() -> void
