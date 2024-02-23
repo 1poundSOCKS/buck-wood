@@ -166,7 +166,7 @@ auto destroy_input_devices() -> void
 auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
 {
   ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-  swapChainDesc.BufferCount = 3;
+  swapChainDesc.BufferCount = 2;
   swapChainDesc.BufferDesc.Width = game_settings::renderTargetWidth();
   swapChainDesc.BufferDesc.Height = game_settings::renderTargetHeight();
   swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

@@ -106,9 +106,16 @@ auto level_container::UpdateObjects(float interval) -> void
     std::visit(update_objects_visitor { *this, object, interval }, object->Get());
   }
 
+  m_currentMineCount = 0;
+
   for( auto& object : m_movingObjects )
   {
     std::visit(update_objects_visitor { *this, object, interval }, object->Get());
+
+    if( std::holds_alternative<mine>(object->Get()) )
+    {
+      ++m_currentMineCount;
+    }
   }
 }
 

@@ -92,6 +92,7 @@ private:
   std::shared_ptr<game_score> m_gameScore;
 
   int m_minesRemaining;
+  int m_currentMineCount { 0 };
 
 };
 
@@ -136,7 +137,7 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return !(m_minesRemaining > 0);
+  return !(m_minesRemaining > 0) && m_currentMineCount == 0;
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
