@@ -3,12 +3,12 @@
 #include "dynamic_object.h"
 
 template <typename object_type>
-class collision
+class geometry_collision_unary
 {
 
 public:
 
-  collision(auto&& callable) : m_callable { callable }
+  geometry_collision_unary(auto&& callable) : m_callable { callable }
   {
   }
 

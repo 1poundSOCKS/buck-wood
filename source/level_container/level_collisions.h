@@ -1,10 +1,10 @@
 #pragma once
 
-#include "collisions/geometry_collision.h"
+#include "collisions/geometry_collision_unary.h"
+#include "collisions/geometry_collision_binary.h"
 #include "collisions/particle_collision.h"
 #include "collisions/geometry_containment.h"
 #include "collisions/particle_containment.h"
-#include "collisions/collision.h"
 
 template <typename visitor_type>
 class level_collision_handler

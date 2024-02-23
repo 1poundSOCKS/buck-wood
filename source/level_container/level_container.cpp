@@ -120,7 +120,6 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
   renderer::render(m_boundary);
   renderer::render_all(m_staticObjects);
   renderer::render_all(m_movingObjects);
-  // renderer::render_all(m_bullets);
   renderer::render_all(m_particles);
 
   auto renderEnd = performance_counter::QueryValue();
@@ -138,10 +137,10 @@ auto level_container::DoCollisions() -> void
   particle_containment<particle> particleContainmentRunner { collisionHandler };
   particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
 
-  geometry_collision<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
+  geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
 
-  collision<default_object> movingCollisionRunner { collisionHandler };
+  geometry_collision_unary<default_object> movingCollisionRunner { collisionHandler };
   movingCollisionRunner(m_movingObjects);
 
   particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
