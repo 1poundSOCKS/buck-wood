@@ -47,10 +47,6 @@ private:
 
   inline static renderer* m_instance { nullptr };
 
-  geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
-  particle_renderer m_particleRenderer { color_scale { screen_render_brush_particles.Get(), screen_render_brush_black.Get(), 10 } };
-  particle_renderer m_impactParticleRenderer { color_scale { screen_render_brush_impact_particles.Get(), screen_render_brush_black.Get(), 10 } };
-  particle_renderer m_thrustParticleRenderer { color_scale { screen_render_brush_thrust_particles.Get(), screen_render_brush_black.Get(), 10 } };
   menu_renderer m_menuRenderer;
   slider_control_renderer m_playerShieldsRenderer;
   diagnostics_renderer m_diagnosticsRenderer;
@@ -61,6 +57,8 @@ private:
   game_score_renderer m_gameScoreRenderer;
 
   default_object_renderer m_defaultObjectRenderer;
+  geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
+  particle_renderer m_particleRenderer;
 
 };
 
@@ -94,15 +92,7 @@ inline auto renderer::Render(const blank_object& blankObject) const -> void
 
 inline auto renderer::Render(const particle& particle) const -> void
 {
-  switch( particle.Type() )
-  {
-    case particle::type::thrust:
-      return m_thrustParticleRenderer.Write(particle);
-    case particle::type::impact:
-      return m_impactParticleRenderer.Write(particle);
-    default:
-      return m_particleRenderer.Write(particle);
-  }
+  m_particleRenderer.Write(particle);
 }
 
 inline auto renderer::Render(const player_shields& playerShields) const -> void
