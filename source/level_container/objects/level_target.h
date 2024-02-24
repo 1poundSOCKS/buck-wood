@@ -14,7 +14,7 @@ public:
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   constexpr [[nodiscard]] auto Destroyed() const -> bool { return false; }
-  auto Update(float interval) -> void;
+  auto Update(float interval, std::optional<POINT_2F> playerPosition) -> void;
 
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(D2D1_POINT_2F position) const -> bool;
@@ -28,6 +28,7 @@ private:
 
   float m_reloadTime;
   D2D1_POINT_2F m_position;
+  float m_angle { 0 };
   bool m_activated = false;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
@@ -42,7 +43,7 @@ inline [[nodiscard]] auto level_target::Scale() const -> SCALE_2F
 
 inline [[nodiscard]] auto level_target::Angle() const -> float
 {
-  return 0;
+  return m_angle;
 }
 
 inline [[nodiscard]] auto level_target::Position() const -> D2D1_POINT_2F

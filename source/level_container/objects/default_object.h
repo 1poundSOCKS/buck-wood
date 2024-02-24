@@ -126,7 +126,7 @@ inline auto default_object::Update(float interval, std::optional<POINT_2F> playe
 
     auto operator()(level_target& object)
     {
-      return object.Update(m_interval);
+      return object.Update(m_interval, m_playerPosition);
     }
     auto operator()(player_ship& object)
     {
