@@ -45,7 +45,7 @@ auto play_screen::Update(int64_t ticks) -> bool
     m_sceneController.UpdateScene(ticks);
   }
 
-  return !m_sceneController.Complete();
+  return m_sceneController.Complete() ? LoadNextLevel() : true;
 }
 
 auto play_screen::Render() -> void
