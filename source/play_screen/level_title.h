@@ -11,7 +11,7 @@ public:
 
   [[nodiscard]] auto Value() const -> std::wstring
   {
-    return std::format(L"Wave {:02d}", m_index);
+    return std::format(L"Wave {:02d}", m_index + 1);
   }
 
 private:
