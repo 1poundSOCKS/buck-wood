@@ -15,9 +15,10 @@
 #include "diagnostics_renderer.h"
 #include "level_radar_renderer.h"
 
-#include "level_geometries.h"
+// #include "level_geometries.h"
 
 #include "game_score_renderer.h"
+#include "level_title_renderer.h"
 
 class renderer
 {
@@ -41,6 +42,7 @@ private:
   auto Render(const level_radar& levelRadar, std::ranges::input_range auto&& objects) -> void;
   auto Render(const hud_target& hudTarget) const -> void;
   auto Render(const game_score& gameScore) const -> void;
+  auto Render(const level_title& levelTitle) const -> void;
 
 private:
 
@@ -54,6 +56,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_playerShieldsBrush { screen_render_brush_white.CreateBrush() };
   geometry_renderer m_playerShieldRenderer { screen_render_brush_grey.CreateBrush(), 5 };
   game_score_renderer m_gameScoreRenderer;
+  level_title_renderer m_levelTitleRenderer;
 
   default_object_renderer m_defaultObjectRenderer;
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
@@ -125,6 +128,11 @@ inline auto renderer::Render(const hud_target& hudTarget) const -> void
 inline auto renderer::Render(const game_score& gameScore) const -> void
 {
   m_gameScoreRenderer.Write(gameScore);
+}
+
+inline auto renderer::Render(const level_title& levelTitle) const -> void
+{
+  m_levelTitleRenderer.Write(levelTitle);
 }
 
 inline auto renderer::Render(const dynamic_object<default_object>& object) const -> void

@@ -10,6 +10,7 @@ public:
   opening_play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents) : 
     play_scene(levelContainer, playEvents)
   {
+    m_renderLevelTitle = true;
   }
 
   auto Begin() -> void override

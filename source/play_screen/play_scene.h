@@ -8,6 +8,7 @@
 #include "camera_sequence.h"
 #include "play_camera_transform.h"
 #include "level_radar.h"
+#include "level_title.h"
 #include "play_events.h"
 #include "game_score.h"
 
@@ -46,6 +47,8 @@ protected:
 
   std::shared_ptr<level_container> m_levelContainer;
   play_events m_playEvents;
+  level_title m_levelTitle;
+  bool m_renderLevelTitle { false };
   float m_cameraZoom { 1 };
   std::optional<D2D1_POINT_2F> m_playerDestination;
   std::optional<D2D1_POINT_2F> m_targetPosition;

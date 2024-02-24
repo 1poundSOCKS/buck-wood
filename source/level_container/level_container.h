@@ -22,7 +22,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(int levelIndex, std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
@@ -31,6 +31,7 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
+  [[nodiscard]] auto Index() const -> int;
   [[nodiscard]] auto PlayerPosition() const -> std::optional<POINT_2F>;
   [[nodiscard]] auto PlayerAngle() const -> float;
   [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
@@ -69,6 +70,8 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
+  int m_levelIndex;
+
   blank_object m_boundary;
   play_events m_playEvents;
   particle_collection m_particles;
@@ -81,13 +84,8 @@ private:
   explosion_collection m_explosions;
   impact_collection m_impacts;
 
-  // int m_activatedTargetCount { 0 };
-  
   std::optional<targetted_object> m_targettedObject;
   std::optional<D2D1_POINT_2F> m_targetPosition;
-
-  // int m_maxCollisionCount { 0 };
-  // bool m_playerActive { false };
 
   level_stage m_stage;
   std::shared_ptr<game_score> m_gameScore;
@@ -97,8 +95,9 @@ private:
 
 };
 
-level_container::level_container(std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_boundary { points }, m_playerState { std::make_shared<player_state>() }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
+level_container::level_container(int levelIndex, std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_levelIndex { levelIndex }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
+  m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
 }
@@ -109,6 +108,11 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
   {
     m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, 5.0f);
   });
+}
+
+inline [[nodiscard]] auto level_container::Index() const -> int
+{
+  return m_levelIndex;
 }
 
 inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
