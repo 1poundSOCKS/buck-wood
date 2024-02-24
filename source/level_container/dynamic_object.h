@@ -65,6 +65,11 @@ public:
   template <typename...Args> auto Update(ID2D1Geometry* sourceGeometry, Args...args)
   {
     m_object.Update(std::forward<Args>(args)...);
+    UpdateGeometry(sourceGeometry);
+  }
+
+  template <typename...Args> auto UpdateGeometry(ID2D1Geometry* sourceGeometry)
+  {
     m_transform = CalculateObjectTransform();
     m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform);
   }

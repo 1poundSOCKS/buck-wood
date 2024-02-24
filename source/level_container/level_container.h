@@ -81,13 +81,13 @@ private:
   explosion_collection m_explosions;
   impact_collection m_impacts;
 
-  int m_activatedTargetCount { 0 };
+  // int m_activatedTargetCount { 0 };
   
   std::optional<targetted_object> m_targettedObject;
   std::optional<D2D1_POINT_2F> m_targetPosition;
 
-  int m_maxCollisionCount { 0 };
-  bool m_playerActive { false };
+  // int m_maxCollisionCount { 0 };
+  // bool m_playerActive { false };
 
   level_stage m_stage;
   std::shared_ptr<game_score> m_gameScore;

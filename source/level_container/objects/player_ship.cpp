@@ -12,7 +12,7 @@ auto player_ship::Update(float interval, bool enableControl) -> void
 
 auto player_ship::Update(float interval) -> void
 {
-  Update(interval, true);
+  Update(interval, m_state->m_active);
 }
 
 auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void

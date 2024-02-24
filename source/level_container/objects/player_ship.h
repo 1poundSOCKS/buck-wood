@@ -15,6 +15,7 @@ struct player_state
   bool m_destroyed { false };
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
+  bool m_active { false };
 };
 
 class player_ship
@@ -81,7 +82,6 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
     
   std::optional<D2D1_POINT_2F> m_destination;
-  bool m_playerActive { false };
 
 };
 
@@ -142,11 +142,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 inline auto player_ship::Destroy() -> void
 {
   m_state->m_destroyed = true;
-}
-
-inline auto player_ship::SetPlayerActive(bool value) -> void
-{
-  m_playerActive = value;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool

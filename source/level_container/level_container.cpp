@@ -5,7 +5,7 @@
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
 
-struct update_objects_visitor
+struct update_object_visitor
 {
   level_container& m_levelContainer;
   dynamic_object<default_object>& m_dynamicObject;
@@ -71,7 +71,7 @@ struct create_new_objects_visitor
 
 auto level_container::SetPlayerActive(bool value) -> void
 {
-  m_playerActive = value;
+  m_playerState->m_active = value;
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
@@ -103,14 +103,14 @@ auto level_container::UpdateObjects(float interval) -> void
 
   for( auto& object : m_staticObjects )
   {
-    std::visit(update_objects_visitor { *this, object, interval }, object->Get());
+    std::visit(update_object_visitor { *this, object, interval }, object->Get());
   }
 
   m_currentMineCount = 0;
 
   for( auto& object : m_movingObjects )
   {
-    std::visit(update_objects_visitor { *this, object, interval }, object->Get());
+    std::visit(update_object_visitor { *this, object, interval }, object->Get());
 
     if( std::holds_alternative<mine>(object->Get()) )
     {

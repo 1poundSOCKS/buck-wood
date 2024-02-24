@@ -12,6 +12,7 @@ public:
 
   template <typename...Args> auto LoadLevel(Args...args) -> std::unique_ptr<level_container>;
   [[nodiscard]] auto NextLevel() -> bool;
+  [[nodiscard]] auto CurrentLevel() const -> int;
 
 private:
 
@@ -32,4 +33,9 @@ template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -
 inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
 {
   return ++m_levelIndex < m_levelCount;
+}
+
+inline [[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
+{
+  return m_levelIndex;
 }
