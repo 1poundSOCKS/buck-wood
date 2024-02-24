@@ -50,7 +50,7 @@ public:
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto TargetActivated() -> void;
-  auto MineDestroyed() -> void;
+  auto OnMineDestroyed(POINT_2F position) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
 
   static [[nodiscard]] auto ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type;
@@ -206,8 +206,9 @@ inline auto level_container::TargetActivated() -> void
   m_playEvents.SetEvent(play_events::event_type::target_activated, true);
 }
 
-inline auto level_container::MineDestroyed() -> void
+inline auto level_container::OnMineDestroyed(POINT_2F position) -> void
 {
+  CreateExplosion(position);
   m_gameScore->Add(10);
 }
 
