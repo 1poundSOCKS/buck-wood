@@ -16,7 +16,7 @@ public:
 private:
 
   int m_levelIndex { -1 };
-  inline static int m_levelCount { 1 };
+  inline static int m_levelCount { 2 };
 
 };
 
