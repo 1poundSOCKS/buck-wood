@@ -9,7 +9,7 @@ public:
   [[nodiscard]] auto MineParameters() -> std::tuple<float, float, mine::type>
   {
     int mineTypeValue = m_dist(pseudo_random_generator::get());
-    return { 10.0f, 100.0f, mineTypeValue > 5 ? mine::type::two : mine::type::one };
+    return { 20.0f, 200.0f, mineTypeValue > 5 ? mine::type::two : mine::type::one };
   }
 
   [[nodiscard]] auto MineCount() const -> int
