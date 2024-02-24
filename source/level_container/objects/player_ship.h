@@ -30,7 +30,7 @@ public:
 
   player_ship(std::shared_ptr<player_state> state);
 
-  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
+  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.2f, 1.2f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
