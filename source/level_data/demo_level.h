@@ -1,5 +1,6 @@
 #pragma once
 
+#include "framework.h"
 #include "level_boundary.h"
 
 class demo_level
@@ -16,9 +17,9 @@ public:
   demo_level();
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
+  [[nodiscard]] auto PlayerPosition() const -> POINT_2F;
   [[nodiscard]] auto TargetPositions() const -> const std::vector<D2D1_POINT_2F>&;
   [[nodiscard]] auto AsteroidPositions() const -> const std::vector<D2D1_POINT_2F>&;
-  [[nodiscard]] auto DuctFanPositions() const -> const std::vector<D2D1_POINT_2F>&;
 
 private:
 
@@ -37,17 +38,7 @@ private:
   };
 
   inline static auto m_targetPositions = {
-    cell { -6, -6 },
-    cell { -6, 6 },
-    cell { 6, -6 },
-    cell { 6, 6 }
-  };
-
-  inline static auto m_ductFanPositions = {
-    cell { 0, 8 },
-    cell { 8, 0 },
-    cell { 0, -8 },
-    cell { -8, 0 }
+    cell { 0, 0 }
   };
 
   inline static auto m_asteroidPositions = {

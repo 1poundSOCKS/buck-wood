@@ -31,19 +31,18 @@ demo_level::demo_level()
   });
 #endif
 
-#ifdef ENABLE_DUCT_FANS
-  std::ranges::transform(m_ductFanPositions, std::back_inserter(m_ductFans), [](const cell& targetCell)
-  {
-    auto x = static_cast<float>(targetCell.x * m_cellSize);
-    auto y = static_cast<float>(targetCell.y * m_cellSize);
-    return D2D1_POINT_2F { x, y };
-  });
-#endif
 }
 
 [[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&
 {
   return m_boundaryPoints;
+}
+
+[[nodiscard]] auto demo_level::PlayerPosition() const -> POINT_2F
+{
+  auto x = static_cast<float>(0 * m_cellSize);
+  auto y = static_cast<float>(-8 * m_cellSize);
+  return POINT_2F { x, y };
 }
 
 [[nodiscard]] auto demo_level::TargetPositions() const -> const std::vector<D2D1_POINT_2F>&
@@ -54,9 +53,4 @@ demo_level::demo_level()
 [[nodiscard]] auto demo_level::AsteroidPositions() const -> const std::vector<D2D1_POINT_2F>&
 {
   return m_asteroids;
-}
-
-[[nodiscard]] auto demo_level::DuctFanPositions() const -> const std::vector<D2D1_POINT_2F>&
-{
-  return m_ductFans;
 }

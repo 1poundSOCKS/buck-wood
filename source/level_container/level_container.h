@@ -22,7 +22,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(int levelIndex, std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(int levelIndex, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
@@ -95,10 +95,11 @@ private:
 
 };
 
-level_container::level_container(int levelIndex, std::ranges::input_range auto&& points, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+level_container::level_container(int levelIndex, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
   m_levelIndex { levelIndex }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
   m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
 {
+  m_playerState->m_position = playerPosition;
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
 }
 
