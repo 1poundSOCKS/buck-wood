@@ -92,6 +92,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   CreateNewObjects(interval);
 
+  auto mineCounter = std::ranges::views::transform(m_movingObjects, [](const auto& object) { return std::holds_alternative<mine>(object->Get()) ? 1 : 0; });
+  m_currentMineCount = std::accumulate(std::begin(mineCounter), std::end(mineCounter), 0);
+  diagnostics::add(L"current mine count", m_currentMineCount);
+
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
@@ -109,9 +113,6 @@ auto level_container::UpdateObjects(float interval) -> void
   {
     std::visit(update_object_visitor { *this, object, interval }, object->Get());
   }
-
-  auto mineCounter = std::ranges::views::transform(m_movingObjects, [](const auto& object) { return std::holds_alternative<mine>(object->Get()) ? 1 : 0; });
-  m_currentMineCount = std::accumulate(std::begin(mineCounter), std::end(mineCounter), 0);
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
