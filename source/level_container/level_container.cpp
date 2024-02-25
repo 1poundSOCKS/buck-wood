@@ -39,8 +39,7 @@ struct create_new_objects_visitor
   {
     if( m_levelContainer.MinesRemaining() > 0 && !m_levelContainer.PlayerDied() && object.CanShootAt(*m_levelContainer.PlayerPosition()) )
     {
-      auto [thrust, maxSpeed, type] = m_levelContainer.MineParameters();
-      m_levelContainer.CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, object.Position(), thrust, maxSpeed, type);
+      m_levelContainer.LaunchMine(object.Position());
     }
   }
 
@@ -106,17 +105,13 @@ auto level_container::UpdateObjects(float interval) -> void
     std::visit(update_object_visitor { *this, object, interval }, object->Get());
   }
 
-  m_currentMineCount = 0;
-
   for( auto& object : m_movingObjects )
   {
     std::visit(update_object_visitor { *this, object, interval }, object->Get());
-
-    if( std::holds_alternative<mine>(object->Get()) )
-    {
-      ++m_currentMineCount;
-    }
   }
+
+  auto mineCounter = std::ranges::views::transform(m_movingObjects, [](const auto& object) { return std::holds_alternative<mine>(object->Get()) ? 1 : 0; });
+  m_currentMineCount = std::accumulate(std::begin(mineCounter), std::end(mineCounter), 0);
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
@@ -214,4 +209,11 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
   {
     return std::nullopt;
   }
+}
+
+auto level_container::LaunchMine(POINT_2F position) -> void
+{
+  auto [thrust, maxSpeed, type] = MineParameters();
+  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, thrust, maxSpeed, type);
+  --m_minesRemaining;  
 }

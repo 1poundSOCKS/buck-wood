@@ -40,7 +40,7 @@ public:
       if( mineObject->Type() == mine::type::one && particle.Type() == particle::type::bullet_two || 
           mineObject->Type() == mine::type::two && particle.Type() == particle::type::bullet_one )
       {
-        m_visitor.OnMineDestroyed(object.Position());
+        m_visitor.MineDestroyed(object.Position());
         object.Destroy();
       }
     }
