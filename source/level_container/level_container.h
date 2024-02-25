@@ -9,6 +9,12 @@
 #include "level_stage.h"
 #include "game_score.h"
 
+struct level_parameters
+{
+  int m_index;
+
+};
+
 class level_container
 {
 
@@ -22,7 +28,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(int levelIndex, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddTargets(std::ranges::input_range auto&& positions) -> void;
@@ -71,7 +77,7 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  int m_levelIndex;
+  level_parameters m_levelParameters;
 
   blank_object m_boundary;
   play_events m_playEvents;
@@ -96,8 +102,8 @@ private:
 
 };
 
-level_container::level_container(int levelIndex, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_levelIndex { levelIndex }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
+level_container::level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_levelParameters { levelParameters }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
   m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
 {
   m_playerState->m_position = playerPosition;
@@ -114,7 +120,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 
 inline [[nodiscard]] auto level_container::Index() const -> int
 {
-  return m_levelIndex;
+  return m_levelParameters.m_index;
 }
 
 inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
@@ -144,7 +150,7 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return !(m_minesRemaining > 0) && m_currentMineCount == 0;
+  return m_minesRemaining + m_currentMineCount == 0;
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
