@@ -25,7 +25,7 @@ template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -
 {
   demo_level demoLevel;
 
-  level_parameters levelParameters { m_levelIndex };
+  level_parameters levelParameters { m_levelIndex, 20.0f, 200.0f, 10 };
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(levelParameters, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<Args>(args)...);
   levelContainer->AddTargets(demoLevel.TargetPositions());
   return levelContainer;

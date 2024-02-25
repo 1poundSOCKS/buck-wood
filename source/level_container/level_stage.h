@@ -6,15 +6,10 @@ class level_stage
 {
 public:
 
-  [[nodiscard]] auto MineParameters() -> std::tuple<float, float, mine::type>
+  [[nodiscard]] auto MineType() -> mine::type
   {
     int mineTypeValue = m_dist(pseudo_random_generator::get());
-    return { 20.0f, 200.0f, mineTypeValue > 5 ? mine::type::two : mine::type::one };
-  }
-
-  [[nodiscard]] auto MineCount() const -> int
-  {
-    return 10;
+    return mineTypeValue > 5 ? mine::type::two : mine::type::one;
   }
 
 private:

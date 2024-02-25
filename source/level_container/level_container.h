@@ -12,7 +12,9 @@
 struct level_parameters
 {
   int m_index;
-
+  float m_mineThrust;
+  float m_mineMaxSpeed;
+  int m_mineCount;
 };
 
 class level_container
@@ -48,7 +50,6 @@ public:
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
-  [[nodiscard]] auto MineParameters();
   [[nodiscard]] auto MinesRemaining() const -> int;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
@@ -104,10 +105,11 @@ private:
 
 level_container::level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
   m_levelParameters { levelParameters }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
-  m_playEvents { playEvents }, m_gameScore { gameScore }, m_minesRemaining { m_stage.MineCount() }
+  m_playEvents { playEvents }, m_gameScore { gameScore }
 {
   m_playerState->m_position = playerPosition;
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
+  m_minesRemaining = m_levelParameters.m_mineCount;
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
@@ -171,11 +173,6 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
   return *m_gameScore;
-}
-
-inline [[nodiscard]] auto level_container::MineParameters()
-{
-  return m_stage.MineParameters();
 }
 
 inline [[nodiscard]] auto level_container::MinesRemaining() const -> int

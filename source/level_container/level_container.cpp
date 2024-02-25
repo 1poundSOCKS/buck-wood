@@ -214,7 +214,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
 auto level_container::LaunchMine(POINT_2F position) -> void
 {
-  auto [thrust, maxSpeed, type] = MineParameters();
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, thrust, maxSpeed, type);
+  auto mineType = m_stage.MineType();
+  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, m_levelParameters.m_mineThrust, m_levelParameters.m_mineMaxSpeed, mineType);
   --m_minesRemaining;  
 }
