@@ -15,6 +15,7 @@ struct level_parameters
   float m_mineThrust;
   float m_mineMaxSpeed;
   int m_mineCount;
+  float m_mineLaunchInterval;
 };
 
 class level_container
@@ -116,7 +117,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, 5.0f);
+    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, m_levelParameters.m_mineLaunchInterval);
   });
 }
 
