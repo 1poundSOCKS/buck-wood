@@ -9,7 +9,7 @@ public:
 
   enum type { one, two };
 
-  mine(POINT_2F position, float thrust, float maxSpeed, type type);
+  mine(POINT_2F position, float thrust, float maxSpeed, type type, POINT_2F targetPosition);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;

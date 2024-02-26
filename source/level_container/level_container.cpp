@@ -127,7 +127,7 @@ auto level_container::CreateNewObjects(level_target& object) -> void
 {
   if( MinesRemaining() > 0 && !PlayerDied() && object.CanShootAt(*PlayerPosition()) )
   {
-    LaunchMine(object.Position());
+    LaunchMine(object.Position(), m_playerState->m_position);
   }
 }
 
@@ -179,9 +179,9 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
   }
 }
 
-auto level_container::LaunchMine(POINT_2F position) -> void
+auto level_container::LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void
 {
   auto mineType = m_stage.MineType();
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, m_levelParameters.m_mineThrust, m_levelParameters.m_mineMaxSpeed, mineType);
-  --m_minesRemaining;  
+  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, m_levelParameters.m_mineThrust, m_levelParameters.m_mineMaxSpeed, mineType, targetPosition);
+  --m_minesRemaining;
 }

@@ -58,7 +58,7 @@ public:
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto TargetActivated() -> void;
-  auto LaunchMine(POINT_2F position) -> void;
+  auto LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void;
   auto MineDestroyed(POINT_2F position) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
 
