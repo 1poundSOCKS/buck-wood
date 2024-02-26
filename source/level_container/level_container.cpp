@@ -4,69 +4,8 @@
 #include "game_settings.h"
 #include "dynamic_object_functions.h"
 #include "particle_functions.h"
-
-struct update_object_visitor
-{
-  level_container& m_levelContainer;
-  dynamic_object<default_object>& m_dynamicObject;
-  float m_interval;
-
-  auto operator()(const level_target& object)
-  {
-    m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_levelContainer.PlayerPosition());
-  }
-
-  auto operator()(const player_ship& object)
-  {
-    m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_levelContainer.PlayerPosition());
-  }
-
-  auto operator()(const mine& object)
-  {
-    m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_levelContainer.PlayerPosition());
-  }
-
-  auto operator()(const auto& object)
-  {
-  }
-};
-
-struct create_new_objects_visitor
-{
-  level_container& m_levelContainer;
-
-  auto operator()(level_target& object)
-  {
-    if( m_levelContainer.MinesRemaining() > 0 && !m_levelContainer.PlayerDied() && object.CanShootAt(*m_levelContainer.PlayerPosition()) )
-    {
-      m_levelContainer.LaunchMine(object.Position());
-    }
-  }
-
-  auto operator()(player_ship& object)
-  {
-    if( object.CanShoot() )
-    {
-      auto targetPosition = m_levelContainer.TargettedObject() ? std::optional<POINT_2F>(m_levelContainer.TargettedObject()->Position()) : std::nullopt;
-      auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-      auto particleType = level_container::ConvertFireModeToParticleType(object.FireMode());
-      m_levelContainer.CreateParticle(particleType, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
-      m_levelContainer.SetPlayEvent(play_events::event_type::shot, true);
-    }
-
-    if( object.EmitThrustParticle() )
-    {
-      auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
-      auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
-      auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
-      m_levelContainer.CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
-    }
-  }
-
-  auto operator()(auto& object)
-  {
-  }
-};
+#include "update_object_visitor.h"
+#include "create_new_objects_visitor.h"
 
 auto level_container::SetPlayerActive(bool value) -> void
 {
@@ -106,12 +45,12 @@ auto level_container::UpdateObjects(float interval) -> void
 
   for( auto& object : m_staticObjects )
   {
-    std::visit(update_object_visitor { *this, object, interval }, object->Get());
+    std::visit(update_object_visitor { object, interval, m_playerState->m_position }, object->Get());
   }
 
   for( auto& object : m_movingObjects )
   {
-    std::visit(update_object_visitor { *this, object, interval }, object->Get());
+    std::visit(update_object_visitor { object, interval, m_playerState->m_position }, object->Get());
   }
 }
 
@@ -181,6 +120,34 @@ auto level_container::CreateNewObjects(float interval) -> void
   for( auto& object : m_movingObjects )
   {
     std::visit(create_new_objects_visitor { *this }, object.Object().Get());
+  }
+}
+
+auto level_container::CreateNewObjects(level_target& object) -> void
+{
+  if( MinesRemaining() > 0 && !PlayerDied() && object.CanShootAt(*PlayerPosition()) )
+  {
+    LaunchMine(object.Position());
+  }
+}
+
+auto level_container::CreateNewObjects(player_ship& object) -> void
+{
+  if( object.CanShoot() )
+  {
+    auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
+    auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
+    auto particleType = ConvertFireModeToParticleType(object.FireMode());
+    CreateParticle(particleType, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
+    SetPlayEvent(play_events::event_type::shot, true);
+  }
+
+  if( object.EmitThrustParticle() )
+  {
+    auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
+    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
+    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+    CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
   }
 }
 

@@ -62,6 +62,10 @@ public:
   auto MineDestroyed(POINT_2F position) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
 
+  auto CreateNewObjects(level_target& object) -> void;
+  auto CreateNewObjects(player_ship& object) -> void;
+  auto CreateNewObjects(auto& object) -> void;
+
   static [[nodiscard]] auto ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type;
 
 private:
@@ -225,6 +229,10 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
+}
+
+auto level_container::CreateNewObjects(auto& object) -> void
+{
 }
 
 inline [[nodiscard]] auto level_container::ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type
