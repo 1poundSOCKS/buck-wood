@@ -18,6 +18,9 @@ auto mine::Update(float interval, std::optional<POINT_2F> targetPosition) -> voi
   auto targetDirection = targetPosition ? direct2d::GetAngleBetweenPoints(m_position, *targetPosition) : m_direction;
   auto velocityChange = direct2d::CalculateVelocity(m_thrust * interval, targetDirection);
   m_velocity = direct2d::CombineVelocities(m_velocity, velocityChange);
+  auto speed = std::min(direct2d::CalculateSpeed(m_velocity), m_maxSpeed);
+  auto direction = direct2d::CalculateDirection(m_velocity);
+  m_velocity = direct2d::CalculateVelocity(speed, direction);
 #else
   m_direction = targetPosition ? direct2d::GetAngleBetweenPoints(m_position, *targetPosition) : m_direction;
   auto speed = std::min(direct2d::CalculateSpeed(m_velocity) + m_thrust, m_maxSpeed);
