@@ -4,6 +4,7 @@
 #include "hud_target.h"
 #include "renderers.h"
 #include "audio_events.h"
+#include "line_to_target.h"
 
 play_scene::play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents) : 
   m_levelContainer { levelContainer }, m_playEvents { playEvents }, m_levelTitle { levelContainer->Index() }
@@ -49,6 +50,8 @@ auto play_scene::Render() const -> void
 
   if( targettedObject )
   {
+    renderer::render(line_to_target { *m_levelContainer->PlayerPosition(), targettedObject->Position() });
+    
     auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
     hud_target hudTarget { bounds };
     renderer::render(hudTarget);

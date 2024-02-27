@@ -162,7 +162,7 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
-  m_targetPosition = direct2d::CalculatePosition(m_playerState->m_position, m_playerState->m_angle, 100);
+  m_targetPosition = m_playerState->m_destroyed ? std::nullopt : std::optional<POINT_2F>(m_playerState->m_position);
 
   if( m_targetPosition )
   {
@@ -170,7 +170,12 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
     constexpr auto angleSpan = 20.0f;
 
-    dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(m_movingObjects), std::end(m_movingObjects), 
+    auto mines = std::ranges::views::filter(m_movingObjects, [](const auto& object)
+    {
+      return object->HoldsAlternative<mine>();
+    });
+
+    dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(mines), std::end(mines), 
     static_cast<dynamic_object<default_object>*>(nullptr), 
     [this, targetAngle](auto* nearest, auto& next) -> dynamic_object<default_object>*
     {

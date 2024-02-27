@@ -51,6 +51,8 @@ public:
     return targettedMine && CanBeDestroyed(*targettedMine, playerShip) ? true : false;
   }
 
+private:
+
   static [[nodiscard]] auto CanBeDestroyed(const mine& mine, const player_ship& playerShip) -> bool
   {
     return mine.Type() == mine::type::one && playerShip.FireMode() == player_ship::fire_mode::two || 

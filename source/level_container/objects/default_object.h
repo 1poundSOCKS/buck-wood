@@ -29,6 +29,11 @@ public:
     return std::get_if<type>(&m_object);
   }
 
+  template <typename type> [[nodiscard]] auto HoldsAlternative() const -> bool
+  {
+    return std::holds_alternative<type>(m_object);
+  }
+
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;

@@ -15,10 +15,10 @@
 #include "diagnostics_renderer.h"
 #include "level_radar_renderer.h"
 
-// #include "level_geometries.h"
-
 #include "game_score_renderer.h"
 #include "level_title_renderer.h"
+
+#include "line_to_target.h"
 
 class renderer
 {
@@ -43,6 +43,7 @@ private:
   auto Render(const hud_target& hudTarget) const -> void;
   auto Render(const game_score& gameScore) const -> void;
   auto Render(const level_title& levelTitle) const -> void;
+  auto Render(const line_to_target& lineToTarget) const -> void;
 
 private:
 
@@ -61,6 +62,7 @@ private:
   default_object_renderer m_defaultObjectRenderer;
   geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   particle_renderer m_particleRenderer;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
 
 };
 
@@ -138,4 +140,9 @@ inline auto renderer::Render(const level_title& levelTitle) const -> void
 inline auto renderer::Render(const dynamic_object<default_object>& object) const -> void
 {
   m_defaultObjectRenderer.Write(object.Object(), object.Geometry());
+}
+
+inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
+{
+  render_target::get()->DrawLine(lineToTarget.m_start, lineToTarget.m_end, m_lineToTargetBrush.get(), 10);
 }
