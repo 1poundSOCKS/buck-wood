@@ -133,6 +133,8 @@ auto level_container::CreateNewObjects(level_target& object) -> void
 
 auto level_container::CreateNewObjects(player_ship& object) -> void
 {
+
+#ifdef USE_BULLETS
   if( object.CanShoot() )
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
@@ -141,6 +143,13 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
     CreateParticle(particleType, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
     SetPlayEvent(play_events::event_type::shot, true);
   }
+#else
+  if( object.CanShoot() && m_targettedObject->CanBeDestroyed(object) )
+  {
+    m_targettedObject->Destroy();
+    CreateExplosion(m_targettedObject->Position());
+  }
+#endif
 
   if( object.EmitThrustParticle() )
   {

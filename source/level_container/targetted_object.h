@@ -12,9 +12,19 @@ public:
   {
   }
 
+  [[nodiscard]] auto Object() const -> const default_object&
+  {
+    return m_object->Object();
+  }
+
+  [[nodiscard]] auto Object() -> default_object&
+  {
+    return m_object->Object();
+  }
+
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F
   {
-    return (*m_object)->Position();
+    return Object().Position();
   }
 
   [[nodiscard]] auto Bounds(D2D1::Matrix3x2F transform) const -> D2D1_RECT_F
@@ -25,9 +35,26 @@ public:
     return { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
   }
 
+  auto Destroy() -> void
+  {
+    Object().Destroy();
+  }
+
   [[nodiscard]] auto Destroyed() const -> bool
   {
-    return (*m_object)->Destroyed();
+    return Object().Destroyed();
+  }
+
+  [[nodiscard]] auto CanBeDestroyed(const player_ship& playerShip) -> bool
+  {
+    auto targettedMine = Object().GetIf<mine>();
+    return targettedMine && CanBeDestroyed(*targettedMine, playerShip) ? true : false;
+  }
+
+  static [[nodiscard]] auto CanBeDestroyed(const mine& mine, const player_ship& playerShip) -> bool
+  {
+    return mine.Type() == mine::type::one && playerShip.FireMode() == player_ship::fire_mode::two || 
+        mine.Type() == mine::type::two && playerShip.FireMode() == player_ship::fire_mode::one;
   }
 
 private:
