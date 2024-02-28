@@ -7,34 +7,6 @@
 #include "level_target_renderer.h"
 #include "mine_renderer.h"
 
-struct default_object_renderer_visitor
-{
-  const geometry_renderer& m_deactivatedRenderer;
-  const geometry_renderer& m_activatedRenderer;
-  const player_ship_renderer& m_playerShipRenderer;
-  const mine_renderer& m_mineRenderer;
-  ID2D1Geometry* m_geometry;
-
-  auto operator()(const level_target& object)
-  {
-    object.IsActivated() ? m_activatedRenderer.Write(m_geometry) : m_deactivatedRenderer.Write(m_geometry);
-  }
-
-  auto operator()(const player_ship& object)
-  {
-    m_playerShipRenderer.Write(object, m_geometry);
-  }
-
-  auto operator()(const mine& object)
-  {
-    m_mineRenderer.Write(object, m_geometry);
-  }
-
-  auto operator()(const auto& object)
-  {
-  }
-};
-
 class default_object_renderer
 {
 
@@ -42,17 +14,46 @@ public:
 
   auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
 
-private:
+  auto Write(const level_target& object, ID2D1Geometry* geometry) const -> void
+  {
+    object.IsActivated() ? m_activatedRenderer.Write(geometry) : m_deactivatedRenderer.Write(geometry);
+  }
+
+  auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_playerShipRenderer.Write(object, geometry);
+  }
+
+  auto Write(const mine& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_mineRenderer.Write(object, geometry);
+  }
+
+  auto Write(const auto& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_defaultGeometryRenderer.Write(geometry);
+  }
 
   geometry_renderer m_deactivatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
   geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
   player_ship_renderer m_playerShipRenderer;
   mine_renderer m_mineRenderer;
+  geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
+};
+
+struct default_object_renderer_visitor
+{
+  const default_object_renderer& m_renderer;
+  ID2D1Geometry* m_geometry;
+
+  auto operator()(const auto& object)
+  {
+    m_renderer.Write(object, m_geometry);
+  }
 };
 
 inline auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
 {
-  default_object_renderer_visitor visitor { m_deactivatedRenderer, m_activatedRenderer, m_playerShipRenderer, m_mineRenderer, geometry };
-  std::visit(visitor, object.Get());
+  std::visit(default_object_renderer_visitor { *this, geometry }, object.Get());
 }
