@@ -44,7 +44,7 @@ public:
 private:
 
   POINT_2F m_position;
-  SCALE_2F m_scale { 1.0f, 1.0f };
+  SCALE_2F m_scale { 1.5f, 1.5f };
   float m_angle;
   bool m_destroyed { false };
   VELOCITY_2F m_velocity;

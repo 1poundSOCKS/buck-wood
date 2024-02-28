@@ -209,7 +209,7 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
 
 inline auto level_container::CreatePlayerBullet(POINT_2F position, VELOCITY_2F velocity) -> void
 {
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<player_bullet>, position, velocity);
+  CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, position, velocity);
 }
 
 inline auto level_container::TargetActivated() -> void

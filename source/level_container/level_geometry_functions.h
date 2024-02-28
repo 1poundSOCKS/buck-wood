@@ -14,6 +14,19 @@ namespace level_geometry_functions
     };
   }
 
+  inline constexpr [[nodiscard]] auto GetPlayerBulletGeometryData()
+  {
+    constexpr float width { 7 };
+    constexpr float height { 20 };
+
+    return std::array {
+      D2D1_POINT_2F { -width, -height },
+      D2D1_POINT_2F { width, -height },
+      D2D1_POINT_2F { width, height },
+      D2D1_POINT_2F { -width, height }
+    };
+  }
+
   inline auto [[nodiscard]] GetDuctFanGeometryData(float size)
   {
     static constexpr auto ductFanGeometryData = std::array {
