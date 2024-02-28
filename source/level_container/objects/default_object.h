@@ -1,15 +1,138 @@
 #pragma once
 
-#include "level_target.h"
 #include "player_ship.h"
+#include "player_bullet.h"
+#include "level_target.h"
 #include "mine.h"
+
+struct scale_visitor
+{
+  auto operator()(const level_target& object)
+  {
+    return object.Scale();
+  }
+  auto operator()(const player_ship& object)
+  {
+    return object.Scale();
+  }
+  auto operator()(const mine& object)
+  {
+    return object.Scale();
+  }
+  auto operator()(const auto& object)
+  {
+    return object.Scale();
+  }
+};
+
+struct angle_visitor
+{
+  auto operator()(const level_target& object)
+  {
+    return object.Angle();
+  }
+  auto operator()(const player_ship& object)
+  {
+    return object.Angle();
+  }
+  auto operator()(const mine& object)
+  {
+    return object.Angle();
+  }
+  auto operator()(const auto& object)
+  {
+    return object.Angle();
+  }
+};
+
+struct position_visitor
+{
+  auto operator()(const level_target& object)
+  {
+    return object.Position();
+  }
+  auto operator()(const player_ship& object)
+  {
+    return object.Position();
+  }
+  auto operator()(const mine& object)
+  {
+    return object.Position();
+  }
+  auto operator()(const auto& object)
+  {
+    return object.Position();
+  }
+};
+
+struct destroyed_visitor
+{
+  auto operator()(const level_target& object)
+  {
+    return object.Destroyed();
+  }
+  auto operator()(const player_ship& object)
+  {
+    return object.Destroyed();
+  }
+  auto operator()(const mine& object)
+  {
+    return object.Destroyed();
+  }
+  auto operator()(const auto& object)
+  {
+    return object.Destroyed();
+  }
+};
+
+struct update_visitor
+{
+  float m_interval;
+  std::optional<POINT_2F> m_playerPosition;
+
+  auto operator()(level_target& object)
+  {
+    return object.Update(m_interval, m_playerPosition);
+  }
+  auto operator()(player_ship& object)
+  {
+    return object.Update(m_interval);
+  }
+  auto operator()(mine& object)
+  {
+    return object.Update(m_interval, m_playerPosition);
+  }
+  auto operator()(auto& object)
+  {
+    return object.Update(m_interval);
+  }
+};
+
+struct destroy_visitor
+{
+  auto operator()(level_target& object)
+  {
+  }
+  auto operator()(player_ship& object)
+  {
+    return object.Destroy();
+  }
+  auto operator()(mine& object)
+  {
+    return object.Destroy();
+  }
+  auto operator()(auto& object)
+  {
+    return object.Destroy();
+  }
+};
 
 class default_object
 {
 
 public:
 
-  using object_type = std::variant<level_target, player_ship, mine>;
+  using object_type = std::variant<player_ship, player_bullet, level_target, mine>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
     m_object { variantType, std::forward<Args>(args)... }
@@ -50,128 +173,30 @@ private:
 
 inline [[nodiscard]] auto default_object::Scale() const -> SCALE_2F
 {
-  struct visitor
-  {
-    auto operator()(const level_target& object)
-    {
-      return object.Scale();
-    }
-    auto operator()(const player_ship& object)
-    {
-      return object.Scale();
-    }
-    auto operator()(const mine& object)
-    {
-      return object.Scale();
-    }
-  };
-
-  return std::visit(visitor{}, m_object);
+  return std::visit(scale_visitor {}, m_object);
 }
 
 inline [[nodiscard]] auto default_object::Angle() const -> float
 {
-  struct visitor
-  {
-    auto operator()(const level_target& object)
-    {
-      return object.Angle();
-    }
-    auto operator()(const player_ship& object)
-    {
-      return object.Angle();
-    }
-    auto operator()(const mine& object)
-    {
-      return object.Angle();
-    }
-  };
-
-  return std::visit(visitor{}, m_object);
+  return std::visit(angle_visitor{}, m_object);
 }
 
 inline [[nodiscard]] auto default_object::Position() const -> D2D1_POINT_2F
 {
-  struct visitor
-  {
-    auto operator()(const level_target& object)
-    {
-      return object.Position();
-    }
-    auto operator()(const player_ship& object)
-    {
-      return object.Position();
-    }
-    auto operator()(const mine& object)
-    {
-      return object.Position();
-    }
-  };
-
-  return std::visit(visitor{}, m_object);
+  return std::visit(position_visitor {}, m_object);
 }
 
 inline [[nodiscard]] auto default_object::Destroyed() const -> bool
 {
-  struct visitor
-  {
-    auto operator()(const level_target& object)
-    {
-      return object.Destroyed();
-    }
-    auto operator()(const player_ship& object)
-    {
-      return object.Destroyed();
-    }
-    auto operator()(const mine& object)
-    {
-      return object.Destroyed();
-    }
-  };
-
-  return std::visit(visitor{}, m_object);
+  return std::visit(destroyed_visitor{}, m_object);
 }
 
 inline auto default_object::Update(float interval, std::optional<POINT_2F> playerPosition) -> void
 {
-  struct visitor
-  {
-    float m_interval;
-    std::optional<POINT_2F> m_playerPosition;
-
-    auto operator()(level_target& object)
-    {
-      return object.Update(m_interval, m_playerPosition);
-    }
-    auto operator()(player_ship& object)
-    {
-      return object.Update(m_interval);
-    }
-    auto operator()(mine& object)
-    {
-      return object.Update(m_interval, m_playerPosition);
-    }
-  };
-
-  return std::visit(visitor{ interval, playerPosition }, m_object);
+  return std::visit(update_visitor { interval, playerPosition }, m_object);
 }
 
 inline auto default_object::Destroy() -> void
 {
-  struct visitor
-  {
-    auto operator()(level_target& object)
-    {
-    }
-    auto operator()(player_ship& object)
-    {
-      return object.Destroy();
-    }
-    auto operator()(mine& object)
-    {
-      return object.Destroy();
-    }
-  };
-
-  return std::visit(visitor {}, m_object);
+  return std::visit(destroy_visitor {}, m_object);
 }
