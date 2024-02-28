@@ -57,6 +57,8 @@ public:
   auto CreateParticle(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
+  auto CreatePlayerBullet(POINT_2F position, VELOCITY_2F velocity) -> void;
+
   auto TargetActivated() -> void;
   auto LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void;
   auto MineDestroyed(POINT_2F position) -> void;
@@ -203,6 +205,11 @@ inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 auto level_container::CreateMovingObject(auto&&...args) -> void
 {
   m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::CreatePlayerBullet(POINT_2F position, VELOCITY_2F velocity) -> void
+{
+  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<player_bullet>, position);
 }
 
 inline auto level_container::TargetActivated() -> void
