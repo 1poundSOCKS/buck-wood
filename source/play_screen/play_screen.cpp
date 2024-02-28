@@ -34,18 +34,19 @@ auto play_screen::Update(int64_t ticks) -> bool
     {
       case play_menu_controller::selection::resume:
         m_sceneController.Resume();
-        break;
+        return true;
       case play_menu_controller::selection::quit:
         m_sceneController.Quit();
-        break;
+        return false;
+      default:
+        return true;
     }
   }
   else
   {
     m_sceneController.UpdateScene(ticks);
+    return m_sceneController.Complete() && !LoadNextLevel() ? false : true;
   }
-
-  return m_menuController.Selection() == play_menu_controller::selection::quit || ( m_sceneController.Complete() && !LoadNextLevel() ) ? false : true;
 }
 
 auto play_screen::Render() -> void
