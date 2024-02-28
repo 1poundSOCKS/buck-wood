@@ -46,7 +46,7 @@ private:
   {
     auto transform = object.Transform();
     return object->ShieldsUp() ? 
-      winrt::com_ptr<ID2D1Geometry> { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShipGeometry(), transform) } : 
+      winrt::com_ptr<ID2D1Geometry> { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), level_geometries::PlayerShipGeometry().get(), transform) } : 
       winrt::com_ptr<ID2D1Geometry> { object.GeometryPtr() };
   }
 

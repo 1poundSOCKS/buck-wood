@@ -36,14 +36,14 @@ public:
     }
   }
 
-  static [[nodiscard]] auto PlayerShipGeometry() -> ID2D1PathGeometry*
+  static [[nodiscard]] auto PlayerShipGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_playerShipGeometry.get();
+    return m_instance->m_playerShipGeometry;
   }
 
-  static [[nodiscard]] auto PlayerBulletGeometry() -> ID2D1PathGeometry*
+  static [[nodiscard]] auto PlayerBulletGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_playerBulletGeometry.get();
+    return m_instance->m_playerBulletGeometry;
   }
 
   static [[nodiscard]] auto PlayerShieldGeometry() -> ID2D1EllipseGeometry*
@@ -51,19 +51,19 @@ public:
     return m_instance->m_playerShieldGeometry.get();
   }
 
-  static [[nodiscard]] auto MineGeometry() -> ID2D1PathGeometry*
+  static [[nodiscard]] auto MineGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_mineGeometry.get();
+    return m_instance->m_mineGeometry;
   }
 
-  static [[nodiscard]] auto TargetGeometry() -> ID2D1PathGeometry*
+  static [[nodiscard]] auto TargetGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_targetGeometry.get();
+    return m_instance->m_targetGeometry;
   }
 
-  static [[nodiscard]] auto AsteroidGeometry() -> ID2D1PathGeometry*
+  static [[nodiscard]] auto AsteroidGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_asteroidGeometry.get();
+    return m_instance->m_asteroidGeometry;
   }
 
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&

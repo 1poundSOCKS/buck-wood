@@ -9,23 +9,8 @@ struct update_object_visitor
   float m_interval;
   POINT_2F m_playerPosition;
 
-  auto operator()(const level_target& object)
+  auto operator()(const auto& object)
   {
-    m_dynamicObject.Update(level_geometries::TargetGeometry(), m_interval, m_playerPosition);
-  }
-
-  auto operator()(const player_ship& object)
-  {
-    m_dynamicObject.Update(level_geometries::PlayerShipGeometry(), m_interval, m_playerPosition);
-  }
-
-  auto operator()(const mine& object)
-  {
-    m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_playerPosition);
-  }
-
-  auto operator()(const player_bullet& object)
-  {
-    m_dynamicObject.Update(level_geometries::PlayerBulletGeometry(), m_interval, m_playerPosition);
+    m_dynamicObject.Update(m_interval, m_playerPosition);
   }
 };

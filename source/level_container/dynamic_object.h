@@ -8,10 +8,11 @@ class dynamic_object
 
 public:
 
-  template <typename...Args> dynamic_object(ID2D1Geometry* sourceGeometry, Args...args) : 
+  template <typename...Args> dynamic_object(winrt::com_ptr<ID2D1Geometry> sourceGeometry, Args...args) : 
     m_object { std::forward<Args>(args)... }, 
     m_transform { CalculateObjectTransform() },
-    m_geometry { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform) },
+    m_sourceGeometry { sourceGeometry },
+    m_geometry { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry.get(), m_transform) },
     m_geometryRadius { direct2d::GetGeometryRadius(m_geometry.get()) }
   {
   }
@@ -62,13 +63,18 @@ public:
       D2D1::Matrix3x2F::Translation(m_object.Position().x, m_object.Position().y);
   }
 
-  template <typename...Args> auto Update(ID2D1Geometry* sourceGeometry, Args...args)
+  template <typename...Args> auto Update(Args...args) -> void
+  {
+    Update(m_sourceGeometry.get(), std::forward<Args>(args)...);
+  }
+
+  template <typename...Args> auto Update(ID2D1Geometry* sourceGeometry, Args...args) -> void
   {
     m_object.Update(std::forward<Args>(args)...);
     UpdateGeometry(sourceGeometry);
   }
 
-  template <typename...Args> auto UpdateGeometry(ID2D1Geometry* sourceGeometry)
+  template <typename...Args> auto UpdateGeometry(ID2D1Geometry* sourceGeometry) -> void
   {
     m_transform = CalculateObjectTransform();
     m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform);
@@ -97,6 +103,7 @@ private:
 
   object_type m_object;
   D2D1::Matrix3x2F m_transform;
+  winrt::com_ptr<ID2D1Geometry> m_sourceGeometry;
   winrt::com_ptr<ID2D1Geometry> m_geometry;
   float m_geometryRadius;
 
