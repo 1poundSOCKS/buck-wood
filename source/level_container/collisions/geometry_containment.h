@@ -32,15 +32,17 @@ public:
     if( !contained )
     {
       std::lock_guard<std::mutex> guard(m_mutex);
-      m_callable(containedObject.Object());
+      
+      if( !containedObject.Object().Destroyed() )
+      {
+        m_callable(containedObject.Object());
+      }
     }
   }
 
   auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& objectCollection) -> void
   {
-    auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
-
-    std::for_each(std::execution::par, std::begin(activeObjects), std::end(activeObjects), [this,containmentGeometry](auto& object)
+    std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,containmentGeometry](auto& object)
     {
       (*this)(containmentGeometry, object);
     });

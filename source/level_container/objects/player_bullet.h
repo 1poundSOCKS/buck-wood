@@ -7,7 +7,7 @@ class player_bullet
 
 public:
 
-  player_bullet(POINT_2F position) : m_position { position }
+  player_bullet(POINT_2F position, VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }
   {
   }
 
@@ -32,7 +32,8 @@ public:
   }
 
   auto Update(float interval) -> void
-  {    
+  {
+    m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
   }
 
   auto Destroy() -> void
@@ -46,5 +47,6 @@ private:
   SCALE_2F m_scale { 1.0f, 1.0f };
   float m_angle { 0 };
   bool m_destroyed { false };
+  VELOCITY_2F m_velocity;
 
 };

@@ -23,6 +23,10 @@ public:
 
 private:
 
+  auto OnCollision(player_bullet& playerBullet, mine& mine) -> void;
+
+private:
+
   visitor_type& m_visitor;
 
 };
@@ -30,15 +34,15 @@ private:
 template <typename visitor_type>
 auto level_collision_handler<visitor_type>::operator()(default_object& object1, default_object& object2) -> void
 {
-  if( !(std::holds_alternative<mine>(object1.Get()) && std::holds_alternative<level_target>(object2.Get()) ||
-      std::holds_alternative<level_target>(object1.Get()) && std::holds_alternative<mine>(object2.Get())) )
+  if( std::holds_alternative<player_bullet>(object1.Get()) && std::holds_alternative<mine>(object2.Get()) )
   {
-    object1.Destroy();
-    object2.Destroy();
-  }
+    return OnCollision(std::get<player_bullet>(object1.Get()), std::get<mine>(object2.Get()));
+  }  
 
-  if( object1.Destroyed() ) m_visitor.CreateExplosion(object1.Position());
-  if( object2.Destroyed() ) m_visitor.CreateExplosion(object2.Position());
+  if( std::holds_alternative<player_bullet>(object2.Get()) && std::holds_alternative<mine>(object1.Get()) )
+  {
+    return OnCollision(std::get<player_bullet>(object2.Get()), std::get<mine>(object1.Get()));
+  }  
 }
 
 template <typename visitor_type>
@@ -78,4 +82,14 @@ auto level_collision_handler<visitor_type>::operator()(particle& particle) -> vo
 {
   m_visitor.CreateImpact(particle.Position());
   particle.Destroy();
+}
+
+template <typename visitor_type>
+auto level_collision_handler<visitor_type>::OnCollision(player_bullet& playerBullet, mine& mine) -> void
+{
+  playerBullet.Destroy();
+  mine.Destroy();
+
+  m_visitor.CreateExplosion(playerBullet.Position());
+  m_visitor.CreateExplosion(mine.Position());
 }

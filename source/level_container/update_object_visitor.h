@@ -24,7 +24,8 @@ struct update_object_visitor
     m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_playerPosition);
   }
 
-  auto operator()(const auto& object)
+  auto operator()(const player_bullet& object)
   {
+    m_dynamicObject.Update(level_geometries::MineGeometry(), m_interval, m_playerPosition);
   }
 };
