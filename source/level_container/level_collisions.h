@@ -24,6 +24,7 @@ public:
 private:
 
   auto OnCollision(player_bullet& playerBullet, mine& mine) -> void;
+  auto OnCollision(player_bullet& playerBullet, level_target& levelTarget) -> void;
 
 private:
 
@@ -42,6 +43,16 @@ auto level_collision_handler<visitor_type>::operator()(default_object& object1, 
   if( std::holds_alternative<player_bullet>(object2.Get()) && std::holds_alternative<mine>(object1.Get()) )
   {
     return OnCollision(std::get<player_bullet>(object2.Get()), std::get<mine>(object1.Get()));
+  }  
+
+  if( std::holds_alternative<player_bullet>(object1.Get()) && std::holds_alternative<level_target>(object2.Get()) )
+  {
+    return OnCollision(std::get<player_bullet>(object1.Get()), std::get<level_target>(object2.Get()));
+  }  
+
+  if( std::holds_alternative<player_bullet>(object2.Get()) && std::holds_alternative<level_target>(object1.Get()) )
+  {
+    return OnCollision(std::get<player_bullet>(object2.Get()), std::get<level_target>(object1.Get()));
   }  
 }
 
@@ -89,7 +100,12 @@ auto level_collision_handler<visitor_type>::OnCollision(player_bullet& playerBul
 {
   playerBullet.Destroy();
   mine.Destroy();
-
-  m_visitor.CreateExplosion(playerBullet.Position());
   m_visitor.CreateExplosion(mine.Position());
+}
+
+template <typename visitor_type>
+auto level_collision_handler<visitor_type>::OnCollision(player_bullet& playerBullet, level_target& levelTarget) -> void
+{
+  playerBullet.Destroy();
+  m_visitor.CreateExplosion(playerBullet.Position());
 }
