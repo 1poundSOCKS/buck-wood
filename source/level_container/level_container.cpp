@@ -131,28 +131,17 @@ auto level_container::CreateNewObjects(level_target& object) -> void
   }
 }
 
-#define USE_BULLETS
-
 auto level_container::CreateNewObjects(player_ship& object) -> void
 {
 
-#ifdef USE_BULLETS
   if( object.CanShoot() )
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
     auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
     // auto particleType = ConvertFireModeToParticleType(object.FireMode());
-    // CreateParticle(particleType, object.Position(), direct2d::CalculateVelocity(500, bulletAngle), 1.0f);
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(500, bulletAngle));
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle));
     SetPlayEvent(play_events::event_type::shot, true);
   }
-#else
-  if( object.CanShoot() && m_targettedObject->CanBeDestroyed(object) )
-  {
-    m_targettedObject->Destroy();
-    CreateExplosion(m_targettedObject->Position());
-  }
-#endif
 
   if( object.EmitThrustParticle() )
   {
