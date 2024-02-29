@@ -22,7 +22,7 @@ class level_container
 
 public:
 
-  using static_object_collection = std::vector<dynamic_object<default_object>>;
+  using static_object_collection = std::list<dynamic_object<default_object>>;
   using moving_object_collection = std::list<dynamic_object<default_object>>;
 
   using particle_collection = std::list<particle>;
@@ -50,7 +50,6 @@ public:
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
-  [[nodiscard]] auto MinesRemaining() const -> int;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateParticle(auto&&...args) -> void;
@@ -104,8 +103,7 @@ private:
   level_stage m_stage;
   std::shared_ptr<game_score> m_gameScore;
 
-  int m_minesRemaining;
-  int m_currentMineCount { 0 };
+  int m_targetsRemaining { 0 };
 
 };
 
@@ -115,7 +113,6 @@ level_container::level_container(level_parameters levelParameters, std::ranges::
 {
   m_playerState->m_position = playerPosition;
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
-  m_minesRemaining = m_levelParameters.m_mineCount;
 }
 
 auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
@@ -158,7 +155,7 @@ inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 {
-  return m_minesRemaining + m_currentMineCount == 0;
+  return m_targetsRemaining == 0;
 }
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
@@ -179,11 +176,6 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
   return *m_gameScore;
-}
-
-inline [[nodiscard]] auto level_container::MinesRemaining() const -> int
-{
-  return m_minesRemaining;
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void

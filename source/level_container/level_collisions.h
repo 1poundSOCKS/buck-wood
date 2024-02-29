@@ -91,20 +91,21 @@ auto level_collision_handler::operator()(particle& particle) -> void
 
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, mine& mine) -> void
 {
+  m_visitor.CreateExplosion(mine.Position());
   playerBullet.Destroy();
   mine.Destroy();
-  m_visitor.CreateExplosion(mine.Position());
 }
 
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, level_target& levelTarget) -> void
 {
+  m_visitor.CreateExplosion(levelTarget.Position());
   playerBullet.Destroy();
-  m_visitor.CreateExplosion(playerBullet.Position());
+  levelTarget.Destroy();
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, mine& mine) -> void
 {
+  m_visitor.CreateExplosion(playerShip.Position());
   playerShip.Destroy();
   mine.Destroy();
-  m_visitor.CreateExplosion(playerShip.Position());
 }

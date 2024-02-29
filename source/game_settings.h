@@ -48,8 +48,8 @@ private:
   int m_renderTargetWidth { 1920 };
   int m_renderTargetHeight { 1080 };
   bool m_showDiagnostics { false };
-  int m_effectsVolume { 2 };
-  int m_musicVolume { 2 };
+  int m_effectsVolume { 1 };
+  int m_musicVolume { 1 };
 
 };
 

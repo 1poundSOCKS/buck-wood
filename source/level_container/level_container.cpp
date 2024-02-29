@@ -32,9 +32,8 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   CreateNewObjects(interval);
 
-  auto mineCounter = std::ranges::views::transform(m_movingObjects, [](const auto& object) { return std::holds_alternative<mine>(object->Get()) ? 1 : 0; });
-  m_currentMineCount = std::accumulate(std::begin(mineCounter), std::end(mineCounter), 0);
-  diagnostics::add(L"current mine count", m_currentMineCount);
+  auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<level_target>(object->Get()) ? 1 : 0; });
+  m_targetsRemaining = std::accumulate(std::begin(targetCounter), std::end(targetCounter), 0);
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
@@ -59,6 +58,7 @@ auto level_container::RemoveDestroyedObjects() -> void
 {
   particle_functions::erase_destroyed(m_particles);
   dynamic_object_functions::erase_destroyed(m_movingObjects);
+  dynamic_object_functions::erase_destroyed(m_staticObjects);
 }
 
 auto level_container::Render(D2D1_RECT_F viewRect) const -> void
@@ -126,7 +126,7 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::CreateNewObjects(level_target& object) -> void
 {
-  if( MinesRemaining() > 0 && !PlayerDied() && object.CanShootAt(*PlayerPosition()) )
+  if( !PlayerDied() && object.CanShootAt(*PlayerPosition()) )
   {
     LaunchMine(object.Position(), m_playerState->m_position);
   }
@@ -139,7 +139,6 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
     auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-    // auto particleType = ConvertFireModeToParticleType(object.FireMode());
     CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle));
     SetPlayEvent(play_events::event_type::shot, true);
   }
@@ -190,5 +189,4 @@ auto level_container::LaunchMine(POINT_2F position, POINT_2F targetPosition) -> 
 {
   auto mineType = m_stage.MineType();
   CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, position, m_levelParameters.m_mineThrust, m_levelParameters.m_mineMaxSpeed, mineType, targetPosition);
-  --m_minesRemaining;
 }

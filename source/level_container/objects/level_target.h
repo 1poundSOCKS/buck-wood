@@ -13,8 +13,9 @@ public:
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> POINT_2F;
-  constexpr [[nodiscard]] auto Destroyed() const -> bool { return false; }
+  [[nodiscard]] auto Destroyed() const -> bool;
   auto Update(float interval, std::optional<POINT_2F> playerPosition) -> void;
+  auto Destroy() -> void;
 
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
@@ -33,6 +34,7 @@ private:
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   int m_hitPoints { 10 };
+  bool m_destroyed { false };
 
 };
 
@@ -49,4 +51,14 @@ inline [[nodiscard]] auto level_target::Angle() const -> float
 inline [[nodiscard]] auto level_target::Position() const -> POINT_2F
 {
   return m_position;
+}
+
+inline [[nodiscard]] auto level_target::Destroyed() const -> bool
+{
+  return m_destroyed;
+}
+
+inline auto level_target::Destroy() -> void
+{
+  m_destroyed = true;
 }

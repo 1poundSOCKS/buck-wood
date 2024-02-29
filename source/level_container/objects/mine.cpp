@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "mine.h"
 
-#define HOMING_MINE
-
 mine::mine(POINT_2F position, float thrust, float maxSpeed, type type, POINT_2F targetPosition) : 
   m_position { position }, m_previousPosition { position }, m_thrust { thrust }, m_maxSpeed { maxSpeed }, m_type { type }
 {
@@ -21,10 +19,6 @@ auto mine::Update(float interval, std::optional<POINT_2F> targetPosition) -> voi
   auto speed = std::min(direct2d::CalculateSpeed(m_velocity), m_maxSpeed);
   auto direction = direct2d::CalculateDirection(m_velocity);
   m_velocity = direct2d::CalculateVelocity(speed, direction);
-#else
-  m_direction = targetPosition ? direct2d::GetAngleBetweenPoints(m_position, *targetPosition) : m_direction;
-  auto speed = std::min(direct2d::CalculateSpeed(m_velocity) + m_thrust, m_maxSpeed);
-  m_velocity = direct2d::CalculateVelocity(speed, m_direction);
 #endif
 
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
