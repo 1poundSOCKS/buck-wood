@@ -6,6 +6,7 @@
 #include "particle_functions.h"
 #include "update_object_visitor.h"
 #include "create_new_objects_visitor.h"
+#include "level_collisions.h"
 
 auto level_container::SetPlayerActive(bool value) -> void
 {
@@ -76,7 +77,7 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 
 auto level_container::DoCollisions() -> void
 {
-  level_collision_handler<level_container> collisionHandler { *this };
+  level_collision_handler collisionHandler { *this };
   
   geometry_containment<default_object> geometryContainmentRunner { collisionHandler };
   geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
