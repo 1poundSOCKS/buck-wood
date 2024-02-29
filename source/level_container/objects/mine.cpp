@@ -6,6 +6,7 @@ mine::mine(POINT_2F position, float thrust, float maxSpeed, type type, POINT_2F 
 {
   m_direction = direct2d::GetAngleBetweenPoints(position, targetPosition);
   m_velocity = direct2d::CalculateVelocity(maxSpeed, m_direction);
+  m_angle = m_direction;
 }
 
 auto mine::Update(float interval, std::optional<POINT_2F> targetPosition) -> void
@@ -22,7 +23,7 @@ auto mine::Update(float interval, std::optional<POINT_2F> targetPosition) -> voi
 #endif
 
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
-  m_spin = direct2d::RotateAngle(m_spin, m_spinRate * interval);
+  // m_spin = direct2d::RotateAngle(m_spin, m_spinRate * interval);
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool

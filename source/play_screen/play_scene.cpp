@@ -48,6 +48,7 @@ auto play_scene::Render() const -> void
 
   auto targettedObject = m_levelContainer->TargettedObject();
 
+#ifdef RENDER_TARGET_HUD
   if( targettedObject )
   {
     renderer::render(line_to_target { *m_levelContainer->PlayerPosition(), targettedObject->Position() });
@@ -56,6 +57,7 @@ auto play_scene::Render() const -> void
     hud_target hudTarget { bounds };
     renderer::render(hudTarget);
   }
+#endif
 
   if( m_renderLevelTitle )
   {

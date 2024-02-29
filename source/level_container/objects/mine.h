@@ -36,7 +36,7 @@ private:
   POINT_2F m_previousPosition;
   VELOCITY_2F m_velocity { 0, 0 };
   float m_direction { 0 };
-  float m_spin { 0 };
+  float m_angle { 0 };
   bool m_destroyed { false };
 
 };
@@ -53,7 +53,7 @@ inline [[nodiscard]] auto mine::PreviousPosition() const -> POINT_2F
 
 inline [[nodiscard]] auto mine::Angle() const -> float
 {
-  return m_spin;
+  return m_angle;
 }
 
 inline [[nodiscard]] auto mine::Type() const -> type

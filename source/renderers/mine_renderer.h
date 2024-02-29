@@ -23,7 +23,7 @@ public:
 
 private:
 
-  geometry_renderer m_rendererOne { screen_render_brush_type_one.CreateBrush(), 6 };
-  geometry_renderer m_rendererTwo { screen_render_brush_type_two.CreateBrush(), 6 };
+  geometry_renderer m_rendererOne { screen_render_brush_type_one.CreateBrush() };
+  geometry_renderer m_rendererTwo { screen_render_brush_type_two.CreateBrush() };
 
 };
