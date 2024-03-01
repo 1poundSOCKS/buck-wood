@@ -75,8 +75,9 @@ inline auto level_target::Destroy() -> void
 auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition, auto&& playerBullets) -> void
 {
   auto bulletCount = std::ranges::count_if(playerBullets, [](const auto& bullet){ return true; });
-  m_destination = !m_destination && playerPosition && bulletCount ? std::optional<POINT_2F>(direct2d::Rotate(m_position, *playerPosition, 10)) : std::nullopt;
-  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, 10 * interval) : m_position;
+  m_destination = !m_destination && playerPosition && bulletCount ? std::optional<POINT_2F>(direct2d::Rotate(m_position, *playerPosition, 20)) : std::nullopt;
+  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, 500 * interval) : m_position;
+  // m_position = m_destination ? *m_destination : m_position;
   m_destination = m_destination && direct2d::AreEqual(m_position, *m_destination) ? std::nullopt : m_destination;
   m_angle = playerPosition ? direct2d::GetAngleBetweenPoints(m_position, *playerPosition) : m_angle;
   m_reloaded = m_reloadTimer.Update(interval);

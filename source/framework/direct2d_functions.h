@@ -174,7 +174,7 @@ namespace direct2d
   {
     auto distance = GetDistanceBetweenPoints(position, rotateAround);
     auto direction = RotateAngle(GetAngleBetweenPoints(rotateAround, position), angle);
-    return CalculatePosition(rotateAround, distance, direction);
+    return CalculatePosition(rotateAround, direction, distance);
   }
 
   inline [[nodiscard]] auto MoveTowards(POINT_2F position, POINT_2F destination, float distance) -> POINT_2F
