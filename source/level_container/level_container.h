@@ -51,6 +51,8 @@ public:
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
 
+  [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
+
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
@@ -176,6 +178,11 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
   return *m_gameScore;
+}
+
+[[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
+{
+  return std::ranges::views::filter(m_movingObjects, unaryFunction);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void

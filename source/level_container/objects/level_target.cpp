@@ -30,13 +30,12 @@ auto level_target::Activate() -> void
   m_activated = true;
 }
 
-auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition) -> void
-{
-  m_angle = playerPosition ? direct2d::GetAngleBetweenPoints(m_position, *playerPosition) : m_angle;
-  m_reloaded = m_reloadTimer.Update(interval);
-}
-
 [[nodiscard]] auto level_target::Reloaded() const -> bool
 {
   return m_reloaded;
+}
+
+auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition) -> void
+{
+  Update(interval, playerPosition, std::ranges::empty_view<player_bullet>());
 }

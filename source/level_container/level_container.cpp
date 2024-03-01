@@ -45,12 +45,12 @@ auto level_container::UpdateObjects(float interval) -> void
 
   for( auto& object : m_staticObjects )
   {
-    std::visit(update_object_visitor { object, interval, m_playerState->m_position }, object->Get());
+    std::visit(update_object_visitor { *this, object, interval }, object->Get());
   }
 
   for( auto& object : m_movingObjects )
   {
-    std::visit(update_object_visitor { object, interval, m_playerState->m_position }, object->Get());
+    std::visit(update_object_visitor { *this, object, interval }, object->Get());
   }
 }
 

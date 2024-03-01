@@ -169,4 +169,21 @@ namespace direct2d
   {
     return ShiftPosition(position, CalculatePosition(distance, angle));
   }
+
+  inline [[nodiscard]] auto Rotate(POINT_2F position, POINT_2F rotateAround, float angle) -> POINT_2F
+  {
+    auto distance = GetDistanceBetweenPoints(position, rotateAround);
+    auto direction = RotateAngle(GetAngleBetweenPoints(rotateAround, position), angle);
+    return CalculatePosition(rotateAround, distance, direction);
+  }
+
+  inline [[nodiscard]] auto MoveTowards(POINT_2F position, POINT_2F destination, float distance) -> POINT_2F
+  {
+    return GetDistanceBetweenPoints(position, destination) > distance ? CalculatePosition(position, GetAngleBetweenPoints(position, destination), distance) : destination;
+  }
+
+  inline [[nodiscard]] auto AreEqual(POINT_2F point1, POINT_2F point2) -> bool
+  {
+    return point1.x == point2.x && point1.y == point2.y;
+  }
 }

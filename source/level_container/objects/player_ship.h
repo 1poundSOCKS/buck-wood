@@ -76,7 +76,7 @@ private:
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
 
-  reload_counter m_playerReloadCounter { 1.0f / 5.0f, 1 };
+  reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
   fire_mode m_fireMode { fire_mode::one };
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
