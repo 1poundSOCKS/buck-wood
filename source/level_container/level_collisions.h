@@ -98,9 +98,9 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, mine& min
 
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, level_target& levelTarget) -> void
 {
-  m_visitor.CreateExplosion(levelTarget.Position());
+  m_visitor.CreateExplosion(playerBullet.Position());
   playerBullet.Destroy();
-  levelTarget.Destroy();
+  levelTarget.ApplyDamage(playerBullet.Damage());
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, mine& mine) -> void

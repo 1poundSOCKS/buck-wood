@@ -55,7 +55,7 @@ public:
   auto CreateParticle(auto&&...args) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
-  auto CreatePlayerBullet(POINT_2F position, VELOCITY_2F velocity) -> void;
+  auto CreatePlayerBullet(auto&&...args) -> void;
 
   auto TargetActivated() -> void;
   auto LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void;
@@ -119,7 +119,7 @@ auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> v
 {
   std::ranges::for_each(positions, [this](const auto& position)
   {
-    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, m_levelParameters.m_mineLaunchInterval);
+    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, m_levelParameters.m_mineLaunchInterval, 10);
   });
 }
 
@@ -198,9 +198,9 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
   m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePlayerBullet(POINT_2F position, VELOCITY_2F velocity) -> void
+inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, position, velocity);
+  CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::TargetActivated() -> void

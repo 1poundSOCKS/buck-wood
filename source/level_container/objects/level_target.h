@@ -8,7 +8,7 @@ class level_target
 
 public:
 
-  level_target(POINT_2F position, float reloadTime);
+  level_target(POINT_2F position, float reloadTime, int hitpoints);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
@@ -25,6 +25,12 @@ public:
   auto SetPlayerPosition(float x, float y) -> void;
   [[nodiscard]] auto Reloaded() const -> bool;
 
+  auto ApplyDamage(int value) -> void
+  {
+    m_hitpoints = std::max(0, m_hitpoints - value);
+    m_destroyed = m_hitpoints == 0;
+  }
+
 private:
 
   float m_reloadTime;
@@ -35,6 +41,7 @@ private:
   bool m_reloaded { false };
   int m_hitPoints { 10 };
   bool m_destroyed { false };
+  int m_hitpoints;
 
 };
 

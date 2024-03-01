@@ -139,7 +139,7 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
     auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle));
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle), 1);
     SetPlayEvent(play_events::event_type::shot, true);
   }
 

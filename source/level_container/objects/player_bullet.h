@@ -7,7 +7,7 @@ class player_bullet
 
 public:
 
-  player_bullet(POINT_2F position, VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }, m_angle { direct2d::CalculateDirection(velocity) }
+  player_bullet(POINT_2F position, VELOCITY_2F velocity, int damage) : m_position { position }, m_velocity { velocity }, m_angle { direct2d::CalculateDirection(velocity) }, m_damage { damage }
   {
   }
 
@@ -41,6 +41,11 @@ public:
     m_destroyed = true;
   }
 
+  [[nodiscard]] auto Damage()
+  {
+    return m_damage;
+  }
+
 private:
 
   POINT_2F m_position;
@@ -48,5 +53,6 @@ private:
   float m_angle;
   bool m_destroyed { false };
   VELOCITY_2F m_velocity;
+  int m_damage;
 
 };

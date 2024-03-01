@@ -3,7 +3,7 @@
 #include "renderers.h"
 #include "shape_generator.h"
 
-level_target::level_target(POINT_2F position, float reloadTime) : m_position { position }, m_reloadTimer { reloadTime }
+level_target::level_target(POINT_2F position, float reloadTime, int hitpoints) : m_position { position }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
 {
 }
 
