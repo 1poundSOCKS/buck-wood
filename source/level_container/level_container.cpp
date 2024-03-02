@@ -134,7 +134,6 @@ auto level_container::CreateNewObjects(level_target& object) -> void
 
 auto level_container::CreateNewObjects(player_ship& object) -> void
 {
-
   if( object.CanShoot() )
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;

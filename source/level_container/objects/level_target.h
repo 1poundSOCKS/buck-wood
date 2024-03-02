@@ -44,6 +44,7 @@ private:
   bool m_destroyed { false };
   int m_hitpoints;
   std::optional<POINT_2F> m_destination;
+  std::uniform_int_distribution<int> m_dist { -10, 10 };
 
 };
 
@@ -75,8 +76,13 @@ inline auto level_target::Destroy() -> void
 auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition, auto&& playerBullets) -> void
 {
   auto bulletCount = std::ranges::count_if(playerBullets, [](const auto& bullet){ return true; });
-  m_destination = !m_destination && playerPosition && bulletCount ? std::optional<POINT_2F>(direct2d::Rotate(m_position, *playerPosition, 20)) : std::nullopt;
-  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, 500 * interval) : m_position;
+  auto speed = bulletCount ? 300: 100;
+
+  auto x = static_cast<float>(m_dist(pseudo_random_generator::get()));
+  auto y = static_cast<float>(m_dist(pseudo_random_generator::get()));
+
+  m_destination = m_destination ? m_destination : std::optional<POINT_2F>({x * 100, y * 100});
+  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, speed * interval) : m_position;
   m_destination = m_destination && direct2d::AreEqual(m_position, *m_destination) ? std::nullopt : m_destination;
   m_angle = playerPosition ? direct2d::GetAngleBetweenPoints(m_position, *playerPosition) : m_angle;
   m_reloaded = m_reloadTimer.Update(interval);

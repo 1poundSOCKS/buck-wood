@@ -23,6 +23,7 @@ public:
 
 private:
 
+  template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
   auto OnCollision(player_bullet& playerBullet, mine& mine) -> void;
   auto OnCollision(player_bullet& playerBullet, level_target& levelTarget) -> void;
   auto OnCollision(player_ship& playerShip, mine& mine) -> void;
@@ -36,40 +37,29 @@ private:
 
 auto level_collision_handler::operator()(default_object& object1, default_object& object2) -> void
 {
-  if( std::holds_alternative<player_bullet>(object1.Get()) && std::holds_alternative<mine>(object2.Get()) )
-  {
-    return OnCollision(std::get<player_bullet>(object1.Get()), std::get<mine>(object2.Get()));
-  }  
-
-  if( std::holds_alternative<player_bullet>(object2.Get()) && std::holds_alternative<mine>(object1.Get()) )
-  {
-    return OnCollision(std::get<player_bullet>(object2.Get()), std::get<mine>(object1.Get()));
-  }  
-
-  if( std::holds_alternative<player_bullet>(object1.Get()) && std::holds_alternative<level_target>(object2.Get()) )
-  {
-    return OnCollision(std::get<player_bullet>(object1.Get()), std::get<level_target>(object2.Get()));
-  }  
-
-  if( std::holds_alternative<player_bullet>(object2.Get()) && std::holds_alternative<level_target>(object1.Get()) )
-  {
-    return OnCollision(std::get<player_bullet>(object2.Get()), std::get<level_target>(object1.Get()));
-  }  
-
-  if( std::holds_alternative<player_ship>(object1.Get()) && std::holds_alternative<mine>(object2.Get()) )
-  {
-    return OnCollision(std::get<player_ship>(object1.Get()), std::get<mine>(object2.Get()));
-  }  
-
-  if( std::holds_alternative<player_ship>(object2.Get()) && std::holds_alternative<mine>(object1.Get()) )
-  {
-    return OnCollision(std::get<player_ship>(object2.Get()), std::get<mine>(object1.Get()));
-  }  
+  OnCollision<player_bullet, mine>(object1, object2);
+  OnCollision<player_bullet, level_target>(object1, object2);
+  OnCollision<player_ship, mine>(object1, object2);
+  // OnCollision<player_ship, level_target>(object1, object2);
 }
 
 auto level_collision_handler::operator()(default_object& object, particle& particle) -> void
 {
   std::visit([this, &particle](auto& object){ OnCollision(object, particle); }, object.Get());
+}
+
+template <typename object_type_1, typename object_type_2>
+auto level_collision_handler::OnCollision(default_object& object1, default_object& object2) -> void
+{
+  if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
+  {
+    return OnCollision(std::get<object_type_1>(object1.Get()), std::get<object_type_2>(object2.Get()));
+  }
+
+  if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
+  {
+    return OnCollision(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
+  }  
 }
 
 auto level_collision_handler::OnCollision(auto& object, particle& particle) -> void
