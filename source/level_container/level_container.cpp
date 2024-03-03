@@ -126,12 +126,13 @@ auto level_container::CreateNewObjects(float interval) -> void
 
 auto level_container::CreateNewObjects(level_target& object) -> void
 {
-  if( !PlayerDied() && object.CanShootAt(*PlayerPosition()) )
+  if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto mineType = m_stage.MineType();
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->m_position);
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
     CreateMine(mineType, object.Position(), velocity);
+    SetPlayEvent(play_events::event_type::shot, true);
   }
 }
 

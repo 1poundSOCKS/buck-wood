@@ -17,11 +17,11 @@ struct update_object_visitor
       return std::holds_alternative<player_bullet>(object->Get());
     });
 
-    m_dynamicObject.Update(m_interval, m_levelContainer.PlayerPosition(), playerBullets);
+    m_dynamicObject.Update(m_interval, m_levelContainer.PlayerState().Position(), playerBullets);
   }
 
   auto operator()(const auto& object)
   {
-    m_dynamicObject.Update(m_interval, m_levelContainer.PlayerPosition());
+    m_dynamicObject.Update(m_interval, m_levelContainer.PlayerState().Position());
   }
 };

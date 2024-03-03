@@ -15,9 +15,7 @@ public:
 
   using static_object_collection = std::list<dynamic_object<default_object>>;
   using moving_object_collection = std::list<dynamic_object<default_object>>;
-
   using particle_collection = std::list<particle>;
-
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
@@ -30,11 +28,7 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Index() const -> int;
-  [[nodiscard]] auto PlayerPosition() const -> std::optional<POINT_2F>;
-  [[nodiscard]] auto PlayerAngle() const -> float;
-  [[nodiscard]] auto PlayerHasThrusterOn() const -> bool;
-  [[nodiscard]] auto PlayerDied() const -> bool;
-  [[nodiscard]] auto PlayerShields() const -> const health_status&;
+  [[nodiscard]] auto PlayerState() const -> const player_state&;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
@@ -109,29 +103,9 @@ inline [[nodiscard]] auto level_container::Index() const -> int
   return m_index;
 }
 
-inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
+inline [[nodiscard]] auto level_container::PlayerState() const -> const player_state&
 {
-  return m_playerState->m_angle;
-}
-
-inline [[nodiscard]] auto level_container::PlayerShields() const -> const health_status&
-{
-  return m_playerState->m_shieldStatus;
-}
-
-inline [[nodiscard]] auto level_container::PlayerPosition() const -> std::optional<POINT_2F>
-{
-  return m_playerState->m_position;
-}
-
-inline [[nodiscard]] auto level_container::PlayerHasThrusterOn() const -> bool
-{
-  return !m_playerState->m_destroyed && m_playerState->m_thrusterOn;
-}
-
-inline [[nodiscard]] auto level_container::PlayerDied() const -> bool
-{
-  return m_playerState->m_destroyed;
+  return *m_playerState;
 }
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
@@ -141,7 +115,7 @@ inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
 {
-  return PlayerDied() || IsComplete();
+  return m_playerState->Destroyed() || IsComplete();
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>

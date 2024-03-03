@@ -10,7 +10,7 @@ class main_play_scene : public play_scene
 public:
 
   main_play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents) : 
-    play_scene(levelContainer, playEvents), m_playerShields { levelContainer->PlayerShields() }
+    play_scene(levelContainer, playEvents), m_playerShields { levelContainer->PlayerState().Shields() }
   {
   }
 

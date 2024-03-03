@@ -1,22 +1,10 @@
 #pragma once
 
 #include "framework.h"
+#include "player_state.h"
 #include "play_event.h"
 #include "reload_timer.h"
-#include "health_status.h"
 #include "reload_counter.h"
-
-struct player_state
-{
-  D2D1_POINT_2F m_position { 0, 0 };
-  D2D1_POINT_2F m_previousPosition { 0, 0 };
-  float m_angle { 0 };
-  VELOCITY_2F m_velocity { 0, 0 };
-  bool m_destroyed { false };
-  bool m_thrusterOn { false };
-  health_status m_shieldStatus { 10 };
-  bool m_active { false };
-};
 
 class player_ship
 {

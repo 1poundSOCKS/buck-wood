@@ -80,7 +80,7 @@ auto play_scene::LevelContainer() const -> std::shared_ptr<level_container>
 
 auto play_scene::PlaySoundEffects() const -> void
 {
-  if( m_levelContainer->PlayerHasThrusterOn() )
+  if( m_levelContainer->PlayerState().ThrusterOn() )
   {
     audio_events::StartPlayerThruster();
   }
