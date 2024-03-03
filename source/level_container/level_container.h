@@ -44,7 +44,7 @@ public:
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
   auto CreateTarget(auto&&...args) -> void;
-  auto CreateMine(POINT_2F position, POINT_2F targetPosition) -> void;
+  auto CreateMine(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
@@ -72,7 +72,6 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  // level_parameters m_levelParameters;
   int m_index;
 
   blank_object m_boundary;
@@ -168,6 +167,11 @@ inline [[nodiscard]] auto level_container::GameScore() const -> const game_score
 auto level_container::CreateTarget(auto&&...args) -> void
 {
   m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateMine(auto&&...args) -> void
+{
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<mine>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
