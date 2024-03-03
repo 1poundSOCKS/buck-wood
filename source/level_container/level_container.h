@@ -33,7 +33,6 @@ public:
   level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddTargets(std::ranges::input_range auto&& positions) -> void;
   auto SetPlayerActive(bool value) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -53,11 +52,12 @@ public:
 
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
-  auto CreateExplosion(D2D1_POINT_2F position) -> void;
+  auto CreateTarget(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
-  auto CreateImpact(D2D1_POINT_2F position) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
+  auto CreateExplosion(D2D1_POINT_2F position) -> void;
+  auto CreateImpact(D2D1_POINT_2F position) -> void;
 
   auto LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
@@ -111,14 +111,6 @@ level_container::level_container(level_parameters levelParameters, std::ranges::
 {
   m_playerState->m_position = playerPosition;
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
-}
-
-auto level_container::AddTargets(std::ranges::input_range auto&& positions) -> void
-{
-  std::ranges::for_each(positions, [this](const auto& position)
-  {
-    m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, position, m_levelParameters.m_mineLaunchInterval, 10);
-  });
 }
 
 inline [[nodiscard]] auto level_container::Index() const -> int
@@ -179,6 +171,11 @@ inline [[nodiscard]] auto level_container::GameScore() const -> const game_score
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
 {
   return std::ranges::views::filter(m_movingObjects, unaryFunction);
+}
+
+auto level_container::CreateTarget(auto&&...args) -> void
+{
+  m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
