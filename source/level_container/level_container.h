@@ -66,8 +66,6 @@ public:
   auto CreateNewObjects(player_ship& object) -> void;
   auto CreateNewObjects(auto& object) -> void;
 
-  static [[nodiscard]] auto ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type;
-
 private:
 
   auto UpdateObjects(float interval) -> void;
@@ -225,15 +223,4 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 
 auto level_container::CreateNewObjects(auto& object) -> void
 {
-}
-
-inline [[nodiscard]] auto level_container::ConvertFireModeToParticleType(player_ship::fire_mode fireMode) -> particle::type
-{
-  switch( fireMode )
-  {
-    case player_ship::fire_mode::two:
-      return particle::type::bullet_two;
-    default:
-      return particle::type::bullet_one;
-  }
 }
