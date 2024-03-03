@@ -44,13 +44,13 @@ public:
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
   auto CreateTarget(auto&&...args) -> void;
+  auto CreateMine(POINT_2F position, POINT_2F targetPosition) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
-  auto LaunchMine(POINT_2F position, POINT_2F targetPosition) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
 
   auto CreateNewObjects(level_target& object) -> void;
