@@ -8,15 +8,6 @@
 #include "level_stage.h"
 #include "game_score.h"
 
-struct level_parameters
-{
-  int m_index;
-  float m_mineThrust;
-  float m_mineMaxSpeed;
-  int m_mineCount;
-  float m_mineLaunchInterval;
-};
-
 class level_container
 {
 
@@ -30,7 +21,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -81,7 +72,8 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  level_parameters m_levelParameters;
+  // level_parameters m_levelParameters;
+  int m_index;
 
   blank_object m_boundary;
   play_events m_playEvents;
@@ -105,8 +97,8 @@ private:
 
 };
 
-level_container::level_container(level_parameters levelParameters, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_levelParameters { levelParameters }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
+level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_index { index }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
   m_playEvents { playEvents }, m_gameScore { gameScore }
 {
   m_playerState->m_position = playerPosition;
@@ -115,7 +107,7 @@ level_container::level_container(level_parameters levelParameters, std::ranges::
 
 inline [[nodiscard]] auto level_container::Index() const -> int
 {
-  return m_levelParameters.m_index;
+  return m_index;
 }
 
 inline [[nodiscard]] auto level_container::PlayerAngle() const -> float
