@@ -7,10 +7,9 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen() : m_gameScore { std::make_shared<game_score>() }
+play_screen::play_screen() : m_levelContainer { LoadNextLevel(nullptr) }, m_gameScore { std::make_shared<game_score>() }
 {
   m_menuController.OpenRoot();
-  LoadNextLevel();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -45,7 +44,8 @@ auto play_screen::Update(int64_t ticks) -> bool
   else
   {
     m_sceneController.UpdateScene(ticks);
-    return m_sceneController.Complete() && !LoadNextLevel() ? false : true;
+    m_levelContainer = m_sceneController.Complete() ? LoadNextLevel(m_levelContainer) : m_levelContainer;
+    return m_levelContainer ? true : false;
   }
 }
 
@@ -78,9 +78,9 @@ auto play_screen::RenderDiagnostics() -> void
   diagnostics::clear();
 }
 
-auto play_screen::LoadNextLevel() -> bool
+auto play_screen::LoadNextLevel(std::shared_ptr<level_container> currentLevelContainer) -> std::shared_ptr<level_container>
 {
-  if( m_gameLevelDataLoader.NextLevel() )
+  if( !(currentLevelContainer && currentLevelContainer->PlayerState().Destroyed()) && m_gameLevelDataLoader.NextLevel() )
   {
     std::shared_ptr<level_container> levelContainer = m_gameLevelDataLoader.LoadLevel(m_playEvents, m_gameScore);
 
@@ -90,11 +90,11 @@ auto play_screen::LoadNextLevel() -> bool
     m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playEvents);
     m_sceneController.Begin();
 
-    return true;
+    return levelContainer;
   }
   else
   {
-    return false;
+    return nullptr;
   }
 }
 
