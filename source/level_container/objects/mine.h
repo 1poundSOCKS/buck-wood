@@ -9,7 +9,7 @@ public:
 
   enum type { one, two };
 
-  mine(POINT_2F position, float thrust, float maxSpeed, type type, POINT_2F targetPosition);
+  mine(type type, POINT_2F position, VELOCITY_2F velocity);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 0.5f, 0.5f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -30,12 +30,8 @@ private:
 
   type m_type;
   POINT_2F m_position;
-  float m_thrust;
-  float m_maxSpeed;
-
   POINT_2F m_previousPosition;
   VELOCITY_2F m_velocity { 0, 0 };
-  float m_direction { 0 };
   float m_angle { 0 };
   bool m_destroyed { false };
 
