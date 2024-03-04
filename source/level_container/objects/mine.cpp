@@ -6,7 +6,7 @@ mine::mine(type type, POINT_2F position, VELOCITY_2F velocity) :
 {
 }
 
-auto mine::Update(float interval, std::optional<POINT_2F> targetPosition) -> void
+auto mine::Update(float interval) -> void
 {
   m_previousPosition = m_position;
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);

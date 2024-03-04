@@ -85,28 +85,28 @@ struct destroyed_visitor
   }
 };
 
-struct update_visitor
-{
-  float m_interval;
-  std::optional<POINT_2F> m_playerPosition;
+// struct update_visitor
+// {
+//   float m_interval;
+//   std::optional<POINT_2F> m_playerPosition;
 
-  auto operator()(level_target& object)
-  {
-    return object.Update(m_interval, m_playerPosition);
-  }
-  auto operator()(player_ship& object)
-  {
-    return object.Update(m_interval);
-  }
-  auto operator()(mine& object)
-  {
-    return object.Update(m_interval, m_playerPosition);
-  }
-  auto operator()(auto& object)
-  {
-    return object.Update(m_interval);
-  }
-};
+//   auto operator()(level_target& object)
+//   {
+//     return object.Update(m_interval, m_playerPosition);
+//   }
+//   auto operator()(player_ship& object)
+//   {
+//     return object.Update(m_interval);
+//   }
+//   auto operator()(mine& object)
+//   {
+//     return object.Update(m_interval, m_playerPosition);
+//   }
+//   auto operator()(auto& object)
+//   {
+//     return object.Update(m_interval);
+//   }
+// };
 
 struct destroy_visitor
 {
@@ -162,7 +162,6 @@ public:
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Update(float interval, std::optional<POINT_2F> playerPosition, auto&&...args) -> void;
   auto Destroy() -> void;
 
 private:
@@ -191,12 +190,12 @@ inline [[nodiscard]] auto default_object::Destroyed() const -> bool
   return std::visit(destroyed_visitor{}, m_object);
 }
 
-auto default_object::Update(float interval, std::optional<POINT_2F> playerPosition, auto&&...args) -> void
-{
-  return std::holds_alternative<level_target>(m_object) ?
-    std::get<level_target>(m_object).Update(interval, playerPosition, std::forward<decltype(args)>(args)...) :
-    std::visit(update_visitor { interval, playerPosition }, m_object);
-}
+// auto default_object::Update(float interval, std::optional<POINT_2F> playerPosition, auto&&...args) -> void
+// {
+//   return std::holds_alternative<level_target>(m_object) ?
+//     std::get<level_target>(m_object).Update(interval, playerPosition, std::forward<decltype(args)>(args)...) :
+//     std::visit(update_visitor { interval, playerPosition }, m_object);
+// }
 
 inline auto default_object::Destroy() -> void
 {

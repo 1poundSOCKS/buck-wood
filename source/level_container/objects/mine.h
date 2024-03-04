@@ -16,7 +16,7 @@ public:
   [[nodiscard]] auto Position() const -> POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Update(float interval, std::optional<POINT_2F> playerPosition) -> void;
+  auto Update(float interval) -> void;
   auto Destroy() -> void;
 
   [[nodiscard]] auto Type() const -> type;
