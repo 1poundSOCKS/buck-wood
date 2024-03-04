@@ -84,7 +84,6 @@ private:
   impact_collection m_impacts;
 
   std::optional<targetted_object> m_targettedObject;
-  // std::optional<D2D1_POINT_2F> m_targetPosition;
 
   std::shared_ptr<game_score> m_gameScore;
 
