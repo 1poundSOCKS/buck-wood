@@ -84,9 +84,8 @@ private:
   impact_collection m_impacts;
 
   std::optional<targetted_object> m_targettedObject;
-  std::optional<D2D1_POINT_2F> m_targetPosition;
+  // std::optional<D2D1_POINT_2F> m_targetPosition;
 
-  level_stage m_stage;
   std::shared_ptr<game_score> m_gameScore;
 
   int m_targetsRemaining { 0 };
@@ -97,6 +96,11 @@ level_container::level_container(int index, std::ranges::input_range auto&& poin
   m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
+}
+
+inline auto level_container::SetPlayerActive(bool value) -> void
+{
+  m_playerActive = value;
 }
 
 inline [[nodiscard]] auto level_container::Index() const -> int
@@ -196,7 +200,7 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
-  return direct2d::GetDistanceBetweenPoints(*m_targetPosition, object->Position());
+  return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
 }
 
 auto level_container::CreateNewObjects(auto& object) -> void

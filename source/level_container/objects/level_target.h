@@ -2,6 +2,7 @@
 
 #include "play_event.h"
 #include "reload_timer.h"
+#include "mine.h"
 
 class level_target
 {
@@ -32,6 +33,12 @@ public:
     m_destroyed = m_hitpoints == 0;
   }
 
+  [[nodiscard]] auto MineType() -> mine::type
+  {
+    int mineTypeValue = m_mineTypeDist(pseudo_random_generator::get());
+    return mineTypeValue > 5 ? mine::type::two : mine::type::one;
+  }
+
 private:
 
   float m_reloadTime;
@@ -44,7 +51,8 @@ private:
   bool m_destroyed { false };
   int m_hitpoints;
   std::optional<POINT_2F> m_destination;
-  std::uniform_int_distribution<int> m_dist { -10, 10 };
+  std::uniform_int_distribution<int> m_positionDist { -10, 10 };
+  std::uniform_int_distribution<int> m_mineTypeDist { 1, 10 };
 
 };
 
@@ -78,8 +86,8 @@ auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition
   auto bulletCount = std::ranges::count_if(playerBullets, [](const auto& bullet){ return true; });
   auto speed = bulletCount ? 300: 100;
 
-  auto x = static_cast<float>(m_dist(pseudo_random_generator::get()));
-  auto y = static_cast<float>(m_dist(pseudo_random_generator::get()));
+  auto x = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
+  auto y = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
 
   m_destination = m_destination ? m_destination : std::optional<POINT_2F>({x * 100, y * 100});
   m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, speed * interval) : m_position;

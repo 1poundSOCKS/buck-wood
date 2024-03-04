@@ -9,11 +9,6 @@
 #include "save_player_state_visitor.h"
 #include "level_collisions.h"
 
-auto level_container::SetPlayerActive(bool value) -> void
-{
-  m_playerActive = value;
-}
-
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
@@ -35,7 +30,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   RemoveDestroyedObjects();
 
-  m_targettedObject = GetTargettedObject();
+  m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
 
   CreateNewObjects(interval);
 
@@ -139,7 +134,7 @@ auto level_container::CreateNewObjects(level_target& object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
-    auto mineType = m_stage.MineType();
+    auto mineType = object.MineType();
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
     CreateMine(mineType, object.Position(), velocity);
@@ -168,33 +163,24 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
-  m_targetPosition = m_playerState.Destroyed() ? std::nullopt : std::optional<POINT_2F>(m_playerState.Position());
+  auto targetAngle = m_playerState.Angle();
 
-  if( m_targetPosition )
+  constexpr auto angleSpan = 20.0f;
+
+  auto mines = std::ranges::views::filter(m_movingObjects, [](const auto& object)
   {
-    auto targetAngle = m_playerState.Angle();
+    return object->HoldsAlternative<mine>();
+  });
 
-    constexpr auto angleSpan = 20.0f;
-
-    auto mines = std::ranges::views::filter(m_movingObjects, [](const auto& object)
-    {
-      return object->HoldsAlternative<mine>();
-    });
-
-    dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(mines), std::end(mines), 
-    static_cast<dynamic_object<default_object>*>(nullptr), 
-    [this, targetAngle](auto* nearest, auto& next) -> dynamic_object<default_object>*
-    {
-      auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
-      auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
-      if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
-      else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
-    });
-
-    return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
-  }
-  else
+  dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(mines), std::end(mines), 
+  static_cast<dynamic_object<default_object>*>(nullptr), 
+  [this, targetAngle](auto* nearest, auto& next) -> dynamic_object<default_object>*
   {
-    return std::nullopt;
-  }
+    auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
+    auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
+    if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
+    else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
+  });
+
+  return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
 }
