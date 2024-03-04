@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dynamic_object.h"
 #include "level_container.h"
 
 struct update_object_visitor

@@ -6,6 +6,7 @@
 #include "particle_functions.h"
 #include "update_object_visitor.h"
 #include "create_new_objects_visitor.h"
+#include "save_player_state_visitor.h"
 #include "level_collisions.h"
 
 auto level_container::SetPlayerActive(bool value) -> void
@@ -25,6 +26,12 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto collisionsEnd = performance_counter::QueryValue();
 
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
+
+  save_player_state_visitor savePlayerStateVisitor { *this };
+  for( const auto& object : m_movingObjects )
+  {
+    std::visit(savePlayerStateVisitor, object->Get());
+  }
 
   RemoveDestroyedObjects();
 
