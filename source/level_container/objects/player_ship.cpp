@@ -1,36 +1,36 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(std::shared_ptr<player_state> state) : m_state { state }
+player_ship::player_ship(POINT_2F position) : m_position { position }
 {
 }
 
 auto player_ship::Update(float interval, bool enableControl) -> void
 {
-  m_state->m_destroyed ? UpdateWhenDestoyed(interval, enableControl) : UpdateWhenActive(interval, enableControl);
+  m_destroyed ? UpdateWhenDestoyed(interval, enableControl) : UpdateWhenActive(interval, enableControl);
 }
 
 auto player_ship::Update(float interval) -> void
 {
-  Update(interval, m_state->m_active);
+  Update(interval, m_active);
 }
 
 auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
 {
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  m_destination = enableControl && leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_state->m_position, *leftThumbstickPosition)) : std::nullopt;
+  m_destination = enableControl && leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_position, *leftThumbstickPosition)) : std::nullopt;
 
   auto thrustControlValue = enableControl ? gamepad_reader::left_trigger() : 0;
   auto shieldControlOn = enableControl ? gamepad_reader::button_down(XINPUT_GAMEPAD_A) : false;
   auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
   auto switchFireMode = enableControl ? gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) : false;
 
-  m_state->m_previousPosition = m_state->m_position;
-  m_state->m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_state->m_angle;
-  m_state->m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_state->m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_state->m_angle)) : m_state->m_velocity;
-  m_state->m_position = GetUpdatedPosition(Position(), m_state->m_velocity, interval);
+  m_previousPosition = m_position;
+  m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_angle;
+  m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
+  m_position = GetUpdatedPosition(m_position, m_velocity, interval);
 
-  m_state->m_thrusterOn = thrustControlValue > 0 ? true : false;
+  m_thrusterOn = thrustControlValue > 0 ? true : false;
   m_shieldsUp = shieldControlOn;
   m_triggerDown = triggerControlOn;
   m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;

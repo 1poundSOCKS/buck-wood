@@ -28,7 +28,8 @@ public:
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Index() const -> int;
-  [[nodiscard]] auto PlayerState() const -> const player_state&;
+  [[nodiscard]] auto PlayerState() const -> const player_ship&;
+  [[nodiscard]] auto PlayerActive() const -> bool;
   [[nodiscard]] auto IsComplete() const -> bool;
   [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
@@ -45,6 +46,7 @@ public:
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
+  auto SavePlayerState(player_ship playerShip) -> void;
   auto SetPlayEvent(auto&&...args) -> void;
 
   auto CreateNewObjects(level_target& object) -> void;
@@ -72,7 +74,8 @@ private:
   play_events m_playEvents;
   particle_collection m_particles;
 
-  std::shared_ptr<player_state> m_playerState;
+  player_ship m_playerState;
+  bool m_playerActive { false };
 
   static_object_collection m_staticObjects;
   moving_object_collection m_movingObjects;
@@ -91,11 +94,9 @@ private:
 };
 
 level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_index { index }, m_boundary { points }, m_playerState { std::make_shared<player_state>() }, 
-  m_playEvents { playEvents }, m_gameScore { gameScore }
+  m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
-  m_playerState->m_position = playerPosition;
-  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, m_playerState);
+  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
 }
 
 inline [[nodiscard]] auto level_container::Index() const -> int
@@ -103,9 +104,14 @@ inline [[nodiscard]] auto level_container::Index() const -> int
   return m_index;
 }
 
-inline [[nodiscard]] auto level_container::PlayerState() const -> const player_state&
+inline [[nodiscard]] auto level_container::PlayerState() const -> const player_ship&
 {
-  return *m_playerState;
+  return m_playerState;
+}
+
+inline [[nodiscard]] auto level_container::PlayerActive() const -> bool
+{
+  return m_playerActive;
 }
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool
@@ -115,7 +121,7 @@ inline [[nodiscard]] auto level_container::IsComplete() const -> bool
 
 inline [[nodiscard]] auto level_container::HasFinished() const -> bool
 {
-  return m_playerState->Destroyed() || IsComplete();
+  return m_playerState.Destroyed() || IsComplete();
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
@@ -171,6 +177,11 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::SavePlayerState(player_ship playerState) -> void
+{
+  m_playerState = playerState;
 }
 
 auto level_container::SetPlayEvent(auto&&...args) -> void

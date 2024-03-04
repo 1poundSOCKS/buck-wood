@@ -190,13 +190,6 @@ inline [[nodiscard]] auto default_object::Destroyed() const -> bool
   return std::visit(destroyed_visitor{}, m_object);
 }
 
-// auto default_object::Update(float interval, std::optional<POINT_2F> playerPosition, auto&&...args) -> void
-// {
-//   return std::holds_alternative<level_target>(m_object) ?
-//     std::get<level_target>(m_object).Update(interval, playerPosition, std::forward<decltype(args)>(args)...) :
-//     std::visit(update_visitor { interval, playerPosition }, m_object);
-// }
-
 inline auto default_object::Destroy() -> void
 {
   return std::visit(destroy_visitor {}, m_object);

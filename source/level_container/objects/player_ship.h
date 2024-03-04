@@ -1,10 +1,10 @@
 #pragma once
 
 #include "framework.h"
-#include "player_state.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "reload_counter.h"
+#include "health_status.h"
 
 class player_ship
 {
@@ -16,7 +16,7 @@ public:
 
 public:
 
-  player_ship(std::shared_ptr<player_state> state);
+  player_ship(POINT_2F position);
 
   [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.5f, 1.5f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -58,7 +58,14 @@ private:
 
 private:
 
-  std::shared_ptr<player_state> m_state;
+  D2D1_POINT_2F m_position { 0, 0 };
+  D2D1_POINT_2F m_previousPosition { 0, 0 };
+  float m_angle { 0 };
+  VELOCITY_2F m_velocity { 0, 0 };
+  bool m_destroyed { false };
+  bool m_thrusterOn { false };
+  health_status m_shieldStatus { 10 };
+  bool m_active { false };
   
   float m_thrust { 0 };
   bool m_triggerDown { false };
@@ -75,37 +82,37 @@ private:
 
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
 {
-  return m_state->m_position;
+  return m_position;
 }
 
 inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
 {
-  return m_state->m_previousPosition;
+  return m_previousPosition;
 }
 
 inline [[nodiscard]] auto player_ship::Angle() const -> float
 {
-  return m_state->m_angle;
+  return m_angle;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
 {
-  return m_state->m_velocity;
+  return m_velocity;
 }
 
 inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
 {
-  return m_state->m_destroyed;
+  return m_destroyed;
 }
 
 inline auto player_ship::SetAngle(float angle) -> void
 {
-  m_state->m_angle = angle;
+  m_angle = angle;
 }
 
 inline auto player_ship::Rotate(float angle) -> void
 {
-  m_state->m_angle = direct2d::RotateAngle(m_state->m_angle, angle);
+  m_angle = direct2d::RotateAngle(m_angle, angle);
 }
 
 inline auto player_ship::SetThrust(float value) -> void
@@ -115,26 +122,26 @@ inline auto player_ship::SetThrust(float value) -> void
 
 inline auto player_ship::ApplyDamage(int value) -> void
 {
-  if( !m_shieldsUp && m_state->m_shieldStatus.ApplyDamage(value) == 0 )
+  if( !m_shieldsUp && m_shieldStatus.ApplyDamage(value) == 0 )
   {
-    m_state->m_destroyed = true;
+    m_destroyed = true;
   }
 }
 
 inline auto player_ship::ApplyFatalDamage() -> void
 {
-  m_state->m_shieldStatus.ApplyFatalDamage();
-  m_state->m_destroyed = true;
+  m_shieldStatus.ApplyFatalDamage();
+  m_destroyed = true;
 }
 
 inline auto player_ship::Destroy() -> void
 {
-  m_state->m_destroyed = true;
+  m_destroyed = true;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
-  return m_state->m_thrusterOn;
+  return m_thrusterOn;
 }
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
@@ -144,7 +151,7 @@ inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
 
 inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_status&
 {
-  return m_state->m_shieldStatus;
+  return m_shieldStatus;
 }
 
 inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
@@ -159,7 +166,7 @@ inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
-  return m_state->m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
+  return m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode
