@@ -138,7 +138,7 @@ auto level_container::CreateNewObjects(level_target& object) -> void
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
     CreateMine(mineType, object.Position(), velocity);
-    SetPlayEvent(play_events::event_type::shot, true);
+    m_playState->Events().SetEvent(play_events::event_type::shot, true);
   }
 }
 
@@ -149,7 +149,7 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
     auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
     CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle), 1);
-    SetPlayEvent(play_events::event_type::shot, true);
+    m_playState->Events().SetEvent(play_events::event_type::shot, true);
   }
 
   if( object.EmitThrustParticle() )

@@ -46,7 +46,6 @@ public:
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
-  auto SetPlayEvent(auto&&...args) -> void;
 
   auto CreateNewObjects(level_target& object) -> void;
   auto CreateNewObjects(player_ship& object) -> void;
@@ -183,11 +182,6 @@ inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
 {
   m_playerState = playerState;
-}
-
-auto level_container::SetPlayEvent(auto&&...args) -> void
-{
-  m_playState->Events().SetEvent(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
