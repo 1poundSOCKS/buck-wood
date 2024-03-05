@@ -18,7 +18,9 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState);
+  enum level_type { vertical_scroller, arena };
+
+  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -66,6 +68,7 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
+  level_type m_type;
   int m_index;
 
   blank_object m_boundary;
@@ -88,8 +91,8 @@ private:
 
 };
 
-level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState) : 
-  m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playState { playState }
+level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState) : 
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playState { playState }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
 }
