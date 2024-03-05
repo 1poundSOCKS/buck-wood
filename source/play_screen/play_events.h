@@ -12,46 +12,46 @@ public:
     switch( eventType )
     {
       case event_type::shot:
-        m_data->m_shot = value;
+        m_shot = value;
         break;
       case event_type::explosion:
-        m_data->m_explosion = value;
+        m_explosion = value;
         break;
       case event_type::target_activated:
-        m_data->m_targetActivated = value;
+        m_targetActivated = value;
         break;
     }
   }
 
-  [[nodiscard]] auto operator[](event_type eventType) const -> bool
+  [[nodiscard]] auto Get(event_type eventType) const -> bool
   {
     switch( eventType )
     {
       case event_type::shot:
-        return m_data->m_shot;
+        return m_shot;
       case event_type::explosion:
-        return m_data->m_explosion;
+        return m_explosion;
       case event_type::target_activated:
-        return m_data->m_targetActivated;
+        return m_targetActivated;
       default:
         return false;
     }
   }
 
+  [[nodiscard]] auto operator[](event_type eventType) const -> bool
+  {
+    return Get(eventType);
+  }
+
   auto Reset() -> void
   {
-    m_data->m_shot = m_data->m_explosion = m_data->m_targetActivated = false;
+    m_shot = m_explosion = m_targetActivated = false;
   }
 
 private:
 
-  struct data
-  {
-    bool m_shot { false };
-    bool m_explosion { false };
-    bool m_targetActivated { false };
-  };
-
-  std::shared_ptr<data> m_data { std::make_shared<data>() };
+  bool m_shot { false };
+  bool m_explosion { false };
+  bool m_targetActivated { false };
 
 };

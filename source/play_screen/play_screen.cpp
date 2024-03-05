@@ -7,7 +7,8 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen() : m_levelContainer { LoadNextLevel(nullptr) }, m_gameScore { std::make_shared<game_score>() }
+play_screen::play_screen() : 
+  m_levelContainer { LoadNextLevel(nullptr) }, m_playEvents { std::make_shared<play_events>() }, m_gameScore { std::make_shared<game_score>() }
 {
   m_menuController.OpenRoot();
 }

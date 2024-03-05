@@ -25,7 +25,7 @@ private:
 
   scene_controller m_sceneController;
   play_menu_controller m_menuController;
-  play_events m_playEvents;
+  std::shared_ptr<play_events> m_playEvents;
   std::shared_ptr<game_score> m_gameScore;
   game_level_data_loader m_gameLevelDataLoader;
   std::shared_ptr<level_container> m_levelContainer;

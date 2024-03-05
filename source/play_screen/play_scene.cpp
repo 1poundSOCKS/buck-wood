@@ -6,7 +6,7 @@
 #include "audio_events.h"
 #include "line_to_target.h"
 
-play_scene::play_scene(std::shared_ptr<level_container> levelContainer, play_events playEvents) : 
+play_scene::play_scene(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_events> playEvents) : 
   m_levelContainer { levelContainer }, m_playEvents { playEvents }, m_levelTitle { levelContainer->Index() }
 {
 }
@@ -34,7 +34,7 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-  m_playEvents.Reset();
+  m_playEvents->Reset();
   m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_levelContainer->HasFinished() ? false : true;
 }
@@ -89,17 +89,17 @@ auto play_scene::PlaySoundEffects() const -> void
     audio_events::StopPlayerThruster();
   }
 
-  if( m_playEvents[play_events::event_type::shot] )
+  if( m_playEvents->Get(play_events::event_type::shot) )
   {
     audio_events::PlayerShot();
   }
 
-  if( m_playEvents[play_events::event_type::target_activated] )
+  if( m_playEvents->Get(play_events::event_type::target_activated) )
   {
     audio_events::TargetActivated();
   }
 
-  if( m_playEvents[play_events::event_type::explosion] )
+  if( m_playEvents->Get(play_events::event_type::explosion) )
   {
     audio_events::Explosion();
   }

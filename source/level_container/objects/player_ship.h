@@ -141,12 +141,12 @@ inline auto player_ship::Destroy() -> void
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
-  return m_thrusterOn;
+  return !m_destroyed && m_thrusterOn;
 }
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
 {
-  return m_triggerDown;
+  return !m_destroyed && m_triggerDown;
 }
 
 inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_status&
@@ -156,17 +156,17 @@ inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_stat
 
 inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 {
-  return m_shieldsUp;
+  return !m_destroyed && m_shieldsUp;
 }
 
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
-  return m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1) == 1;
+  return !m_destroyed && m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
-  return m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
+  return !m_destroyed && m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode

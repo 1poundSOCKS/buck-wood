@@ -19,7 +19,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -71,7 +71,6 @@ private:
   int m_index;
 
   blank_object m_boundary;
-  play_events m_playEvents;
   particle_collection m_particles;
 
   player_ship m_playerState;
@@ -85,13 +84,14 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
+  std::shared_ptr<play_events> m_playEvents;
   std::shared_ptr<game_score> m_gameScore;
 
   int m_targetsRemaining { 0 };
 
 };
 
-level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, play_events playEvents, std::shared_ptr<game_score> gameScore) : 
+level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : 
   m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
@@ -189,7 +189,7 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
 
 auto level_container::SetPlayEvent(auto&&...args) -> void
 {
-  m_playEvents.SetEvent(std::forward<decltype(args)>(args)...);
+  m_playEvents->SetEvent(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
