@@ -17,7 +17,7 @@ private:
   auto Update(int64_t ticks) -> bool;
   auto Render() -> void;
   auto RenderDiagnostics() -> void;
-  auto LoadNextLevel(std::shared_ptr<level_container> currentLevelContainer) -> std::shared_ptr<level_container>;
+  auto LoadNextLevel() -> std::shared_ptr<level_container>;
   [[nodiscard]] auto PausePressed() -> bool;
 
 private:
