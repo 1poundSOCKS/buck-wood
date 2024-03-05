@@ -3,8 +3,7 @@
 #include "framework.h"
 #include "scene_controller.h"
 #include "play_scene.h"
-#include "play_events.h"
-#include "game_score.h"
+#include "play_state.h"
 
 class play_screen
 {
@@ -25,8 +24,7 @@ private:
 
   scene_controller m_sceneController;
   play_menu_controller m_menuController;
-  std::shared_ptr<play_events> m_playEvents;
-  std::shared_ptr<game_score> m_gameScore;
+  std::shared_ptr<play_state> m_playState;
   game_level_data_loader m_gameLevelDataLoader;
   std::shared_ptr<level_container> m_levelContainer;
   bool m_playerDestroyed { false };

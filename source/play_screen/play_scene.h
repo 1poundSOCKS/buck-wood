@@ -9,15 +9,14 @@
 #include "play_camera_transform.h"
 #include "level_radar.h"
 #include "level_title.h"
-#include "play_events.h"
-#include "game_score.h"
+#include "play_state.h"
 
 class play_scene : public base_scene
 {
 
 public:
 
-  play_scene(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_events> playEvents);
+  play_scene(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_state> playState);
   virtual ~play_scene();
 
   auto Begin() -> void override;
@@ -46,7 +45,7 @@ private:
 protected:
 
   std::shared_ptr<level_container> m_levelContainer;
-  std::shared_ptr<play_events> m_playEvents;
+  std::shared_ptr<play_state> m_playState;
   level_title m_levelTitle;
   bool m_renderLevelTitle { false };
   float m_cameraZoom { 1 };

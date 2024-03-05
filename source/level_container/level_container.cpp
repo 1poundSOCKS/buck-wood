@@ -107,7 +107,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   for( const auto& position : m_explosions )
   {
     std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
-    m_playEvents->SetEvent(play_events::event_type::explosion, true);
+    m_playState->Events().SetEvent(play_events::event_type::explosion, true);
   }
 
   m_explosions.clear();

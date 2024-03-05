@@ -3,10 +3,9 @@
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_explosion.h"
-#include "play_events.h"
+#include "play_state.h"
 #include "targetted_object.h"
 #include "level_stage.h"
-#include "game_score.h"
 
 class level_container
 {
@@ -19,7 +18,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -84,15 +83,14 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
-  std::shared_ptr<play_events> m_playEvents;
-  std::shared_ptr<game_score> m_gameScore;
+  std::shared_ptr<play_state> m_playState;
 
   int m_targetsRemaining { 0 };
 
 };
 
-level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : 
-  m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }
+level_container::level_container(int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState) : 
+  m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playState { playState }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
 }
@@ -139,7 +137,7 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
-  return *m_gameScore;
+  return m_playState->Score();
 }
 
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
@@ -189,7 +187,7 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
 
 auto level_container::SetPlayEvent(auto&&...args) -> void
 {
-  m_playEvents->SetEvent(std::forward<decltype(args)>(args)...);
+  m_playState->Events().SetEvent(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
