@@ -45,8 +45,9 @@ auto play_screen::Update(int64_t ticks) -> bool
   else
   {
     m_sceneController.UpdateScene(ticks);
-    m_levelContainer = m_sceneController.Complete() ? LoadNextLevel() : m_levelContainer;
-    return m_levelContainer && !m_sceneController.Complete() && !m_levelContainer->PlayerState().Destroyed() ? true : false;
+    m_levelContainer = m_sceneController.Complete() && !m_levelContainer->PlayerState().Destroyed() ? LoadNextLevel() : m_levelContainer;
+    m_levelContainer = m_sceneController.Complete() && m_levelContainer->PlayerState().Destroyed() ? nullptr : m_levelContainer;
+    return m_levelContainer ? true : false;
   }
 }
 
