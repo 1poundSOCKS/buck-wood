@@ -71,7 +71,11 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
 {
   auto renderStart = performance_counter::QueryValue();
 
-  renderer::render(m_boundary);
+  if( m_boundary.Geometry() )
+  {
+    renderer::render(m_boundary);
+  }
+
   renderer::render_all(m_staticObjects);
   renderer::render_all(m_movingObjects);
   renderer::render_all(m_particles);
@@ -85,11 +89,14 @@ auto level_container::DoCollisions() -> void
 {
   level_collision_handler collisionHandler { *this };
   
-  geometry_containment<default_object> geometryContainmentRunner { collisionHandler };
-  geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
+  if( m_boundary.Geometry() )
+  {
+    geometry_containment<default_object> geometryContainmentRunner { collisionHandler };
+    geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
 
-  particle_containment<particle> particleContainmentRunner { collisionHandler };
-  particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
+    particle_containment<particle> particleContainmentRunner { collisionHandler };
+    particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
+  }
 
   geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
@@ -148,7 +155,7 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
   {
     auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
     auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1000, bulletAngle), 1);
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, bulletAngle), 1);
     m_playState->Events().SetEvent(play_events::event_type::shot, true);
   }
 

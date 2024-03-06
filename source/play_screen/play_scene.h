@@ -34,6 +34,7 @@ protected:
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;
+  auto CameraPosition() const -> camera_sequence::camera_position;
   [[nodiscard]] auto GetPlayCameraZoom() const -> float;
   static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
 

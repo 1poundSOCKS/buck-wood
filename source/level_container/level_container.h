@@ -28,6 +28,7 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto Render(D2D1_RECT_F viewRect) const -> void;
 
+  [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto Index() const -> int;
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
   [[nodiscard]] auto PlayerActive() const -> bool;
@@ -102,6 +103,11 @@ inline auto level_container::SetPlayerActive(bool value) -> void
   m_playerActive = value;
 }
 
+inline [[nodiscard]] auto level_container::Type() const -> level_type
+{
+  return m_type;
+}
+
 inline [[nodiscard]] auto level_container::Index() const -> int
 {
   return m_index;
@@ -134,7 +140,7 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optio
 
 inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 {
-  return direct2d::GetGeometrySize(m_boundary);
+  return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
 }
 
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
