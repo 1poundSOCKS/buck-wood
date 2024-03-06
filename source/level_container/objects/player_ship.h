@@ -18,7 +18,7 @@ public:
 
   player_ship(POINT_2F position);
 
-  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.5f, 1.5f }; };
+  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.8f, 1.8f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
@@ -32,7 +32,8 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
   auto Destroy() -> void;
-  auto SetPlayerActive(bool value) -> void;
+  auto SetActive(bool value) -> void;
+  auto SetInvulnerable(bool value) -> void;
 
   [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
@@ -66,6 +67,7 @@ private:
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
   bool m_active { false };
+  bool m_invulnerable { false };
   
   float m_thrust { 0 };
   bool m_triggerDown { false };
@@ -136,7 +138,17 @@ inline auto player_ship::ApplyFatalDamage() -> void
 
 inline auto player_ship::Destroy() -> void
 {
-  m_destroyed = true;
+  m_destroyed = m_invulnerable ? false : true;
+}
+
+inline auto player_ship::SetActive(bool value) -> void
+{
+  m_active = value;
+}
+
+inline auto player_ship::SetInvulnerable(bool value) -> void
+{
+  m_invulnerable = value;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool

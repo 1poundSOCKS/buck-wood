@@ -114,7 +114,7 @@ inline [[nodiscard]] auto level_container::PlayerState() const -> const player_s
 
 inline [[nodiscard]] auto level_container::PlayerActive() const -> bool
 {
-  return m_playerActive;
+  return m_playerActive && !IsComplete();
 }
 
 inline [[nodiscard]] auto level_container::IsComplete() const -> bool

@@ -7,7 +7,7 @@ player_ship::player_ship(POINT_2F position) : m_position { position }
 
 auto player_ship::Update(float interval, bool enableControl) -> void
 {
-  m_destroyed ? UpdateWhenDestoyed(interval, enableControl) : UpdateWhenActive(interval, enableControl);
+  enableControl && !m_destroyed ? UpdateWhenActive(interval, enableControl) : UpdateWhenDestoyed(interval, enableControl);
 }
 
 auto player_ship::Update(float interval) -> void
@@ -40,6 +40,9 @@ auto player_ship::UpdateWhenActive(float interval, bool enableControl) -> void
 
 auto player_ship::UpdateWhenDestoyed(float interval, bool enableControl) -> void
 {
+  constexpr float rotationSpeed = 480.0f;
+  auto rotationAmount = rotationSpeed * interval;
+  m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
 }
 
 [[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float

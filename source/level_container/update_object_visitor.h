@@ -9,6 +9,7 @@ struct update_object_visitor
 
   auto operator()(player_ship& object)
   {
+    object.SetInvulnerable(m_levelContainer.IsComplete());
     object.Update(m_interval, m_levelContainer.PlayerActive());
     m_levelContainer.SavePlayerState(object);
   }
