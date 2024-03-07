@@ -85,29 +85,6 @@ struct destroyed_visitor
   }
 };
 
-// struct update_visitor
-// {
-//   float m_interval;
-//   std::optional<POINT_2F> m_playerPosition;
-
-//   auto operator()(level_target& object)
-//   {
-//     return object.Update(m_interval, m_playerPosition);
-//   }
-//   auto operator()(player_ship& object)
-//   {
-//     return object.Update(m_interval);
-//   }
-//   auto operator()(mine& object)
-//   {
-//     return object.Update(m_interval, m_playerPosition);
-//   }
-//   auto operator()(auto& object)
-//   {
-//     return object.Update(m_interval);
-//   }
-// };
-
 struct destroy_visitor
 {
   auto operator()(level_target& object)

@@ -60,7 +60,7 @@ auto level_collision_handler::OnCollision(default_object& object1, default_objec
   if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
   {
     return OnCollision(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
-  }  
+  }
 }
 
 auto level_collision_handler::OnCollision(auto& object, particle& particle) -> void

@@ -18,7 +18,7 @@ public:
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 
-  enum level_type { vertical_scroller, arena };
+  enum class level_type { vertical_scroller, arena };
 
   level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState);
   level_container(const level_container& levelContainer) = delete;
@@ -56,6 +56,7 @@ public:
 
 private:
 
+  static [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
   auto UpdateObjects(float interval) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -93,9 +94,9 @@ private:
 };
 
 level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { playerPosition }, m_playState { playState }
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playState { playState }
 {
-  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, playerPosition);
+  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(levelType), playerPosition);
 }
 
 inline auto level_container::SetPlayerActive(bool value) -> void
@@ -205,4 +206,17 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 
 auto level_container::CreateNewObjects(auto& object) -> void
 {
+}
+
+inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelType) -> player_ship::movement_type
+{
+  switch( levelType )
+  {
+    case level_type::vertical_scroller:
+      return player_ship::movement_type::horizontal;
+    case level_type::arena:
+      return player_ship::movement_type::both;
+    default:
+      return player_ship::movement_type::both;
+  }
 }

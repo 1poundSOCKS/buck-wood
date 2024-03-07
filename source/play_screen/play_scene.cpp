@@ -81,7 +81,7 @@ auto play_scene::CameraPosition() const -> camera_sequence::camera_position
   switch( m_levelContainer->Type() )
   {
     case level_container::level_type::vertical_scroller:
-      return camera_sequence::camera_position { playerPosition.x, playerPosition.y - viewHeight / 3, m_cameraZoom };
+      return camera_sequence::camera_position { 0, playerPosition.y - viewHeight / 3, m_cameraZoom };
     case level_container::level_type::arena:
       return camera_sequence::camera_position { 0, 0, m_cameraZoom };
     default:

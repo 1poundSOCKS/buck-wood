@@ -16,7 +16,9 @@ public:
 
 public:
 
-  player_ship(POINT_2F position);
+  enum class movement_type { horizontal, both };
+
+  player_ship(movement_type movementType, POINT_2F position);
 
   constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.8f, 1.8f }; };
   [[nodiscard]] auto Angle() const -> float;
@@ -47,8 +49,11 @@ public:
 
 private:
 
-  auto UpdateWhenDestoyed(float interval, bool enableControl) -> void;
-  auto UpdateWhenActive(float interval, bool enableControl) -> void;
+  auto UpdateWithControl(float interval, bool enableControl) -> void;
+  auto UpdateWithoutControl(float interval, bool enableControl) -> void;
+  auto UpdateWithHorizontalControl(float interval, bool enableControl) -> void;
+  auto UpdateWithAllControl(float interval, bool enableControl) -> void;
+  
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
   static [[nodiscard]] auto SwitchFireMode(fire_mode fireMode) -> fire_mode;
@@ -59,6 +64,7 @@ private:
 
 private:
 
+  movement_type m_movementType;
   D2D1_POINT_2F m_position { 0, 0 };
   D2D1_POINT_2F m_previousPosition { 0, 0 };
   float m_angle { 0 };
