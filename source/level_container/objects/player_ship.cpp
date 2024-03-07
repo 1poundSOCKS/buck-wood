@@ -57,6 +57,7 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   m_shieldsUp = shieldControlOn;
   m_triggerDown = triggerControlOn;
   m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
+
   m_playerReloadCounter.Update(interval);
   m_thrustEmmisionCounter.Update(interval);
 }
@@ -67,6 +68,14 @@ auto player_ship::UpdateWithHorizontalControl(float interval, bool enableControl
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
   m_velocity = enableControl && leftThumbstickPosition ? VELOCITY_2F { leftThumbstickPosition->x * movementSpeed, 0 } : VELOCITY_2F { 0, 0 };
   m_position = GetUpdatedPosition(m_position, m_velocity, interval);
+
+  auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
+  m_triggerDown = triggerControlOn;
+
+  m_thrusterOn = true;
+
+  m_playerReloadCounter.Update(interval);
+  m_thrustEmmisionCounter.Update(interval);
 }
 
 [[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float
