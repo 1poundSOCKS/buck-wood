@@ -42,14 +42,18 @@ auto play_screen::Update(int64_t ticks) -> bool
         return true;
     }
   }
-  else
-  {
-    m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
-    m_sceneController.UpdateScene(ticks);
-    m_levelContainer = m_sceneController.Complete() && !m_levelContainer->PlayerState().Destroyed() ? LoadNextLevel() : m_levelContainer;
-    m_levelContainer = m_sceneController.Complete() && m_levelContainer->PlayerState().Destroyed() ? nullptr : m_levelContainer;
-    return m_levelContainer ? true : false;
-  }
+
+  m_sceneController.UpdateScene(ticks);
+  m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
+
+  auto levelComplete = !m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
+  auto playerDestroyed = m_levelContainer->PlayerState().Destroyed();
+  auto loadNextLevel = levelComplete && !playerDestroyed;
+  auto gameOver = (levelComplete || playerDestroyed) && m_sceneController.Complete();
+
+  m_levelContainer = !gameOver && loadNextLevel ? LoadNextLevel() : m_levelContainer;
+
+  return !gameOver;
 }
 
 auto play_screen::Render() -> void
