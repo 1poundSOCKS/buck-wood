@@ -44,6 +44,7 @@ auto play_screen::Update(int64_t ticks) -> bool
   }
   else
   {
+    m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
     m_sceneController.UpdateScene(ticks);
     m_levelContainer = m_sceneController.Complete() && !m_levelContainer->PlayerState().Destroyed() ? LoadNextLevel() : m_levelContainer;
     m_levelContainer = m_sceneController.Complete() && m_levelContainer->PlayerState().Destroyed() ? nullptr : m_levelContainer;

@@ -42,7 +42,6 @@
 				"/I${workspaceFolder}/source/user_interface",
 				"/I${workspaceFolder}/source/framework/",
 				"/I${workspaceFolder}/source/renderers/",
-				"/link /LIBPATH:\"%cpp_packages%/MSVC/14.35.32215/lib/x64\" /LIBPATH:\"%cpp_packages%/Windows Kits/10.0.22621.0/Lib/um/x64\" /LIBPATH:\"%cpp_packages%/Windows Kits/10.0.22621.0/Lib/ucrt/x64\" /LIBPATH:\"${workspaceFolder}/packages/jsoncpp_x64-windows/lib\" /LIBPATH:\"${workspaceFolder}/packages/gtest/lib/x64/Release\"",
 				"/SUBSYSTEM:WINDOWS"
 			],
 			"options": {
