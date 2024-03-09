@@ -8,9 +8,15 @@
 #include "hud_target.h"
 
 play_screen::play_screen() : 
-  m_levelContainer { LoadNextLevel() }, m_playState { std::make_shared<play_state>() }
+  m_playState { std::make_shared<play_state>() }
 {
   m_menuController.OpenRoot();
+
+  if( m_playState->LoadLevel() )
+  {
+    CreateScenes();
+    m_sceneController.Begin();
+  }
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -44,16 +50,15 @@ auto play_screen::Update(int64_t ticks) -> bool
   }
 
   m_sceneController.UpdateScene(ticks);
-  m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
 
-  auto levelComplete = !m_gameLevelDataLoader.UpdateLevel(m_levelContainer.get(), ticks);
-  auto playerDestroyed = m_levelContainer->PlayerState().Destroyed();
-  auto loadNextLevel = levelComplete && !playerDestroyed;
-  auto gameOver = (levelComplete || playerDestroyed) && m_sceneController.Complete();
+  if( m_sceneController.Complete() && m_playState->Complete() && m_playState->LoadLevel() )
+  {
+    m_sceneController.Clear();
+    CreateScenes();
+    m_sceneController.Begin();
+  }
 
-  m_levelContainer = !gameOver && loadNextLevel ? LoadNextLevel() : m_levelContainer;
-
-  return !gameOver;
+  return m_sceneController.Complete() ? false : true;
 }
 
 auto play_screen::Render() -> void
@@ -85,24 +90,11 @@ auto play_screen::RenderDiagnostics() -> void
   diagnostics::clear();
 }
 
-auto play_screen::LoadNextLevel() -> std::shared_ptr<level_container>
+auto play_screen::CreateScenes() -> void
 {
-  if( m_gameLevelDataLoader.NextLevel() )
-  {
-    std::shared_ptr<level_container> levelContainer = m_gameLevelDataLoader.LoadLevel(m_playState);
-
-    m_sceneController.Clear();
-    m_sceneController.AddScene<opening_play_scene>(levelContainer, m_playState);
-    m_sceneController.AddScene<main_play_scene>(levelContainer, m_playState);
-    m_sceneController.AddScene<closing_play_scene>(levelContainer, m_playState);
-    m_sceneController.Begin();
-
-    return levelContainer;
-  }
-  else
-  {
-    return nullptr;
-  }
+  m_sceneController.AddScene<opening_play_scene>(m_playState);
+  m_sceneController.AddScene<main_play_scene>(m_playState);
+  m_sceneController.AddScene<closing_play_scene>(m_playState);
 }
 
 [[nodiscard]] auto play_screen::PausePressed() -> bool

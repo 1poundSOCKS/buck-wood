@@ -3,9 +3,10 @@
 #include "level_geometries.h"
 #include "level_objects.h"
 #include "level_explosion.h"
-#include "play_state.h"
 #include "targetted_object.h"
 #include "level_stage.h"
+#include "play_events.h"
+#include "game_score.h"
 
 class level_container
 {
@@ -20,7 +21,8 @@ public:
 
   enum class level_type { vertical_scroller, arena };
 
-  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState);
+  level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore);
+  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -87,14 +89,19 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
-  std::shared_ptr<play_state> m_playState;
+  std::shared_ptr<play_events> m_playEvents;
+  std::shared_ptr<game_score> m_gameScore;
 
   int m_targetsRemaining { 0 };
 
 };
 
-level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_state> playState) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playState { playState }
+inline level_container::level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 }, playEvents, gameScore)
+{
+}
+
+inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : 
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }
 {
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(levelType), playerPosition);
 }
@@ -146,7 +153,7 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
-  return m_playState->Score();
+  return *m_gameScore;
 }
 
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)

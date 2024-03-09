@@ -6,8 +6,8 @@
 #include "audio_events.h"
 #include "line_to_target.h"
 
-play_scene::play_scene(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_state> playState) : 
-  m_levelContainer { levelContainer }, m_playState { playState }, m_levelTitle { levelContainer->Index() }
+play_scene::play_scene(std::shared_ptr<play_state> playState) : 
+  m_playState { playState }, m_levelTitle { m_playState->LevelContainer().Index() }
 {
 }
 
@@ -35,8 +35,9 @@ auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
   m_playState->Events().Reset();
-  m_levelContainer->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  return m_levelContainer->HasFinished() ? false : true;
+  m_playState->Update();
+  m_playState->LevelContainer().Update(game_clock::getInterval(ticks), GetRenderTargetView());
+  return m_playState->LevelContainer().HasFinished() ? false : true;
 }
 
 auto play_scene::Render() const -> void
@@ -44,9 +45,9 @@ auto play_scene::Render() const -> void
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   auto transform = RenderTransform();
   render_target::get()->SetTransform(transform);
-  m_levelContainer->Render(GetRenderTargetView(transform));
+  m_playState->LevelContainer().Render(GetRenderTargetView(transform));
 
-  auto targettedObject = m_levelContainer->TargettedObject();
+  auto targettedObject = m_playState->LevelContainer().TargettedObject();
 
 #ifdef RENDER_TARGET_HUD
   if( targettedObject )
@@ -75,10 +76,10 @@ auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerPosition = m_levelContainer->PlayerState().Position();
+  auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
   auto viewHeight = render_target::get()->GetSize().height / m_cameraZoom;
 
-  switch( m_levelContainer->Type() )
+  switch( m_playState->LevelContainer().Type() )
   {
     case level_container::level_type::vertical_scroller:
       return camera_sequence::camera_position { 0, playerPosition.y - viewHeight / 3, m_cameraZoom };
@@ -89,14 +90,14 @@ auto play_scene::CameraPosition() const -> camera_sequence::camera_position
   }
 }
 
-auto play_scene::LevelContainer() const -> std::shared_ptr<level_container>
-{
-  return m_levelContainer;
-}
+// auto play_scene::LevelContainer() const -> std::shared_ptr<level_container>
+// {
+//   return m_playState->LevelContainer();
+// }
 
 auto play_scene::PlaySoundEffects() const -> void
 {
-  if( m_levelContainer->PlayerState().ThrusterOn() )
+  if( m_playState->LevelContainer().PlayerState().ThrusterOn() )
   {
     audio_events::StartPlayerThruster();
   }
@@ -128,10 +129,10 @@ auto play_scene::SetCameraZoom(float value) -> void
 
 [[nodiscard]] auto play_scene::GetPlayCameraZoom() const -> float
 {
-  auto levelSize = m_levelContainer->LevelSize();
+  auto levelSize = m_playState->LevelContainer().LevelSize();
   auto renderTargetSize = render_target::get()->GetSize();
 
-  switch( m_levelContainer->Type() )
+  switch( m_playState->LevelContainer().Type() )
   {
     case level_container::level_type::vertical_scroller:
       return renderTargetSize.width / levelSize.width * 0.8f;

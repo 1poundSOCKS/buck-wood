@@ -22,13 +22,13 @@ public:
   auto Begin() -> void override
   {
     audio_events::StartGameplayTheme();
-    m_levelContainer->SetPlayerActive(true);
+    m_playState->LevelContainer().SetPlayerActive(true);
     SetCameraZoom(GetPlayCameraZoom());
   }
 
   auto End() -> void override
   {
-    m_levelContainer->SetPlayerActive(false);
+    m_playState->LevelContainer().SetPlayerActive(false);
     audio_events::StopPlayerThruster();
     audio_events::StopGameplayTheme();
   }
@@ -55,9 +55,9 @@ public:
   {
     play_scene::Render();
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderer::render(m_levelContainer->GameScore());
+    renderer::render(m_playState->LevelContainer().GameScore());
   #ifdef RENDER_RADAR
-    renderer::render(level_radar { m_levelContainer->PlayerPosition() }, m_levelContainer->Targets());
+    renderer::render(level_radar { m_playState->LevelContainer().PlayerPosition() }, m_playState->LevelContainer().Targets());
   #endif
   }
 

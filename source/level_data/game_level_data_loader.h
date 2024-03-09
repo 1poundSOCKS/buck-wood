@@ -11,8 +11,9 @@ public:
 
   game_level_data_loader() = default;
 
-  template <typename...Args> auto LoadLevel(Args...args) -> std::unique_ptr<level_container>;
-  auto UpdateLevel(level_container* levelContainer, int64_t ticks) -> bool;
+  auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
+  auto UpdateLevel(level_container* levelContainer) -> bool;
+  [[nodiscard]] auto MoreLevels() const -> bool;
   [[nodiscard]] auto NextLevel() -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;
 
@@ -21,17 +22,15 @@ private:
   int m_levelIndex { -1 };
   inline static int m_levelCount { 3 };
   reload_timer m_levelTimer { 5.0f };
+  bool m_updateComplete { false };
 
 };
 
-template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
   demo_level demoLevel;
 
-  std::unique_ptr<level_container> levelContainer = m_levelIndex % 2 == 0 ?
-    std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<Args>(args)...) :
-    // std::make_unique<level_container>(level_container::level_type::vertical_scroller, m_levelIndex, std::array<POINT_2F, 0>(), demoLevel.PlayerPosition(), std::forward<Args>(args)...);
-    std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<Args>(args)...);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   for( const auto& targetPosition : demoLevel.TargetPositions() )
   {
@@ -41,10 +40,14 @@ template <typename...Args> auto game_level_data_loader::LoadLevel(Args...args) -
   return levelContainer;
 }
 
-inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer, int64_t ticks) -> bool
+inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer) -> bool
 {
-  return true;
-  // return m_levelTimer.Update(game_clock::getInterval(ticks));
+  return false;
+}
+
+inline [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
+{
+  return m_levelIndex + 1 < m_levelCount;
 }
 
 inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
