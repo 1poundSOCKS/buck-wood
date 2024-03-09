@@ -51,7 +51,7 @@ auto play_screen::Update(int64_t ticks) -> bool
 
   m_sceneController.UpdateScene(ticks);
 
-  if( m_sceneController.Complete() && m_playState->Complete() && m_playState->LoadLevel() )
+  if( m_sceneController.Complete() && m_playState->LoadLevel() )
   {
     m_sceneController.Clear();
     CreateScenes();
