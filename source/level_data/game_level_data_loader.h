@@ -12,10 +12,11 @@ public:
   game_level_data_loader() = default;
 
   auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
-  auto UpdateLevel(level_container* levelContainer) -> bool;
+  auto UpdateLevel(level_container* levelContainer) -> void;
   [[nodiscard]] auto MoreLevels() const -> bool;
   [[nodiscard]] auto NextLevel() -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;
+  [[nodiscard]] auto MoreUpdates() const -> bool;
 
 private:
 
@@ -40,9 +41,8 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
   return levelContainer;
 }
 
-inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer) -> bool
+inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer) -> void
 {
-  return false;
 }
 
 inline [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
@@ -58,4 +58,9 @@ inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
 inline [[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
 {
   return m_levelIndex;
+}
+
+inline [[nodiscard]] auto game_level_data_loader::MoreUpdates() const -> bool
+{
+  return true;
 }

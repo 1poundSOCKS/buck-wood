@@ -29,12 +29,12 @@ public:
 
   auto Update() -> void
   {
-    m_loadComplete = m_dataLoader.UpdateLevel(m_levelContainer.get()) ? false : true;
+    m_dataLoader.UpdateLevel(m_levelContainer.get());
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
   {
-    return m_loadComplete && m_levelContainer->IsComplete();
+    return m_levelContainer->IsComplete() && !m_dataLoader.MoreUpdates();
   }
 
   [[nodiscard]] auto Complete() const -> bool
@@ -78,6 +78,5 @@ private:
   std::shared_ptr<play_events> m_events;
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
-  bool m_loadComplete { false };
 
 };

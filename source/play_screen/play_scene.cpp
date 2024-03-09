@@ -37,7 +37,7 @@ auto play_scene::Update(__int64 ticks) -> bool
   m_playState->Events().Reset();
   m_playState->Update();
   m_playState->LevelContainer().Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  return m_playState->LevelContainer().HasFinished() ? false : true;
+  return m_playState->LevelComplete() ? false : true;
 }
 
 auto play_scene::Render() const -> void
