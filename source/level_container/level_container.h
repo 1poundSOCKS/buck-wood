@@ -34,11 +34,13 @@ public:
   [[nodiscard]] auto Index() const -> int;
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
   [[nodiscard]] auto PlayerActive() const -> bool;
-  [[nodiscard]] auto IsComplete() const -> bool;
-  [[nodiscard]] auto HasFinished() const -> bool;
+  [[nodiscard]] auto PlayerInvulnerable() const -> bool;
+  // [[nodiscard]] auto IsComplete() const -> bool;
+  // [[nodiscard]] auto HasFinished() const -> bool;
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
+  [[nodiscard]] auto TargetCount() const -> int;
 
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
@@ -80,6 +82,7 @@ private:
 
   player_ship m_playerState;
   bool m_playerActive { false };
+  bool m_playerInvulnerable { false };
 
   static_object_collection m_staticObjects;
   moving_object_collection m_movingObjects;
@@ -128,18 +131,23 @@ inline [[nodiscard]] auto level_container::PlayerState() const -> const player_s
 
 inline [[nodiscard]] auto level_container::PlayerActive() const -> bool
 {
-  return m_playerActive && !IsComplete();
+  return m_playerActive;
 }
 
-inline [[nodiscard]] auto level_container::IsComplete() const -> bool
+inline [[nodiscard]] auto level_container::PlayerInvulnerable() const -> bool
 {
-  return m_targetsRemaining == 0;
+  return m_playerInvulnerable;
 }
 
-inline [[nodiscard]] auto level_container::HasFinished() const -> bool
-{
-  return m_playerState.Destroyed() || IsComplete();
-}
+// inline [[nodiscard]] auto level_container::IsComplete() const -> bool
+// {
+//   return m_targetsRemaining == 0;
+// }
+
+// inline [[nodiscard]] auto level_container::HasFinished() const -> bool
+// {
+//   return m_playerState.Destroyed() || IsComplete();
+// }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
 {
@@ -154,6 +162,11 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
 {
   return *m_gameScore;
+}
+
+inline [[nodiscard]] auto level_container::TargetCount() const -> int
+{
+  return m_targetsRemaining;
 }
 
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)

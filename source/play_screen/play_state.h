@@ -34,7 +34,8 @@ public:
 
   [[nodiscard]] auto LevelComplete() const -> bool
   {
-    return m_levelContainer->IsComplete() && !m_dataLoader.MoreUpdates();
+    // return m_levelContainer->IsComplete() && !m_dataLoader.MoreUpdates();
+    return m_levelContainer->PlayerState().Destroyed() || (m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates());
   }
 
   [[nodiscard]] auto Complete() const -> bool
