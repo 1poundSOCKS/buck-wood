@@ -20,6 +20,9 @@ public:
     m_cameraSequence = camera_sequence::camera_position { 0, 0, 0.1f };
     m_cameraSequence.AddMove( { 0, 0, playCameraZoom }, performance_counter::CalculateTicks(2) );
     SetCameraZoom(m_cameraSequence.GetScale(0));
+
+    m_playState->LevelContainer().SetPlayerActive(false);
+    m_playState->LevelContainer().SetPlayerInvulnerable(true);
   }
 
   auto Update(int64_t ticks) -> bool override

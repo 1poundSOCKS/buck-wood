@@ -35,7 +35,7 @@ auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
   m_playState->Events().Reset();
-  m_playState->Update();
+  m_playState->Update(game_clock::getInterval(ticks));
   m_playState->LevelContainer().Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_playState->LevelComplete() ? false : true;
 }
@@ -89,11 +89,6 @@ auto play_scene::CameraPosition() const -> camera_sequence::camera_position
       return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
   }
 }
-
-// auto play_scene::LevelContainer() const -> std::shared_ptr<level_container>
-// {
-//   return m_playState->LevelContainer();
-// }
 
 auto play_scene::PlaySoundEffects() const -> void
 {

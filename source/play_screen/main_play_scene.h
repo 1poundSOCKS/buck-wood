@@ -22,8 +22,9 @@ public:
   auto Begin() -> void override
   {
     audio_events::StartGameplayTheme();
-    m_playState->LevelContainer().SetPlayerActive(true);
     SetCameraZoom(GetPlayCameraZoom());
+    m_playState->LevelContainer().SetPlayerActive(true);
+    m_playState->LevelContainer().SetPlayerInvulnerable(false);
   }
 
   auto End() -> void override

@@ -34,9 +34,10 @@ public:
   [[nodiscard]] auto Index() const -> int;
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
   [[nodiscard]] auto PlayerActive() const -> bool;
+
   [[nodiscard]] auto PlayerInvulnerable() const -> bool;
-  // [[nodiscard]] auto IsComplete() const -> bool;
-  // [[nodiscard]] auto HasFinished() const -> bool;
+  auto SetPlayerInvulnerable(bool value) -> void;
+
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto GameScore() const -> const game_score&;
@@ -139,15 +140,10 @@ inline [[nodiscard]] auto level_container::PlayerInvulnerable() const -> bool
   return m_playerInvulnerable;
 }
 
-// inline [[nodiscard]] auto level_container::IsComplete() const -> bool
-// {
-//   return m_targetsRemaining == 0;
-// }
-
-// inline [[nodiscard]] auto level_container::HasFinished() const -> bool
-// {
-//   return m_playerState.Destroyed() || IsComplete();
-// }
+inline auto level_container::SetPlayerInvulnerable(bool value) -> void
+{
+  m_playerInvulnerable = value;
+}
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
 {

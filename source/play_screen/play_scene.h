@@ -27,7 +27,6 @@ public:
   auto Render() const -> void override;
 
   auto RenderTransform() const -> D2D1::Matrix3x2F;
-  auto LevelContainer() const -> std::shared_ptr<level_container>;
 
 protected:
 

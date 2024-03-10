@@ -27,14 +27,13 @@ public:
     }
   }
 
-  auto Update() -> void
+  auto Update(float interval) -> void
   {
-    m_dataLoader.UpdateLevel(m_levelContainer.get());
+    m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
   {
-    // return m_levelContainer->IsComplete() && !m_dataLoader.MoreUpdates();
     return m_levelContainer->PlayerState().Destroyed() || (m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates());
   }
 
