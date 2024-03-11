@@ -50,6 +50,7 @@ public:
   auto CreateParticle(auto&&...args) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
+  auto CreatePowerUp(auto&&...args) -> void;
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
@@ -193,6 +194,11 @@ auto level_container::CreateParticle(auto&&...args) -> void
 inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 {
   m_impacts.emplace_back(position);
+}
+
+auto level_container::CreatePowerUp(auto&&...args) -> void
+{
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateMovingObject(auto&&...args) -> void
