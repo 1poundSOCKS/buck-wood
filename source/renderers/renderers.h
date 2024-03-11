@@ -30,6 +30,7 @@ public:
   static auto render(const auto& object) -> void;
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
+  static auto reverse_render_all(std::ranges::input_range auto&& objects) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -81,6 +82,14 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   for( const auto& object : objects )
   {
     m_instance->Render(object);
+  }
+}
+
+auto renderer::reverse_render_all(std::ranges::input_range auto&& objects) -> void
+{
+  for( auto it = std::rbegin(objects); it != std::rend(objects); ++it )
+  {
+    m_instance->Render(*it);
   }
 }
 

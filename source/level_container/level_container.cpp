@@ -76,9 +76,9 @@ auto level_container::Render(D2D1_RECT_F viewRect) const -> void
     renderer::render(m_boundary);
   }
 
-  renderer::render_all(m_staticObjects);
-  renderer::render_all(m_movingObjects);
   renderer::render_all(m_particles);
+  renderer::reverse_render_all(m_movingObjects);
+  renderer::render_all(m_staticObjects);
 
   auto renderEnd = performance_counter::QueryValue();
 

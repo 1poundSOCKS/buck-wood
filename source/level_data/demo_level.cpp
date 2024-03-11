@@ -41,7 +41,7 @@ demo_level::demo_level()
 [[nodiscard]] auto demo_level::PlayerPosition() const -> POINT_2F
 {
   auto x = static_cast<float>(0 * m_cellSize);
-  auto y = static_cast<float>(-8 * m_cellSize);
+  auto y = static_cast<float>(0 * m_cellSize);
   return POINT_2F { x, y };
 }
 
