@@ -7,6 +7,7 @@ public:
 
   reload_timer(float reloadTime);
   auto Update(float interval) -> bool;
+  auto Reset() -> void;
 
   [[nodiscard]] auto Interval() -> float { return m_reloadTime; }
 

@@ -19,3 +19,8 @@ auto reload_timer::Update(float interval) -> bool
 
   return reloadCount > 0;
 }
+
+auto reload_timer::Reset() -> void
+{
+  m_currentTime = 0;
+}

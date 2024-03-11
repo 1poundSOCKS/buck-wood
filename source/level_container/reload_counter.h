@@ -16,9 +16,11 @@ public:
     m_count += ( m_timer.Update(interval) && m_count < m_maxCount ) ? 1 : 0;
   }
 
-  [[nodiscard]] auto Get(int count) -> int
+  [[nodiscard]] auto Get(int count, bool reset) -> int
   {
-    return std::exchange(m_count, m_count - std::min(count, m_count));
+    auto returnedCount = std::exchange(m_count, m_count - std::min(count, m_count));
+    if( returnedCount && reset ) m_timer.Reset();
+    return returnedCount;
   }
 
 private:

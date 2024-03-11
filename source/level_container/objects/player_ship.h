@@ -60,7 +60,7 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 200.0f };
+  static constexpr float m_thrustPower { 300.0f };
 
 private:
 
@@ -79,7 +79,7 @@ private:
   bool m_triggerDown { false };
   bool m_shieldsUp { false };
 
-  reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
+  reload_counter m_playerReloadCounter { 1.0f / 2.0f, 1 };
   fire_mode m_fireMode { fire_mode::one };
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 1 };
@@ -179,12 +179,12 @@ inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
-  return !m_destroyed && m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1) == 1;
+  return !m_destroyed && m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
-  return !m_destroyed && m_thrusterOn && m_thrustEmmisionCounter.Get(1) == 1;
+  return !m_destroyed && m_thrusterOn && m_thrustEmmisionCounter.Get(1, true) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode
