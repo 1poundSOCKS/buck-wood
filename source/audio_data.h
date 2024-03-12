@@ -2,7 +2,7 @@
 
 #include "framework.h"
 
-enum class audio_data_item { menu_theme=0, main_theme, explosion, shoot, target_activated, thruster };
+enum class audio_data_item { menu_theme=0, main_theme, explosion, shoot, target_activated, thruster, power_up };
 
 class audio_data
 {
@@ -51,7 +51,8 @@ private:
       std::tuple<audio_data_item, buffer>(audio_data_item::explosion, LoadWavFileData(L"mine_exploded.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::shoot, LoadWavFileData(L"shoot_effect.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::target_activated, LoadWavFileData(L"target_activated.wav")),
-      std::tuple<audio_data_item, buffer>(audio_data_item::thruster, LoadWavFileData(L"thrust_effect.wav"))
+      std::tuple<audio_data_item, buffer>(audio_data_item::thruster, LoadWavFileData(L"thrust_effect.wav")),
+      std::tuple<audio_data_item, buffer>(audio_data_item::power_up, LoadWavFileData(L"power_up.wav"))
     };
   }
 

@@ -5,7 +5,7 @@ class play_events
 
 public:
 
-  enum class event_type { shot, explosion, target_activated };
+  enum class event_type { shot, explosion, target_activated, power_up_collected };
 
   auto SetEvent(event_type eventType, bool value) -> void
   {
@@ -20,6 +20,9 @@ public:
       case event_type::target_activated:
         m_targetActivated = value;
         break;
+      case event_type::power_up_collected:
+        m_powerUpCollected = value;
+        break;
     }
   }
 
@@ -33,6 +36,8 @@ public:
         return m_explosion;
       case event_type::target_activated:
         return m_targetActivated;
+      case event_type::power_up_collected:
+        return m_powerUpCollected;
       default:
         return false;
     }
@@ -45,7 +50,7 @@ public:
 
   auto Reset() -> void
   {
-    m_shot = m_explosion = m_targetActivated = false;
+    m_shot = m_explosion = m_targetActivated = m_powerUpCollected = false;
   }
 
 private:
@@ -53,5 +58,6 @@ private:
   bool m_shot { false };
   bool m_explosion { false };
   bool m_targetActivated { false };
+  bool m_powerUpCollected { false };
 
 };

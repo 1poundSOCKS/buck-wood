@@ -89,6 +89,11 @@ public:
     m_instance->m_explosion.Start();
   }
 
+  static auto PowerUpCollected() -> void
+  {
+    m_instance->m_powerUpCollected.Start();
+  }
+
 private:
 
   inline static audio_events* m_instance { nullptr };
@@ -98,5 +103,6 @@ private:
   audio_player m_playerShot { audio_data_item::shoot, audio_player::type::effect };
   audio_player m_targetActivated { audio_data_item::target_activated, audio_player::type::effect };
   audio_player m_explosion { audio_data_item::explosion, audio_player::type::effect };
+  audio_player m_powerUpCollected { audio_data_item::power_up, audio_player::type::effect };
 
 };

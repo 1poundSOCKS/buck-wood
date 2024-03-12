@@ -115,6 +115,11 @@ auto play_scene::PlaySoundEffects() const -> void
   {
     audio_events::Explosion();
   }
+
+  if( m_playState->Events().Get(play_events::event_type::power_up_collected) )
+  {
+    audio_events::PowerUpCollected();
+  }
 }
 
 auto play_scene::SetCameraZoom(float value) -> void

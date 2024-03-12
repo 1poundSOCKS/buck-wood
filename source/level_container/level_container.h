@@ -53,6 +53,7 @@ public:
   auto CreatePowerUp(auto&&...args) -> void;
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
+  auto PowerUpCollected(POINT_2F position) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
@@ -209,6 +210,11 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::PowerUpCollected(POINT_2F position) -> void
+{
+  m_playEvents->SetEvent(play_events::event_type::power_up_collected, true);
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void

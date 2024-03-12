@@ -112,5 +112,6 @@ auto level_collision_handler::OnCollision(player_ship& playerShip, level_target&
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
 {
+  m_visitor.PowerUpCollected(powerUp.Position());
   powerUp.Destroy();
 }
