@@ -106,7 +106,7 @@ private:
 
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_playerBulletGeometry;
-  winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 40, 40, 3 }, D2D1_FIGURE_END_CLOSED) };
+  winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED) };
   winrt::com_ptr<ID2D1PathGeometry> m_targetGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 6 }, D2D1_FIGURE_END_CLOSED) };
   winrt::com_ptr<ID2D1PathGeometry> m_asteroidGeometry { level_geometry_functions::CreateAsteroidGeometry(0, 0, 200, 200) };
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;

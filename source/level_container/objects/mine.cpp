@@ -10,6 +10,9 @@ auto mine::Update(float interval) -> void
 {
   m_previousPosition = m_position;
   m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
+
+  constexpr float rotationSpeed = 200.0f;
+  m_angle = direct2d::RotateAngle(m_angle, rotationSpeed * interval);
 }
 
 [[nodiscard]] auto mine::Destroyed() const -> bool

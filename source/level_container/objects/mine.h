@@ -11,7 +11,7 @@ public:
 
   mine(type type, POINT_2F position, VELOCITY_2F velocity);
 
-  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 0.5f, 0.5f }; };
+  [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;

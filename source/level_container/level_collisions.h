@@ -84,7 +84,7 @@ auto level_collision_handler::operator()(particle& particle) -> void
 
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, mine& mine) -> void
 {
-  m_visitor.CreatePowerUp(mine.Position());
+  m_visitor.CreatePowerUp(mine.Position(), mine.Angle());
   playerBullet.Destroy();
   mine.Destroy();
 }

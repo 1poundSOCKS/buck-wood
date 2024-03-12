@@ -104,9 +104,11 @@ auto level_container::DoCollisions() -> void
   geometry_collision_unary<default_object> movingCollisionRunner { collisionHandler };
   movingCollisionRunner(m_movingObjects);
 
-  // particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
-  // particleCollisionRunner(m_staticObjects, m_particles);
-  // particleCollisionRunner(m_movingObjects, m_particles);
+#ifdef ALL_PARTICLE_COLLISIONS_TESTED
+  particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
+  particleCollisionRunner(m_staticObjects, m_particles);
+  particleCollisionRunner(m_movingObjects, m_particles);
+#endif
 }
 
 auto level_container::CreateNewObjects(float interval) -> void
