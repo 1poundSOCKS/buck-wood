@@ -36,6 +36,7 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   m_targetsToCreate = 1;
   m_levelTimer = reload_timer { 3.0f };
+  m_targetsToCreate = m_levelIndex + 1;
 
   return levelContainer;
 }
