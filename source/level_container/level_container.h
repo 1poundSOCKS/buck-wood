@@ -7,14 +7,17 @@
 #include "level_stage.h"
 #include "play_events.h"
 #include "game_score.h"
+#include "malloc_allocator.h"
 
 class level_container
 {
 
 public:
 
-  using static_object_collection = std::list<dynamic_object<default_object>>;
-  using moving_object_collection = std::list<dynamic_object<default_object>>;
+  using Allocator = malloc_allocator<dynamic_object<default_object>>;
+
+  using static_object_collection = std::list<dynamic_object<default_object>, Allocator>;
+  using moving_object_collection = std::list<dynamic_object<default_object>, Allocator>;
   using particle_collection = std::list<particle>;
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
