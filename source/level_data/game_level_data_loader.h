@@ -21,7 +21,7 @@ public:
 private:
 
   int m_levelIndex { -1 };
-  inline static int m_levelCount { 3 };
+  inline static int m_levelCount { 99 };
   reload_timer m_levelTimer { 5.0f };
   bool m_updateComplete { false };
   int m_targetsToCreate { 1 };

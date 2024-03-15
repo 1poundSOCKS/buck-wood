@@ -60,7 +60,7 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 300.0f };
+  static constexpr float m_thrustPower { 500.0f };
 
 private:
 
