@@ -15,9 +15,14 @@ public:
         delete [] buffer;
     }
 
-    [[nodiscard]] auto get(size_t index) const -> T*
+    [[nodiscard]] auto get(size_t index) const noexcept -> T*
     {
         return m_buffer.get() + index;
+    }
+
+    [[nodiscard]] auto contains(T* object) const noexcept -> bool
+    {
+      return object >= m_buffer.get() && object < m_buffer.get() + S;
     }
 
 private:

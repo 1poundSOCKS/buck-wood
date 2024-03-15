@@ -46,9 +46,9 @@ private:
 
 template <class T, size_t S> T* linear_allocator<T, S>::allocate(const size_t n)
 {
-    if( n != 1 )
+    if( m_freeMemory.size() == 0 || n > 1 )
     {
-        return nullptr;
+        return reinterpret_cast<T*>(new BYTE[n * sizeof T]);
     }
     
     if( n > static_cast<size_t>(-1) / sizeof(T) )
@@ -61,7 +61,14 @@ template <class T, size_t S> T* linear_allocator<T, S>::allocate(const size_t n)
     return allocated;
 }
 
-template<class T, size_t SIZE> void linear_allocator<T, SIZE>::deallocate(T * const p, size_t) noexcept
+template<class T, size_t SIZE> void linear_allocator<T, SIZE>::deallocate(T * const p, size_t n) noexcept
 {
-    m_freeMemory.push(p);
+    if( m_buffer.contains(p) )
+    {
+        m_freeMemory.push(p);
+    }
+    else
+    {
+        delete [] reinterpret_cast<BYTE*>(p);
+    }
 }
