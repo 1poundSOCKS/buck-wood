@@ -14,12 +14,14 @@ class level_container
 
 public:
 
-  using ObjectAllocator = linear_allocator<dynamic_object<default_object>>;
-  using ParticleAllocator = linear_allocator<particle>;
+  using StaticObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
+  using MovingObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 100 }>;
+  using ParticleAllocator = linear_allocator<particle, size_t { 10000}>;
 
-  using static_object_collection = std::list<dynamic_object<default_object>, ObjectAllocator>;
-  using moving_object_collection = std::list<dynamic_object<default_object>, ObjectAllocator>;
+  using static_object_collection = std::list<dynamic_object<default_object>, StaticObjectAllocator>;
+  using moving_object_collection = std::list<dynamic_object<default_object>, MovingObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
+
   using explosion_collection = std::vector<D2D1_POINT_2F>;
   using impact_collection = std::vector<D2D1_POINT_2F>;
 

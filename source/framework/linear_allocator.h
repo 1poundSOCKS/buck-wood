@@ -1,10 +1,22 @@
 #pragma once
 
-template <typename T> struct linear_allocator
+template <typename T, size_t S> class linear_buffer
+{
+
+public:
+
+    linear_buffer() : m_buffer { reinterpret_cast<T*>(new BYTE[sizeof(T) * S]) }
+    {
+    }
+
+    std::unique_ptr<T[]> m_buffer;
+};
+
+template <typename T, size_t S> struct linear_allocator
 {
     typedef T value_type;
 
-    linear_allocator() noexcept : m_buffer { reinterpret_cast<T*>(new BYTE[sizeof(T) * 10000]) }
+    linear_allocator() noexcept : m_buffer { reinterpret_cast<T*>(new BYTE[sizeof(T) * S]) }
     {
         for( int i = 10000 - 1; i >= 0; --i )
         {
@@ -18,14 +30,14 @@ template <typename T> struct linear_allocator
         delete [] buffer;
     }
 
-    template<class U> linear_allocator(const linear_allocator<U>&) noexcept {}
+    template<class U> linear_allocator(const linear_allocator<U, S>&) noexcept {}
 
-    template<class U> bool operator==(const linear_allocator<U>&) const noexcept
+    template<class U> bool operator==(const linear_allocator<U, S>&) const noexcept
     {
         return true;
     }
 
-    template<class U> bool operator!=(const linear_allocator<U>&) const noexcept
+    template<class U> bool operator!=(const linear_allocator<U, S>&) const noexcept
     {
         return false;
     }
@@ -33,17 +45,16 @@ template <typename T> struct linear_allocator
     T* allocate(const size_t n);
     void deallocate(T* const p, size_t) noexcept;
 
-    template<typename U>
-    struct rebind {
-        typedef linear_allocator<U> other;
+    template<typename U> struct rebind
+    {
+        typedef linear_allocator<U, S> other;
     };
 
     std::unique_ptr<T[]> m_buffer;
     std::stack<T*,std::vector<T*>> m_freeMemory;
 };
 
-template <class T>
-T* linear_allocator<T>::allocate(const size_t n)
+template <class T, size_t S> T* linear_allocator<T, S>::allocate(const size_t n)
 {
     if( n != 1 )
     {
@@ -60,8 +71,7 @@ T* linear_allocator<T>::allocate(const size_t n)
     return allocated;
 }
 
-template<class T>
-void linear_allocator<T>::deallocate(T * const p, size_t) noexcept
+template<class T, size_t SIZE> void linear_allocator<T, SIZE>::deallocate(T * const p, size_t) noexcept
 {
     m_freeMemory.push(p);
 }
