@@ -25,8 +25,11 @@ private:
     std::unique_ptr<T[]> m_buffer;
 };
 
-template <typename T, size_t S> struct linear_allocator
+template <typename T, size_t S> class linear_allocator
 {
+
+public:
+
     typedef T value_type;
 
     linear_allocator() noexcept
