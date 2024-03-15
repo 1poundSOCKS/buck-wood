@@ -78,8 +78,13 @@ auto level_collision_handler::operator()(default_object& object) -> void
 
 auto level_collision_handler::operator()(particle& particle) -> void
 {
-  m_visitor.CreateImpact(particle.Position());
-  particle.Destroy();
+  switch( particle.Type() )
+  {
+    case particle::type::explosion:
+      m_visitor.CreateImpact(particle.Position());
+      particle.Destroy();
+      break;
+  }
 }
 
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, mine& mine) -> void

@@ -121,12 +121,10 @@ auto level_container::CreateNewObjects(float interval) -> void
 
   m_explosions.clear();
 
-#ifdef CREATE_IMPACTS
   for( const auto& position : m_impacts )
   {
     m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
   }
-#endif
 
   m_impacts.clear();
 
