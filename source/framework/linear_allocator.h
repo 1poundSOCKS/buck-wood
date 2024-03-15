@@ -9,6 +9,19 @@ public:
     {
     }
 
+    ~linear_buffer()
+    {
+        auto buffer = reinterpret_cast<BYTE*>(m_buffer.release());
+        delete [] buffer;
+    }
+
+    [[nodiscard]] auto get(size_t index) const -> T*
+    {
+        return m_buffer.get() + index;
+    }
+
+private:
+
     std::unique_ptr<T[]> m_buffer;
 };
 
@@ -16,18 +29,12 @@ template <typename T, size_t S> struct linear_allocator
 {
     typedef T value_type;
 
-    linear_allocator() noexcept : m_buffer { reinterpret_cast<T*>(new BYTE[sizeof(T) * S]) }
+    linear_allocator() noexcept
     {
-        for( int i = 10000 - 1; i >= 0; --i )
+        for( size_t i = S; i > 0; --i )
         {
-            m_freeMemory.push(m_buffer.get() + i);
+            m_freeMemory.push(m_buffer.get(i-1));
         }
-    }
-
-    ~linear_allocator()
-    {
-        auto buffer = reinterpret_cast<BYTE*>(m_buffer.release());
-        delete [] buffer;
     }
 
     template<class U> linear_allocator(const linear_allocator<U, S>&) noexcept {}
@@ -50,7 +57,7 @@ template <typename T, size_t S> struct linear_allocator
         typedef linear_allocator<U, S> other;
     };
 
-    std::unique_ptr<T[]> m_buffer;
+    linear_buffer<T, S> m_buffer;
     std::stack<T*,std::vector<T*>> m_freeMemory;
 };
 
