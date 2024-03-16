@@ -42,9 +42,10 @@
 				"/I${workspaceFolder}/source/user_interface",
 				"/I${workspaceFolder}/source/framework/",
 				"/I${workspaceFolder}/source/renderers/",
+				"/link",
 				"/SUBSYSTEM:WINDOWS"
 			],
-			"options": {
+B			"options": {
 				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
@@ -136,6 +137,7 @@
 				"/I${workspaceFolder}/source/user_interface",
 				"/I${workspaceFolder}/source/framework/",
 				"/I${workspaceFolder}/source/renderers/",
+				"/link",
 				"/SUBSYSTEM:CONSOLE"
 			],
 			"options": {
