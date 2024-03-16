@@ -31,14 +31,19 @@ private:
   std::vector<D2D1_POINT_2F> m_asteroids;
   std::vector<D2D1_POINT_2F> m_ductFans;
 
+  constexpr static int m_cornerIndent { 3 };
+
+  constexpr static int m_boundaryStartPositionX { -18 };
+  constexpr static int m_boundaryStartPositionY { -12 + m_cornerIndent };
+
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { 2, -2 },
-    boundary_build_command { 32, 0 },
-    boundary_build_command { 2, 2 },
-    boundary_build_command { 0, 20 },
-    boundary_build_command { -2, 2 },
-    boundary_build_command { -32, 0 },
-    boundary_build_command { -2, -2 }
+    boundary_build_command { m_cornerIndent, -m_cornerIndent },
+    boundary_build_command { 36 - m_cornerIndent * 2, 0 },
+    boundary_build_command { m_cornerIndent, m_cornerIndent },
+    boundary_build_command { 0, 24 - m_cornerIndent * 2 },
+    boundary_build_command { -m_cornerIndent, m_cornerIndent },
+    boundary_build_command { -36 + m_cornerIndent * 2, 0 },
+    boundary_build_command { -m_cornerIndent, -m_cornerIndent }
   };
 
   inline static auto m_targetPositions = {
