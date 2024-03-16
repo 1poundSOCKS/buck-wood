@@ -10,7 +10,9 @@ class play_state
 
 public:
 
-  play_state() : m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>() }, m_levelContainer { std::make_shared<level_container>(m_events, m_score) }
+  play_state() : 
+    m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>() }, m_powerUpsCollected { std::make_shared<int>(0) },
+    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
   {
   }
 
@@ -18,7 +20,7 @@ public:
   {
     if( m_dataLoader.NextLevel() )
     {
-      m_levelContainer = m_dataLoader.LoadLevel(m_events, m_score);
+      m_levelContainer = m_dataLoader.LoadLevel(m_events, m_score, m_powerUpsCollected);
       return true;
     }
     else
@@ -72,11 +74,17 @@ public:
     return *m_score;
   }
 
+  [[nodiscard]] auto PowerUpsCollected() const -> int
+  {
+    return *m_powerUpsCollected;
+  }
+
 private:
 
   game_level_data_loader m_dataLoader;
   std::shared_ptr<play_events> m_events;
   std::shared_ptr<game_score> m_score;
+  std::shared_ptr<int> m_powerUpsCollected;
   std::shared_ptr<level_container> m_levelContainer;
 
 };

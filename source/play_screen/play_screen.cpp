@@ -7,8 +7,7 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen() : 
-  m_playState { std::make_shared<play_state>() }
+play_screen::play_screen() : m_playState { std::make_shared<play_state>() }
 {
   m_menuController.OpenRoot();
 
