@@ -15,8 +15,8 @@ class level_container
 public:
 
   using StaticObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
-  using MovingObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 100 }>;
-  using ParticleAllocator = linear_allocator<particle, size_t { 10000}>;
+  using MovingObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
+  using ParticleAllocator = linear_allocator<particle, size_t { 2000 }>;
 
   using static_object_collection = std::list<dynamic_object<default_object>, StaticObjectAllocator>;
   using moving_object_collection = std::list<dynamic_object<default_object>, MovingObjectAllocator>;
@@ -110,6 +110,8 @@ private:
 
 inline level_container::level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 }, playEvents, gameScore)
 {
+  m_explosions.reserve(10);
+  m_impacts.reserve(100);
 }
 
 inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore) : 
