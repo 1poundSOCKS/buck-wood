@@ -32,9 +32,13 @@ private:
   std::vector<D2D1_POINT_2F> m_ductFans;
 
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { 36, 0 },
-    boundary_build_command { 0, 24 },
-    boundary_build_command { -36, 0 }
+    boundary_build_command { 2, -2 },
+    boundary_build_command { 32, 0 },
+    boundary_build_command { 2, 2 },
+    boundary_build_command { 0, 20 },
+    boundary_build_command { -2, 2 },
+    boundary_build_command { -32, 0 },
+    boundary_build_command { -2, -2 }
   };
 
   inline static auto m_targetPositions = {
