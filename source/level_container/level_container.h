@@ -60,7 +60,8 @@ public:
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
-  auto TargetDamaged(const level_target& target) -> void;
+  auto TargetDamaged(const level_target& target) const -> void;
+  auto MineDestroyed() const -> void;
   auto PowerUpCollected(POINT_2F position) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
@@ -225,12 +226,17 @@ inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
   CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::TargetDamaged(const level_target& target) -> void
+inline auto level_container::TargetDamaged(const level_target& target) const -> void
 {
   if( target.Destroyed() )
   {
     m_gameScore->Add(50);
   }
+}
+
+inline auto level_container::MineDestroyed() const -> void
+{
+  m_gameScore->Add(20);
 }
 
 inline auto level_container::PowerUpCollected(POINT_2F position) -> void
