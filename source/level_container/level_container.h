@@ -226,6 +226,7 @@ inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 inline auto level_container::PowerUpCollected(POINT_2F position) -> void
 {
   m_playEvents->SetEvent(play_events::event_type::power_up_collected, true);
+  ++(*m_powerUpsCollected);
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
