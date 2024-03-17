@@ -47,9 +47,9 @@ auto play_scene::Render() const -> void
   render_target::get()->SetTransform(transform);
   m_playState->LevelContainer().Render(GetRenderTargetView(transform));
 
+#ifdef RENDER_TARGET_HUD
   auto targettedObject = m_playState->LevelContainer().TargettedObject();
 
-#ifdef RENDER_TARGET_HUD
   if( targettedObject )
   {
     renderer::render(line_to_target { *m_levelContainer->PlayerPosition(), targettedObject->Position() });

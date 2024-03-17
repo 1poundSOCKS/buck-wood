@@ -56,7 +56,8 @@ public:
   {
     play_scene::Render();
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderer::render(m_playState->LevelContainer().GameScore());
+    renderer::render(m_playState->Score());
+    renderer::render(m_playState->PowerUps());
   #ifdef RENDER_RADAR
     renderer::render(level_radar { m_playState->LevelContainer().PlayerPosition() }, m_playState->LevelContainer().Targets());
   #endif

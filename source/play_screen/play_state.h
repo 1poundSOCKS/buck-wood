@@ -11,7 +11,7 @@ class play_state
 public:
 
   play_state() : 
-    m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>() }, m_powerUpsCollected { std::make_shared<int>(0) },
+    m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
     m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
   {
   }
@@ -74,9 +74,11 @@ public:
     return *m_score;
   }
 
-  [[nodiscard]] auto PowerUpsCollected() const -> int
+  [[nodiscard]] auto PowerUps() const -> game_score
   {
-    return *m_powerUpsCollected;
+    game_score powerUps(game_score::value_type::power_ups);
+    powerUps.Add(*m_powerUpsCollected);
+    return powerUps;
   }
 
 private:
