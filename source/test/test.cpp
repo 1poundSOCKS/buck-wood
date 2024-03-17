@@ -2,6 +2,9 @@
 #include "gtest/gtest.h"
 #include "framework.h"
 
+#pragma comment(lib,"gtest.lib")
+#pragma comment(lib,"gtest_main.lib")
+
 TEST(angle,0)
 {
   EXPECT_EQ(direct2d::GetAngleBetweenPoints({0,0},{0,-1}), 0);

@@ -19,11 +19,6 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"Shell32.lib")
 
-#if 0
-#pragma comment(lib,"gtest.lib")
-#pragma comment(lib,"gtest_main.lib")
-#endif
-
 auto RunMainMenuScreen() -> void;
 auto create_directx_objects(HINSTANCE instance) -> void;
 auto destroy_directx_objects() -> void;

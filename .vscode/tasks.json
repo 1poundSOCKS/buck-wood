@@ -34,7 +34,6 @@
 				"/I%cpp_packages%/Windows Kits/10.0.22621.0/Include/shared",
 				"/I%cpp_packages%/Windows Kits/10.0.22621.0/Include/cppwinrt",
 				"/I${workspaceFolder}/packages/jsoncpp_x64-windows/include/json",
-				"/I${workspaceFolder}/packages/gtest/include",
 				"/I${workspaceFolder}/source/",
 				"/I${workspaceFolder}/source/play_screen",
 				"/I${workspaceFolder}/source/level_container",
@@ -45,7 +44,7 @@
 				"/link",
 				"/SUBSYSTEM:WINDOWS"
 			],
-B			"options": {
+			"options": {
 				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
@@ -138,6 +137,7 @@ B			"options": {
 				"/I${workspaceFolder}/source/framework/",
 				"/I${workspaceFolder}/source/renderers/",
 				"/link",
+				"/LIBPATH:${workspaceFolder}/packages/gtest/lib/x64/Release",
 				"/SUBSYSTEM:CONSOLE"
 			],
 			"options": {
