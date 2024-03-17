@@ -19,13 +19,9 @@
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"Shell32.lib")
 
-auto RunMainMenuScreen() -> void;
-auto create_directx_objects(HINSTANCE instance) -> void;
-auto destroy_directx_objects() -> void;
-auto create_d2d_render_target() -> void;
-auto destroy_d2d_render_target() -> void;
-auto create_input_devices(HINSTANCE instance) -> void;
-auto destroy_input_devices() -> void;
+auto initialize_all(HINSTANCE instance) -> void;
+auto destroy_all() -> void;
+auto run_main_menu_screen() -> void;
 auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void;
 
 auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLine, int cmdShow) -> int
@@ -61,31 +57,15 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   main_window::create(instance, cmdShow);
   windows_message_loop::create();
 
-  create_directx_objects(instance);
-
-  diagnostics::create();
-
-  audio_data::create(L"data");
-  audio_events::create();
-
-  game_volume_controller::create();
-  game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
-  game_volume_controller::setMusicVolume(game_settings::musicVolume());
-
-  gamepad_reader::invert_y_axis();
+  initialize_all(instance);
 
   game_clock::setMultiplier(1.6f);
 
-  RunMainMenuScreen();
+  run_main_menu_screen();
 
   log::write(log::type::info, "app closing");
 
-  game_volume_controller::destroy();
-  audio_events::destroy();
-  audio_data::destroy();
-  diagnostics::destroy();
-
-  destroy_directx_objects();
+  destroy_all();
 
   windows_message_loop::destroy();
   main_window::destroy();
@@ -96,34 +76,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   return 0;
 }
 
-auto RunMainMenuScreen() -> void
-{
-  log::write(log::type::info, "opening main menu screen");
-  screen_container<main_menu_screen> mainMenu { game_settings::framerateCapped(), DIK_F12 };
-  windows_message_loop::run(mainMenu);
-}
-
-auto create_directx_objects(HINSTANCE instance) -> void
-{
-  create_render_objects();
-  xaudio2_engine::create();
-  xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
-  level_geometries::create();
-  renderer::create();
-  create_input_devices(instance);
-}
-
-auto destroy_directx_objects() -> void
-{
-  destroy_input_devices();
-  renderer::destroy();
-  level_geometries::destroy();
-  xaudio2_masteringvoice::destroy();
-  xaudio2_engine::destroy();
-  destroy_render_objects();
-}
-
-auto create_render_objects() -> void
+auto initialize_all(HINSTANCE instance) -> void
 {
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   format(swapChainDesc);
@@ -132,30 +85,56 @@ auto create_render_objects() -> void
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
   dwrite_factory::create();
+
+  xaudio2_engine::create();
+  xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
+
+  level_geometries::create();
+  renderer::create();
+  diagnostics::create();
+
+  direct_input::create(instance);
+  keyboard_device::create(direct_input::get_raw(), main_window::handle());
+  keyboard_reader::create(keyboard_device::get());
+  gamepad_reader::create();
+  gamepad_reader::invert_y_axis();
+
+  audio_data::create(L"data");
+  audio_events::create();
+
+  game_volume_controller::create();
+  game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
+  game_volume_controller::setMusicVolume(game_settings::musicVolume());
 }
 
-auto destroy_render_objects() -> void
+auto destroy_all() -> void
 {
+  game_volume_controller::destroy();
+  audio_events::destroy();
+  audio_data::destroy();
+
+  gamepad_reader::destroy();
+  keyboard_reader::destroy();
+  keyboard_device::destroy();
+  direct_input::destroy();
+
+  diagnostics::destroy();
+  renderer::destroy();
+  level_geometries::destroy();
+  xaudio2_masteringvoice::destroy();
+  xaudio2_engine::destroy();
+
   dwrite_factory::destroy();
   render_target::destroy();
   d2d_factory::destroy();
   swap_chain::destroy();
 }
 
-auto create_input_devices(HINSTANCE instance) -> void
+auto run_main_menu_screen() -> void
 {
-  direct_input::create(instance);
-  keyboard_device::create(direct_input::get_raw(), main_window::handle());
-  keyboard_reader::create(keyboard_device::get());
-  gamepad_reader::create();
-}
-
-auto destroy_input_devices() -> void
-{
-  gamepad_reader::destroy();
-  keyboard_reader::destroy();
-  keyboard_device::destroy();
-  direct_input::destroy();
+  log::write(log::type::info, "opening main menu screen");
+  screen_container<main_menu_screen> mainMenu { game_settings::framerateCapped(), DIK_F12 };
+  windows_message_loop::run(mainMenu);
 }
 
 auto format(DXGI_SWAP_CHAIN_DESC& swapChainDesc) -> void
