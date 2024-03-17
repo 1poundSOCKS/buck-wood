@@ -105,8 +105,7 @@ auto RunMainMenuScreen() -> void
 
 auto create_directx_objects(HINSTANCE instance) -> void
 {
-  create_d2d_render_target();
-  dwrite_factory::create();
+  create_render_objects();
   xaudio2_engine::create();
   xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
   level_geometries::create();
@@ -121,11 +120,10 @@ auto destroy_directx_objects() -> void
   level_geometries::destroy();
   xaudio2_masteringvoice::destroy();
   xaudio2_engine::destroy();
-  dwrite_factory::destroy();
-  destroy_d2d_render_target();
+  destroy_render_objects();
 }
 
-auto create_d2d_render_target() -> void
+auto create_render_objects() -> void
 {
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   format(swapChainDesc);
@@ -133,10 +131,12 @@ auto create_d2d_render_target() -> void
   swap_chain::create(swapChainDesc, featureLevels);
   d2d_factory::create(); 
   render_target::create(swap_chain::get_raw(), d2d_factory::get_raw());
+  dwrite_factory::create();
 }
 
-auto destroy_d2d_render_target() -> void
+auto destroy_render_objects() -> void
 {
+  dwrite_factory::destroy();
   render_target::destroy();
   d2d_factory::destroy();
   swap_chain::destroy();
