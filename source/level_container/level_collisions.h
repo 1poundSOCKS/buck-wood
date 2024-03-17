@@ -99,6 +99,7 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, level_tar
   m_visitor.CreateExplosion(playerBullet.Position());
   playerBullet.Destroy();
   levelTarget.ApplyDamage(playerBullet.Damage());
+  m_visitor.TargetDamaged(levelTarget);
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, mine& mine) -> void
