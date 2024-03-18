@@ -29,6 +29,11 @@ public:
     m_mineRenderer.Write(object, geometry);
   }
 
+  auto Write(const portal& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_portalRenderer.Write(geometry);
+  }
+
   auto Write(const auto& object, ID2D1Geometry* geometry) const -> void
   {
     m_defaultGeometryRenderer.Write(geometry);
@@ -38,6 +43,7 @@ public:
   geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
   player_ship_renderer m_playerShipRenderer;
   mine_renderer m_mineRenderer;
+  geometry_renderer m_portalRenderer { screen_render_brush_grey.CreateBrush(), 10 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
 };

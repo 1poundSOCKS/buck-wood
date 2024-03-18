@@ -35,7 +35,7 @@ public:
 
 private:
 
-  auto Render(const dynamic_object<default_object>& object) const -> void;  
+  auto Render(const dynamic_object<default_object>& object) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const health_status& playerShields) const -> void;
