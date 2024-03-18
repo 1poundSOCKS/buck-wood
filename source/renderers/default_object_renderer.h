@@ -48,7 +48,7 @@ public:
   geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
   player_ship_renderer m_playerShipRenderer;
   mine_renderer m_mineRenderer;
-  geometry_renderer m_portalRenderer { screen_render_brush_grey.CreateBrush(), 10 };
+  geometry_renderer m_portalRenderer { screen_render_brush_dark_grey.CreateBrush(), 10 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
 };
