@@ -32,6 +32,9 @@ public:
   auto Write(const portal& object, ID2D1Geometry* geometry) const -> void
   {
     m_portalRenderer.Write(geometry);
+
+    float scale = object.Age() - static_cast<int>(object.Age()) + 1.0f;
+    scale;
   }
 
   auto Write(const auto& object, ID2D1Geometry* geometry) const -> void

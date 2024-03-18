@@ -33,10 +33,16 @@ public:
 
   auto Update(float interval) -> void
   {
+    m_age += interval;
   }
 
   auto Destroy() -> void
   {
+  }
+
+  [[nodiscard]] auto Age() const noexcept -> float
+  {
+    return m_age;
   }
 
 private:
@@ -46,6 +52,6 @@ private:
   constexpr static float m_angle { 0 };
   constexpr static bool m_destroyed { false };
   constexpr static VELOCITY_2F m_velocity { 0, 0 };
-  int m_damage;
+  float m_age { 0 };
 
 };
