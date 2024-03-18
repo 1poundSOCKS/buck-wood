@@ -34,7 +34,9 @@ public:
     m_portalRenderer.Write(geometry);
 
     float scale = object.Age() - static_cast<int>(object.Age()) + 1.0f;
-    scale;
+    auto transform = D2D1::Matrix3x2F::Scale({scale, scale}) * D2D1::Matrix3x2F::Translation({object.Position().x, object.Position().y});
+    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry, transform);
+    m_portalRenderer.Write(transformedGeometry.get());
   }
 
   auto Write(const auto& object, ID2D1Geometry* geometry) const -> void
