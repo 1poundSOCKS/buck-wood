@@ -51,6 +51,8 @@ public:
 
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
+  auto CreatePortal(auto&&...args) -> void;
+  auto CreatePlayer(auto&&...args) -> void;
   auto CreateTarget(auto&&...args) -> void;
   auto CreateMine(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
@@ -70,9 +72,10 @@ public:
   auto CreateNewObjects(player_ship& object) -> void;
   auto CreateNewObjects(auto& object) -> void;
 
+  [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
+
 private:
 
-  static [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
   auto UpdateObjects(float interval) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -123,8 +126,6 @@ inline level_container::level_container(level_type levelType, int index, std::ra
   std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
   m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
 {
-  m_staticObjects.emplace_back(level_geometries::CircleGeometry(), std::in_place_type<portal>, POINT_2F {0, 0});
-  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(levelType), playerPosition);
 }
 
 inline auto level_container::SetPlayerActive(bool value) -> void
@@ -185,6 +186,16 @@ inline [[nodiscard]] auto level_container::TargetCount() const -> int
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
 {
   return std::ranges::views::filter(m_movingObjects, unaryFunction);
+}
+
+auto level_container::CreatePortal(auto&&...args) -> void
+{
+  m_staticObjects.emplace_back(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreatePlayer(auto&&...args) -> void
+{
+  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateTarget(auto&&...args) -> void
@@ -269,9 +280,9 @@ inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelT
 {
   switch( levelType )
   {
-    case level_type::vertical_scroller:
+    case level_container::level_type::vertical_scroller:
       return player_ship::movement_type::horizontal;
-    case level_type::arena:
+    case level_container::level_type::arena:
       return player_ship::movement_type::both;
     default:
       return player_ship::movement_type::both;

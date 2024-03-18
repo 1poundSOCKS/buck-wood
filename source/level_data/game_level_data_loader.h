@@ -34,6 +34,9 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
+  levelContainer->CreatePortal(POINT_2F {0, 0});
+  levelContainer->CreatePlayer(demoLevel.PlayerPosition());
+
   m_targetsToCreate = 1;
   m_levelTimer = reload_timer { 3.0f };
   m_targetsToCreate = m_levelIndex + 1;
