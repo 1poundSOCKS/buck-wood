@@ -123,6 +123,7 @@ inline level_container::level_container(level_type levelType, int index, std::ra
   std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
   m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
 {
+  m_staticObjects.emplace_back(level_geometries::CircleGeometry(), std::in_place_type<portal>, POINT_2F {0, 0});
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(levelType), playerPosition);
 }
 

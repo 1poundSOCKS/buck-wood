@@ -77,5 +77,9 @@ namespace level_geometry_functions
   {
     return D2D1::Ellipse({ 0, 0 }, 50, 50);
   }
-}
 
+  inline auto GetCircle() -> D2D1_ELLIPSE
+  {
+    return D2D1::Ellipse({ 0, 0 }, 1, 1);
+  }
+}
