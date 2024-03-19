@@ -7,7 +7,10 @@
 
 class game_level_data_loader
 {
+
 public:
+
+  enum class state_type { inactive, active };
 
   game_level_data_loader() = default;
 
@@ -20,22 +23,23 @@ public:
 
 private:
 
+  state_type m_state { state_type::inactive };
   int m_levelIndex { -1 };
   inline static int m_levelCount { 99 };
   reload_timer m_levelTimer { 5.0f };
   bool m_updateComplete { false };
   int m_targetsToCreate { 1 };
 
+  demo_level m_demoLevel;
+
 };
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
-  demo_level demoLevel;
-
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, demoLevel.BoundaryPoints(), demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
-  levelContainer->CreatePlayer(demoLevel.PlayerPosition());
+  // levelContainer->CreatePlayer(demoLevel.PlayerPosition());
 
   m_targetsToCreate = 1;
   m_levelTimer = reload_timer { 3.0f };
@@ -48,10 +52,23 @@ inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer,
 {
   if( m_levelTimer.Update(interval) )
   {
-    if( m_targetsToCreate > 0 )
+    switch( m_state )
     {
-      levelContainer->CreateTarget( POINT_2F { 0, 0 }, 4.0f, 10);    
-      --m_targetsToCreate;
+      case state_type::inactive:
+        levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
+        m_state = state_type::active;
+        break;
+
+      case state_type::active:
+        if( m_targetsToCreate > 0 )
+        {
+          levelContainer->CreateTarget( POINT_2F { 0, 0 }, 4.0f, 10);    
+          --m_targetsToCreate;
+        }
+        break;
+
+      default:
+        break;
     }
   }
 }
@@ -63,6 +80,7 @@ inline [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
 
 inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
 {
+  m_state = state_type::inactive;
   return ++m_levelIndex < m_levelCount;
 }
 
