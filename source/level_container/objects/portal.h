@@ -48,7 +48,7 @@ public:
 private:
 
   POINT_2F m_position;
-  constexpr static SCALE_2F m_scale { 100.0f, 100.0f };
+  constexpr static SCALE_2F m_scale { 150.0f, 150.0f };
   constexpr static float m_angle { 0 };
   constexpr static bool m_destroyed { false };
   constexpr static VELOCITY_2F m_velocity { 0, 0 };
