@@ -9,7 +9,7 @@ public:
   {
   }
 
-  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.0f, 1.0f }; };
+  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 20.0f, 20.0f }; };
   constexpr [[nodiscard]] auto Angle() const -> float { return m_angle; }
 
   [[nodiscard]] auto Position() const -> POINT_2F

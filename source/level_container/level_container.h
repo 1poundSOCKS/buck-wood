@@ -229,7 +229,7 @@ inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
 
 auto level_container::CreatePowerUp(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
+  CreateMovingObject(level_geometries::CircleGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateMovingObject(auto&&...args) -> void
