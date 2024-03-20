@@ -30,6 +30,7 @@ public:
 
 protected:
 
+  auto RenderLevelContainer() const -> void;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;

@@ -5,6 +5,7 @@
 #include "renderers.h"
 #include "audio_events.h"
 #include "line_to_target.h"
+#include "game_settings.h"
 
 play_scene::play_scene(std::shared_ptr<play_state> playState) : 
   m_playState { playState }, m_levelTitle { m_playState->LevelContainer().Index() }
@@ -45,7 +46,9 @@ auto play_scene::Render() const -> void
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   auto transform = RenderTransform();
   render_target::get()->SetTransform(transform);
-  m_playState->LevelContainer().Render(GetRenderTargetView(transform));
+
+  // m_playState->LevelContainer().Render(GetRenderTargetView(transform));
+  RenderLevelContainer();
 
 #ifdef RENDER_TARGET_HUD
   auto targettedObject = m_playState->LevelContainer().TargettedObject();
@@ -88,6 +91,26 @@ auto play_scene::CameraPosition() const -> camera_sequence::camera_position
     default:
       return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
   }
+}
+
+auto play_scene::RenderLevelContainer() const -> void
+{
+  auto renderStart = performance_counter::QueryValue();
+
+  const auto& levelContainer = m_playState->LevelContainer();
+
+  if( levelContainer.Boundary().Geometry() )
+  {
+    renderer::render(levelContainer.Boundary());
+  }
+
+  renderer::render_all(levelContainer.StaticObjects());
+  renderer::render_all(levelContainer.Particles());
+  renderer::reverse_render_all(levelContainer.MovingObjects());
+
+  auto renderEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
 }
 
 auto play_scene::PlaySoundEffects() const -> void

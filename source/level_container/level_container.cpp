@@ -67,24 +67,6 @@ auto level_container::RemoveDestroyedObjects() -> void
   dynamic_object_functions::erase_destroyed(m_staticObjects);
 }
 
-auto level_container::Render(D2D1_RECT_F viewRect) const -> void
-{
-  auto renderStart = performance_counter::QueryValue();
-
-  if( m_boundary.Geometry() )
-  {
-    renderer::render(m_boundary);
-  }
-
-  renderer::render_all(m_particles);
-  renderer::reverse_render_all(m_movingObjects);
-  renderer::render_all(m_staticObjects);
-
-  auto renderEnd = performance_counter::QueryValue();
-
-  diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
-}
-
 auto level_container::DoCollisions() -> void
 {
   level_collision_handler collisionHandler { *this };

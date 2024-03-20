@@ -34,7 +34,6 @@ public:
   auto SetPlayerActive(bool value) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
-  auto Render(D2D1_RECT_F viewRect) const -> void;
 
   [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto Index() const -> int;
@@ -61,6 +60,11 @@ public:
   auto CreatePowerUp(auto&&...args) -> void;
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
+
+  auto Boundary() const -> const blank_object&;
+  auto StaticObjects() const -> const static_object_collection&;
+  auto MovingObjects() const -> const moving_object_collection&;
+  auto Particles() const -> const particle_collection&;
 
   auto TargetDamaged(const level_target& target) const -> void;
   auto MineDestroyed() const -> void;
@@ -236,6 +240,26 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::Boundary() const -> const blank_object&
+{
+  return m_boundary;
+}
+
+inline auto level_container::StaticObjects() const -> const static_object_collection&
+{
+  return m_staticObjects;
+}
+
+inline auto level_container::MovingObjects() const -> const moving_object_collection&
+{
+  return m_movingObjects;
+}
+
+inline auto level_container::Particles() const -> const particle_collection&
+{
+  return m_particles;
 }
 
 inline auto level_container::TargetDamaged(const level_target& target) const -> void
