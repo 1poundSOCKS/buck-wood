@@ -5,11 +5,11 @@ class power_up
 
 public:
 
-  power_up(POINT_2F position, float angle) : m_position { position }, m_angle { angle }
+  power_up(POINT_2F position) : m_position { position }
   {
   }
 
-  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 20.0f, 20.0f }; };
+  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return m_scale; };
   constexpr [[nodiscard]] auto Angle() const -> float { return m_angle; }
 
   [[nodiscard]] auto Position() const -> POINT_2F
@@ -24,8 +24,6 @@ public:
 
   auto Update(float interval) -> void
   {
-    constexpr float rotationSpeed = 100.0f;
-    m_angle = direct2d::RotateAngle(m_angle, rotationSpeed * interval);
   }
 
   auto Destroy() -> void
@@ -36,7 +34,8 @@ public:
 private:
 
   POINT_2F m_position;
-  float m_angle;
+  constexpr static SCALE_2F m_scale { 20.0f, 20.0f };
+  constexpr static float m_angle { 0 };
   bool m_destroyed { false };
 
 };
