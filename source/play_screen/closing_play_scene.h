@@ -37,9 +37,13 @@ public:
   {
     play_scene::Render();
     
+    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+
+    renderer::render(m_playState->Score());
+    renderer::render(m_playState->PowerUps());
+
     if( m_stopwatch.Expired() )
     {
-      render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
       D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
       m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
     }
