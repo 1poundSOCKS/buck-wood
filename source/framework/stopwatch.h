@@ -20,6 +20,11 @@ public:
     return ( m_ticks -= ticks ) > 0 ? true : false;
   }
 
+  auto Expired() const -> bool
+  {
+    return m_ticks > 0 ? false : true;
+  }
+
 private:
 
   int64_t m_ticks { 0 };
