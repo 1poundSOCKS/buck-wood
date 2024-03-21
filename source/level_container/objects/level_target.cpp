@@ -3,7 +3,7 @@
 #include "renderers.h"
 #include "shape_generator.h"
 
-level_target::level_target(POINT_2F position, float reloadTime, int hitpoints) : m_position { position }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
+level_target::level_target(POINT_2F position, float reloadTime, int hitpoints) : m_position { position }, m_reloadTimer { reloadTime }, m_maxHitpoints { hitpoints }, m_hitpoints { hitpoints }
 {
 }
 
@@ -15,14 +15,6 @@ level_target::level_target(POINT_2F position, float reloadTime, int hitpoints) :
 [[nodiscard]] auto level_target::CanShootAt(POINT_2F position) const -> bool
 {
   return !m_activated && m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
-}
-
-auto level_target::HitByBullet() -> void
-{
-  if( --m_hitPoints <= 0 )
-  {
-    Activate();
-  }
 }
 
 auto level_target::Activate() -> void

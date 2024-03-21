@@ -22,7 +22,6 @@ public:
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
 
-  auto HitByBullet() -> void;
   auto Activate() -> void;
   auto SetPlayerPosition(float x, float y) -> void;
   [[nodiscard]] auto Reloaded() const -> bool;
@@ -44,6 +43,11 @@ public:
     return m_age;
   }
 
+  [[nodiscard]] auto Health() const -> float
+  {
+    return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
+  }
+
 private:
 
   float m_reloadTime;
@@ -52,8 +56,9 @@ private:
   bool m_activated = false;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  int m_hitPoints { 10 };
+  // int m_hitPoints { 10 };
   bool m_destroyed { false };
+  int m_maxHitpoints;
   int m_hitpoints;
   std::optional<POINT_2F> m_destination;
   std::uniform_int_distribution<int> m_positionDist { -10, 10 };
