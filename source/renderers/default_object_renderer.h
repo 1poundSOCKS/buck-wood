@@ -4,7 +4,7 @@
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
 #include "player_ship_renderer.h"
-// #include "level_target_renderer.h"
+#include "level_target_renderer.h"
 #include "mine_renderer.h"
 
 class default_object_renderer
@@ -16,10 +16,7 @@ public:
 
   auto Write(const level_target& object, ID2D1Geometry* geometry) const -> void
   {
-    float halfAge = object.Age() / 2.0f;
-    float cyclicAge = halfAge - static_cast<int>(halfAge);
-    float fillBrushSelection = ( 1.0f - cyclicAge ) * 0.8f + 0.2f;
-    geometry_renderer::Write(geometry, m_targetBrushes[fillBrushSelection].get(), m_targetBrushes[0.0f].get(), 10);
+    m_targetRenderer.Write(object, geometry);
   }
 
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
@@ -52,10 +49,9 @@ public:
     m_defaultGeometryRenderer.Write(geometry);
   }
 
-  // geometry_renderer m_deactivatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_red.CreateBrush(), 10 };
-  // geometry_renderer m_activatedRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 10 };
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   player_ship_renderer m_playerShipRenderer;
+  level_target_renderer m_targetRenderer;
   mine_renderer m_mineRenderer;
   geometry_renderer m_portalRenderer { screen_render_brush_dark_grey.CreateBrush(), 10 };
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
