@@ -56,7 +56,6 @@ private:
   bool m_activated = false;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  // int m_hitPoints { 10 };
   bool m_destroyed { false };
   int m_maxHitpoints;
   int m_hitpoints;
