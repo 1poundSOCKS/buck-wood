@@ -39,6 +39,11 @@ public:
     return mineTypeValue > 5 ? mine::type::two : mine::type::one;
   }
 
+  [[nodiscard]] auto Age() const noexcept -> float
+  {
+    return m_age;
+  }
+
 private:
 
   float m_reloadTime;
@@ -53,6 +58,7 @@ private:
   std::optional<POINT_2F> m_destination;
   std::uniform_int_distribution<int> m_positionDist { -10, 10 };
   std::uniform_int_distribution<int> m_mineTypeDist { 1, 10 };
+  float m_age { 0 };
 
 };
 
@@ -83,6 +89,8 @@ inline auto level_target::Destroy() -> void
 
 auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition, auto&& playerBullets) -> void
 {
+  m_age += interval;
+
   auto bulletCount = std::ranges::count_if(playerBullets, [](const auto& bullet){ return true; });
   auto speed = bulletCount ? 300: 100;
 

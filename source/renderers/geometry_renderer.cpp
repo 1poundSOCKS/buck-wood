@@ -16,13 +16,18 @@ geometry_renderer::geometry_renderer(const render_brush& drawBrush, float drawWi
 
 auto geometry_renderer::Write(ID2D1Geometry* geometry) const -> void
 {
-  if( m_fillBrush )
+  Write(geometry, m_fillBrush.get(), m_drawBrush.get(), m_drawWidth);
+}
+
+auto geometry_renderer::Write(ID2D1Geometry* geometry, ID2D1SolidColorBrush* fillBrush, ID2D1SolidColorBrush* drawBrush, float drawWidth) -> void
+{
+  if( fillBrush )
   {
-    render_target::get()->FillGeometry(geometry, m_fillBrush.get());
+    render_target::get()->FillGeometry(geometry, fillBrush);
   }
 
-  if( m_drawBrush )
+  if( drawBrush )
   {
-    render_target::get()->DrawGeometry(geometry, m_drawBrush.get(), m_drawWidth);
+    render_target::get()->DrawGeometry(geometry, drawBrush, drawWidth);
   }
 }

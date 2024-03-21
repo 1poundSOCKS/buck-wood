@@ -32,3 +32,5 @@
 #include "enum_collection.h"
 #include "shape_generator.h"
 #include "wav_file_data.h"
+
+#include "color_scale_brushes.h"

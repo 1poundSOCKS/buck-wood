@@ -13,6 +13,8 @@ public:
 
   auto Write(ID2D1Geometry* geometry) const -> void;
 
+  static auto Write(ID2D1Geometry* geometry, ID2D1SolidColorBrush* fillBrush, ID2D1SolidColorBrush* drawBrush, float drawWidth) -> void;
+
 private:
 
   render_brush m_fillBrush;
