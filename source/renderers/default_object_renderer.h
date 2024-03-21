@@ -16,7 +16,8 @@ public:
 
   auto Write(const level_target& object, ID2D1Geometry* geometry) const -> void
   {
-    float fillBrushSelection = ( 1.0f - object.Age() + static_cast<int>(object.Age()) ) * 0.8f + 0.2f;
+    float cyclicAge = object.Age() - static_cast<int>(object.Age());
+    float fillBrushSelection = ( 1.0f - cyclicAge ) * 0.8f + 0.2f;
     geometry_renderer::Write(geometry, m_targetBrushes[fillBrushSelection].get(), m_targetBrushes[0.0f].get(), 10);
   }
 
