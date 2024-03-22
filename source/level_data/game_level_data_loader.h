@@ -4,6 +4,7 @@
 #include "play_events.h"
 #include "demo_level.h"
 #include "game_clock.h"
+#include "random_velocity.h"
 
 class game_level_data_loader
 {
@@ -27,8 +28,10 @@ private:
   int m_levelIndex { -1 };
   inline static int m_levelCount { 99 };
   reload_timer m_levelTimer { 5.0f };
+  reload_timer m_powerUpTimer { 7.0f };
   bool m_updateComplete { false };
   int m_targetsToCreate { 1 };
+  random_velocity m_randomVelocity { 100, 300 };
 
   demo_level m_demoLevel;
 
@@ -64,11 +67,15 @@ inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer,
           levelContainer->CreateTarget( POINT_2F { 0, 0 }, 4.0f, 10);    
           --m_targetsToCreate;
         }
-        break;
 
       default:
         break;
     }
+  }
+
+  if( m_state == state_type::active && m_powerUpTimer.Update(interval) )
+  {
+    levelContainer->CreatePowerUp( POINT_2F { 0, 0 }, m_randomVelocity.get() );
   }
 }
 

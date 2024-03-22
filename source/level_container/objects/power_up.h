@@ -5,7 +5,7 @@ class power_up
 
 public:
 
-  power_up(POINT_2F position) : m_position { position }
+  power_up(POINT_2F position, VELOCITY_2F velocity) : m_position { position }, m_velocity { velocity }
   {
   }
 
@@ -24,6 +24,7 @@ public:
 
   auto Update(float interval) -> void
   {
+    m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
   }
 
   auto Destroy() -> void
@@ -34,6 +35,7 @@ public:
 private:
 
   POINT_2F m_position;
+  VELOCITY_2F m_velocity;
   constexpr static SCALE_2F m_scale { 20.0f, 20.0f };
   constexpr static float m_angle { 0 };
   bool m_destroyed { false };
