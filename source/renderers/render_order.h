@@ -22,16 +22,6 @@ namespace render_order
       return 1;
     }
 
-    constexpr auto operator()(const mine&) -> int
-    {
-      return 0;
-    }
-
-    constexpr auto operator()(const player_bullet&) -> int
-    {
-      return 0;
-    }
-
     constexpr auto operator()(auto&& object) -> int
     {
       return 0;
