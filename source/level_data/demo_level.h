@@ -31,12 +31,12 @@ private:
   std::vector<D2D1_POINT_2F> m_asteroids;
   std::vector<D2D1_POINT_2F> m_ductFans;
 
-  constexpr static int m_boundaryWidth { 36 };
+  constexpr static int m_boundaryWidth { 38 };
   constexpr static int m_boundaryHeight { 24 };
 
-  constexpr static int m_cornerIndent { 3 };
+  constexpr static int m_cornerIndent { 4 };
 
-  constexpr static int m_boundaryStartPositionX { -18 };
+  constexpr static int m_boundaryStartPositionX { -19 };
   constexpr static int m_boundaryStartPositionY { 0 };
 
   inline static auto m_startBoundaryBuildCommands = {
