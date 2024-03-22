@@ -33,7 +33,7 @@ public:
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
   static auto reverse_render_all(std::ranges::input_range auto&& objects) -> void;
-  static auto ordered_render_all(std::ranges::input_range auto&& objects) -> void;
+  static auto ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -96,18 +96,19 @@ auto renderer::reverse_render_all(std::ranges::input_range auto&& objects) -> vo
   }
 }
 
-auto renderer::ordered_render_all(std::ranges::input_range auto&& objects) -> void
+auto renderer::ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void
 {
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
   {
-    auto renderObjects = std::ranges::views::filter(objects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+    auto renderObjects1 = std::ranges::views::filter(objects1, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+    auto renderObjects2 = std::ranges::views::filter(objects2, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
 
-    // for( const auto& object : objects )
-    // {
+    for( const auto& object : renderObjects1 )
+    {
+      m_instance->Render(object);
+    }
 
-    //   m_instance->Render(object);
-    // }
-    for( const auto& object : renderObjects )
+    for( const auto& object : renderObjects2 )
     {
       m_instance->Render(object);
     }
