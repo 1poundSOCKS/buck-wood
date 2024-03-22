@@ -6,6 +6,7 @@
 #include "player_ship_renderer.h"
 #include "level_target_renderer.h"
 #include "mine_renderer.h"
+#include "portal_renderer.h"
 
 class default_object_renderer
 {
@@ -31,13 +32,7 @@ public:
 
   auto Write(const portal& object, ID2D1Geometry* geometry) const -> void
   {
-    m_portalRenderer.Write(geometry);
-
-    constexpr static cyclic_interval cyclicInterval { 1.0f };
-    float scale = cyclicInterval.get(object.Age());
-    auto transform = D2D1::Matrix3x2F::Scale({scale, scale}) * D2D1::Matrix3x2F::Translation({object.Position().x, object.Position().y});
-    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry, transform);
-    m_portalRenderer.Write(transformedGeometry.get());
+    m_portalRenderer.Write(object, geometry);
   }
 
   auto Write(const power_up& object, ID2D1Geometry* geometry) const -> void
@@ -54,7 +49,7 @@ public:
   player_ship_renderer m_playerShipRenderer;
   level_target_renderer m_targetRenderer;
   mine_renderer m_mineRenderer;
-  geometry_renderer m_portalRenderer { screen_render_brush_dark_grey.CreateBrush(), 10 };
+  portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
