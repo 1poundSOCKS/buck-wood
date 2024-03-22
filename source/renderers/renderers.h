@@ -20,6 +20,8 @@
 
 #include "line_to_target.h"
 
+#include "render_order.h"
+
 class renderer
 {
 
@@ -31,6 +33,7 @@ public:
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
   static auto reverse_render_all(std::ranges::input_range auto&& objects) -> void;
+  static auto ordered_render_all(std::ranges::input_range auto&& objects) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -90,6 +93,24 @@ auto renderer::reverse_render_all(std::ranges::input_range auto&& objects) -> vo
   for( auto it = std::rbegin(objects); it != std::rend(objects); ++it )
   {
     m_instance->Render(*it);
+  }
+}
+
+auto renderer::ordered_render_all(std::ranges::input_range auto&& objects) -> void
+{
+  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  {
+    auto renderObjects = std::ranges::views::filter(objects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+
+    // for( const auto& object : objects )
+    // {
+
+    //   m_instance->Render(object);
+    // }
+    for( const auto& object : renderObjects )
+    {
+      m_instance->Render(object);
+    }
   }
 }
 

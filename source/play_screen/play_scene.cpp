@@ -106,7 +106,8 @@ auto play_scene::RenderLevelContainer() const -> void
 
   renderer::render_all(levelContainer.StaticObjects());
   renderer::render_all(levelContainer.Particles());
-  renderer::reverse_render_all(levelContainer.MovingObjects());
+  // renderer::reverse_render_all(levelContainer.MovingObjects());
+  renderer::ordered_render_all(levelContainer.MovingObjects());
 
   auto renderEnd = performance_counter::QueryValue();
 
