@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "mine.h"
 
-mine::mine(type type, POINT_2F position, VELOCITY_2F velocity) : base_object { position, velocity },
+mine::mine(type type, POINT_2F position, VELOCITY_2F velocity) : base_object { position, velocity, { 1.0f, 1.0f }, 0 },
   m_type { type }
 {
 }

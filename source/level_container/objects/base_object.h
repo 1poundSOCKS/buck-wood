@@ -7,7 +7,8 @@ class base_object
 
 public:
 
-  base_object(POINT_2F position, VELOCITY_2F velocity) noexcept : m_position { position }, m_velocity { velocity }
+  base_object(POINT_2F position, VELOCITY_2F velocity, SCALE_2F scale, float angle) noexcept : 
+    m_position { position }, m_velocity { velocity }, m_scale { scale }, m_angle { angle }
   {
   }
 
@@ -31,6 +32,16 @@ public:
     return m_destroyed;
   }
 
+  [[nodiscard]] auto Scale() const noexcept -> SCALE_2F
+  {
+    return m_scale;
+  };
+
+  [[nodiscard]] auto Angle() const noexcept -> float
+  {
+    return m_angle;
+  }
+
   auto Update(float interval) noexcept -> void
   {
     m_position = direct2d::CalculatePosition(m_position, m_velocity, interval);
@@ -48,5 +59,7 @@ protected:
   VELOCITY_2F m_velocity;
   float m_age { 0 };
   bool m_destroyed { false };
+  SCALE_2F m_scale;
+  float m_angle;
 
 };
