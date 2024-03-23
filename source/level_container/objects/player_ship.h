@@ -37,7 +37,6 @@ public:
   auto SetActive(bool value) -> void;
   auto SetInvulnerable(bool value) -> void;
 
-  // [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
