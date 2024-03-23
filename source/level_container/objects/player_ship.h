@@ -1,12 +1,13 @@
 #pragma once
 
 #include "framework.h"
+#include "base_object.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "reload_counter.h"
 #include "health_status.h"
 
-class player_ship
+class player_ship : public base_object
 {
 
 public:
@@ -20,24 +21,16 @@ public:
 
   player_ship(movement_type movementType, POINT_2F position);
 
-  constexpr [[nodiscard]] auto Scale() const -> SCALE_2F { return { 1.8f, 1.8f }; };
-  [[nodiscard]] auto Angle() const -> float;
-  [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
-  [[nodiscard]] auto Destroyed() const -> bool;
   auto Update(float interval) -> void;
-
   auto Update(float interval, bool enableControl) -> void;
 
-  auto SetAngle(float angle) -> void;
   auto Rotate(float angle) -> void;
   auto SetThrust(float value) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  auto Destroy() -> void;
   auto SetActive(bool value) -> void;
   auto SetInvulnerable(bool value) -> void;
 
-  [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
@@ -64,10 +57,6 @@ private:
 private:
 
   movement_type m_movementType;
-  D2D1_POINT_2F m_position { 0, 0 };
-  float m_angle { 0 };
-  VELOCITY_2F m_velocity { 0, 0 };
-  bool m_destroyed { false };
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
   bool m_active { false };
@@ -85,31 +74,6 @@ private:
   std::optional<D2D1_POINT_2F> m_destination;
 
 };
-
-inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
-{
-  return m_position;
-}
-
-inline [[nodiscard]] auto player_ship::Angle() const -> float
-{
-  return m_angle;
-}
-
-inline [[nodiscard]] auto player_ship::Velocity() const -> VELOCITY_2F
-{
-  return m_velocity;
-}
-
-inline [[nodiscard]] auto player_ship::Destroyed() const -> bool
-{
-  return m_destroyed;
-}
-
-inline auto player_ship::SetAngle(float angle) -> void
-{
-  m_angle = angle;
-}
 
 inline auto player_ship::Rotate(float angle) -> void
 {
@@ -133,11 +97,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus.ApplyFatalDamage();
   m_destroyed = true;
-}
-
-inline auto player_ship::Destroy() -> void
-{
-  m_destroyed = m_invulnerable ? false : true;
 }
 
 inline auto player_ship::SetActive(bool value) -> void

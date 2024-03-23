@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(movement_type movementType, POINT_2F position) : m_movementType { movementType },  m_position { position }
+player_ship::player_ship(movement_type movementType, POINT_2F position) : 
+  base_object { position, { 0, 0 }, { 1.8f, 1.8f }, 0 }, m_movementType { movementType }
 {
 }
 
@@ -50,7 +51,7 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
 
   m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_angle;
   m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
-  m_position = GetUpdatedPosition(m_position, m_velocity, interval);
+  base_object::Update(interval);
 
   m_thrusterOn = thrustControlValue > 0 ? true : false;
   m_shieldsUp = shieldControlOn;
