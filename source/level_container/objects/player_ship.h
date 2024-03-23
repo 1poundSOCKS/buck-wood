@@ -37,7 +37,7 @@ public:
   auto SetActive(bool value) -> void;
   auto SetInvulnerable(bool value) -> void;
 
-  [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
+  // [[nodiscard]] auto PreviousPosition() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Velocity() const -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
@@ -66,7 +66,6 @@ private:
 
   movement_type m_movementType;
   D2D1_POINT_2F m_position { 0, 0 };
-  D2D1_POINT_2F m_previousPosition { 0, 0 };
   float m_angle { 0 };
   VELOCITY_2F m_velocity { 0, 0 };
   bool m_destroyed { false };
@@ -91,11 +90,6 @@ private:
 inline [[nodiscard]] auto player_ship::Position() const -> D2D1_POINT_2F
 {
   return m_position;
-}
-
-inline [[nodiscard]] auto player_ship::PreviousPosition() const -> D2D1_POINT_2F
-{
-  return m_previousPosition;
 }
 
 inline [[nodiscard]] auto player_ship::Angle() const -> float
