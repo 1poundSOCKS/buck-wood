@@ -55,7 +55,7 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   m_levelTimer = { 3.0f };
   m_targetTimer = { 3.0f };
-  m_powerUpTimer = { 7.0f };
+  m_powerUpTimer = { 2.0f };
 
   m_state = state_type::starting;
 

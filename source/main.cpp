@@ -111,7 +111,6 @@ auto destroy_all() -> void
 {
   game_volume_controller::destroy();
   audio_events::destroy();
-  audio_data::destroy();
 
   gamepad_reader::destroy();
   keyboard_reader::destroy();
@@ -123,6 +122,8 @@ auto destroy_all() -> void
   level_geometries::destroy();
   xaudio2_masteringvoice::destroy();
   xaudio2_engine::destroy();
+
+  audio_data::destroy();
 
   dwrite_factory::destroy();
   render_target::destroy();
