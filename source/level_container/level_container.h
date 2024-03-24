@@ -58,6 +58,8 @@ public:
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
+  auto CreateEnemyTypeOne(auto&&...args) -> void;
+
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
 
@@ -210,6 +212,11 @@ auto level_container::CreateTarget(auto&&...args) -> void
 auto level_container::CreateMine(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateEnemyTypeOne(auto&&...args) -> void
+{
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_one>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void

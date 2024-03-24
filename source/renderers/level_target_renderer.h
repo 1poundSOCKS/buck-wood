@@ -11,7 +11,7 @@ class level_target_renderer
 
 public:
 
-  auto Write(const level_target& object, ID2D1Geometry* geometry) const -> void;
+  auto Write(auto&& object, ID2D1Geometry* geometry) const -> void;
 
 private:
 
@@ -19,7 +19,7 @@ private:
 
 };
 
-inline auto level_target_renderer::Write(const level_target& object, ID2D1Geometry* geometry) const -> void
+inline auto level_target_renderer::Write(auto&& object, ID2D1Geometry* geometry) const -> void
 {
   constexpr static float cycleLength = 5.0f;
 

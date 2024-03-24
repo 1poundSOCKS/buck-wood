@@ -20,6 +20,11 @@ public:
     m_targetRenderer.Write(object, geometry);
   }
 
+  auto Write(const enemy_type_one& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_targetRenderer.Write(object, geometry);
+  }
+
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
   {
     m_playerShipRenderer.Write(object, geometry);

@@ -32,9 +32,9 @@ private:
   state_type m_state { state_type::starting };
   int m_levelIndex { -1 };
   inline static int m_levelCount { 99 };
-  reload_timer m_levelTimer { 3.0f };
-  reload_timer m_targetTimer { 3.0f };
-  reload_timer m_powerUpTimer { 7.0f };
+  reload_timer m_levelTimer { 0 };
+  reload_timer m_targetTimer { 0 };
+  reload_timer m_powerUpTimer { 0 };
   bool m_updateComplete { false };
   int m_targetsToCreate { 1 };
   random_velocity m_randomVelocity { 100, 300 };
@@ -108,7 +108,8 @@ inline auto game_level_data_loader::UpdateActiveLevel(level_container* levelCont
 {
   if( m_targetTimer.Update(interval) && m_targetsToCreate > 0 )
   {
-    levelContainer->CreateTarget( POINT_2F { 0, 0 }, 4.0f, 10);    
+    levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
+    levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
     --m_targetsToCreate;
   }
 
