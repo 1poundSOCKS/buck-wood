@@ -11,11 +11,15 @@ class level_target_renderer
 
 public:
 
+  level_target_renderer(color_scale colorScale) : m_targetBrushes { colorScale }
+  {
+  }
+
   auto Write(auto&& object, ID2D1Geometry* geometry) const -> void;
 
 private:
 
-  color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 } };
+  color_scale_brushes m_targetBrushes;
 
 };
 

@@ -22,7 +22,7 @@ public:
 
   auto Write(const enemy_type_one& object, ID2D1Geometry* geometry) const -> void
   {
-    m_targetRenderer.Write(object, geometry);
+    m_enemyTypeOneRenderer.Write(object, geometry);
   }
 
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
@@ -52,7 +52,8 @@ public:
 
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   player_ship_renderer m_playerShipRenderer;
-  level_target_renderer m_targetRenderer;
+  level_target_renderer m_targetRenderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 } };
+  level_target_renderer m_enemyTypeOneRenderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 } };
   mine_renderer m_mineRenderer;
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
