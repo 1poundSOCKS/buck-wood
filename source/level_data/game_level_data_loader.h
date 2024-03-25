@@ -54,6 +54,7 @@ public:
   auto CreatePlayer(level_container* levelContainer) -> void;
   auto CreateTargets(level_container* levelContainer, int count) -> void;
   auto CreateEnemies(level_container* levelContainer, int count) -> void;
+  auto CreatePowerUps(level_container* levelContainer, int count) -> void;
 
 private:
 
@@ -85,12 +86,18 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
       break;
     
     case 1:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
     
     case 2:
       m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
       m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateEnemies(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
 
     default:
@@ -146,5 +153,13 @@ inline auto game_level_data_loader::CreateEnemies(level_container* levelContaine
   for( int i = 0; i < count; ++i )
   {
     levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
+  }
+}
+
+inline auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int count) -> void
+{
+  for( int i = 0; i < count; ++i )
+  {
+    levelContainer->CreatePowerUp(POINT_2F { 0, 0 }, m_randomVelocity.get());
   }
 }
