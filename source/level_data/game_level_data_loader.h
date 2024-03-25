@@ -52,7 +52,7 @@ public:
   [[nodiscard]] auto MoreUpdates() const -> bool;
 
   auto CreatePlayer(level_container* levelContainer) -> void;
-  auto CreateTarget(level_container* levelContainer) -> void;
+  auto CreateTargets(level_container* levelContainer, int count) -> void;
 
 private:
 
@@ -73,8 +73,9 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
 
+  m_events.clear();
   m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreatePlayer(levelContainer); });
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTarget(levelContainer); });
+  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, m_levelIndex + 1); });
 
   m_currentEvent = std::begin(m_events);
 
@@ -111,7 +112,10 @@ inline auto game_level_data_loader::CreatePlayer(level_container* levelContainer
   levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
 }
 
-inline auto game_level_data_loader::CreateTarget(level_container* levelContainer) -> void
+inline auto game_level_data_loader::CreateTargets(level_container* levelContainer, int count) -> void
 {
-  levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
+  for( int i = 0; i < count; ++i )
+  {
+    levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
+  }
 }
