@@ -58,7 +58,7 @@ public:
 private:
 
   int m_levelIndex { -1 };
-  inline static int m_levelCount { 99 };
+  inline static int m_levelCount { 3 };
   random_velocity m_randomVelocity { 100, 300 };
 
   std::vector<level_update_event> m_events;
