@@ -4,7 +4,7 @@
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
 #include "player_ship_renderer.h"
-#include "level_target_renderer.h"
+#include "flashing_geometry_renderer.h"
 #include "mine_renderer.h"
 #include "portal_renderer.h"
 
@@ -52,8 +52,8 @@ public:
 
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   player_ship_renderer m_playerShipRenderer;
-  level_target_renderer m_targetRenderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 } };
-  level_target_renderer m_enemyTypeOneRenderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 } };
+  flashing_geometry_renderer m_targetRenderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 } };
+  flashing_geometry_renderer m_enemyTypeOneRenderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 } };
   mine_renderer m_mineRenderer;
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };

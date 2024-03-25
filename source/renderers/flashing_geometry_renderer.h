@@ -6,12 +6,12 @@
 #include "screen_render_brush_defs.h"
 #include "cyclic_interval.h"
 
-class level_target_renderer
+class flashing_geometry_renderer
 {
 
 public:
 
-  level_target_renderer(color_scale colorScale) : m_targetBrushes { colorScale }
+  flashing_geometry_renderer(color_scale colorScale) : m_targetBrushes { colorScale }
   {
   }
 
@@ -23,7 +23,7 @@ private:
 
 };
 
-inline auto level_target_renderer::Write(auto&& object, ID2D1Geometry* geometry) const -> void
+inline auto flashing_geometry_renderer::Write(auto&& object, ID2D1Geometry* geometry) const -> void
 {
   constexpr static float cycleLength = 5.0f;
 
