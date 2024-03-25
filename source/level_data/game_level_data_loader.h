@@ -53,6 +53,7 @@ public:
 
   auto CreatePlayer(level_container* levelContainer) -> void;
   auto CreateTargets(level_container* levelContainer, int count) -> void;
+  auto CreateEnemies(level_container* levelContainer, int count) -> void;
 
 private:
 
@@ -74,8 +75,28 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
   levelContainer->CreatePortal(POINT_2F {0, 0});
 
   m_events.clear();
+
   m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreatePlayer(levelContainer); });
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, m_levelIndex + 1); });
+
+  switch( m_levelIndex )
+  {
+    case 0:
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      break;
+    
+    case 1:
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
+      break;
+    
+    case 2:
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateEnemies(levelContainer, 1); });
+      break;
+
+    default:
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      break;
+  }
 
   m_currentEvent = std::begin(m_events);
 
@@ -117,5 +138,13 @@ inline auto game_level_data_loader::CreateTargets(level_container* levelContaine
   for( int i = 0; i < count; ++i )
   {
     levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
+  }
+}
+
+inline auto game_level_data_loader::CreateEnemies(level_container* levelContainer, int count) -> void
+{
+  for( int i = 0; i < count; ++i )
+  {
+    levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
   }
 }
