@@ -6,6 +6,34 @@
 #include "game_clock.h"
 #include "random_velocity.h"
 
+class level_update_event
+{
+
+public:
+
+  level_update_event(float wait, std::function<void(level_container*)> event) : m_timer { wait }, m_event { event }
+  {
+  }
+
+  auto Update(float interval, level_container* levelContainer) -> bool
+  {
+    bool complete = m_timer.Update(interval);
+
+    if( complete )
+    {
+      m_event(levelContainer);
+    }
+
+    return complete;
+  }
+
+private:
+
+  reload_timer m_timer;
+  std::function<void(level_container*)> m_event;
+
+};
+
 class game_level_data_loader
 {
 
@@ -23,21 +51,17 @@ public:
   [[nodiscard]] auto CurrentLevel() const -> int;
   [[nodiscard]] auto MoreUpdates() const -> bool;
 
+  auto CreatePlayer(level_container* levelContainer) -> void;
+  auto CreateTarget(level_container* levelContainer) -> void;
+
 private:
 
-  auto UpdateActiveLevel(level_container* levelContainer, float interval) -> void;
-
-private:
-
-  state_type m_state { state_type::starting };
   int m_levelIndex { -1 };
   inline static int m_levelCount { 99 };
-  reload_timer m_levelTimer { 0 };
-  reload_timer m_targetTimer { 0 };
-  reload_timer m_powerUpTimer { 0 };
-  bool m_updateComplete { false };
-  int m_targetsToCreate { 1 };
   random_velocity m_randomVelocity { 100, 300 };
+
+  std::vector<level_update_event> m_events;
+  std::vector<level_update_event>::iterator m_currentEvent;
 
   demo_level m_demoLevel;
 
@@ -49,39 +73,17 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
 
-  m_targetsToCreate = 1;
-  m_levelTimer = reload_timer { 3.0f };
-  m_targetsToCreate = m_levelIndex + 1;
+  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreatePlayer(levelContainer); });
+  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTarget(levelContainer); });
 
-  m_levelTimer = reload_timer { 3.0f };
-  m_targetTimer = reload_timer { 3.0f };
-  m_powerUpTimer = reload_timer { 2.0f };
-
-  m_state = state_type::starting;
+  m_currentEvent = std::begin(m_events);
 
   return levelContainer;
 }
 
 inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float interval) -> void
 {
-  switch( m_state )
-  {
-    case state_type::starting:
-      if( m_levelTimer.Update(interval) )
-      {
-        m_state = state_type::active;
-        levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
-      }
-      break;
-
-    case state_type::active:
-      UpdateActiveLevel(levelContainer, interval);
-      m_state = MoreUpdates() ? state_type::active : state_type::finished;
-      break;
-
-    default:
-      break;
-  }
+  m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
 }
 
 inline [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
@@ -101,20 +103,15 @@ inline [[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
 
 inline [[nodiscard]] auto game_level_data_loader::MoreUpdates() const -> bool
 {
-  return m_targetsToCreate > 0 ? true : false;
+  return m_currentEvent != std::end(m_events);
 }
 
-inline auto game_level_data_loader::UpdateActiveLevel(level_container* levelContainer, float interval) -> void
+inline auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
-  if( m_targetTimer.Update(interval) && m_targetsToCreate > 0 )
-  {
-    levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
-    levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
-    --m_targetsToCreate;
-  }
+  levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
+}
 
-  if( m_powerUpTimer.Update(interval) )
-  {
-    levelContainer->CreatePowerUp( POINT_2F { 0, 0 }, m_randomVelocity.get() );
-  }
+inline auto game_level_data_loader::CreateTarget(level_container* levelContainer) -> void
+{
+  levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
 }
