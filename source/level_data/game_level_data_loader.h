@@ -1,38 +1,8 @@
 #pragma once
 
-#include "level_container.h"
-#include "play_events.h"
+#include "level_update_event.h"
 #include "demo_level.h"
-#include "game_clock.h"
 #include "random_velocity.h"
-
-class level_update_event
-{
-
-public:
-
-  level_update_event(float wait, std::function<void(level_container*)> event) : m_timer { wait }, m_event { event }
-  {
-  }
-
-  auto Update(float interval, level_container* levelContainer) -> bool
-  {
-    bool complete = m_timer.Update(interval);
-
-    if( complete )
-    {
-      m_event(levelContainer);
-    }
-
-    return complete;
-  }
-
-private:
-
-  reload_timer m_timer;
-  std::function<void(level_container*)> m_event;
-
-};
 
 class game_level_data_loader
 {
@@ -54,6 +24,7 @@ public:
   auto CreatePlayer(level_container* levelContainer) -> void;
   auto CreateTargets(level_container* levelContainer, int count) -> void;
   auto CreateEnemies(level_container* levelContainer, int count) -> void;
+  auto CreatePowerUps(level_container* levelContainer, int count) -> void;
 
 private:
 
@@ -85,12 +56,18 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
       break;
     
     case 1:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
     
     case 2:
       m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
       m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateEnemies(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
 
     default:
@@ -101,50 +78,4 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
   m_currentEvent = std::begin(m_events);
 
   return levelContainer;
-}
-
-inline auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float interval) -> void
-{
-  m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
-}
-
-inline [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
-{
-  return m_levelIndex + 1 < m_levelCount;
-}
-
-inline [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
-{
-  return ++m_levelIndex < m_levelCount;
-}
-
-inline [[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
-{
-  return m_levelIndex;
-}
-
-inline [[nodiscard]] auto game_level_data_loader::MoreUpdates() const -> bool
-{
-  return m_currentEvent != std::end(m_events);
-}
-
-inline auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
-{
-  levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
-}
-
-inline auto game_level_data_loader::CreateTargets(level_container* levelContainer, int count) -> void
-{
-  for( int i = 0; i < count; ++i )
-  {
-    levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
-  }
-}
-
-inline auto game_level_data_loader::CreateEnemies(level_container* levelContainer, int count) -> void
-{
-  for( int i = 0; i < count; ++i )
-  {
-    levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
-  }
 }
