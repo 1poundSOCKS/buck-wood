@@ -2,8 +2,9 @@
 
 #include "framework.h"
 #include "base_object.h"
+#include "object_velocity.h"
 
-class mine : public base_object
+class mine : public base_object, public object_velocity
 {
 
 public:

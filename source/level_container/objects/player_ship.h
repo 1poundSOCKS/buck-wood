@@ -2,12 +2,13 @@
 
 #include "framework.h"
 #include "base_object.h"
+#include "object_velocity.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "reload_counter.h"
 #include "health_status.h"
 
-class player_ship : public base_object
+class player_ship : public base_object, public object_velocity
 {
 
 public:

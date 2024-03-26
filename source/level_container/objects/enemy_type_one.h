@@ -33,7 +33,7 @@ private:
 
 };
 
-inline enemy_type_one::enemy_type_one(POINT_2F position) : base_object { position, { 0, 0 }, { 1, 1 }, 0 }
+inline enemy_type_one::enemy_type_one(POINT_2F position) : base_object { position, { 1, 1 }, 0 }
 {
 }
 
