@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "base_object.h"
+#include "object_destination.h"
 
 constexpr auto GetEnemyPath()
 {
@@ -39,19 +40,11 @@ inline enemy_type_one::enemy_type_one(POINT_2F position) : base_object { positio
 
 inline auto enemy_type_one::Update(float interval) -> void
 {
-  auto currentDestination = m_path[m_destinationIndex];
-  auto distanceToDestination = direct2d::GetDistanceBetweenPoints(m_position, currentDestination);
-  auto distanceToMove = m_speed * interval;
+  auto destination = object_destination { m_path[m_destinationIndex] };
+  m_position = destination.UpdatePosition(m_position, m_speed, interval);
 
-  if( distanceToDestination < distanceToMove )
-  {
-    m_position = currentDestination;
-    m_destinationIndex = ++m_destinationIndex < m_path.size() ? m_destinationIndex : 0;
-  }
-  else
-  {
-    m_position = direct2d::MoveTowards(m_position, currentDestination, distanceToMove);
-  }
+  m_destinationIndex += destination == m_position ? 1 : 0;
+  m_destinationIndex = m_destinationIndex < m_path.size() ? m_destinationIndex : 0;
 
   base_object::Update(interval);
 }
