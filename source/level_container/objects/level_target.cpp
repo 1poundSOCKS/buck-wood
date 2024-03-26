@@ -28,7 +28,17 @@ auto level_target::Activate() -> void
   return m_reloaded;
 }
 
-auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition) -> void
+auto level_target::Update(float interval) -> void
 {
-  Update(interval, playerPosition, std::ranges::empty_view<player_bullet>());
+  base_object::Update(interval);
+
+  float speed = 300;
+
+  auto x = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
+  auto y = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
+
+  m_destination = m_destination ? m_destination : std::optional<POINT_2F>({x * 100, y * 100});
+  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, speed * interval) : m_position;
+  m_destination = m_destination && direct2d::AreEqual(m_position, *m_destination) ? std::nullopt : m_destination;
+  m_reloaded = m_reloadTimer.Update(interval);
 }

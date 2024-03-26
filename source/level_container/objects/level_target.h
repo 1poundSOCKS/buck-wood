@@ -12,8 +12,7 @@ public:
 
   level_target(POINT_2F position, float reloadTime, int hitpoints);
 
-  auto Update(float interval, std::optional<POINT_2F> playerPosition) -> void;
-  auto Update(float interval, std::optional<POINT_2F> playerPosition, auto&& playerBullets) -> void;
+  auto Update(float interval) -> void;
 
   [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
@@ -48,24 +47,9 @@ private:
   int m_maxHitpoints;
   int m_hitpoints;
   std::optional<POINT_2F> m_destination;
-  std::uniform_int_distribution<int> m_positionDist { -10, 10 };
-  std::uniform_int_distribution<int> m_mineTypeDist { 1, 10 };
+
+  inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
+  inline static std::uniform_int_distribution<int> m_mineTypeDist { 1, 10 };
+  inline static std::uniform_int_distribution<int> m_mineSpeed { 200, 400 };
 
 };
-
-auto level_target::Update(float interval, std::optional<POINT_2F> playerPosition, auto&& playerBullets) -> void
-{
-  base_object::Update(interval);
-
-  auto bulletCount = std::ranges::count_if(playerBullets, [](const auto& bullet){ return true; });
-  auto speed = bulletCount ? 300: 100;
-
-  auto x = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
-  auto y = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
-
-  m_destination = m_destination ? m_destination : std::optional<POINT_2F>({x * 100, y * 100});
-  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, speed * interval) : m_position;
-  m_destination = m_destination && direct2d::AreEqual(m_position, *m_destination) ? std::nullopt : m_destination;
-  m_angle = playerPosition ? direct2d::GetAngleBetweenPoints(m_position, *playerPosition) : m_angle;
-  m_reloaded = m_reloadTimer.Update(interval);
-}

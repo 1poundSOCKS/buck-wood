@@ -14,16 +14,6 @@ struct update_object_visitor
     m_levelContainer.SavePlayerState(object);
   }
 
-  auto operator()(level_target& object)
-  {
-    auto playerBullets = m_levelContainer.MovingObjects([](const auto& object)
-    {
-      return object->HoldsAlternative<player_bullet>();
-    });
-
-    object.Update(m_interval, m_levelContainer.PlayerState().Position(), playerBullets);
-  }
-
   auto operator()(auto& object)
   {
     object.Update(m_interval);
