@@ -3,18 +3,7 @@
 #include "framework.h"
 #include "base_object.h"
 #include "object_destination.h"
-
-constexpr auto GetEnemyPath()
-{
-  constexpr float distance = 1000;
-
-  return std::array {
-    POINT_2F { -distance, -distance },
-    POINT_2F { -distance, distance },
-    POINT_2F { distance, distance },
-    POINT_2F { distance, -distance }
-  };
-}
+#include "enemy_movement_path.h"
 
 class enemy_type_1 : public base_object
 {
@@ -32,6 +21,8 @@ private:
   constexpr static float m_speed { 500 };
   int m_destinationIndex { 0 };
 
+  enemy_movement_path m_pathMovement;
+
 };
 
 inline enemy_type_1::enemy_type_1(POINT_2F position) : base_object { position, { 1, 1 }, 0 }
@@ -40,12 +31,7 @@ inline enemy_type_1::enemy_type_1(POINT_2F position) : base_object { position, {
 
 inline auto enemy_type_1::Update(float interval) -> void
 {
-  auto destination = object_destination { m_path[m_destinationIndex] };
-  m_position = destination.UpdatePosition(m_position, m_speed, interval);
-
-  m_destinationIndex += destination == m_position ? 1 : 0;
-  m_destinationIndex = m_destinationIndex < m_path.size() ? m_destinationIndex : 0;
-
+  m_position = m_pathMovement(m_position, interval);
   base_object::Update(interval);
 }
 
