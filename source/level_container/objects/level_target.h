@@ -14,34 +14,19 @@ public:
 
   auto Update(float interval) -> void;
 
-  [[nodiscard]] auto IsActivated() const -> bool;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
-
-  auto Activate() -> void;
-  auto SetPlayerPosition(float x, float y) -> void;
   [[nodiscard]] auto Reloaded() const -> bool;
+  [[nodiscard]] auto MineType() -> mine::type;
+  [[nodiscard]] auto Health() const -> float;
 
-  auto ApplyDamage(int value) -> void
-  {
-    m_hitpoints = std::max(0, m_hitpoints - value);
-    m_destroyed = m_hitpoints == 0;
-  }
-
-  [[nodiscard]] auto MineType() -> mine::type
-  {
-    int mineTypeValue = m_mineTypeDist(pseudo_random_generator::get());
-    return mineTypeValue > 5 ? mine::type::two : mine::type::one;
-  }
-
-  [[nodiscard]] auto Health() const -> float
-  {
-    return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
-  }
+  auto ApplyDamage(int value) -> void;
 
 private:
 
+  enum class object_state { moving, shooting };
+
+  object_state m_state { object_state::moving };
   float m_reloadTime;
-  bool m_activated = false;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   int m_maxHitpoints;
@@ -53,3 +38,30 @@ private:
   inline static std::uniform_int_distribution<int> m_mineSpeed { 200, 400 };
 
 };
+
+inline [[nodiscard]] auto level_target::CanShootAt(POINT_2F position) const -> bool
+{
+  return m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
+}
+
+inline [[nodiscard]] auto level_target::Reloaded() const -> bool
+{
+  return m_reloaded;
+}
+
+inline auto level_target::ApplyDamage(int value) -> void
+{
+  m_hitpoints = std::max(0, m_hitpoints - value);
+  m_destroyed = m_hitpoints == 0;
+}
+
+inline [[nodiscard]] auto level_target::MineType() -> mine::type
+{
+  int mineTypeValue = m_mineTypeDist(pseudo_random_generator::get());
+  return mineTypeValue > 5 ? mine::type::two : mine::type::one;
+}
+
+inline [[nodiscard]] auto level_target::Health() const -> float
+{
+  return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
+}
