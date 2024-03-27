@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "base_object.h"
-// #include "object_destination.h"
 #include "reload_timer.h"
 
 template <typename movement_type> class enemy_type : public base_object
@@ -30,11 +29,13 @@ private:
 
 };
 
-template <typename movement_type> enemy_type<movement_type>::enemy_type(POINT_2F position) : base_object { position, { 1, 1 }, 0 }
+template <typename movement_type> enemy_type<movement_type>::enemy_type(POINT_2F position) : 
+  base_object { position, { 1, 1 }, 0 }
 {
 }
 
-template <typename movement_type> enemy_type<movement_type>::enemy_type(POINT_2F position, float reloadTime, int hitpoints) : base_object { position, { 1, 1 }, 0 }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
+template <typename movement_type> enemy_type<movement_type>::enemy_type(POINT_2F position, float reloadTime, int hitpoints) : 
+  base_object { position, { 1, 1 }, 0 }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
 {
 }
 
