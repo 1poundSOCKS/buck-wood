@@ -52,13 +52,13 @@ public:
 
   auto CreatePortal(auto&&...args) -> void;
   auto CreatePlayer(auto&&...args) -> void;
-  auto CreateTarget(auto&&...args) -> void;
-  auto CreateMine(auto&&...args) -> void;
+  auto CreateEnemyType1(auto&&...args) -> void;
+  auto CreateEnemyType2(auto&&...args) -> void;
+  auto CreateEnemyBullet(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
-  auto CreateEnemyTypeOne(auto&&...args) -> void;
 
   auto CreateExplosion(D2D1_POINT_2F position) -> void;
   auto CreateImpact(D2D1_POINT_2F position) -> void;
@@ -74,6 +74,7 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
+  auto CreateNewObjects(enemy_type_1& object) -> void;
   auto CreateNewObjects(enemy_type_2& object) -> void;
   auto CreateNewObjects(player_ship& object) -> void;
   auto CreateNewObjects(auto& object) -> void;
@@ -204,19 +205,19 @@ auto level_container::CreatePlayer(auto&&...args) -> void
   m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateTarget(auto&&...args) -> void
+auto level_container::CreateEnemyType1(auto&&...args) -> void
+{
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateEnemyType2(auto&&...args) -> void
 {
   m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateMine(auto&&...args) -> void
+auto level_container::CreateEnemyBullet(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateEnemyTypeOne(auto&&...args) -> void
-{
-  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void

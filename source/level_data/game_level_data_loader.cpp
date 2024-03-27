@@ -31,19 +31,19 @@ auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> vo
   levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
 }
 
-auto game_level_data_loader::CreateTargets(level_container* levelContainer, int count) -> void
+auto game_level_data_loader::CreateType1Enemies(level_container* levelContainer, int count) -> void
 {
   for( int i = 0; i < count; ++i )
   {
-    levelContainer->CreateTarget(POINT_2F { 0, 0 }, 4.0f, 10);
+    levelContainer->CreateEnemyType1(POINT_2F { 0, 0 });
   }
 }
 
-auto game_level_data_loader::CreateEnemies(level_container* levelContainer, int count) -> void
+auto game_level_data_loader::CreateType2Enemies(level_container* levelContainer, int count) -> void
 {
   for( int i = 0; i < count; ++i )
   {
-    levelContainer->CreateEnemyTypeOne(POINT_2F { 0, 0 });
+    levelContainer->CreateEnemyType2(POINT_2F { 0, 0 }, 4.0f, 10);
   }
 }
 

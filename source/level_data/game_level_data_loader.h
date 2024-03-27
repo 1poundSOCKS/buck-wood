@@ -22,8 +22,8 @@ public:
   [[nodiscard]] auto MoreUpdates() const -> bool;
 
   auto CreatePlayer(level_container* levelContainer) -> void;
-  auto CreateTargets(level_container* levelContainer, int count) -> void;
-  auto CreateEnemies(level_container* levelContainer, int count) -> void;
+  auto CreateType1Enemies(level_container* levelContainer, int count) -> void;
+  auto CreateType2Enemies(level_container* levelContainer, int count) -> void;
   auto CreatePowerUps(level_container* levelContainer, int count) -> void;
 
 private:
@@ -52,26 +52,26 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
   switch( m_levelIndex )
   {
     case 0:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
       break;
     
     case 1:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
     
     case 2:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 2); });
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateEnemies(levelContainer, 1); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 2); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
 
     default:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateTargets(levelContainer, 1); });
+      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 5); });
       break;
   }
 
