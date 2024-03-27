@@ -16,12 +16,12 @@ constexpr auto GetEnemyPath()
   };
 }
 
-class enemy_type_one : public base_object
+class enemy_type_1 : public base_object
 {
 
 public:
 
-  enemy_type_one(POINT_2F position);
+  enemy_type_1(POINT_2F position);
   auto Update(float interval) -> void;
 
   constexpr [[nodiscard]] auto Health() const -> float;
@@ -34,11 +34,11 @@ private:
 
 };
 
-inline enemy_type_one::enemy_type_one(POINT_2F position) : base_object { position, { 1, 1 }, 0 }
+inline enemy_type_1::enemy_type_1(POINT_2F position) : base_object { position, { 1, 1 }, 0 }
 {
 }
 
-inline auto enemy_type_one::Update(float interval) -> void
+inline auto enemy_type_1::Update(float interval) -> void
 {
   auto destination = object_destination { m_path[m_destinationIndex] };
   m_position = destination.UpdatePosition(m_position, m_speed, interval);
@@ -49,7 +49,7 @@ inline auto enemy_type_one::Update(float interval) -> void
   base_object::Update(interval);
 }
 
-constexpr [[nodiscard]] auto enemy_type_one::Health() const -> float
+constexpr [[nodiscard]] auto enemy_type_1::Health() const -> float
 {
   return 1.0f;
 }

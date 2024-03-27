@@ -20,7 +20,7 @@ public:
     m_enemyType2_renderer.Write(object, geometry);
   }
 
-  auto Write(const enemy_type_one& object, ID2D1Geometry* geometry) const -> void
+  auto Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void
   {
     m_enemyType1_renderer.Write(object, geometry);
   }

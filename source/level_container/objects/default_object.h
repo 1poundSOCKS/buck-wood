@@ -6,7 +6,7 @@
 #include "mine.h"
 #include "power_up.h"
 #include "portal.h"
-#include "enemy_type_one.h"
+#include "enemy_type_1.h"
 
 struct scale_visitor
 {
@@ -112,7 +112,7 @@ class default_object
 
 public:
 
-  using object_type = std::variant<player_ship, player_bullet, enemy_type_2, mine, power_up, portal, enemy_type_one>;
+  using object_type = std::variant<player_ship, player_bullet, mine, power_up, portal, enemy_type_1, enemy_type_2>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
     m_object { variantType, std::forward<Args>(args)... }

@@ -216,7 +216,7 @@ auto level_container::CreateMine(auto&&...args) -> void
 
 auto level_container::CreateEnemyTypeOne(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_one>, std::forward<decltype(args)>(args)...);
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void

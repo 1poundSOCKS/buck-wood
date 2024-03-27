@@ -29,8 +29,8 @@ private:
   auto OnCollision(player_ship& playerShip, mine& mine) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp) -> void;
-  auto OnCollision(player_ship& ship, enemy_type_one& enemy) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_one& enemy) -> void;
+  auto OnCollision(player_ship& ship, enemy_type_1& enemy) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(auto& object, particle& particle) -> void;
 
 private:
@@ -46,8 +46,8 @@ auto level_collision_handler::operator()(default_object& object1, default_object
   OnCollision<player_ship, mine>(object1, object2);
   OnCollision<player_ship, enemy_type_2>(object1, object2);
   OnCollision<player_ship, power_up>(object1, object2);
-  OnCollision<player_ship, enemy_type_one>(object1, object2);
-  OnCollision<player_bullet, enemy_type_one>(object1, object2);
+  OnCollision<player_ship, enemy_type_1>(object1, object2);
+  OnCollision<player_bullet, enemy_type_1>(object1, object2);
 }
 
 auto level_collision_handler::operator()(default_object& object, particle& particle) -> void
@@ -126,14 +126,14 @@ auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& pow
   powerUp.Destroy();
 }
 
-auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_one& enemy) -> void
+auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
 {
   m_visitor.CreateExplosion(enemy.Position());
   ship.Destroy();
   enemy.Destroy();  
 }
 
-auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_one& enemy) -> void
+auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {
   m_visitor.CreateExplosion(enemy.Position());
   bullet.Destroy();
