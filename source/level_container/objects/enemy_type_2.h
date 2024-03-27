@@ -23,6 +23,9 @@ public:
 
 private:
 
+  inline static std::uniform_int_distribution<int> m_bulletType { 1, 10 };
+  inline static std::uniform_int_distribution<int> m_bulletSpeed { 200, 400 };
+
   enum class object_state { moving, shooting };
 
   object_state m_state { object_state::moving };
@@ -31,11 +34,6 @@ private:
   bool m_reloaded { false };
   int m_maxHitpoints;
   int m_hitpoints;
-  std::optional<POINT_2F> m_destination;
-
-  inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
-  inline static std::uniform_int_distribution<int> m_bulletType { 1, 10 };
-  inline static std::uniform_int_distribution<int> m_bulletSpeed { 200, 400 };
 
   enemy_movement_random m_randomMovement;
 
