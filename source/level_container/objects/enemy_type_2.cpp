@@ -9,15 +9,6 @@ enemy_type_2::enemy_type_2(POINT_2F position, float reloadTime, int hitpoints) :
 auto enemy_type_2::Update(float interval) -> void
 {
   base_object::Update(interval);
-
-  float speed = 500;
-
-  auto x = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
-  auto y = static_cast<float>(m_positionDist(pseudo_random_generator::get()));
-
-  m_destination = m_destination ? m_destination : std::optional<POINT_2F>({x * 100, y * 100});
-  m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, speed * interval) : m_position;
-  m_destination = m_destination && direct2d::AreEqual(m_position, *m_destination) ? std::nullopt : m_destination;
-
+  m_position = m_randomMovement(m_position, interval);
   m_reloaded = m_reloadTimer.Update(interval);
 }

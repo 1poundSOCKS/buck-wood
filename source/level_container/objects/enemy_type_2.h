@@ -3,6 +3,7 @@
 #include "base_object.h"
 #include "reload_timer.h"
 #include "enemy_bullet_1.h"
+#include "enemy_movement_random.h"
 
 class enemy_type_2 : public base_object
 {
@@ -35,6 +36,8 @@ private:
   inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
   inline static std::uniform_int_distribution<int> m_bulletType { 1, 10 };
   inline static std::uniform_int_distribution<int> m_bulletSpeed { 200, 400 };
+
+  enemy_movement_random m_randomMovement;
 
 };
 
