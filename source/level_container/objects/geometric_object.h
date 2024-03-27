@@ -26,6 +26,11 @@ public:
     return m_angle;
   }
 
+  auto SetScale(SCALE_2F value) -> void
+  {
+    m_scale = value;
+  }
+
 protected:
 
   POINT_2F m_position;

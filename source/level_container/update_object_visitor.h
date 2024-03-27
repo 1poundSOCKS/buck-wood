@@ -14,6 +14,12 @@ struct update_object_visitor
     m_levelContainer.SavePlayerState(object);
   }
 
+  auto operator()(enemy_type_2& object)
+  {
+    object.Update(m_interval);
+    object.SetScale({2,2});
+  }
+
   auto operator()(auto& object)
   {
     object.Update(m_interval);
