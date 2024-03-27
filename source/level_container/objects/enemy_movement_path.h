@@ -20,7 +20,7 @@ class enemy_movement_path
 
 public:
 
-  [[nodiscard]] auto operator()(POINT_2F position, float interval) -> POINT_2F;
+  [[nodiscard]] auto Position(POINT_2F position, float interval) -> POINT_2F;
 
 private:
 
@@ -29,7 +29,7 @@ private:
 
 };
 
-inline [[nodiscard]] auto enemy_movement_path::operator()(POINT_2F position, float interval) -> POINT_2F
+inline [[nodiscard]] auto enemy_movement_path::Position(POINT_2F position, float interval) -> POINT_2F
 {
   constexpr static float speed { 500 };
 

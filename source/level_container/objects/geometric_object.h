@@ -26,6 +26,11 @@ public:
     return m_angle;
   }
 
+  auto SetPosition(POINT_2F value) -> void
+  {
+    m_position = value;
+  }
+
   auto SetScale(SCALE_2F value) -> void
   {
     m_scale = value;

@@ -7,7 +7,7 @@ class enemy_movement_random
 
 public:
 
-  [[nodiscard]] auto operator()(POINT_2F position, float interval) -> POINT_2F;
+  [[nodiscard]] auto Position(POINT_2F position, float interval) -> POINT_2F;
 
 private:
 
@@ -16,7 +16,7 @@ private:
 
 };
 
-inline [[nodiscard]] auto enemy_movement_random::operator()(POINT_2F position, float interval) -> POINT_2F
+inline [[nodiscard]] auto enemy_movement_random::Position(POINT_2F position, float interval) -> POINT_2F
 {
   constexpr float speed = 500;
 

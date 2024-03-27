@@ -42,7 +42,7 @@ template <typename movement_type> enemy_type<movement_type>::enemy_type(POINT_2F
 template <typename movement_type> auto enemy_type<movement_type>::Update(float interval) -> void
 {
   base_object::Update(interval);
-  m_position = m_movement(m_position, interval);
+  m_position = m_movement.Position(m_position, interval);
   m_reloaded = m_reloadTimer.Update(interval);
 }
 
