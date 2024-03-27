@@ -4,7 +4,7 @@
 #include "level_objects.h"
 #include "level_explosion.h"
 #include "targetted_object.h"
-#include "level_stage.h"
+// #include "level_stage.h"
 #include "play_events.h"
 #include "game_score.h"
 #include "linear_allocator.h"
@@ -211,7 +211,7 @@ auto level_container::CreateTarget(auto&&...args) -> void
 
 auto level_container::CreateMine(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<mine>, std::forward<decltype(args)>(args)...);
+  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyTypeOne(auto&&...args) -> void

@@ -30,7 +30,7 @@ public:
     m_playerShipRenderer.Write(object, geometry);
   }
 
-  auto Write(const mine& object, ID2D1Geometry* geometry) const -> void
+  auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void
   {
     m_mineRenderer.Write(object, geometry);
   }

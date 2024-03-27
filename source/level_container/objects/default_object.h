@@ -3,7 +3,7 @@
 #include "player_ship.h"
 #include "player_bullet.h"
 #include "enemy_type_2.h"
-#include "mine.h"
+#include "enemy_bullet_1.h"
 #include "power_up.h"
 #include "portal.h"
 #include "enemy_type_1.h"
@@ -18,7 +18,7 @@ struct scale_visitor
   {
     return object.Scale();
   }
-  auto operator()(const mine& object)
+  auto operator()(const enemy_bullet_1& object)
   {
     return object.Scale();
   }
@@ -38,7 +38,7 @@ struct angle_visitor
   {
     return object.Angle();
   }
-  auto operator()(const mine& object)
+  auto operator()(const enemy_bullet_1& object)
   {
     return object.Angle();
   }
@@ -58,7 +58,7 @@ struct position_visitor
   {
     return object.Position();
   }
-  auto operator()(const mine& object)
+  auto operator()(const enemy_bullet_1& object)
   {
     return object.Position();
   }
@@ -78,7 +78,7 @@ struct destroyed_visitor
   {
     return object.Destroyed();
   }
-  auto operator()(const mine& object)
+  auto operator()(const enemy_bullet_1& object)
   {
     return object.Destroyed();
   }
@@ -97,7 +97,7 @@ struct destroy_visitor
   {
     return object.Destroy();
   }
-  auto operator()(mine& object)
+  auto operator()(enemy_bullet_1& object)
   {
     return object.Destroy();
   }
@@ -112,7 +112,7 @@ class default_object
 
 public:
 
-  using object_type = std::variant<player_ship, player_bullet, mine, power_up, portal, enemy_type_1, enemy_type_2>;
+  using object_type = std::variant<player_ship, player_bullet, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
     m_object { variantType, std::forward<Args>(args)... }

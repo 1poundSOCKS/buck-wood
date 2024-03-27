@@ -8,14 +8,14 @@ class mine_renderer
 
 public:
 
-  auto Write(const mine& object, ID2D1Geometry* geometry) const -> void
+  auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void
   {
     switch( object.Type() )
     {
-      case mine::type::one:
+      case enemy_bullet_1::type::one:
         m_rendererOne.Write(geometry);
         return;
-      case mine::type::two:
+      case enemy_bullet_1::type::two:
         m_rendererTwo.Write(geometry);
         return;
     }

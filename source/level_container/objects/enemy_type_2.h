@@ -2,7 +2,7 @@
 
 #include "base_object.h"
 #include "reload_timer.h"
-#include "mine.h"
+#include "enemy_bullet_1.h"
 
 class enemy_type_2 : public base_object
 {
@@ -15,7 +15,7 @@ public:
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
-  [[nodiscard]] auto MineType() -> mine::type;
+  [[nodiscard]] auto BulletType() -> enemy_bullet_1::type;
   [[nodiscard]] auto Health() const -> float;
 
   auto ApplyDamage(int value) -> void;
@@ -33,8 +33,8 @@ private:
   std::optional<POINT_2F> m_destination;
 
   inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
-  inline static std::uniform_int_distribution<int> m_mineTypeDist { 1, 10 };
-  inline static std::uniform_int_distribution<int> m_mineSpeed { 200, 400 };
+  inline static std::uniform_int_distribution<int> m_bulletType { 1, 10 };
+  inline static std::uniform_int_distribution<int> m_bulletSpeed { 200, 400 };
 
 };
 
@@ -54,10 +54,10 @@ inline auto enemy_type_2::ApplyDamage(int value) -> void
   m_destroyed = m_hitpoints == 0;
 }
 
-inline [[nodiscard]] auto enemy_type_2::MineType() -> mine::type
+inline [[nodiscard]] auto enemy_type_2::BulletType() -> enemy_bullet_1::type
 {
-  int mineTypeValue = m_mineTypeDist(pseudo_random_generator::get());
-  return mineTypeValue > 5 ? mine::type::two : mine::type::one;
+  int enemy_bullet_1TypeValue = m_bulletType(pseudo_random_generator::get());
+  return enemy_bullet_1TypeValue > 5 ? enemy_bullet_1::type::two : enemy_bullet_1::type::one;
 }
 
 inline [[nodiscard]] auto enemy_type_2::Health() const -> float
