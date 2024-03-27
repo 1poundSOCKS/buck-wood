@@ -98,7 +98,7 @@ private:
     return m_playerShipGeometry;
   }
 
-  [[nodiscard]] auto Get(const level_target& object) -> winrt::com_ptr<ID2D1Geometry>
+  [[nodiscard]] auto Get(const enemy_type_2& object) -> winrt::com_ptr<ID2D1Geometry>
   {
     return m_targetGeometry;
   }

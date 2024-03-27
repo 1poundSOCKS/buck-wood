@@ -1,16 +1,15 @@
 #pragma once
 
 #include "base_object.h"
-#include "play_event.h"
 #include "reload_timer.h"
 #include "mine.h"
 
-class level_target : public base_object
+class enemy_type_2 : public base_object
 {
 
 public:
 
-  level_target(POINT_2F position, float reloadTime, int hitpoints);
+  enemy_type_2(POINT_2F position, float reloadTime, int hitpoints);
 
   auto Update(float interval) -> void;
 
@@ -39,29 +38,29 @@ private:
 
 };
 
-inline [[nodiscard]] auto level_target::CanShootAt(POINT_2F position) const -> bool
+inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> bool
 {
   return m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
 }
 
-inline [[nodiscard]] auto level_target::Reloaded() const -> bool
+inline [[nodiscard]] auto enemy_type_2::Reloaded() const -> bool
 {
   return m_reloaded;
 }
 
-inline auto level_target::ApplyDamage(int value) -> void
+inline auto enemy_type_2::ApplyDamage(int value) -> void
 {
   m_hitpoints = std::max(0, m_hitpoints - value);
   m_destroyed = m_hitpoints == 0;
 }
 
-inline [[nodiscard]] auto level_target::MineType() -> mine::type
+inline [[nodiscard]] auto enemy_type_2::MineType() -> mine::type
 {
   int mineTypeValue = m_mineTypeDist(pseudo_random_generator::get());
   return mineTypeValue > 5 ? mine::type::two : mine::type::one;
 }
 
-inline [[nodiscard]] auto level_target::Health() const -> float
+inline [[nodiscard]] auto enemy_type_2::Health() const -> float
 {
   return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
 }

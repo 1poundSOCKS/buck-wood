@@ -68,13 +68,13 @@ public:
   auto MovingObjects() const -> const moving_object_collection&;
   auto Particles() const -> const particle_collection&;
 
-  auto TargetDamaged(const level_target& target) const -> void;
+  auto TargetDamaged(const enemy_type_2& target) const -> void;
   auto MineDestroyed() const -> void;
   auto PowerUpCollected(POINT_2F position) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
-  auto CreateNewObjects(level_target& object) -> void;
+  auto CreateNewObjects(enemy_type_2& object) -> void;
   auto CreateNewObjects(player_ship& object) -> void;
   auto CreateNewObjects(auto& object) -> void;
 
@@ -206,7 +206,7 @@ auto level_container::CreatePlayer(auto&&...args) -> void
 
 auto level_container::CreateTarget(auto&&...args) -> void
 {
-  m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<level_target>, std::forward<decltype(args)>(args)...);
+  m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateMine(auto&&...args) -> void
@@ -269,9 +269,9 @@ inline auto level_container::Particles() const -> const particle_collection&
   return m_particles;
 }
 
-inline auto level_container::TargetDamaged(const level_target& target) const -> void
+inline auto level_container::TargetDamaged(const enemy_type_2& object) const -> void
 {
-  if( target.Destroyed() )
+  if( object.Destroyed() )
   {
     m_gameScore->Add(50);
   }

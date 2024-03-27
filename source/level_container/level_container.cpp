@@ -34,7 +34,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   CreateNewObjects(interval);
 
-  auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<level_target>(object->Get()) ? 1 : 0; });
+  auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0; });
   m_targetsRemaining = std::accumulate(std::begin(targetCounter), std::end(targetCounter), 0);
 
   auto updateEnd = performance_counter::QueryValue();
@@ -121,7 +121,7 @@ auto level_container::CreateNewObjects(float interval) -> void
   }
 }
 
-auto level_container::CreateNewObjects(level_target& object) -> void
+auto level_container::CreateNewObjects(enemy_type_2& object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {

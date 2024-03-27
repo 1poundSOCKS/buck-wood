@@ -17,7 +17,7 @@ namespace render_order
       return 1;
     }
 
-    constexpr auto operator()(const level_target&) -> int
+    constexpr auto operator()(const enemy_type_2&) -> int
     {
       return 1;
     }
