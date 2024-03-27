@@ -125,10 +125,9 @@ auto level_container::CreateNewObjects(enemy_type_2& object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
-    auto bulletType = object.BulletType();
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-    CreateMine(bulletType, object.Position(), velocity);
+    CreateMine(enemy_bullet_1::type::two, object.Position(), velocity);
     m_playEvents->SetEvent(play_events::event_type::shot, true);
   }
 }
