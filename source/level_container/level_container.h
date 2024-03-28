@@ -75,11 +75,6 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
-  auto CreateNewObjects(enemy_type_1& object) -> void;
-  auto CreateNewObjects(enemy_type_2& object) -> void;
-  auto CreateNewObjects(player_ship& object) -> void;
-  auto CreateNewObjects(auto& object) -> void;
-
   [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
 
 private:
@@ -303,10 +298,6 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
-}
-
-auto level_container::CreateNewObjects(auto& object) -> void
-{
 }
 
 inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelType) -> player_ship::movement_type

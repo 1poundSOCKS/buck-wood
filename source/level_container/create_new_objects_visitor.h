@@ -46,9 +46,8 @@ struct create_new_objects_visitor
     }
   }
 
-  auto operator()(auto& object)
+  auto operator()(auto&& object)
   {
-    m_levelContainer->CreateNewObjects(object);
   }
 
 };

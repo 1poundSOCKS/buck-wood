@@ -11,7 +11,7 @@ struct save_player_state_visitor
     m_levelContainer->SavePlayerState(object);
   }
 
-  auto operator()(const auto& object)
+  auto operator()(auto&& object)
   {
   }
 };

@@ -12,7 +12,6 @@ struct update_object_visitor
   {
     object.SetInvulnerable(m_levelContainer->PlayerInvulnerable());
     object.Update(m_interval, m_levelContainer->PlayerActive());
-    m_levelContainer->SavePlayerState(object);
   }
 
   auto operator()(enemy_type_1& object)
@@ -28,7 +27,7 @@ struct update_object_visitor
     object.SetDestination(destination);
   }
 
-  auto operator()(auto& object)
+  auto operator()(auto&& object)
   {
     object.Update(m_interval);
   }
