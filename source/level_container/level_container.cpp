@@ -94,9 +94,7 @@ auto level_container::CreateNewObjects(player_ship& object) -> void
 {
   if( object.CanShoot() )
   {
-    auto targetPosition = TargettedObject() ? std::optional<POINT_2F>(TargettedObject()->Position()) : std::nullopt;
-    auto bulletAngle = targetPosition ? direct2d::GetAngleBetweenPoints(object.Position(), *targetPosition) : object.Angle();
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, bulletAngle), 1);
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, object.Angle()), 1);
     m_playEvents->SetEvent(play_events::event_type::shot, true);
   }
 
