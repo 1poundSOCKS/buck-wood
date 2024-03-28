@@ -5,7 +5,6 @@ level_update_event::level_update_event(float wait, std::function<void(level_cont
 {
 }
 
-
 auto level_update_event::Update(float interval, level_container* levelContainer) -> bool
 {
   bool complete = m_timer.Update(interval);

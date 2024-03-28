@@ -29,9 +29,10 @@ public:
     }
   }
 
-  auto Update(float interval) -> void
+  auto Update(float interval, RECT_F view) -> void
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
+    m_levelContainer->Update(interval, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool

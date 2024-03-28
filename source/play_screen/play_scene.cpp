@@ -36,8 +36,7 @@ auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
   m_playState->Events().Reset();
-  m_playState->Update(game_clock::getInterval(ticks));
-  m_playState->LevelContainer().Update(game_clock::getInterval(ticks), GetRenderTargetView());
+  m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_playState->LevelComplete() ? false : true;
 }
 
@@ -47,7 +46,6 @@ auto play_scene::Render() const -> void
   auto transform = RenderTransform();
   render_target::get()->SetTransform(transform);
 
-  // m_playState->LevelContainer().Render(GetRenderTargetView(transform));
   RenderLevelContainer();
 
 #ifdef RENDER_TARGET_HUD
