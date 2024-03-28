@@ -72,12 +72,14 @@ auto level_collision_handler::OnCollision(default_object& object1, default_objec
 
 auto level_collision_handler::OnCollision(auto& object, particle& particle) -> void
 {
+  m_levelContainer->CreateImpact(particle.Position());
   particle.Destroy();
 }
 
 inline auto level_collision_handler::operator()(default_object& object) -> void
 {
   m_levelContainer->CreateExplosion(object.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   object.Destroy();
 }
 
@@ -95,7 +97,7 @@ inline auto level_collision_handler::operator()(particle& particle) -> void
 inline auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bullet_1& enemyBullet) -> void
 {
   m_levelContainer->CreateExplosion(enemyBullet.Position());
-  // m_playEvents->MineDestroyed();
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   playerBullet.Destroy();
   enemyBullet.Destroy();
 }
@@ -103,14 +105,15 @@ inline auto level_collision_handler::OnCollision(player_bullet& playerBullet, en
 inline auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
 {
   m_levelContainer->CreateExplosion(enemy.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
-  // m_playEvents->TargetDamaged(enemy);
 }
 
 inline auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
 {
   m_levelContainer->CreateExplosion(playerShip.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   playerShip.Destroy();
   enemyBullet.Destroy();
 }
@@ -118,18 +121,20 @@ inline auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_
 inline auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_2& enemy) -> void
 {
   m_levelContainer->CreateExplosion(ship.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   ship.Destroy();
 }
 
 inline auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
 {
-  // m_playEvents->PowerUpCollected(powerUp.Position());
+  m_playEvents->SetEvent(play_events::event_type::power_up_collected, true);
   powerUp.Destroy();
 }
 
 inline auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
 {
   m_levelContainer->CreateExplosion(ship.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   ship.Destroy();
   enemy.Destroy();
 }
@@ -137,6 +142,7 @@ inline auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1
 inline auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {
   m_levelContainer->CreateExplosion(enemy.Position());
+  m_playEvents->SetEvent(play_events::event_type::explosion, true);
   bullet.Destroy();
   enemy.Destroy();  
 }

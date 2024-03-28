@@ -32,7 +32,6 @@ public:
       m_updateObjectVisitor.m_levelContainer = m_levelContainer;
       m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
       m_createNewObjectsVisitor.m_levelContainer = m_levelContainer;
-      // m_collisionHandler.SetVisitor(m_levelContainer);
       return true;
     }
     else
