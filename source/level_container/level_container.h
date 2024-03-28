@@ -4,7 +4,6 @@
 #include "level_objects.h"
 #include "level_explosion.h"
 #include "targetted_object.h"
-// #include "level_stage.h"
 #include "play_events.h"
 #include "game_score.h"
 #include "game_settings.h"
