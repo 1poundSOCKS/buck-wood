@@ -9,9 +9,6 @@ class level_collision_handler
 
 public:
 
-  using explosion_collection = std::vector<POINT_2F>;
-  using impact_collection = std::vector<POINT_2F>;
-
   level_collision_handler(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_events> playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
   {
   }
