@@ -1,64 +1,11 @@
 #include "pch.h"
 #include "level_container.h"
 #include "renderers.h"
-#include "game_settings.h"
-#include "dynamic_object_functions.h"
 #include "particle_functions.h"
 #include "update_object_visitor.h"
 #include "create_new_objects_visitor.h"
 #include "save_player_state_visitor.h"
 #include "level_collisions.h"
-
-auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
-{
-  auto updateStart = performance_counter::QueryValue();
-  UpdateObjects(interval);
-
-  auto collisionsStart = performance_counter::QueryValue();
-
-  DoCollisions();
-
-  auto collisionsEnd = performance_counter::QueryValue();
-
-  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
-
-  save_player_state_visitor savePlayerStateVisitor { *this };
-  for( const auto& object : m_movingObjects )
-  {
-    std::visit(savePlayerStateVisitor, object->Get());
-  }
-
-  RemoveDestroyedObjects();
-
-  m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
-
-  CreateNewObjects(interval);
-
-  auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0; });
-  m_targetsRemaining = std::accumulate(std::begin(targetCounter), std::end(targetCounter), 0);
-
-  auto updateEnd = performance_counter::QueryValue();
-  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
-}
-
-auto level_container::UpdateObjects(float interval) -> void
-{
-  dynamic_object_functions::update(m_particles, interval);
-
-  update_object_visitor updateObjectVisitor { *this, interval };
-  
-  for( auto& object : m_staticObjects )
-  {
-    std::visit(updateObjectVisitor, object->Get());
-    object.UpdateGeometry();
-  }
-
-  for( auto& object : m_movingObjects )
-  {
-    std::visit(updateObjectVisitor, object->Get());
-    object.UpdateGeometry();
-  }
-}
 
 auto level_container::RemoveDestroyedObjects() -> void
 {

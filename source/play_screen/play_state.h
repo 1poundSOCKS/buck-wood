@@ -4,6 +4,8 @@
 #include "level_container.h"
 #include "play_events.h"
 #include "game_score.h"
+#include "update_object_visitor.h"
+#include "save_player_state_visitor.h"
 
 class play_state
 {
@@ -14,6 +16,8 @@ public:
     m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
     m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
   {
+    m_updateObjectVisitor.m_levelContainer = m_levelContainer;
+    m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
   }
 
   auto LoadLevel() -> bool
@@ -21,6 +25,8 @@ public:
     if( m_dataLoader.NextLevel() )
     {
       m_levelContainer = m_dataLoader.LoadLevel(m_events, m_score, m_powerUpsCollected);
+      m_updateObjectVisitor.m_levelContainer = m_levelContainer;
+      m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
       return true;
     }
     else
@@ -32,7 +38,8 @@ public:
   auto Update(float interval, RECT_F view) -> void
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
-    m_levelContainer->Update(interval, view);
+    m_updateObjectVisitor.m_interval = interval;
+    m_levelContainer->Update(m_updateObjectVisitor, m_savePlayerStateVisitor, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
@@ -89,5 +96,7 @@ private:
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<int> m_powerUpsCollected;
   std::shared_ptr<level_container> m_levelContainer;
+  update_object_visitor m_updateObjectVisitor;
+  save_player_state_visitor m_savePlayerStateVisitor;
 
 };

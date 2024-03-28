@@ -7,7 +7,9 @@
 // #include "level_stage.h"
 #include "play_events.h"
 #include "game_score.h"
+#include "game_settings.h"
 #include "linear_allocator.h"
+#include "dynamic_object_functions.h"
 
 class level_container
 {
@@ -33,7 +35,7 @@ public:
 
   auto SetPlayerActive(bool value) -> void;
 
-  auto Update(float interval, D2D1_RECT_F viewRect) -> void;
+  auto Update(auto&& visitor, auto&& saveVisitor, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto Index() const -> int;
@@ -83,7 +85,7 @@ public:
 
 private:
 
-  auto UpdateObjects(float interval) -> void;
+  auto UpdateObjects(auto&& visitor) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
@@ -318,5 +320,53 @@ inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelT
       return player_ship::movement_type::both;
     default:
       return player_ship::movement_type::both;
+  }
+}
+
+auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, D2D1_RECT_F viewRect) -> void
+{
+  auto updateStart = performance_counter::QueryValue();
+  UpdateObjects(updateVisitor);
+
+  auto collisionsStart = performance_counter::QueryValue();
+
+  DoCollisions();
+
+  auto collisionsEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
+
+  for( const auto& object : m_movingObjects )
+  {
+    std::visit(saveVisitor, object->Get());
+  }
+
+  RemoveDestroyedObjects();
+
+  m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
+
+  CreateNewObjects(updateVisitor.m_interval);
+
+  auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0; });
+  m_targetsRemaining = std::accumulate(std::begin(targetCounter), std::end(targetCounter), 0);
+
+  auto updateEnd = performance_counter::QueryValue();
+  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
+}
+
+auto level_container::UpdateObjects(auto&& visitor) -> void
+{
+  dynamic_object_functions::update(m_particles, visitor.m_interval);
+
+  for( auto& object : m_staticObjects )
+  {
+    std::visit(visitor, object->Get());
+    object.UpdateGeometry();
+  }
+
+  for( auto& object : m_movingObjects )
+  {
+    std::visit(visitor, object->Get());
+    object.UpdateGeometry();
   }
 }
