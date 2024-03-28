@@ -34,7 +34,7 @@ public:
 
   auto SetPlayerActive(bool value) -> void;
 
-  auto Update(auto&& visitor, auto&& saveVisitor, D2D1_RECT_F viewRect) -> void;
+  auto Update(auto&& visitor, auto&& saveVisitor, auto&& createVisitor, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto Index() const -> int;
@@ -88,7 +88,7 @@ private:
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
-  auto CreateNewObjects() -> void;
+  auto CreateNewObjects(auto&& visitor) -> void;
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
@@ -322,7 +322,7 @@ inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelT
   }
 }
 
-auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(updateVisitor);
@@ -344,7 +344,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, D2D1_RECT
 
   m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
 
-  CreateNewObjects(updateVisitor.m_interval);
+  CreateNewObjects(createVisitor);
 
   auto targetCounter = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0; });
   m_targetsRemaining = std::accumulate(std::begin(targetCounter), std::end(targetCounter), 0);
@@ -367,5 +367,33 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
   {
     std::visit(visitor, object->Get());
     object.UpdateGeometry();
+  }
+}
+
+auto level_container::CreateNewObjects(auto&& visitor) -> void
+{
+  for( const auto& position : m_explosions )
+  {
+    std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
+    m_playEvents->SetEvent(play_events::event_type::explosion, true);
+  }
+
+  m_explosions.clear();
+
+  for( const auto& position : m_impacts )
+  {
+    m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
+  }
+
+  m_impacts.clear();
+
+  for( auto& object : m_staticObjects )
+  {
+    std::visit(visitor, object.Object().Get());
+  }
+
+  for( auto& object : m_movingObjects )
+  {
+    std::visit(visitor, object.Object().Get());
   }
 }
