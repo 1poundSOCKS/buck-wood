@@ -8,7 +8,6 @@ class geometry_collision_unary
 
 public:
 
-  // geometry_collision_unary(auto&& callable) : m_callable { callable }
   geometry_collision_unary()
   {
   }
@@ -50,7 +49,7 @@ public:
     {
       auto& object1 = *objectIt;
       
-      std::for_each(std::execution::seq, std::next(objectIt), std::end(objectCollection), [this, &object1, &callable](auto& object2)
+      std::for_each(std::execution::par, std::next(objectIt), std::end(objectCollection), [this, &object1, &callable](auto& object2)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
         if( !object1->Destroyed() && !object2->Destroyed() )
@@ -63,7 +62,6 @@ public:
 
 private:
 
-  // std::function<void(object_type&, object_type&)> m_callable;
   std::mutex m_mutex;
 
 };

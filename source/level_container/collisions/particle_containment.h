@@ -6,7 +6,6 @@ class particle_containment
 
 public:
 
-  // particle_containment(auto&& callable) : m_callable { callable }
   particle_containment()
   {
   }
@@ -37,7 +36,6 @@ public:
 
 private:
 
-  // std::function<void(contained_particle_type&)> m_callable;
   std::mutex m_mutex;
 
 };

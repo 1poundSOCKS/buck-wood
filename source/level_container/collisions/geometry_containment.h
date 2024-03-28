@@ -8,7 +8,6 @@ class geometry_containment
 
 public:
 
-  // geometry_containment(auto&& callable) : m_callable { callable }
   geometry_containment()
   {
   }
@@ -51,7 +50,6 @@ public:
 
 private:
 
-  // std::function<void(contained_object_type&)> m_callable;
   std::mutex m_mutex;
 
 };

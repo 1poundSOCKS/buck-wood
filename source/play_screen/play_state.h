@@ -16,9 +16,7 @@ public:
 
   play_state() : 
     m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
-    // m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_levelContainer }
-    // m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_events }
-    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_events }
+    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
   {
     m_updateObjectVisitor.m_levelContainer = m_levelContainer;
     m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
@@ -45,14 +43,9 @@ public:
 
   auto Update(float interval, RECT_F view) -> void
   {
-    m_collisionHandler.reset();
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
     m_updateObjectVisitor.m_interval = interval;
-    m_levelContainer->Update(m_updateObjectVisitor, m_savePlayerStateVisitor, m_createNewObjectsVisitor, m_collisionHandler, view);
-    diagnostics::add(L"explosions: ",m_collisionHandler.Explosions().size());
-    diagnostics::add(L"impacts: ",m_collisionHandler.Impacts().size());
-    m_levelContainer->CreateExplosions(m_collisionHandler.Explosions());
-    m_levelContainer->CreateImpacts(m_collisionHandler.Impacts());
+    m_levelContainer->Update(m_updateObjectVisitor, m_savePlayerStateVisitor, m_createNewObjectsVisitor, level_collision_handler { m_levelContainer, m_events }, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
@@ -112,6 +105,5 @@ private:
   update_object_visitor m_updateObjectVisitor;
   save_player_state_visitor m_savePlayerStateVisitor;
   create_new_objects_visitor m_createNewObjectsVisitor;
-  level_collision_handler m_collisionHandler;
 
 };

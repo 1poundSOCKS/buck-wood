@@ -62,6 +62,9 @@ public:
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
 
+  auto CreateExplosion(POINT_2F position) -> void;
+  auto CreateImpact(POINT_2F position) -> void;
+
   auto CreateExplosions(auto&& positions) -> void;
   auto CreateImpacts(auto&& positions) -> void;
 
@@ -232,6 +235,16 @@ inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
   CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
+inline auto level_container::CreateExplosion(POINT_2F position) -> void
+{
+  std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
+}
+
+inline auto level_container::CreateImpact(POINT_2F position) -> void
+{
+  m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
+}
+
 auto level_container::CreateExplosions(auto&& positions) -> void
 {
   for( const auto& position : positions )
@@ -380,20 +393,16 @@ auto level_container::DoCollisions(auto&& handler) -> void
 {
   if( m_boundary.Geometry() )
   {
-    // geometry_containment<default_object> geometryContainmentRunner { handler };
     geometry_containment<default_object> geometryContainmentRunner;
     geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects, handler);
 
-    // particle_containment<particle> particleContainmentRunner { handler };
     particle_containment<particle> particleContainmentRunner;
     particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
   }
 
-  // geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { handler };
   geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner;
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects, handler);
 
-  // geometry_collision_unary<default_object> movingCollisionRunner { handler };
   geometry_collision_unary<default_object> movingCollisionRunner;
   movingCollisionRunner(m_movingObjects, handler);
 

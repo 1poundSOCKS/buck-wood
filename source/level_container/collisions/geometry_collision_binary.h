@@ -8,7 +8,6 @@ class geometry_collision_binary
 
 public:
 
-  // geometry_collision_binary(auto&& callable) : m_callable { callable }
   geometry_collision_binary()
   {
   }
@@ -75,7 +74,6 @@ public:
 
 private:
 
-  // std::function<void(object_type_1&, object_type_2&)> m_callable;
   std::mutex m_mutex;
 
 };

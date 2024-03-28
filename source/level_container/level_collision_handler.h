@@ -2,6 +2,7 @@
 
 #include "level_objects.h"
 #include "play_events.h"
+#include "level_container.h"
 
 class level_collision_handler
 {
@@ -11,26 +12,8 @@ public:
   using explosion_collection = std::vector<POINT_2F>;
   using impact_collection = std::vector<POINT_2F>;
 
-  level_collision_handler(std::shared_ptr<play_events> playEvents) : m_playEvents { playEvents }
+  level_collision_handler(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_events> playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
   {
-    m_explosions.reserve(10);
-    m_impacts.reserve(100);
-  }
-
-  auto reset() -> void
-  {
-    m_explosions.clear();
-    m_impacts.clear();
-  }
-
-  [[nodiscard]] auto Explosions() const -> const explosion_collection&
-  {
-    return m_explosions;
-  }
-
-  [[nodiscard]] auto Impacts() const -> const impact_collection&
-  {
-    return m_impacts;
   }
 
   auto operator()(default_object& object1, default_object& object2) -> void;
@@ -52,8 +35,7 @@ private:
 
 private:
 
-  explosion_collection m_explosions;
-  impact_collection m_impacts;
+  std::shared_ptr<level_container> m_levelContainer;
   std::shared_ptr<play_events> m_playEvents;
 
 };
@@ -95,7 +77,7 @@ auto level_collision_handler::OnCollision(auto& object, particle& particle) -> v
 
 inline auto level_collision_handler::operator()(default_object& object) -> void
 {
-  m_explosions.emplace_back(object.Position());
+  m_levelContainer->CreateExplosion(object.Position());
   object.Destroy();
 }
 
@@ -104,7 +86,7 @@ inline auto level_collision_handler::operator()(particle& particle) -> void
   switch( particle.Type() )
   {
     case particle::type::explosion:
-      m_impacts.emplace_back(particle.Position());
+      m_levelContainer->CreateImpact(particle.Position());
       particle.Destroy();
       break;
   }
@@ -112,31 +94,31 @@ inline auto level_collision_handler::operator()(particle& particle) -> void
 
 inline auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bullet_1& enemyBullet) -> void
 {
-  m_explosions.emplace_back(enemyBullet.Position());
+  m_levelContainer->CreateExplosion(enemyBullet.Position());
   // m_playEvents->MineDestroyed();
   playerBullet.Destroy();
   enemyBullet.Destroy();
 }
 
-inline auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_type_2& enemy) -> void
+inline auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
 {
-  m_explosions.emplace_back(playerBullet.Position());
-  playerBullet.Destroy();
-  enemy.ApplyDamage(playerBullet.Damage());
+  m_levelContainer->CreateExplosion(enemy.Position());
+  bullet.Destroy();
+  enemy.ApplyDamage(bullet.Damage());
   // m_playEvents->TargetDamaged(enemy);
 }
 
 inline auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
 {
-  m_explosions.emplace_back(playerShip.Position());
+  m_levelContainer->CreateExplosion(playerShip.Position());
   playerShip.Destroy();
   enemyBullet.Destroy();
 }
 
-inline auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void
+inline auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_2& enemy) -> void
 {
-  m_explosions.emplace_back(playerShip.Position());
-  playerShip.Destroy();
+  m_levelContainer->CreateExplosion(ship.Position());
+  ship.Destroy();
 }
 
 inline auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
@@ -147,14 +129,14 @@ inline auto level_collision_handler::OnCollision(player_ship& playerShip, power_
 
 inline auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
 {
-  m_explosions.emplace_back(enemy.Position());
+  m_levelContainer->CreateExplosion(ship.Position());
   ship.Destroy();
-  enemy.Destroy();  
+  enemy.Destroy();
 }
 
 inline auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {
-  m_explosions.emplace_back(enemy.Position());
+  m_levelContainer->CreateExplosion(enemy.Position());
   bullet.Destroy();
   enemy.Destroy();  
 }
