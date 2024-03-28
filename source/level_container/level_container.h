@@ -27,9 +27,6 @@ public:
   using moving_object_collection = std::list<dynamic_object<default_object>, MovingObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
-  // using explosion_collection = std::vector<D2D1_POINT_2F>;
-  // using impact_collection = std::vector<D2D1_POINT_2F>;
-
   enum class level_type { vertical_scroller, arena };
 
   level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected);
@@ -65,9 +62,6 @@ public:
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
 
-  // auto CreateExplosion(D2D1_POINT_2F position) -> void;
-  // auto CreateImpact(D2D1_POINT_2F position) -> void;
-
   auto CreateExplosions(auto&& positions) -> void;
   auto CreateImpacts(auto&& positions) -> void;
 
@@ -90,7 +84,6 @@ private:
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions(auto&& handler) -> void;
-  // auto CreateNewObjects(auto&& explosions, auto&& impacts, auto&& visitor) -> void;
   auto CreateNewObjects(auto&& visitor) -> void;
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
@@ -113,9 +106,6 @@ private:
   static_object_collection m_staticObjects;
   moving_object_collection m_movingObjects;
 
-  // explosion_collection m_explosions;
-  // impact_collection m_impacts;
-
   std::optional<targetted_object> m_targettedObject;
 
   std::shared_ptr<play_events> m_playEvents;
@@ -135,8 +125,6 @@ inline level_container::level_container(level_type levelType, int index, std::ra
   std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
   m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
 {
-  // m_explosions.reserve(10);
-  // m_impacts.reserve(100);
 }
 
 inline auto level_container::SetPlayerActive(bool value) -> void
@@ -224,20 +212,10 @@ auto level_container::CreateEnemyBullet(auto&&...args) -> void
   CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
 }
 
-// inline auto level_container::CreateExplosion(D2D1_POINT_2F position) -> void
-// {
-//   m_explosions.emplace_back(position);
-// }
-
 auto level_container::CreateParticle(auto&&...args) -> void
 {
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
 }
-
-// inline auto level_container::CreateImpact(D2D1_POINT_2F position) -> void
-// {
-//   m_impacts.emplace_back(position);
-// }
 
 auto level_container::CreatePowerUp(auto&&...args) -> void
 {
@@ -385,26 +363,8 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
   }
 }
 
-// auto level_container::CreateNewObjects(auto&& explosions, auto&& impacts, auto&& visitor) -> void
 auto level_container::CreateNewObjects(auto&& visitor) -> void
 {
-  // for( const auto& position : m_explosions )
-  // for( const auto& position : explosions )
-  // {
-  //   std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
-  //   m_playEvents->SetEvent(play_events::event_type::explosion, true);
-  // }
-
-  // m_explosions.clear();
-
-  // for( const auto& position : m_impacts )
-  // for( const auto& position : impacts )
-  // {
-  //   m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
-  // }
-
-  // m_impacts.clear();
-
   for( auto& object : m_staticObjects )
   {
     std::visit(visitor, object.Object().Get());

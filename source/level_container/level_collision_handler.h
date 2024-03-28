@@ -1,13 +1,7 @@
 #pragma once
 
-// #include "collisions/geometry_collision_unary.h"
-// #include "collisions/geometry_collision_binary.h"
-// #include "collisions/particle_collision.h"
-// #include "collisions/geometry_containment.h"
-// #include "collisions/particle_containment.h"
-// #include "level_container.h"
 #include "level_objects.h"
-// #include "play_events.h"
+#include "play_events.h"
 
 class level_collision_handler
 {
@@ -17,10 +11,7 @@ public:
   using explosion_collection = std::vector<POINT_2F>;
   using impact_collection = std::vector<POINT_2F>;
 
-  // level_collision_handler(level_container& visitor) : m_visitor { visitor }
-  // level_collision_handler(std::shared_ptr<level_container> visitor) : m_visitor { visitor }
-  // level_collision_handler(std::shared_ptr<play_events> playEvents) : m_playEvents { playEvents }
-  level_collision_handler()
+  level_collision_handler(std::shared_ptr<play_events> playEvents) : m_playEvents { playEvents }
   {
     m_explosions.reserve(10);
     m_impacts.reserve(100);
@@ -31,8 +22,6 @@ public:
     m_explosions.clear();
     m_impacts.clear();
   }
-
-  // auto SetVisitor(std::shared_ptr<level_container> visitor) -> void;
 
   [[nodiscard]] auto Explosions() const -> const explosion_collection&
   {
@@ -63,10 +52,9 @@ private:
 
 private:
 
-  // std::shared_ptr<level_container> m_visitor;
   explosion_collection m_explosions;
   impact_collection m_impacts;
-  // std::shared_ptr<play_events> m_playEvents;
+  std::shared_ptr<play_events> m_playEvents;
 
 };
 
@@ -80,11 +68,6 @@ inline auto level_collision_handler::operator()(default_object& object1, default
   OnCollision<player_ship, enemy_type_1>(object1, object2);
   OnCollision<player_bullet, enemy_type_1>(object1, object2);
 }
-
-// auto level_collision_handler::SetVisitor(std::shared_ptr<level_container> visitor) -> void
-// {
-//   m_visitor = visitor;
-// }
 
 inline auto level_collision_handler::operator()(default_object& object, particle& particle) -> void
 {
@@ -112,7 +95,6 @@ auto level_collision_handler::OnCollision(auto& object, particle& particle) -> v
 
 inline auto level_collision_handler::operator()(default_object& object) -> void
 {
-  // m_visitor->CreateExplosion(object.Position());
   m_explosions.emplace_back(object.Position());
   object.Destroy();
 }
@@ -122,7 +104,6 @@ inline auto level_collision_handler::operator()(particle& particle) -> void
   switch( particle.Type() )
   {
     case particle::type::explosion:
-      // m_visitor->CreateImpact(particle.Position());
       m_impacts.emplace_back(particle.Position());
       particle.Destroy();
       break;

@@ -18,7 +18,7 @@ public:
     m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
     // m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_levelContainer }
     // m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_events }
-    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
+    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }, m_collisionHandler { m_events }
   {
     m_updateObjectVisitor.m_levelContainer = m_levelContainer;
     m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
