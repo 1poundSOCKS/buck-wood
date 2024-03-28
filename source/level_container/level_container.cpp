@@ -5,39 +5,12 @@
 #include "update_object_visitor.h"
 #include "create_new_objects_visitor.h"
 #include "save_player_state_visitor.h"
-#include "level_collisions.h"
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
   particle_functions::erase_destroyed(m_particles);
   dynamic_object_functions::erase_destroyed(m_movingObjects);
   dynamic_object_functions::erase_destroyed(m_staticObjects);
-}
-
-auto level_container::DoCollisions() -> void
-{
-  level_collision_handler collisionHandler { *this };
-  
-  if( m_boundary.Geometry() )
-  {
-    geometry_containment<default_object> geometryContainmentRunner { collisionHandler };
-    geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
-
-    particle_containment<particle> particleContainmentRunner { collisionHandler };
-    particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
-  }
-
-  geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { collisionHandler };
-  staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
-
-  geometry_collision_unary<default_object> movingCollisionRunner { collisionHandler };
-  movingCollisionRunner(m_movingObjects);
-
-#ifdef ALL_PARTICLE_COLLISIONS_TESTED
-  particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
-  particleCollisionRunner(m_staticObjects, m_particles);
-  particleCollisionRunner(m_movingObjects, m_particles);
-#endif
 }
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
