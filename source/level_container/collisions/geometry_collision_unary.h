@@ -8,11 +8,12 @@ class geometry_collision_unary
 
 public:
 
-  geometry_collision_unary(auto&& callable) : m_callable { callable }
+  // geometry_collision_unary(auto&& callable) : m_callable { callable }
+  geometry_collision_unary()
   {
   }
 
-  auto operator()(dynamic_object<object_type>& object1, dynamic_object<object_type>& object2) -> void
+  auto operator()(dynamic_object<object_type>& object1, dynamic_object<object_type>& object2, auto&& callable) -> void
   {
     auto position1 = object1->Position();
     auto position2 = object2->Position();
@@ -38,23 +39,23 @@ public:
 
       if( collided )
       {
-        m_callable(object1.Object(), object2.Object());
+        callable(object1.Object(), object2.Object());
       }
     }
   }
 
-  auto operator()(std::ranges::input_range auto&& objectCollection) -> void
+  auto operator()(std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
   {
     for( auto objectIt = std::begin(objectCollection); objectIt != std::end(objectCollection); ++objectIt )
     {
       auto& object1 = *objectIt;
       
-      std::for_each(std::execution::par, std::next(objectIt), std::end(objectCollection), [this, &object1](auto& object2)
+      std::for_each(std::execution::seq, std::next(objectIt), std::end(objectCollection), [this, &object1, &callable](auto& object2)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
         if( !object1->Destroyed() && !object2->Destroyed() )
         {
-          (*this)(object1, object2);
+          (*this)(object1, object2, callable);
         }
       });
     }
@@ -62,7 +63,7 @@ public:
 
 private:
 
-  std::function<void(object_type&, object_type&)> m_callable;
+  // std::function<void(object_type&, object_type&)> m_callable;
   std::mutex m_mutex;
 
 };

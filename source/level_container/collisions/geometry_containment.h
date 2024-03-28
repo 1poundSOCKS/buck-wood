@@ -8,11 +8,12 @@ class geometry_containment
 
 public:
 
-  geometry_containment(auto&& callable) : m_callable { callable }
+  // geometry_containment(auto&& callable) : m_callable { callable }
+  geometry_containment()
   {
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, dynamic_object<contained_object_type>& containedObject) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, dynamic_object<contained_object_type>& containedObject, auto&& callable) -> void
   {
     D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
     HRESULT hr = containmentGeometry->CompareWithGeometry(containedObject.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
@@ -35,22 +36,22 @@ public:
       
       if( !containedObject.Object().Destroyed() )
       {
-        m_callable(containedObject.Object());
+        callable(containedObject.Object());
       }
     }
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& objectCollection) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
   {
-    std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,containmentGeometry](auto& object)
+    std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,containmentGeometry,&callable](auto& object)
     {
-      (*this)(containmentGeometry, object);
+      (*this)(containmentGeometry, object, callable);
     });
   }
 
 private:
 
-  std::function<void(contained_object_type&)> m_callable;
+  // std::function<void(contained_object_type&)> m_callable;
   std::mutex m_mutex;
 
 };

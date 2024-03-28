@@ -380,18 +380,22 @@ auto level_container::DoCollisions(auto&& handler) -> void
 {
   if( m_boundary.Geometry() )
   {
-    geometry_containment<default_object> geometryContainmentRunner { handler };
-    geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects);
+    // geometry_containment<default_object> geometryContainmentRunner { handler };
+    geometry_containment<default_object> geometryContainmentRunner;
+    geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects, handler);
 
-    particle_containment<particle> particleContainmentRunner { handler };
-    particleContainmentRunner(m_boundary.Geometry().get(), m_particles);
+    // particle_containment<particle> particleContainmentRunner { handler };
+    particle_containment<particle> particleContainmentRunner;
+    particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
   }
 
-  geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { handler };
-  staticMovingCollisionRunner(m_staticObjects, m_movingObjects);
+  // geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner { handler };
+  geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner;
+  staticMovingCollisionRunner(m_staticObjects, m_movingObjects, handler);
 
-  geometry_collision_unary<default_object> movingCollisionRunner { handler };
-  movingCollisionRunner(m_movingObjects);
+  // geometry_collision_unary<default_object> movingCollisionRunner { handler };
+  geometry_collision_unary<default_object> movingCollisionRunner;
+  movingCollisionRunner(m_movingObjects, handler);
 
 #ifdef ALL_PARTICLE_COLLISIONS_TESTED
   particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };

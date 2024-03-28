@@ -8,11 +8,12 @@ class geometry_collision_binary
 
 public:
 
-  geometry_collision_binary(auto&& callable) : m_callable { callable }
+  // geometry_collision_binary(auto&& callable) : m_callable { callable }
+  geometry_collision_binary()
   {
   }
 
-  auto operator()(dynamic_object<object_type_1>& object1, dynamic_object<object_type_2>& object2) -> void
+  auto operator()(dynamic_object<object_type_1>& object1, dynamic_object<object_type_2>& object2, auto&& callable) -> void
   {
     auto position1 = object1->Position();
     auto position2 = object2->Position();
@@ -38,35 +39,35 @@ public:
 
       if( collided )
       {
-        m_callable(object1.Object(), object2.Object());
+        callable(object1.Object(), object2.Object());
       }
     }
   }
 
-  auto operator()(dynamic_object<object_type_1>& object, std::ranges::input_range auto&& objectCollection) -> void
+  auto operator()(dynamic_object<object_type_1>& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
   {
     if( !object->Destroyed() )
     {
       auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
 
-      std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,&object](auto& collectionObject)
+      std::for_each(std::execution::par, std::begin(objectCollection), std::end(objectCollection), [this,&object,&callable](auto& collectionObject)
       {
         std::lock_guard<std::mutex> guard(m_mutex);
-        (*this)(object, collectionObject);
+        (*this)(object, collectionObject, callable);
       });
     }
   }
 
-  auto operator()(std::ranges::input_range auto&& objectCollection1, std::ranges::input_range auto&& objectCollection2) -> void
+  auto operator()(std::ranges::input_range auto&& objectCollection1, std::ranges::input_range auto&& objectCollection2, auto&& callable) -> void
   {
-    std::for_each(std::execution::par, std::begin(objectCollection1), std::end(objectCollection1), [this,&objectCollection2](auto& object1)
+    std::for_each(std::execution::par, std::begin(objectCollection1), std::end(objectCollection1), [this,&objectCollection2,&callable](auto& object1)
     {
       for( auto& object2 : objectCollection2 )
       {
         std::lock_guard<std::mutex> guard(m_mutex);
         if( !object1->Destroyed() && !object2->Destroyed() )
         {
-          (*this)(object1, object2);
+          (*this)(object1, object2, callable);
         }
       }
     });
@@ -74,7 +75,7 @@ public:
 
 private:
 
-  std::function<void(object_type_1&, object_type_2&)> m_callable;
+  // std::function<void(object_type_1&, object_type_2&)> m_callable;
   std::mutex m_mutex;
 
 };
