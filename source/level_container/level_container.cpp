@@ -40,7 +40,7 @@ auto level_container::DoCollisions() -> void
 #endif
 }
 
-auto level_container::CreateNewObjects(float interval) -> void
+auto level_container::CreateNewObjects() -> void
 {
   for( const auto& position : m_explosions )
   {
