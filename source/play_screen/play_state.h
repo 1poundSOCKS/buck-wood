@@ -37,7 +37,7 @@ public:
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
 
-    update_object_visitor m_updateObjectVisitor { m_levelContainer, interval, m_enemyMovementRandom };
+    update_object_visitor m_updateObjectVisitor { interval, m_levelContainer->PlayerInvulnerable(), m_levelContainer->PlayerActive(), m_enemyMovementRandom };
     create_new_objects_visitor createNewObjectsVisitor { m_levelContainer, m_events };
     save_player_state_visitor savePlayerStateVisitor { m_levelContainer };
     level_collision_handler collisionHandler { m_levelContainer, m_events };
