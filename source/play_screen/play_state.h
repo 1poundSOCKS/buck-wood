@@ -19,9 +19,6 @@ public:
     m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
   {
     m_updateObjectVisitor.m_levelContainer = m_levelContainer;
-    m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
-    m_createNewObjectsVisitor.m_levelContainer = m_levelContainer;
-    m_createNewObjectsVisitor.m_events = m_events;
   }
 
   auto LoadLevel() -> bool
@@ -30,8 +27,6 @@ public:
     {
       m_levelContainer = m_dataLoader.LoadLevel(m_events, m_score, m_powerUpsCollected);
       m_updateObjectVisitor.m_levelContainer = m_levelContainer;
-      m_savePlayerStateVisitor.m_levelContainer = m_levelContainer;
-      m_createNewObjectsVisitor.m_levelContainer = m_levelContainer;
       return true;
     }
     else
@@ -44,7 +39,9 @@ public:
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
     m_updateObjectVisitor.m_interval = interval;
-    m_levelContainer->Update(m_updateObjectVisitor, m_savePlayerStateVisitor, m_createNewObjectsVisitor, level_collision_handler { m_levelContainer, m_events }, view);
+    create_new_objects_visitor createNewObjectsVisitor { m_levelContainer, m_events };
+    save_player_state_visitor savePlayerStateVisitor { m_levelContainer };
+    m_levelContainer->Update(m_updateObjectVisitor, savePlayerStateVisitor, createNewObjectsVisitor, level_collision_handler { m_levelContainer, m_events }, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
@@ -102,7 +99,5 @@ private:
   std::shared_ptr<int> m_powerUpsCollected;
   std::shared_ptr<level_container> m_levelContainer;
   update_object_visitor m_updateObjectVisitor;
-  save_player_state_visitor m_savePlayerStateVisitor;
-  create_new_objects_visitor m_createNewObjectsVisitor;
 
 };
