@@ -36,10 +36,13 @@ public:
   auto Update(float interval, RECT_F view) -> void
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
+
     update_object_visitor m_updateObjectVisitor { m_levelContainer, interval, m_enemyMovementRandom };
     create_new_objects_visitor createNewObjectsVisitor { m_levelContainer, m_events };
     save_player_state_visitor savePlayerStateVisitor { m_levelContainer };
-    m_levelContainer->Update(m_updateObjectVisitor, savePlayerStateVisitor, createNewObjectsVisitor, level_collision_handler { m_levelContainer, m_events }, view);
+    level_collision_handler collisionHandler { m_levelContainer, m_events };
+    
+    m_levelContainer->Update(m_updateObjectVisitor, savePlayerStateVisitor, createNewObjectsVisitor, collisionHandler, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
