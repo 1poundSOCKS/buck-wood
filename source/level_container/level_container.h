@@ -35,7 +35,7 @@ public:
 
   auto SetPlayerActive(bool value) -> void;
 
-  auto Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
+  auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto Index() const -> int;
@@ -83,6 +83,7 @@ public:
 
 private:
 
+  auto Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
   auto UpdateObjects(auto&& visitor) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -114,6 +115,8 @@ private:
   std::shared_ptr<play_events> m_playEvents;
   std::shared_ptr<game_score> m_gameScore;
   std::shared_ptr<int> m_powerUpsCollected;
+
+  enemy_movement_random m_enemyMovementRandom;
 
   int m_targetsRemaining { 0 };
 

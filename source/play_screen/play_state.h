@@ -4,10 +4,6 @@
 #include "level_container.h"
 #include "play_events.h"
 #include "game_score.h"
-#include "update_object_visitor.h"
-#include "save_player_state_visitor.h"
-#include "create_new_objects_visitor.h"
-#include "level_collision_handler.h"
 
 class play_state
 {
@@ -36,13 +32,7 @@ public:
   auto Update(float interval, RECT_F view) -> void
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
-
-    update_object_visitor m_updateObjectVisitor { interval, m_levelContainer->PlayerActive(), m_enemyMovementRandom };
-    create_new_objects_visitor createNewObjectsVisitor { m_levelContainer.get(), m_events };
-    save_player_state_visitor savePlayerStateVisitor { m_levelContainer.get() };
-    level_collision_handler collisionHandler { m_levelContainer.get(), m_events };
-    
-    m_levelContainer->Update(m_updateObjectVisitor, savePlayerStateVisitor, createNewObjectsVisitor, collisionHandler, view);
+    m_levelContainer->Update(interval, view);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool
@@ -99,6 +89,5 @@ private:
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<int> m_powerUpsCollected;
   std::shared_ptr<level_container> m_levelContainer;
-  enemy_movement_random m_enemyMovementRandom;
 
 };

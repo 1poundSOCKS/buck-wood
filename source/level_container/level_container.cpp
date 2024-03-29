@@ -5,6 +5,17 @@
 #include "update_object_visitor.h"
 #include "create_new_objects_visitor.h"
 #include "save_player_state_visitor.h"
+#include "level_collision_handler.h"
+
+auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
+{
+  update_object_visitor m_updateObjectVisitor { interval, PlayerActive(), m_enemyMovementRandom };
+  create_new_objects_visitor createNewObjectsVisitor { this, m_playEvents };
+  save_player_state_visitor savePlayerStateVisitor { this };
+  level_collision_handler collisionHandler { this, m_playEvents };
+  
+  Update(m_updateObjectVisitor, savePlayerStateVisitor, createNewObjectsVisitor, collisionHandler, viewRect);
+}
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
