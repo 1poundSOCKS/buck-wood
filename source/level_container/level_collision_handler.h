@@ -9,7 +9,7 @@ class level_collision_handler
 
 public:
 
-  level_collision_handler(std::shared_ptr<level_container> levelContainer, std::shared_ptr<play_events> playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
+  level_collision_handler(level_container* levelContainer, std::shared_ptr<play_events> playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
   {
   }
 
@@ -32,7 +32,7 @@ private:
 
 private:
 
-  std::shared_ptr<level_container> m_levelContainer;
+  level_container* m_levelContainer;
   std::shared_ptr<play_events> m_playEvents;
 
 };

@@ -4,7 +4,7 @@
 
 struct create_new_objects_visitor
 {
-  std::shared_ptr<level_container> m_levelContainer;
+  level_container* m_levelContainer;
   std::shared_ptr<play_events> m_events;
 
   auto operator()(enemy_type_1& object) -> void
