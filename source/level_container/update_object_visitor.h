@@ -6,7 +6,7 @@ struct update_object_visitor
 {
   std::shared_ptr<level_container> m_levelContainer;
   float m_interval;
-  enemy_movement_random m_enemyMovementRandom;
+  enemy_movement_random& m_enemyMovementRandom;
 
   auto operator()(player_ship& object)
   {
