@@ -30,7 +30,6 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
   auto SetActive(bool value) -> void;
-  auto SetInvulnerable(bool value) -> void;
 
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
@@ -61,7 +60,6 @@ private:
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
   bool m_active { false };
-  bool m_invulnerable { false };
   
   float m_thrust { 0 };
   bool m_triggerDown { false };
@@ -103,11 +101,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 inline auto player_ship::SetActive(bool value) -> void
 {
   m_active = value;
-}
-
-inline auto player_ship::SetInvulnerable(bool value) -> void
-{
-  m_invulnerable = value;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
