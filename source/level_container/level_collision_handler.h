@@ -166,5 +166,5 @@ inline auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_ty
   m_levelContainer->CreateExplosion(enemy.Position());
   m_playEvents->SetEvent(play_events::event_type::explosion, true);
   bullet.Destroy();
-  enemy.Destroy();  
+  enemy.Destroy();
 }

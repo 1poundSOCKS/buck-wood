@@ -59,7 +59,20 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
   object.Update(interval);
-  auto [position, destination] = m_enemyMovementRandom(object.Position(), object.Destination(), interval);
-  object.SetPosition(position);
-  object.SetDestination(destination);
+
+  // switch( object.State() )
+  // {
+  //   case enemy_type_2::state_type::moving:
+  //   {
+      // auto [position, destination] = m_enemyMovementRandom(object.Position(), object.Destination(), interval);
+      // auto destination = m_enemyMovementRandom(object.Position(), object.Destination(), interval);
+      // auto destination = m_enemyMovementRandom();
+      // object.SetPosition(position);
+  //     object.SetDestination(object.Destination() ? object.Destination() : std::optional<POINT_2F>(m_enemyMovementRandom()));
+  //     break;
+  //   }
+  //   case enemy_type_2::state_type::shooting:
+  //   default:
+  //     break;
+  // }
 }
