@@ -9,7 +9,7 @@
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  update_object_visitor m_updateObjectVisitor { this, interval, PlayerActive() };
+  update_object_visitor m_updateObjectVisitor { this, interval };
   create_new_objects_visitor createNewObjectsVisitor { this, m_playEvents };
   save_player_state_visitor savePlayerStateVisitor { this };
   level_collision_handler collisionHandler { this, m_playEvents };
@@ -46,6 +46,11 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
   });
 
   return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
+}
+
+auto level_container::UpdateObject(player_ship& object, float interval) -> void
+{
+  object.Update(interval, m_playerActive);
 }
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void

@@ -6,11 +6,10 @@ struct update_object_visitor
 {
   level_container* m_levelContainer;
   float m_interval;
-  bool m_playerActive;
 
   auto operator()(player_ship& object)
   {
-    object.Update(m_interval, m_playerActive);
+    m_levelContainer->UpdateObject(object, m_interval);
   }
 
   auto operator()(enemy_type_1& object)
