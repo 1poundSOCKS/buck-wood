@@ -88,7 +88,7 @@ public:
 
 private:
 
-  auto Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
+  auto Update(auto&& updateVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
   auto UpdateObjects(auto&& visitor) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -337,7 +337,7 @@ inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelT
   }
 }
 
-auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(auto&& updateVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void
 {
   auto collisionsStart = performance_counter::QueryValue();
 
@@ -362,7 +362,11 @@ auto level_container::Update(auto&& updateVisitor, auto&& saveVisitor, auto&& cr
 
   CreateNewObjects(createVisitor);
 
-  auto enemies = std::ranges::views::transform(m_staticObjects, [](const auto& object) { return std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0; });
+  auto enemies = std::ranges::views::transform(m_staticObjects, [](const auto& object)
+  {
+    return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
+  });
+
   m_targetsRemaining = std::accumulate(std::begin(enemies), std::end(enemies), 0);
 
   auto updateEnd = performance_counter::QueryValue();
