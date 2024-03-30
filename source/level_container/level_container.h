@@ -13,6 +13,7 @@
 #include "collisions/particle_containment.h"
 #include "collisions/geometry_collision_binary.h"
 #include "collisions/geometry_collision_unary.h"
+#include "enemy_update.h"
 
 class level_container
 {
@@ -81,6 +82,9 @@ public:
 
   [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
 
+  auto UpdateObject(enemy_type_1& object, float interval) -> void;
+  auto UpdateObject(enemy_type_2& object, float interval) -> void;
+
 private:
 
   auto Update(auto&& updateVisitor, auto&& saveVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
@@ -129,7 +133,8 @@ inline level_container::level_container(std::shared_ptr<play_events> playEvents,
 
 inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, 
   std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, 
+  m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
 {
 }
 

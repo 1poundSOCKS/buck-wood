@@ -4,9 +4,9 @@
 
 struct update_object_visitor
 {
+  level_container* m_levelContainer;
   float m_interval;
   bool m_playerActive;
-  enemy_movement_random& m_enemyMovementRandom;
 
   auto operator()(player_ship& object)
   {
@@ -15,15 +15,12 @@ struct update_object_visitor
 
   auto operator()(enemy_type_1& object)
   {
-    object.Update(m_interval);
+    m_levelContainer->UpdateObject(object, m_interval);
   }
 
   auto operator()(enemy_type_2& object)
   {
-    object.Update(m_interval);
-    auto [position, destination] = m_enemyMovementRandom(object.Position(), object.Destination(), m_interval);
-    object.SetPosition(position);
-    object.SetDestination(destination);
+    m_levelContainer->UpdateObject(object, m_interval);
   }
 
   auto operator()(auto&& object)
