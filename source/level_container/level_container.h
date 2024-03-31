@@ -19,12 +19,12 @@ class level_container
 
 public:
 
-  using StaticObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
-  using MovingObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
+  using PlayerObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 20 }>;
+  using EnemyObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 2000 }>;
 
-  using static_object_collection = std::list<dynamic_object<default_object>, StaticObjectAllocator>;
-  using moving_object_collection = std::list<dynamic_object<default_object>, MovingObjectAllocator>;
+  using static_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
+  using moving_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   enum class level_type { vertical_scroller, arena };

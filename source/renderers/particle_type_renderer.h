@@ -14,7 +14,8 @@ public:
 
 private:
 
-  inline static constexpr auto m_renderRect = D2D1_RECT_F { -4, -4, 4, 4 };
+  constexpr static float m_renderRectSize { 8 };
+  constexpr static D2D1_RECT_F m_renderRect { -m_renderRectSize, -m_renderRectSize, m_renderRectSize, m_renderRectSize };
   color_scale_brushes m_brushes;
 
 };
