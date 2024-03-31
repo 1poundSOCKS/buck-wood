@@ -50,10 +50,11 @@ public:
   [[nodiscard]] auto GameScore() const -> const game_score&;
   [[nodiscard]] auto TargetCount() const -> int;
 
-  [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
+  [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
 
   auto CreateStaticObject(auto&&...args) -> void;
   auto CreateMovingObject(auto&&...args) -> void;
+
   auto CreatePortal(auto&&...args) -> void;
   auto CreatePlayer(auto&&...args) -> void;
   auto CreateEnemyType1(auto&&...args) -> void;
@@ -70,8 +71,8 @@ public:
   auto CreateImpacts(auto&& positions) -> void;
 
   auto Boundary() const -> const blank_object&;
-  auto StaticObjects() const -> const static_object_collection&;
-  auto MovingObjects() const -> const moving_object_collection&;
+  auto PlayerObjects() const -> const static_object_collection&;
+  auto EnemyObjects() const -> const moving_object_collection&;
   auto Particles() const -> const particle_collection&;
 
   auto TargetDamaged(const enemy_type_2& target) const -> void;
@@ -112,8 +113,8 @@ private:
   bool m_playerActive { false };
   bool m_playerInvulnerable { false };
 
-  static_object_collection m_staticObjects;
-  moving_object_collection m_movingObjects;
+  static_object_collection m_playerObjects;
+  moving_object_collection m_enemyObjects;
 
   std::optional<targetted_object> m_targettedObject;
 
@@ -196,17 +197,17 @@ inline [[nodiscard]] auto level_container::TargetCount() const -> int
 
 auto level_container::CreateStaticObject(auto&&...args) -> void
 {
-  m_staticObjects.emplace_back(std::forward<decltype(args)>(args)...);
+  m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateMovingObject(auto&&...args) -> void
 {
-  m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
+  m_enemyObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-[[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
+[[nodiscard]] auto level_container::EnemyObjects(auto&& unaryFunction)
 {
-  return std::ranges::views::filter(m_movingObjects, unaryFunction);
+  return std::ranges::views::filter(m_enemyObjects, unaryFunction);
 }
 
 auto level_container::CreatePortal(auto&&...args) -> void
@@ -280,14 +281,14 @@ inline auto level_container::Boundary() const -> const blank_object&
   return m_boundary;
 }
 
-inline auto level_container::StaticObjects() const -> const static_object_collection&
+inline auto level_container::PlayerObjects() const -> const static_object_collection&
 {
-  return m_staticObjects;
+  return m_playerObjects;
 }
 
-inline auto level_container::MovingObjects() const -> const moving_object_collection&
+inline auto level_container::EnemyObjects() const -> const moving_object_collection&
 {
-  return m_movingObjects;
+  return m_enemyObjects;
 }
 
 inline auto level_container::Particles() const -> const particle_collection&
@@ -355,7 +356,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(updateVisitor);
 
-  for( const auto& object : m_staticObjects )
+  for( const auto& object : m_playerObjects )
   {
     auto ship = object->GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
@@ -365,7 +366,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
 
   m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
 
-  auto enemies = std::ranges::views::transform(m_movingObjects, [](const auto& object)
+  auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {
     return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
   });
@@ -382,17 +383,17 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
 
   dynamic_object_functions::update(particles, visitor.m_interval);
 
-  auto staticObjects = std::ranges::views::filter(m_staticObjects, [](const auto& object) { return !object->Destroyed(); } );
+  auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
 
-  for( auto& object : staticObjects )
+  for( auto& object : PlayerObjects )
   {
     std::visit(visitor, object->Get());
     object.UpdateGeometry();
   }
 
-  auto movingObjects = std::ranges::views::filter(m_movingObjects, [](const auto& object) { return !object->Destroyed(); } );
+  auto EnemyObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object) { return !object->Destroyed(); } );
 
-  for( auto& object : movingObjects )
+  for( auto& object : EnemyObjects )
   {
     std::visit(visitor, object->Get());
     object.UpdateGeometry();
@@ -404,24 +405,24 @@ auto level_container::DoCollisions(auto&& handler) -> void
   if( m_boundary.Geometry() )
   {
     geometry_containment<default_object> geometryContainmentRunner;
-    geometryContainmentRunner(m_boundary.Geometry().get(), m_staticObjects, handler);
-    geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects, handler);
+    geometryContainmentRunner(m_boundary.Geometry().get(), m_playerObjects, handler);
+    geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
 
     particle_containment<particle> particleContainmentRunner;
     particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
   }
 
   geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner;
-  staticMovingCollisionRunner(m_staticObjects, m_movingObjects, handler);
+  staticMovingCollisionRunner(m_playerObjects, m_enemyObjects, handler);
 
 #ifdef SELF_COLLISION
   geometry_collision_unary<default_object> movingCollisionRunner;
-  movingCollisionRunner(m_movingObjects, handler);
+  movingCollisionRunner(m_enemyObjects, handler);
 #endif
 
 #ifdef ALL_PARTICLE_COLLISIONS_TESTED
   particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
-  particleCollisionRunner(m_staticObjects, m_particles);
-  particleCollisionRunner(m_movingObjects, m_particles);
+  particleCollisionRunner(m_playerObjects, m_particles);
+  particleCollisionRunner(m_enemyObjects, m_particles);
 #endif
 }

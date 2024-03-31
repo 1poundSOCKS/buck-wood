@@ -16,8 +16,8 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 auto level_container::RemoveDestroyedObjects() -> void
 {
   particle_functions::erase_destroyed(m_particles);
-  dynamic_object_functions::erase_destroyed(m_movingObjects);
-  dynamic_object_functions::erase_destroyed(m_staticObjects);
+  dynamic_object_functions::erase_destroyed(m_enemyObjects);
+  dynamic_object_functions::erase_destroyed(m_playerObjects);
 }
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
@@ -26,7 +26,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
   constexpr auto angleSpan = 20.0f;
 
-  auto mines = std::ranges::views::filter(m_movingObjects, [](const auto& object)
+  auto mines = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
   {
     return object->HoldsAlternative<enemy_bullet_1>();
   });
