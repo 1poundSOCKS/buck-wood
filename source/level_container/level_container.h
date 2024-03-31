@@ -88,7 +88,7 @@ public:
 
 private:
 
-  auto Update(auto&& updateVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
+  auto Update(auto&& updateVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void;
   auto UpdateObjects(auto&& visitor) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -337,7 +337,7 @@ inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelT
   }
 }
 
-auto level_container::Update(auto&& updateVisitor, auto&& createVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void
 {
   auto collisionsStart = performance_counter::QueryValue();
 
@@ -359,8 +359,6 @@ auto level_container::Update(auto&& updateVisitor, auto&& createVisitor, auto&& 
   RemoveDestroyedObjects();
 
   m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
-
-  // CreateNewObjects(createVisitor);
 
   auto enemies = std::ranges::views::transform(m_staticObjects, [](const auto& object)
   {
@@ -395,19 +393,6 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
     object.UpdateGeometry();
   }
 }
-
-// auto level_container::CreateNewObjects(auto&& visitor) -> void
-// {
-//   for( auto& object : m_staticObjects )
-//   {
-//     std::visit(visitor, object.Object().Get());
-//   }
-
-//   for( auto& object : m_movingObjects )
-//   {
-//     std::visit(visitor, object.Object().Get());
-//   }
-// }
 
 auto level_container::DoCollisions(auto&& handler) -> void
 {
