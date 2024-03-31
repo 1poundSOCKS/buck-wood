@@ -21,14 +21,13 @@ public:
   [[nodiscard]] auto Reloaded() const -> bool;
   [[nodiscard]] auto Health() const -> float;
 
-  auto SetDestination(std::optional<POINT_2F> destination) -> void;
   auto ApplyDamage(int value) -> void;
 
 private:
 
   state_type m_state { state_type::moving };
   constexpr static int m_movesBeforeStateChange { 3 };
-  constexpr static float m_speed = 500;
+  constexpr static float m_speed = 600;
   inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
 
   std::optional<POINT_2F> m_destination;
@@ -36,47 +35,11 @@ private:
   int m_hitpoints { 5 };
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  constexpr static int m_shotsBeforeStateChange { 3 };
+  constexpr static int m_shotsBeforeStateChange { 5 };
 
   int m_actionCount { 0 };
 
 };
-
-inline enemy_type_2::enemy_type_2(POINT_2F position, float reloadTime, int hitpoints) : 
-  base_object { position, { 1.5, 1.5 }, 0 }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
-{
-}
-
-inline auto enemy_type_2::Update(float interval) -> void
-{
-  base_object::Update(interval);
-
-  switch( m_state )
-  {
-    case state_type::moving:
-    {
-      m_destination = m_destination ? m_destination : std::optional<POINT_2F>({static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100, static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100});
-      m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, m_speed * interval) : m_position;
-      bool atDestination = m_destination && direct2d::AreEqual(m_position, *m_destination);
-      m_destination = atDestination ? std::optional<POINT_2F>({static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100, static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100})  : m_destination;
-      m_actionCount += atDestination ? 1 : 0;
-      bool stateChange = m_actionCount < m_movesBeforeStateChange ? false : true;
-      m_state = stateChange ? state_type::shooting : m_state;
-      m_actionCount = stateChange ? 0 : m_actionCount;
-      break;
-    }
-    case state_type::shooting:
-    {
-      m_reloaded = m_reloadTimer.Update(interval);
-      m_actionCount += m_reloaded ? 1 : 0;
-      bool stateChange = m_actionCount > m_shotsBeforeStateChange ? true : false;
-      m_state = stateChange ? state_type::moving : m_state;
-      m_actionCount = stateChange ? 0 : m_actionCount;
-      m_reloaded = stateChange ? false : m_reloaded;
-      break;
-    }
-  }
-}
 
 inline [[nodiscard]] auto enemy_type_2::State() const -> state_type
 {
@@ -95,19 +58,12 @@ inline [[nodiscard]] auto enemy_type_2::Health() const -> float
 
 inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> bool
 {
-  // return m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
   return m_reloaded;
 }
 
 inline [[nodiscard]] auto enemy_type_2::Reloaded() const -> bool
 {
   return m_reloaded;
-}
-
-inline auto enemy_type_2::SetDestination(std::optional<POINT_2F> destination) -> void
-{
-  m_destination = destination;
-  m_actionCount += ( m_destination && destination && !direct2d::AreEqual(*m_destination, *destination) ) ? 1 : 0;
 }
 
 inline auto enemy_type_2::ApplyDamage(int value) -> void

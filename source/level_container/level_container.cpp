@@ -67,7 +67,7 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
   object.Update(interval);
 
-  if( object.CanShootAt(m_playerState.Position()) )
+  if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
@@ -80,7 +80,7 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
   object.Update(interval);
 
-  if( object.CanShootAt(m_playerState.Position()) )
+  if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
