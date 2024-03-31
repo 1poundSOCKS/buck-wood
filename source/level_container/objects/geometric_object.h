@@ -36,6 +36,12 @@ public:
     m_scale = value;
   }
 
+  auto MoveTowards(float distance, POINT_2F destination) -> bool
+  {
+    m_position = direct2d::GetDistanceBetweenPoints(m_position, destination) > distance ? direct2d::CalculatePosition(m_position, direct2d::GetAngleBetweenPoints(m_position, destination), distance) : destination;
+    return direct2d::AreEqual(m_position, destination);
+  }
+
 protected:
 
   POINT_2F m_position;

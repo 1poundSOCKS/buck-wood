@@ -15,8 +15,7 @@ auto enemy_type_2::Update(float interval) -> void
     case state_type::moving:
     {
       m_destination = m_destination ? m_destination : std::optional<POINT_2F>({static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100, static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100});
-      m_position = m_destination ? direct2d::MoveTowards(m_position, *m_destination, m_speed * interval) : m_position;
-      bool atDestination = m_destination && direct2d::AreEqual(m_position, *m_destination);
+      bool atDestination = m_destination && MoveTowards(m_speed * interval, *m_destination);
       m_destination = atDestination ? std::optional<POINT_2F>({static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100, static_cast<float>(m_positionDist(pseudo_random_generator::get())) * 100})  : m_destination;
       m_actionCount += atDestination ? 1 : 0;
       bool stateChange = m_actionCount < m_movesBeforeStateChange ? false : true;
