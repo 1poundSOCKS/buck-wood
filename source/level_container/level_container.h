@@ -360,7 +360,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& createVisitor, auto&& 
 
   m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
 
-  CreateNewObjects(createVisitor);
+  // CreateNewObjects(createVisitor);
 
   auto enemies = std::ranges::views::transform(m_staticObjects, [](const auto& object)
   {
@@ -396,18 +396,18 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
   }
 }
 
-auto level_container::CreateNewObjects(auto&& visitor) -> void
-{
-  for( auto& object : m_staticObjects )
-  {
-    std::visit(visitor, object.Object().Get());
-  }
+// auto level_container::CreateNewObjects(auto&& visitor) -> void
+// {
+//   for( auto& object : m_staticObjects )
+//   {
+//     std::visit(visitor, object.Object().Get());
+//   }
 
-  for( auto& object : m_movingObjects )
-  {
-    std::visit(visitor, object.Object().Get());
-  }
-}
+//   for( auto& object : m_movingObjects )
+//   {
+//     std::visit(visitor, object.Object().Get());
+//   }
+// }
 
 auto level_container::DoCollisions(auto&& handler) -> void
 {

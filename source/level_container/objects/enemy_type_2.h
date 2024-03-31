@@ -69,7 +69,7 @@ inline auto enemy_type_2::Update(float interval) -> void
     {
       m_reloaded = m_reloadTimer.Update(interval);
       m_actionCount += m_reloaded ? 1 : 0;
-      bool stateChange = m_actionCount < m_shotsBeforeStateChange ? false : true;
+      bool stateChange = m_actionCount > m_shotsBeforeStateChange ? true : false;
       m_state = stateChange ? state_type::moving : m_state;
       m_actionCount = stateChange ? 0 : m_actionCount;
       m_reloaded = stateChange ? false : m_reloaded;
@@ -95,7 +95,8 @@ inline [[nodiscard]] auto enemy_type_2::Health() const -> float
 
 inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> bool
 {
-  return m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
+  // return m_reloaded && direct2d::GetDistanceBetweenPoints(m_position, position) < 1500;
+  return m_reloaded;
 }
 
 inline [[nodiscard]] auto enemy_type_2::Reloaded() const -> bool

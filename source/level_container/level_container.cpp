@@ -49,30 +49,44 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {
   object.Update(interval, m_playerActive);
+
+  if( object.CanShoot() )
+  {
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, object.Angle()), 1);
+    m_playEvents->SetEvent(play_events::event_type::shot, true);
+  }
+
+  if( object.EmitThrustParticle() )
+  {
+    auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
+    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
+    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+    CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+  }
 }
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
   object.Update(interval);
+
+  if( object.CanShootAt(m_playerState.Position()) )
+  {
+    auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
+    auto velocity = direct2d::CalculateVelocity(500.0f, direction);
+    CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
+    m_playEvents->SetEvent(play_events::event_type::shot, true);
+  }
 }
 
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
   object.Update(interval);
 
-  // switch( object.State() )
-  // {
-  //   case enemy_type_2::state_type::moving:
-  //   {
-      // auto [position, destination] = m_enemyMovementRandom(object.Position(), object.Destination(), interval);
-      // auto destination = m_enemyMovementRandom(object.Position(), object.Destination(), interval);
-      // auto destination = m_enemyMovementRandom();
-      // object.SetPosition(position);
-  //     object.SetDestination(object.Destination() ? object.Destination() : std::optional<POINT_2F>(m_enemyMovementRandom()));
-  //     break;
-  //   }
-  //   case enemy_type_2::state_type::shooting:
-  //   default:
-  //     break;
-  // }
+  if( object.CanShootAt(m_playerState.Position()) )
+  {
+    auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
+    auto velocity = direct2d::CalculateVelocity(500.0f, direction);
+    CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
+    m_playEvents->SetEvent(play_events::event_type::shot, true);
+  }
 }
