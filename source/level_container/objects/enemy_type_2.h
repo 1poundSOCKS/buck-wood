@@ -34,7 +34,7 @@ private:
   std::optional<POINT_2F> m_destination;
   int m_maxHitpoints { 5 };
   int m_hitpoints { 5 };
-  reload_timer m_reloadTimer { 0.1f };
+  reload_timer m_reloadTimer;
   bool m_reloaded { false };
   constexpr static int m_shotsBeforeStateChange { 3 };
 

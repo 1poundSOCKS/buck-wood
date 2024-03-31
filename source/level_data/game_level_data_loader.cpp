@@ -43,7 +43,7 @@ auto game_level_data_loader::CreateType2Enemies(level_container* levelContainer,
 {
   for( int i = 0; i < count; ++i )
   {
-    levelContainer->CreateEnemyType2(POINT_2F { 0, 0 }, 4.0f, 10);
+    levelContainer->CreateEnemyType2(POINT_2F { 0, 0 }, 0.5f, 10);
   }
 }
 
