@@ -1,8 +1,5 @@
 #pragma once
 
-#include "dynamic_object.h"
-
-template <typename contained_object_type>
 class geometry_containment
 {
 
@@ -12,7 +9,7 @@ public:
   {
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, dynamic_object<contained_object_type>& containedObject, auto&& callable) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, auto&& containedObject, auto&& callable) -> void
   {
     D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
     HRESULT hr = containmentGeometry->CompareWithGeometry(containedObject.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);

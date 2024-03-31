@@ -1,8 +1,5 @@
 #pragma once
 
-#include "dynamic_object.h"
-
-template <typename object_type_1, typename object_type_2>
 class geometry_collision_binary
 {
 
@@ -12,7 +9,7 @@ public:
   {
   }
 
-  auto operator()(dynamic_object<object_type_1>& object1, dynamic_object<object_type_2>& object2, auto&& callable) -> void
+  auto operator()(auto&& object1, auto&& object2, auto&& callable) -> void
   {
     auto position1 = object1->Position();
     auto position2 = object2->Position();
@@ -43,7 +40,7 @@ public:
     }
   }
 
-  auto operator()(dynamic_object<object_type_1>& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
+  auto operator()(auto&& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
   {
     if( !object->Destroyed() )
     {

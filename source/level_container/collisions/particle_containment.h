@@ -1,6 +1,5 @@
 #pragma once
 
-template <typename contained_particle_type>
 class particle_containment
 {
 
@@ -10,7 +9,7 @@ public:
   {
   }
 
-  auto operator()(ID2D1Geometry* containmentGeometry, contained_particle_type& particle, auto&& callable) -> void
+  auto operator()(ID2D1Geometry* containmentGeometry, auto&& particle, auto&& callable) -> void
   {
     BOOL contains { FALSE };
     D2D1_POINT_2F position { particle.Position().x, particle.Position().y };

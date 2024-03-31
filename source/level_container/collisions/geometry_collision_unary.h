@@ -1,8 +1,5 @@
 #pragma once
 
-#include "dynamic_object.h"
-
-template <typename object_type>
 class geometry_collision_unary
 {
 
@@ -12,7 +9,7 @@ public:
   {
   }
 
-  auto operator()(dynamic_object<object_type>& object1, dynamic_object<object_type>& object2, auto&& callable) -> void
+  auto operator()(auto&& object1, auto&& object2, auto&& callable) -> void
   {
     auto position1 = object1->Position();
     auto position2 = object2->Position();

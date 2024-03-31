@@ -122,9 +122,9 @@ private:
   std::shared_ptr<game_score> m_gameScore;
   std::shared_ptr<int> m_powerUpsCollected;
 
-  geometry_containment<default_object> m_geometryContainmentRunner;
-  particle_containment<particle> m_particleContainmentRunner;
-  geometry_collision_binary<default_object, default_object> m_collisionRunner;
+  geometry_containment m_geometryContainmentRunner;
+  particle_containment m_particleContainmentRunner;
+  geometry_collision_binary m_collisionRunner;
 
   int m_targetsRemaining { 0 };
 
@@ -412,15 +412,4 @@ auto level_container::DoCollisions(auto&& handler) -> void
   }
 
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
-
-#ifdef SELF_COLLISION
-  geometry_collision_unary<default_object> movingCollisionRunner;
-  movingCollisionRunner(m_enemyObjects, handler);
-#endif
-
-#ifdef ALL_PARTICLE_COLLISIONS_TESTED
-  particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
-  particleCollisionRunner(m_playerObjects, m_particles);
-  particleCollisionRunner(m_enemyObjects, m_particles);
-#endif
 }

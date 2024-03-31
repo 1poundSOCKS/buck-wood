@@ -1,16 +1,15 @@
 #pragma once
 
-template <typename geometry_object_type, typename particle_object_type>
 class particle_collision
 {
 
 public:
 
-  particle_collision(auto&& callable) : m_callable { callable }
+  particle_collision()
   {
   }
 
-  auto operator()(dynamic_object<geometry_object_type>& geometryObject, particle_object_type& particleObject) -> void
+  auto operator()(auto&& geometryObject, auto&& particleObject, auto&& callable) -> void
   {
     auto position1 = geometryObject->Position();
     auto position2 = particleObject.Position();
@@ -23,12 +22,12 @@ public:
       if( SUCCEEDED(hr) && collision )
       {
         std::lock_guard<std::mutex> guard(m_mutex);
-        m_callable(geometryObject.Object(), particleObject);
+        callable(geometryObject.Object(), particleObject);
       }
     }
   }
 
-  auto operator()(dynamic_object<geometry_object_type>& geometryObject, std::ranges::input_range auto && particleObjectCollection) -> void
+  auto operator()(auto&& geometryObject, std::ranges::input_range auto && particleObjectCollection, auto&& callable) -> void
   {
     std::for_each(std::execution::par, std::begin(particleObjectCollection), std::end(particleObjectCollection), [this,&geometryObject](auto& particleObject)
     {
@@ -46,7 +45,7 @@ public:
         {
           if( !particleObject.Destroyed() )
           {
-            (*this)(geometryObject, particleObject);
+            (*this)(geometryObject, particleObject, callable);
           }
         }
       }
@@ -55,7 +54,6 @@ public:
 
 private:
 
-  std::function<void(geometry_object_type&, particle_object_type&)> m_callable;
   std::mutex m_mutex;
 
 };
