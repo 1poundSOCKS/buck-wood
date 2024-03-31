@@ -13,7 +13,6 @@
 #include "collisions/particle_containment.h"
 #include "collisions/geometry_collision_binary.h"
 #include "collisions/geometry_collision_unary.h"
-#include "enemy_update.h"
 
 class level_container
 {
@@ -53,13 +52,14 @@ public:
 
   [[nodiscard]] auto MovingObjects(auto&& unaryFunction);
 
+  auto CreateStaticObject(auto&&...args) -> void;
+  auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePortal(auto&&...args) -> void;
   auto CreatePlayer(auto&&...args) -> void;
   auto CreateEnemyType1(auto&&...args) -> void;
   auto CreateEnemyType2(auto&&...args) -> void;
   auto CreateEnemyBullet(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
-  auto CreateMovingObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
 
@@ -194,6 +194,16 @@ inline [[nodiscard]] auto level_container::TargetCount() const -> int
   return m_targetsRemaining;
 }
 
+auto level_container::CreateStaticObject(auto&&...args) -> void
+{
+  m_staticObjects.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateMovingObject(auto&&...args) -> void
+{
+  m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
 [[nodiscard]] auto level_container::MovingObjects(auto&& unaryFunction)
 {
   return std::ranges::views::filter(m_movingObjects, unaryFunction);
@@ -201,12 +211,17 @@ inline [[nodiscard]] auto level_container::TargetCount() const -> int
 
 auto level_container::CreatePortal(auto&&...args) -> void
 {
-  m_staticObjects.emplace_back(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+  CreateStaticObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreatePlayer(auto&&...args) -> void
 {
-  m_movingObjects.emplace_back(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
+  CreateStaticObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
+{
+  CreateStaticObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType1(auto&&...args) -> void
@@ -216,7 +231,7 @@ auto level_container::CreateEnemyType1(auto&&...args) -> void
 
 auto level_container::CreateEnemyType2(auto&&...args) -> void
 {
-  m_staticObjects.emplace_back(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
+  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(auto&&...args) -> void
@@ -232,16 +247,6 @@ auto level_container::CreateParticle(auto&&...args) -> void
 auto level_container::CreatePowerUp(auto&&...args) -> void
 {
   CreateMovingObject(level_geometries::CircleGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateMovingObject(auto&&...args) -> void
-{
-  m_movingObjects.emplace_back(std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
-{
-  CreateMovingObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
@@ -350,7 +355,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(updateVisitor);
 
-  for( const auto& object : m_movingObjects )
+  for( const auto& object : m_staticObjects )
   {
     auto ship = object->GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
@@ -360,7 +365,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
 
   m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
 
-  auto enemies = std::ranges::views::transform(m_staticObjects, [](const auto& object)
+  auto enemies = std::ranges::views::transform(m_movingObjects, [](const auto& object)
   {
     return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
   });
@@ -399,6 +404,7 @@ auto level_container::DoCollisions(auto&& handler) -> void
   if( m_boundary.Geometry() )
   {
     geometry_containment<default_object> geometryContainmentRunner;
+    geometryContainmentRunner(m_boundary.Geometry().get(), m_staticObjects, handler);
     geometryContainmentRunner(m_boundary.Geometry().get(), m_movingObjects, handler);
 
     particle_containment<particle> particleContainmentRunner;
@@ -408,8 +414,10 @@ auto level_container::DoCollisions(auto&& handler) -> void
   geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner;
   staticMovingCollisionRunner(m_staticObjects, m_movingObjects, handler);
 
+#ifdef SELF_COLLISION
   geometry_collision_unary<default_object> movingCollisionRunner;
   movingCollisionRunner(m_movingObjects, handler);
+#endif
 
 #ifdef ALL_PARTICLE_COLLISIONS_TESTED
   particle_collision<default_object, particle> particleCollisionRunner { collisionHandler };
