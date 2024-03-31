@@ -406,15 +406,11 @@ auto level_container::DoCollisions(auto&& handler) -> void
 {
   if( m_boundary.Geometry() )
   {
-    // geometry_containment<default_object> geometryContainmentRunner;
     m_geometryContainmentRunner(m_boundary.Geometry().get(), m_playerObjects, handler);
     m_geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
-
-    // particle_containment<particle> particleContainmentRunner;
     m_particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
   }
 
-  // geometry_collision_binary<default_object, default_object> staticMovingCollisionRunner;
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
 
 #ifdef SELF_COLLISION
