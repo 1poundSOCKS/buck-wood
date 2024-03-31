@@ -25,7 +25,7 @@ public:
 private:
 
   inline static const int m_maxCount { 50 };
-  inline static const float m_particleLifespan { 2.0f };
+  inline static const float m_particleLifespan { 1.5f };
 
   const_level_explosion_iterator(type iteratorType, D2D1_POINT_2F position);
 
@@ -34,7 +34,7 @@ private:
 private:
 
   inline static std::uniform_int_distribution<int> m_angleDist { 0, 359 };
-  inline static std::uniform_int_distribution<int> m_velocityDist { 200, 300 };
+  inline static std::uniform_int_distribution<int> m_velocityDist { 300, 500 };
 
   type m_type { type::none };
   D2D1_POINT_2F m_position;
