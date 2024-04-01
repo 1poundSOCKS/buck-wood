@@ -60,8 +60,9 @@ public:
 
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
 
-  auto CreateStaticObject(auto&&...args) -> void;
-  auto CreateMovingObject(auto&&...args) -> void;
+  auto CreateNoninteractiveObject(auto&&...args) -> void;
+  auto CreatePlayerObject(auto&&...args) -> void;
+  auto CreateEnemyObject(auto&&...args) -> void;
 
   auto CreatePortal(auto&&...args) -> void;
   auto CreatePlayer(auto&&...args) -> void;
@@ -188,44 +189,49 @@ inline [[nodiscard]] auto level_container::TargetCount() const -> int
   return m_targetsRemaining;
 }
 
-auto level_container::CreateStaticObject(auto&&...args) -> void
+auto level_container::CreateNoninteractiveObject(auto&&...args) -> void
+{
+  m_noninteractiveObjects.emplace_back(std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreatePlayerObject(auto&&...args) -> void
 {
   m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateMovingObject(auto&&...args) -> void
+auto level_container::CreateEnemyObject(auto&&...args) -> void
 {
   m_enemyObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreatePortal(auto&&...args) -> void
 {
-  CreateStaticObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+  CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreatePlayer(auto&&...args) -> void
 {
-  CreateStaticObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
-  CreateStaticObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType1(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType2(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateParticle(auto&&...args) -> void
@@ -235,7 +241,7 @@ auto level_container::CreateParticle(auto&&...args) -> void
 
 auto level_container::CreatePowerUp(auto&&...args) -> void
 {
-  CreateMovingObject(level_geometries::CircleGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::CircleGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
