@@ -52,6 +52,12 @@ public:
   [[nodiscard]] auto GameScore() const -> const game_score&;
   [[nodiscard]] auto TargetCount() const -> int;
 
+  auto Boundary() const -> const blank_object&;
+  auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
+  auto PlayerObjects() const -> const player_object_collection&;
+  auto EnemyObjects() const -> const enemy_object_collection&;
+  auto Particles() const -> const particle_collection&;
+
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
 
   auto CreateStaticObject(auto&&...args) -> void;
@@ -71,11 +77,6 @@ public:
 
   auto CreateExplosions(auto&& positions) -> void;
   auto CreateImpacts(auto&& positions) -> void;
-
-  auto Boundary() const -> const blank_object&;
-  auto PlayerObjects() const -> const player_object_collection&;
-  auto EnemyObjects() const -> const enemy_object_collection&;
-  auto Particles() const -> const particle_collection&;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
@@ -197,11 +198,6 @@ auto level_container::CreateMovingObject(auto&&...args) -> void
   m_enemyObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-[[nodiscard]] auto level_container::EnemyObjects(auto&& unaryFunction)
-{
-  return std::ranges::views::filter(m_enemyObjects, unaryFunction);
-}
-
 auto level_container::CreatePortal(auto&&...args) -> void
 {
   CreateStaticObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
@@ -273,6 +269,11 @@ inline auto level_container::Boundary() const -> const blank_object&
   return m_boundary;
 }
 
+inline auto level_container::NoninteractiveObjects() const -> const noninteractive_object_collection&
+{
+  return m_noninteractiveObjects;
+}
+
 inline auto level_container::PlayerObjects() const -> const player_object_collection&
 {
   return m_playerObjects;
@@ -286,6 +287,11 @@ inline auto level_container::EnemyObjects() const -> const enemy_object_collecti
 inline auto level_container::Particles() const -> const particle_collection&
 {
   return m_particles;
+}
+
+[[nodiscard]] auto level_container::EnemyObjects(auto&& unaryFunction)
+{
+  return std::ranges::views::filter(m_enemyObjects, unaryFunction);
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
