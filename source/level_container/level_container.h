@@ -76,8 +76,8 @@ public:
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
 
-  auto CreateExplosions(auto&& positions) -> void;
-  auto CreateImpacts(auto&& positions) -> void;
+  auto CreateExplosions(std::ranges::input_range auto&& positions) -> void;
+  auto CreateImpacts(std::ranges::input_range auto&& positions) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
@@ -94,7 +94,7 @@ private:
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions(auto&& handler) -> void;
-  auto CreateNewObjects(auto&& visitor) -> void;
+  // auto CreateNewObjects(auto&& visitor) -> void;
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
@@ -254,7 +254,7 @@ inline auto level_container::CreateImpact(POINT_2F position) -> void
   m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
 }
 
-auto level_container::CreateExplosions(auto&& positions) -> void
+auto level_container::CreateExplosions(std::ranges::input_range auto&& positions) -> void
 {
   for( const auto& position : positions )
   {
@@ -262,7 +262,7 @@ auto level_container::CreateExplosions(auto&& positions) -> void
   }
 }
 
-auto level_container::CreateImpacts(auto&& positions) -> void
+auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -> void
 {
   for( const auto& position : positions )
   {
