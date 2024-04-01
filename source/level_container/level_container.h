@@ -313,7 +313,7 @@ inline auto level_container::MineDestroyed() const -> void
 
 inline auto level_container::PowerUpCollected(POINT_2F position) -> void
 {
-  m_playEvents->SetEvent(play_events::event_type::power_up_collected, true);
+  m_playEvents->Set(play_events::event_type::power_up_collected, true);
   ++(*m_powerUpsCollected);
 }
 
