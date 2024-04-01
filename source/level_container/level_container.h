@@ -94,7 +94,6 @@ private:
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions(auto&& handler) -> void;
-  // auto CreateNewObjects(auto&& visitor) -> void;
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;

@@ -7,10 +7,10 @@
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  update_object_visitor m_updateObjectVisitor { this, interval };
+  update_object_visitor updateObjectVisitor { this, interval };
   level_collision_handler collisionHandler { this, m_playEvents };
   
-  Update(m_updateObjectVisitor, collisionHandler, viewRect);
+  Update(updateObjectVisitor, collisionHandler, viewRect);
 }
 
 auto level_container::RemoveDestroyedObjects() -> void

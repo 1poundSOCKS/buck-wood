@@ -26,10 +26,12 @@ auto play_scene::End() -> void
 
 auto play_scene::Pause() -> void
 {
+  m_paused = true;
 }
 
 auto play_scene::Resume() -> void
 {
+  m_paused = false;
 }
 
 auto play_scene::Update(__int64 ticks) -> bool
@@ -61,7 +63,7 @@ auto play_scene::Render() const -> void
   }
 #endif
 
-  if( m_renderLevelTitle )
+  if( !m_paused && m_renderLevelTitle )
   {
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     renderer::render(m_levelTitle);

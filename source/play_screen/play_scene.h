@@ -45,6 +45,7 @@ private:
 
 protected:
 
+  bool m_paused { false };
   std::shared_ptr<play_state> m_playState;
   level_title m_levelTitle;
   bool m_renderLevelTitle { false };

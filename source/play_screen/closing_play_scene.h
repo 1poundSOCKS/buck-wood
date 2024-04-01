@@ -25,7 +25,7 @@ public:
   {
     play_scene::Update(ticks);
 
-    if( m_stopwatch.Expired() )
+    if( !m_paused && m_stopwatch.Expired() )
     {
       m_menuController.Update();
     }
@@ -42,7 +42,7 @@ public:
     renderer::render(m_playState->Score());
     renderer::render(m_playState->PowerUps());
 
-    if( m_stopwatch.Expired() )
+    if( !m_paused && m_stopwatch.Expired() )
     {
       D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
       m_menuController.Render(D2D1_RECT_F { 0, 0, renderTargetSize.width - 1, renderTargetSize.height - 1});
