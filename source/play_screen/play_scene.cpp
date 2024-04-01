@@ -103,7 +103,7 @@ auto play_scene::RenderLevelContainer() const -> void
   }
 
   renderer::render_all(levelContainer.Particles());
-  renderer::ordered_render_all(levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
+  renderer::ordered_render_all(levelContainer.NoninteractiveObjects(), levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
 
   auto renderEnd = performance_counter::QueryValue();
 

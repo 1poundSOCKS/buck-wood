@@ -368,6 +368,14 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
 
   dynamic_object_functions::update(particles, visitor.m_interval);
 
+  auto NoninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : NoninteractiveObjects )
+  {
+    std::visit(visitor, object->Get());
+    object.UpdateGeometry();
+  }
+
   auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
 
   for( auto& object : PlayerObjects )

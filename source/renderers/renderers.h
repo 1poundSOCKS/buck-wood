@@ -31,7 +31,7 @@ public:
   static auto render(const auto& object) -> void;
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
-  static auto ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void;
+  static auto ordered_render_all(std::ranges::input_range auto&& noninteractiveObjects , std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -86,19 +86,27 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   }
 }
 
-auto renderer::ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void
+auto renderer::ordered_render_all(std::ranges::input_range auto&& noninteractiveObjects , std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void
 {
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
   {
-    auto renderObjects1 = std::ranges::views::filter(objects1, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
-    auto renderObjects2 = std::ranges::views::filter(objects2, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+    auto renderNoninteractiveObjects = std::ranges::views::filter(noninteractiveObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
 
-    for( const auto& object : renderObjects1 )
+    for( const auto& object : renderNoninteractiveObjects )
     {
       m_instance->Render(object);
     }
 
-    for( const auto& object : renderObjects2 )
+    auto renderPlayerObjects = std::ranges::views::filter(playerObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+
+    for( const auto& object : renderPlayerObjects )
+    {
+      m_instance->Render(object);
+    }
+
+    auto renderEnemyObjects = std::ranges::views::filter(enemyObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
+
+    for( const auto& object : renderEnemyObjects )
     {
       m_instance->Render(object);
     }
