@@ -12,7 +12,7 @@ public:
 
   play_state() : 
     m_events { std::make_shared<play_events>() }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
-    m_levelContainer { std::make_shared<level_container>(m_events, m_score, m_powerUpsCollected) }
+    m_levelContainer { std::make_shared<level_container>(m_events) }
   {
   }
 
@@ -20,7 +20,7 @@ public:
   {
     if( m_dataLoader.NextLevel() )
     {
-      m_levelContainer = m_dataLoader.LoadLevel(m_events, m_score, m_powerUpsCollected);
+      m_levelContainer = m_dataLoader.LoadLevel(m_events);
       return true;
     }
     else
@@ -33,6 +33,9 @@ public:
   {
     m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
     m_levelContainer->Update(interval, view);
+
+    m_score->Add(m_events->Get(play_events::counter_type::enemies_destroyed) * 50);
+    m_score->Add(m_events->Get(play_events::counter_type::bullets_destroyed) * 20);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool

@@ -20,6 +20,25 @@ auto play_events::Set(event_type eventType, bool value) -> void
   }
 }
 
+auto play_events::Increment(counter_type counterType) -> void
+{
+  switch( counterType )
+  {
+    case counter_type::enemies_destroyed:
+      ++m_enemiesDestroyed;
+      break;
+    case counter_type::bullets_destroyed:
+      ++m_bulletsDestroyed;
+      break;
+  }
+}
+
+auto play_events::Reset() -> void
+{
+  m_shot = m_explosion = m_targetActivated = m_powerUpCollected = false;
+  m_enemiesDestroyed = m_bulletsDestroyed = 0;
+}
+
 [[nodiscard]] auto play_events::Get(event_type eventType) const -> bool
 {
   switch( eventType )
@@ -42,7 +61,20 @@ auto play_events::Set(event_type eventType, bool value) -> void
   return Get(eventType);
 }
 
-auto play_events::Reset() -> void
+[[nodiscard]] auto play_events::Get(counter_type counterType) const -> int
 {
-  m_shot = m_explosion = m_targetActivated = m_powerUpCollected = false;
+  switch( counterType )
+  {
+    case counter_type::enemies_destroyed:
+      return m_enemiesDestroyed;
+    case counter_type::bullets_destroyed:
+      return m_bulletsDestroyed;
+    default:
+      return 0;
+  }
+}
+
+[[nodiscard]] auto play_events::operator[](counter_type counterType) const -> int
+{
+  return Get(counterType);
 }

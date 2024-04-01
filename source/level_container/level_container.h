@@ -29,8 +29,8 @@ public:
 
   enum class level_type { vertical_scroller, arena };
 
-  level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected);
-  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected);
+  level_container(std::shared_ptr<play_events> playEvents);
+  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -75,10 +75,6 @@ public:
   auto EnemyObjects() const -> const moving_object_collection&;
   auto Particles() const -> const particle_collection&;
 
-  auto TargetDamaged(const enemy_type_2& target) const -> void;
-  auto MineDestroyed() const -> void;
-  auto PowerUpCollected(POINT_2F position) -> void;
-
   auto SavePlayerState(player_ship playerShip) -> void;
 
   [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
@@ -119,8 +115,6 @@ private:
   std::optional<targetted_object> m_targettedObject;
 
   std::shared_ptr<play_events> m_playEvents;
-  std::shared_ptr<game_score> m_gameScore;
-  std::shared_ptr<int> m_powerUpsCollected;
 
   geometry_containment m_geometryContainmentRunner;
   particle_containment m_particleContainmentRunner;
@@ -130,15 +124,13 @@ private:
 
 };
 
-inline level_container::level_container(std::shared_ptr<play_events> playEvents, std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
-  level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 }, playEvents, gameScore, powerUpsCollected)
+inline level_container::level_container(std::shared_ptr<play_events> playEvents) : 
+  level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 }, playEvents)
 {
 }
 
-inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents, 
-  std::shared_ptr<game_score> gameScore, std::shared_ptr<int> powerUpsCollected) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }, 
-  m_gameScore { gameScore }, m_powerUpsCollected { powerUpsCollected }
+inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents) : 
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }
 {
 }
 
@@ -185,11 +177,6 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optio
 inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 {
   return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
-}
-
-inline [[nodiscard]] auto level_container::GameScore() const -> const game_score&
-{
-  return *m_gameScore;
 }
 
 inline [[nodiscard]] auto level_container::TargetCount() const -> int
@@ -296,25 +283,6 @@ inline auto level_container::EnemyObjects() const -> const moving_object_collect
 inline auto level_container::Particles() const -> const particle_collection&
 {
   return m_particles;
-}
-
-inline auto level_container::TargetDamaged(const enemy_type_2& object) const -> void
-{
-  if( object.Destroyed() )
-  {
-    m_gameScore->Add(50);
-  }
-}
-
-inline auto level_container::MineDestroyed() const -> void
-{
-  m_gameScore->Add(20);
-}
-
-inline auto level_container::PowerUpCollected(POINT_2F position) -> void
-{
-  m_playEvents->Set(play_events::event_type::power_up_collected, true);
-  ++(*m_powerUpsCollected);
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void

@@ -47,6 +47,7 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bul
   m_playEvents->Set(play_events::event_type::explosion, true);
   playerBullet.Destroy();
   enemyBullet.Destroy();
+  m_playEvents->Increment(play_events::counter_type::bullets_destroyed);
 }
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
@@ -55,6 +56,7 @@ auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& e
   m_playEvents->Set(play_events::event_type::explosion, true);
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
+  if( enemy.Destroyed() ) m_playEvents->Increment(play_events::counter_type::enemies_destroyed);
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
