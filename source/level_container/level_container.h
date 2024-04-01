@@ -19,12 +19,14 @@ class level_container
 
 public:
 
+  using NoninteractiveObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
   using PlayerObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 20 }>;
   using EnemyObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
-  using ParticleAllocator = linear_allocator<particle, size_t { 2000 }>;
+  using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
-  using static_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
-  using moving_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
+  using noninteractive_object_collection = std::list<dynamic_object<default_object>, NoninteractiveObjectAllocator>;
+  using player_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
+  using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   enum class level_type { vertical_scroller, arena };
@@ -71,8 +73,8 @@ public:
   auto CreateImpacts(auto&& positions) -> void;
 
   auto Boundary() const -> const blank_object&;
-  auto PlayerObjects() const -> const static_object_collection&;
-  auto EnemyObjects() const -> const moving_object_collection&;
+  auto PlayerObjects() const -> const player_object_collection&;
+  auto EnemyObjects() const -> const enemy_object_collection&;
   auto Particles() const -> const particle_collection&;
 
   auto SavePlayerState(player_ship playerShip) -> void;
@@ -109,8 +111,9 @@ private:
   bool m_playerActive { false };
   bool m_playerInvulnerable { false };
 
-  static_object_collection m_playerObjects;
-  moving_object_collection m_enemyObjects;
+  noninteractive_object_collection m_noninteractiveObjects;
+  player_object_collection m_playerObjects;
+  enemy_object_collection m_enemyObjects;
 
   std::optional<targetted_object> m_targettedObject;
 
@@ -270,12 +273,12 @@ inline auto level_container::Boundary() const -> const blank_object&
   return m_boundary;
 }
 
-inline auto level_container::PlayerObjects() const -> const static_object_collection&
+inline auto level_container::PlayerObjects() const -> const player_object_collection&
 {
   return m_playerObjects;
 }
 
-inline auto level_container::EnemyObjects() const -> const moving_object_collection&
+inline auto level_container::EnemyObjects() const -> const enemy_object_collection&
 {
   return m_enemyObjects;
 }
