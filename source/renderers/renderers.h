@@ -31,7 +31,6 @@ public:
   static auto render(const auto& object) -> void;
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
-  static auto reverse_render_all(std::ranges::input_range auto&& objects) -> void;
   static auto ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void;
   static auto renderDiagnostics() -> void;
 
@@ -87,14 +86,6 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   }
 }
 
-auto renderer::reverse_render_all(std::ranges::input_range auto&& objects) -> void
-{
-  for( auto it = std::rbegin(objects); it != std::rend(objects); ++it )
-  {
-    m_instance->Render(*it);
-  }
-}
-
 auto renderer::ordered_render_all(std::ranges::input_range auto&& objects1, std::ranges::input_range auto&& objects2) -> void
 {
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
@@ -113,7 +104,6 @@ auto renderer::ordered_render_all(std::ranges::input_range auto&& objects1, std:
     }
   }
 }
-
 inline auto renderer::renderDiagnostics() -> void
 {
   m_instance->m_diagnosticsRenderer.Write();
