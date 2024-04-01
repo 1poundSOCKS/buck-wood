@@ -93,7 +93,7 @@ auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_2& enemy
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
 {
-  m_playEvents->Set(play_events::event_type::power_up_collected, true);
+  m_playEvents->Increment(play_events::counter_type::power_ups_collected);
   powerUp.Destroy();
 }
 

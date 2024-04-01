@@ -36,6 +36,7 @@ public:
 
     m_score->Add(m_events->Get(play_events::counter_type::enemies_destroyed) * 50);
     m_score->Add(m_events->Get(play_events::counter_type::bullets_destroyed) * 20);
+    *m_powerUpsCollected += m_events->Get(play_events::counter_type::power_ups_collected);
   }
 
   [[nodiscard]] auto LevelComplete() const -> bool

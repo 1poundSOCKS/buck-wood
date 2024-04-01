@@ -136,7 +136,7 @@ auto play_scene::PlaySoundEffects() const -> void
     audio_events::Explosion();
   }
 
-  if( m_playState->Events().Get(play_events::event_type::power_up_collected) )
+  if( m_playState->Events().Get(play_events::counter_type::power_ups_collected) )
   {
     audio_events::PowerUpCollected();
   }

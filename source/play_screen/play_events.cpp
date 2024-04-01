@@ -14,9 +14,6 @@ auto play_events::Set(event_type eventType, bool value) -> void
     case event_type::target_activated:
       m_targetActivated = value;
       break;
-    case event_type::power_up_collected:
-      m_powerUpCollected = value;
-      break;
   }
 }
 
@@ -30,13 +27,16 @@ auto play_events::Increment(counter_type counterType) -> void
     case counter_type::bullets_destroyed:
       ++m_bulletsDestroyed;
       break;
+    case counter_type::power_ups_collected:
+      ++m_powerUpsCollected;
+      break;
   }
 }
 
 auto play_events::Reset() -> void
 {
-  m_shot = m_explosion = m_targetActivated = m_powerUpCollected = false;
-  m_enemiesDestroyed = m_bulletsDestroyed = 0;
+  m_shot = m_explosion = m_targetActivated = false;
+  m_enemiesDestroyed = m_bulletsDestroyed = m_powerUpsCollected = 0;
 }
 
 [[nodiscard]] auto play_events::Get(event_type eventType) const -> bool
@@ -49,8 +49,6 @@ auto play_events::Reset() -> void
       return m_explosion;
     case event_type::target_activated:
       return m_targetActivated;
-    case event_type::power_up_collected:
-      return m_powerUpCollected;
     default:
       return false;
   }
@@ -69,6 +67,8 @@ auto play_events::Reset() -> void
       return m_enemiesDestroyed;
     case counter_type::bullets_destroyed:
       return m_bulletsDestroyed;
+    case counter_type::power_ups_collected:
+      return m_powerUpsCollected;
     default:
       return 0;
   }
