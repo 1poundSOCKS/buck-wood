@@ -50,7 +50,6 @@ private:
       std::tuple<audio_data_item, buffer>(audio_data_item::main_theme, LoadWavFileData(L"main_theme.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::explosion, LoadWavFileData(L"mine_exploded.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::shoot, LoadWavFileData(L"shoot_effect.wav")),
-      std::tuple<audio_data_item, buffer>(audio_data_item::target_activated, LoadWavFileData(L"target_activated.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::thruster, LoadWavFileData(L"thrust_effect.wav")),
       std::tuple<audio_data_item, buffer>(audio_data_item::power_up, LoadWavFileData(L"power_up.wav"))
     };

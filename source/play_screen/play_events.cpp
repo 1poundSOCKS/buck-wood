@@ -11,9 +11,6 @@ auto play_events::Set(event_type eventType, bool value) -> void
     case event_type::explosion:
       m_explosion = value;
       break;
-    case event_type::target_activated:
-      m_targetActivated = value;
-      break;
   }
 }
 
@@ -35,7 +32,7 @@ auto play_events::Increment(counter_type counterType) -> void
 
 auto play_events::Reset() -> void
 {
-  m_shot = m_explosion = m_targetActivated = false;
+  m_shot = m_explosion = false;
   m_enemiesDestroyed = m_bulletsDestroyed = m_powerUpsCollected = 0;
 }
 
@@ -47,8 +44,6 @@ auto play_events::Reset() -> void
       return m_shot;
     case event_type::explosion:
       return m_explosion;
-    case event_type::target_activated:
-      return m_targetActivated;
     default:
       return false;
   }

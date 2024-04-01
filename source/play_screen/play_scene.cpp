@@ -126,11 +126,6 @@ auto play_scene::PlaySoundEffects() const -> void
     audio_events::PlayerShot();
   }
 
-  if( m_playState->Events().Get(play_events::event_type::target_activated) )
-  {
-    audio_events::TargetActivated();
-  }
-
   if( m_playState->Events().Get(play_events::event_type::explosion) )
   {
     audio_events::Explosion();

@@ -44,7 +44,7 @@ inline auto effects_volume_slider::Increment() -> int
 {
   auto volume = game_volume_controller::effectsVolume();
   volume = game_volume_controller::setEffectsVolume(volume + 1);
-  audio_events::TargetActivated();
+  audio_events::PowerUpCollected();
   return volume;
 }
 
@@ -52,6 +52,6 @@ inline auto effects_volume_slider::Decrement() -> int
 {
   auto volume = game_volume_controller::effectsVolume();
   volume = game_volume_controller::setEffectsVolume(volume - 1);
-  audio_events::TargetActivated();
+  audio_events::PowerUpCollected();
   return volume;
 }

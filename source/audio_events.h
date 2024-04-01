@@ -35,10 +35,10 @@ public:
     com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_playerThruster->SetVolume");
     hr = m_instance->m_playerShot->SetVolume(value);
     com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_playerShot->SetVolume");
-    hr = m_instance->m_targetActivated->SetVolume(value);
-    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_targetActivated->SetVolume");
     hr = m_instance->m_explosion->SetVolume(value);
     com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_explosion->SetVolume");
+    hr = m_instance->m_powerUpCollected->SetVolume(value);
+    com_logger::write(log::type::debug, hr, "[audio_events::SetMusicVolume] m_powerUpCollected->SetVolume");
   }
 
   static auto StartMainMenuTheme() -> void
@@ -79,11 +79,6 @@ public:
     m_instance->m_playerShot.Start();
   }
 
-  static auto TargetActivated() -> void
-  {
-    m_instance->m_targetActivated.Start();
-  }
-
   static auto Explosion() -> void
   {
     m_instance->m_explosion.Start();
@@ -101,7 +96,6 @@ private:
   audio_player m_mainTheme { audio_data_item::main_theme, audio_player::type::music };
   audio_player m_playerThruster { audio_data_item::thruster, audio_player::type::music };
   audio_player m_playerShot { audio_data_item::shoot, audio_player::type::effect };
-  audio_player m_targetActivated { audio_data_item::target_activated, audio_player::type::effect };
   audio_player m_explosion { audio_data_item::explosion, audio_player::type::effect };
   audio_player m_powerUpCollected { audio_data_item::power_up, audio_player::type::effect };
 

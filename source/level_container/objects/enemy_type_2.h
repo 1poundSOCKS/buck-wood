@@ -27,7 +27,7 @@ private:
 
   state_type m_state { state_type::moving };
   constexpr static int m_movesBeforeStateChange { 3 };
-  constexpr static float m_speed = 600;
+  constexpr static float m_speed = 300;
   inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
 
   std::optional<POINT_2F> m_destination;
