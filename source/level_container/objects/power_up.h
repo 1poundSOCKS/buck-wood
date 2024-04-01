@@ -8,7 +8,7 @@ class power_up : public base_object, public object_velocity
 
 public:
 
-  power_up(POINT_2F position, VELOCITY_2F velocity) : base_object { position , { 20.0f, 20.0f }, 0 }, object_velocity { velocity }
+  power_up(POINT_2F position, VELOCITY_2F velocity) : base_object { position , { 30.0f, 30.0f }, 0 }, object_velocity { velocity }
   {
   }
 
