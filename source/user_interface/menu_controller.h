@@ -53,4 +53,5 @@ inline auto menu_controller::Render(D2D1_RECT_F viewRect) const -> void
 inline auto menu_controller::Clear() noexcept -> void
 {
   while( !m_menus.empty() ) m_menus.pop();
+  m_menus.emplace();
 }
