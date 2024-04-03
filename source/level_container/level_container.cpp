@@ -67,13 +67,13 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
   object.Update(interval, m_playerState.Position());
 
-  // if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
-  // {
-  //   auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
-  //   auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-  //   CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
-  //   play_events::Set(play_events::event_type::shot, true);
-  // }
+  if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
+  {
+    auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
+    auto velocity = direct2d::CalculateVelocity(500.0f, direction);
+    CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
+    play_events::set(play_events::event_type::shot, true);
+  }
 }
 
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
