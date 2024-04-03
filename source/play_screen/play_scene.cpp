@@ -37,7 +37,7 @@ auto play_scene::Resume() -> void
 auto play_scene::Update(__int64 ticks) -> bool
 {
   PlaySoundEffects();
-  m_playState->Events().Reset();
+  play_events::reset();
   m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   return m_playState->LevelComplete() ? false : true;
 }
@@ -123,17 +123,17 @@ auto play_scene::PlaySoundEffects() const -> void
     audio_events::StopPlayerThruster();
   }
 
-  if( m_playState->Events().Get(play_events::event_type::shot) )
+  if( play_events::get(play_events::event_type::shot) )
   {
     audio_events::PlayerShot();
   }
 
-  if( m_playState->Events().Get(play_events::event_type::explosion) )
+  if( play_events::get(play_events::event_type::explosion) )
   {
     audio_events::Explosion();
   }
 
-  if( m_playState->Events().Get(play_events::counter_type::power_ups_collected) )
+  if( play_events::get(play_events::counter_type::power_ups_collected) )
   {
     audio_events::PowerUpCollected();
   }

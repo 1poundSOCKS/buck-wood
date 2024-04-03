@@ -19,6 +19,8 @@ public:
   static [[nodiscard]] auto get(event_type eventType) -> bool;
   static [[nodiscard]] auto get(counter_type counterType) -> int;
 
+private:
+
   auto Reset() -> void;
 
   auto Set(event_type eventType, bool value) -> void;
