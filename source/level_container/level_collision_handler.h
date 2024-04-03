@@ -9,9 +9,7 @@ class level_collision_handler
 
 public:
 
-  level_collision_handler(level_container* levelContainer, std::shared_ptr<play_events> playEvents) : m_levelContainer { levelContainer }, m_playEvents { playEvents }
-  {
-  }
+  level_collision_handler(level_container* levelContainer);
 
   auto operator()(default_object& object1, default_object& object2) -> void;
   auto operator()(default_object& object, particle& particle) -> void;
@@ -33,7 +31,6 @@ private:
 private:
 
   level_container* m_levelContainer;
-  std::shared_ptr<play_events> m_playEvents;
 
 };
 

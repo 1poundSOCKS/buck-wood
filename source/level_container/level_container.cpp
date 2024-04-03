@@ -8,7 +8,7 @@
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   update_object_visitor updateObjectVisitor { this, interval };
-  level_collision_handler collisionHandler { this, m_playEvents };
+  level_collision_handler collisionHandler { this };
   
   Update(updateObjectVisitor, collisionHandler, viewRect);
 }

@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "level_collision_handler.h"
 
+level_collision_handler::level_collision_handler(level_container* levelContainer) : m_levelContainer { levelContainer }
+{
+}
+
 auto level_collision_handler::operator()(default_object& object1, default_object& object2) -> void
 {
   OnCollision<player_bullet, enemy_bullet_1>(object1, object2);

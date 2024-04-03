@@ -31,8 +31,8 @@ public:
 
   enum class level_type { vertical_scroller, arena };
 
-  level_container(std::shared_ptr<play_events> playEvents);
-  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents);
+  level_container();
+  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -118,8 +118,6 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
-  std::shared_ptr<play_events> m_playEvents;
-
   geometry_containment m_geometryContainmentRunner;
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
@@ -128,13 +126,13 @@ private:
 
 };
 
-inline level_container::level_container(std::shared_ptr<play_events> playEvents) : 
-  level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 }, playEvents)
+inline level_container::level_container() : 
+  level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 })
 {
 }
 
-inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition, std::shared_ptr<play_events> playEvents) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }, m_playEvents { playEvents }
+inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition) : 
+  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }
 {
 }
 
