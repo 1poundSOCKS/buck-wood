@@ -7,7 +7,7 @@ class main_menu_controller : public common_menu_controller
 
 public:
 
-  enum class selection { none, start, exit };
+  enum class selection { none, start, resume, exit };
 
   auto OpenRoot() -> void;
   [[nodiscard]] auto Selection() -> selection;

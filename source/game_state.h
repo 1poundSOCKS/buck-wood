@@ -5,9 +5,14 @@ class game_state
 
 public:
 
-  static auto create() -> void;
-  static auto destroy() -> void;
-  static auto saved() -> bool;
+  static auto create() noexcept -> void;
+  static auto destroy() noexcept -> void;
+
+  [[nodiscard]] static auto saved() noexcept -> bool;
+
+private:
+
+  [[nodiscard]] auto Saved() noexcept -> bool;
 
 private:
 
@@ -15,19 +20,19 @@ private:
 
 };
 
-inline auto game_state::create() -> void
+inline auto game_state::create() noexcept -> void
 {
   destroy();
   m_instance = new game_state();
 }
 
-inline auto game_state::destroy() -> void
+inline auto game_state::destroy() noexcept -> void
 {
   delete m_instance;
   m_instance = nullptr;
 }
 
-inline auto game_state::saved() -> bool
+inline auto game_state::saved() noexcept -> bool
 {
-  return false;
+  return m_instance->Saved();
 }
