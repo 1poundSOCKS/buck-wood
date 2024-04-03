@@ -1,9 +1,9 @@
 #pragma once
 
-#include "enemy_type.h"
-#include "enemy_movement_random.h"
+#include "enemy_object.h"
+#include "reload_timer.h"
 
-class enemy_type_2 : public base_object
+class enemy_type_2 : public enemy_object
 {
 
 public:
@@ -19,9 +19,6 @@ public:
   [[nodiscard]] auto Destination() const -> std::optional<POINT_2F>;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
-  [[nodiscard]] auto Health() const -> float;
-
-  auto ApplyDamage(int value) -> void;
 
 private:
 
@@ -31,8 +28,6 @@ private:
   inline static std::uniform_int_distribution<int> m_positionDist { -10, 10 };
 
   std::optional<POINT_2F> m_destination;
-  int m_maxHitpoints { 5 };
-  int m_hitpoints { 5 };
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   constexpr static int m_shotsBeforeStateChange { 5 };
@@ -51,11 +46,6 @@ inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<POI
   return m_destination;
 }
 
-inline [[nodiscard]] auto enemy_type_2::Health() const -> float
-{
-  return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
-}
-
 inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> bool
 {
   return m_reloaded;
@@ -64,10 +54,4 @@ inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> b
 inline [[nodiscard]] auto enemy_type_2::Reloaded() const -> bool
 {
   return m_reloaded;
-}
-
-inline auto enemy_type_2::ApplyDamage(int value) -> void
-{
-  m_hitpoints = std::max(0, m_hitpoints - value);
-  m_destroyed = m_hitpoints == 0;
 }

@@ -2,7 +2,7 @@
 #include "enemy_type_2.h"
 
 enemy_type_2::enemy_type_2(POINT_2F position, float reloadTime, int hitpoints) : 
-  base_object { position, { 1.5, 1.5 }, 0 }, m_reloadTimer { reloadTime }, m_hitpoints { hitpoints }
+  enemy_object { position, { 1.5, 1.5 }, 0, 3 }, m_reloadTimer { reloadTime }
 {
 }
 

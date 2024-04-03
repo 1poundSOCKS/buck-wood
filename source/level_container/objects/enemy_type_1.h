@@ -1,8 +1,8 @@
 #pragma once
 
-#include "base_object.h"
+#include "enemy_object.h"
 
-class enemy_type_1 : public base_object
+class enemy_type_1 : public enemy_object
 {
 
 public:
@@ -13,7 +13,5 @@ public:
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
-  [[nodiscard]] auto Health() const -> float;
-
-  auto ApplyDamage(int value) -> void;
+  
 };
