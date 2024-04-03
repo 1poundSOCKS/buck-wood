@@ -10,12 +10,9 @@
 play_screen::play_screen() : m_playState { std::make_shared<play_state>() }
 {
   m_menuController.OpenRoot();
-
-  if( m_playState->LoadLevel() )
-  {
-    CreateScenes();
-    m_sceneController.Begin();
-  }
+  m_playState->LoadCurrentLevel();
+  CreateScenes();
+  m_sceneController.Begin();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -50,7 +47,7 @@ auto play_screen::Update(int64_t ticks) -> bool
 
   m_sceneController.UpdateScene(ticks);
 
-  if( m_sceneController.Complete() && !m_playState->Complete() && m_playState->LoadLevel() )
+  if( m_sceneController.Complete() && !m_playState->Complete() && m_playState->LoadNextLevel() )
   {
     m_sceneController.Clear();
     CreateScenes();

@@ -16,7 +16,12 @@ public:
   {
   }
 
-  auto LoadLevel() -> bool
+  auto LoadCurrentLevel() -> void
+  {
+    m_levelContainer = m_dataLoader.LoadLevel();
+  }
+
+  auto LoadNextLevel() -> bool
   {
     if( m_dataLoader.NextLevel() )
     {

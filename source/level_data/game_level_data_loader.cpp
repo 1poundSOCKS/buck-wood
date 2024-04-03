@@ -8,17 +8,18 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
 
 [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
 {
-  return m_levelIndex + 1 < m_levelCount;
+  return game_state::level_index() + 1 < m_levelCount;
 }
 
 [[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
 {
-  return ++m_levelIndex < m_levelCount;
+  game_state::set_level_index(game_state::level_index() + 1);
+  return game_state::level_index() < m_levelCount;
 }
 
 [[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
 {
-  return m_levelIndex;
+  return game_state::level_index();
 }
 
 [[nodiscard]] auto game_level_data_loader::MoreUpdates() const -> bool

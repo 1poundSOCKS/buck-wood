@@ -28,6 +28,8 @@ auto main_menu_screen::Update(int64_t frameInterval) -> bool
   switch( m_menuController.Selection() )
   {
     case main_menu_controller::selection::start:
+      game_state::set_level_index(0);
+    case main_menu_controller::selection::resume:
       StartPlay();
       break;
     case main_menu_controller::selection::exit:
@@ -53,4 +55,6 @@ auto main_menu_screen::StartPlay() -> void
   screen_container<play_screen> playScreen { game_settings::framerateCapped(), DIK_F12 };
   windows_message_loop::run(playScreen);
   audio_events::StartMainMenuTheme();
+  m_menuController.Clear();
+  m_menuController.OpenRoot();
 }

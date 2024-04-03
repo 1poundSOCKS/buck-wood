@@ -16,6 +16,7 @@ public:
   auto Render() const -> void;
   [[nodiscard]] auto GetCurrent() const-> const menu&;
   [[nodiscard]] auto GetCurrent() -> menu&;
+  auto Clear() noexcept -> void;
 
 private:
 
@@ -47,4 +48,9 @@ inline auto menu_controller::Render(D2D1_RECT_F viewRect) const -> void
 [[nodiscard]] inline auto menu_controller::GetCurrent() -> menu&
 {
   return m_menus.top();
+}
+
+inline auto menu_controller::Clear() noexcept -> void
+{
+  while( !m_menus.empty() ) m_menus.pop();
 }

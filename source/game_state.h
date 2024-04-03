@@ -8,7 +8,10 @@ public:
   static auto create() noexcept -> void;
   static auto destroy() noexcept -> void;
 
-  [[nodiscard]] static auto saved() noexcept -> bool;
+  static [[nodiscard]] auto saved() noexcept -> bool;
+  static [[nodiscard]] auto level_index() noexcept -> int;
+
+  static auto set_level_index(int value) -> void;
 
 private:
 
@@ -17,6 +20,7 @@ private:
 private:
 
   inline static game_state* m_instance { nullptr };
+  int m_levelIndex { 0 };
 
 };
 
@@ -35,4 +39,14 @@ inline auto game_state::destroy() noexcept -> void
 inline auto game_state::saved() noexcept -> bool
 {
   return m_instance->Saved();
+}
+
+inline [[nodiscard]] auto game_state::level_index() noexcept -> int
+{
+  return m_instance->m_levelIndex;
+}
+
+inline auto game_state::set_level_index(int value) -> void
+{
+  m_instance->m_levelIndex = value;
 }

@@ -3,5 +3,5 @@
 
 [[nodiscard]] auto game_state::Saved() noexcept -> bool
 {
-  return false;
+  return m_levelIndex > 0;
 }

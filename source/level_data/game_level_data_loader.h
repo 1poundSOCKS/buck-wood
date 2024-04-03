@@ -3,6 +3,7 @@
 #include "level_update_event.h"
 #include "demo_level.h"
 #include "random_velocity.h"
+#include "game_state.h"
 
 class game_level_data_loader
 {
@@ -28,7 +29,6 @@ public:
 
 private:
 
-  int m_levelIndex { -1 };
   inline static int m_levelCount { 3 };
   random_velocity m_randomVelocity { 100, 300 };
 
@@ -41,7 +41,9 @@ private:
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_levelIndex, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
+  auto levelIndex = game_state::level_index();
+
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, levelIndex, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
 
@@ -49,7 +51,7 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 
   m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreatePlayer(levelContainer); });
 
-  switch( m_levelIndex )
+  switch( levelIndex )
   {
     case 0:
       m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });

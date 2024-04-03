@@ -15,6 +15,7 @@ private:
   auto Update(int64_t frameInterval) -> bool;
   auto Render() const -> void;
   auto StartPlay() -> void;
+  auto ResumePlay() -> void;
 
 private:
 
