@@ -9,6 +9,7 @@
 #include "main_menu_screen.h"
 #include "audio_data.h"
 #include "play_events.h"
+#include "game_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -107,12 +108,14 @@ auto initialize_all(HINSTANCE instance) -> void
   game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
   game_volume_controller::setMusicVolume(game_settings::musicVolume());
 
+  game_state::create();
   play_events::create();
 }
 
 auto destroy_all() -> void
 {
   play_events::destroy();
+  game_state::destroy();
   
   game_volume_controller::destroy();
   audio_events::destroy();
