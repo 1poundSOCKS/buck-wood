@@ -21,6 +21,13 @@ private:
 
 private:
 
+  struct game_state_data
+  {
+    uint32_t levelIndex { 0 };
+    uint32_t score { 0 };
+    uint32_t powerups { 0 };
+  };
+
   inline static save_data* m_instance { nullptr };
   std::wstring m_folder;
 

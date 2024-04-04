@@ -12,13 +12,6 @@ auto save_data::Read(game_state *gameState) noexcept -> void
 
   std::ifstream fileReader(fullFilename.c_str(), std::ifstream::binary);
 
-  struct game_state_data
-  {
-    uint32_t levelIndex { 0 };
-    uint32_t score { 0 };
-    uint32_t powerups { 0 };
-  };
-
   if( !fileReader.fail() )
   {
     game_state_data savedData;
@@ -31,4 +24,17 @@ auto save_data::Read(game_state *gameState) noexcept -> void
 
 auto save_data::Write(const game_state* gameState) noexcept -> void
 {
+  std::filesystem::path fullFilename = m_folder;
+  fullFilename /= L"game_state.dat";
+
+  std::ofstream fileWriter(fullFilename.c_str(), std::ifstream::binary);
+
+  if( !fileWriter.fail() )
+  {
+    game_state_data savedData;
+    savedData.levelIndex = gameState->level_index();
+    savedData.score = gameState->score();
+    savedData.powerups = gameState->power_up_count();
+    fileWriter.write(reinterpret_cast<char*>(&savedData), sizeof(savedData));
+  }
 }
