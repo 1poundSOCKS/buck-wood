@@ -6,6 +6,7 @@
 #include "screen_container.h"
 #include "game_settings.h"
 #include "audio_events.h"
+#include "save_data.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -54,6 +55,7 @@ auto main_menu_screen::StartPlay() -> void
   audio_events::StopMainMenuTheme();
   screen_container<play_screen> playScreen { game_settings::framerateCapped(), DIK_F12 };
   windows_message_loop::run(playScreen);
+  save_data::write(game_state::get());
   audio_events::StartMainMenuTheme();
   m_menuController.Clear();
   m_menuController.OpenRoot();

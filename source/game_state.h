@@ -7,6 +7,7 @@ public:
 
   static auto create() noexcept -> void;
   static auto destroy() noexcept -> void;
+  static auto get() -> game_state*;
 
   static [[nodiscard]] auto saved() noexcept -> bool;
   static [[nodiscard]] auto level_index() noexcept -> int;
@@ -43,6 +44,11 @@ inline auto game_state::destroy() noexcept -> void
 {
   delete m_instance;
   m_instance = nullptr;
+}
+
+inline auto game_state::get() -> game_state*
+{
+  return m_instance;
 }
 
 inline auto game_state::saved() noexcept -> bool
