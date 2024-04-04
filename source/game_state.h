@@ -17,6 +17,8 @@ public:
   static auto set_score(int value) -> void;
   static auto set_power_up_count(int value) -> void;
 
+  static auto reset() -> void;
+
 private:
 
   [[nodiscard]] auto Saved() noexcept -> bool;
@@ -76,4 +78,11 @@ inline auto game_state::set_score(int value) -> void
 inline auto game_state::set_power_up_count(int value) -> void
 {
   m_instance->m_power_up_count = value;
+}
+
+inline auto game_state::reset() -> void
+{
+  m_instance->m_levelIndex = 0;
+  m_instance->m_score = 0;
+  m_instance->m_power_up_count = 0;
 }

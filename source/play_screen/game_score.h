@@ -26,6 +26,11 @@ public:
     return m_value += value;
   }
 
+  auto Set(int value) -> int
+  {
+    return m_value = value;
+  }
+
 private:
 
   value_type m_type;

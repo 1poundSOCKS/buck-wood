@@ -14,6 +14,8 @@ public:
     m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
     m_levelContainer { std::make_shared<level_container>() }
   {
+    m_score->Set(game_state::score());
+    *m_powerUpsCollected = game_state::power_up_count();
   }
 
   auto LoadCurrentLevel() -> void
@@ -23,6 +25,9 @@ public:
 
   auto LoadNextLevel() -> bool
   {
+    game_state::set_score(m_score->Value());
+    game_state::set_power_up_count(*m_powerUpsCollected);
+
     if( m_dataLoader.NextLevel() )
     {
       m_levelContainer = m_dataLoader.LoadLevel();

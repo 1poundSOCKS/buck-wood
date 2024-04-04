@@ -28,7 +28,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> bool
   switch( m_menuController.Selection() )
   {
     case main_menu_controller::selection::start:
-      game_state::set_level_index(0);
+      game_state::reset();
     case main_menu_controller::selection::resume:
       StartPlay();
       break;
