@@ -10,81 +10,20 @@ class play_state
 
 public:
 
-  play_state() : 
-    m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
-    m_levelContainer { std::make_shared<level_container>() }
-  {
-    m_score->Set(game_state::score());
-    *m_powerUpsCollected = game_state::power_up_count();
-  }
+  play_state();
 
-  auto LoadCurrentLevel() -> void
-  {
-    m_levelContainer = m_dataLoader.LoadLevel();
-  }
+  auto LoadCurrentLevel() -> void;
+  auto LoadNextLevel() -> bool;
+  auto Update(float interval, RECT_F view) -> void;
+  auto SaveGameState() noexcept -> void;
 
-  auto LoadNextLevel() -> bool
-  {
-    game_state::set_score(m_score->Value());
-    game_state::set_power_up_count(*m_powerUpsCollected);
-
-    if( m_dataLoader.NextLevel() )
-    {
-      m_levelContainer = m_dataLoader.LoadLevel();
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  auto Update(float interval, RECT_F view) -> void
-  {
-    m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
-    m_levelContainer->Update(interval, view);
-
-    m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
-    m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
-    *m_powerUpsCollected += play_events::get(play_events::counter_type::power_ups_collected);
-  }
-
-  [[nodiscard]] auto LevelComplete() const -> bool
-  {
-    return m_levelContainer->PlayerState().Destroyed() || (m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates());
-  }
-
-  [[nodiscard]] auto Complete() const -> bool
-  {
-    return m_levelContainer->PlayerState().Destroyed() || ( LevelComplete() && !m_dataLoader.MoreLevels() );
-  }
-
-  [[nodiscard]] auto LevelContainer() const -> const level_container&
-  {
-    return *m_levelContainer;
-  }
-
-  [[nodiscard]] auto LevelContainer() -> level_container&
-  {
-    return *m_levelContainer;
-  }
-
-  [[nodiscard]] auto Score() const -> const game_score&
-  {
-    return *m_score;
-  }
-
-  [[nodiscard]] auto Score() -> game_score&
-  {
-    return *m_score;
-  }
-
-  [[nodiscard]] auto PowerUps() const -> game_score
-  {
-    game_score powerUps(game_score::value_type::power_ups);
-    powerUps.Add(*m_powerUpsCollected);
-    return powerUps;
-  }
+  [[nodiscard]] auto LevelComplete() const -> bool;
+  [[nodiscard]] auto Complete() const -> bool;
+  [[nodiscard]] auto LevelContainer() const -> const level_container&;
+  [[nodiscard]] auto LevelContainer() -> level_container&;
+  [[nodiscard]] auto Score() const -> const game_score&;
+  [[nodiscard]] auto Score() -> game_score&;
+  [[nodiscard]] auto PowerUps() const -> game_score;
 
 private:
 
