@@ -14,4 +14,9 @@ public:
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
   
+private:
+
+  inline static constexpr int m_hitpoints { 10 };
+  inline static constexpr float m_speed { 200 };
+
 };

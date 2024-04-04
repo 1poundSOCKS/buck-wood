@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base_object.h"
+#include "play_events.h"
 
 class enemy_object : public base_object
 {
@@ -16,6 +17,11 @@ public:
   {
     m_hitpoints = std::max(0, m_hitpoints - value);
     m_destroyed = m_hitpoints == 0;
+
+    if( m_destroyed )
+    {
+      play_events::increment(play_events::counter_type::enemies_destroyed);
+    }
   }
 
   [[nodiscard]] auto Health() const -> float
