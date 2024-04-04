@@ -109,9 +109,11 @@ auto initialize_all(HINSTANCE instance) -> void
   game_volume_controller::setEffectsVolume(game_settings::effectsVolume());
   game_volume_controller::setMusicVolume(game_settings::musicVolume());
 
-  save_data::create();
+  save_data::create(L"save_data");
   game_state::create();
   play_events::create();
+
+  save_data::read(game_state::get());
 }
 
 auto destroy_all() -> void
