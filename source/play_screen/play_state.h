@@ -10,6 +10,8 @@ class play_state
 
 public:
 
+  enum class status { running, end_of_level, end_of_game };
+
   play_state();
 
   auto LoadCurrentLevel() -> void;
@@ -17,8 +19,7 @@ public:
   auto Update(float interval, RECT_F view) -> void;
   auto SaveGameState() noexcept -> void;
 
-  [[nodiscard]] auto LevelComplete() const -> bool;
-  [[nodiscard]] auto Complete() const -> bool;
+  [[nodiscard]] auto Status() const -> status;
   [[nodiscard]] auto LevelContainer() const -> const level_container&;
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
@@ -27,6 +28,7 @@ public:
 
 private:
 
+  status m_status { status::running };
   game_level_data_loader m_dataLoader;
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<int> m_powerUpsCollected;

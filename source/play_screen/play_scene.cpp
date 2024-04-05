@@ -39,7 +39,7 @@ auto play_scene::Update(__int64 ticks) -> bool
   PlaySoundEffects();
   play_events::reset();
   m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  return m_playState->LevelComplete() ? false : true;
+  return m_playState->Status() == play_state::status::running;
 }
 
 auto play_scene::Render() const -> void

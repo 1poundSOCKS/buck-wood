@@ -20,11 +20,6 @@ auto main_play_scene::End() -> void
   m_playState->LevelContainer().SetPlayerActive(false);
   audio_events::StopPlayerThruster();
   audio_events::StopGameplayTheme();
-
-  if( m_playState->LevelComplete() )
-  {
-    m_playState->SaveGameState();
-  }
 }
 
 auto main_play_scene::Pause() -> void

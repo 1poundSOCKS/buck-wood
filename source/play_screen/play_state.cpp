@@ -45,14 +45,24 @@ auto play_state::SaveGameState() noexcept -> void
   save_data::write(game_state::get());
 }
 
-[[nodiscard]] auto play_state::LevelComplete() const -> bool
+auto play_state::Status() const -> status
 {
-  return m_levelContainer->PlayerState().Destroyed() || (m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates());
-}
+  if( m_levelContainer->PlayerState().Destroyed() )
+  {
+    return status::end_of_game;
+  }
+  
+  if( m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates() && !m_dataLoader.MoreLevels() )
+  {
+    return status::end_of_game;
+  }
 
-[[nodiscard]] auto play_state::Complete() const -> bool
-{
-  return m_levelContainer->PlayerState().Destroyed() || ( LevelComplete() && !m_dataLoader.MoreLevels() );
+  if( m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates() )
+  {
+    return status::end_of_level;
+  }
+
+  return status::running;
 }
 
 [[nodiscard]] auto play_state::LevelContainer() const -> const level_container&

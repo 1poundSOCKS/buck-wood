@@ -47,9 +47,11 @@ auto play_screen::Update(int64_t ticks) -> bool
 
   m_sceneController.UpdateScene(ticks);
 
-  if( m_sceneController.Complete() && !m_playState->Complete() && m_playState->LoadNextLevel() )
+  if( m_sceneController.Complete() && m_playState->Status() == play_state::status::end_of_level )
   {
+    m_playState->SaveGameState();
     m_sceneController.Clear();
+    m_playState->LoadNextLevel();
     CreateScenes();
     m_sceneController.Begin();
   }
