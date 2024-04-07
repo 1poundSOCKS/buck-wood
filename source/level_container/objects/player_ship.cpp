@@ -45,7 +45,6 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   m_destination = enableControl && leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_position, *leftThumbstickPosition)) : std::nullopt;
 
   auto thrustControlValue = enableControl ? gamepad_reader::left_trigger() : 0;
-  auto shieldControlOn = enableControl ? gamepad_reader::button_down(XINPUT_GAMEPAD_A) : false;
   auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
   auto switchFireMode = enableControl ? gamepad_reader::button_pressed(XINPUT_GAMEPAD_X) : false;
 
@@ -56,7 +55,6 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   m_position = object_velocity::UpdatePosition(m_position, interval);
 
   m_thrusterOn = thrustControlValue > 0 ? true : false;
-  m_shieldsUp = shieldControlOn;
   m_triggerDown = triggerControlOn;
   m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
 

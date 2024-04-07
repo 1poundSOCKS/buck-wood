@@ -71,6 +71,7 @@ public:
   auto CreateEnemyBullet(auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
+  auto CreatePlayerMissile(auto&&...args) -> void;
   auto CreatePowerUp(auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
@@ -214,6 +215,11 @@ auto level_container::CreatePlayer(auto&&...args) -> void
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
   CreatePlayerObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
+{
+  CreatePlayerObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType1(auto&&...args) -> void

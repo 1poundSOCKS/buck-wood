@@ -36,6 +36,7 @@ public:
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
   [[nodiscard]] auto ShieldsUp() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
+  [[nodiscard]] auto CanFireMissile() -> bool;
   [[nodiscard]] auto EmitThrustParticle() -> bool;
   [[nodiscard]] auto FireMode() const -> fire_mode;
 
@@ -128,6 +129,11 @@ inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
   return !m_destroyed && m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
+}
+
+inline [[nodiscard]] auto player_ship::CanFireMissile() -> bool
+{
+  return !m_destroyed && gamepad_reader::button_down(XINPUT_GAMEPAD_A) && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
