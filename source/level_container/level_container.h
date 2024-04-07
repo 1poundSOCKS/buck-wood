@@ -346,7 +346,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
 
   RemoveDestroyedObjects();
 
-  m_targettedObject = m_playerState.Destroyed() ? std::nullopt : GetTargettedObject();
+  m_targettedObject = !m_playerState.Destroyed() && gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER) ? GetTargettedObject() : std::nullopt;
 
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {

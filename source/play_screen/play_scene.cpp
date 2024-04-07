@@ -50,23 +50,26 @@ auto play_scene::Render() const -> void
 
   RenderLevelContainer();
 
-#ifdef RENDER_TARGET_HUD
-  auto targettedObject = m_playState->LevelContainer().TargettedObject();
-
-  if( targettedObject )
+  if( gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER) )
   {
-    renderer::render(line_to_target { *m_levelContainer->PlayerPosition(), targettedObject->Position() });
-    
-    auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
-    hud_target hudTarget { bounds };
-    renderer::render(hudTarget);
-  }
-#endif
+    auto targettedObject = m_playState->LevelContainer().TargettedObject();
 
-  if( !m_paused && m_renderLevelTitle )
-  {
-    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderer::render(m_levelTitle);
+    if( targettedObject )
+    {
+      auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
+
+      renderer::render(line_to_target { playerPosition, targettedObject->Position() });
+      
+      auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
+      hud_target hudTarget { bounds };
+      renderer::render(hudTarget);
+    }
+
+    if( !m_paused && m_renderLevelTitle )
+    {
+      render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+      renderer::render(m_levelTitle);
+    }
   }
 }
 
