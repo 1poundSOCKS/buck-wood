@@ -22,21 +22,19 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
-  auto targetAngle = m_playerState.Angle();
+  constexpr auto angleSpan = 40.0f;
 
-  constexpr auto angleSpan = 20.0f;
-
-  auto mines = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
+  auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
   {
-    return object->HoldsAlternative<enemy_bullet_1>();
+    return object->HoldsAlternative<enemy_type_1>();
   });
 
-  dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(mines), std::end(mines), 
+  dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
   static_cast<dynamic_object<default_object>*>(nullptr), 
-  [this, targetAngle](auto* nearest, auto& next) -> dynamic_object<default_object>*
+  [this](auto* nearest, auto& next) -> dynamic_object<default_object>*
   {
-    auto mineAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
-    auto angleDifference = direct2d::GetAngleDifference(targetAngle, mineAngle);
+    auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
+    auto angleDifference = direct2d::GetAngleDifference(m_playerState.Angle(), targetAngle);
     if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
     else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
   });
