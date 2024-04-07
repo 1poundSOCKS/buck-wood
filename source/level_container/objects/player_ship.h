@@ -39,6 +39,8 @@ public:
   [[nodiscard]] auto EmitThrustParticle() -> bool;
   [[nodiscard]] auto FireMode() const -> fire_mode;
 
+  [[nodiscard]] auto TargettingActive() const -> bool;
+
 private:
 
   auto UpdateWithControl(float interval, bool enableControl) -> void;
@@ -149,4 +151,9 @@ inline [[nodiscard]] auto player_ship::SwitchFireMode(fire_mode fireMode) -> fir
     default:
       return fire_mode::none;
   }
+}
+
+inline [[nodiscard]] auto player_ship::TargettingActive() const -> bool
+{
+  return !Destroyed() && gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER);
 }

@@ -7,6 +7,7 @@ enemy_type_1::enemy_type_1(POINT_2F position) : enemy_object { position, { 1, 1 
 
 auto enemy_type_1::Update(float interval, POINT_2F target) -> void
 {
+  base_object::Update(interval);
   MoveTowards(m_speed * interval, target);
 }
 
