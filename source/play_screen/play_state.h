@@ -28,6 +28,10 @@ public:
 
 private:
 
+  [[nodiscard]] auto CalculateStatus() const -> status;
+
+private:
+
   status m_status { status::running };
   game_level_data_loader m_dataLoader;
   std::shared_ptr<game_score> m_score;

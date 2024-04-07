@@ -30,8 +30,14 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
-  m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
+  if( m_status == status::running )
+  {
+    m_dataLoader.UpdateLevel(m_levelContainer.get(), interval);
+  }
+
   m_levelContainer->Update(interval, view);
+
+  m_status = CalculateStatus();
 
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
@@ -46,6 +52,11 @@ auto play_state::SaveGameState() noexcept -> void
 }
 
 auto play_state::Status() const -> status
+{
+  return m_status;
+}
+
+[[nodiscard]] auto play_state::CalculateStatus() const -> status
 {
   if( m_levelContainer->PlayerState().Destroyed() )
   {
