@@ -52,14 +52,9 @@ auto play_state::Status() const -> status
     return status::end_of_game;
   }
   
-  if( m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates() && !m_dataLoader.MoreLevels() )
+  if( m_dataLoader.LevelCanBeCompleted() && m_levelContainer->TargetCount() == 0 )
   {
-    return status::end_of_game;
-  }
-
-  if( m_levelContainer->TargetCount() == 0 && !m_dataLoader.MoreUpdates() )
-  {
-    return status::end_of_level;
+    return m_dataLoader.MoreLevels() ? status::end_of_level : status::end_of_game;
   }
 
   return status::running;

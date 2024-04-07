@@ -27,6 +27,11 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
   return m_currentEvent != std::end(m_events);
 }
 
+[[nodiscard]] auto game_level_data_loader::LevelCanBeCompleted() const -> bool
+{
+  return m_levelCanBeCompleted;
+}
+
 auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
   levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
