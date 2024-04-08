@@ -12,6 +12,11 @@ struct update_object_visitor
     m_levelContainer->UpdateObject(object, m_interval);
   }
 
+  auto operator()(player_missile& object)
+  {
+    m_levelContainer->UpdateObject(object, m_interval);
+  }
+
   auto operator()(enemy_type_1& object)
   {
     m_levelContainer->UpdateObject(object, m_interval);

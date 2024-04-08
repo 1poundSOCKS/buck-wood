@@ -67,6 +67,11 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
   }
 }
 
+auto level_container::UpdateObject(player_missile& object, float interval) -> void
+{
+  m_targettedObject ? object.Update(interval, m_targettedObject->Position()) : object.Update(interval);
+}
+
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
   object.Update(interval, m_playerState.Position());

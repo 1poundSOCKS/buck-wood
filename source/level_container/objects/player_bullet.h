@@ -20,6 +20,7 @@ public:
 
   auto Update(float interval) noexcept -> void
   {
+    base_object::Update(interval);
     m_position = object_velocity::UpdatePosition(m_position, interval);
   }
 

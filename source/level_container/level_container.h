@@ -85,6 +85,7 @@ public:
   [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
+  auto UpdateObject(player_missile& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
   auto UpdateObject(enemy_type_2& object, float interval) -> void;
 
