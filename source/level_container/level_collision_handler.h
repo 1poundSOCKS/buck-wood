@@ -20,7 +20,7 @@ private:
 
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
   auto OnCollision(player_bullet& playerBullet, enemy_bullet_1& enemyBullet) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
+  // auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& playerBullet, enemy_type_2& enemy) -> void;
   auto OnCollision(player_missile& missile, enemy_type_1& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void;

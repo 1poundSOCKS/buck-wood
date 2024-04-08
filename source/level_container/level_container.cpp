@@ -22,7 +22,9 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
+#if 0
   constexpr auto angleSpan = 40.0f;
+#endif
 
   auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
   {
@@ -33,10 +35,13 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
   static_cast<dynamic_object<default_object>*>(nullptr), 
   [this](auto* nearest, auto& next) -> dynamic_object<default_object>*
   {
+#if 0
     auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
     auto angleDifference = direct2d::GetAngleDifference(m_playerState.Angle(), targetAngle);
     if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
     else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
+#endif
+    return nearest ? &GetNearestToTarget(*nearest, next) : &next;
   });
 
   return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
