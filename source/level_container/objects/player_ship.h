@@ -128,12 +128,12 @@ inline [[nodiscard]] auto player_ship::ShieldsUp() const -> bool
 
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
-  return !m_destroyed && m_triggerDown && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
+  return !m_destroyed && m_fireMode == fire_mode::one && TriggerDown() && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::CanFireMissile() -> bool
 {
-  return !m_destroyed && gamepad_reader::button_down(XINPUT_GAMEPAD_A) && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
+  return !m_destroyed && m_fireMode == fire_mode::two && TriggerDown() && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
 }
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
@@ -161,5 +161,5 @@ inline [[nodiscard]] auto player_ship::SwitchFireMode(fire_mode fireMode) -> fir
 
 inline [[nodiscard]] auto player_ship::TargettingActive() const -> bool
 {
-  return !Destroyed() && gamepad_reader::button_down(XINPUT_GAMEPAD_RIGHT_SHOULDER);
+  return !Destroyed() && m_fireMode == fire_mode::two;
 }
