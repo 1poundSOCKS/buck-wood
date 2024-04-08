@@ -56,8 +56,10 @@ auto play_scene::Render() const -> void
   {
     auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
 
+#if 0
     renderer::render(line_to_target { playerPosition, targettedObject->Position() });
-    
+#endif
+
     auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
     hud_target hudTarget { bounds };
     renderer::render(hudTarget);
