@@ -54,7 +54,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( m_targettedObject && object.CanFireMissile() )
   {
-    CreatePlayerMissile(object.Position(), direct2d::CalculateVelocity(500, object.Angle()), 1);
+    CreatePlayerMissile(object.Position(), direct2d::CalculateVelocity(500, object.Angle()), 10);
     play_events::set(play_events::event_type::shot, true);
   }
 
