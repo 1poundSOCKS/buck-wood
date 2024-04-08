@@ -220,7 +220,7 @@ inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 
 inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
 {
-  CreatePlayerObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::MineGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType1(auto&&...args) -> void

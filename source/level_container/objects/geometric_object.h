@@ -42,6 +42,11 @@ public:
     return direct2d::AreEqual(m_position, destination);
   }
 
+  auto RotateBy(float angle) -> void
+  {
+    m_angle = direct2d::RotateAngle(m_angle, angle);
+  }
+
 protected:
 
   POINT_2F m_position;
