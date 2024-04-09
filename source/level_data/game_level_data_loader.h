@@ -59,7 +59,9 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
   switch( levelIndex )
   {
     case 0:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
       break;
     
     case 1:
