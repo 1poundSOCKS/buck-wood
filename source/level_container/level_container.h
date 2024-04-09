@@ -128,8 +128,7 @@ private:
 
 };
 
-inline level_container::level_container() : 
-  level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 })
+inline level_container::level_container() : level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 })
 {
 }
 
