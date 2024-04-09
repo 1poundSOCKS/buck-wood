@@ -24,7 +24,6 @@ public:
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
-  [[nodiscard]] auto PowerUps() const -> game_score;
 
 private:
 
@@ -35,7 +34,6 @@ private:
   status m_status { status::running };
   game_level_data_loader m_dataLoader;
   std::shared_ptr<game_score> m_score;
-  std::shared_ptr<int> m_powerUpsCollected;
   std::shared_ptr<level_container> m_levelContainer;
 
 };

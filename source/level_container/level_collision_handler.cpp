@@ -13,7 +13,7 @@ auto level_collision_handler::operator()(default_object& object1, default_object
   OnCollision<player_ship, enemy_type_2>(object1, object2);
   OnCollision<player_ship, power_up>(object1, object2);
   OnCollision<player_ship, enemy_type_1>(object1, object2);
-  // OnCollision<player_bullet, enemy_type_1>(object1, object2);
+  OnCollision<player_bullet, enemy_type_1>(object1, object2);
   OnCollision<player_missile, enemy_type_1>(object1, object2);
   OnCollision<player_missile, enemy_type_2>(object1, object2);
 }
@@ -56,13 +56,16 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bul
   play_events::increment(play_events::counter_type::bullets_destroyed);
 }
 
-// auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
-// {
-//   m_levelContainer->CreateExplosion(enemy.Position());
-//   play_events::set(play_events::event_type::explosion, true);
-//   bullet.Destroy();
-//   enemy.ApplyDamage(bullet.Damage());
-// }
+auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
+{
+  m_levelContainer->CreateExplosion(enemy.Position());
+  play_events::set(play_events::event_type::explosion, true);
+  bullet.Destroy();
+
+#if 0
+  enemy.ApplyDamage(bullet.Damage());
+#endif
+}
 
 auto level_collision_handler::OnCollision(player_missile& missile, enemy_type_1& enemy) -> void
 {

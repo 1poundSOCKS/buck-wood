@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "main_play_scene.h"
+#include "player_state.h"
 
 main_play_scene::~main_play_scene()
 {
@@ -47,7 +48,10 @@ auto main_play_scene::Render() const -> void
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   
   renderer::render(m_playState->Score());
-  renderer::render(m_playState->PowerUps());
+
+  game_score powerUps(game_score::value_type::power_ups);
+  powerUps.Add(player_state::missile_count());
+  renderer::render(powerUps);
 
 #ifdef RENDER_RADAR
   renderer::render(level_radar { m_playState->LevelContainer().PlayerPosition() }, m_playState->LevelContainer().Targets());

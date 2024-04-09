@@ -3,6 +3,7 @@
 #include "play_scene.h"
 #include "stopwatch.h"
 #include "end_of_level_menu_controller.h"
+#include "player_state.h"
 
 class closing_play_scene : public play_scene
 {
@@ -40,7 +41,10 @@ public:
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
     renderer::render(m_playState->Score());
-    renderer::render(m_playState->PowerUps());
+
+    game_score powerUps(game_score::value_type::power_ups);
+    powerUps.Add(player_state::missile_count());
+    renderer::render(powerUps);
 
     if( !m_paused && m_stopwatch.Expired() )
     {
