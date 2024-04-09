@@ -11,6 +11,7 @@
 #include "play_events.h"
 #include "save_data.h"
 #include "game_state.h"
+#include "player_state.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -112,12 +113,14 @@ auto initialize_all(HINSTANCE instance) -> void
   save_data::create(L"save_data");
   game_state::create();
   play_events::create();
+  player_state::create();
 
   save_data::read(game_state::get());
 }
 
 auto destroy_all() -> void
 {
+  player_state::destroy();
   play_events::destroy();
   game_state::destroy();
   save_data::destroy();
