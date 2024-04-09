@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "play_state.h"
 #include "save_data.h"
+#include "player_state.h"
 
 play_state::play_state() : 
   m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
@@ -42,6 +43,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   *m_powerUpsCollected += play_events::get(play_events::counter_type::power_ups_collected);
+  player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
 }
 
 auto play_state::SaveGameState() noexcept -> void

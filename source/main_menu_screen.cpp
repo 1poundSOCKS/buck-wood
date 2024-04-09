@@ -6,6 +6,7 @@
 #include "screen_container.h"
 #include "game_settings.h"
 #include "audio_events.h"
+#include "player_state.h"
 
 main_menu_screen::main_menu_screen()
 {
@@ -29,6 +30,7 @@ auto main_menu_screen::Update(int64_t frameInterval) -> bool
   {
     case main_menu_controller::selection::start:
       game_state::reset();
+      player_state::reset();
     case main_menu_controller::selection::resume:
       StartPlay();
       break;

@@ -4,6 +4,7 @@
 #include "particle_functions.h"
 #include "update_object_visitor.h"
 #include "level_collision_handler.h"
+#include "player_state.h"
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
@@ -57,10 +58,11 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
     play_events::set(play_events::event_type::shot, true);
   }
 
-  if( m_targettedObject && object.CanFireMissile() )
+  if( m_targettedObject && player_state::missile_count() && object.CanFireMissile() )
   {
     CreatePlayerMissile(object.Position(), direct2d::CalculateVelocity(500, object.Angle()), 10);
     play_events::set(play_events::event_type::shot, true);
+    player_state::decrement_missile_count();
   }
 
   if( object.EmitThrustParticle() )

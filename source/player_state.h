@@ -12,6 +12,10 @@ public:
   static [[nodiscard]] auto missile_count() noexcept -> int;
 
   static auto set_missile_count(int value) -> void;
+  static auto add_missiles(int value) -> int;
+  static auto decrement_missile_count() -> int;
+
+  static auto reset() -> void;
 
 private:
 
@@ -46,4 +50,19 @@ inline [[nodiscard]] auto player_state::missile_count() noexcept -> int
 inline auto player_state::set_missile_count(int value) -> void
 {
   m_instance->m_missileCount = value;
+}
+
+inline auto player_state::add_missiles(int value) -> int
+{
+  return m_instance->m_missileCount += value;
+}
+
+inline auto player_state::decrement_missile_count() -> int
+{
+  return --m_instance->m_missileCount;
+}
+
+inline auto player_state::reset() -> void
+{
+  m_instance->m_missileCount = 0;
 }
