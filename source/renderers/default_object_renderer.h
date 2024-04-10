@@ -30,6 +30,11 @@ public:
     m_playerShipRenderer.Write(object, geometry);
   }
 
+  auto Write(const player_missile& object, ID2D1Geometry* geometry) const -> void
+  {
+    m_playerMissileRenderer.Write(object, geometry);
+  }
+
   auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void
   {
     m_mineRenderer.Write(object, geometry);
@@ -52,8 +57,9 @@ public:
 
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   player_ship_renderer m_playerShipRenderer;
-  flashing_geometry_renderer m_enemyType1_renderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 } };
-  flashing_geometry_renderer m_enemyType2_renderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 } };
+  flashing_geometry_renderer m_playerMissileRenderer { color_scale { screen_render_brush_yellow.Get(), screen_render_brush_black.Get(), 20 } };
+  flashing_geometry_renderer m_enemyType1_renderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 }, 10 };
+  flashing_geometry_renderer m_enemyType2_renderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   mine_renderer m_mineRenderer;
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };

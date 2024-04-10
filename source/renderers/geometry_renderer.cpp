@@ -26,7 +26,7 @@ auto geometry_renderer::Write(ID2D1Geometry* geometry, ID2D1SolidColorBrush* fil
     render_target::get()->FillGeometry(geometry, fillBrush);
   }
 
-  if( drawBrush )
+  if( drawBrush && drawWidth )
   {
     render_target::get()->DrawGeometry(geometry, drawBrush, drawWidth);
   }
