@@ -34,7 +34,7 @@ public:
 
 private:
 
-  inline static constexpr float m_speed { 300 };
+  inline static constexpr float m_speed { 200 };
   inline static constexpr float m_rotationSpeed { 400 };
   int m_damage;
 
