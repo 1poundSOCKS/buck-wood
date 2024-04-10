@@ -17,6 +17,6 @@ public:
 private:
 
   inline static constexpr int m_hitpoints { 10 };
-  inline static constexpr float m_speed { 200 };
+  inline static constexpr float m_speed { 100 };
 
 };
