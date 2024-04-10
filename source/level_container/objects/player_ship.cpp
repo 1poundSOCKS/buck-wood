@@ -54,10 +54,6 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   base_object::Update(interval);
   m_position = object_velocity::UpdatePosition(m_position, interval);
 
-#if 0
-  Move(thrustControlValue * 400 * interval, m_angle);
-#endif
-
   m_thrusterOn = thrustControlValue > 0 ? true : false;
   m_triggerDown = triggerControlOn;
   m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
