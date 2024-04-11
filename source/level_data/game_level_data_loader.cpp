@@ -4,6 +4,26 @@
 auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float interval) -> void
 {
   m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
+
+  if( m_status == status::started && m_currentEvent == std::end(m_events) )
+  {
+    m_events.clear();
+
+    switch( game_state::level_index() )
+    {
+      case 0:
+      default:
+        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
+        m_events.emplace_back(10.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
+        m_events.emplace_back(10.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); m_levelCanBeCompleted = true; });
+        break;
+    }
+
+    m_currentEvent = std::begin(m_events);
+    m_status = status::running;
+  }
 }
 
 [[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool

@@ -10,7 +10,7 @@ class game_level_data_loader
 
 public:
 
-  enum class state_type { starting, active, finished };
+  enum class status { starting, started, running, finished };
 
   game_level_data_loader() = default;
 
@@ -30,6 +30,7 @@ public:
 
 private:
 
+  status m_status { status::starting };
   inline static int m_levelCount { 3 };
   random_velocity m_randomVelocity { 100, 300 };
 
@@ -43,46 +44,18 @@ private:
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
-  auto levelIndex = game_state::level_index();
-
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, levelIndex, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, game_state::level_index(), m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
-
+  m_status = status::starting;
   m_levelCanBeCompleted = false;
-  
+
   m_events.clear();
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreatePlayer(levelContainer); });
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); });
-  m_events.emplace_back(1.0f, [this](level_container* levelContainer) -> void { m_levelCanBeCompleted = true; });
-
-  switch( levelIndex )
-  {
-    case 0:
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      break;
-    
-    case 1:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      break;
-    
-    case 2:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-      break;
-
-    default:
-      m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 5); });
-      break;
-  }
+  
+  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void {
+    CreatePlayer(levelContainer);
+    m_status = status::started;
+  });
 
   m_currentEvent = std::begin(m_events);
 

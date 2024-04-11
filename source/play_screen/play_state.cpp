@@ -4,11 +4,9 @@
 #include "player_state.h"
 
 play_state::play_state() : 
-  // m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_powerUpsCollected { std::make_shared<int>(0) },
   m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelContainer { std::make_shared<level_container>() }
 {
   m_score->Set(game_state::score());
-  // *m_powerUpsCollected = game_state::power_up_count();
 }
 
 auto play_state::LoadCurrentLevel() -> void
