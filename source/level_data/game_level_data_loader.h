@@ -31,7 +31,7 @@ public:
 private:
 
   status m_status { status::starting };
-  inline static int m_levelCount { 3 };
+  inline static int m_levelCount { 9 };
   random_velocity m_randomVelocity { 100, 300 };
 
   std::vector<level_update_event> m_events;
@@ -44,7 +44,7 @@ private:
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, game_state::level_index(), m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
   m_status = status::starting;

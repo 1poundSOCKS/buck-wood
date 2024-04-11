@@ -32,7 +32,7 @@ public:
   enum class level_type { vertical_scroller, arena };
 
   level_container();
-  level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition);
+  level_container(level_type levelType, std::ranges::input_range auto&& points, POINT_2F playerPosition);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
@@ -40,7 +40,6 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto Type() const -> level_type;
-  [[nodiscard]] auto Index() const -> int;
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
   [[nodiscard]] auto PlayerActive() const -> bool;
 
@@ -105,7 +104,6 @@ private:
   static constexpr float m_maxTargetRange { 1000.0f };
 
   level_type m_type;
-  int m_index;
 
   blank_object m_boundary;
   particle_collection m_particles;
@@ -128,12 +126,12 @@ private:
 
 };
 
-inline level_container::level_container() : level_container(level_type::arena, 0, std::array<POINT_2F, 0>(), { 0, 0 })
+inline level_container::level_container() : level_container(level_type::arena, std::array<POINT_2F, 0>(), { 0, 0 })
 {
 }
 
-inline level_container::level_container(level_type levelType, int index, std::ranges::input_range auto&& points, POINT_2F playerPosition) : 
-  m_type { levelType }, m_index { index }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }
+inline level_container::level_container(level_type levelType, std::ranges::input_range auto&& points, POINT_2F playerPosition) : 
+  m_type { levelType }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }
 {
 }
 
@@ -145,11 +143,6 @@ inline auto level_container::SetPlayerActive(bool value) -> void
 inline [[nodiscard]] auto level_container::Type() const -> level_type
 {
   return m_type;
-}
-
-inline [[nodiscard]] auto level_container::Index() const -> int
-{
-  return m_index;
 }
 
 inline [[nodiscard]] auto level_container::PlayerState() const -> const player_ship&

@@ -13,11 +13,11 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
     {
       case 0:
       default:
-        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreatePowerUps(levelContainer, 1); });
-        m_events.emplace_back(10.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, 1); });
-        m_events.emplace_back(10.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); m_levelCanBeCompleted = true; });
+        for( int i = 0; i <= game_state::level_index(); ++i )
+        {
+          m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); m_levelCanBeCompleted = true; });
+        }
+        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, game_state::level_index() + 1); m_levelCanBeCompleted = true; });
         break;
     }
 

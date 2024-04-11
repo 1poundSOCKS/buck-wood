@@ -76,6 +76,11 @@ auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& e
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
   m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
+
+  if( enemy.Destroyed() )
+  {
+    m_levelContainer->CreatePowerUp(enemy.Position(), VELOCITY_2F { 0, 0 });
+  }
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void

@@ -6,9 +6,10 @@
 #include "audio_events.h"
 #include "line_to_target.h"
 #include "game_settings.h"
+#include "game_state.h"
 
 play_scene::play_scene(std::shared_ptr<play_state> playState) : 
-  m_playState { playState }, m_levelTitle { m_playState->LevelContainer().Index() }
+  m_playState { playState }, m_levelTitle { game_state::level_index() }
 {
 }
 
