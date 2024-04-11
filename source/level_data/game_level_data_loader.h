@@ -44,7 +44,7 @@ private:
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(level_container::level_type::arena, m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F {0, 0});
   m_status = status::starting;

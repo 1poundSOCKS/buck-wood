@@ -29,17 +29,14 @@ public:
   using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
-  enum class level_type { vertical_scroller, arena };
-
   level_container();
-  level_container(level_type levelType, std::ranges::input_range auto&& points, POINT_2F playerPosition);
+  level_container(std::ranges::input_range auto&& points, POINT_2F playerPosition);
   level_container(const level_container& levelContainer) = delete;
 
   auto SetPlayerActive(bool value) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
-  [[nodiscard]] auto Type() const -> level_type;
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
   [[nodiscard]] auto PlayerActive() const -> bool;
 
@@ -81,8 +78,6 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
-  [[nodiscard]] auto GetShipMovementType(level_type levelType) -> player_ship::movement_type;
-
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(player_missile& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
@@ -102,8 +97,6 @@ private:
 private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
-
-  level_type m_type;
 
   blank_object m_boundary;
   particle_collection m_particles;
@@ -126,23 +119,17 @@ private:
 
 };
 
-inline level_container::level_container() : level_container(level_type::arena, std::array<POINT_2F, 0>(), { 0, 0 })
+inline level_container::level_container() : level_container(std::array<POINT_2F, 0>(), { 0, 0 })
 {
 }
 
-inline level_container::level_container(level_type levelType, std::ranges::input_range auto&& points, POINT_2F playerPosition) : 
-  m_type { levelType }, m_boundary { points }, m_playerState { GetShipMovementType(levelType), playerPosition }
+inline level_container::level_container(std::ranges::input_range auto&& points, POINT_2F playerPosition) : m_boundary { points }, m_playerState { playerPosition }
 {
 }
 
 inline auto level_container::SetPlayerActive(bool value) -> void
 {
   m_playerActive = value;
-}
-
-inline [[nodiscard]] auto level_container::Type() const -> level_type
-{
-  return m_type;
 }
 
 inline [[nodiscard]] auto level_container::PlayerState() const -> const player_ship&
@@ -202,7 +189,7 @@ auto level_container::CreatePortal(auto&&...args) -> void
 
 auto level_container::CreatePlayer(auto&&...args) -> void
 {
-  CreatePlayerObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, GetShipMovementType(m_type), std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
@@ -309,19 +296,6 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
-}
-
-inline [[nodiscard]] auto level_container::GetShipMovementType(level_type levelType) -> player_ship::movement_type
-{
-  switch( levelType )
-  {
-    case level_container::level_type::vertical_scroller:
-      return player_ship::movement_type::horizontal;
-    case level_container::level_type::arena:
-      return player_ship::movement_type::both;
-    default:
-      return player_ship::movement_type::both;
-  }
 }
 
 auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1_RECT_F viewRect) -> void

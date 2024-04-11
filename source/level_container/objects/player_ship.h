@@ -18,9 +18,7 @@ public:
 
 public:
 
-  enum class movement_type { horizontal, both };
-
-  player_ship(movement_type movementType, POINT_2F position);
+  player_ship(POINT_2F position);
 
   auto Update(float interval) -> void;
   auto Update(float interval, bool enableControl) -> void;
@@ -59,7 +57,6 @@ private:
 
 private:
 
-  movement_type m_movementType;
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
   bool m_active { false };

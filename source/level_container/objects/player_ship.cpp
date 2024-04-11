@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "player_ship.h"
 
-player_ship::player_ship(movement_type movementType, POINT_2F position) : 
-  base_object { position, { 1.8f, 1.8f }, 0 }, m_movementType { movementType }
+player_ship::player_ship(POINT_2F position) : 
+  base_object { position, { 1.8f, 1.8f }, 0 }
 {
 }
 
@@ -18,18 +18,7 @@ auto player_ship::Update(float interval) -> void
 
 auto player_ship::UpdateWithControl(float interval, bool enableControl) -> void
 {
-  switch( m_movementType )
-  {
-    case movement_type::horizontal:
-      UpdateWithHorizontalControl(interval, enableControl);
-      break;
-    case movement_type::both:
-      UpdateWithAllControl(interval, enableControl);
-      break;
-    default:
-      UpdateWithAllControl(interval, enableControl);
-      break;
-  }
+  UpdateWithAllControl(interval, enableControl);
 }
 
 auto player_ship::UpdateWithoutControl(float interval, bool enableControl) -> void

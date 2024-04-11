@@ -83,17 +83,7 @@ auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
   auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
-  auto viewHeight = render_target::get()->GetSize().height / m_cameraZoom;
-
-  switch( m_playState->LevelContainer().Type() )
-  {
-    case level_container::level_type::vertical_scroller:
-      return camera_sequence::camera_position { 0, playerPosition.y - viewHeight / 3, m_cameraZoom };
-    case level_container::level_type::arena:
-      return camera_sequence::camera_position { 0, 0, m_cameraZoom };
-    default:
-      return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
-  }
+  return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
 
 auto play_scene::RenderLevelContainer() const -> void
@@ -151,16 +141,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 {
   auto levelSize = m_playState->LevelContainer().LevelSize();
   auto renderTargetSize = render_target::get()->GetSize();
-
-  switch( m_playState->LevelContainer().Type() )
-  {
-    case level_container::level_type::vertical_scroller:
-      return renderTargetSize.width / levelSize.width * 0.8f;
-    case level_container::level_type::arena:
-      return renderTargetSize.height / levelSize.height * 0.9f;
-    default:
-      return 1.0f;
-  }
+  return 0.8f;
 }
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
