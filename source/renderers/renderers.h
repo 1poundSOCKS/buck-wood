@@ -62,7 +62,7 @@ private:
   level_title_renderer m_levelTitleRenderer;
 
   default_object_renderer m_defaultObjectRenderer;
-  geometry_renderer m_blankRenderer { screen_render_brush_grey.CreateBrush(), 10 };
+  geometry_renderer m_boundaryRenderer { screen_render_brush_grey.CreateBrush(), 20 };
   particle_renderer m_particleRenderer;
   winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
 
@@ -119,7 +119,7 @@ inline auto renderer::renderDiagnostics() -> void
 
 inline auto renderer::Render(const blank_object& blankObject) const -> void
 {
-  m_blankRenderer.Write(static_cast<ID2D1PathGeometry*>(blankObject));
+  m_boundaryRenderer.Write(static_cast<ID2D1PathGeometry*>(blankObject));
 }
 
 inline auto renderer::Render(const particle& particle) const -> void
