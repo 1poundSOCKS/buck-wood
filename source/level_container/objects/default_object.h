@@ -1,5 +1,6 @@
 #pragma once
 
+#include "background_object.h"
 #include "player_ship.h"
 #include "player_bullet.h"
 #include "player_missile.h"
@@ -113,7 +114,7 @@ class default_object
 
 public:
 
-  using object_type = std::variant<player_ship, player_bullet, player_missile, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2>;
+  using object_type = std::variant<background_object, player_ship, player_bullet, player_missile, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
     m_object { variantType, std::forward<Args>(args)... }

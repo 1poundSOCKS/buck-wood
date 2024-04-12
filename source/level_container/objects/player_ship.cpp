@@ -37,7 +37,7 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
   auto switchFireMode = enableControl ? gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) : false;
 
-  m_angle = m_destination ? GetUpdatedAngle(Position(), Angle(), *m_destination, interval) : m_angle;
+  m_angle = leftThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *leftThumbstickPosition) : m_angle;
   m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
 
   base_object::Update(interval);

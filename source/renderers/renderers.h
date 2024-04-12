@@ -31,7 +31,7 @@ public:
   static auto render(const auto& object) -> void;
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
-  static auto ordered_render_all(std::ranges::input_range auto&& noninteractiveObjects , std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void;
+  static auto ordered_render_all(std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -86,17 +86,10 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   }
 }
 
-auto renderer::ordered_render_all(std::ranges::input_range auto&& noninteractiveObjects , std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void
+auto renderer::ordered_render_all(std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void
 {
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
   {
-    auto renderNoninteractiveObjects = std::ranges::views::filter(noninteractiveObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
-
-    for( const auto& object : renderNoninteractiveObjects )
-    {
-      m_instance->Render(object);
-    }
-
     auto renderPlayerObjects = std::ranges::views::filter(playerObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
 
     for( const auto& object : renderPlayerObjects )
@@ -112,6 +105,7 @@ auto renderer::ordered_render_all(std::ranges::input_range auto&& noninteractive
     }
   }
 }
+
 inline auto renderer::renderDiagnostics() -> void
 {
   m_instance->m_diagnosticsRenderer.Write();

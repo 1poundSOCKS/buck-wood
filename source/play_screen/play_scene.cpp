@@ -97,8 +97,9 @@ auto play_scene::RenderLevelContainer() const -> void
     renderer::render(levelContainer.Boundary());
   }
 
+  renderer::render_all(levelContainer.NoninteractiveObjects());
   renderer::render_all(levelContainer.Particles());
-  renderer::ordered_render_all(levelContainer.NoninteractiveObjects(), levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
+  renderer::ordered_render_all(levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
 
   auto renderEnd = performance_counter::QueryValue();
 
@@ -141,7 +142,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 {
   auto levelSize = m_playState->LevelContainer().LevelSize();
   auto renderTargetSize = render_target::get()->GetSize();
-  return 0.8f;
+  return renderTargetSize.height / 1600;
 }
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
