@@ -46,7 +46,11 @@ auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_c
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), m_demoLevel.PlayerPosition(), std::forward<decltype(args)>(args)...);
 
-  levelContainer->CreatePortal(POINT_2F {0, 0});
+  levelContainer->CreatePortal(POINT_2F { 0, 0 });
+  levelContainer->CreateBackgroundObject(POINT_2F { -500, -500 });
+  levelContainer->CreateBackgroundObject(POINT_2F { 800, -900 });
+  levelContainer->CreateBackgroundObject(POINT_2F { -700, 300 });
+  levelContainer->CreateBackgroundObject(POINT_2F { 700, 500 });
   m_status = status::starting;
   m_levelCanBeCompleted = false;
 

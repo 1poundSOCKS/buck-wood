@@ -62,6 +62,7 @@ public:
 
   auto CreatePortal(auto&&...args) -> void;
   auto CreatePlayer(auto&&...args) -> void;
+  auto CreateBackgroundObject(auto&&...args) -> void;
   auto CreateEnemyType1(auto&&...args) -> void;
   auto CreateEnemyType2(auto&&...args) -> void;
   auto CreateEnemyBullet(auto&&...args) -> void;
@@ -190,6 +191,11 @@ auto level_container::CreatePortal(auto&&...args) -> void
 auto level_container::CreatePlayer(auto&&...args) -> void
 {
   CreatePlayerObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
+}
+
+auto level_container::CreateBackgroundObject(auto&&...args) -> void
+{
+  CreateNoninteractiveObject(level_geometries::AsteroidGeometry(), std::in_place_type<background_object>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
