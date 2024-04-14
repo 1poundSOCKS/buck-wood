@@ -139,12 +139,15 @@ auto play_scene::RenderEnergyBars() const -> void
 {
   auto enemiesWithEnergyBars = std::ranges::views::filter(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
   {
-    return true;
+    return enemy->HoldsAlternative<enemy_type_1>() || enemy->HoldsAlternative<enemy_type_2>();
   });
 
   auto energyBars = std::ranges::views::transform(enemiesWithEnergyBars, [this](const auto& enemy)
   {
-    return energy_bar { EnemyRenderRect(enemy), enemy->Health() };
+    auto renderRect = EnemyRenderRect(enemy);
+    auto renderRectWidth = renderRect.right - renderRect.left;
+    renderRect.bottom = renderRect.top - renderRectWidth / 5;
+    return energy_bar { renderRect, enemy->Health() };
   });
 
   renderer::render_all(energyBars);

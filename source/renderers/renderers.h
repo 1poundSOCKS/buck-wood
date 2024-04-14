@@ -72,6 +72,8 @@ private:
   geometry_renderer m_boundaryRenderer { screen_render_brush_grey.CreateBrush(), 20 };
   particle_renderer m_particleRenderer;
   winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarBorderBrush { screen_render_brush_white.CreateBrush() };
+  winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarFillBrush { screen_render_brush_green.CreateBrush() };
 
 };
 
@@ -178,5 +180,8 @@ inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
 
 inline auto renderer::Render(const energy_bar& energyBar) const -> void
 {
-  render_target::get()->DrawRectangle(energyBar.position, m_playerShieldsBrush.get(), 5);
+  auto fillRect = energyBar.position;
+  fillRect.right = fillRect.left + ( fillRect.right - fillRect.left * energyBar.value );
+  render_target::get()->FillRectangle(energyBar.position, m_energyBarFillBrush.get());
+  render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
 }

@@ -123,7 +123,7 @@ public:
 
   [[nodiscard]] auto Get() const -> const object_type& { return m_object; }
   [[nodiscard]] auto Get() -> object_type& { return m_object; }
-  
+
   template <typename type> [[nodiscard]] auto GetIf() const -> const type*
   {
     return std::get_if<type>(&m_object);
