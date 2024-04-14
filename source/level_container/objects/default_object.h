@@ -143,6 +143,7 @@ public:
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
+  [[nodiscard]] auto Health() const -> float;
 
   auto Destroy() -> void;
 
@@ -175,4 +176,9 @@ inline [[nodiscard]] auto default_object::Destroyed() const -> bool
 inline auto default_object::Destroy() -> void
 {
   return std::visit(destroy_visitor {}, m_object);
+}
+
+inline [[nodiscard]] auto default_object::Health() const -> float
+{
+  return 1.0f;
 }

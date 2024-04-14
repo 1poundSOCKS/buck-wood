@@ -26,17 +26,18 @@ public:
   auto Update(__int64 ticks) -> bool override;
   auto Render() const -> void override;
 
-  auto RenderTransform() const -> D2D1::Matrix3x2F;
-
 protected:
 
+  [[nodiscard]] auto RenderTransform() const noexcept -> D2D1::Matrix3x2F;
   auto RenderLevelContainer() const -> void;
+  auto RenderEnergyBars() const -> void;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;
   auto CameraPosition() const -> camera_sequence::camera_position;
   [[nodiscard]] auto GetPlayCameraZoom() const -> float;
   static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
+  [[nodiscard]] auto EnemyRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
 
 private:
 
@@ -50,7 +51,6 @@ protected:
   level_title m_levelTitle;
   bool m_renderLevelTitle { false };
   float m_cameraZoom { 1 };
-  std::optional<D2D1_POINT_2F> m_playerDestination;
-  std::optional<D2D1_POINT_2F> m_targetPosition;
+  D2D1::Matrix3x2F m_renderTransform { RenderTransform() };
 
 };

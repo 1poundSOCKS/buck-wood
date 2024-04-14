@@ -40,16 +40,18 @@ auto play_scene::Update(__int64 ticks) -> bool
   PlaySoundEffects();
   play_events::reset();
   m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
+  m_renderTransform = RenderTransform();
   return m_playState->Status() == play_state::status::running;
 }
 
 auto play_scene::Render() const -> void
 {
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
-  auto transform = RenderTransform();
-  render_target::get()->SetTransform(transform);
+  render_target::get()->SetTransform(m_renderTransform);
 
   RenderLevelContainer();
+
+  RenderEnergyBars();
 
   auto targettedObject = m_playState->LevelContainer().TargettedObject();
 
@@ -73,7 +75,7 @@ auto play_scene::Render() const -> void
   }
 }
 
-auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
+[[nodiscard]] auto play_scene::RenderTransform() const noexcept -> D2D1::Matrix3x2F
 {
   auto cameraPosition = CameraPosition();
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
@@ -133,6 +135,16 @@ auto play_scene::PlaySoundEffects() const -> void
   }
 }
 
+auto play_scene::RenderEnergyBars() const -> void
+{
+  auto energyBars = std::ranges::views::transform(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
+  {
+    return energy_bar { EnemyRenderRect(enemy), enemy->Health() };
+  });
+
+  renderer::render_all(energyBars);
+}
+
 auto play_scene::SetCameraZoom(float value) -> void
 {
   m_cameraZoom = value;
@@ -147,7 +159,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
 {
-  return GetRenderTargetView(RenderTransform());
+  return GetRenderTargetView(m_renderTransform);
 }
 
 auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
@@ -166,4 +178,15 @@ auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
   auto [minY, maxY] = std::minmax({topLeft.y, bottomRight.y, bottomLeft.y, topRight.y});
 
   return { minX, minY, maxX, maxY };
+}
+
+[[nodiscard]] auto play_scene::EnemyRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F
+{
+  auto position = enemy->Position();
+  auto radius = enemy.GeometryRadius();
+  auto topLeft = POINT_2F { position.x - radius, position.y - radius };
+  auto bottomRight = POINT_2F { position.x + radius, position.y + radius };
+  auto renderTopLeft = m_renderTransform.TransformPoint(topLeft);
+  auto renderBottomRight = m_renderTransform.TransformPoint(bottomRight);
+  return { renderTopLeft.x, renderTopLeft.y, renderBottomRight.x, renderBottomRight.y };
 }

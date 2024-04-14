@@ -21,6 +21,12 @@
 
 #include "render_order.h"
 
+struct energy_bar
+{
+  RECT_F position;
+  float value;
+};
+
 class renderer
 {
 
@@ -46,6 +52,7 @@ private:
   auto Render(const game_score& gameScore) const -> void;
   auto Render(const level_title& levelTitle) const -> void;
   auto Render(const line_to_target& lineToTarget) const -> void;
+  auto Render(const energy_bar& energyBar) const -> void;
 
 private:
 
@@ -167,4 +174,9 @@ inline auto renderer::Render(const dynamic_object<default_object>& object) const
 inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
 {
   render_target::get()->DrawLine(lineToTarget.m_start, lineToTarget.m_end, m_lineToTargetBrush.get(), 10);
+}
+
+inline auto renderer::Render(const energy_bar& energyBar) const -> void
+{
+  
 }
