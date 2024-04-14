@@ -7,7 +7,7 @@ class enemy_type_1 : public enemy_object
 
 public:
 
-  enemy_type_1(POINT_2F position);
+  enemy_type_1(POINT_2F position, int hitpoints);
 
   auto Update(float interval, POINT_2F target) -> void;
 
@@ -16,7 +16,6 @@ public:
   
 private:
 
-  inline static constexpr int m_hitpoints { 10 };
   inline static constexpr float m_speed { 100 };
 
 };

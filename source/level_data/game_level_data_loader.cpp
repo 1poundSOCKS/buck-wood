@@ -13,10 +13,7 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
     {
       case 0:
       default:
-        for( int i = 0; i <= game_state::level_index(); ++i )
-        {
-          m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1); m_levelCanBeCompleted = true; });
-        }
+        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1, 10 * (game_state::level_index() + 1)); m_levelCanBeCompleted = true; });
         m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, game_state::level_index() + 1); m_levelCanBeCompleted = true; });
         break;
     }
@@ -57,11 +54,11 @@ auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> vo
   levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
 }
 
-auto game_level_data_loader::CreateType1Enemies(level_container* levelContainer, int count) -> void
+auto game_level_data_loader::CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void
 {
   for( int i = 0; i < count; ++i )
   {
-    levelContainer->CreateEnemyType1(POINT_2F { 0, 0 });
+    levelContainer->CreateEnemyType1(POINT_2F { 0, 0 }, hitpoints);
   }
 }
 
