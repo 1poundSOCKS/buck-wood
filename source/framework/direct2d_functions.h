@@ -56,7 +56,6 @@ namespace direct2d
     return sqrt( cx * cx + cy * cy );
   }
 
-
   inline [[nodiscard]] auto GetGeometryBounds(ID2D1Geometry* geometry) -> RECT_F
   {
     D2D1_RECT_F bounds;
