@@ -109,6 +109,22 @@ struct destroy_visitor
   }
 };
 
+struct health_visitor
+{
+  auto operator()(const enemy_type_1& object) -> float
+  {
+    return object.Health();
+  }
+  auto operator()(const enemy_type_2& object) -> float
+  {
+    return object.Health();
+  }
+  auto operator()(const auto& object) -> float
+  {
+    return 1.0;
+  }
+};
+
 class default_object
 {
 
@@ -180,5 +196,5 @@ inline auto default_object::Destroy() -> void
 
 inline [[nodiscard]] auto default_object::Health() const -> float
 {
-  return 1.0f;
+  return std::visit(health_visitor {}, m_object);
 }
