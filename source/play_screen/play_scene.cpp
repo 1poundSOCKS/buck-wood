@@ -146,6 +146,7 @@ auto play_scene::RenderEnergyBars() const -> void
   {
     auto renderRect = EnemyRenderRect(enemy);
     auto renderRectWidth = renderRect.right - renderRect.left;
+    renderRect.top -= 20.0f;
     renderRect.bottom = renderRect.top - renderRectWidth / 5;
     return energy_bar { renderRect, enemy->Health() };
   });
