@@ -75,7 +75,7 @@ auto play_state::Status() const -> status
     return status::end_of_game;
   }
   
-  if( m_dataLoader.LevelCanBeCompleted() && m_levelContainer->TargetCount() == 0 )
+  if( m_dataLoader.LevelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
   {
     return m_dataLoader.MoreLevels() ? status::end_of_level : status::end_of_game;
   }

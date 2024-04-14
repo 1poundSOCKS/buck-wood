@@ -41,7 +41,7 @@ public:
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
-  [[nodiscard]] auto TargetCount() const -> int;
+  [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
 
   auto Boundary() const -> const blank_object&;
   auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
@@ -109,7 +109,7 @@ private:
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
 
-  int m_targetsRemaining { 0 };
+  enemy_object_collection::size_type m_enemyCount { 0 };
 
 };
 
@@ -146,9 +146,9 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
   return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
 }
 
-inline [[nodiscard]] auto level_container::TargetCount() const -> int
+inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_collection::size_type
 {
-  return m_targetsRemaining;
+  return m_enemyCount;
 }
 
 auto level_container::CreateNoninteractiveObject(auto&&...args) -> void
@@ -315,7 +315,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
     return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
   });
 
-  m_targetsRemaining = std::accumulate(std::begin(enemies), std::end(enemies), 0);
+  m_enemyCount = m_enemyObjects.size();//std::accumulate(std::begin(enemies), std::end(enemies), 0);
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
