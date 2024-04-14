@@ -51,8 +51,6 @@ auto play_scene::Render() const -> void
 
   RenderLevelContainer();
 
-  RenderEnergyBars();
-
   auto targettedObject = m_playState->LevelContainer().TargettedObject();
 
   if( targettedObject )
@@ -68,9 +66,11 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+  RenderEnergyBars();
+
   if( !m_paused && m_renderLevelTitle )
   {
-    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     renderer::render(m_levelTitle);
   }
 }
@@ -137,7 +137,12 @@ auto play_scene::PlaySoundEffects() const -> void
 
 auto play_scene::RenderEnergyBars() const -> void
 {
-  auto energyBars = std::ranges::views::transform(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
+  auto enemiesWithEnergyBars = std::ranges::views::filter(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
+  {
+    return true;
+  });
+
+  auto energyBars = std::ranges::views::transform(enemiesWithEnergyBars, [this](const auto& enemy)
   {
     return energy_bar { EnemyRenderRect(enemy), enemy->Health() };
   });

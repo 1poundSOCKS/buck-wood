@@ -178,5 +178,5 @@ inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
 
 inline auto renderer::Render(const energy_bar& energyBar) const -> void
 {
-  
+  render_target::get()->DrawRectangle(energyBar.position, m_playerShieldsBrush.get(), 5);
 }
