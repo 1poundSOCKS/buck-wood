@@ -187,10 +187,9 @@ auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
 
 [[nodiscard]] auto play_scene::EnemyRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F
 {
-  auto position = enemy->Position();
-  auto radius = enemy.GeometryRadius();
-  auto topLeft = POINT_2F { position.x - radius, position.y - radius };
-  auto bottomRight = POINT_2F { position.x + radius, position.y + radius };
+  auto bounds = enemy.GeometryBounds();
+  auto topLeft = POINT_2F { bounds.left, bounds.top };
+  auto bottomRight = POINT_2F { bounds.right, bounds.bottom };
   auto renderTopLeft = m_renderTransform.TransformPoint(topLeft);
   auto renderBottomRight = m_renderTransform.TransformPoint(bottomRight);
   return { renderTopLeft.x, renderTopLeft.y, renderBottomRight.x, renderBottomRight.y };

@@ -13,6 +13,7 @@ public:
     m_transform { CalculateObjectTransform() },
     m_sourceGeometry { sourceGeometry },
     m_geometry { direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry.get(), m_transform) },
+    m_geometryBounds { direct2d::GetGeometryBounds(m_geometry.get()) },
     m_geometryRadius { direct2d::GetGeometryRadius(m_geometry.get()) }
   {
   }
@@ -47,6 +48,11 @@ public:
     return m_geometry;
   }
 
+  [[nodiscard]] auto GeometryBounds() const noexcept -> RECT_F
+  {
+    return m_geometryBounds;
+  }
+
   [[nodiscard]] auto GeometryRadius() const -> float
   {
     return m_geometryRadius;
@@ -78,12 +84,16 @@ public:
   {
     m_transform = CalculateObjectTransform();
     m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_sourceGeometry.get(), m_transform);
+    m_geometryBounds = direct2d::GetGeometryBounds(m_geometry.get());
+    m_geometryRadius = direct2d::GetGeometryRadius(m_geometry.get());
   }
 
   auto UpdateGeometry(ID2D1Geometry* sourceGeometry) -> void
   {
     m_transform = CalculateObjectTransform();
     m_geometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), sourceGeometry, m_transform);
+    m_geometryBounds = direct2d::GetGeometryBounds(m_geometry.get());
+    m_geometryRadius = direct2d::GetGeometryRadius(m_geometry.get());
   }
 
   auto operator->() const -> const object_type*
@@ -111,6 +121,7 @@ private:
   D2D1::Matrix3x2F m_transform;
   winrt::com_ptr<ID2D1Geometry> m_sourceGeometry;
   winrt::com_ptr<ID2D1Geometry> m_geometry;
+  RECT_F m_geometryBounds;
   float m_geometryRadius;
 
 };
