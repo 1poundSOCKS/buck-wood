@@ -55,7 +55,7 @@ auto play_scene::Render() const -> void
 
   if( targettedObject )
   {
-    auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
+    auto playerPosition = m_playState->LevelContainer().PlayerPosition();
 
 #if 0
     renderer::render(line_to_target { playerPosition, targettedObject->Position() });
@@ -82,7 +82,7 @@ auto play_scene::RenderTransform() const -> D2D1::Matrix3x2F
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
+  auto playerPosition = m_playState->LevelContainer().PlayerPosition();
   return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
 
@@ -108,7 +108,7 @@ auto play_scene::RenderLevelContainer() const -> void
 
 auto play_scene::PlaySoundEffects() const -> void
 {
-  if( m_playState->LevelContainer().PlayerState().ThrusterOn() )
+  if( !m_playState->LevelContainer().PlayerDestroyed() && m_playState->LevelContainer().PlayerThrusterOn() )
   {
     audio_events::StartPlayerThruster();
   }

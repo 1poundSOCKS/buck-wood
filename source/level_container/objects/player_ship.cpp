@@ -23,7 +23,6 @@ auto player_ship::Update(float interval) -> void
 auto player_ship::UpdateWhenActive(float interval) -> void
 {
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  m_destination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_position, *leftThumbstickPosition)) : std::nullopt;
 
   auto thrustControlValue = gamepad_reader::left_trigger();
   auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;

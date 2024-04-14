@@ -35,11 +35,12 @@ public:
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
-  [[nodiscard]] auto PlayerState() const -> const player_ship&;
+  [[nodiscard]] auto PlayerDestroyed() const noexcept -> bool;
+  [[nodiscard]] auto PlayerPosition() const noexcept -> POINT_2F;
+  [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
-  [[nodiscard]] auto GameScore() const -> const game_score&;
   [[nodiscard]] auto TargetCount() const -> int;
 
   auto Boundary() const -> const blank_object&;
@@ -120,9 +121,19 @@ inline level_container::level_container(std::ranges::input_range auto&& points, 
 {
 }
 
-inline [[nodiscard]] auto level_container::PlayerState() const -> const player_ship&
+inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
 {
-  return m_playerState;
+  return m_playerState.Destroyed();
+}
+
+inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> POINT_2F
+{
+  return m_playerState.Position();
+}
+
+inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
+{
+  return m_playerState.ThrusterOn();
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>

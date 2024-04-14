@@ -70,7 +70,7 @@ auto play_state::Status() const -> status
 
 [[nodiscard]] auto play_state::CalculateStatus() const -> status
 {
-  if( m_levelContainer->PlayerState().Destroyed() )
+  if( m_levelContainer->PlayerDestroyed() )
   {
     return status::end_of_game;
   }

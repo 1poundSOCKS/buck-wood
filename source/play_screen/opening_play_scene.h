@@ -14,7 +14,7 @@ public:
 
   auto Begin() -> void override
   {
-    auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
+    auto playerPosition = m_playState->LevelContainer().PlayerPosition();
     auto playCameraZoom = GetPlayCameraZoom();
     
     m_cameraSequence = camera_sequence::camera_position { 0, 0, 5.0f };
