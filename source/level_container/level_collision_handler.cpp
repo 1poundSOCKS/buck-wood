@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "level_collision_handler.h"
+#include "player_state.h"
 
 level_collision_handler::level_collision_handler(level_container* levelContainer) : m_levelContainer { levelContainer }
 {
@@ -85,30 +86,32 @@ auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& e
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
 {
-  if( m_levelContainer->PlayerInvulnerable() )
+  switch( player_state::get_status() )
   {
-    m_levelContainer->CreateExplosion(enemyBullet.Position());
-  }
-  else
-  {
-    m_levelContainer->CreateExplosion(playerShip.Position());
-    play_events::set(play_events::event_type::explosion, true);
-    playerShip.Destroy();
+    case player_state::status::active:
+      m_levelContainer->CreateExplosion(playerShip.Position());
+      playerShip.Destroy();
+      break;
+    case player_state::status::celebrating:
+      m_levelContainer->CreateExplosion(enemyBullet.Position());
+      break;
   }
 
+  play_events::set(play_events::event_type::explosion, true);
   enemyBullet.Destroy();
 }
 
 auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_2& enemy) -> void
 {
-  if( m_levelContainer->PlayerInvulnerable() )
+  switch( player_state::get_status() )
   {
-    m_levelContainer->CreateExplosion(enemy.Position());
-  }
-  else
-  {
-    m_levelContainer->CreateExplosion(ship.Position());
-    ship.Destroy();
+    case player_state::status::active:
+      m_levelContainer->CreateExplosion(ship.Position());
+      ship.Destroy();
+      break;
+    case player_state::status::celebrating:
+      m_levelContainer->CreateExplosion(enemy.Position());
+      break;
   }
 
   play_events::set(play_events::event_type::explosion, true);
@@ -123,14 +126,15 @@ auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& pow
 
 auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
 {
-  if( m_levelContainer->PlayerInvulnerable() )
+  switch( player_state::get_status() )
   {
-    m_levelContainer->CreateExplosion(enemy.Position());
-  }
-  else
-  {
-    m_levelContainer->CreateExplosion(ship.Position());
-    ship.Destroy();
+    case player_state::status::active:
+      m_levelContainer->CreateExplosion(ship.Position());
+      ship.Destroy();
+      break;
+    case player_state::status::celebrating:
+      m_levelContainer->CreateExplosion(enemy.Position());
+      break;
   }
 
   play_events::set(play_events::event_type::explosion, true);

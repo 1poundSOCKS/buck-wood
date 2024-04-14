@@ -33,15 +33,9 @@ public:
   level_container(std::ranges::input_range auto&& points, POINT_2F playerPosition);
   level_container(const level_container& levelContainer) = delete;
 
-  auto SetPlayerActive(bool value) -> void;
-
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto PlayerState() const -> const player_ship&;
-  [[nodiscard]] auto PlayerActive() const -> bool;
-
-  [[nodiscard]] auto PlayerInvulnerable() const -> bool;
-  auto SetPlayerInvulnerable(bool value) -> void;
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
@@ -103,8 +97,6 @@ private:
   particle_collection m_particles;
 
   player_ship m_playerState;
-  bool m_playerActive { false };
-  bool m_playerInvulnerable { false };
 
   noninteractive_object_collection m_noninteractiveObjects;
   player_object_collection m_playerObjects;
@@ -128,29 +120,9 @@ inline level_container::level_container(std::ranges::input_range auto&& points, 
 {
 }
 
-inline auto level_container::SetPlayerActive(bool value) -> void
-{
-  m_playerActive = value;
-}
-
 inline [[nodiscard]] auto level_container::PlayerState() const -> const player_ship&
 {
   return m_playerState;
-}
-
-inline [[nodiscard]] auto level_container::PlayerActive() const -> bool
-{
-  return m_playerActive;
-}
-
-inline [[nodiscard]] auto level_container::PlayerInvulnerable() const -> bool
-{
-  return m_playerInvulnerable;
-}
-
-inline auto level_container::SetPlayerInvulnerable(bool value) -> void
-{
-  m_playerInvulnerable = value;
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>

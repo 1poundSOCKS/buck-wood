@@ -12,13 +12,10 @@ auto main_play_scene::Begin() -> void
 {
   audio_events::StartGameplayTheme();
   SetCameraZoom(GetPlayCameraZoom());
-  m_playState->LevelContainer().SetPlayerActive(true);
-  m_playState->LevelContainer().SetPlayerInvulnerable(false);
 }
 
 auto main_play_scene::End() -> void
 {
-  m_playState->LevelContainer().SetPlayerActive(false);
   audio_events::StopPlayerThruster();
   audio_events::StopGameplayTheme();
 }

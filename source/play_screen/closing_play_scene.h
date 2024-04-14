@@ -18,8 +18,6 @@ public:
   auto Begin() -> void override
   {
     SetCameraZoom(GetPlayCameraZoom());
-    m_playState->LevelContainer().SetPlayerActive(false);
-    m_playState->LevelContainer().SetPlayerInvulnerable(true);
   }
 
   auto Update(int64_t ticks) -> bool override
