@@ -1,41 +1,33 @@
 #include "pch.h"
 #include "player_ship.h"
+#include "player_state.h"
 
 player_ship::player_ship(POINT_2F position) : 
   base_object { position, { 1.8f, 1.8f }, 0 }
 {
 }
 
-auto player_ship::Update(float interval, bool enableControl) -> void
-{
-  enableControl && !m_destroyed ? UpdateWithControl(interval, enableControl) : UpdateWithoutControl(interval, enableControl);
-}
-
 auto player_ship::Update(float interval) -> void
 {
-  Update(interval, m_active);
+  switch( player_state::get_status() )
+  {
+    case player_state::status::active:
+      UpdateWhenActive(interval);
+      break;
+    case player_state::status::celebrating:
+      UpdateWhenCelebrating(interval);
+      break;
+  }
 }
 
-auto player_ship::UpdateWithControl(float interval, bool enableControl) -> void
-{
-  UpdateWithAllControl(interval, enableControl);
-}
-
-auto player_ship::UpdateWithoutControl(float interval, bool enableControl) -> void
-{
-  constexpr float rotationSpeed = 480.0f;
-  auto rotationAmount = rotationSpeed * interval;
-  m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
-}
-
-auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> void
+auto player_ship::UpdateWhenActive(float interval) -> void
 {
   std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  m_destination = enableControl && leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_position, *leftThumbstickPosition)) : std::nullopt;
+  m_destination = leftThumbstickPosition ? std::optional<D2D1_POINT_2F>(direct2d::ShiftPosition(m_position, *leftThumbstickPosition)) : std::nullopt;
 
-  auto thrustControlValue = enableControl ? gamepad_reader::left_trigger() : 0;
-  auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
-  auto switchFireMode = enableControl ? gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER) : false;
+  auto thrustControlValue = gamepad_reader::left_trigger();
+  auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
+  auto switchFireMode = gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER);
 
   m_angle = leftThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *leftThumbstickPosition) : m_angle;
   m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
@@ -51,20 +43,11 @@ auto player_ship::UpdateWithAllControl(float interval, bool enableControl) -> vo
   m_thrustEmmisionCounter.Update(interval);
 }
 
-auto player_ship::UpdateWithHorizontalControl(float interval, bool enableControl) -> void
+auto player_ship::UpdateWhenCelebrating(float interval) -> void
 {
-  constexpr float movementSpeed = 1000.0f;
-  std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  m_velocity = enableControl && leftThumbstickPosition ? VELOCITY_2F { leftThumbstickPosition->x * movementSpeed, 0 } : VELOCITY_2F { 0, 0 };
-  m_position = GetUpdatedPosition(m_position, m_velocity, interval);
-
-  auto triggerControlOn = enableControl && gamepad_reader::right_trigger() > 0 ? true : false;
-  m_triggerDown = triggerControlOn;
-
-  m_thrusterOn = true;
-
-  m_playerReloadCounter.Update(interval);
-  m_thrustEmmisionCounter.Update(interval);
+  constexpr float rotationSpeed = 480.0f;
+  auto rotationAmount = rotationSpeed * interval;
+  m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
 }
 
 [[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float

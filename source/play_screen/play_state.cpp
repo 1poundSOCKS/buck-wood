@@ -12,6 +12,7 @@ play_state::play_state() :
 auto play_state::LoadCurrentLevel() -> void
 {
   m_levelContainer = m_dataLoader.LoadLevel();
+  player_state::set_status(player_state::status::active);
 }
 
 auto play_state::LoadNextLevel() -> bool
@@ -19,6 +20,7 @@ auto play_state::LoadNextLevel() -> bool
   if( m_dataLoader.NextLevel() )
   {
     m_levelContainer = m_dataLoader.LoadLevel();
+    player_state::set_status(player_state::status::active);
     return true;
   }
   else
@@ -37,6 +39,17 @@ auto play_state::Update(float interval, RECT_F view) -> void
   m_levelContainer->Update(interval, view);
 
   m_status = CalculateStatus();
+
+  switch( m_status )
+  {
+    case status::running:
+      player_state::set_status(player_state::status::active);
+      break;
+    case status::end_of_level:
+    case status::end_of_game:
+      player_state::set_status(player_state::status::celebrating);
+      break;
+  }
 
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);

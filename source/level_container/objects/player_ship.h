@@ -21,13 +21,11 @@ public:
   player_ship(POINT_2F position);
 
   auto Update(float interval) -> void;
-  auto Update(float interval, bool enableControl) -> void;
 
   auto Rotate(float angle) -> void;
   auto SetThrust(float value) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  auto SetActive(bool value) -> void;
 
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
@@ -42,10 +40,8 @@ public:
 
 private:
 
-  auto UpdateWithControl(float interval, bool enableControl) -> void;
-  auto UpdateWithoutControl(float interval, bool enableControl) -> void;
-  auto UpdateWithHorizontalControl(float interval, bool enableControl) -> void;
-  auto UpdateWithAllControl(float interval, bool enableControl) -> void;
+  auto UpdateWhenActive(float interval) -> void;
+  auto UpdateWhenCelebrating(float interval) -> void;
   
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
@@ -59,7 +55,6 @@ private:
 
   bool m_thrusterOn { false };
   health_status m_shieldStatus { 10 };
-  bool m_active { false };
   
   float m_thrust { 0 };
   bool m_triggerDown { false };
@@ -96,11 +91,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus.ApplyFatalDamage();
   m_destroyed = true;
-}
-
-inline auto player_ship::SetActive(bool value) -> void
-{
-  m_active = value;
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
