@@ -18,6 +18,7 @@ public:
   auto Begin() -> void override
   {
     SetCameraZoom(GetPlayCameraZoom());
+    m_renderTransform = RenderTransform();
   }
 
   auto Update(int64_t ticks) -> bool override

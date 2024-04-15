@@ -12,6 +12,7 @@ auto main_play_scene::Begin() -> void
 {
   audio_events::StartGameplayTheme();
   SetCameraZoom(GetPlayCameraZoom());
+  m_renderTransform = RenderTransform();
 }
 
 auto main_play_scene::End() -> void
