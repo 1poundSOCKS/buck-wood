@@ -68,6 +68,7 @@ auto play_scene::Render() const -> void
 
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderEnergyBars();
+  RenderGeometryBoundaries();
 
   if( !m_paused && m_renderLevelTitle )
   {
@@ -152,6 +153,21 @@ auto play_scene::RenderEnergyBars() const -> void
   });
 
   renderer::render_all(energyBars);
+}
+
+auto play_scene::RenderGeometryBoundaries() const -> void
+{
+  auto enemiesToInclude = std::ranges::views::filter(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
+  {
+    return enemy->HoldsAlternative<enemy_type_1>() || enemy->HoldsAlternative<enemy_type_2>() || enemy->HoldsAlternative<enemy_bullet_1>();
+  });
+
+  auto enemyBoundaries = std::ranges::views::transform(enemiesToInclude, [this](const auto& enemy)
+  {
+    return EnemyRenderRect(enemy);
+  });
+
+  renderer::render_all(enemyBoundaries);
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
