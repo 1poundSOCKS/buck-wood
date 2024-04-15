@@ -11,11 +11,6 @@ public:
   {
   }
 
-  auto operator()(auto&& object1, auto&& object2, auto&& callable) -> void
-  {
-    m_geometryCollision(object1, object2, callable);
-  }
-
   auto operator()(auto&& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
   {
     if( !object->Destroyed() )
@@ -39,7 +34,7 @@ public:
         std::lock_guard<std::mutex> guard(m_mutex);
         if( !object1->Destroyed() && !object2->Destroyed() )
         {
-          (*this)(object1, object2, callable);
+          m_geometryCollision(object1, object2, callable);
         }
       }
     });
