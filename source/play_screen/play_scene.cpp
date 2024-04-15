@@ -2,7 +2,6 @@
 #include "play_scene.h"
 #include "game_clock.h"
 #include "hud_target.h"
-#include "renderers.h"
 #include "audio_events.h"
 #include "line_to_target.h"
 #include "game_settings.h"
@@ -145,11 +144,7 @@ auto play_scene::RenderEnergyBars() const -> void
 
   auto energyBars = std::ranges::views::transform(enemiesWithEnergyBars, [this](const auto& enemy)
   {
-    auto renderRect = EnemyRenderRect(enemy);
-    auto renderRectWidth = renderRect.right - renderRect.left;
-    renderRect.top -= 20.0f;
-    renderRect.bottom = renderRect.top - renderRectWidth / 5;
-    return energy_bar { renderRect, enemy->Health() };
+    return energy_bar { EnergyBarRenderRect(enemy), enemy->Health() };
   });
 
   renderer::render_all(energyBars);
@@ -157,17 +152,8 @@ auto play_scene::RenderEnergyBars() const -> void
 
 auto play_scene::RenderGeometryBoundaries() const -> void
 {
-  auto enemiesToInclude = std::ranges::views::filter(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
-  {
-    return enemy->HoldsAlternative<enemy_type_1>() || enemy->HoldsAlternative<enemy_type_2>() || enemy->HoldsAlternative<enemy_bullet_1>();
-  });
-
-  auto enemyBoundaries = std::ranges::views::transform(enemiesToInclude, [this](const auto& enemy)
-  {
-    return EnemyRenderRect(enemy);
-  });
-
-  renderer::render_all(enemyBoundaries);
+  RenderGeometryBoundaries(m_playState->LevelContainer().PlayerObjects());
+  RenderGeometryBoundaries(m_playState->LevelContainer().EnemyObjects());
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
@@ -205,12 +191,21 @@ auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
   return { minX, minY, maxX, maxY };
 }
 
-[[nodiscard]] auto play_scene::EnemyRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F
+[[nodiscard]] auto play_scene::ObjectRenderRect(const dynamic_object<default_object>& object) const noexcept -> RECT_F
 {
-  auto bounds = enemy.GeometryBounds();
+  auto bounds = object.GeometryBounds();
   auto topLeft = POINT_2F { bounds.left, bounds.top };
   auto bottomRight = POINT_2F { bounds.right, bounds.bottom };
   auto renderTopLeft = m_renderTransform.TransformPoint(topLeft);
   auto renderBottomRight = m_renderTransform.TransformPoint(bottomRight);
   return { renderTopLeft.x, renderTopLeft.y, renderBottomRight.x, renderBottomRight.y };
+}
+
+[[nodiscard]] auto play_scene::EnergyBarRenderRect(const dynamic_object<default_object>& object) const noexcept -> RECT_F
+{
+  auto objectRect = ObjectRenderRect(object);
+  auto objectRectWidth = objectRect.right - objectRect.left;
+  objectRect.top -= 20.0f;
+  objectRect.bottom = objectRect.top - objectRectWidth / 5;
+  return objectRect;
 }

@@ -10,6 +10,7 @@
 #include "level_radar.h"
 #include "level_title.h"
 #include "play_state.h"
+#include "renderers.h"
 
 class play_scene : public base_scene
 {
@@ -32,13 +33,15 @@ protected:
   auto RenderLevelContainer() const -> void;
   auto RenderEnergyBars() const -> void;
   auto RenderGeometryBoundaries() const -> void;
+  auto RenderGeometryBoundaries(std::ranges::input_range auto&& objects) const -> void;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;
   auto CameraPosition() const -> camera_sequence::camera_position;
   [[nodiscard]] auto GetPlayCameraZoom() const -> float;
   static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
-  [[nodiscard]] auto EnemyRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
+  [[nodiscard]] auto ObjectRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
+  [[nodiscard]] auto EnergyBarRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
 
 private:
 
@@ -55,3 +58,13 @@ protected:
   D2D1::Matrix3x2F m_renderTransform { RenderTransform() };
 
 };
+
+auto play_scene::RenderGeometryBoundaries(std::ranges::input_range auto&& objects) const -> void
+{
+  auto boundaries = std::ranges::views::transform(objects, [this](const auto& enemy)
+  {
+    return ObjectRenderRect(enemy);
+  });
+
+  renderer::render_all(boundaries);
+}
