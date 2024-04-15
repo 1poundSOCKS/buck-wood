@@ -6,6 +6,7 @@ class game_settings
 public:
 
   enum frame_rate_type { capped, uncapped };
+  enum collision_detection_type { direct2d, basic };
 
   static auto create() -> void;
   static auto destroy() -> void;
@@ -32,6 +33,7 @@ public:
   static [[nodiscard]] auto showDiagnostics() -> bool;
   static [[nodiscard]] auto effectsVolume() -> int;
   static [[nodiscard]] auto musicVolume() -> int;
+  static [[nodiscard]] auto collisionDetectionType() -> collision_detection_type;  
 
 private:
 
@@ -50,6 +52,7 @@ private:
   bool m_showDiagnostics { false };
   int m_effectsVolume { 1 };
   int m_musicVolume { 1 };
+  collision_detection_type m_collisionDetectionType { collision_detection_type::direct2d };
 
 };
 
@@ -169,4 +172,9 @@ inline [[nodiscard]] auto game_settings::effectsVolume() -> int
 inline [[nodiscard]] auto game_settings::musicVolume() -> int
 {
   return m_instance ? m_instance->m_musicVolume : 10;
+}
+
+inline [[nodiscard]] auto game_settings::collisionDetectionType() -> collision_detection_type
+{
+  return m_instance->m_collisionDetectionType;
 }

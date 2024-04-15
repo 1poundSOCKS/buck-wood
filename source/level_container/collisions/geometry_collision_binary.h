@@ -1,5 +1,7 @@
 #pragma once
 
+#include "game_settings.h"
+
 class geometry_collision_binary
 {
 
