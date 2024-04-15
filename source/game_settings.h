@@ -52,7 +52,7 @@ private:
   bool m_showDiagnostics { false };
   int m_effectsVolume { 1 };
   int m_musicVolume { 1 };
-  collision_detection_type m_collisionDetectionType { collision_detection_type::direct2d };
+  collision_detection_type m_collisionDetectionType { collision_detection_type::basic };
 
 };
 

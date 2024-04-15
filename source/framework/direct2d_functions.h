@@ -192,4 +192,12 @@ namespace direct2d
   {
     return point1.x == point2.x && point1.y == point2.y;
   }
+
+  inline [[nodiscard]] auto CheckOverlap(RECT_F rect1, RECT_F rect2) -> bool
+  {
+    return ( rect1.left > rect2.right ||
+    rect1.right < rect2.left ||
+    rect1.top > rect2.bottom ||
+    rect1.bottom < rect2.top ) ? false : true;
+  }
 }
