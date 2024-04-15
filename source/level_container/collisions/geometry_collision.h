@@ -12,7 +12,6 @@ public:
     auto position1 = object1->Position();
     auto position2 = object2->Position();
 
-    // auto possibleCollision = direct2d::GetDistanceBetweenPoints(position1, position2) < object1.GeometryRadius() + object2.GeometryRadius();
     auto possibleCollision = direct2d::CheckOverlap(object1.GeometryBounds(), object2.GeometryBounds());
 
     switch( game_settings::collisionDetectionType() )
