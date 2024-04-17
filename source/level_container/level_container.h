@@ -30,7 +30,7 @@ public:
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   level_container();
-  level_container(std::ranges::input_range auto&& points, POINT_2F playerPosition);
+  level_container(std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -113,11 +113,11 @@ private:
 
 };
 
-inline level_container::level_container() : level_container(std::array<POINT_2F, 0>(), { 0, 0 })
+inline level_container::level_container() : level_container(std::array<POINT_2F, 0>())
 {
 }
 
-inline level_container::level_container(std::ranges::input_range auto&& points, POINT_2F playerPosition) : m_boundary { points }, m_playerState { playerPosition }
+inline level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }, m_playerState { { 0, 0} }
 {
 }
 

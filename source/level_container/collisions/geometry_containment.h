@@ -56,17 +56,7 @@ public:
       }
     }
 
-    // if( !contained )
-    // {
-    //   std::lock_guard<std::mutex> guard(m_mutex);
-      
-    //   if( !containedObject.Object().Destroyed() )
-    //   {
-    //     callable(containedObject.Object());
-    //   }
-    // }
-
-    return contained;
+    return !contained;
   }
 
   auto operator()(ID2D1Geometry* containmentGeometry, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void

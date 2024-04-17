@@ -23,6 +23,7 @@ public:
   static auto setShowDiagnostics(bool value) -> void;
   static auto setEffectsVolume(int value) -> int;
   static auto setMusicVolume(int value) -> int;
+  static auto setCollisionDetectionType(collision_detection_type value) -> void;
 
   static [[nodiscard]] auto framerateCapped() -> bool;
   static [[nodiscard]] auto framerateUncapped() -> bool;
@@ -33,7 +34,7 @@ public:
   static [[nodiscard]] auto showDiagnostics() -> bool;
   static [[nodiscard]] auto effectsVolume() -> int;
   static [[nodiscard]] auto musicVolume() -> int;
-  static [[nodiscard]] auto collisionDetectionType() -> collision_detection_type;  
+  static [[nodiscard]] auto collisionDetectionType() -> collision_detection_type;
 
 private:
 
@@ -52,7 +53,7 @@ private:
   bool m_showDiagnostics { false };
   int m_effectsVolume { 1 };
   int m_musicVolume { 1 };
-  collision_detection_type m_collisionDetectionType { collision_detection_type::basic };
+  collision_detection_type m_collisionDetectionType { collision_detection_type::direct2d };
 
 };
 
@@ -127,6 +128,11 @@ inline auto game_settings::setEffectsVolume(int value) -> int
 inline auto game_settings::setMusicVolume(int value) -> int
 {
   return m_instance ? m_instance->m_musicVolume = value : value;
+}
+
+inline auto game_settings::setCollisionDetectionType(collision_detection_type value) -> void
+{
+  m_instance->m_collisionDetectionType = value;
 }
 
 inline [[nodiscard]] auto game_settings::framerateCapped() -> bool

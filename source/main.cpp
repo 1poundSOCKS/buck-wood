@@ -51,6 +51,7 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   command_line::contains(L"-u") ? game_settings::setFramerateUncapped() : game_settings::setFramerateCapped();
   game_settings::setFullscreen(command_line::contains(L"-w") ? false : true);
   game_settings::setShowDiagnostics(command_line::contains(L"-d"));
+  game_settings::setCollisionDetectionType(command_line::contains(L"-cb") ? game_settings::collision_detection_type::basic : game_settings::collision_detection_type::direct2d);
 
   log::write(log::type::info, "framerate {}", game_settings::framerateCapped() ? std::format("{}", game_settings::swapChainRefreshRate()) : "UNCAPPED");
   log::write(log::type::info, "render target width {}", game_settings::renderTargetWidth());
