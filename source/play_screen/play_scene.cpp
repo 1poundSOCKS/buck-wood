@@ -67,7 +67,11 @@ auto play_scene::Render() const -> void
 
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderEnergyBars();
-  RenderGeometryBoundaries();
+
+  if( game_settings::showDiagnostics() )
+  {
+    RenderGeometryBoundaries();
+  }
 
   if( !m_paused && m_renderLevelTitle )
   {
@@ -206,6 +210,6 @@ auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
   auto objectRect = ObjectRenderRect(object);
   auto objectRectWidth = objectRect.right - objectRect.left;
   objectRect.top -= 20.0f;
-  objectRect.bottom = objectRect.top - objectRectWidth / 5;
+  objectRect.bottom = objectRect.top - objectRectWidth / 8;
   return objectRect;
 }
