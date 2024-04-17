@@ -213,7 +213,7 @@ auto level_container::CreateParticle(auto&&...args) -> void
 
 auto level_container::CreatePowerUp(auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::CircleGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
