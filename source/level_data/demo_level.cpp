@@ -43,7 +43,17 @@ demo_level::demo_level()
   return CellPosition(0, 0);
 }
 
+constexpr [[nodiscard]] auto demo_level::CellWidth() noexcept-> float
+{
+  return static_cast<float>(m_cellSize);
+}
+
+constexpr [[nodiscard]] auto demo_level::CellHeight() noexcept-> float
+{
+  return static_cast<float>(m_cellSize);
+}
+
 [[nodiscard]] auto demo_level::CellPosition(int x, int y) const noexcept-> POINT_2F
 {
-  return { static_cast<float>(x * m_cellSize), static_cast<float>(y * m_cellSize) };
+  return { static_cast<float>(x * CellWidth()), static_cast<float>(y * CellHeight()) };
 }
