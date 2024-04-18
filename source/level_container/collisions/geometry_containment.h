@@ -11,6 +11,26 @@ public:
   {
   }
 
+  [[nodiscard]] auto IsContained(ID2D1Geometry* containmentGeometry, ID2D1Geometry* geometry) const noexcept -> bool
+  {
+    D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
+    HRESULT hr = containmentGeometry->CompareWithGeometry(geometry, D2D1::Matrix3x2F::Identity(), &relation);
+
+    bool contained = false;
+
+    if( SUCCEEDED(hr) )
+    {
+      switch( relation )
+      {
+        case D2D1_GEOMETRY_RELATION_CONTAINS:
+          contained = true;
+          break;
+      }
+    }
+
+    return contained;
+  }
+
   auto operator()(ID2D1Geometry* containmentGeometry, auto&& containedObject, auto&& callable) -> void
   {
     switch( game_settings::collisionDetectionType() )

@@ -18,12 +18,20 @@ public:
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
   [[nodiscard]] auto PlayerPosition() const -> POINT_2F;
+
   constexpr static [[nodiscard]] auto CellWidth() noexcept-> float;
   constexpr static [[nodiscard]] auto CellHeight() noexcept-> float;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept-> POINT_2F;
   constexpr static [[nodiscard]] auto CellTopLeft() noexcept -> POINT_2F;
   constexpr static [[nodiscard]] auto CellBottomRight() noexcept -> POINT_2F;
   constexpr static [[nodiscard]] auto CellRect() noexcept -> RECT_F;
+
+  [[nodiscard]] auto MinCellX() const noexcept -> int;
+  [[nodiscard]] auto MinCellY() const noexcept -> int;
+  [[nodiscard]] auto MaxCellX() const noexcept -> int;
+  [[nodiscard]] auto MaxCellY() const noexcept -> int;
+
+  [[nodiscard]] auto CellIsValid(int x, int y) const noexcept -> bool;
 
 private:
 
@@ -61,5 +69,8 @@ private:
     cell { 3, -6 },
     cell { -3, 6 }
   };
+
+  winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
+  RECT_F m_boundaryRect { 0, 0, 0, 0 };
 
 };

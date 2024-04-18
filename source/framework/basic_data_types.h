@@ -2,6 +2,7 @@
 
 using POINT_2F = D2D1_POINT_2F;
 using RECT_F = D2D1_RECT_F;
+using SIZE_F = D2D1_SIZE_F;
 
 struct VELOCITY_2F
 {

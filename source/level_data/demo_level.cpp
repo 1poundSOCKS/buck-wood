@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "demo_level.h"
+#include "direct2d_functions.h"
+#include "collisions/geometry_containment.h"
 
 demo_level::demo_level()
 {
@@ -31,6 +33,8 @@ demo_level::demo_level()
   });
 #endif
 
+  m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPoints, D2D1_FIGURE_END_CLOSED);
+  m_boundaryRect = direct2d::GetGeometryBounds(m_boundaryGeometry.get());
 }
 
 [[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&
@@ -71,4 +75,40 @@ constexpr [[nodiscard]] auto demo_level::CellBottomRight() noexcept -> POINT_2F
 constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
 {
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
+}
+
+[[nodiscard]] auto demo_level::MinCellX() const noexcept -> int
+{
+  return static_cast<int>(m_boundaryRect.left / CellWidth());
+}
+
+[[nodiscard]] auto demo_level::MinCellY() const noexcept -> int
+{
+  return static_cast<int>(m_boundaryRect.top / CellHeight());
+}
+
+[[nodiscard]] auto demo_level::MaxCellX() const noexcept -> int
+{
+  return static_cast<int>(m_boundaryRect.right / CellWidth());
+}
+
+[[nodiscard]] auto demo_level::MaxCellY() const noexcept -> int
+{
+  return static_cast<int>(m_boundaryRect.bottom / CellHeight());
+}
+
+[[nodiscard]] auto demo_level::CellIsValid(int x, int y) const noexcept -> bool
+{
+  auto cellPosition = CellPosition(x, y);
+  auto cellTranslation = SIZE_F { cellPosition.x, cellPosition.y };
+  auto cellTransform = D2D1::Matrix3x2F::Translation(cellTranslation);
+  auto cellTopLeft = cellTransform.TransformPoint(CellTopLeft());
+  auto cellBottomRight = cellTransform.TransformPoint(CellBottomRight());
+  auto cellTopRight = POINT_2F { cellBottomRight.x, cellTopLeft.y };
+  auto cellBottomLeft = POINT_2F { cellTopLeft.x, cellBottomRight.y };
+  auto cellBoundary = std::array { cellTopLeft, cellTopRight, cellBottomRight, cellBottomLeft };
+  auto cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
+
+  geometry_containment containmentCheck;
+  return containmentCheck.IsContained(m_boundaryGeometry.get(), cellGeometry.get());
 }
