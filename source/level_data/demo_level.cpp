@@ -40,17 +40,10 @@ demo_level::demo_level()
 
 [[nodiscard]] auto demo_level::PlayerPosition() const -> POINT_2F
 {
-  auto x = static_cast<float>(0 * m_cellSize);
-  auto y = static_cast<float>(0 * m_cellSize);
-  return POINT_2F { x, y };
+  return CellPosition(0, 0);
 }
 
-[[nodiscard]] auto demo_level::TargetPositions() const -> const std::vector<D2D1_POINT_2F>&
+[[nodiscard]] auto demo_level::CellPosition(int x, int y) const noexcept-> POINT_2F
 {
-  return m_targets;
-}
-
-[[nodiscard]] auto demo_level::AsteroidPositions() const -> const std::vector<D2D1_POINT_2F>&
-{
-  return m_asteroids;
+  return { static_cast<float>(x * m_cellSize), static_cast<float>(y * m_cellSize) };
 }

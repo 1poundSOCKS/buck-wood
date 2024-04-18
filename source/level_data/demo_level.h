@@ -18,8 +18,7 @@ public:
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
   [[nodiscard]] auto PlayerPosition() const -> POINT_2F;
-  [[nodiscard]] auto TargetPositions() const -> const std::vector<D2D1_POINT_2F>&;
-  [[nodiscard]] auto AsteroidPositions() const -> const std::vector<D2D1_POINT_2F>&;
+  [[nodiscard]] auto CellPosition(int x, int y) const noexcept-> POINT_2F;
 
 private:
 
