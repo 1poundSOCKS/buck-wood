@@ -102,3 +102,8 @@ auto play_state::Status() const -> status
 {
   return *m_score;
 }
+
+[[nodiscard]] auto play_state::DataLoader() const noexcept -> const game_level_data_loader&
+{
+  return m_dataLoader;
+}

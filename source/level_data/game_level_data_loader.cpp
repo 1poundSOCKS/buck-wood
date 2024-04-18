@@ -77,3 +77,8 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
     levelContainer->CreatePowerUp(POINT_2F { 0, 0 }, m_randomVelocity.get());
   }
 }
+
+auto game_level_data_loader::ValidCellGeometries() const -> const std::vector<winrt::com_ptr<ID2D1TransformedGeometry>>&
+{
+  return m_demoLevel.ValidCellGeometries();
+}

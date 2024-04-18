@@ -24,6 +24,7 @@ public:
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
+  [[nodiscard]] auto DataLoader() const noexcept -> const game_level_data_loader&;
 
 private:
 

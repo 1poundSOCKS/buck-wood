@@ -31,7 +31,9 @@ public:
   [[nodiscard]] auto MaxCellX() const noexcept -> int;
   [[nodiscard]] auto MaxCellY() const noexcept -> int;
 
-  [[nodiscard]] auto CellIsValid(int x, int y) const noexcept -> bool;
+  [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
+  [[nodiscard]] auto CellIsValid(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const noexcept -> bool;
+  auto ValidCellGeometries() const -> const std::vector<winrt::com_ptr<ID2D1TransformedGeometry>>&;
 
 private:
 
@@ -73,5 +75,6 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
   RECT_F m_boundaryRect { 0, 0, 0, 0 };
   winrt::com_ptr<ID2D1Geometry> m_cellGeometry;
+  std::vector<winrt::com_ptr<ID2D1TransformedGeometry>> m_validCellGeometries;
 
 };

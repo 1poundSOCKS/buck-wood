@@ -53,6 +53,7 @@ private:
   auto Render(const level_title& levelTitle) const -> void;
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
+  auto Render(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const -> void;
 
 private:
 
@@ -74,6 +75,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarBorderBrush { screen_render_brush_white.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarFillBrush { screen_render_brush_green.CreateBrush() };
+  geometry_renderer m_defaultGeometryRenderer { screen_render_brush_grey.CreateBrush(), 5 };
 
 };
 
@@ -184,4 +186,9 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
   fillRect.right = fillRect.left + ( fillRect.right - fillRect.left ) * energyBar.value;
   render_target::get()->FillRectangle(fillRect, m_energyBarFillBrush.get());
   render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
+}
+
+inline auto renderer::Render(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const -> void
+{
+  m_defaultGeometryRenderer.Write(geometry.get());
 }

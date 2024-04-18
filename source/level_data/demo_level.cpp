@@ -39,7 +39,20 @@ demo_level::demo_level()
   auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
   auto cellBottomLeft = POINT_2F { CellTopLeft().x, CellBottomRight().y };
   auto cellBoundary = std::array { CellTopLeft(), cellTopRight, CellBottomRight(), cellBottomLeft };
-  auto cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
+  m_cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
+
+  for( auto x = MinCellX(); x <= MaxCellX(); ++x )
+  {
+    for( auto y = MinCellY(); y <= MaxCellY(); ++y )
+    {
+      auto geometry = CellGeometry(x, y);
+      
+      if( CellIsValid(geometry) )
+      {
+        m_validCellGeometries.push_back(geometry);
+      }
+    }
+  }
 }
 
 [[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&
@@ -102,13 +115,21 @@ constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
   return static_cast<int>(m_boundaryRect.bottom / CellHeight());
 }
 
-[[nodiscard]] auto demo_level::CellIsValid(int x, int y) const noexcept -> bool
+[[nodiscard]] auto demo_level::CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>
 {
   auto cellPosition = CellPosition(x, y);
   auto cellTranslation = SIZE_F { cellPosition.x, cellPosition.y };
   auto cellTransform = D2D1::Matrix3x2F::Translation(cellTranslation);
-  auto cellGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_cellGeometry.get(), cellTransform);
+  return direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_cellGeometry.get(), cellTransform);
+}
 
+[[nodiscard]] auto demo_level::CellIsValid(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const noexcept -> bool
+{
   geometry_containment containmentCheck;
-  return containmentCheck.IsContained(m_boundaryGeometry.get(), cellGeometry.get());
+  return containmentCheck.IsContained(m_boundaryGeometry.get(), geometry.get());
+}
+
+[[nodiscard]] auto demo_level::ValidCellGeometries() const -> const std::vector<winrt::com_ptr<ID2D1TransformedGeometry>>&
+{
+  return m_validCellGeometries;
 }
