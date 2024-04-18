@@ -21,6 +21,8 @@ public:
   constexpr static [[nodiscard]] auto CellWidth() noexcept-> float;
   constexpr static [[nodiscard]] auto CellHeight() noexcept-> float;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept-> POINT_2F;
+  constexpr static [[nodiscard]] auto CellTopLeft() noexcept -> POINT_2F;
+  constexpr static [[nodiscard]] auto CellBottomRight() noexcept -> POINT_2F;
   constexpr static [[nodiscard]] auto CellRect() noexcept -> RECT_F;
 
 private:

@@ -58,7 +58,17 @@ constexpr [[nodiscard]] auto demo_level::CellHeight() noexcept-> float
   return { static_cast<float>(x * CellWidth()), static_cast<float>(y * CellHeight()) };
 }
 
+constexpr [[nodiscard]] auto demo_level::CellTopLeft() noexcept -> POINT_2F
+{
+  return { -CellWidth() / 2, -CellHeight() / 2 };
+}
+
+constexpr [[nodiscard]] auto demo_level::CellBottomRight() noexcept -> POINT_2F
+{
+  return { CellWidth() / 2, CellHeight() / 2 };
+}
+
 constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
 {
-  return { -CellWidth() / 2, -CellHeight() / 2, CellWidth() / 2, CellHeight() / 2 };
+  return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
