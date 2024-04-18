@@ -37,7 +37,7 @@ public:
 
 private:
 
-  inline static constexpr int m_cellSize = 100;
+  inline static constexpr int m_cellSize = 400;
 
   level_boundary m_boundary;
   std::vector<D2D1_POINT_2F> m_boundaryPoints;
@@ -45,12 +45,12 @@ private:
   std::vector<D2D1_POINT_2F> m_asteroids;
   std::vector<D2D1_POINT_2F> m_ductFans;
 
-  constexpr static int m_boundaryWidth { 38 };
-  constexpr static int m_boundaryHeight { 24 };
+  constexpr static int m_boundaryWidth { 8 };
+  constexpr static int m_boundaryHeight { 6 };
 
-  constexpr static int m_cornerIndent { 4 };
+  constexpr static int m_cornerIndent { 1 };
 
-  constexpr static int m_boundaryStartPositionX { -19 };
+  constexpr static int m_boundaryStartPositionX { -4 };
   constexpr static int m_boundaryStartPositionY { 0 };
 
   inline static auto m_startBoundaryBuildCommands = {
