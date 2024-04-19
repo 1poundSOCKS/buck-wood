@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "level_boundary.h"
+#include "valid_cell_collection.h"
 
 class demo_level
 {
@@ -14,8 +15,8 @@ public:
     int y { 0 };
   };
 
-  using valid_cell = std::tuple<bool, winrt::com_ptr<ID2D1TransformedGeometry>>;
-  using valid_cell_collection = std::vector<valid_cell>;
+  // using valid_cell = std::tuple<bool, winrt::com_ptr<ID2D1TransformedGeometry>>;
+  // using valid_cell_collection = std::vector<valid_cell>;
 
   demo_level();
 

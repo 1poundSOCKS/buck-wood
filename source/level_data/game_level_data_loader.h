@@ -27,7 +27,7 @@ public:
   auto CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void;
   auto CreateType2Enemies(level_container* levelContainer, int count) -> void;
   auto CreatePowerUps(level_container* levelContainer, int count) -> void;
-  auto ValidCellGeometries() const -> const demo_level::valid_cell_collection&;
+  auto ValidCells() const -> const valid_cell_collection&;
 
 private:
 

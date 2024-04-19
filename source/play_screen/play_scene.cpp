@@ -48,8 +48,9 @@ auto play_scene::Render() const -> void
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   render_target::get()->SetTransform(m_renderTransform);
 
-  auto validCells = std::ranges::views::filter(m_playState->DataLoader().ValidCellGeometries(), [](const auto& cell){
-    auto [valid, geometry] = cell;
+  auto validCells = std::ranges::views::filter(m_playState->DataLoader().ValidCells(), [](const auto& cell)
+  {
+    auto [valid, position, geometry] = cell;
     return valid;
   });
 

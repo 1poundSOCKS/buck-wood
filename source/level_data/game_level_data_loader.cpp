@@ -78,7 +78,7 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
   }
 }
 
-auto game_level_data_loader::ValidCellGeometries() const -> const demo_level::valid_cell_collection&
+auto game_level_data_loader::ValidCells() const -> const valid_cell_collection&
 {
   return m_demoLevel.ValidCellGeometries();
 }
