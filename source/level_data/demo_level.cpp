@@ -45,12 +45,8 @@ demo_level::demo_level()
   {
     for( auto y = MinCellY(); y <= MaxCellY(); ++y )
     {
-      auto geometry = CellGeometry(x, y);
-      
-      if( CellIsValid(geometry) )
-      {
-        m_validCellGeometries.emplace_back(true, geometry);
-      }
+      auto geometry = CellGeometry(x, y);      
+      m_validCellGeometries.emplace_back(CellIsValid(geometry), geometry);
     }
   }
 }
