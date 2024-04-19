@@ -15,9 +15,6 @@ public:
     int y { 0 };
   };
 
-  // using valid_cell = std::tuple<bool, winrt::com_ptr<ID2D1TransformedGeometry>>;
-  // using valid_cell_collection = std::vector<valid_cell>;
-
   demo_level();
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
@@ -37,7 +34,7 @@ public:
 
   [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
   [[nodiscard]] auto CellIsValid(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const noexcept -> bool;
-  auto ValidCellGeometries() const -> const valid_cell_collection&;
+  auto ValidCellCollection() const -> const valid_cell_collection&;
 
 private:
 
