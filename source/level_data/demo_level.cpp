@@ -49,7 +49,7 @@ demo_level::demo_level()
       
       if( CellIsValid(geometry) )
       {
-        m_validCellGeometries.push_back(geometry);
+        m_validCellGeometries.emplace_back(true, geometry);
       }
     }
   }
@@ -129,7 +129,7 @@ constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
   return containmentCheck.IsContained(m_boundaryGeometry.get(), geometry.get());
 }
 
-[[nodiscard]] auto demo_level::ValidCellGeometries() const -> const std::vector<winrt::com_ptr<ID2D1TransformedGeometry>>&
+[[nodiscard]] auto demo_level::ValidCellGeometries() const -> const valid_cell_collection&
 {
   return m_validCellGeometries;
 }

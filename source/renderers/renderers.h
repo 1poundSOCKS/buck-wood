@@ -21,6 +21,8 @@
 
 #include "render_order.h"
 
+#include "demo_level.h"
+
 struct energy_bar
 {
   RECT_F position;
@@ -53,7 +55,7 @@ private:
   auto Render(const level_title& levelTitle) const -> void;
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
-  auto Render(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const -> void;
+  auto Render(demo_level::valid_cell validCell) const -> void;
 
 private:
 
@@ -188,7 +190,8 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
   render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
 }
 
-inline auto renderer::Render(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const -> void
+inline auto renderer::Render(demo_level::valid_cell validCell) const -> void
 {
+  auto [valid, geometry] = validCell;
   m_defaultGeometryRenderer.Write(geometry.get());
 }
