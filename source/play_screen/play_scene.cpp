@@ -51,13 +51,14 @@ auto play_scene::Render() const -> void
   if( game_settings::showDiagnostics() )
   {
     const auto& cells = m_playState->DataLoader().ValidCells().Get();
-    auto validCells = std::ranges::views::filter(cells, [](const auto& cell)
-    {
-      auto [valid, x, y, position, geometry] = cell.Get();
-      return valid;
-    });
+    cells;
+    // auto validCells = std::ranges::views::filter(cells, [](const auto& cell)
+    // {
+    //   auto [valid, x, y, position, geometry] = cell.Get();
+    //   return valid;
+    // });
 
-    // renderer::render_all(validCells);
+    // renderer::render_all(cells);
   }
 
   RenderLevelContainer();
