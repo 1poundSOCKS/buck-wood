@@ -55,7 +55,7 @@ private:
   auto Render(const level_title& levelTitle) const -> void;
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
-  auto Render(valid_cell validCell) const -> void;
+  // auto Render(const valid_cell& validCell) const -> void;
 
 private:
 
@@ -190,8 +190,8 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
   render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
 }
 
-inline auto renderer::Render(valid_cell validCell) const -> void
-{
-  auto [valid, x, y, position, geometry] = validCell;
-  m_defaultGeometryRenderer.Write(geometry.get());
-}
+// inline auto renderer::Render(const valid_cell& validCell) const -> void
+// {
+//   auto [valid, x, y, position, geometry] = validCell.Get();
+//   m_defaultGeometryRenderer.Write(geometry.get());
+// }

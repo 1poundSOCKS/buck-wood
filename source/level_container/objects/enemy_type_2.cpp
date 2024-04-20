@@ -4,21 +4,21 @@
 enemy_type_2::enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, valid_cell_collection cells) : 
   enemy_object { position, { 1.5, 1.5 }, 0, hitpoints }, m_status { status::moving }, m_waitTimer { waitTime }, m_speed { speed }, m_reloadTimer { reloadTime }
 {
-  auto validCells = std::ranges::views::filter(cells, [](const auto& cell)
+  auto validCells = std::ranges::views::filter(cells.Get(), [](const auto& cell)
   {
-    auto [valid, x, y, position, geometry] = cell;
+    auto [valid, x, y, position, geometry] = cell.Get();
     return valid;
   });
 
-  std::ranges::copy(validCells, std::back_inserter(m_cells));
+  std::ranges::copy(validCells, m_cells.BackInserter());
 
-  auto originCell = std::ranges::views::filter(cells, [](const auto& cell)
+  auto originCell = std::ranges::views::filter(cells.Get(), [](const auto& cell)
   {
-    auto [valid, x, y, position, geometry] = cell;
+    auto [valid, x, y, position, geometry] = cell.Get();
     return x == 0 && y == 0;
   });
 
-  m_destination = originCell.front();
+  m_destination = originCell.front().Get();
 }
 
 auto enemy_type_2::Update(float interval) -> void
@@ -40,8 +40,8 @@ auto enemy_type_2::Update(float interval) -> void
 [[nodiscard]] auto enemy_type_2::UpdateWhenMoving(float interval) noexcept -> status
 {
   m_waitTimer.Reset();
-  m_destination = m_destination ? m_destination : NewDestination();
-  auto [a, x, y, position, b] = *m_destination;
+  m_destination = m_destination ? m_destination : std::optional<valid_cell>(NewDestination());
+  auto [a, x, y, position, b] = m_destination->Get();
   auto atDestination = MoveTowards(m_speed * interval, position);
   m_destination = atDestination ? std::nullopt : m_destination;
   return atDestination ? status::waiting : status::moving;
@@ -55,10 +55,10 @@ auto enemy_type_2::Update(float interval) -> void
 
 auto enemy_type_2::NewDestination() -> valid_cell
 {
-  auto adjacentCells = std::ranges::views::filter(m_cells, [this](const auto& cell)
+  auto adjacentCells = std::ranges::views::filter(m_cells.Get(), [this](const auto& cell)
   {
-    auto [destValid, destX, destY, destPosition, destGeometry] = *m_destination;
-    auto [valid, x, y, position, geometry] = cell;
+    auto [destValid, destX, destY, destPosition, destGeometry] = m_destination->Get();
+    auto [valid, x, y, position, geometry] = cell.Get();
     auto minX = destX - 1;
     auto maxX = destX + 1;
     auto minY = destY - 1;
