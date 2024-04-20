@@ -26,7 +26,7 @@ auto enemy_type_2::Update(float interval) -> void
 {
   m_waitTimer.Reset();
   m_destination = m_destination ? m_destination : std::optional<valid_cell>(NewDestination());
-  auto [a, x, y, position, b] = m_destination->Get();
+  auto position = m_destination->Position();
   auto atDestination = MoveTowards(m_speed * interval, position);
   m_destination = atDestination ? std::nullopt : m_destination;
   return atDestination ? status::waiting : status::moving;
@@ -42,14 +42,15 @@ auto enemy_type_2::NewDestination() -> valid_cell
 {
   auto validCells = std::ranges::views::filter(m_cells->Get(), [](const auto& cell)
   {
-    auto [valid, x, y, position, geometry] = cell.Get();
-    return valid;
+    return cell.Valid();
   });
 
   auto adjacentCells = std::ranges::views::filter(validCells, [this](const auto& cell)
   {
-    auto [destValid, destX, destY, destPosition, destGeometry] = m_destination->Get();
-    auto [valid, x, y, position, geometry] = cell.Get();
+    auto destX = m_destination->X();
+    auto destY = m_destination->Y();
+    auto x = cell.X();
+    auto y = cell.Y();
     auto minX = destX - 1;
     auto maxX = destX + 1;
     auto minY = destY - 1;
