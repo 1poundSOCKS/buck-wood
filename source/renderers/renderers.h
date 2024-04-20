@@ -192,6 +192,6 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
 
 inline auto renderer::Render(valid_cell validCell) const -> void
 {
-  auto [valid, position, geometry] = validCell;
+  auto [valid, x, y, position, geometry] = validCell;
   m_defaultGeometryRenderer.Write(geometry.get());
 }

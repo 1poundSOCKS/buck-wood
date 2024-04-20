@@ -37,7 +37,7 @@ demo_level::demo_level()
     for( auto y = MinCellY(); y <= MaxCellY(); ++y )
     {
       auto geometry = CellGeometry(x, y);
-      m_validCells.emplace_back(CellIsValid(geometry), CellPosition(x, y), geometry);
+      m_validCells.emplace_back(CellIsValid(geometry), x, y, CellPosition(x, y), geometry);
     }
   }
 }

@@ -50,7 +50,7 @@ auto play_scene::Render() const -> void
 
   auto validCells = std::ranges::views::filter(m_playState->DataLoader().ValidCells(), [](const auto& cell)
   {
-    auto [valid, position, geometry] = cell;
+    auto [valid, x, y, position, geometry] = cell;
     return valid;
   });
 

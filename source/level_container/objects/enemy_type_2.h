@@ -13,25 +13,25 @@ public:
 
   auto Update(float interval) -> void;
 
-  [[nodiscard]] auto Destination() const -> std::optional<POINT_2F>;
+  [[nodiscard]] auto Destination() const -> std::optional<valid_cell>;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
 private:
 
-  [[nodiscard]] auto NewDestination() -> POINT_2F;
+  [[nodiscard]] auto NewDestination() -> valid_cell;
 
 private:
 
   float m_speed;
-  std::optional<POINT_2F> m_destination;
+  std::optional<valid_cell> m_destination;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
   valid_cell_collection m_cells;
 
 };
 
-inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<POINT_2F>
+inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<valid_cell>
 {
   return m_destination;
 }
