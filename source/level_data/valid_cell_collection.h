@@ -1,7 +1,5 @@
 #pragma once
 
-// using valid_cell = std::tuple<bool, int, int, POINT_2F, winrt::com_ptr<ID2D1TransformedGeometry>>;
-
 class valid_cell
 {
 
@@ -25,7 +23,6 @@ private:
 };
 
 
-// using valid_cell_collection = std::vector<valid_cell>;
 class valid_cell_collection
 {
 
