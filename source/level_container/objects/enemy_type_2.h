@@ -9,7 +9,7 @@ class enemy_type_2 : public enemy_object
 
 public:
 
-  enemy_type_2(POINT_2F position, int hitpoints, float speed, float reloadTime, valid_cell_collection cells);
+  enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, valid_cell_collection cells);
 
   auto Update(float interval) -> void;
 
@@ -19,10 +19,16 @@ public:
 
 private:
 
+  enum class status { moving, waiting };
+
+  [[nodiscard]] auto UpdateWhenMoving(float interval) noexcept -> status;
+  [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
   [[nodiscard]] auto NewDestination() -> valid_cell;
 
 private:
 
+  status m_status;
+  reload_timer m_waitTimer;
   float m_speed;
   std::optional<valid_cell> m_destination;
   reload_timer m_reloadTimer;
