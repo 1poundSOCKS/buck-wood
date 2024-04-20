@@ -10,7 +10,6 @@ class enemy_type_2 : public enemy_object
 public:
 
   enemy_type_2(POINT_2F position, int hitpoints, float speed, float reloadTime, valid_cell_collection cells);
-  // enemy_type_2(POINT_2F position, int hitpoints, float speed, float reloadTime);
 
   auto Update(float interval) -> void;
 
