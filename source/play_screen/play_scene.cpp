@@ -48,13 +48,16 @@ auto play_scene::Render() const -> void
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   render_target::get()->SetTransform(m_renderTransform);
 
-  auto validCells = std::ranges::views::filter(m_playState->DataLoader().ValidCells(), [](const auto& cell)
+  if( game_settings::showDiagnostics() )
   {
-    auto [valid, x, y, position, geometry] = cell;
-    return valid;
-  });
+    auto validCells = std::ranges::views::filter(m_playState->DataLoader().ValidCells(), [](const auto& cell)
+    {
+      auto [valid, x, y, position, geometry] = cell;
+      return valid;
+    });
 
-  renderer::render_all(validCells);
+    renderer::render_all(validCells);    
+  }
 
   RenderLevelContainer();
 
