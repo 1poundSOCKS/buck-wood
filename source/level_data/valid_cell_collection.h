@@ -5,18 +5,11 @@ class valid_cell
 
 public:
 
-  // using value_type = std::tuple<bool, int, int, POINT_2F, winrt::com_ptr<ID2D1TransformedGeometry>>;
-
-  // valid_cell(auto...args) : m_value { std::forward<decltype(args)>(args)... }
   valid_cell(bool valid, int x, int y, POINT_2F position, winrt::com_ptr<ID2D1TransformedGeometry> geometry) :
     m_valid { valid }, m_x { x }, m_y { y }, m_position { position }, m_geometry { geometry }
   {
   }
 
-  // [[nodiscard]] auto Get() const noexcept -> const value_type&
-  // {
-  //   return m_value;
-  // }
   [[nodiscard]] auto Valid() const noexcept -> bool
   {
     return m_valid;
@@ -44,7 +37,6 @@ public:
 
 private:
 
-  // value_type m_value;
   bool m_valid;
   int m_x;
   int m_y;
