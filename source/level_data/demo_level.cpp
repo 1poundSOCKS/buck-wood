@@ -3,7 +3,7 @@
 #include "direct2d_functions.h"
 #include "collisions/geometry_containment.h"
 
-demo_level::demo_level()
+demo_level::demo_level() : m_validCells { std::make_shared<valid_cell_collection>() }
 {
   std::vector<geometry_builder::point> boundaryPoints;
 
@@ -37,7 +37,7 @@ demo_level::demo_level()
     for( auto y = MinCellY(); y <= MaxCellY(); ++y )
     {
       auto geometry = CellGeometry(x, y);
-      m_validCells.EmplaceBack(CellIsValid(geometry), x, y, CellPosition(x, y), geometry);
+      m_validCells->EmplaceBack(CellIsValid(geometry), x, y, CellPosition(x, y), geometry);
     }
   }
 }
@@ -116,7 +116,7 @@ constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
   return containmentCheck.IsContained(m_boundaryGeometry.get(), geometry.get());
 }
 
-[[nodiscard]] auto demo_level::ValidCellCollection() const -> const valid_cell_collection&
+[[nodiscard]] auto demo_level::ValidCellCollection() const -> std::shared_ptr<valid_cell_collection>
 {
   return m_validCells;
 }

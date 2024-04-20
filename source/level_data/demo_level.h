@@ -34,7 +34,7 @@ public:
 
   [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
   [[nodiscard]] auto CellIsValid(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const noexcept -> bool;
-  auto ValidCellCollection() const -> const valid_cell_collection&;
+  auto ValidCellCollection() const -> std::shared_ptr<valid_cell_collection>;
 
 private:
 
@@ -76,6 +76,6 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
   RECT_F m_boundaryRect { 0, 0, 0, 0 };
   winrt::com_ptr<ID2D1Geometry> m_cellGeometry;
-  valid_cell_collection m_validCells;
+  std::shared_ptr<valid_cell_collection> m_validCells;
 
 };

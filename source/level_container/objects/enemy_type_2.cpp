@@ -1,24 +1,9 @@
 #include "pch.h"
 #include "enemy_type_2.h"
 
-enemy_type_2::enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, valid_cell_collection cells) : 
-  enemy_object { position, { 1.5, 1.5 }, 0, hitpoints }, m_status { status::moving }, m_waitTimer { waitTime }, m_speed { speed }, m_reloadTimer { reloadTime }
+enemy_type_2::enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, std::shared_ptr<valid_cell_collection> cells) : 
+  enemy_object { position, { 1.5, 1.5 }, 0, hitpoints }, m_status { status::moving }, m_waitTimer { waitTime }, m_speed { speed }, m_reloadTimer { reloadTime }, m_cells { cells }, m_destination { std::nullopt }
 {
-  auto validCells = std::ranges::views::filter(cells.Get(), [](const auto& cell)
-  {
-    auto [valid, x, y, position, geometry] = cell.Get();
-    return valid;
-  });
-
-  std::ranges::copy(validCells, m_cells.BackInserter());
-
-  auto originCell = std::ranges::views::filter(cells.Get(), [](const auto& cell)
-  {
-    auto [valid, x, y, position, geometry] = cell.Get();
-    return x == 0 && y == 0;
-  });
-
-  m_destination = originCell.front().Get();
 }
 
 auto enemy_type_2::Update(float interval) -> void
@@ -55,7 +40,13 @@ auto enemy_type_2::Update(float interval) -> void
 
 auto enemy_type_2::NewDestination() -> valid_cell
 {
-  auto adjacentCells = std::ranges::views::filter(m_cells.Get(), [this](const auto& cell)
+  auto validCells = std::ranges::views::filter(m_cells->Get(), [](const auto& cell)
+  {
+    auto [valid, x, y, position, geometry] = cell.Get();
+    return valid;
+  });
+
+  auto adjacentCells = std::ranges::views::filter(validCells, [this](const auto& cell)
   {
     auto [destValid, destX, destY, destPosition, destGeometry] = m_destination->Get();
     auto [valid, x, y, position, geometry] = cell.Get();
