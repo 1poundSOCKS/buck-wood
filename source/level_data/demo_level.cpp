@@ -24,15 +24,6 @@ demo_level::demo_level()
     return D2D1_POINT_2F { x, y };
   });
 
-#ifdef ENABLE_ASTEROIDS
-  std::ranges::transform(m_asteroidPositions, std::back_inserter(m_asteroids), [](const cell& asteroidCell)
-  {
-    auto x = static_cast<float>(asteroidCell.x * m_cellSize);
-    auto y = static_cast<float>(asteroidCell.y * m_cellSize);
-    return D2D1_POINT_2F { x, y };
-  });
-#endif
-
   m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPoints, D2D1_FIGURE_END_CLOSED);
   m_boundaryRect = direct2d::GetGeometryBounds(m_boundaryGeometry.get());
 
@@ -46,7 +37,7 @@ demo_level::demo_level()
     for( auto y = MinCellY(); y <= MaxCellY(); ++y )
     {
       auto geometry = CellGeometry(x, y);
-      m_validCellGeometries.emplace_back(CellIsValid(geometry), CellPosition(x, y), geometry);
+      m_validCells.emplace_back(CellIsValid(geometry), CellPosition(x, y), geometry);
     }
   }
 }
@@ -127,5 +118,5 @@ constexpr [[nodiscard]] auto demo_level::CellRect() noexcept -> RECT_F
 
 [[nodiscard]] auto demo_level::ValidCellCollection() const -> const valid_cell_collection&
 {
-  return m_validCellGeometries;
+  return m_validCells;
 }
