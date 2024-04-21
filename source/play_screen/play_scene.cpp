@@ -51,14 +51,7 @@ auto play_scene::Render() const -> void
   if( game_settings::showDiagnostics() )
   {
     const auto& cells = game_level_data_loader::validCells()->Get();
-    cells;
-    // auto validCells = std::ranges::views::filter(cells, [](const auto& cell)
-    // {
-    //   auto [valid, x, y, position, geometry] = cell.Get();
-    //   return valid;
-    // });
-
-    // renderer::render_all(cells);
+    renderer::render_all(cells);
   }
 
   RenderLevelContainer();
