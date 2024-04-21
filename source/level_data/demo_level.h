@@ -75,7 +75,7 @@ private:
 
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
   RECT_F m_boundaryRect { 0, 0, 0, 0 };
-  winrt::com_ptr<ID2D1Geometry> m_cellGeometry;
+  winrt::com_ptr<ID2D1PathGeometry> m_cellGeometry;
   std::shared_ptr<valid_cell_collection> m_validCells;
 
 };
