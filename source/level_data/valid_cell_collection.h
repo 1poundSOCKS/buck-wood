@@ -5,14 +5,9 @@ class valid_cell
 
 public:
 
-  valid_cell(bool valid, int x, int y, POINT_2F position, winrt::com_ptr<ID2D1TransformedGeometry> geometry) :
-    m_valid { valid }, m_x { x }, m_y { y }, m_position { position }, m_geometry { geometry }
+  valid_cell(int x, int y, POINT_2F position, winrt::com_ptr<ID2D1TransformedGeometry> geometry) :
+    m_x { x }, m_y { y }, m_position { position }, m_geometry { geometry }
   {
-  }
-
-  [[nodiscard]] auto Valid() const noexcept -> bool
-  {
-    return m_valid;
   }
 
   [[nodiscard]] auto X() const noexcept -> int
@@ -37,7 +32,6 @@ public:
 
 private:
 
-  bool m_valid;
   int m_x;
   int m_y;
   POINT_2F m_position;

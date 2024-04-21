@@ -40,12 +40,7 @@ auto enemy_type_2::Update(float interval) -> void
 
 auto enemy_type_2::NewDestination() -> valid_cell
 {
-  auto validCells = std::ranges::views::filter(m_cells->Get(), [](const auto& cell)
-  {
-    return cell.Valid();
-  });
-
-  auto adjacentCells = std::ranges::views::filter(validCells, [this](const auto& cell)
+  auto adjacentCells = std::ranges::views::filter(m_cells->Get(), [this](const auto& cell)
   {
     auto destX = m_destination->X();
     auto destY = m_destination->Y();

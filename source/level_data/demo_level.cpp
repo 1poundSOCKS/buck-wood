@@ -37,7 +37,10 @@ demo_level::demo_level() : m_validCells { std::make_shared<valid_cell_collection
     for( auto y = MinCellY(); y <= MaxCellY(); ++y )
     {
       auto geometry = CellGeometry(x, y);
-      m_validCells->EmplaceBack(CellIsValid(geometry), x, y, CellPosition(x, y), geometry);
+      if( CellIsValid(geometry) )
+      {
+        m_validCells->EmplaceBack(x, y, CellPosition(x, y), geometry);
+      }
     }
   }
 }
