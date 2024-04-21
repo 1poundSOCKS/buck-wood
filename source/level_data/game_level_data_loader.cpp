@@ -1,6 +1,18 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
+auto game_level_data_loader::create() -> void
+{
+  destroy();
+  m_instance = new game_level_data_loader();
+}
+
+auto game_level_data_loader::destroy() -> void
+{
+  delete m_instance;
+  m_instance = nullptr;
+}
+
 auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float interval) -> void
 {
   m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;

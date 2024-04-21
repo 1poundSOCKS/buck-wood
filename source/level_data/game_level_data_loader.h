@@ -12,6 +12,20 @@ public:
 
   enum class status { starting, started, running, finished };
 
+  static auto create() -> void;
+  static auto destroy() -> void;
+
+  auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
+  auto UpdateLevel(level_container* levelContainer, float interval) -> void;
+
+  [[nodiscard]] auto MoreLevels() const -> bool;
+  [[nodiscard]] auto NextLevel() -> bool;
+  [[nodiscard]] auto CurrentLevel() const -> int;
+  [[nodiscard]] auto MoreUpdates() const -> bool;
+  [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
+
+private:
+
   game_level_data_loader() = default;
 
   auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
@@ -30,6 +44,8 @@ public:
   auto ValidCells() const -> std::shared_ptr<valid_cell_collection>;
 
 private:
+
+  inline static game_level_data_loader* m_instance { nullptr };
 
   status m_status { status::starting };
   inline static int m_levelCount { 9 };
