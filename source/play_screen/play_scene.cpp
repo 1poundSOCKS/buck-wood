@@ -50,7 +50,7 @@ auto play_scene::Render() const -> void
 
   if( game_settings::showDiagnostics() )
   {
-    const auto& cells = m_playState->DataLoader().ValidCells()->Get();
+    const auto& cells = game_level_data_loader::validCells()->Get();
     cells;
     // auto validCells = std::ranges::views::filter(cells, [](const auto& cell)
     // {

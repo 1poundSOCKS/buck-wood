@@ -24,7 +24,7 @@ public:
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
-  [[nodiscard]] auto DataLoader() const noexcept -> const game_level_data_loader&;
+  // [[nodiscard]] auto DataLoader() const noexcept -> const game_level_data_loader&;
 
 private:
 
@@ -33,7 +33,7 @@ private:
 private:
 
   status m_status { status::running };
-  game_level_data_loader m_dataLoader;
+  // game_level_data_loader m_dataLoader;
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
 

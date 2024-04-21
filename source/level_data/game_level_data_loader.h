@@ -15,14 +15,15 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
-  auto UpdateLevel(level_container* levelContainer, float interval) -> void;
+  static auto loadLevel(auto&&...args) -> std::unique_ptr<level_container>;
+  static auto updateLevel(level_container* levelContainer, float interval) -> void;
 
-  [[nodiscard]] auto MoreLevels() const -> bool;
-  [[nodiscard]] auto NextLevel() -> bool;
-  [[nodiscard]] auto CurrentLevel() const -> int;
-  [[nodiscard]] auto MoreUpdates() const -> bool;
-  [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
+  static [[nodiscard]] auto moreLevels() -> bool;
+  static [[nodiscard]] auto nextLevel() -> bool;
+  static [[nodiscard]] auto currentLevel() -> int;
+  static [[nodiscard]] auto moreUpdates() -> bool;
+  static [[nodiscard]] auto levelCanBeCompleted() -> bool;
+  static [[nodiscard]] auto validCells() -> std::shared_ptr<valid_cell_collection>;
 
 private:
 
@@ -58,6 +59,58 @@ private:
   demo_level m_demoLevel;
 
 };
+
+inline auto game_level_data_loader::create() -> void
+{
+  destroy();
+  m_instance = new game_level_data_loader();
+}
+
+inline auto game_level_data_loader::destroy() -> void
+{
+  delete m_instance;
+  m_instance = nullptr;
+}
+
+inline auto game_level_data_loader::loadLevel(auto&&...args) -> std::unique_ptr<level_container>
+{
+  return m_instance->LoadLevel(std::forward<decltype(args)>(args)...);
+}
+
+inline auto game_level_data_loader::updateLevel(level_container* levelContainer, float interval) -> void
+{
+  m_instance->UpdateLevel(levelContainer, interval);
+}
+
+inline [[nodiscard]] auto game_level_data_loader::moreLevels() -> bool
+{
+  return m_instance->MoreLevels();
+}
+
+inline [[nodiscard]] auto game_level_data_loader::nextLevel() -> bool
+{
+  return m_instance->NextLevel();
+}
+
+inline [[nodiscard]] auto game_level_data_loader::currentLevel() -> int
+{
+  return m_instance->CurrentLevel();
+}
+
+inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
+{
+  return m_instance->MoreUpdates();
+}
+
+inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
+{
+  return m_instance->LevelCanBeCompleted();
+}
+
+inline [[nodiscard]] auto game_level_data_loader::validCells() -> std::shared_ptr<valid_cell_collection>
+{
+  return m_instance->ValidCells();
+}
 
 auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
 {

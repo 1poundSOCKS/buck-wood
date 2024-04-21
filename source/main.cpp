@@ -11,6 +11,7 @@
 #include "play_events.h"
 #include "save_data.h"
 #include "game_state.h"
+#include "game_level_data_loader.h"
 #include "player_state.h"
 
 #pragma comment(lib,"user32.lib")
@@ -113,6 +114,7 @@ auto initialize_all(HINSTANCE instance) -> void
 
   save_data::create(L"save_data");
   game_state::create();
+  game_level_data_loader::create();
   play_events::create();
   player_state::create();
 
@@ -123,6 +125,7 @@ auto destroy_all() -> void
 {
   player_state::destroy();
   play_events::destroy();
+  game_level_data_loader::destroy();
   game_state::destroy();
   save_data::destroy();
   
