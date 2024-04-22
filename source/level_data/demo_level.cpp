@@ -5,17 +5,17 @@
 demo_level::demo_level()
 {
   auto area1 = std::array {
-    POINT_2F { static_cast<float>(-4), static_cast<float>(-4) },
-    POINT_2F { static_cast<float>(4), static_cast<float>(-4) },
-    POINT_2F { static_cast<float>(4), static_cast<float>(4) },
-    POINT_2F { static_cast<float>(-4), static_cast<float>(4) }
+    POINT_2F { -4, -4 },
+    POINT_2F { 4, -4 },
+    POINT_2F { 4, 4 },
+    POINT_2F { -4, 4 }
   };
 
   auto area2 = std::array {
-    POINT_2F {static_cast<float>(-2), static_cast<float>(-4) },
-    POINT_2F {static_cast<float>(-2), static_cast<float>(-8) },
-    POINT_2F {static_cast<float>(2), static_cast<float>(-8) },
-    POINT_2F {static_cast<float>(2), static_cast<float>(-4) }
+    POINT_2F { -2, -4 },
+    POINT_2F { -2, -8 },
+    POINT_2F { 2, -8 },
+    POINT_2F { 2, -4 }
   };
 
   auto area1Transform = std::ranges::views::transform(area1, [this](auto point) { return POINT_2F { static_cast<float>(point.x * m_cellSize), static_cast<float>(point.y * m_cellSize) }; } );
