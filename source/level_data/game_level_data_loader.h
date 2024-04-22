@@ -25,7 +25,7 @@ public:
 
 private:
 
-  game_level_data_loader() = default;
+  game_level_data_loader();
 
   auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
@@ -55,6 +55,7 @@ private:
   bool m_levelCanBeCompleted { false };
 
   demo_level m_demoLevel;
+  std::shared_ptr<valid_cell_collection> m_validCells;
 
 };
 
@@ -108,6 +109,7 @@ inline [[nodiscard]] auto game_level_data_loader::validCells() -> std::shared_pt
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), std::forward<decltype(args)>(args)...);
+  m_validCells->Load(m_demoLevel.BoundaryGeometry().get(), 400, 400);
 
   levelContainer->CreatePortal(POINT_2F { 0, 0 });
   levelContainer->CreateBackgroundObject(POINT_2F { -500, -500 });

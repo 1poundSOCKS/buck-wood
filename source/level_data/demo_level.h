@@ -18,8 +18,7 @@ public:
   demo_level();
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
-  [[nodiscard]] auto PlayerPosition() const -> POINT_2F;
-  [[nodiscard]] auto ValidCellCollection() const -> std::shared_ptr<valid_cell_collection>;
+  [[nodiscard]] auto BoundaryGeometry() const -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -46,8 +45,5 @@ private:
   };
 
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
-  RECT_F m_boundaryRect { 0, 0, 0, 0 };
-  winrt::com_ptr<ID2D1PathGeometry> m_cellGeometry;
-  std::shared_ptr<valid_cell_collection> m_validCells;
 
 };

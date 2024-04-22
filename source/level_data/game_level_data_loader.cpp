@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
+game_level_data_loader::game_level_data_loader() : m_validCells { std::make_shared<valid_cell_collection>() }
+{
+}
+
 auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
 {
   m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
@@ -45,7 +49,7 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
 auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
-  levelContainer->CreatePlayer(m_demoLevel.PlayerPosition());
+  levelContainer->CreatePlayer(POINT_2F { 0, 0 });
 }
 
 auto game_level_data_loader::CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void
@@ -74,5 +78,5 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
 
 auto game_level_data_loader::ValidCells() const -> std::shared_ptr<valid_cell_collection>
 {
-  return m_demoLevel.ValidCellCollection();
+  return m_validCells;
 }
