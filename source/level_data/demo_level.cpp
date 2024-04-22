@@ -17,13 +17,6 @@ demo_level::demo_level() : m_validCells { std::make_shared<valid_cell_collection
     return { static_cast<float>(x * m_cellSize), static_cast<float>(y * m_cellSize) };
   });
 
-  std::ranges::transform(m_targetPositions, std::back_inserter(m_targets), [](const cell& targetCell)
-  {
-    auto x = static_cast<float>(targetCell.x * m_cellSize);
-    auto y = static_cast<float>(targetCell.y * m_cellSize);
-    return D2D1_POINT_2F { x, y };
-  });
-
   m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPoints, D2D1_FIGURE_END_CLOSED);
   m_boundaryRect = direct2d::GetGeometryBounds(m_boundaryGeometry.get());
 

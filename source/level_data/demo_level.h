@@ -52,25 +52,12 @@ private:
   constexpr static int m_cornerIndent { 1 };
 
   constexpr static int m_boundaryStartPositionX { -4 };
-  constexpr static int m_boundaryStartPositionY { 0 };
+  constexpr static int m_boundaryStartPositionY { -3 };
 
   inline static auto m_startBoundaryBuildCommands = {
-    boundary_build_command { m_cornerIndent, -m_boundaryHeight / 2 },\
-    boundary_build_command { m_boundaryWidth / 2 - m_cornerIndent, -m_cornerIndent },
-    boundary_build_command { m_boundaryWidth / 2 - m_cornerIndent, m_cornerIndent },
-    boundary_build_command { m_cornerIndent, m_boundaryHeight / 2 },
-    boundary_build_command { -m_cornerIndent, m_boundaryHeight / 2 },
-    boundary_build_command { -m_boundaryWidth / 2 + m_cornerIndent, m_cornerIndent },
-    boundary_build_command { -m_boundaryWidth / 2 + m_cornerIndent, -m_cornerIndent }
-  };
-
-  inline static auto m_targetPositions = {
-    cell { 0, 0 }
-  };
-
-  inline static auto m_asteroidPositions = {
-    cell { 3, -6 },
-    cell { -3, 6 }
+    boundary_build_command { m_boundaryWidth, 0 },\
+    boundary_build_command { 0, m_boundaryHeight },\
+    boundary_build_command { -m_boundaryWidth, 0 }
   };
 
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
