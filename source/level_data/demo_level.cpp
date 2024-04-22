@@ -4,17 +4,17 @@
 
 demo_level::demo_level()
 {
-  std::vector<geometry_builder::point> boundaryPoints;
+  m_boundaryPoints.emplace_back(static_cast<float>(-4 * m_cellSize), static_cast<float>(-4 * m_cellSize));
+  m_boundaryPoints.emplace_back(static_cast<float>(4 * m_cellSize), static_cast<float>(-4 * m_cellSize));
+  m_boundaryPoints.emplace_back(static_cast<float>(4 * m_cellSize), static_cast<float>(4 * m_cellSize));
+  m_boundaryPoints.emplace_back(static_cast<float>(-4 * m_cellSize), static_cast<float>(4 * m_cellSize));
 
-  m_boundary.AddGeometry(m_startBoundaryBuildCommands);
-  
-  m_boundary.Build(m_boundaryStartPositionX, m_boundaryStartPositionY, std::back_inserter(boundaryPoints));
-
-  std::ranges::transform(boundaryPoints, std::back_inserter(m_boundaryPoints), [](geometry_builder::point point) -> D2D1_POINT_2F
-  {
-    const auto [x, y] = point;
-    return { static_cast<float>(x * m_cellSize), static_cast<float>(y * m_cellSize) };
-  });
+  auto pointIterator = std::begin(m_boundaryPoints);
+  std::advance(pointIterator, 1);
+  m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
+  m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
+  m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
+  m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
 
   m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPoints, D2D1_FIGURE_END_CLOSED);
 }
@@ -24,7 +24,7 @@ demo_level::demo_level()
   return m_boundaryGeometry;
 }
 
-[[nodiscard]] auto demo_level::BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&
+[[nodiscard]] auto demo_level::BoundaryPoints() const -> const points_collection&
 {
   return m_boundaryPoints;
 }
