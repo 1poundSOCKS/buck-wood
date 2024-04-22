@@ -19,22 +19,7 @@ public:
 
   [[nodiscard]] auto BoundaryPoints() const -> const std::vector<D2D1_POINT_2F>&;
   [[nodiscard]] auto PlayerPosition() const -> POINT_2F;
-
-  constexpr static [[nodiscard]] auto CellWidth() noexcept-> float;
-  constexpr static [[nodiscard]] auto CellHeight() noexcept-> float;
-  [[nodiscard]] auto CellPosition(int x, int y) const noexcept-> POINT_2F;
-  constexpr static [[nodiscard]] auto CellTopLeft() noexcept -> POINT_2F;
-  constexpr static [[nodiscard]] auto CellBottomRight() noexcept -> POINT_2F;
-  constexpr static [[nodiscard]] auto CellRect() noexcept -> RECT_F;
-
-  [[nodiscard]] auto MinCellX() const noexcept -> int;
-  [[nodiscard]] auto MinCellY() const noexcept -> int;
-  [[nodiscard]] auto MaxCellX() const noexcept -> int;
-  [[nodiscard]] auto MaxCellY() const noexcept -> int;
-
-  [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
-  [[nodiscard]] auto CellIsValid(winrt::com_ptr<ID2D1TransformedGeometry> geometry) const noexcept -> bool;
-  auto ValidCellCollection() const -> std::shared_ptr<valid_cell_collection>;
+  [[nodiscard]] auto ValidCellCollection() const -> std::shared_ptr<valid_cell_collection>;
 
 private:
 
