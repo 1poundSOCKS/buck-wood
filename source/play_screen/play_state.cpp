@@ -11,15 +11,16 @@ play_state::play_state() :
 
 auto play_state::LoadCurrentLevel() -> void
 {
-  m_levelContainer = game_level_data_loader::loadLevel();
+  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
   player_state::set_status(player_state::status::active);
 }
 
 auto play_state::LoadNextLevel() -> bool
 {
-  if( game_level_data_loader::nextLevel() )
+  if( game_level_data_loader::nextLevel(game_state::level_index()) )
   {
-    m_levelContainer = game_level_data_loader::loadLevel();
+    game_state::set_level_index(game_state::level_index() + 1);
+    m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
     player_state::set_status(player_state::status::active);
     return true;
   }
@@ -33,7 +34,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
 {
   if( m_status == status::running )
   {
-    game_level_data_loader::updateLevel(m_levelContainer.get(), interval);
+    game_level_data_loader::updateLevel(game_state::level_index(), m_levelContainer.get(), interval);
   }
 
   m_levelContainer->Update(interval, view);
@@ -77,7 +78,7 @@ auto play_state::Status() const -> status
   
   if( game_level_data_loader::levelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
   {
-    return game_level_data_loader::moreLevels() ? status::end_of_level : status::end_of_game;
+    return game_level_data_loader::moreLevels(game_state::level_index()) ? status::end_of_level : status::end_of_game;
   }
 
   return status::running;
@@ -102,8 +103,3 @@ auto play_state::Status() const -> status
 {
   return *m_score;
 }
-
-// [[nodiscard]] auto play_state::DataLoader() const noexcept -> const game_level_data_loader&
-// {
-//   return m_dataLoader;
-// }

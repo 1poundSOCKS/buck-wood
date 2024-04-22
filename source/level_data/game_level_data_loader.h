@@ -3,7 +3,6 @@
 #include "level_update_event.h"
 #include "demo_level.h"
 #include "random_velocity.h"
-#include "game_state.h"
 
 class game_level_data_loader
 {
@@ -15,12 +14,11 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  static auto loadLevel(auto&&...args) -> std::unique_ptr<level_container>;
-  static auto updateLevel(level_container* levelContainer, float interval) -> void;
+  static auto loadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
-  static [[nodiscard]] auto moreLevels() -> bool;
-  static [[nodiscard]] auto nextLevel() -> bool;
-  static [[nodiscard]] auto currentLevel() -> int;
+  static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
+  static [[nodiscard]] auto nextLevel(int levelIndex) -> bool;
   static [[nodiscard]] auto moreUpdates() -> bool;
   static [[nodiscard]] auto levelCanBeCompleted() -> bool;
   static [[nodiscard]] auto validCells() -> std::shared_ptr<valid_cell_collection>;
@@ -29,11 +27,11 @@ private:
 
   game_level_data_loader() = default;
 
-  auto LoadLevel(auto&&...args) -> std::unique_ptr<level_container>;
-  auto UpdateLevel(level_container* levelContainer, float interval) -> void;
+  auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
-  [[nodiscard]] auto MoreLevels() const -> bool;
-  [[nodiscard]] auto NextLevel() -> bool;
+  [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
+  [[nodiscard]] auto NextLevel(int levelIndex) -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;
   [[nodiscard]] auto MoreUpdates() const -> bool;
   [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
@@ -72,29 +70,24 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::loadLevel(auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::loadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  return m_instance->LoadLevel(std::forward<decltype(args)>(args)...);
+  return m_instance->LoadLevel(levelIndex, std::forward<decltype(args)>(args)...);
 }
 
-inline auto game_level_data_loader::updateLevel(level_container* levelContainer, float interval) -> void
+inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
 {
-  m_instance->UpdateLevel(levelContainer, interval);
+  m_instance->UpdateLevel(levelIndex, levelContainer, interval);
 }
 
-inline [[nodiscard]] auto game_level_data_loader::moreLevels() -> bool
+inline [[nodiscard]] auto game_level_data_loader::moreLevels(int levelIndex) -> bool
 {
-  return m_instance->MoreLevels();
+  return m_instance->MoreLevels(levelIndex);
 }
 
-inline [[nodiscard]] auto game_level_data_loader::nextLevel() -> bool
+inline [[nodiscard]] auto game_level_data_loader::nextLevel(int levelIndex) -> bool
 {
-  return m_instance->NextLevel();
-}
-
-inline [[nodiscard]] auto game_level_data_loader::currentLevel() -> int
-{
-  return m_instance->CurrentLevel();
+  return m_instance->NextLevel(levelIndex);
 }
 
 inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
@@ -112,7 +105,7 @@ inline [[nodiscard]] auto game_level_data_loader::validCells() -> std::shared_pt
   return m_instance->ValidCells();
 }
 
-auto game_level_data_loader::LoadLevel(auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), std::forward<decltype(args)>(args)...);
 

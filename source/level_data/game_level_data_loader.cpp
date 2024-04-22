@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float interval) -> void
+auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
 {
   m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
 
@@ -9,12 +9,12 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
   {
     m_events.clear();
 
-    switch( game_state::level_index() )
+    switch( levelIndex )
     {
       case 0:
       default:
-        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1, 10 * (game_state::level_index() + 1)); m_levelCanBeCompleted = true; });
-        m_events.emplace_back(5.0f, [this](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, game_state::level_index() + 1); m_levelCanBeCompleted = true; });
+        m_events.emplace_back(5.0f, [this, levelIndex](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1, 10 * (levelIndex + 1)); m_levelCanBeCompleted = true; });
+        m_events.emplace_back(5.0f, [this, levelIndex](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, levelIndex + 1); m_levelCanBeCompleted = true; });
         break;
     }
 
@@ -23,20 +23,14 @@ auto game_level_data_loader::UpdateLevel(level_container* levelContainer, float 
   }
 }
 
-[[nodiscard]] auto game_level_data_loader::MoreLevels() const -> bool
+[[nodiscard]] auto game_level_data_loader::MoreLevels(int levelIndex) const -> bool
 {
-  return game_state::level_index() + 1 < m_levelCount;
+  return levelIndex + 1 < m_levelCount;
 }
 
-[[nodiscard]] auto game_level_data_loader::NextLevel() -> bool
+[[nodiscard]] auto game_level_data_loader::NextLevel(int levelIndex) -> bool
 {
-  game_state::set_level_index(game_state::level_index() + 1);
-  return game_state::level_index() < m_levelCount;
-}
-
-[[nodiscard]] auto game_level_data_loader::CurrentLevel() const -> int
-{
-  return game_state::level_index();
+  return levelIndex < m_levelCount;
 }
 
 [[nodiscard]] auto game_level_data_loader::MoreUpdates() const -> bool

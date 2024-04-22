@@ -7,6 +7,7 @@
 #include "game_settings.h"
 #include "audio_events.h"
 #include "player_state.h"
+#include "game_state.h"
 
 main_menu_screen::main_menu_screen()
 {
