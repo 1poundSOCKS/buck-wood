@@ -4,12 +4,13 @@
 
 demo_level::demo_level()
 {
-  m_boundaryPoints.emplace_back(static_cast<float>(-4 * m_cellSize), static_cast<float>(-4 * m_cellSize));
-  m_boundaryPoints.emplace_back(static_cast<float>(4 * m_cellSize), static_cast<float>(-4 * m_cellSize));
-  m_boundaryPoints.emplace_back(static_cast<float>(4 * m_cellSize), static_cast<float>(4 * m_cellSize));
-  m_boundaryPoints.emplace_back(static_cast<float>(-4 * m_cellSize), static_cast<float>(4 * m_cellSize));
-
   auto pointIterator = std::begin(m_boundaryPoints);
+  m_boundaryPoints.insert(pointIterator, { static_cast<float>(-4 * m_cellSize), static_cast<float>(-4 * m_cellSize) });
+  m_boundaryPoints.insert(pointIterator, { static_cast<float>(4 * m_cellSize), static_cast<float>(-4 * m_cellSize) });
+  m_boundaryPoints.insert(pointIterator, { static_cast<float>(4 * m_cellSize), static_cast<float>(4 * m_cellSize) });
+  m_boundaryPoints.insert(pointIterator, { static_cast<float>(-4 * m_cellSize), static_cast<float>(4 * m_cellSize) });
+
+  pointIterator = std::begin(m_boundaryPoints);
   std::advance(pointIterator, 1);
   m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
   m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
