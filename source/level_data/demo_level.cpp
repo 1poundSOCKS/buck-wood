@@ -4,18 +4,29 @@
 
 demo_level::demo_level()
 {
-  auto pointIterator = std::begin(m_boundaryPoints);
-  m_boundaryPoints.insert(pointIterator, { static_cast<float>(-4 * m_cellSize), static_cast<float>(-4 * m_cellSize) });
-  m_boundaryPoints.insert(pointIterator, { static_cast<float>(4 * m_cellSize), static_cast<float>(-4 * m_cellSize) });
-  m_boundaryPoints.insert(pointIterator, { static_cast<float>(4 * m_cellSize), static_cast<float>(4 * m_cellSize) });
-  m_boundaryPoints.insert(pointIterator, { static_cast<float>(-4 * m_cellSize), static_cast<float>(4 * m_cellSize) });
+  auto area1 = std::array {
+    POINT_2F { static_cast<float>(-4 * m_cellSize), static_cast<float>(-4 * m_cellSize) },
+    POINT_2F { static_cast<float>(4 * m_cellSize), static_cast<float>(-4 * m_cellSize) },
+    POINT_2F { static_cast<float>(4 * m_cellSize), static_cast<float>(4 * m_cellSize) },
+    POINT_2F { static_cast<float>(-4 * m_cellSize), static_cast<float>(4 * m_cellSize) }
+  };
 
-  pointIterator = std::begin(m_boundaryPoints);
+  auto area2 = std::array {
+    POINT_2F {static_cast<float>(-2 * m_cellSize), static_cast<float>(-4 * m_cellSize) },
+    POINT_2F {static_cast<float>(-2 * m_cellSize), static_cast<float>(-8 * m_cellSize) },
+    POINT_2F {static_cast<float>(2 * m_cellSize), static_cast<float>(-8 * m_cellSize) },
+    POINT_2F {static_cast<float>(2 * m_cellSize), static_cast<float>(-4 * m_cellSize) }
+  };
+
+  std::ranges::copy(area1, std::back_inserter(m_boundaryPoints));
+
+  auto pointIterator = std::begin(m_boundaryPoints);
   std::advance(pointIterator, 1);
-  m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
-  m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
-  m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
-  m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
+  std::ranges::copy(area2, std::inserter(m_boundaryPoints, pointIterator));
+  // m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
+  // m_boundaryPoints.insert(pointIterator, {static_cast<float>(-2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
+  // m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-8 * m_cellSize)});
+  // m_boundaryPoints.insert(pointIterator, {static_cast<float>(2 * m_cellSize), static_cast<float>(-4 * m_cellSize)});
 
   m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPoints, D2D1_FIGURE_END_CLOSED);
 }
