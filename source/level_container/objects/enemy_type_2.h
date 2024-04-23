@@ -23,7 +23,8 @@ private:
 
   [[nodiscard]] auto UpdateWhenMoving(float interval) noexcept -> status;
   [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
-  [[nodiscard]] auto NewDestination() -> valid_cell;
+  auto MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool;
+  [[nodiscard]] auto NewDestination() -> std::optional<valid_cell>;
 
 private:
 

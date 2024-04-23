@@ -13,10 +13,7 @@ demo_level::demo_level()
 
   POINT_2I area1Position = { 0, 0 };
 
-  auto area1Transform1 = std::ranges::views::transform(area1, [this, area1Position](auto point) { return POINT_2I { point.x + area1Position.x * 8, point.y + area1Position.x * 8 }; } );
-  auto area1Transform2 = std::ranges::views::transform(area1Transform1, [this](auto point) { return POINT_2I { point.x * m_cellSize, point.y * m_cellSize }; } );
-
-  std::ranges::copy(area1Transform2, std::back_inserter(m_boundaryPointsI));
+  AddArea(area1, area1Position, 1);
 
   auto area2 = std::array {
     POINT_2I { -2, 4 },
@@ -27,12 +24,7 @@ demo_level::demo_level()
 
   POINT_2I area2Position = { 0, -1 };
 
-  auto area2Transform1 = std::ranges::views::transform(area2, [this, area2Position](auto point) { return POINT_2I { point.x + area2Position.x * 8, point.y + area2Position.y * 8  }; } );
-  auto area2Transform2 = std::ranges::views::transform(area2Transform1, [this](auto point) { return POINT_2I { point.x * m_cellSize, point.y * m_cellSize }; } );
-  
-  auto pointIterator = std::begin(m_boundaryPointsI);
-  std::advance(pointIterator, 1);
-  std::ranges::copy(area2Transform2, std::inserter(m_boundaryPointsI, pointIterator));
+  AddArea(area2, area2Position, 1);
 
   auto area3 = std::array {
     POINT_2I { -4, 4 },
@@ -43,12 +35,7 @@ demo_level::demo_level()
 
   POINT_2I area3Position = { 0, -2 };
 
-  auto area3Transform1 = std::ranges::views::transform(area3, [this, area3Position](auto point) { return POINT_2I { point.x + area3Position.x * 8, point.y + area3Position.y * 8 }; } );
-  auto area3Transform2 = std::ranges::views::transform(area3Transform1, [this](auto point) { return POINT_2I { point.x * m_cellSize, point.y * m_cellSize }; } );
-
-  pointIterator = std::begin(m_boundaryPointsI);
-  std::advance(pointIterator, 3);
-  std::ranges::copy(area3Transform2, std::inserter(m_boundaryPointsI, pointIterator));
+  AddArea(area3, area3Position, 3);
 
   std::ranges::transform(m_boundaryPointsI, std::back_inserter(m_boundaryPointsF), [](auto point)
   {

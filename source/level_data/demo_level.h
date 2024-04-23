@@ -19,6 +19,10 @@ public:
 
 private:
 
+  auto AddArea(std::ranges::input_range auto&& points, POINT_2I position, int offset) noexcept -> void;
+
+private:
+
   inline static constexpr int m_cellSize = 400;
 
   level_boundary m_boundary;
@@ -27,3 +31,14 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
 
 };
+
+auto demo_level::AddArea(std::ranges::input_range auto&& points, POINT_2I position, int offset) noexcept -> void
+{
+  auto pointIterator = std::begin(m_boundaryPointsI);
+  std::advance(pointIterator, offset);
+
+  auto worldPosition = std::ranges::views::transform(points, [this, position](auto point) { return POINT_2I { point.x + position.x * 8, point.y + position.y * 8 }; } );
+  auto scaledWorldPosition = std::ranges::views::transform(worldPosition, [this](auto point) { return POINT_2I { point.x * m_cellSize, point.y * m_cellSize }; } );
+
+  std::ranges::copy(scaledWorldPosition, std::inserter(m_boundaryPointsI, pointIterator));
+}

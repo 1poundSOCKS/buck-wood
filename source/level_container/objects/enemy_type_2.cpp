@@ -25,10 +25,8 @@ auto enemy_type_2::Update(float interval) -> void
 [[nodiscard]] auto enemy_type_2::UpdateWhenMoving(float interval) noexcept -> status
 {
   m_waitTimer.Reset();
-  m_destination = m_destination ? m_destination : std::optional<valid_cell>(NewDestination());
-  auto position = m_destination->Position();
-  auto atDestination = MoveTowards(m_speed * interval, position);
-  m_destination = atDestination ? std::nullopt : m_destination;
+  m_destination = m_destination ? m_destination : NewDestination();
+  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
   return atDestination ? status::waiting : status::moving;
 }
 
@@ -38,7 +36,15 @@ auto enemy_type_2::Update(float interval) -> void
   return finishedWaiting ? status::moving : status::waiting;
 }
 
-auto enemy_type_2::NewDestination() -> valid_cell
+auto enemy_type_2::MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool
+{
+  auto position = destination.Position();
+  bool atDestination = MoveTowards(m_speed * interval, position);
+  m_destination = atDestination ? std::nullopt : m_destination;
+  return atDestination;
+}
+
+auto enemy_type_2::NewDestination() -> std::optional<valid_cell>
 {
   auto adjacentCells = std::ranges::views::filter(m_cells->Get(), [this](const auto& cell)
   {
@@ -57,7 +63,7 @@ auto enemy_type_2::NewDestination() -> valid_cell
 
   if( adjacentCellCount == 0 )
   {
-    return *m_destination;
+    return m_destination;
   }
   else
   {
