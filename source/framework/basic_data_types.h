@@ -15,3 +15,9 @@ struct SCALE_2F
   float x;
   float y;
 };
+
+struct POINT_2I
+{
+  int32_t x;
+  int32_t y;
+};
