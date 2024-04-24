@@ -54,6 +54,15 @@ auto play_scene::Render() const -> void
     renderer::render_all(cells);
   }
 
+  const auto& validCells = m_playState->Cells()->Get();
+  auto validCellView = std::ranges::views::transform(validCells, [](const auto& cell) -> valid_cell
+  {
+    // auto [key, value] = cell;
+    return cell.second;
+  });
+
+  renderer::render_all(validCellView);
+
   RenderLevelContainer();
 
   auto targettedObject = m_playState->LevelContainer().TargettedObject();
@@ -104,10 +113,10 @@ auto play_scene::RenderLevelContainer() const -> void
 
   const auto& levelContainer = m_playState->LevelContainer();
 
-  if( levelContainer.Boundary().Geometry() )
-  {
-    renderer::render(levelContainer.Boundary());
-  }
+  // if( levelContainer.Boundary().Geometry() )
+  // {
+  //   renderer::render(levelContainer.Boundary());
+  // }
 
   renderer::render_all(levelContainer.NoninteractiveObjects());
   renderer::render_all(levelContainer.Particles());

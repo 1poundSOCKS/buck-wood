@@ -2,6 +2,7 @@
 
 #include "level_geometries.h"
 #include "level_objects.h"
+#include "level_cell_collection.h"
 #include "level_explosion.h"
 #include "targetted_object.h"
 #include "play_events.h"
@@ -30,7 +31,8 @@ public:
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   level_container();
-  level_container(std::ranges::input_range auto&& points);
+  level_container(std::ranges::input_range auto&& cells);
+  // level_container(std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -43,7 +45,7 @@ public:
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
 
-  auto Boundary() const -> const blank_object&;
+  // auto Boundary() const -> const blank_object&;
   auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
   auto PlayerObjects() const -> const player_object_collection&;
   auto EnemyObjects() const -> const enemy_object_collection&;
@@ -94,7 +96,9 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  blank_object m_boundary;
+  level_cell_collection m_cells;
+
+  // blank_object m_boundary;
   particle_collection m_particles;
 
   player_ship m_playerState;
@@ -113,12 +117,20 @@ private:
 
 };
 
-inline level_container::level_container() : level_container(std::array<POINT_2F, 0>())
+inline level_container::level_container() : level_container(std::array<POINT_2I, 0>())
 {
 }
 
-inline level_container::level_container(std::ranges::input_range auto&& points) : m_boundary { points }, m_playerState { { 0, 0} }
+// inline level_container::level_container(std::ranges::input_range auto&& points) : m_cells { 400, 400 }, m_boundary { points }, m_playerState { { 0, 0} }
+// {
+// }
+
+inline level_container::level_container(std::ranges::input_range auto&& cells) : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
+  for( const auto& cell : cells )
+  {
+    m_cells.Add(cell.x, cell.y);
+  }
 }
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
@@ -143,7 +155,8 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optio
 
 inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 {
-  return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
+  // return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
+  return { 4000, 4000 };
 }
 
 inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_collection::size_type
@@ -242,10 +255,10 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
   }
 }
 
-inline auto level_container::Boundary() const -> const blank_object&
-{
-  return m_boundary;
-}
+// inline auto level_container::Boundary() const -> const blank_object&
+// {
+//   return m_boundary;
+// }
 
 inline auto level_container::NoninteractiveObjects() const -> const noninteractive_object_collection&
 {
@@ -354,12 +367,12 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
 
 auto level_container::DoCollisions(auto&& handler) -> void
 {
-  if( m_boundary.Geometry() )
-  {
-    m_geometryContainmentRunner(m_boundary.Geometry().get(), m_playerObjects, handler);
-    m_geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
-    m_particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
-  }
+  // if( m_boundary.Geometry() )
+  // {
+  //   m_geometryContainmentRunner(m_boundary.Geometry().get(), m_playerObjects, handler);
+  //   m_geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
+  //   m_particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
+  // }
 
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
 }

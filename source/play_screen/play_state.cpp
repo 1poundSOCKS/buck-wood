@@ -4,8 +4,10 @@
 #include "player_state.h"
 
 play_state::play_state() : 
-  m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelContainer { std::make_shared<level_container>() }
+  m_cells { std::make_shared<level_cell_collection>(400, 400) }, m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelContainer { std::make_shared<level_container>() }
 {
+  m_cells->Add(0, 0);
+  m_cells->Add(1, 0);
   m_score->Set(game_state::score());
 }
 
@@ -67,6 +69,11 @@ auto play_state::SaveGameState() noexcept -> void
 auto play_state::Status() const -> status
 {
   return m_status;
+}
+
+auto play_state::Cells() const -> std::shared_ptr<level_cell_collection>
+{
+  return m_cells;
 }
 
 [[nodiscard]] auto play_state::CalculateStatus() const -> status

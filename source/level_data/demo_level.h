@@ -3,6 +3,7 @@
 #include "framework.h"
 #include "level_boundary.h"
 #include "valid_cell_collection.h"
+#include "level_cell_collection.h"
 
 class demo_level
 {
@@ -29,6 +30,7 @@ private:
   points_collection_i m_boundaryPointsI;
   points_collection_f m_boundaryPointsF;
   winrt::com_ptr<ID2D1Geometry> m_boundaryGeometry;
+  level_cell_collection m_cells;
 
 };
 

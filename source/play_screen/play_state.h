@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game_level_data_loader.h"
+#include "level_cell_collection.h"
 #include "level_container.h"
 #include "play_events.h"
 #include "game_score.h"
@@ -20,6 +21,7 @@ public:
   auto SaveGameState() noexcept -> void;
 
   [[nodiscard]] auto Status() const -> status;
+  [[nodiscard]] auto Cells() const -> std::shared_ptr<level_cell_collection>;
   [[nodiscard]] auto LevelContainer() const -> const level_container&;
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
@@ -32,6 +34,7 @@ private:
 private:
 
   status m_status { status::running };
+  std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
 
