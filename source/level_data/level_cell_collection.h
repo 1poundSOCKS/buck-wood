@@ -10,6 +10,7 @@ public:
 
   using key_type = std::tuple<int, int>;
   using collection_type = std::map<key_type, valid_cell>;
+  enum class cell_type { wall, floor };
 
 public:
 
@@ -17,6 +18,7 @@ public:
   [[nodiscard]] auto Get() const noexcept -> collection_type;
 
   auto Add(int x, int y) noexcept -> void;
+  [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
 
 private:
 

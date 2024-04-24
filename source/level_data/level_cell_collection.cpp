@@ -43,3 +43,10 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
 {
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
+
+[[nodiscard]] auto level_cell_collection::CellType(POINT_2F position) const -> cell_type
+{
+  auto cellX = static_cast<int>(position.x / m_cellWidth);
+  auto cellY = static_cast<int>(position.y / m_cellHeight);
+  return m_cells.contains({cellX,cellY}) ? cell_type::floor : cell_type::wall;
+}

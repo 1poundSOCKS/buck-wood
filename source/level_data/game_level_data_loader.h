@@ -108,8 +108,6 @@ inline [[nodiscard]] auto game_level_data_loader::validCells() -> std::shared_pt
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  // std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), std::forward<decltype(args)>(args)...);
-  // m_validCells->Load(m_demoLevel.BoundaryGeometry().get(), 400, 400);
   auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
   {
     const auto& [x, y] = cell;
