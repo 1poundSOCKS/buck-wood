@@ -46,10 +46,12 @@ public:
   [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
 
   // auto Boundary() const -> const blank_object&;
-  auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
-  auto PlayerObjects() const -> const player_object_collection&;
-  auto EnemyObjects() const -> const enemy_object_collection&;
-  auto Particles() const -> const particle_collection&;
+
+  [[nodiscard]] auto Cells() const -> const level_cell_collection&;
+  [[nodiscard]] auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
+  [[nodiscard]] auto PlayerObjects() const -> const player_object_collection&;
+  [[nodiscard]] auto EnemyObjects() const -> const enemy_object_collection&;
+  [[nodiscard]] auto Particles() const -> const particle_collection&;
 
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
 
@@ -260,7 +262,12 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
 //   return m_boundary;
 // }
 
-inline auto level_container::NoninteractiveObjects() const -> const noninteractive_object_collection&
+inline auto level_container::Cells() const -> const level_cell_collection&
+{
+  return m_cells;
+}
+
+inline auto level_container::NoninteractiveObjects() const -> const noninteractive_object_collection &
 {
   return m_noninteractiveObjects;
 }

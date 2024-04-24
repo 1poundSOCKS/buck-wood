@@ -2,7 +2,8 @@
 #include "demo_level.h"
 #include "direct2d_functions.h"
 
-demo_level::demo_level() : m_cells { m_cellSize, m_cellSize }
+// demo_level::demo_level() : m_cells { m_cellSize, m_cellSize }
+demo_level::demo_level()
 {
   // auto area1 = std::array {
   //   POINT_2I { -4, -4 },
@@ -43,15 +44,30 @@ demo_level::demo_level() : m_cells { m_cellSize, m_cellSize }
   // });
 
   // m_boundaryGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_boundaryPointsF, D2D1_FIGURE_END_CLOSED);
-  m_cells.Add(0, 0);
+  // m_cells.Add(0, 0);
+
+  m_cells.emplace(0, 0);
+  m_cells.emplace(0, -1);
+  m_cells.emplace(1, 0);
+  m_cells.emplace(0, 1);
+  m_cells.emplace(-1, 0);
 }
 
-[[nodiscard]] auto demo_level::BoundaryGeometry() const -> winrt::com_ptr<ID2D1Geometry>
-{
-  return m_boundaryGeometry;
-}
+// constexpr auto demo_level::CellWidth() noexcept -> int
+// {
+//   return 400;
+// }
 
-[[nodiscard]] auto demo_level::BoundaryPoints() const -> const points_collection_f&
-{
-  return m_boundaryPointsF;
-}
+// constexpr auto demo_level::CellHeight() noexcept -> int
+// {
+//   return 400;
+// }
+// [[nodiscard]] auto demo_level::BoundaryGeometry() const -> winrt::com_ptr<ID2D1Geometry>
+// {
+//   return m_boundaryGeometry;
+// }
+
+// [[nodiscard]] auto demo_level::BoundaryPoints() const -> const points_collection_f&
+// {
+//   return m_boundaryPointsF;
+// }

@@ -54,11 +54,11 @@ auto play_scene::Render() const -> void
     renderer::render_all(cells);
   }
 
-  const auto& validCells = m_playState->Cells()->Get();
+  const auto& validCells = m_playState->LevelContainer().Cells().Get();
   auto validCellView = std::ranges::views::transform(validCells, [](const auto& cell) -> valid_cell
   {
-    // auto [key, value] = cell;
-    return cell.second;
+    const auto& [key, value] = cell;
+    return value;
   });
 
   renderer::render_all(validCellView);

@@ -110,7 +110,13 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
 {
   // std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(m_demoLevel.BoundaryPoints(), std::forward<decltype(args)>(args)...);
   // m_validCells->Load(m_demoLevel.BoundaryGeometry().get(), 400, 400);
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
+  auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
+  {
+    const auto& [x, y] = cell;
+    return { x, y };
+  });
+
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(cellView, std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F { 0, 0 });
   levelContainer->CreateBackgroundObject(POINT_2F { -500, -500 });

@@ -21,7 +21,6 @@ public:
   auto SaveGameState() noexcept -> void;
 
   [[nodiscard]] auto Status() const -> status;
-  [[nodiscard]] auto Cells() const -> std::shared_ptr<level_cell_collection>;
   [[nodiscard]] auto LevelContainer() const -> const level_container&;
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;

@@ -71,11 +71,6 @@ auto play_state::Status() const -> status
   return m_status;
 }
 
-auto play_state::Cells() const -> std::shared_ptr<level_cell_collection>
-{
-  return m_cells;
-}
-
 [[nodiscard]] auto play_state::CalculateStatus() const -> status
 {
   if( m_levelContainer->PlayerDestroyed() )
