@@ -14,6 +14,7 @@
 #include "collisions/particle_containment.h"
 #include "collisions/geometry_collision_binary.h"
 #include "collisions/geometry_collision_unary.h"
+#include "collisions/cell_collision_tests.h"
 
 class level_container
 {
@@ -100,7 +101,6 @@ private:
 
   level_cell_collection m_cells;
 
-  // blank_object m_boundary;
   particle_collection m_particles;
 
   player_ship m_playerState;
@@ -114,6 +114,7 @@ private:
   geometry_containment m_geometryContainmentRunner;
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
+  cell_collision_tests m_cellCollisionTests;
 
   enemy_object_collection::size_type m_enemyCount { 0 };
 
@@ -122,10 +123,6 @@ private:
 inline level_container::level_container() : level_container(std::array<POINT_2I, 0>())
 {
 }
-
-// inline level_container::level_container(std::ranges::input_range auto&& points) : m_cells { 400, 400 }, m_boundary { points }, m_playerState { { 0, 0} }
-// {
-// }
 
 inline level_container::level_container(std::ranges::input_range auto&& cells) : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
@@ -157,7 +154,6 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optio
 
 inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
 {
-  // return m_boundary.Geometry() ? direct2d::GetGeometrySize(m_boundary) : render_target::get()->GetSize();
   return { 4000, 4000 };
 }
 
@@ -256,11 +252,6 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
     m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
   }
 }
-
-// inline auto level_container::Boundary() const -> const blank_object&
-// {
-//   return m_boundary;
-// }
 
 inline auto level_container::Cells() const -> const level_cell_collection&
 {
@@ -380,6 +371,8 @@ auto level_container::DoCollisions(auto&& handler) -> void
   //   m_geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
   //   m_particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
   // }
+
+  m_cellCollisionTests(m_cells, m_playerObjects, handler);
 
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
 }

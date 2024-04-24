@@ -46,7 +46,14 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
 
 [[nodiscard]] auto level_cell_collection::CellType(POINT_2F position) const -> cell_type
 {
-  auto cellX = static_cast<int>(position.x / m_cellWidth);
-  auto cellY = static_cast<int>(position.y / m_cellHeight);
-  return m_cells.contains({cellX,cellY}) ? cell_type::floor : cell_type::wall;
+  auto cellCoordinates = CellCoordinates(position);
+  const auto& [column, row] = cellCoordinates;
+  return m_cells.contains({column, row}) ? cell_type::floor : cell_type::wall;
+}
+
+[[nodiscard]] auto level_cell_collection::CellCoordinates(POINT_2F position) const -> cell_coordinates
+{
+  auto cellColumn = static_cast<int>((position.x + m_cellWidth / 2) / m_cellWidth);
+  auto cellRow = static_cast<int>((position.y + m_cellHeight / 2 ) / m_cellHeight);
+  return { cellColumn, cellRow };
 }
