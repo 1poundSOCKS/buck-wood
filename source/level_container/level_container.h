@@ -33,7 +33,6 @@ public:
 
   level_container();
   level_container(std::ranges::input_range auto&& cells);
-  // level_container(std::ranges::input_range auto&& points);
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -45,8 +44,6 @@ public:
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
-
-  // auto Boundary() const -> const blank_object&;
 
   [[nodiscard]] auto Cells() const -> const level_cell_collection&;
   [[nodiscard]] auto NoninteractiveObjects() const -> const noninteractive_object_collection&;

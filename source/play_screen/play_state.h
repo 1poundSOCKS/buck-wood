@@ -33,7 +33,6 @@ private:
 private:
 
   status m_status { status::running };
-  std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
 
