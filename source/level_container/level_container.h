@@ -362,14 +362,7 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
 
 auto level_container::DoCollisions(auto&& handler) -> void
 {
-  // if( m_boundary.Geometry() )
-  // {
-  //   m_geometryContainmentRunner(m_boundary.Geometry().get(), m_playerObjects, handler);
-  //   m_geometryContainmentRunner(m_boundary.Geometry().get(), m_enemyObjects, handler);
-  //   m_particleContainmentRunner(m_boundary.Geometry().get(), m_particles, handler);
-  // }
-
   m_cellCollisionTests(m_cells, m_playerObjects, handler);
-
+  m_cellCollisionTests(m_cells, m_enemyObjects, handler);
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
 }
