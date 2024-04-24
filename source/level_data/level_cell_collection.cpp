@@ -53,7 +53,9 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
 
 [[nodiscard]] auto level_cell_collection::CellCoordinates(POINT_2F position) const -> cell_coordinates
 {
-  auto cellColumn = static_cast<int>((position.x + m_cellWidth / 2) / m_cellWidth);
-  auto cellRow = static_cast<int>((position.y + m_cellHeight / 2 ) / m_cellHeight);
+  auto halfCellWidth = m_cellWidth / 2;
+  auto halfCellHeight = m_cellHeight / 2;
+  auto cellColumn = ( position.x < 0) ? static_cast<int>((position.x - halfCellWidth) / m_cellWidth) : static_cast<int>((position.x + halfCellWidth) / m_cellWidth);
+  auto cellRow = ( position.y < 0) ? static_cast<int>((position.y - halfCellHeight ) / m_cellHeight) : static_cast<int>((position.y + halfCellHeight ) / m_cellHeight);
   return { cellColumn, cellRow };
 }
