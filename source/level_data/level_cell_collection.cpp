@@ -18,9 +18,17 @@ auto level_cell_collection::Add(valid_cell::cell_type cellType, int x, int y) no
 
 auto level_cell_collection::AddWalls() noexcept -> void
 {
-  for( int column = MinColumn() - 1; column <= MaxColumn() + 1; ++column )
+  auto minColumn = MinColumn();
+  auto maxColumn = MaxColumn();
+
+  auto minRow = MinRow();
+  auto maxRow = MaxRow();
+
+  minColumn;maxColumn;minRow;maxRow;
+
+  for( int column = minColumn - 1; column <= maxColumn + 1; ++column )
   {
-    for( int row = MinRow() - 1; column <= MaxRow() + 1; ++column )
+    for( int row = minRow - 1; row <= maxRow + 1; ++row )
     {
       Add(valid_cell::cell_type::wall, column, row);
     }

@@ -191,5 +191,15 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
 
 inline auto renderer::Render(const valid_cell& validCell) const -> void
 {
-  m_cellRenderer.Write(validCell.Geometry().get());
+  switch(validCell.Type() )
+  {
+  case valid_cell::cell_type::wall:
+    m_defaultGeometryRenderer.Write(validCell.Geometry().get());
+    break;
+  
+  case valid_cell::cell_type::floor:
+    m_cellRenderer.Write(validCell.Geometry().get());
+    break;
+
+  }
 }
