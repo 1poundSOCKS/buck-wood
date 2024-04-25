@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-game_level_data_loader::game_level_data_loader() : m_validCells { std::make_shared<valid_cell_collection>() }
+game_level_data_loader::game_level_data_loader()
 {
 }
 
@@ -64,7 +64,7 @@ auto game_level_data_loader::CreateType2Enemies(level_container* levelContainer,
 {
   for( int i = 0; i < count; ++i )
   {
-    levelContainer->CreateEnemyType2(POINT_2F { 0, 0 }, 3, 2.0f, 400.0f, 2.0f, ValidCells());
+    levelContainer->CreateEnemyType2(POINT_2F { 0, 0 }, 3, 2.0f, 400.0f, 2.0f);
   }
 }
 
@@ -74,9 +74,4 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
   {
     levelContainer->CreatePowerUp(POINT_2F { 0, 0 }, m_randomVelocity.get());
   }
-}
-
-auto game_level_data_loader::ValidCells() const -> std::shared_ptr<valid_cell_collection>
-{
-  return m_validCells;
 }

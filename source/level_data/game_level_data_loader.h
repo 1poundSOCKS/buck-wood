@@ -21,7 +21,6 @@ public:
   static [[nodiscard]] auto nextLevel(int levelIndex) -> bool;
   static [[nodiscard]] auto moreUpdates() -> bool;
   static [[nodiscard]] auto levelCanBeCompleted() -> bool;
-  static [[nodiscard]] auto validCells() -> std::shared_ptr<valid_cell_collection>;
 
 private:
 
@@ -40,7 +39,6 @@ private:
   auto CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void;
   auto CreateType2Enemies(level_container* levelContainer, int count) -> void;
   auto CreatePowerUps(level_container* levelContainer, int count) -> void;
-  auto ValidCells() const -> std::shared_ptr<valid_cell_collection>;
 
 private:
 
@@ -55,7 +53,6 @@ private:
   bool m_levelCanBeCompleted { false };
 
   demo_level m_demoLevel;
-  std::shared_ptr<valid_cell_collection> m_validCells;
 
 };
 
@@ -101,11 +98,6 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-inline [[nodiscard]] auto game_level_data_loader::validCells() -> std::shared_ptr<valid_cell_collection>
-{
-  return m_instance->ValidCells();
-}
-
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
   auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
@@ -117,10 +109,6 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(cellView, std::forward<decltype(args)>(args)...);
 
   levelContainer->CreatePortal(POINT_2F { 0, 0 });
-  levelContainer->CreateBackgroundObject(POINT_2F { -500, -500 });
-  levelContainer->CreateBackgroundObject(POINT_2F { 800, -900 });
-  levelContainer->CreateBackgroundObject(POINT_2F { -700, 300 });
-  levelContainer->CreateBackgroundObject(POINT_2F { 700, 500 });
   m_status = status::starting;
   m_levelCanBeCompleted = false;
 

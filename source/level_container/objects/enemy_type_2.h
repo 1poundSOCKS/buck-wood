@@ -2,14 +2,15 @@
 
 #include "enemy_object.h"
 #include "reload_timer.h"
-#include "valid_cell_collection.h"
+#include "level_cell_collection.h"
 
 class enemy_type_2 : public enemy_object
 {
 
 public:
 
-  enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, std::shared_ptr<valid_cell_collection> cells);
+  // enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime, std::shared_ptr<valid_cell_collection> cells);
+  enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime);
 
   auto Update(float interval) -> void;
 
@@ -34,7 +35,7 @@ private:
   std::optional<valid_cell> m_destination;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  std::shared_ptr<valid_cell_collection> m_cells;
+  // std::shared_ptr<valid_cell_collection> m_cells;
 
 };
 

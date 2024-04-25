@@ -9,11 +9,22 @@ level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_
   m_cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
 }
 
-auto level_cell_collection::Add(int x, int y) noexcept -> void
+auto level_cell_collection::Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void
 {
   POINT_2F position = CellPosition(x, y);
   winrt::com_ptr<ID2D1TransformedGeometry> geometry = CellGeometry(x, y);
-  m_cells.insert({{x, y}, {x, y, position, geometry}});
+  m_cells.insert({{x, y}, {cellType, x, y, position, geometry}});
+}
+
+auto level_cell_collection::AddWalls() noexcept -> void
+{
+  for( int column = MinColumn() - 1; column <= MaxColumn() + 1; ++column )
+  {
+    for( int row = MinRow() - 1; column <= MaxRow() + 1; ++column )
+    {
+      Add(valid_cell::cell_type::wall, column, row);
+    }
+  }
 }
 
 auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
@@ -48,7 +59,23 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
 {
   auto cellCoordinates = CellCoordinates(position);
   const auto& [column, row] = cellCoordinates;
-  return m_cells.contains({column, row}) ? cell_type::floor : cell_type::wall;
+  auto cell = m_cells.find({column, row});
+  return cell != m_cells.end() ? CellType(cell) : cell_type::empty;
+}
+
+auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> cell_type
+{
+  const auto& [key, value] = *cell;
+
+  switch( value.Type() )
+  {
+    case valid_cell::cell_type::floor:
+      return cell_type::floor;
+    case valid_cell::cell_type::wall:
+      return cell_type::wall;
+    default:
+      return cell_type::empty;
+  }
 }
 
 [[nodiscard]] auto level_cell_collection::CellCoordinates(POINT_2F position) const -> cell_coordinates
@@ -58,4 +85,55 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
   auto cellColumn = ( position.x < 0) ? static_cast<int>((position.x - halfCellWidth) / m_cellWidth) : static_cast<int>((position.x + halfCellWidth) / m_cellWidth);
   auto cellRow = ( position.y < 0) ? static_cast<int>((position.y - halfCellHeight ) / m_cellHeight) : static_cast<int>((position.y + halfCellHeight ) / m_cellHeight);
   return { cellColumn, cellRow };
+}
+
+auto level_cell_collection::MinColumn() const noexcept -> int
+{
+  auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+  {
+    const auto& [key, value] = cellEntry;
+    return value.X();
+  });
+
+  std::vector<int> columns;
+  std::ranges::copy(cellColumns, std::back_inserter(columns));
+
+  auto minElement = std::ranges::min_element(cellColumns);
+  return *minElement;
+}
+
+auto level_cell_collection::MaxColumn() const noexcept -> int
+{
+  auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+  {
+    const auto& [key, value] = cellEntry;
+    return value.X();
+  });
+
+  auto maxElement = std::ranges::max_element(cellColumns);
+  return *maxElement;
+}
+
+auto level_cell_collection::MinRow() const noexcept -> int
+{
+  auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+  {
+    const auto& [key, value] = cellEntry;
+    return value.Y();
+  });
+
+  auto minElement = std::ranges::min_element(cellRows);
+  return *minElement;
+}
+
+auto level_cell_collection::MaxRow() const noexcept -> int
+{
+  auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+  {
+    const auto& [key, value] = cellEntry;
+    return value.Y();
+  });
+
+  auto maxElement = std::ranges::max_element(cellRows);
+  return *maxElement;
 }

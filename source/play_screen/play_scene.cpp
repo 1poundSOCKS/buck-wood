@@ -48,20 +48,14 @@ auto play_scene::Render() const -> void
   render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
   render_target::get()->SetTransform(m_renderTransform);
 
-  if( game_settings::showDiagnostics() )
-  {
-    const auto& cells = game_level_data_loader::validCells()->Get();
-    renderer::render_all(cells);
-  }
-
-  const auto& validCells = m_playState->LevelContainer().Cells().Get();
-  auto validCellView = std::ranges::views::transform(validCells, [](const auto& cell) -> valid_cell
+  const auto& cellCollection = m_playState->LevelContainer().Cells().Get();
+  auto cells = std::ranges::views::transform(cellCollection, [](const auto& cell) -> valid_cell
   {
     const auto& [key, value] = cell;
     return value;
   });
 
-  renderer::render_all(validCellView);
+  renderer::render_all(cells);
 
   RenderLevelContainer();
 

@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "level_boundary.h"
-#include "valid_cell_collection.h"
 #include "level_cell_collection.h"
 
 class demo_level

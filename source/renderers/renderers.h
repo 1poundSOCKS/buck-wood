@@ -21,8 +21,6 @@
 
 #include "render_order.h"
 
-#include "valid_cell_collection.h"
-
 struct energy_bar
 {
   RECT_F position;

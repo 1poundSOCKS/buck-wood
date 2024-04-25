@@ -9,6 +9,7 @@ public:
 
   auto operator()(const level_cell_collection& cells, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void;
   auto operator()(const level_cell_collection& cells, auto&& object, auto&& callable) -> void;
+  auto particles(const level_cell_collection& cells, std::ranges::input_range auto&& particleCollection, auto&& callable) -> void;
 
 private:
 
@@ -39,5 +40,24 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
         }
         break;
     }
-    
+}
+
+auto cell_collision_tests::particles(const level_cell_collection& cells, std::ranges::input_range auto&& particleCollection, auto&& callable) -> void
+{
+  std::for_each(std::execution::par, std::begin(particleCollection), std::end(particleCollection), [this,&cells,&callable](auto& particle)
+  {
+    std::lock_guard<std::mutex> guard(m_mutex);
+
+    auto cellType = cells.CellType(particle.Position());
+
+    switch( cellType )
+    {
+      case level_cell_collection::cell_type::wall:
+        if( !particle.Destroyed() )
+        {
+          callable(particle);
+        }
+        break;
+    }
+  });
 }

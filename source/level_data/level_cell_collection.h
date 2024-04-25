@@ -10,7 +10,7 @@ public:
 
   using key_type = std::tuple<int, int>;
   using collection_type = std::map<key_type, valid_cell>;
-  enum class cell_type { wall, floor };
+  enum class cell_type { empty, wall, floor };
   using cell_coordinates = std::tuple<int, int>;
 
 public:
@@ -18,9 +18,17 @@ public:
   level_cell_collection(int cellWidth, int cellHeight);
   [[nodiscard]] auto Get() const noexcept -> collection_type;
 
-  auto Add(int x, int y) noexcept -> void;
+  auto Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void;
+  auto AddWalls() noexcept -> void;
+
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
+  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
   [[nodiscard]] auto CellCoordinates(POINT_2F position) const -> cell_coordinates;
+
+  [[nodiscard]] auto MinColumn() const noexcept -> int;
+  [[nodiscard]] auto MaxColumn() const noexcept -> int;
+  [[nodiscard]] auto MinRow() const noexcept -> int;
+  [[nodiscard]] auto MaxRow() const noexcept -> int;
 
 private:
 
