@@ -3,7 +3,7 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position) : 
-  base_object { position, { 1.8f, 1.8f }, 0 }
+  base_object { position, { 3.0f, 3.0f }, 0 }
 {
 }
 
