@@ -11,19 +11,21 @@ public:
   using key_type = std::tuple<int, int>;
   using collection_type = std::map<key_type, valid_cell>;
   enum class cell_type { empty, wall, floor };
-  using cell_coordinates = std::tuple<int, int>;
+  using cell_id = std::tuple<int, int>;
 
 public:
 
   level_cell_collection(int cellWidth, int cellHeight);
-  [[nodiscard]] auto Get() const noexcept -> collection_type;
+
+  [[nodiscard]] auto Get() const noexcept -> const collection_type&;
+  [[nodiscard]] auto Get(int column, int row) -> const valid_cell&;
 
   auto Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void;
   auto AddWalls() noexcept -> void;
 
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
-  [[nodiscard]] auto CellCoordinates(POINT_2F position) const -> cell_coordinates;
+  [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
 
   [[nodiscard]] auto MinColumn() const noexcept -> int;
   [[nodiscard]] auto MaxColumn() const noexcept -> int;
@@ -47,7 +49,12 @@ private:
 
 };
 
-inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> collection_type
+inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> const collection_type&
 {
   return m_cells;
 }
+
+// inline [[nodiscard]] auto level_cell_collection::Get(int column, int row) -> const valid_cell&
+// {
+//   m_Cells.find({columnm, row});
+// }

@@ -65,8 +65,7 @@ auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::
 
 [[nodiscard]] auto level_cell_collection::CellType(POINT_2F position) const -> cell_type
 {
-  auto cellCoordinates = CellCoordinates(position);
-  const auto& [column, row] = cellCoordinates;
+  const auto& [column, row] = CellId(position);
   auto cell = m_cells.find({column, row});
   return cell != m_cells.end() ? CellType(cell) : cell_type::empty;
 }
@@ -86,7 +85,7 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   }
 }
 
-[[nodiscard]] auto level_cell_collection::CellCoordinates(POINT_2F position) const -> cell_coordinates
+[[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
 {
   auto halfCellWidth = m_cellWidth / 2;
   auto halfCellHeight = m_cellHeight / 2;

@@ -29,21 +29,47 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
 {
     std::lock_guard<std::mutex> guard(m_mutex);
 
-    auto walls = std::ranges::views::filter(cells.Get(), [](const auto& cellEntry)
+    using key_type = std::tuple<int, int>;
+
+    constexpr auto adjacentCellIds = std::array {
+      key_type(-1,-1),
+      key_type(0,-1),
+      key_type(1,-1),
+      key_type(-1,0),
+      key_type(0,0),
+      key_type(1,0),
+      key_type(-1,1),
+      key_type(0,1),
+      key_type(1,1)
+    };
+
+    const auto& [objectColumn, objectRow] = cells.CellId(object.Object().Position());
+    
+    const auto& cellsMap = cells.Get();
+
+    auto adjacentCellIterators = std::ranges::views::transform(adjacentCellIds, [&cellsMap,objectColumn,objectRow](const auto& cellId)
     {
-      const auto& [key, value] = cellEntry;
-      return value.Type() == valid_cell::cell_type::wall;
+      const auto& [column, row] = cellId;
+      level_cell_collection::cell_id id = { column + objectColumn, row + objectRow };
+      return cellsMap.find(id);
     });
 
-    // auto wallGeometries = std::ranges::views::transform(walls, [](const auto& cellEntry)
-    // {
-    //   const auto& [key, value] = cellEntry;
-    //   return value.Geometry();
-    // });
-
-    for( const auto& cellEntry : walls )
+    auto adjacentWallIterators = std::ranges::views::filter(adjacentCellIterators, [&cellsMap](const auto& cellIterator)
     {
-      const auto& [key, value] = cellEntry;
+      if( cellIterator == std::end(cellsMap) )
+      {
+        return false;
+      }
+      else
+      {
+        const auto& [key, value] = *cellIterator;
+        return value.Type() == valid_cell::cell_type::wall;
+      }
+    });
+
+    for( const auto& cellIterator : adjacentWallIterators )
+    {
+      const auto& [key, value] = *cellIterator;
 
       D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
       HRESULT hr = object.Geometry()->CompareWithGeometry(value.Geometry().get(), D2D1::Matrix3x2F::Identity(), &relation);

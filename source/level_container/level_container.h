@@ -364,8 +364,8 @@ auto level_container::UpdateObjects(auto&& visitor) -> void
 
 auto level_container::DoCollisions(auto&& handler) -> void
 {
+  m_cellCollisionTests.particles(m_cells, m_particles, handler);
   m_cellCollisionTests(m_cells, m_playerObjects, handler);
   m_cellCollisionTests(m_cells, m_enemyObjects, handler);
-  m_cellCollisionTests.particles(m_cells, m_particles, handler);
   m_collisionRunner(m_playerObjects, m_enemyObjects, handler);
 }
