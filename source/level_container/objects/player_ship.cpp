@@ -3,7 +3,7 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position) : 
-  base_object { position, { 3.0f, 3.0f }, 0 }
+  base_object { position, { 6.0f, 6.0f }, 0 }
 {
 }
 
@@ -22,24 +22,7 @@ auto player_ship::Update(float interval, const level_cell_collection& cells) -> 
 
 auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& cells) -> void
 {
-  // std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-
-  // auto thrustControlValue = gamepad_reader::left_trigger();
-  // auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
-  // auto switchFireMode = gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER);
-
-  // m_angle = leftThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *leftThumbstickPosition) : m_angle;
-  // m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
-
-  // base_object::Update(interval);
-  // m_position = object_velocity::UpdatePosition(m_position, interval);
-
-  // m_thrusterOn = thrustControlValue > 0 ? true : false;
-  // m_triggerDown = triggerControlOn;
-  // m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
-
   m_playerReloadCounter.Update(interval);
-  // m_thrustEmmisionCounter.Update(interval);
 
   if( m_destination )
   {
@@ -51,8 +34,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     auto direction = DirectionalControlPressed();
 
     auto cellId = cells.CellId(m_position);
-    adjacent_cell_visitor visitor { cellId };
-    Visit(visitor, cells);
+    // adjacent_cell_visitor visitor { cellId };
+    // Visit(visitor, cells);
 
     auto newCellId = cellId;
     auto& [column, row] = newCellId;
@@ -118,22 +101,22 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
 
 [[nodiscard]] auto player_ship::DirectionalControlPressed() const -> control_direction_type
 {
-  if( gamepad_reader::up_pressed() )
+  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_UP) )
   {
     return control_direction_type::up;
   }
 
-  if( gamepad_reader::down_pressed() )
+  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_DOWN) )
   {
     return control_direction_type::down;
   }
 
-  if( gamepad_reader::left_pressed() )
+  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_LEFT) )
   {
     return control_direction_type::left;
   }
 
-  if( gamepad_reader::right_pressed() )
+  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_RIGHT) )
   {
     return control_direction_type::right;
   }
