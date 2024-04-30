@@ -36,6 +36,7 @@ public:
   static auto invert_y_axis() -> void;
 
   static [[nodiscard]] auto left_thumbstick() -> thumbstick_position;
+  static [[nodiscard]] auto right_thumbstick() -> thumbstick_position;
 
 private:
 

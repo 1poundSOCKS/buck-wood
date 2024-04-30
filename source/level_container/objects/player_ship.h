@@ -7,6 +7,8 @@
 #include "reload_timer.h"
 #include "reload_counter.h"
 #include "health_status.h"
+#include "level_cell_collection.h"
+#include "adjacent_cell_visitor.h"
 
 class player_ship : public base_object, public object_velocity
 {
@@ -20,7 +22,7 @@ public:
 
   player_ship(POINT_2F position);
 
-  auto Update(float interval) -> void;
+  auto Update(float interval, const level_cell_collection& cells) -> void;
 
   auto Rotate(float angle) -> void;
   auto SetThrust(float value) -> void;
@@ -40,12 +42,16 @@ public:
 
 private:
 
-  auto UpdateWhenActive(float interval) -> void;
+  auto UpdateWhenActive(float interval, const level_cell_collection& cells) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
   
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
   static [[nodiscard]] auto SwitchFireMode(fire_mode fireMode) -> fire_mode;
+
+  enum class control_direction_type { none, up, down, left, right };
+  [[nodiscard]] auto DirectionalControlPressed() const -> control_direction_type;
+  auto Visit(adjacent_cell_visitor& visitor, const level_cell_collection& cellCollection) -> void;
 
 private:
 
@@ -64,6 +70,8 @@ private:
   fire_mode m_fireMode { fire_mode::one };
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
+
+  std::optional<POINT_2F> m_destination;
 
 };
 

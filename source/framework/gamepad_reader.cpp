@@ -114,6 +114,15 @@ auto gamepad_reader::invert_y_axis() -> void
   return distance < m_instance->m_stickDeadzone ? std::nullopt : thumbstick_position(GetStickCoordinates(angle, distance - m_instance->m_stickDeadzone));
 }
 
+auto gamepad_reader::right_thumbstick() -> thumbstick_position
+{
+  auto thumbRX = ToFloat(m_instance->m_currentState->ThumbRX());
+  auto thumbRY = m_instance->m_yAxisInverted ? -ToFloat(m_instance->m_currentState->ThumbRY()) : ToFloat(m_instance->m_currentState->ThumbRY());
+  auto angle = direct2d::GetAngleBetweenPoints({0,0}, {thumbRX, thumbRY});
+  auto distance = direct2d::GetDistanceBetweenPoints({0,0}, {thumbRX, thumbRY});
+  return distance < m_instance->m_stickDeadzone ? std::nullopt : thumbstick_position(GetStickCoordinates(angle, distance - m_instance->m_stickDeadzone));
+}
+
 gamepad_reader::gamepad_reader() : m_currentState { std::make_unique<gamepad_state>() }, m_previousState { std::make_unique<gamepad_state>() }
 {
 }

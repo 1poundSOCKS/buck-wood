@@ -50,7 +50,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {
-  object.Update(interval);
+  object.Update(interval, m_cells);
 
   if( object.CanShoot() )
   {

@@ -7,12 +7,12 @@ player_ship::player_ship(POINT_2F position) :
 {
 }
 
-auto player_ship::Update(float interval) -> void
+auto player_ship::Update(float interval, const level_cell_collection& cells) -> void
 {
   switch( player_state::get_status() )
   {
     case player_state::status::active:
-      UpdateWhenActive(interval);
+      UpdateWhenActive(interval, cells);
       break;
     case player_state::status::celebrating:
       UpdateWhenCelebrating(interval);
@@ -20,26 +20,74 @@ auto player_ship::Update(float interval) -> void
   }
 }
 
-auto player_ship::UpdateWhenActive(float interval) -> void
+auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& cells) -> void
 {
-  std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
+  // std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
-  auto thrustControlValue = gamepad_reader::left_trigger();
-  auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
-  auto switchFireMode = gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER);
+  // auto thrustControlValue = gamepad_reader::left_trigger();
+  // auto triggerControlOn = gamepad_reader::right_trigger() > 0 ? true : false;
+  // auto switchFireMode = gamepad_reader::button_pressed(XINPUT_GAMEPAD_RIGHT_SHOULDER);
 
-  m_angle = leftThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *leftThumbstickPosition) : m_angle;
-  m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
+  // m_angle = leftThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *leftThumbstickPosition) : m_angle;
+  // m_velocity = thrustControlValue > 0 ? direct2d::CombineVelocities(m_velocity, direct2d::CalculateVelocity(thrustControlValue * m_thrustPower * interval, m_angle)) : m_velocity;
 
-  base_object::Update(interval);
-  m_position = object_velocity::UpdatePosition(m_position, interval);
+  // base_object::Update(interval);
+  // m_position = object_velocity::UpdatePosition(m_position, interval);
 
-  m_thrusterOn = thrustControlValue > 0 ? true : false;
-  m_triggerDown = triggerControlOn;
-  m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
+  // m_thrusterOn = thrustControlValue > 0 ? true : false;
+  // m_triggerDown = triggerControlOn;
+  // m_fireMode = switchFireMode ? SwitchFireMode(m_fireMode) : m_fireMode;
 
   m_playerReloadCounter.Update(interval);
-  m_thrustEmmisionCounter.Update(interval);
+  // m_thrustEmmisionCounter.Update(interval);
+
+  if( m_destination )
+  {
+    bool atDestination = MoveTowards(400 * interval, *m_destination);
+    m_destination = atDestination ? std::nullopt : m_destination;
+  }
+  else
+  {
+    auto direction = DirectionalControlPressed();
+
+    auto cellId = cells.CellId(m_position);
+    adjacent_cell_visitor visitor { cellId };
+    Visit(visitor, cells);
+
+    auto newCellId = cellId;
+    auto& [column, row] = newCellId;
+
+    switch( direction )
+    {
+    case player_ship::control_direction_type::up:
+      --row;
+      break;
+    case player_ship::control_direction_type::down:
+      ++row;
+      break;
+    case player_ship::control_direction_type::left:
+      --column;
+      break;
+    case player_ship::control_direction_type::right:
+      ++column;
+      break;
+    }
+
+    if( newCellId != cellId )
+    {
+      auto newCellIterator = cells.Get().find(newCellId);
+      
+      if( newCellIterator != std::end(cells.Get()) )
+      {
+        const auto& [key, value] = *newCellIterator;
+        m_destination = value.Position();
+      }
+    }    
+  }
+
+  std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
+  m_angle = rightThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition) : m_angle;
+  m_triggerDown = rightThumbstickPosition ? true : false;
 }
 
 auto player_ship::UpdateWhenCelebrating(float interval) -> void
@@ -66,4 +114,36 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
 [[nodiscard]] auto player_ship::GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F
 {
   return { position.x + velocity.x * interval, position.y + velocity.y * interval };
+}
+
+[[nodiscard]] auto player_ship::DirectionalControlPressed() const -> control_direction_type
+{
+  if( gamepad_reader::up_pressed() )
+  {
+    return control_direction_type::up;
+  }
+
+  if( gamepad_reader::down_pressed() )
+  {
+    return control_direction_type::down;
+  }
+
+  if( gamepad_reader::left_pressed() )
+  {
+    return control_direction_type::left;
+  }
+
+  if( gamepad_reader::right_pressed() )
+  {
+    return control_direction_type::right;
+  }
+
+  return control_direction_type::none;
+}
+
+auto player_ship::Visit(adjacent_cell_visitor& visitor, const level_cell_collection& cellCollection) -> void
+{
+  visitor(cellCollection, [](const valid_cell& cell)
+  {
+  });
 }
