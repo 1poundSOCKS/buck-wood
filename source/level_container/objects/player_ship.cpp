@@ -3,7 +3,7 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position) : 
-  base_object { position, { 6.0f, 6.0f }, 0 }
+  base_object { position, { 1.5f, 1.5f }, 0 }, m_shootAngle { 0 }
 {
 }
 
@@ -31,45 +31,49 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   }
   else
   {
-    auto direction = DirectionalControlPressed();
+    // auto direction = DirectionalControlPressed();
 
-    auto cellId = cells.CellId(m_position);
-    // adjacent_cell_visitor visitor { cellId };
-    // Visit(visitor, cells);
+    // auto cellId = cells.CellId(m_position);
 
-    auto newCellId = cellId;
-    auto& [column, row] = newCellId;
+    // auto newCellId = cellId;
+    // auto& [column, row] = newCellId;
 
-    switch( direction )
-    {
-    case player_ship::control_direction_type::up:
-      row -= cells.IsTypeOf({column, row - 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
-      break;
-    case player_ship::control_direction_type::down:
-      row += cells.IsTypeOf({column, row + 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
-      break;
-    case player_ship::control_direction_type::left:
-      column -= cells.IsTypeOf({column - 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
-      break;
-    case player_ship::control_direction_type::right:
-      column += cells.IsTypeOf({column + 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
-      break;
-    }
+    // switch( direction )
+    // {
+    // case player_ship::control_direction_type::up:
+    //   row -= cells.IsTypeOf({column, row - 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
+    //   break;
+    // case player_ship::control_direction_type::down:
+    //   row += cells.IsTypeOf({column, row + 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
+    //   break;
+    // case player_ship::control_direction_type::left:
+    //   column -= cells.IsTypeOf({column - 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
+    //   break;
+    // case player_ship::control_direction_type::right:
+    //   column += cells.IsTypeOf({column + 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
+    //   break;
+    // }
 
-    if( newCellId != cellId )
-    {
-      auto newCellIterator = cells.Get().find(newCellId);
+    // if( newCellId != cellId )
+    // {
+    //   auto newCellIterator = cells.Get().find(newCellId);
       
-      if( newCellIterator != std::end(cells.Get()) )
+    //   if( newCellIterator != std::end(cells.Get()) )
+    //   {
+    //     const auto& [key, value] = *newCellIterator;
+    //     m_destination = value.Position();
+    //   }
+    // }    
+      std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
+      if( leftThumbstickPosition )
       {
-        const auto& [key, value] = *newCellIterator;
-        m_destination = value.Position();
+        m_position = direct2d::CalculatePosition(m_position, {leftThumbstickPosition->x * 1000, leftThumbstickPosition->y * 1000}, interval);        
       }
-    }    
+
   }
 
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
-  m_angle = rightThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition) : m_angle;
+  m_shootAngle = rightThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition) : m_shootAngle;
   m_triggerDown = rightThumbstickPosition ? true : false;
 }
 

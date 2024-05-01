@@ -183,7 +183,7 @@ auto level_container::CreatePortal(auto&&...args) -> void
 
 auto level_container::CreatePlayer(auto&&...args) -> void
 {
-  CreatePlayerObject(level_geometries::PlayerShipGeometry(), std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::TargetGeometry(), std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateBackgroundObject(auto&&...args) -> void

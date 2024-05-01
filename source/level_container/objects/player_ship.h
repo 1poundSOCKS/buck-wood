@@ -39,6 +39,7 @@ public:
   [[nodiscard]] auto FireMode() const -> fire_mode;
 
   [[nodiscard]] auto TargettingActive() const -> bool;
+  [[nodiscard]] auto ShootAngle() const noexcept -> float;
 
 private:
 
@@ -72,6 +73,7 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
 
   std::optional<POINT_2F> m_destination;
+  float m_shootAngle;
 
 };
 
@@ -155,4 +157,9 @@ inline [[nodiscard]] auto player_ship::SwitchFireMode(fire_mode fireMode) -> fir
 inline [[nodiscard]] auto player_ship::TargettingActive() const -> bool
 {
   return !Destroyed() && m_fireMode == fire_mode::two;
+}
+
+inline auto player_ship::ShootAngle() const noexcept -> float
+{
+  return m_shootAngle;
 }
