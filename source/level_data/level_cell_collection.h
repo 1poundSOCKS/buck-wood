@@ -11,7 +11,7 @@ public:
   using key_type = std::tuple<int, int>;
   using collection_type = std::map<key_type, valid_cell>;
   enum class cell_type { empty, wall, floor };
-  using cell_id = std::tuple<int, int>;
+  using cell_id = key_type;
 
 public:
 
@@ -31,6 +31,8 @@ public:
   [[nodiscard]] auto MaxColumn() const noexcept -> int;
   [[nodiscard]] auto MinRow() const noexcept -> int;
   [[nodiscard]] auto MaxRow() const noexcept -> int;
+
+  [[nodiscard]] auto IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool;
 
 private:
 

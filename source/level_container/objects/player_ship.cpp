@@ -26,7 +26,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
 
   if( m_destination )
   {
-    bool atDestination = MoveTowards(400 * interval, *m_destination);
+    bool atDestination = MoveTowards(800 * interval, *m_destination);
     m_destination = atDestination ? std::nullopt : m_destination;
   }
   else
@@ -43,16 +43,16 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     switch( direction )
     {
     case player_ship::control_direction_type::up:
-      --row;
+      row -= cells.IsTypeOf({column, row - 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
       break;
     case player_ship::control_direction_type::down:
-      ++row;
+      row += cells.IsTypeOf({column, row + 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
       break;
     case player_ship::control_direction_type::left:
-      --column;
+      column -= cells.IsTypeOf({column - 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
       break;
     case player_ship::control_direction_type::right:
-      ++column;
+      column += cells.IsTypeOf({column + 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
       break;
     }
 
@@ -101,22 +101,22 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
 
 [[nodiscard]] auto player_ship::DirectionalControlPressed() const -> control_direction_type
 {
-  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_UP) )
+  if( gamepad_reader::button_pressed(XINPUT_GAMEPAD_DPAD_UP) )
   {
     return control_direction_type::up;
   }
 
-  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_DOWN) )
+  if( gamepad_reader::button_pressed(XINPUT_GAMEPAD_DPAD_DOWN) )
   {
     return control_direction_type::down;
   }
 
-  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_LEFT) )
+  if( gamepad_reader::button_pressed(XINPUT_GAMEPAD_DPAD_LEFT) )
   {
     return control_direction_type::left;
   }
 
-  if( gamepad_reader::button_down(XINPUT_GAMEPAD_DPAD_RIGHT) )
+  if( gamepad_reader::button_pressed(XINPUT_GAMEPAD_DPAD_RIGHT) )
   {
     return control_direction_type::right;
   }

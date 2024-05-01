@@ -22,12 +22,11 @@ private:
 
   inline static std::array m_levelData { 
     std::array { 1, 1, 1, 1, 1 },
-    std::array { 0, 0, 1, 0, 0 },
-    std::array { 0, 0, 1, 0, 0 },
-    std::array { 0, 0, 1, 0, 0 },
-    std::array { 0, 0, 0, 0, 0 },
-    std::array { 0, 0, 0, 0, 0 },
-    std::array { 0, 0, 0, 0, 0 }
+    std::array { 1, 1, 1, 1, 1 },
+    std::array { 1, 1, 1, 1, 1 },
+    std::array { 1, 1, 1, 1, 1 },
+    std::array { 1, 1, 1, 1, 1 },
+    std::array { 1, 1, 1, 1, 1 }
   };
 
   cell_collection m_cells;

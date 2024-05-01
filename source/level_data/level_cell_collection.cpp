@@ -144,3 +144,29 @@ auto level_cell_collection::MaxRow() const noexcept -> int
   auto maxElement = std::ranges::max_element(cellRows);
   return *maxElement;
 }
+
+auto level_cell_collection::IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool
+{
+  auto cellIterator = m_cells.find(cellId);
+
+  if( cellIterator == std::end(m_cells) )
+  {
+    return false;
+  }
+  else
+  {
+    switch( cellIterator->second.Type() )
+    {
+
+      case valid_cell::cell_type::wall:
+        return cellType == cell_type::wall;
+
+      case valid_cell::cell_type::floor:
+        return cellType == cell_type::floor;
+        
+      default:
+        return false;
+
+    }
+  }
+}
