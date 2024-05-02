@@ -8,7 +8,7 @@ class player_bullet : public base_object, public object_velocity
 
 public:
 
-  player_bullet(POINT_2F position, VELOCITY_2F velocity, int damage) : base_object { position, { 1.5f, 1.5f }, direct2d::CalculateDirection(velocity) }, object_velocity { velocity },
+  player_bullet(POINT_2F position, VELOCITY_2F velocity, int damage) : base_object { position, { 0.5f, 0.5f }, direct2d::CalculateDirection(velocity) }, object_velocity { velocity },
     m_damage { damage }
   {
   }

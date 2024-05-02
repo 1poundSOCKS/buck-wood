@@ -193,7 +193,7 @@ auto level_container::CreateBackgroundObject(auto&&...args) -> void
 
 inline auto level_container::CreatePlayerBullet(auto&&...args) -> void
 {
-  CreatePlayerObject(level_geometries::PlayerBulletGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(level_geometries::TargetGeometry(), std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerMissile(auto&&...args) -> void

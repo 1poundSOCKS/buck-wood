@@ -29,7 +29,6 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   if( rightThumbstickPosition )
   {
     auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
-    shootAngle -= shootAngle % 90;
     m_shootAngle = static_cast<float>(shootAngle);
     m_triggerDown = true;
   }
