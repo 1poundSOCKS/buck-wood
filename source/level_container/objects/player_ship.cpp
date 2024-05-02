@@ -64,17 +64,27 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     //     m_destination = value.Position();
     //   }
     // }    
-      std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-      if( leftThumbstickPosition )
-      {
-        m_position = direct2d::CalculatePosition(m_position, {leftThumbstickPosition->x * 1000, leftThumbstickPosition->y * 1000}, interval);        
-      }
-
   }
 
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
-  m_shootAngle = rightThumbstickPosition ? direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition) : m_shootAngle;
-  m_triggerDown = rightThumbstickPosition ? true : false;
+
+  if( rightThumbstickPosition )
+  {
+    auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
+    shootAngle -= shootAngle % 90;  
+    m_shootAngle = static_cast<float>(shootAngle);
+    m_triggerDown = true;
+  }
+  else
+  {
+    m_triggerDown = false;
+
+    std::optional<D2D1_POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
+    if( leftThumbstickPosition )
+    {
+      m_position = direct2d::CalculatePosition(m_position, {leftThumbstickPosition->x * 1000, leftThumbstickPosition->y * 1000}, interval);        
+    }
+  }
 }
 
 auto player_ship::UpdateWhenCelebrating(float interval) -> void
