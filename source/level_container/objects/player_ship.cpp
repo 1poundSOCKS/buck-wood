@@ -24,54 +24,12 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
 {
   m_playerReloadCounter.Update(interval);
 
-  if( m_destination )
-  {
-    bool atDestination = MoveTowards(800 * interval, *m_destination);
-    m_destination = atDestination ? std::nullopt : m_destination;
-  }
-  else
-  {
-    // auto direction = DirectionalControlPressed();
-
-    // auto cellId = cells.CellId(m_position);
-
-    // auto newCellId = cellId;
-    // auto& [column, row] = newCellId;
-
-    // switch( direction )
-    // {
-    // case player_ship::control_direction_type::up:
-    //   row -= cells.IsTypeOf({column, row - 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
-    //   break;
-    // case player_ship::control_direction_type::down:
-    //   row += cells.IsTypeOf({column, row + 1}, level_cell_collection::cell_type::floor) ? 1 : 0;
-    //   break;
-    // case player_ship::control_direction_type::left:
-    //   column -= cells.IsTypeOf({column - 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
-    //   break;
-    // case player_ship::control_direction_type::right:
-    //   column += cells.IsTypeOf({column + 1, row}, level_cell_collection::cell_type::floor) ? 1 : 0;
-    //   break;
-    // }
-
-    // if( newCellId != cellId )
-    // {
-    //   auto newCellIterator = cells.Get().find(newCellId);
-      
-    //   if( newCellIterator != std::end(cells.Get()) )
-    //   {
-    //     const auto& [key, value] = *newCellIterator;
-    //     m_destination = value.Position();
-    //   }
-    // }    
-  }
-
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
 
   if( rightThumbstickPosition )
   {
     auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
-    shootAngle -= shootAngle % 90;  
+    shootAngle -= shootAngle % 90;
     m_shootAngle = static_cast<float>(shootAngle);
     m_triggerDown = true;
   }
