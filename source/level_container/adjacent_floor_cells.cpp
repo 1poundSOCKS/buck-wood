@@ -15,22 +15,17 @@ auto adjacent_floor_cells::Count() const noexcept -> size_t
     level_cell_collection::cell_id { -1, 0 }
   };
 
-  auto adjacentCellIds = std::ranges::views::transform(adjacentCellIdsatOrigin, [this](auto cellId)
+  size_t adjacentFloorCellCount = 0;
+
+  AdjacentFloorCellIdView(adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentFloorCellCount](const auto& cellId)
   {
-    const auto& [column, row] = m_cellId;
-    const auto& [columnShift, rowShift] = cellId;
-    return level_cell_collection::cell_id { column + columnShift, row + rowShift };
+    ++adjacentFloorCellCount;
   });
 
-  auto validAdjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [this](auto cellId)
-  {
-    return m_cells.IsTypeOf(cellId, level_cell_collection::cell_type::floor);
-  });
-
-  return std::ranges::distance(validAdjacentFloorCellIds);
+  return adjacentFloorCellCount;
 }
 
-auto adjacent_floor_cells::operator[](size_t index) -> const valid_cell &
+auto adjacent_floor_cells::operator[](size_t index) -> level_cell_collection::cell_id
 {
   auto adjacentCellIdsatOrigin = std::array
   {
@@ -40,19 +35,17 @@ auto adjacent_floor_cells::operator[](size_t index) -> const valid_cell &
     level_cell_collection::cell_id { -1, 0 }
   };
 
-  auto adjacentCellIds = std::ranges::views::transform(adjacentCellIdsatOrigin, [this](auto cellId)
+  level_cell_collection::cell_id adjacentCellId { m_cellId };
+
+  AdjacentFloorCellIdView(adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentCellId, &index](const auto& cellId)
   {
-    const auto& [column, row] = m_cellId;
-    const auto& [columnShift, rowShift] = cellId;
-    return level_cell_collection::cell_id { column + columnShift, row + rowShift };
+    if( index == 0 )
+    {
+      adjacentCellId = cellId;
+    }
+
+    --index;
   });
 
-  auto validAdjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [this](auto cellId)
-  {
-    return m_cells.IsTypeOf(cellId, level_cell_collection::cell_type::floor);
-  });
-
-  auto cellIdIterator = std::begin(validAdjacentFloorCellIds);
-  std::advance(cellIdIterator, index);
-  return m_cells.Get(*cellIdIterator);
+  return adjacentCellId;
 }
