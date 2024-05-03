@@ -37,4 +37,12 @@ private:
   const level_cell_collection& m_cells;
   const level_cell_collection::cell_id m_cellId;
 
+  inline static auto m_adjacentCellIdsatOrigin = std::array
+  {
+    level_cell_collection::cell_id { 0, -1 },
+    level_cell_collection::cell_id { 1, 0 },
+    level_cell_collection::cell_id { 0, 1 },
+    level_cell_collection::cell_id { -1, 0 }
+  };
+
 };

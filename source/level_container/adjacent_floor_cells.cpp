@@ -7,17 +7,9 @@ adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, l
 
 auto adjacent_floor_cells::Count() const noexcept -> size_t
 {
-  auto adjacentCellIdsatOrigin = std::array
-  {
-    level_cell_collection::cell_id { 0, -1 },
-    level_cell_collection::cell_id { 1, 0 },
-    level_cell_collection::cell_id { 0, 1 },
-    level_cell_collection::cell_id { -1, 0 }
-  };
-
   size_t adjacentFloorCellCount = 0;
 
-  AdjacentFloorCellIdView(adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentFloorCellCount](const auto& cellId)
+  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentFloorCellCount](const auto& cellId)
   {
     ++adjacentFloorCellCount;
   });
@@ -27,17 +19,9 @@ auto adjacent_floor_cells::Count() const noexcept -> size_t
 
 auto adjacent_floor_cells::operator[](size_t index) -> level_cell_collection::cell_id
 {
-  auto adjacentCellIdsatOrigin = std::array
-  {
-    level_cell_collection::cell_id { 0, -1 },
-    level_cell_collection::cell_id { 1, 0 },
-    level_cell_collection::cell_id { 0, 1 },
-    level_cell_collection::cell_id { -1, 0 }
-  };
-
   level_cell_collection::cell_id adjacentCellId { m_cellId };
 
-  AdjacentFloorCellIdView(adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentCellId, &index](const auto& cellId)
+  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentCellId, &index](const auto& cellId)
   {
     if( index == 0 )
     {

@@ -34,7 +34,6 @@ private:
   std::optional<valid_cell> m_destination;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  // std::shared_ptr<valid_cell_collection> m_cells;
 
 };
 
