@@ -18,7 +18,7 @@ public:
   level_cell_collection(int cellWidth, int cellHeight);
 
   [[nodiscard]] auto Get() const noexcept -> const collection_type&;
-  [[nodiscard]] auto Get(int column, int row) -> const valid_cell&;
+  [[nodiscard]] auto Get(cell_id cellId) const -> const valid_cell&;
 
   auto Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void;
   auto AddWalls() noexcept -> void;
@@ -56,7 +56,7 @@ inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> const c
   return m_cells;
 }
 
-// inline [[nodiscard]] auto level_cell_collection::Get(int column, int row) -> const valid_cell&
-// {
-//   m_Cells.find({columnm, row});
-// }
+inline auto level_cell_collection::Get(cell_id cellId) const -> const valid_cell &
+{
+  return m_cells.at(cellId);
+}
