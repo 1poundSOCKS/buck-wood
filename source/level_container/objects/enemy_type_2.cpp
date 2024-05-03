@@ -47,34 +47,6 @@ auto enemy_type_2::MoveTowardsDestination(valid_cell destination, float interval
 
 auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::optional<valid_cell>
 {
-  // auto adjacentCells = std::ranges::views::filter(m_cells->Get(), [this](const auto& cell)
-  // {
-  //   auto destX = m_destination->X();
-  //   auto destY = m_destination->Y();
-  //   auto x = cell.X();
-  //   auto y = cell.Y();
-  //   auto minX = destX - 1;
-  //   auto maxX = destX + 1;
-  //   auto minY = destY - 1;
-  //   auto maxY = destY + 1;
-  //   return x >= minX && x <= maxX && y >= minY && y <= maxY;
-  // });
-
-  // size_t adjacentCellCount = std::ranges::distance(adjacentCells);
-
-  // if( adjacentCellCount == 0 )
-  // {
-  //   return m_destination;
-  // }
-  // else
-  // {
-  //   std::uniform_int_distribution<size_t> cellDist { 0, adjacentCellCount - 1 };
-  //   auto cellIndex = cellDist(pseudo_random_generator::get());
-  //   auto cellIterator = std::begin(adjacentCells);
-  //   std::advance(cellIterator, cellIndex);
-  //   return *cellIterator;
-  // }
-
   auto cellId = cells.CellId(m_position);
   auto adjacentFloorCells = adjacent_floor_cells(cells, cellId);
   auto adjacentFloorCellsCount = adjacentFloorCells.Count();
