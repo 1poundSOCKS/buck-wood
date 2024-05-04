@@ -31,6 +31,7 @@ public:
 
   [[nodiscard]] auto Count() const noexcept -> size_t;
   [[nodiscard]] auto operator[](size_t index) -> level_cell_collection::cell_id;
+  auto ForEach(auto&& callable) -> void;
 
 private:
 
@@ -46,3 +47,8 @@ private:
   };
 
 };
+
+auto adjacent_floor_cells::ForEach(auto&& callable) -> void
+{
+  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, callable);
+}

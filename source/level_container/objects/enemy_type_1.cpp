@@ -1,14 +1,47 @@
 #include "pch.h"
 #include "enemy_type_1.h"
+#include "adjacent_floor_cells.h"
 
 enemy_type_1::enemy_type_1(POINT_2F position, int hitpoints) : enemy_object { position, { 2, 2 }, 0, hitpoints }
 {
 }
 
-auto enemy_type_1::Update(float interval, POINT_2F target) -> void
+auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void
 {
   base_object::Update(interval);
-  MoveTowards(m_speed * interval, target);
+
+  m_destination = m_destination ? m_destination : NewDestination(target, cells);
+  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
+  m_destination = atDestination ? std::nullopt : m_destination;
+}
+
+auto enemy_type_1::MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool
+{
+  auto position = destination.Position();
+  bool atDestination = MoveTowards(m_speed * interval, position);
+  return atDestination;
+}
+
+auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& cells) -> std::optional<valid_cell>
+{
+  auto distanceToTarget = direct2d::GetDistanceBetweenPoints(m_position, target);
+
+  auto currentCellId = cells.CellId(m_position);
+  auto destinationCellId = currentCellId;
+  
+  adjacent_floor_cells adjacentFloorCells { cells, currentCellId };
+  adjacentFloorCells.ForEach([&cells,&currentCellId,&destinationCellId,&target,distanceToTarget](const auto& cellId)
+  {
+    const auto& cell = cells.Get(cellId);
+    auto positionOfCell = cell.Position();
+    auto distanceOfTargetToCell = direct2d::GetDistanceBetweenPoints(target, positionOfCell);
+    if( distanceOfTargetToCell < distanceToTarget )
+    {
+      destinationCellId = cellId;
+    }
+  });
+
+  return cells.Get(destinationCellId);
 }
 
 [[nodiscard]] auto enemy_type_1::CanShootAt(POINT_2F position) const -> bool

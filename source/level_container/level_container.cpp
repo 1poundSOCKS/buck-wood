@@ -81,7 +81,7 @@ auto level_container::UpdateObject(player_missile& object, float interval) -> vo
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
-  object.Update(interval, m_playerState.Position());
+  object.Update(interval, m_playerState.Position(), m_cells);
 
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {

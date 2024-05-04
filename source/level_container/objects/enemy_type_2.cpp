@@ -28,6 +28,7 @@ auto enemy_type_2::Update(float interval, const level_cell_collection& cells) ->
   m_waitTimer.Reset();
   m_destination = m_destination ? m_destination : NewDestination(cells);
   bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
+  m_destination = atDestination ? std::nullopt : m_destination;
   return atDestination ? status::waiting : status::moving;
 }
 
@@ -41,7 +42,6 @@ auto enemy_type_2::MoveTowardsDestination(valid_cell destination, float interval
 {
   auto position = destination.Position();
   bool atDestination = MoveTowards(m_speed * interval, position);
-  m_destination = atDestination ? std::nullopt : m_destination;
   return atDestination;
 }
 
