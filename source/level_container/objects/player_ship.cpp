@@ -61,6 +61,23 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     auto height = 100.0f;
     m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
   }
+
+
+  auto leftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow };
+  if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
+  {
+    auto leftCellRect = cells.CellRect(leftCellId);
+    auto width = 100.0f;
+    m_position.x = std::max(m_position.x - width, leftCellRect.right) + width;
+  }
+
+  auto rightCellId = level_cell_collection::cell_id { currentColumn + 1, currentRow };
+  if( cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) )
+  {
+    auto rightCellRect = cells.CellRect(rightCellId);
+    auto width = 100.0f;
+    m_position.x = std::min(m_position.x + width, rightCellRect.left) - width;
+  }
 }
 
 auto player_ship::UpdateWhenCelebrating(float interval) -> void
