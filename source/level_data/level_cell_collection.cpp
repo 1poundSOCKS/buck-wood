@@ -94,6 +94,15 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   return { cellColumn, cellRow };
 }
 
+auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
+{
+  auto [column, row] = cellId;
+  auto orignCellRect = CellRect();
+  auto shiftX = column * m_cellWidth;
+  auto shiftY = row * m_cellHeight;
+  return RECT_F { orignCellRect.left + shiftX, orignCellRect.top + shiftY, orignCellRect.right + shiftX, orignCellRect.bottom + shiftY };
+}
+
 auto level_cell_collection::MinColumn() const noexcept -> int
 {
   auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int

@@ -26,6 +26,7 @@ public:
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
+  [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
   [[nodiscard]] auto MinColumn() const noexcept -> int;
   [[nodiscard]] auto MaxColumn() const noexcept -> int;

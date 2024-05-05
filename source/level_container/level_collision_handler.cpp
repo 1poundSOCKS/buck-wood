@@ -32,9 +32,9 @@ auto level_collision_handler::OnCollision(auto& object, particle& particle) -> v
 
 auto level_collision_handler::operator()(default_object& object) -> void
 {
-  m_levelContainer->CreateExplosion(object.Position());
-  play_events::set(play_events::event_type::explosion, true);
-  object.Destroy();
+  // m_levelContainer->CreateExplosion(object.Position());
+  // play_events::set(play_events::event_type::explosion, true);
+  // object.Destroy();
 }
 
 auto level_collision_handler::operator()(particle& particle) -> void

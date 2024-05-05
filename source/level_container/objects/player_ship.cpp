@@ -42,6 +42,25 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
       m_position = direct2d::CalculatePosition(m_position, {leftThumbstickPosition->x * 1000, leftThumbstickPosition->y * 1000}, interval);        
     }
   }
+
+  auto currentCellId = cells.CellId(m_position);
+  auto [currentColumn, currentRow] = currentCellId;
+
+  auto aboveCellId = level_cell_collection::cell_id { currentColumn, currentRow - 1 };
+  if( cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) )
+  {
+    auto aboveCellRect = cells.CellRect(aboveCellId);
+    auto height = 100.0f;
+    m_position.y = std::max(m_position.y - height, aboveCellRect.bottom) + height;
+  }
+
+  auto belowCellId = level_cell_collection::cell_id { currentColumn, currentRow + 1 };
+  if( cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) )
+  {
+    auto belowCellRect = cells.CellRect(belowCellId);
+    auto height = 100.0f;
+    m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
+  }
 }
 
 auto player_ship::UpdateWhenCelebrating(float interval) -> void
