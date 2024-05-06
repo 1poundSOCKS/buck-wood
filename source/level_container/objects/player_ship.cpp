@@ -108,6 +108,26 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     }
   }
 
+
+  if( rightCellOverlap )
+  {
+    auto aboveRightCellId = level_cell_collection::cell_id { currentColumn + 1, currentRow - 1};
+
+    if( cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) )
+    {
+      auto cellRect = cells.CellRect(aboveRightCellId);
+      m_position.y = std::max(m_position.y - height, cellRect.bottom) + height;
+    }
+
+    auto belowRightCellId = level_cell_collection::cell_id { currentColumn + 1, currentRow + 1};
+
+    if( cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) )
+    {
+      auto cellRect = cells.CellRect(belowRightCellId);
+      m_position.y = std::min(m_position.y + height, cellRect.top) - height;
+    }
+  }
+
 }
 
 auto player_ship::UpdateWhenCelebrating(float interval) -> void
