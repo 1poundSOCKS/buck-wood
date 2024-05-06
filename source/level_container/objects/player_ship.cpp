@@ -50,35 +50,38 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   auto height = 100.0f;
 
   auto aboveCellId = level_cell_collection::cell_id { currentColumn, currentRow - 1 };
+  auto belowCellId = level_cell_collection::cell_id { currentColumn, currentRow + 1 };
+  auto leftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow };
+  auto rightCellId = level_cell_collection::cell_id { currentColumn + 1, currentRow };
+  auto aboveLeftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow - 1};
+  auto belowLeftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow + 1};
+
   auto aboveCellRect = cells.CellRect(aboveCellId);
   bool aboveCellOverlap = m_position.y - height < aboveCellRect.bottom;
+
+  auto belowCellRect = cells.CellRect(belowCellId);
+  bool belowCellOverlap = m_position.y + height > belowCellRect.top;
+
+  auto leftCellRect = cells.CellRect(leftCellId);
+  bool leftCellOverlap = m_position.x - width < leftCellRect.right;
+
+  auto rightCellRect = cells.CellRect(rightCellId);
+  bool rightCellOverlap = m_position.x + width > rightCellRect.left;
 
   if( cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) )
   {
     m_position.y = std::max(m_position.y - height, aboveCellRect.bottom) + height;
   }
 
-  auto belowCellId = level_cell_collection::cell_id { currentColumn, currentRow + 1 };
-  auto belowCellRect = cells.CellRect(belowCellId);
-  bool belowCellOverlap = m_position.y + height > belowCellRect.top;
-
   if( cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) )
   {
     m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
   }
 
-  auto leftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow };
-  auto leftCellRect = cells.CellRect(leftCellId);
-  bool leftCellOverlap = m_position.x - width < leftCellRect.right;
-
   if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
   {
     m_position.x = std::max(m_position.x - width, leftCellRect.right) + width;
   }
-
-  auto rightCellId = level_cell_collection::cell_id { currentColumn + 1, currentRow };
-  auto rightCellRect = cells.CellRect(rightCellId);
-  bool rightCellOverlap = m_position.x + width > rightCellRect.left;
 
   if( cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) )
   {
@@ -87,15 +90,11 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
 
   if( leftCellOverlap )
   {
-    auto aboveLeftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow - 1};
-
     if( cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
     {
       auto cellRect = cells.CellRect(aboveLeftCellId);
       m_position.y = std::max(m_position.y - height, cellRect.bottom) + height;
     }
-
-    auto belowLeftCellId = level_cell_collection::cell_id { currentColumn - 1, currentRow + 1};
 
     if( cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) )
     {
