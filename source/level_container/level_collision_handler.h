@@ -51,6 +51,6 @@ template <typename object_type_1, typename object_type_2> auto level_collision_h
 
 auto level_collision_handler::OnCollision(auto&& object1, auto&& object2) -> void
 {
-  // object1.Destroy();
-  // object2.Destroy();
+  object1.Destroy();
+  object2.Destroy();
 }
