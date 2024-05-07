@@ -67,51 +67,117 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   auto aboveRightCellRect = cells.CellRect(aboveRightCellId);
   auto belowRightCellRect = cells.CellRect(belowRightCellId);
 
+  auto leftCellOverlap = leftCellRect.right - ( m_position.x - width );
+  auto rightCellOverlap = m_position.x + width - rightCellRect.left;
+
+  auto aboveCellOverlap = aboveCellRect.bottom - ( m_position.y - height );
+  auto belowCellOverlap = m_position.y + height - belowCellRect.top;
+
+  rightCellOverlap;
+  belowCellOverlap;
+
   if( cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) )
   {
-    m_position.y = std::max(m_position.y - height, aboveCellRect.bottom) + height;
-  }
-
-  if( cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) )
-  {
-    m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
+    m_position.y = std::max(m_position.y - height, aboveCellRect.bottom + 1) + height;
   }
 
   if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
   {
-    m_position.x = std::max(m_position.x - width, leftCellRect.right) + width;
+    m_position.x = std::max(m_position.x - width, leftCellRect.right + 1) + width;
   }
 
-  if( cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) )
+  if( cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
   {
-    m_position.x = std::min(m_position.x + width, rightCellRect.left) - width;
-  }
-
-  bool leftCellOverlap = m_position.x - width < leftCellRect.right;
-  if( leftCellOverlap && cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
-  {
-    m_position.y = std::max(m_position.y - height, aboveCellRect.bottom) + height;
-  }
-  else
-  {
-    bool aboveCellOverlap = m_position.y - height < aboveCellRect.bottom;
-    if( aboveCellOverlap && cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
+    if( leftCellOverlap > aboveCellOverlap )
     {
-      m_position.x = std::max(m_position.x - width, aboveLeftCellRect.right) + width;
+      m_position.y = std::max(m_position.y - height, aboveLeftCellRect.bottom) + height;
+    }
+    else
+    {
+      m_position.x = std::max(m_position.x - width, aboveLeftCellRect.right + 1) + width;
     }
   }
 
-  bool rightCellOverlap = m_position.x + width > rightCellRect.left;
-  if( rightCellOverlap && cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) )
-  {
-    m_position.y = std::max(m_position.y - height, aboveRightCellRect.bottom) + height;
-  }
+  // if( cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) )
+  // {
+  //   if( leftCellOverlap > belowCellOverlap )
+  //   {
+  //       m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
+  //   }
+  //   else
+  //   {
+  //     m_position.x = std::max(m_position.x - width, leftCellRect.right + 1) + width;
+  //   }
+  // }
 
-  bool belowCellOverlap = m_position.y + height > belowCellRect.top;
-  if( belowCellOverlap && cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall))
-  {
-    m_position.x = std::max(m_position.x - width, belowLeftCellRect.right) + width;
-  }
+  // bool wallBelow = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ||
+  //   leftCellOverlap && cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) ||
+  //   rightCellOverlap && cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall);
+
+  // if( wallBelow )
+  // {
+  //   m_position.y = std::min(m_position.y + height, belowCellRect.top - 1) - height;
+  // }
+
+  // bool aboveCellOverlap = m_position.y - height < aboveCellRect.bottom;
+  // bool belowCellOverlap = m_position.y + height > belowCellRect.top;
+
+  // bool wallLeft = cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) ||
+  //   aboveCellOverlap && cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) ||
+  //   belowCellOverlap && cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall);
+
+  // if( wallLeft )
+  // {
+  //   m_position.x = std::max(m_position.x - width, leftCellRect.right + 1) + width;
+  // }
+
+  // if( cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) )
+  // {
+  //   m_position.y = std::max(m_position.y - height, aboveCellRect.bottom) + height;
+  // }
+  // else
+  // {
+  //   bool leftCellOverlap = m_position.x - width < leftCellRect.right;
+  //   if( leftCellOverlap && cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
+  //   {
+  //     m_position.y = std::max(m_position.y - height, aboveLeftCellRect.bottom) + height;
+  //   }
+    
+  //   bool rightCellOverlap = m_position.x + width > rightCellRect.left;
+  //   if( rightCellOverlap && cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) )
+  //   {
+  //     m_position.y = std::max(m_position.y - height, aboveRightCellRect.bottom) + height;
+  //   }
+  // }
+
+  // if( cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) )
+  // {
+  //   m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
+  // }
+
+  // if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
+  // {
+  //   m_position.x = std::max(m_position.x - width, leftCellRect.right) + width;
+  // }
+  // else
+  // {
+  //   bool aboveCellOverlap = m_position.y - height < aboveCellRect.bottom;
+  //   if( aboveCellOverlap && cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
+  //   {
+  //     m_position.x = std::max(m_position.x - width, aboveLeftCellRect.right) + width;
+  //   }
+
+  //   bool belowCellOverlap = m_position.y + height > belowCellRect.top;
+  //   if( belowCellOverlap && cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall))
+  //   {
+  //     m_position.x = std::max(m_position.x - width, belowLeftCellRect.right) + width;
+  //   }
+  // }
+
+  // if( cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) )
+  // {
+  //   m_position.x = std::min(m_position.x + width, rightCellRect.left) - width;
+  // }
 
 }
 
