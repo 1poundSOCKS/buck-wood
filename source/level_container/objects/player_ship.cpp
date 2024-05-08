@@ -46,8 +46,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   auto currentCellId = cells.CellId(m_position);
   auto [currentColumn, currentRow] = currentCellId;
 
-  auto width = 100.0f;
-  auto height = 100.0f;
+  auto width = 90.0f;
+  auto height = 90.0f;
 
   auto aboveCellId = level_cell_collection::cell_id { currentColumn, currentRow - 1 };
   auto belowCellId = level_cell_collection::cell_id { currentColumn, currentRow + 1 };
@@ -73,20 +73,29 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   auto aboveCellOverlap = aboveCellRect.bottom - ( m_position.y - height );
   auto belowCellOverlap = m_position.y + height - belowCellRect.top;
 
-  rightCellOverlap;
-  belowCellOverlap;
+  if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
+  {
+    m_position.x = std::max(m_position.x - width, leftCellRect.right + 1) + width;
+  }
 
   if( cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) )
   {
     m_position.y = std::max(m_position.y - height, aboveCellRect.bottom + 1) + height;
   }
 
-  if( cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) )
+  if( cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) )
   {
-    m_position.x = std::max(m_position.x - width, leftCellRect.right + 1) + width;
+    m_position.x = std::min(m_position.x + width, rightCellRect.left) - width;
   }
 
-  if( cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
+  if( cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) )
+  {
+    m_position.y = std::min(m_position.y + height, belowCellRect.top) - height;
+  }
+
+  if( !cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) &&
+      !cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) && 
+      cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) )
   {
     if( leftCellOverlap > aboveCellOverlap )
     {
@@ -95,6 +104,18 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
     else
     {
       m_position.x = std::max(m_position.x - width, aboveLeftCellRect.right + 1) + width;
+    }
+  }
+
+  if( cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) )
+  {
+    if( rightCellOverlap > belowCellOverlap )
+    {
+      m_position.y = std::min(m_position.y + height, belowRightCellRect.top) - height;
+    }
+    else
+    {
+      m_position.x = std::min(m_position.x + width, belowRightCellRect.left + 1) - width;
     }
   }
 
