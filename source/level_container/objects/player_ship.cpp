@@ -50,7 +50,7 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
 
 auto player_ship::UpdatePosition(float interval, const level_cell_collection& cells, POINT_2F movementControl) -> void
 {
-  auto moveDistance = POINT_2F { movementControl.x * 1000 * interval, movementControl.y * 1000 * interval };
+  auto moveDistance = POINT_2F { movementControl.x * 500 * interval, movementControl.y * 500 * interval };
 
   auto [column, row] = cells.CellId(m_position);
 

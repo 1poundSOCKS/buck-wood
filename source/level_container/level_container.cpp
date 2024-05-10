@@ -54,7 +54,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, object.ShootAngle()), 1);
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(2000, object.ShootAngle()), 1);
     play_events::set(play_events::event_type::shot, true);
   }
 
