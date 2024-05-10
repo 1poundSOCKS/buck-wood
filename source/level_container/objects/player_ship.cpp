@@ -88,7 +88,7 @@ auto player_ship::UpdatePosition(float interval, const level_cell_collection& ce
 
   auto wallBelow = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
   auto wallBelowLeft = cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && m_position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
-  auto wallBelowRight = wallBelow;
+  auto wallBelowRight = cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && m_position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
 
   wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
   wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
@@ -98,9 +98,7 @@ auto player_ship::UpdatePosition(float interval, const level_cell_collection& ce
   auto minXShift = wallLeft  - m_position.x;
   auto maxXShift = wallRight - m_position.x;
 
-  // auto minYShift = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom - m_position.y : aboveCellRect.top - m_position.y;
   auto minYShift = wallAbove - m_position.y;
-  // auto maxYShift = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top - m_position.y : belowCellRect.bottom - m_position.y;
   auto maxYShift = wallBelow - m_position.y;
 
   moveDistance.x = std::max(moveDistance.x, minXShift);
