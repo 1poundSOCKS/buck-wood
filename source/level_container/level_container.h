@@ -143,7 +143,8 @@ inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> PO
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
-  return m_playerState.ThrusterOn();
+  // return m_playerState.ThrusterOn();
+  return false;
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
@@ -318,7 +319,7 @@ auto level_container::Update(auto&& updateVisitor, auto&& collisionHandler, D2D1
 
   RemoveDestroyedObjects();
 
-  m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
+  // m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {

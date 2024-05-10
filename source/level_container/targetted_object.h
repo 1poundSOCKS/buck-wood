@@ -47,17 +47,19 @@ public:
 
   [[nodiscard]] auto CanBeDestroyed(const player_ship& playerShip) -> bool
   {
-    auto targettedBullet = Object().GetIf<enemy_bullet_1>();
-    return targettedBullet && CanBeDestroyed(*targettedBullet, playerShip) ? true : false;
+    // auto targettedBullet = Object().GetIf<enemy_bullet_1>();
+    // return targettedBullet && CanBeDestroyed(*targettedBullet, playerShip) ? true : false;
+    return true;
   }
 
 private:
 
-  static [[nodiscard]] auto CanBeDestroyed(const enemy_bullet_1& bullet, const player_ship& playerShip) -> bool
-  {
-    return bullet.Type() == enemy_bullet_1::type::one && playerShip.FireMode() == player_ship::fire_mode::two || 
-        bullet.Type() == enemy_bullet_1::type::two && playerShip.FireMode() == player_ship::fire_mode::one;
-  }
+  // static [[nodiscard]] auto CanBeDestroyed(const enemy_bullet_1& bullet, const player_ship& playerShip) -> bool
+  // {
+    // return bullet.Type() == enemy_bullet_1::type::one && playerShip.FireMode() == player_ship::fire_mode::two || 
+    //     bullet.Type() == enemy_bullet_1::type::two && playerShip.FireMode() == player_ship::fire_mode::one;
+  //   return true;
+  // }
 
 private:
 

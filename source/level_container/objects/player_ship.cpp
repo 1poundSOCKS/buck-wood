@@ -26,18 +26,50 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
 
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
 
-  std::optional<POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
-  if( leftThumbstickPosition )
+  switch( m_movementState )
   {
-    UpdatePosition(interval, cells, *leftThumbstickPosition);
-  }
+    case movement_state::normal:
+      {
+        std::optional<POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
+        if( leftThumbstickPosition )
+        {
+          UpdatePosition(interval, cells, *leftThumbstickPosition);
+        }
 
-  m_triggerDown = rightThumbstickPosition != std::nullopt;
+        m_triggerDown = rightThumbstickPosition != std::nullopt;
 
-  if( m_triggerDown )
-  {
-    auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
-    m_shootAngle = static_cast<float>(shootAngle);
+        if( m_triggerDown )
+        {
+          auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
+          m_shootAngle = static_cast<float>(shootAngle);
+        }
+
+        if( leftThumbstickPosition && gamepad_reader::button_pressed(XINPUT_GAMEPAD_A) )
+        {
+          m_movementState = movement_state::dash;
+          auto leftThumbstickDirection = direct2d::CalculateDirection({leftThumbstickPosition->x, leftThumbstickPosition->y});
+          m_dashVelocity = direct2d::CalculateVelocity(2000, leftThumbstickDirection);
+        }
+
+      }
+
+      break;
+
+    case movement_state::dash:
+
+      m_dashTimer.Update(interval);
+
+      if( m_dashTimer.Get(1, true) > 0 )
+      {
+        m_movementState = movement_state::normal;
+      }
+      else
+      {
+        m_position = direct2d::CalculatePosition(m_position, m_dashVelocity, interval);
+      }
+
+      break;
+
   }
 }
 
