@@ -11,9 +11,9 @@ public:
 
 private:
 
-  particle_type_renderer m_defaultParticleRenderer { color_scale { screen_render_brush_particles.Get(), screen_render_brush_black.Get(), 10 } };
-  particle_type_renderer m_impactParticleRenderer { color_scale { screen_render_brush_impact_particles.Get(), screen_render_brush_black.Get(), 10 } };
-  particle_type_renderer m_thrustParticleRenderer { color_scale { screen_render_brush_thrust_particles.Get(), screen_render_brush_black.Get(), 10 } };
+  particle_type_renderer m_defaultParticleRenderer { 8, color_scale { screen_render_brush_particles.Get(), screen_render_brush_black.Get(), 10 } };
+  particle_type_renderer m_impactParticleRenderer { 8, color_scale { screen_render_brush_impact_particles.Get(), screen_render_brush_black.Get(), 10 } };
+  particle_type_renderer m_thrustParticleRenderer { 32, color_scale { screen_render_brush_thrust_particles.Get(), screen_render_brush_black.Get(), 10 } };
 
 };
 

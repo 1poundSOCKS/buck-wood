@@ -9,19 +9,19 @@ class particle_type_renderer
 
 public:
 
-  template <class... Args> particle_type_renderer(Args&&... args);
+  template <class... Args> particle_type_renderer(float particleSize, Args&&... args);
   auto Write(const particle& particleInstance) const -> void;
 
 private:
 
-  constexpr static float m_renderRectSize { 8 };
-  constexpr static D2D1_RECT_F m_renderRect { -m_renderRectSize, -m_renderRectSize, m_renderRectSize, m_renderRectSize };
+  float m_renderRectSize { 8 };
+  D2D1_RECT_F m_renderRect { -m_renderRectSize, -m_renderRectSize, m_renderRectSize, m_renderRectSize };
   color_scale_brushes m_brushes;
 
 };
 
-template <class... Args> particle_type_renderer::particle_type_renderer(Args&&... args) : 
-  m_brushes(std::forward<Args>(args)...)
+template <class... Args> particle_type_renderer::particle_type_renderer(float particleSize, Args&&... args) : 
+  m_renderRectSize { particleSize }, m_brushes(std::forward<Args>(args)...)
 {
 }
 
