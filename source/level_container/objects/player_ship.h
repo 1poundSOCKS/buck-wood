@@ -35,7 +35,8 @@ public:
   // [[nodiscard]] auto ShieldsUp() const -> bool;
   [[nodiscard]] auto CanShoot() -> bool;
   // [[nodiscard]] auto CanFireMissile() -> bool;
-  // [[nodiscard]] auto EmitThrustParticle() -> bool;
+  [[nodiscard]] auto EmitThrustParticle() -> bool;
+  [[nodiscard]] auto ThrustParticleDirection() const -> float;
   // [[nodiscard]] auto FireMode() const -> fire_mode;
 
   // [[nodiscard]] auto TargettingActive() const -> bool;
@@ -85,6 +86,8 @@ private:
   float m_shootAngle;
 
   VELOCITY_2F m_dashVelocity { 0, 0 };
+
+  std::optional<POINT_2F> m_leftThumbstickPosition;
 
 };
 
@@ -141,13 +144,20 @@ inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 
 // inline [[nodiscard]] auto player_ship::CanFireMissile() -> bool
 // {
+
+inline [[nodiscard]] auto player_ship::ThrustParticleDirection() const -> float
+{
+  auto angle = m_leftThumbstickPosition ? direct2d::CalculateDirection({m_leftThumbstickPosition->x, m_leftThumbstickPosition->y}) : 0;
+  return direct2d::RotateAngle(angle, 180);
+}
+
 //   return !m_destroyed && m_fireMode == fire_mode::two && TriggerDown() && !m_shieldsUp && m_playerReloadCounter.Get(1, true) == 1;
 // }
 
-// inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
-// {
-//   return !m_destroyed && m_thrusterOn && m_thrustEmmisionCounter.Get(1, true) == 1;
-// }
+inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
+{
+  return !m_destroyed && m_movementState == movement_state::dash && m_thrustEmmisionCounter.Get(1, true) == 1;
+}
 
 // inline [[nodiscard]] auto player_ship::FireMode() const -> fire_mode
 // {

@@ -58,20 +58,14 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
     play_events::set(play_events::event_type::shot, true);
   }
 
-  // if( m_targettedObject && player_state::missile_count() && object.CanFireMissile() )
-  // {
-  //   CreatePlayerMissile(object.Position(), direct2d::CalculateVelocity(500, object.ShootAngle()), 10);
-  //   play_events::set(play_events::event_type::shot, true);
-  //   player_state::decrement_missile_count();
-  // }
-
-  // if( object.EmitThrustParticle() )
-  // {
-  //   auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
-  //   auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
-  //   auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
-  //   CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
-  // }
+  if( object.EmitThrustParticle() )
+  {
+    // auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
+    auto thrustAngle = object.ThrustParticleDirection();
+    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
+    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+    CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+  }
 }
 
 auto level_container::UpdateObject(player_missile& object, float interval) -> void
@@ -99,7 +93,7 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
-    auto velocity = direct2d::CalculateVelocity(1000.0f, direction);
+    auto velocity = direct2d::CalculateVelocity(600.0f, direction);
     CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
     play_events::set(play_events::event_type::shot, true);
   }
