@@ -18,7 +18,7 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
       case 0:
       default:
         m_events.emplace_back(5.0f, [this, levelIndex](level_container* levelContainer) -> void { CreateType1Enemies(levelContainer, 1, 10 * (levelIndex + 1)); m_levelCanBeCompleted = true; });
-        m_events.emplace_back(5.0f, [this, levelIndex](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, levelIndex + 1); m_levelCanBeCompleted = true; });
+        // m_events.emplace_back(5.0f, [this, levelIndex](level_container* levelContainer) -> void { CreateType2Enemies(levelContainer, levelIndex + 1); m_levelCanBeCompleted = true; });
         break;
     }
 
