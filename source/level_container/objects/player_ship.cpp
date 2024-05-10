@@ -78,18 +78,30 @@ auto player_ship::UpdatePosition(float interval, const level_cell_collection& ce
   auto wallLeftAbove = cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
   auto wallLeftBelow = cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && m_position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
 
+  auto wallAbove = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
+  auto wallAboveLeft = wallAbove;//= cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_position.x < aboveLeftCellRect.right ? aboveLeftCellRect.left : aboveLeftCellRect.left;
+  auto wallAboveRight = wallAbove;//cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.x > aboveRightCellRect.left ? aboveRightCellRect.left : belowLeftCellRect.right;
+
   auto wallRight = cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) ? rightCellRect.left : rightCellRect.right;
   auto wallRightAbove = cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
   auto wallRightBelow = cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && m_position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
 
+  auto wallBelow = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
+  auto wallBelowLeft = wallBelow;
+  auto wallBelowRight = wallBelow;
+
   wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
+  wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
   wallRight = std::min({wallRight, wallRightAbove, wallRightBelow});
+  wallBelow = std::min({wallBelow, wallBelowLeft, wallBelowRight});
 
   auto minXShift = wallLeft  - m_position.x;
   auto maxXShift = wallRight - m_position.x;
 
-  auto minYShift = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom - m_position.y : aboveCellRect.top - m_position.y;
-  auto maxYShift = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top - m_position.y : belowCellRect.bottom - m_position.y;
+  // auto minYShift = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom - m_position.y : aboveCellRect.top - m_position.y;
+  auto minYShift = wallAbove - m_position.y;
+  // auto maxYShift = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top - m_position.y : belowCellRect.bottom - m_position.y;
+  auto maxYShift = wallBelow - m_position.y;
 
   moveDistance.x = std::max(moveDistance.x, minXShift);
   moveDistance.x = std::min(moveDistance.x, maxXShift);
