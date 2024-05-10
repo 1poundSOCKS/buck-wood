@@ -80,7 +80,7 @@ auto player_ship::UpdatePosition(float interval, const level_cell_collection& ce
 
   auto wallAbove = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
   auto wallAboveLeft = cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
-  auto wallAboveRight = wallAbove;//cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.x > aboveRightCellRect.left ? aboveRightCellRect.left : belowLeftCellRect.right;
+  auto wallAboveRight = cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
 
   auto wallRight = cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) ? rightCellRect.left : rightCellRect.right;
   auto wallRightAbove = cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
