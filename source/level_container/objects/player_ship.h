@@ -29,7 +29,7 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
 
-  // [[nodiscard]] auto ThrusterOn() const -> bool;
+  [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
   // [[nodiscard]] auto ShieldsUp() const -> bool;
@@ -79,7 +79,7 @@ private:
 
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
 
-  reload_counter m_dashTimer { 1.0f / 5.0f, 1 };
+  reload_counter m_dashTimer { 1.0f / 3.0f, 1 };
 
   std::optional<POINT_2F> m_destination;
   float m_shootAngle;
@@ -113,10 +113,10 @@ inline auto player_ship::ApplyFatalDamage() -> void
   m_destroyed = true;
 }
 
-// inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
-// {
-//   return !m_destroyed && m_thrusterOn;
-// }
+inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
+{
+  return !m_destroyed && m_movementState == movement_state::dash;
+}
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
 {

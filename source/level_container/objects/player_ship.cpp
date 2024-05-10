@@ -33,7 +33,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         std::optional<POINT_2F> leftThumbstickPosition = gamepad_reader::left_thumbstick();
         if( leftThumbstickPosition )
         {
-          UpdatePosition(interval, cells, *leftThumbstickPosition);
+          auto moveDistance = POINT_2F { leftThumbstickPosition->x * 500 * interval, leftThumbstickPosition->y * 500 * interval };
+          UpdatePosition(interval, cells, moveDistance);
         }
 
         m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -65,7 +66,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
       }
       else
       {
-        m_position = direct2d::CalculatePosition(m_position, m_dashVelocity, interval);
+        auto moveDistance = direct2d::CalculatePosition({0,0}, m_dashVelocity, interval);
+        UpdatePosition(interval, cells, moveDistance);
       }
 
       break;
@@ -80,9 +82,9 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
   m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
 }
 
-auto player_ship::UpdatePosition(float interval, const level_cell_collection& cells, POINT_2F movementControl) -> void
+auto player_ship::UpdatePosition(float interval, const level_cell_collection& cells, POINT_2F moveDistance) -> void
 {
-  auto moveDistance = POINT_2F { movementControl.x * 500 * interval, movementControl.y * 500 * interval };
+  // auto moveDistance = POINT_2F { movementControl.x * 500 * interval, movementControl.y * 500 * interval };
 
   auto [column, row] = cells.CellId(m_position);
 

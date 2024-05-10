@@ -143,8 +143,7 @@ inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> PO
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
-  // return m_playerState.ThrusterOn();
-  return false;
+  return m_playerState.ThrusterOn();
 }
 
 inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
