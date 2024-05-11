@@ -57,7 +57,6 @@ public:
   auto CreatePlayerObject(auto&&...args) -> void;
   auto CreateEnemyObject(auto&&...args) -> void;
 
-  // auto CreatePortal(auto&&...args) -> void;
   auto CreatePortal(POINT_2I cell) -> void;
   auto CreatePlayer(auto&&...args) -> void;
   auto CreateBackgroundObject(auto&&...args) -> void;
@@ -177,15 +176,9 @@ auto level_container::CreateEnemyObject(auto&&...args) -> void
   m_enemyObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-// auto level_container::CreatePortal(auto&&...args) -> void
-// {
-//   CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
-// }
-
 inline auto level_container::CreatePortal(POINT_2I cell) -> void
 {
-  // auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  auto cellPosition = m_cells.CellPosition(1, 0);
+  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
   CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, cellPosition);
 }
 
