@@ -54,13 +54,12 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(2000, object.ShootAngle()), 1);
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1500, object.ShootAngle()), 1);
     play_events::set(play_events::event_type::shot, true);
   }
 
   if( object.EmitThrustParticle() )
   {
-    // auto thrustAngle = direct2d::RotateAngle(object.Angle(), 180);
     auto thrustAngle = object.ThrustParticleDirection();
     auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
     auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
