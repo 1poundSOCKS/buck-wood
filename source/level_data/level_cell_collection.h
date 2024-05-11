@@ -34,13 +34,13 @@ public:
   [[nodiscard]] auto MaxRow() const noexcept -> int;
 
   [[nodiscard]] auto IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool;
+  [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
 private:
 
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
-  [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
   [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
 
 private:

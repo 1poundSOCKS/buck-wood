@@ -18,6 +18,8 @@ demo_level::demo_level()
     {
       switch( rowData[columnIndex] )
       {
+        case 'P':
+          m_portals.emplace(static_cast<int>(columnIndex - centreColumn), static_cast<int>(rowIndex - centreRow));
         case ' ':
           m_cells.emplace(static_cast<int>(columnIndex - centreColumn), static_cast<int>(rowIndex - centreRow));
           break;

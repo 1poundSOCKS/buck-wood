@@ -108,13 +108,19 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
 
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(cellView, std::forward<decltype(args)>(args)...);
 
-  levelContainer->CreatePortal(POINT_2F { 0, 0 });
+  for( const auto& portal : m_demoLevel.Portals() )
+  {
+    const auto& [x, y] = portal;
+    levelContainer->CreatePortal(POINT_2I { x, y });
+  }
+  
   m_status = status::starting;
   m_levelCanBeCompleted = false;
 
   m_events.clear();
   
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void {
+  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void
+  {
     CreatePlayer(levelContainer);
     m_status = status::started;
   });

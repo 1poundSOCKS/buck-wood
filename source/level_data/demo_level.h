@@ -17,6 +17,7 @@ public:
   constexpr static [[nodiscard]] auto CellHeight() noexcept -> int { return 400; }
 
   [[nodiscard]] auto Cells() const noexcept -> const cell_collection&;
+  [[nodiscard]] auto Portals() const noexcept -> const cell_collection&;
 
 private:
 
@@ -27,7 +28,7 @@ private:
     std::string { "  00  0  00  " },
     std::string { "      0      " },
     std::string { "     000     " },
-    std::string { "             " },
+    std::string { "  P          " },
     std::string { "     000     " },
     std::string { "      0      " },
     std::string { "  00  0  00  " },
@@ -37,10 +38,16 @@ private:
   };
 
   cell_collection m_cells;
+  cell_collection m_portals;
 
 };
 
 inline [[nodiscard]] auto demo_level::Cells() const noexcept -> const cell_collection&
 {
   return m_cells;
+}
+
+inline [[nodiscard]] auto demo_level::Portals() const noexcept -> const cell_collection&
+{
+  return m_portals;
 }
