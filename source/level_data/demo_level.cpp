@@ -5,7 +5,7 @@
 demo_level::demo_level()
 {
   auto rowCount = m_levelData.size();
-  auto columnCount = m_levelData[0].size();
+  auto columnCount = m_levelData[0].length();
 
   auto centreRow = rowCount / 2;
   auto centreColumn = columnCount / 2;
@@ -18,7 +18,7 @@ demo_level::demo_level()
     {
       switch( rowData[columnIndex] )
       {
-        case 1:
+        case '1':
           m_cells.emplace(static_cast<int>(columnIndex - centreColumn), static_cast<int>(rowIndex - centreRow));
           break;
       }
