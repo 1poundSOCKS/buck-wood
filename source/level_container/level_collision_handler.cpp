@@ -59,9 +59,11 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bul
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {
+  enemy.ApplyDamage(bullet.Damage());
   m_levelContainer->CreateExplosion(bullet.Position());
-  play_events::set(play_events::event_type::explosion, true);
   bullet.Destroy();
+  m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
+  play_events::set(play_events::event_type::explosion, true);
 }
 
 auto level_collision_handler::OnCollision(player_missile& missile, enemy_type_1& enemy) -> void
@@ -69,14 +71,15 @@ auto level_collision_handler::OnCollision(player_missile& missile, enemy_type_1&
   enemy.ApplyDamage(missile.Damage());
   missile.Destroy();
   m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : missile.Position());
+  play_events::set(play_events::event_type::explosion, true);
 }
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
 {
-  play_events::set(play_events::event_type::explosion, true);
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
   m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
+  play_events::set(play_events::event_type::explosion, true);
 
   if( enemy.Destroyed() )
   {

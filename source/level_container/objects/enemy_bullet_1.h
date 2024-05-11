@@ -20,7 +20,7 @@ public:
 private:
 
   static constexpr float m_spinRate { 400 };
-  static constexpr float rotationSpeed { 200.0f };
+  static constexpr float rotationSpeed { 300.0f };
 
   type m_type;
 
