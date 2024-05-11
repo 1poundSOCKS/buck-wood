@@ -18,7 +18,7 @@ demo_level::demo_level()
     {
       switch( rowData[columnIndex] )
       {
-        case '1':
+        case ' ':
           m_cells.emplace(static_cast<int>(columnIndex - centreColumn), static_cast<int>(rowIndex - centreRow));
           break;
       }

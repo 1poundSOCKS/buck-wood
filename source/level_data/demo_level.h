@@ -21,19 +21,19 @@ public:
 private:
 
   inline static std::array m_levelData { 
-    std::string { "1111111111111" },
-    std::string { "1111111111111" },
-    std::string { "1100110110011" },
-    std::string { "1100110110011" },
-    std::string { "1111110111111" },
-    std::string { "1111100011111" },
-    std::string { "1111111111111" },
-    std::string { "1111100011111" },
-    std::string { "1111110111111" },
-    std::string { "1100110110011" },
-    std::string { "1100110110011" },
-    std::string { "1111111111111" },
-    std::string { "1111111111111" }
+    std::string { "             " },
+    std::string { "             " },
+    std::string { "  00  0  00  " },
+    std::string { "  00  0  00  " },
+    std::string { "      0      " },
+    std::string { "     000     " },
+    std::string { "             " },
+    std::string { "     000     " },
+    std::string { "      0      " },
+    std::string { "  00  0  00  " },
+    std::string { "  00  0  00  " },
+    std::string { "             " },
+    std::string { "             " }
   };
 
   cell_collection m_cells;
