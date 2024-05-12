@@ -49,7 +49,9 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
 auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
-  levelContainer->CreatePlayer(POINT_2F { 0, 0 });
+  auto playerStartCell = m_demoLevel.PlayerStartCell();
+  auto playerStartPosition = levelContainer->Cells().CellPosition(playerStartCell.x, playerStartCell.y);
+  levelContainer->CreatePlayer(playerStartPosition);
 }
 
 auto game_level_data_loader::CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void

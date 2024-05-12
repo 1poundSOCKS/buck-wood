@@ -18,6 +18,11 @@ public:
 
   [[nodiscard]] auto Cells() const noexcept -> const cell_collection&;
   [[nodiscard]] auto Portals() const noexcept -> const cell_collection&;
+  [[nodiscard]] auto PlayerStartCell() const noexcept -> POINT_2I;
+
+private:
+
+  [[nodiscard]] auto FirstPortal() const -> POINT_2I;
 
 private:
 
@@ -50,4 +55,15 @@ inline [[nodiscard]] auto demo_level::Cells() const noexcept -> const cell_colle
 inline [[nodiscard]] auto demo_level::Portals() const noexcept -> const cell_collection&
 {
   return m_portals;
+}
+
+inline auto demo_level::PlayerStartCell() const noexcept -> POINT_2I
+{
+  return m_portals.size() == 0 ? POINT_2I { 0, 0  } : FirstPortal();
+}
+
+inline auto demo_level::FirstPortal() const -> POINT_2I
+{
+  const auto& [column, row] = *std::begin(m_portals);
+  return { column, row };
 }
