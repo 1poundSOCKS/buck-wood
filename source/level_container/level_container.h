@@ -179,6 +179,7 @@ auto level_container::CreateEnemyObject(auto&&...args) -> void
 inline auto level_container::CreatePortal(POINT_2I cell) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
+  m_playerState.SetPosition(cellPosition);
   CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, cellPosition);
 }
 

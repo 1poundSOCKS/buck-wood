@@ -17,8 +17,8 @@ public:
     auto playerPosition = m_playState->LevelContainer().PlayerPosition();
     auto playCameraZoom = GetPlayCameraZoom();
     
-    m_cameraSequence = camera_sequence::camera_position { 0, 0, 5.0f };
-    m_cameraSequence.AddMove( { 0, 0, playCameraZoom }, performance_counter::CalculateTicks(3) );
+    m_cameraSequence = camera_sequence::camera_position { playerPosition.x, playerPosition.y, 5.0f };
+    m_cameraSequence.AddMove( { playerPosition.x, playerPosition.y, playCameraZoom }, performance_counter::CalculateTicks(3) );
     SetCameraZoom(m_cameraSequence.GetScale(0));
 
     m_renderTransform = RenderTransform();

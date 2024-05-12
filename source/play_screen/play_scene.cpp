@@ -107,11 +107,6 @@ auto play_scene::RenderLevelContainer() const -> void
 
   const auto& levelContainer = m_playState->LevelContainer();
 
-  // if( levelContainer.Boundary().Geometry() )
-  // {
-  //   renderer::render(levelContainer.Boundary());
-  // }
-
   renderer::render_all(levelContainer.NoninteractiveObjects());
   renderer::render_all(levelContainer.Particles());
   renderer::ordered_render_all(levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
