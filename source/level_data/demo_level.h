@@ -32,14 +32,14 @@ private:
     std::string { "  00  0  00  " },
     std::string { "  00  0  00  " },
     std::string { "      0      " },
+    std::string { "000   0      " },
+    std::string { "000          " },
     std::string { "     000     " },
-    std::string { "  P          " },
-    std::string { "     000     " },
-    std::string { "      0      " },
+    std::string { "  00  0      " },
     std::string { "  00  0  00  " },
     std::string { "  00  0  00  " },
-    std::string { "             " },
-    std::string { "             " }
+    std::string { "  00         " },
+    std::string { "P 00         " }
   };
 
   cell_collection m_cells;
