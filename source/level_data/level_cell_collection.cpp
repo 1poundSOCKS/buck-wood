@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "level_cell_collection.h"
-#include "level_position.h"
 
 level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_cellWidth { cellWidth}, m_cellHeight { cellHeight }
 {
