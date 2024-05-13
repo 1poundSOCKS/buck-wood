@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "player_state.h"
-#include "level_position.h"
 
 player_ship::player_ship(POINT_2F position) : 
   base_object { position, { 1.5f, 1.5f }, 0 }, m_shootAngle { 0 }
@@ -39,8 +38,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         if( m_leftThumbstickPosition )
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 500 * interval, m_leftThumbstickPosition->y * 500 * interval };
-          auto currentPosition = level_position { m_position };
-          m_position = currentPosition.MoveBy(moveDistance, cells, m_objectSize);
+          m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
         }
 
         m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -60,8 +58,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         if( m_leftThumbstickPosition )
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 1500 * interval, m_leftThumbstickPosition->y * 1500 * interval };
-          auto currentPosition = level_position { m_position };
-          m_position = currentPosition.MoveBy(moveDistance, cells, m_objectSize);
+          m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
         }
       }
 

@@ -36,6 +36,8 @@ public:
   [[nodiscard]] auto IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
+  [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
+
 private:
 
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;

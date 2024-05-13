@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "level_cell_collection.h"
+#include "level_position.h"
 
 level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_cellWidth { cellWidth}, m_cellHeight { cellHeight }
 {
@@ -38,6 +39,12 @@ auto level_cell_collection::AddWalls() noexcept -> void
 auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
 {
   return POINT_2F(static_cast<float>(x * m_cellWidth), static_cast<float>(y * m_cellHeight));
+}
+
+auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
+{
+  auto currentPosition = level_position { position };
+  return currentPosition.MoveBy(distance, *this, objectSize);
 }
 
 auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>
