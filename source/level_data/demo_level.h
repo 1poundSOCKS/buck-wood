@@ -28,18 +28,18 @@ private:
 
   inline static std::array m_levelData { 
     std::string { "             " },
-    std::string { "             " },
+    std::string { "  1     2    " },
     std::string { "  000   000  " },
     std::string { "  000   000  " },
     std::string { "             " },
     std::string { "00000   00000" },
     std::string { "00000   00000" },
     std::string { "             " },
-    std::string { "  000        " },
+    std::string { "  000    2   " },
     std::string { "  00   000   " },
     std::string { "  00   000   " },
     std::string { "  00         " },
-    std::string { "P 00         " }
+    std::string { "P 00     1   " }
   };
 
   cell_collection m_cells;
