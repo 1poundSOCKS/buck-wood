@@ -40,7 +40,6 @@ private:
 
   auto UpdateWhenActive(float interval, const level_cell_collection& cells) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
-  auto UpdatePosition(float interval, const level_cell_collection& cells, POINT_2F movementControl) -> void;
 
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
@@ -49,8 +48,6 @@ private:
   enum class control_direction_type { none, up, down, left, right };
   [[nodiscard]] auto DirectionalControlPressed() const -> control_direction_type;
   auto Visit(adjacent_cell_visitor& visitor, const level_cell_collection& cellCollection) -> void;
-
-  static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
 
 private:
 

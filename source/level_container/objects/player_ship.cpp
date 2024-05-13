@@ -39,7 +39,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         if( m_leftThumbstickPosition )
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 500 * interval, m_leftThumbstickPosition->y * 500 * interval };
-          UpdatePosition(interval, cells, moveDistance);
+          auto currentPosition = level_position { m_position };
+          m_position = currentPosition.MoveBy(moveDistance, cells);
         }
 
         m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -59,7 +60,8 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         if( m_leftThumbstickPosition )
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 1500 * interval, m_leftThumbstickPosition->y * 1500 * interval };
-          UpdatePosition(interval, cells, moveDistance);
+          auto currentPosition = level_position { m_position };
+          m_position = currentPosition.MoveBy(moveDistance, cells);
         }
       }
 
@@ -73,69 +75,6 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
   constexpr float rotationSpeed = 480.0f;
   auto rotationAmount = rotationSpeed * interval;
   m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
-}
-
-auto player_ship::UpdatePosition(float interval, const level_cell_collection& cells, POINT_2F moveDistance) -> void
-{
-  // auto moveDistance = POINT_2F { movementControl.x * 500 * interval, movementControl.y * 500 * interval };
-
-  auto [column, row] = cells.CellId(m_position);
-
-  auto playerSize = SIZE_F { 90, 90 };
-
-  auto aboveCellId = level_cell_collection::cell_id { column, row - 1 };
-  auto belowCellId = level_cell_collection::cell_id { column, row + 1 };
-  auto leftCellId = level_cell_collection::cell_id { column - 1, row };
-  auto rightCellId = level_cell_collection::cell_id { column + 1, row };
-  auto aboveLeftCellId = level_cell_collection::cell_id { column - 1, row - 1};
-  auto belowLeftCellId = level_cell_collection::cell_id { column - 1, row + 1};
-  auto aboveRightCellId = level_cell_collection::cell_id { column + 1, row - 1};
-  auto belowRightCellId = level_cell_collection::cell_id { column + 1, row + 1};
-
-  auto aboveCellRect = ExpandRect(cells.CellRect(aboveCellId), playerSize);
-  auto belowCellRect = ExpandRect(cells.CellRect(belowCellId), playerSize);
-  auto leftCellRect = ExpandRect(cells.CellRect(leftCellId), playerSize);
-  auto rightCellRect = ExpandRect(cells.CellRect(rightCellId), playerSize);
-  auto aboveLeftCellRect = ExpandRect(cells.CellRect(aboveLeftCellId), playerSize);
-  auto belowLeftCellRect = ExpandRect(cells.CellRect(belowLeftCellId), playerSize);
-  auto aboveRightCellRect = ExpandRect(cells.CellRect(aboveRightCellId), playerSize);
-  auto belowRightCellRect = ExpandRect(cells.CellRect(belowRightCellId), playerSize);
-
-  auto wallLeft = cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) ? leftCellRect.right : leftCellRect.left;
-  auto wallLeftAbove = cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
-  auto wallLeftBelow = cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && m_position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
-
-  auto wallAbove = cells.IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
-  auto wallAboveLeft = cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
-  auto wallAboveRight = cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
-
-  auto wallRight = cells.IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) ? rightCellRect.left : rightCellRect.right;
-  auto wallRightAbove = cells.IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && m_position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
-  auto wallRightBelow = cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && m_position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
-
-  auto wallBelow = cells.IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
-  auto wallBelowLeft = cells.IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && m_position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
-  auto wallBelowRight = cells.IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && m_position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
-
-  wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
-  wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
-  wallRight = std::min({wallRight, wallRightAbove, wallRightBelow});
-  wallBelow = std::min({wallBelow, wallBelowLeft, wallBelowRight});
-
-  auto minXShift = wallLeft  - m_position.x;
-  auto maxXShift = wallRight - m_position.x;
-
-  auto minYShift = wallAbove - m_position.y;
-  auto maxYShift = wallBelow - m_position.y;
-
-  moveDistance.x = std::max(moveDistance.x, minXShift);
-  moveDistance.x = std::min(moveDistance.x, maxXShift);
-
-  moveDistance.y = std::max(moveDistance.y, minYShift);
-  moveDistance.y = std::min(moveDistance.y, maxYShift);
-
-  m_position.x += moveDistance.x;
-  m_position.y += moveDistance.y;
 }
 
 [[nodiscard]] auto player_ship::GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float
@@ -187,9 +126,4 @@ auto player_ship::Visit(adjacent_cell_visitor& visitor, const level_cell_collect
   visitor(cellCollection, [](const valid_cell& cell)
   {
   });
-}
-
-[[nodiscard]] auto player_ship::ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F
-{
-  return { rect.left - size.width, rect.top - size.height, rect.right + size.width, rect.bottom + size.height };
 }
