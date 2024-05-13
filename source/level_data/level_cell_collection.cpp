@@ -43,8 +43,57 @@ auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2
 
 auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
 {
-  auto currentPosition = level_position { position };
-  return currentPosition.MoveBy(distance, *this, objectSize);
+  auto [column, row] = CellId(position);
+
+  auto aboveCellId = level_cell_collection::cell_id { column, row - 1 };
+  auto belowCellId = level_cell_collection::cell_id { column, row + 1 };
+  auto leftCellId = level_cell_collection::cell_id { column - 1, row };
+  auto rightCellId = level_cell_collection::cell_id { column + 1, row };
+  auto aboveLeftCellId = level_cell_collection::cell_id { column - 1, row - 1};
+  auto belowLeftCellId = level_cell_collection::cell_id { column - 1, row + 1};
+  auto aboveRightCellId = level_cell_collection::cell_id { column + 1, row - 1};
+  auto belowRightCellId = level_cell_collection::cell_id { column + 1, row + 1};
+
+  auto aboveCellRect = ExpandRect(CellRect(aboveCellId), objectSize);
+  auto belowCellRect = ExpandRect(CellRect(belowCellId), objectSize);
+  auto leftCellRect = ExpandRect(CellRect(leftCellId), objectSize);
+  auto rightCellRect = ExpandRect(CellRect(rightCellId), objectSize);
+  auto aboveLeftCellRect = ExpandRect(CellRect(aboveLeftCellId), objectSize);
+  auto belowLeftCellRect = ExpandRect(CellRect(belowLeftCellId), objectSize);
+  auto aboveRightCellRect = ExpandRect(CellRect(aboveRightCellId), objectSize);
+  auto belowRightCellRect = ExpandRect(CellRect(belowRightCellId), objectSize);
+
+  auto wallLeft = IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) ? leftCellRect.right : leftCellRect.left;
+  auto wallLeftAbove = IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
+  auto wallLeftBelow = IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
+
+  auto wallAbove = IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
+  auto wallAboveLeft = IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
+  auto wallAboveRight = IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
+
+  auto wallRight = IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) ? rightCellRect.left : rightCellRect.right;
+  auto wallRightAbove = IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
+  auto wallRightBelow = IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
+
+  auto wallBelow = IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
+  auto wallBelowLeft = IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
+  auto wallBelowRight = IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
+
+  wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
+  wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
+  wallRight = std::min({wallRight, wallRightAbove, wallRightBelow});
+  wallBelow = std::min({wallBelow, wallBelowLeft, wallBelowRight});
+
+  auto minXShift = wallLeft  - position.x;
+  auto maxXShift = wallRight - position.x;
+
+  auto minYShift = wallAbove - position.y;
+  auto maxYShift = wallBelow - position.y;
+
+  auto maxAdjustedDistance = POINT_2F { std::max(distance.x, minXShift), std::max(distance.y, minYShift) };
+  auto adjustedDistance = POINT_2F { std::min(maxAdjustedDistance.x, maxXShift), std::min(maxAdjustedDistance.y, maxYShift) };
+
+  return { position.x + adjustedDistance.x, position.y + adjustedDistance.y };
 }
 
 auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>
@@ -185,4 +234,9 @@ auto level_cell_collection::IsTypeOf(cell_id cellId, cell_type cellType) const n
 
     }
   }
+}
+
+[[nodiscard]] auto level_cell_collection::ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F
+{
+  return { rect.left - size.width, rect.top - size.height, rect.right + size.width, rect.bottom + size.height };
 }
