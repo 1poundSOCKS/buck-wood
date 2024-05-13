@@ -11,7 +11,7 @@ public:
 
   enum type { one, two };
 
-  enemy_bullet_1(type type, POINT_2F position, VELOCITY_2F velocity);
+  enemy_bullet_1(POINT_2F position, type type, VELOCITY_2F velocity);
 
   auto Update(float interval) -> void;
 

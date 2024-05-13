@@ -18,6 +18,8 @@ public:
 
   [[nodiscard]] auto Cells() const noexcept -> const cell_collection&;
   [[nodiscard]] auto Portals() const noexcept -> const cell_collection&;
+  [[nodiscard]] auto Enemies1() const noexcept -> const cell_collection&;
+  [[nodiscard]] auto Enemies2() const noexcept -> const cell_collection&;
   [[nodiscard]] auto PlayerStartCell() const noexcept -> POINT_2I;
 
 private:
@@ -44,6 +46,8 @@ private:
 
   cell_collection m_cells;
   cell_collection m_portals;
+  cell_collection m_enemies1;
+  cell_collection m_enemies2;
 
 };
 
@@ -55,6 +59,16 @@ inline [[nodiscard]] auto demo_level::Cells() const noexcept -> const cell_colle
 inline [[nodiscard]] auto demo_level::Portals() const noexcept -> const cell_collection&
 {
   return m_portals;
+}
+
+inline [[nodiscard]] auto demo_level::Enemies1() const noexcept -> const cell_collection&
+{
+  return m_enemies1;
+}
+
+inline [[nodiscard]] auto demo_level::Enemies2() const noexcept -> const cell_collection&
+{
+  return m_enemies2;
 }
 
 inline auto demo_level::PlayerStartCell() const noexcept -> POINT_2I

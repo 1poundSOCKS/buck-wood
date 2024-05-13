@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "enemy_bullet_1.h"
 
-enemy_bullet_1::enemy_bullet_1(type type, POINT_2F position, VELOCITY_2F velocity) : base_object { position, { 1.5f, 1.5f }, 0 }, object_velocity { velocity }, m_type { type }
+enemy_bullet_1::enemy_bullet_1(POINT_2F position, type type, VELOCITY_2F velocity) : base_object { position, { 1.5f, 1.5f }, 0 }, object_velocity { velocity }, m_type { type }
 {
 }
 

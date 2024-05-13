@@ -36,8 +36,7 @@ private:
   [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
 
   auto CreatePlayer(level_container* levelContainer) -> void;
-  auto CreateType1Enemies(level_container* levelContainer, int count, int hitpoints) -> void;
-  auto CreateType2Enemies(level_container* levelContainer, int count) -> void;
+  auto CreateEnemies(level_container* levelContainer) -> void;
   auto CreatePowerUps(level_container* levelContainer, int count) -> void;
 
 private:

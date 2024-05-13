@@ -55,18 +55,18 @@ public:
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
   auto CreatePlayerObject(auto&&...args) -> void;
-  auto CreateEnemyObject(auto&&...args) -> void;
+  auto CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void;
 
   auto CreatePortal(POINT_2I cell) -> void;
   auto CreatePlayer(auto&&...args) -> void;
   auto CreateBackgroundObject(auto&&...args) -> void;
-  auto CreateEnemyType1(auto&&...args) -> void;
-  auto CreateEnemyType2(auto&&...args) -> void;
-  auto CreateEnemyBullet(auto&&...args) -> void;
+  auto CreateEnemyType1(POINT_2I cell, auto&&...args) -> void;
+  auto CreateEnemyType2(POINT_2I cell, auto&&...args) -> void;
+  auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreatePlayerMissile(auto&&...args) -> void;
-  auto CreatePowerUp(auto&&...args) -> void;
+  auto CreatePowerUp(POINT_2F position, auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
@@ -171,9 +171,9 @@ auto level_container::CreatePlayerObject(auto&&...args) -> void
   m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateEnemyObject(auto&&...args) -> void
+auto level_container::CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void
 {
-  m_enemyObjects.emplace_back(std::forward<decltype(args)>(args)...);
+  m_enemyObjects.emplace_back(sourceGeometry, variantType, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePortal(POINT_2I cell) -> void
@@ -203,19 +203,21 @@ inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
   CreatePlayerObject(level_geometries::MineGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateEnemyType1(auto&&...args) -> void
+auto level_container::CreateEnemyType1(POINT_2I cell, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
+  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateEnemyType2(auto&&...args) -> void
+auto level_container::CreateEnemyType2(POINT_2I cell, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
+  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateEnemyBullet(auto&&...args) -> void
+auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, position, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateParticle(auto&&...args) -> void
@@ -223,9 +225,9 @@ auto level_container::CreateParticle(auto&&...args) -> void
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreatePowerUp(auto&&...args) -> void
+auto level_container::CreatePowerUp(POINT_2F position, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
