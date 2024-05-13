@@ -40,7 +40,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 500 * interval, m_leftThumbstickPosition->y * 500 * interval };
           auto currentPosition = level_position { m_position };
-          m_position = currentPosition.MoveBy(moveDistance, cells);
+          m_position = currentPosition.MoveBy(moveDistance, cells, m_objectSize);
         }
 
         m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -61,7 +61,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         {
           auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 1500 * interval, m_leftThumbstickPosition->y * 1500 * interval };
           auto currentPosition = level_position { m_position };
-          m_position = currentPosition.MoveBy(moveDistance, cells);
+          m_position = currentPosition.MoveBy(moveDistance, cells, m_objectSize);
         }
       }
 

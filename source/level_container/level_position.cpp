@@ -5,11 +5,9 @@ level_position::level_position(POINT_2F value) : m_value { value }
 {
 }
 
-auto level_position::MoveBy(POINT_2F value, const level_cell_collection& cells) -> POINT_2F
+auto level_position::MoveBy(POINT_2F value, const level_cell_collection& cells, SIZE_F objectSize) -> POINT_2F
 {
   auto [column, row] = cells.CellId(m_value);
-
-  auto playerSize = SIZE_F { 90, 90 };
 
   auto aboveCellId = level_cell_collection::cell_id { column, row - 1 };
   auto belowCellId = level_cell_collection::cell_id { column, row + 1 };
@@ -20,14 +18,14 @@ auto level_position::MoveBy(POINT_2F value, const level_cell_collection& cells) 
   auto aboveRightCellId = level_cell_collection::cell_id { column + 1, row - 1};
   auto belowRightCellId = level_cell_collection::cell_id { column + 1, row + 1};
 
-  auto aboveCellRect = ExpandRect(cells.CellRect(aboveCellId), playerSize);
-  auto belowCellRect = ExpandRect(cells.CellRect(belowCellId), playerSize);
-  auto leftCellRect = ExpandRect(cells.CellRect(leftCellId), playerSize);
-  auto rightCellRect = ExpandRect(cells.CellRect(rightCellId), playerSize);
-  auto aboveLeftCellRect = ExpandRect(cells.CellRect(aboveLeftCellId), playerSize);
-  auto belowLeftCellRect = ExpandRect(cells.CellRect(belowLeftCellId), playerSize);
-  auto aboveRightCellRect = ExpandRect(cells.CellRect(aboveRightCellId), playerSize);
-  auto belowRightCellRect = ExpandRect(cells.CellRect(belowRightCellId), playerSize);
+  auto aboveCellRect = ExpandRect(cells.CellRect(aboveCellId), objectSize);
+  auto belowCellRect = ExpandRect(cells.CellRect(belowCellId), objectSize);
+  auto leftCellRect = ExpandRect(cells.CellRect(leftCellId), objectSize);
+  auto rightCellRect = ExpandRect(cells.CellRect(rightCellId), objectSize);
+  auto aboveLeftCellRect = ExpandRect(cells.CellRect(aboveLeftCellId), objectSize);
+  auto belowLeftCellRect = ExpandRect(cells.CellRect(belowLeftCellId), objectSize);
+  auto aboveRightCellRect = ExpandRect(cells.CellRect(aboveRightCellId), objectSize);
+  auto belowRightCellRect = ExpandRect(cells.CellRect(belowRightCellId), objectSize);
 
   auto wallLeft = cells.IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) ? leftCellRect.right : leftCellRect.left;
   auto wallLeftAbove = cells.IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && m_value.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;

@@ -9,7 +9,7 @@ public:
 
   level_position(POINT_2F value);
   [[nodiscard]] auto Get() const -> POINT_2F;
-  auto MoveBy(POINT_2F value, const level_cell_collection& cells) -> POINT_2F;
+  auto MoveBy(POINT_2F value, const level_cell_collection& cells, SIZE_F objectSize) -> POINT_2F;
 
 private:
 
