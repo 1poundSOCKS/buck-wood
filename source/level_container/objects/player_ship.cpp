@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "player_state.h"
+#include "level_position.h"
 
 player_ship::player_ship(POINT_2F position) : 
   base_object { position, { 1.5f, 1.5f }, 0 }, m_shootAngle { 0 }
