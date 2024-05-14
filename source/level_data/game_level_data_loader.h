@@ -1,7 +1,8 @@
 #pragma once
 
 #include "level_update_event.h"
-#include "demo_level.h"
+#include "level_1.h"
+#include "level_2.h"
 #include "random_velocity.h"
 
 class game_level_data_loader
@@ -52,7 +53,6 @@ private:
   bool m_levelCanBeCompleted { false };
 
   std::unique_ptr<level_base> m_currentLevel;
-  // demo_level m_demoLevel;
 
 };
 
@@ -100,6 +100,7 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
+  // auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
   auto cellView = std::ranges::views::transform(m_currentLevel->Cells(), [](const auto& cell) -> POINT_2I
   {
     const auto& [x, y] = cell;
