@@ -37,3 +37,7 @@ demo_level::demo_level()
     }
   }
 }
+
+demo_level::~demo_level()
+{
+}

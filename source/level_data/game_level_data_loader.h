@@ -51,7 +51,8 @@ private:
   std::vector<level_update_event>::iterator m_currentEvent;
   bool m_levelCanBeCompleted { false };
 
-  demo_level m_demoLevel;
+  std::unique_ptr<level_base> m_currentLevel;
+  // demo_level m_demoLevel;
 
 };
 
@@ -99,7 +100,8 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
+  // auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
+  auto cellView = std::ranges::views::transform(m_currentLevel->Cells(), [](const auto& cell) -> POINT_2I
   {
     const auto& [x, y] = cell;
     return { x, y };
@@ -107,7 +109,8 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
 
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(cellView, std::forward<decltype(args)>(args)...);
 
-  for( const auto& portal : m_demoLevel.Portals() )
+  // for( const auto& portal : m_demoLevel.Portals() )
+  for( const auto& portal : m_currentLevel->Portals() )
   {
     const auto& [x, y] = portal;
     levelContainer->CreatePortal(POINT_2I { x, y });

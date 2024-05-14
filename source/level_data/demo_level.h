@@ -11,6 +11,7 @@ class demo_level : public level_base
 public:
 
   demo_level();
+  ~demo_level() override;
 
   constexpr static [[nodiscard]] auto CellWidth() noexcept -> int { return 400; }
   constexpr static [[nodiscard]] auto CellHeight() noexcept -> int { return 400; }

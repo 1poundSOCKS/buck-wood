@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-game_level_data_loader::game_level_data_loader()
+game_level_data_loader::game_level_data_loader() : m_currentLevel { std::make_unique<demo_level>() }
 {
 }
 
@@ -48,7 +48,8 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
 auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
-  auto playerStartCell = m_demoLevel.PlayerStartCell();
+  // auto playerStartCell = m_demoLevel.PlayerStartCell();
+  auto playerStartCell = m_currentLevel->PlayerStartCell();
   auto playerStartPosition = levelContainer->Cells().CellPosition(playerStartCell.x, playerStartCell.y);
   levelContainer->CreatePlayer(playerStartPosition);
 }
@@ -63,13 +64,14 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
 
 auto game_level_data_loader::CreateEnemies(level_container* levelContainer) -> void
 {
-  for( const auto& enemy : m_demoLevel.Enemies1() )
+  // for( const auto& enemy : m_demoLevel.Enemies1() )
+  for( const auto& enemy : m_currentLevel->Enemies1() )
   {
     const auto& [x, y] = enemy;
     levelContainer->CreateEnemyType1(POINT_2I { x, y }, 10);
   }
   
-  for( const auto& enemy : m_demoLevel.Enemies2() )
+  for( const auto& enemy : m_currentLevel->Enemies2() )
   {
     const auto& [x, y] = enemy;
     levelContainer->CreateEnemyType2(POINT_2I { x, y }, 3, 2.0f, 400.0f, 2.0f);
