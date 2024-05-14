@@ -1,26 +1,25 @@
 #pragma once
 
 #include "framework.h"
+#include "level_base.h"
 #include "level_boundary.h"
 #include "level_cell_collection.h"
 
-class demo_level
+class demo_level : public level_base
 {
 
 public:
-
-  using cell_collection = std::set<std::tuple<int, int>>;
 
   demo_level();
 
   constexpr static [[nodiscard]] auto CellWidth() noexcept -> int { return 400; }
   constexpr static [[nodiscard]] auto CellHeight() noexcept -> int { return 400; }
 
-  [[nodiscard]] auto Cells() const noexcept -> const cell_collection&;
-  [[nodiscard]] auto Portals() const noexcept -> const cell_collection&;
-  [[nodiscard]] auto Enemies1() const noexcept -> const cell_collection&;
-  [[nodiscard]] auto Enemies2() const noexcept -> const cell_collection&;
-  [[nodiscard]] auto PlayerStartCell() const noexcept -> POINT_2I;
+  [[nodiscard]] auto Cells() const noexcept -> const cell_collection& override;
+  [[nodiscard]] auto Portals() const noexcept -> const cell_collection& override;
+  [[nodiscard]] auto Enemies1() const noexcept -> const cell_collection& override;
+  [[nodiscard]] auto Enemies2() const noexcept -> const cell_collection& override;
+  [[nodiscard]] auto PlayerStartCell() const noexcept -> POINT_2I override;
 
 private:
 
