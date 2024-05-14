@@ -5,13 +5,13 @@
 #include "level_boundary.h"
 #include "level_cell_collection.h"
 
-class level_1 : public level_base
+class level_2 : public level_base
 {
 
 public:
 
-  level_1();
-  ~level_1() override;
+  level_2();
+  ~level_2() override;
 
   [[nodiscard]] auto Cells() const noexcept -> const cell_collection& override;
   [[nodiscard]] auto Portals() const noexcept -> const cell_collection& override;
@@ -26,12 +26,19 @@ private:
 private:
 
   inline static std::array m_levelData { 
-    std::string { "     " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "P 002" }
+    std::string { "             " },
+    std::string { "  1     2    " },
+    std::string { "  000   000  " },
+    std::string { "  000   000  " },
+    std::string { "             " },
+    std::string { "00000   00000" },
+    std::string { "00000   00000" },
+    std::string { "             " },
+    std::string { "  000    2   " },
+    std::string { "  00   000   " },
+    std::string { "  00   000   " },
+    std::string { "  00         " },
+    std::string { "P 00     1   " }
   };
 
   cell_collection m_cells;
@@ -41,32 +48,32 @@ private:
 
 };
 
-inline [[nodiscard]] auto level_1::Cells() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_2::Cells() const noexcept -> const cell_collection&
 {
   return m_cells;
 }
 
-inline [[nodiscard]] auto level_1::Portals() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_2::Portals() const noexcept -> const cell_collection&
 {
   return m_portals;
 }
 
-inline [[nodiscard]] auto level_1::Enemies1() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_2::Enemies1() const noexcept -> const cell_collection&
 {
   return m_enemies1;
 }
 
-inline [[nodiscard]] auto level_1::Enemies2() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_2::Enemies2() const noexcept -> const cell_collection&
 {
   return m_enemies2;
 }
 
-inline auto level_1::PlayerStartCell() const noexcept -> POINT_2I
+inline auto level_2::PlayerStartCell() const noexcept -> POINT_2I
 {
   return m_portals.size() == 0 ? POINT_2I { 0, 0  } : FirstPortal();
 }
 
-inline auto level_1::FirstPortal() const -> POINT_2I
+inline auto level_2::FirstPortal() const -> POINT_2I
 {
   const auto& [column, row] = *std::begin(m_portals);
   return { column, row };
