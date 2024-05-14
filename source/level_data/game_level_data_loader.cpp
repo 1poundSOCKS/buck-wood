@@ -48,7 +48,6 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
 auto game_level_data_loader::CreatePlayer(level_container* levelContainer) -> void
 {
-  // auto playerStartCell = m_demoLevel.PlayerStartCell();
   auto playerStartCell = m_currentLevel->PlayerStartCell();
   auto playerStartPosition = levelContainer->Cells().CellPosition(playerStartCell.x, playerStartCell.y);
   levelContainer->CreatePlayer(playerStartPosition);
@@ -64,7 +63,6 @@ auto game_level_data_loader::CreatePowerUps(level_container* levelContainer, int
 
 auto game_level_data_loader::CreateEnemies(level_container* levelContainer) -> void
 {
-  // for( const auto& enemy : m_demoLevel.Enemies1() )
   for( const auto& enemy : m_currentLevel->Enemies1() )
   {
     const auto& [x, y] = enemy;

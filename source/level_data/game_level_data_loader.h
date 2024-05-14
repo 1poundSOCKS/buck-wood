@@ -100,7 +100,16 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  // auto cellView = std::ranges::views::transform(m_demoLevel.Cells(), [](const auto& cell) -> POINT_2I
+  switch( levelIndex )
+  {
+    case 0:
+      m_currentLevel = std::make_unique<level_1>();
+      break;
+    default:
+      m_currentLevel = std::make_unique<level_2>();
+      break;
+  }
+
   auto cellView = std::ranges::views::transform(m_currentLevel->Cells(), [](const auto& cell) -> POINT_2I
   {
     const auto& [x, y] = cell;
