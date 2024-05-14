@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "valid_cell.h"
+#include "linear_allocator.h"
 
 class level_cell_collection
 {
@@ -9,7 +10,8 @@ class level_cell_collection
 public:
 
   using key_type = std::tuple<int, int>;
-  using collection_type = std::map<key_type, valid_cell>;
+  using collection_allocator_type = linear_allocator<std::pair<const key_type, valid_cell>, size_t { 1000 }>;
+  using collection_type = std::map<key_type, valid_cell, std::less<key_type>, collection_allocator_type>;
   enum class cell_type { empty, wall, floor };
   using cell_id = key_type;
 
