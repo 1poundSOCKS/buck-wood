@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "demo_level.h"
+#include "level_1.h"
 #include "direct2d_functions.h"
 
-demo_level::demo_level()
+level_1::level_1()
 {
   auto rowCount = m_levelData.size();
   auto columnCount = m_levelData[0].length();
@@ -38,6 +38,6 @@ demo_level::demo_level()
   }
 }
 
-demo_level::~demo_level()
+level_1::~level_1()
 {
 }

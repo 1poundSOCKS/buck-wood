@@ -5,16 +5,13 @@
 #include "level_boundary.h"
 #include "level_cell_collection.h"
 
-class demo_level : public level_base
+class level_1 : public level_base
 {
 
 public:
 
-  demo_level();
-  ~demo_level() override;
-
-  constexpr static [[nodiscard]] auto CellWidth() noexcept -> int { return 400; }
-  constexpr static [[nodiscard]] auto CellHeight() noexcept -> int { return 400; }
+  level_1();
+  ~level_1() override;
 
   [[nodiscard]] auto Cells() const noexcept -> const cell_collection& override;
   [[nodiscard]] auto Portals() const noexcept -> const cell_collection& override;
@@ -51,32 +48,32 @@ private:
 
 };
 
-inline [[nodiscard]] auto demo_level::Cells() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_1::Cells() const noexcept -> const cell_collection&
 {
   return m_cells;
 }
 
-inline [[nodiscard]] auto demo_level::Portals() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_1::Portals() const noexcept -> const cell_collection&
 {
   return m_portals;
 }
 
-inline [[nodiscard]] auto demo_level::Enemies1() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_1::Enemies1() const noexcept -> const cell_collection&
 {
   return m_enemies1;
 }
 
-inline [[nodiscard]] auto demo_level::Enemies2() const noexcept -> const cell_collection&
+inline [[nodiscard]] auto level_1::Enemies2() const noexcept -> const cell_collection&
 {
   return m_enemies2;
 }
 
-inline auto demo_level::PlayerStartCell() const noexcept -> POINT_2I
+inline auto level_1::PlayerStartCell() const noexcept -> POINT_2I
 {
   return m_portals.size() == 0 ? POINT_2I { 0, 0  } : FirstPortal();
 }
 
-inline auto demo_level::FirstPortal() const -> POINT_2I
+inline auto level_1::FirstPortal() const -> POINT_2I
 {
   const auto& [column, row] = *std::begin(m_portals);
   return { column, row };
