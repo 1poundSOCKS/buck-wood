@@ -4,7 +4,7 @@
 #include "base_object.h"
 #include "object_velocity.h"
 
-class enemy_bullet_1 : public base_object, public object_velocity
+class enemy_bullet_1 : public base_object
 {
 
 public:
@@ -23,6 +23,7 @@ private:
   static constexpr float rotationSpeed { 300.0f };
 
   type m_type;
+  object_velocity m_velocity;
 
 };
 

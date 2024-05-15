@@ -10,7 +10,7 @@
 #include "level_cell_collection.h"
 #include "adjacent_cell_visitor.h"
 
-class player_ship : public base_object, public object_velocity
+class player_ship : public base_object
 {
 
 public:
@@ -27,6 +27,7 @@ public:
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
 
+  [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
@@ -57,6 +58,7 @@ private:
   enum class movement_state { normal, dash };
 
   movement_state m_movementState { movement_state::normal };
+  object_velocity m_velocity;
   health_status m_shieldStatus { 10 };
   bool m_triggerDown { false };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
@@ -83,6 +85,11 @@ inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus.ApplyFatalDamage();
   m_destroyed = true;
+}
+
+inline [[nodiscard]] auto player_ship::Velocity() const noexcept -> VELOCITY_2F
+{
+  return m_velocity.Get();
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
