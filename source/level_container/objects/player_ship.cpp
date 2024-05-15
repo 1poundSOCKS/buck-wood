@@ -35,8 +35,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
       {
         if( m_leftThumbstickPosition )
         {
-          auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * m_thrustPower * interval, m_leftThumbstickPosition->y * m_thrustPower * interval };
-          m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
+          m_velocity.AdjustBy({ m_leftThumbstickPosition->x * m_thrustPower * interval, m_leftThumbstickPosition->y * m_thrustPower * interval });
         }
 
         m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -46,6 +45,9 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
           auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
           m_shootAngle = static_cast<float>(shootAngle);
         }
+
+        auto moveDistance =  m_velocity.UpdatePosition({0, 0}, interval);
+        m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
       }
 
       break;
