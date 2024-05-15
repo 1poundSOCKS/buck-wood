@@ -16,7 +16,6 @@ class player_ship : public base_object, public object_velocity
 public:
 
   using points_collection = std::vector<D2D1_POINT_2F>;
-  enum class fire_mode { none, one, two };
 
 public:
 
@@ -43,7 +42,6 @@ private:
 
   static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
   static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
-  static [[nodiscard]] auto SwitchFireMode(fire_mode fireMode) -> fire_mode;
 
   enum class control_direction_type { none, up, down, left, right };
   [[nodiscard]] auto DirectionalControlPressed() const -> control_direction_type;
@@ -51,7 +49,7 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 500.0f };
+  static constexpr float m_thrustPower { 700.0f };
   static constexpr SIZE_F m_objectSize { 90, 90 };
 
 private:
@@ -89,7 +87,7 @@ inline auto player_ship::ApplyFatalDamage() -> void
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 {
-  return !m_destroyed && m_movementState == movement_state::dash;
+  return !m_destroyed && m_leftThumbstickPosition;
 }
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
@@ -115,20 +113,7 @@ inline [[nodiscard]] auto player_ship::ThrustParticleDirection() const -> float
 
 inline [[nodiscard]] auto player_ship::EmitThrustParticle() -> bool
 {
-  return !m_destroyed && m_movementState == movement_state::dash && m_thrustEmmisionCounter.Get(1, true) == 1;
-}
-
-inline [[nodiscard]] auto player_ship::SwitchFireMode(fire_mode fireMode) -> fire_mode
-{
-  switch( fireMode )
-  {
-    case fire_mode::one:
-      return fire_mode::two;
-    case fire_mode::two:
-      return fire_mode::one;
-    default:
-      return fire_mode::none;
-  }
+  return !m_destroyed && m_leftThumbstickPosition && m_thrustEmmisionCounter.Get(1, true) == 1;
 }
 
 inline auto player_ship::ShootAngle() const noexcept -> float

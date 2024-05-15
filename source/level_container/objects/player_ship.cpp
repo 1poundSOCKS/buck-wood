@@ -27,8 +27,6 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
 
   std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
 
-  m_movementState = gamepad_reader::right_trigger() > 0 ? movement_state::dash : movement_state::normal;
-
   m_leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
   switch( m_movementState )
@@ -37,7 +35,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
       {
         if( m_leftThumbstickPosition )
         {
-          auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * 500 * interval, m_leftThumbstickPosition->y * 500 * interval };
+          auto moveDistance = POINT_2F { m_leftThumbstickPosition->x * m_thrustPower * interval, m_leftThumbstickPosition->y * m_thrustPower * interval };
           m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
         }
 
