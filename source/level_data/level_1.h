@@ -26,12 +26,12 @@ private:
 private:
 
   inline static std::array m_levelData { 
+    std::string { "  2  " },
     std::string { "     " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "  00 " },
-    std::string { "P 002" }
+    std::string { "0   0" },
+    std::string { "0   0" },
+    std::string { "0   0" },
+    std::string { "0 P 0" }
   };
 
   cell_collection m_cells;
