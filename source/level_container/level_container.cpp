@@ -61,8 +61,8 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
   if( object.EmitThrustParticle() )
   {
     auto thrustAngle = object.ThrustParticleDirection();
-    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 20);
-    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(50.0f, thrustAngle));
+    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 40);
+    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(200.0f, thrustAngle));
     CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
   }
 }
