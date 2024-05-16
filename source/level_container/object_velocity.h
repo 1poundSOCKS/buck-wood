@@ -11,7 +11,10 @@ public:
   object_velocity(VELOCITY_2F value);
 
   [[nodiscard]] auto Get() const noexcept -> VELOCITY_2F;
+  [[nodiscard]] auto X() const noexcept -> float;
+  [[nodiscard]] auto Y() const noexcept -> float;
 
+  auto Set(float x, float y) -> void;
   auto AdjustBy(VELOCITY_2F value) noexcept -> void;
   [[nodiscard]] auto UpdatePosition(POINT_2F position, float interval) const noexcept -> POINT_2F;
 
@@ -28,6 +31,21 @@ inline object_velocity::object_velocity(VELOCITY_2F value) : m_value { value }
 inline [[nodiscard]] auto object_velocity::Get() const noexcept -> VELOCITY_2F
 {
   return m_value;
+}
+
+inline [[nodiscard]] auto object_velocity::X() const noexcept -> float
+{
+  return m_value.x;
+}
+
+inline [[nodiscard]] auto object_velocity::Y() const noexcept -> float
+{
+  return m_value.y;
+}
+
+inline auto object_velocity::Set(float x, float y) -> void
+{
+  m_value = VELOCITY_2F { x, y };
 }
 
 inline auto object_velocity::AdjustBy(VELOCITY_2F value) noexcept -> void

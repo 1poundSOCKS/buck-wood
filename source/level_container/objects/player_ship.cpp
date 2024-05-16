@@ -47,7 +47,13 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
         }
 
         auto moveDistance =  m_velocity.UpdatePosition({0, 0}, interval);
+        auto position = POINT_2F { m_position.x + moveDistance.x, m_position.y + moveDistance.y };
         m_position = cells.UpdatePosition(m_position, moveDistance, m_objectSize);
+        auto collisionX = m_position.x != position.x;
+        auto collisionY = m_position.y != position.y;
+        auto velocityX = collisionX ? 0 : m_velocity.X();
+        auto velocityY = collisionY ? 0 : m_velocity.Y();
+        m_velocity.Set(velocityX, velocityY);
       }
 
       break;
