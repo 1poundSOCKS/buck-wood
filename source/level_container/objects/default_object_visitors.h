@@ -1,8 +1,7 @@
 #pragma once
 
+#include "enemy_type_1.h"
 #include "enemy_type_2.h"
-#include "player_ship.h"
-#include "enemy_bullet_1.h"
 
 struct scale_visitor
 {
