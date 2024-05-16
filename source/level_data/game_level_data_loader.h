@@ -107,7 +107,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
   levelContainer->AddWalls();
   
   m_status = status::starting;
-  m_levelCanBeCompleted = false;
+  m_levelCanBeCompleted = true;
 
   m_events.clear();
   
