@@ -32,6 +32,7 @@ auto player_ship::UpdateWhenActive(float interval, const level_cell_collection& 
   if( m_leftThumbstickPosition )
   {
     m_velocity.AdjustBy({ m_leftThumbstickPosition->x * m_thrustPower * interval, m_leftThumbstickPosition->y * m_thrustPower * interval });
+    m_angle = direct2d::CalculateDirection(m_velocity.Get());
   }
 
   m_triggerDown = rightThumbstickPosition != std::nullopt;
