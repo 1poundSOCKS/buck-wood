@@ -119,19 +119,8 @@ private:
 
 };
 
-// inline level_container::level_container() : level_container(std::array<POINT_2I, 0>())
-// {
-// }
-
-// inline level_container::level_container(std::ranges::input_range auto&& cells) : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
-  // for( const auto& cell : cells )
-  // {
-  //   m_cells.Add(valid_cell::cell_type::floor, cell.x, cell.y);
-  // }
-
-  // m_cells.AddWalls();
 }
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
