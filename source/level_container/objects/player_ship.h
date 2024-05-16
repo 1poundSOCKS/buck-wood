@@ -41,13 +41,6 @@ private:
   auto UpdateWhenActive(float interval, const level_cell_collection& cells) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
-  static [[nodiscard]] auto GetUpdatedAngle(D2D1_POINT_2F position, float direction, D2D1_POINT_2F destination, float interval) -> float;
-  static [[nodiscard]] auto GetUpdatedPosition(D2D1_POINT_2F position, VELOCITY_2F velocity, float interval) -> D2D1_POINT_2F;
-
-  enum class control_direction_type { none, up, down, left, right };
-  [[nodiscard]] auto DirectionalControlPressed() const -> control_direction_type;
-  auto Visit(adjacent_cell_visitor& visitor, const level_cell_collection& cellCollection) -> void;
-
 private:
 
   static constexpr float m_thrustPower { 700.0f };
@@ -55,9 +48,6 @@ private:
 
 private:
 
-  enum class movement_state { normal, dash };
-
-  movement_state m_movementState { movement_state::normal };
   object_velocity m_velocity;
   health_status m_shieldStatus { 10 };
   bool m_triggerDown { false };
