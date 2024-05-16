@@ -10,6 +10,8 @@ public:
 
   enemy_type_3(POINT_2F position, int hitpoints, float reloadTime);
 
+  auto Update(float interval) noexcept -> void;
+
 private:
 
   reload_timer m_reloadTimer;
