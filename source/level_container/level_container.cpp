@@ -6,6 +6,16 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
+auto level_container::AddFloorCell(int x, int y) -> void
+{
+  m_cells.Add(valid_cell::cell_type::floor, x, y);
+}
+
+auto level_container::AddWalls() -> void
+{
+  m_cells.AddWalls();
+}
+
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   update_object_visitor updateObjectVisitor { this, interval };

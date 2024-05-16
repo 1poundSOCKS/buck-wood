@@ -1,5 +1,6 @@
 #pragma once
 
+#include "level_container_loader.h"
 #include "level_update_event.h"
 #include "level_1.h"
 #include "level_2.h"
@@ -35,10 +36,6 @@ private:
   [[nodiscard]] auto CurrentLevel() const -> int;
   [[nodiscard]] auto MoreUpdates() const -> bool;
   [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
-
-  auto CreatePlayer(level_container* levelContainer) -> void;
-  auto CreateEnemies(level_container* levelContainer) -> void;
-  auto CreatePowerUps(level_container* levelContainer, int count) -> void;
 
 private:
 
@@ -100,41 +97,20 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  switch( levelIndex )
-  {
-    case 0:
-      m_currentLevel = std::make_unique<level_1>();
-      break;
-    default:
-      m_currentLevel = std::make_unique<level_2>();
-      break;
-  }
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 
-  auto cellView = std::ranges::views::transform(m_currentLevel->Cells(), [](const auto& cell) -> POINT_2I
-  {
-    const auto& [x, y] = cell;
-    return { x, y };
-  });
-
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(cellView, std::forward<decltype(args)>(args)...);
-
-  for( const auto& portal : m_currentLevel->Portals() )
-  {
-    const auto& [x, y] = portal;
-    levelContainer->CreatePortal(POINT_2I { x, y });
-  }
+  auto level = std::make_unique<level_2>();
+  level_container_loader levelContainerLoader(std::move(levelContainer));
+  level->Visit(levelContainerLoader);
+  m_currentLevel = std::move(level);
+  levelContainer = std::move(levelContainerLoader);
+  levelContainer->AddWalls();
   
   m_status = status::starting;
   m_levelCanBeCompleted = false;
 
   m_events.clear();
   
-  m_events.emplace_back(3.0f, [this](level_container* levelContainer) -> void
-  {
-    CreatePlayer(levelContainer);
-    m_status = status::started;
-  });
-
   m_currentEvent = std::begin(m_events);
 
   return levelContainer;
