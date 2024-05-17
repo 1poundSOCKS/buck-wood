@@ -109,29 +109,41 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
      break;
   }
 
-  level->Enumerate([&levelContainer](size_t column, size_t row, char cellType) -> void
+  level->EnumerateCells([&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     
     switch( cellType )
     {
-    case '1':
-      levelContainer->AddFloorCell(columnIndex, rowIndex);
-      levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
-      break;
-    case '2':
-      levelContainer->AddFloorCell(columnIndex, rowIndex);
-      levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
-      break;
-    case 'P':
-      levelContainer->AddFloorCell(columnIndex, rowIndex);
-      levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
-      levelContainer->CreatePlayer(POINT_2I { columnIndex, rowIndex });
-      break;
-    case ' ':
-      levelContainer->AddFloorCell(columnIndex, rowIndex);
-      break;
+      case level_cell_type::floor:
+        levelContainer->AddFloorCell(columnIndex, rowIndex);
+        break;
+    }
+  });
+
+  level->EnumerateItems([&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    
+    switch( itemType )
+    {
+      case level_item_type::portal:
+        levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
+        levelContainer->CreatePlayer(POINT_2I { columnIndex, rowIndex });
+        break;
+
+      case level_item_type::enemy_type_one:
+        levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
+        break;
+      
+      case level_item_type::enemy_type_two:
+        levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
+        break;
+
+      case level_item_type::enemy_type_three:
+        break;
     }
   });
 
