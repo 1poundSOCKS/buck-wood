@@ -14,20 +14,21 @@ auto level_cell_collection::Add(int x, int y, level_cell_type cellType) noexcept
   POINT_2F position = CellPosition(x, y);
   winrt::com_ptr<ID2D1TransformedGeometry> geometry = CellGeometry(x, y);
 
-  auto convertedCellType = valid_cell::cell_type::floor;
+  // auto convertedCellType = valid_cell::cell_type::floor;
 
-  switch( cellType )
-  {
-    case level_cell_type::wall:
-      convertedCellType = valid_cell::cell_type::wall;
-      break;
+  // switch( cellType )
+  // {
+  //   case level_cell_type::wall:
+  //     convertedCellType = valid_cell::cell_type::wall;
+  //     break;
 
-    case level_cell_type::exit:
-      convertedCellType = valid_cell::cell_type::wall;
-      break;
-  }
+  //   case level_cell_type::exit:
+  //     convertedCellType = valid_cell::cell_type::wall;
+  //     break;
+  // }
 
-  m_cells.insert({{x, y}, {convertedCellType, x, y, position, geometry}});
+  // m_cells.insert({{x, y}, {convertedCellType, x, y, position, geometry}});
+  m_cells.insert({{x, y}, {x, y, cellType, position, geometry}});
 }
 
 auto level_cell_collection::AddWalls() noexcept -> void
@@ -145,9 +146,9 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
 
   switch( value.Type() )
   {
-    case valid_cell::cell_type::floor:
+    case level_cell_type::floor:
       return cell_type::floor;
-    case valid_cell::cell_type::wall:
+    case level_cell_type::wall:
       return cell_type::wall;
     default:
       return cell_type::empty;
@@ -236,10 +237,10 @@ auto level_cell_collection::IsTypeOf(cell_id cellId, cell_type cellType) const n
     switch( cellIterator->second.Type() )
     {
 
-      case valid_cell::cell_type::wall:
+      case level_cell_type::wall:
         return cellType == cell_type::wall;
 
-      case valid_cell::cell_type::floor:
+      case level_cell_type::floor:
         return cellType == cell_type::floor;
         
       default:

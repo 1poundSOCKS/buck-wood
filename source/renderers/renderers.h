@@ -193,10 +193,10 @@ inline auto renderer::Render(const valid_cell& validCell) const -> void
 {
   switch(validCell.Type() )
   {
-  case valid_cell::cell_type::wall:
+  case level_cell_type::wall:
     break;
   
-  case valid_cell::cell_type::floor:
+  case level_cell_type::floor:
     m_cellRenderer.Write(validCell.Geometry().get());
     break;
 

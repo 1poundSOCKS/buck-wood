@@ -63,7 +63,7 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
       else
       {
         const auto& [key, value] = *cellIterator;
-        return value.Type() == valid_cell::cell_type::wall;
+        return value.Type() == level_cell_type::wall;
       }
     });
 
