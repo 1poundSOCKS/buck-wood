@@ -11,7 +11,7 @@ class play_state
 
 public:
 
-  enum class status { running, end_of_level, end_of_game };
+  enum class status { running, end_of_level, end_of_game, exit_level };
 
   play_state();
 

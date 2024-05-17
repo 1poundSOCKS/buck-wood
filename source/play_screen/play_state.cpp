@@ -50,6 +50,9 @@ auto play_state::Update(float interval, RECT_F view) -> void
     case status::end_of_game:
       player_state::set_status(player_state::status::celebrating);
       break;
+    case status::exit_level:
+      LoadNextLevel();
+      break;
   }
 
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
@@ -79,6 +82,11 @@ auto play_state::Status() const -> status
   if( game_level_data_loader::levelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
   {
     return game_level_data_loader::moreLevels(game_state::level_index()) ? status::end_of_level : status::end_of_game;
+  }
+
+  if( m_levelContainer->Exit() )
+  {
+    return status::exit_level;
   }
 
   return status::running;

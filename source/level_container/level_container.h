@@ -54,6 +54,7 @@ public:
   [[nodiscard]] auto Particles() const -> const particle_collection&;
 
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
+  [[nodiscard]] auto Exit() const noexcept -> bool;
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
   auto CreatePlayerObject(auto&&...args) -> void;
@@ -277,6 +278,11 @@ inline auto level_container::Particles() const -> const particle_collection&
 [[nodiscard]] auto level_container::EnemyObjects(auto&& unaryFunction)
 {
   return std::ranges::views::filter(m_enemyObjects, unaryFunction);
+}
+
+inline auto level_container::Exit() const noexcept -> bool
+{
+  return false;
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
