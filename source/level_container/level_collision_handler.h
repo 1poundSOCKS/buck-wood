@@ -13,6 +13,7 @@ public:
 
   auto operator()(default_object& object1, default_object& object2) -> void;
   auto operator()(default_object& object, particle& particle) -> void;
+  auto operator()(default_object& object, const valid_cell& cell) -> void;
   auto operator()(default_object& object) -> void;
   auto operator()(particle& particle) -> void;
 

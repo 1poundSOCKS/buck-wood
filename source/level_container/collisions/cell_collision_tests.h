@@ -63,7 +63,7 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
       else
       {
         const auto& [key, value] = *cellIterator;
-        return value.Type() == level_cell_type::wall;
+        return value.Type() != level_cell_type::floor;
       }
     });
 
@@ -92,7 +92,7 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
       {
         if( !object.Object().Destroyed() )
         {
-          callable(object.Object());
+          callable(object.Object(), value);
         }
       }
     }
