@@ -3,10 +3,6 @@
 class valid_cell
 {
 
-// public:
-
-  // enum class cell_type { wall, floor };
-
 public:
 
   valid_cell(int x, int y, level_cell_type cellType, POINT_2F position, winrt::com_ptr<ID2D1TransformedGeometry> geometry) :
