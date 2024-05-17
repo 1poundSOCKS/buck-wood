@@ -10,7 +10,7 @@ public:
   level_base(std::ranges::input_range auto&& data);
   virtual ~level_base() = default;
 
-  auto Visit(auto&& visitor) -> void;
+  auto Enumerate(auto&& visitor) -> void;
 
 private:
 
@@ -24,7 +24,7 @@ inline level_base::level_base(std::ranges::input_range auto&& data)
   std::ranges::copy(data, std::back_inserter(m_data));
 }
 
-auto level_base::Visit(auto&& visitor) -> void
+auto level_base::Enumerate(auto&& visitor) -> void
 {
   for( auto rowIndex  = 0; rowIndex < m_data.size(); ++rowIndex )
   {

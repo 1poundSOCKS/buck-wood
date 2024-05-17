@@ -99,9 +99,21 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 
-  auto level = std::make_unique<level_2>();
+  std::unique_ptr<level_base> level;
+  
+  switch( levelIndex)
+  {
+    case 0:
+     level = std::make_unique<level_1>();
+     break;
+
+    default:
+     level = std::make_unique<level_2>();
+     break;
+  }
+
   level_container_loader levelContainerLoader(std::move(levelContainer));
-  level->Visit(levelContainerLoader);
+  level->Enumerate(levelContainerLoader);
   m_currentLevel = std::move(level);
   levelContainer = std::move(levelContainerLoader);
   levelContainer->AddWalls();
