@@ -34,7 +34,7 @@ public:
   level_container();
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddFloorCell(int x, int y) -> void;
+  auto AddFloorCell(int x, int y, level_cell_type cellType) -> void;
   auto AddWalls() -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;

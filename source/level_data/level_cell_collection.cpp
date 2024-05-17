@@ -9,11 +9,25 @@ level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_
   m_cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
 }
 
-auto level_cell_collection::Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void
+auto level_cell_collection::Add(int x, int y, level_cell_type cellType) noexcept -> void
 {
   POINT_2F position = CellPosition(x, y);
   winrt::com_ptr<ID2D1TransformedGeometry> geometry = CellGeometry(x, y);
-  m_cells.insert({{x, y}, {cellType, x, y, position, geometry}});
+
+  auto convertedCellType = valid_cell::cell_type::floor;
+
+  switch( cellType )
+  {
+    case level_cell_type::wall:
+      convertedCellType = valid_cell::cell_type::wall;
+      break;
+
+    case level_cell_type::exit:
+      convertedCellType = valid_cell::cell_type::wall;
+      break;
+  }
+
+  m_cells.insert({{x, y}, {convertedCellType, x, y, position, geometry}});
 }
 
 auto level_cell_collection::AddWalls() noexcept -> void
@@ -30,7 +44,7 @@ auto level_cell_collection::AddWalls() noexcept -> void
   {
     for( int row = minRow - 1; row <= maxRow + 1; ++row )
     {
-      Add(valid_cell::cell_type::wall, column, row);
+      Add(column, row, level_cell_type::wall);
     }
   }
 }

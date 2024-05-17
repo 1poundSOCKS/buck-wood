@@ -1,6 +1,7 @@
 #pragma once
 
 #include "framework.h"
+#include "level_types.h"
 #include "valid_cell.h"
 #include "linear_allocator.h"
 
@@ -22,7 +23,7 @@ public:
   [[nodiscard]] auto Get() const noexcept -> const collection_type&;
   [[nodiscard]] auto Get(cell_id cellId) const -> const valid_cell&;
 
-  auto Add(valid_cell::cell_type cellType, int x, int y) noexcept -> void;
+  auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
 
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;

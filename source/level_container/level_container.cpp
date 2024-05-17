@@ -6,9 +6,9 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
-auto level_container::AddFloorCell(int x, int y) -> void
+auto level_container::AddFloorCell(int x, int y, level_cell_type cellType) -> void
 {
-  m_cells.Add(valid_cell::cell_type::floor, x, y);
+  m_cells.Add(x, y, cellType);
 }
 
 auto level_container::AddWalls() -> void

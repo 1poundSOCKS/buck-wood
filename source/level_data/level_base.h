@@ -1,9 +1,7 @@
 #pragma once
 
 #include "framework.h"
-
-enum class level_cell_type { none, floor };
-enum class level_item_type { none, portal, enemy_type_one, enemy_type_two, enemy_type_three };
+#include "level_types.h"
 
 class level_base
 {
@@ -65,6 +63,8 @@ inline [[nodiscard]] auto level_base::CellType(char cellData) -> level_cell_type
   {
     case '0':
       return level_cell_type::none;
+    case 'E':
+      return level_cell_type::exit;
     default:
       return level_cell_type::floor;
   }

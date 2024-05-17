@@ -117,7 +117,8 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
     switch( cellType )
     {
       case level_cell_type::floor:
-        levelContainer->AddFloorCell(columnIndex, rowIndex);
+      case level_cell_type::exit:
+        levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
         break;
     }
   });
