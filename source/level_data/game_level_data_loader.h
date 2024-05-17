@@ -1,10 +1,8 @@
 #pragma once
 
-#include "level_container_loader.h"
 #include "level_update_event.h"
 #include "level_1.h"
 #include "level_2.h"
-#include "random_velocity.h"
 
 class game_level_data_loader
 {
@@ -43,7 +41,6 @@ private:
 
   status m_status { status::starting };
   inline static int m_levelCount { 9 };
-  random_velocity m_randomVelocity { 100, 300 };
 
   std::vector<level_update_event> m_events;
   std::vector<level_update_event>::iterator m_currentEvent;
@@ -112,10 +109,33 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
      break;
   }
 
-  level_container_loader levelContainerLoader(std::move(levelContainer));
-  level->Enumerate(levelContainerLoader);
+  level->Enumerate([&levelContainer](size_t column, size_t row, char cellType) -> void
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    
+    switch( cellType )
+    {
+    case '1':
+      levelContainer->AddFloorCell(columnIndex, rowIndex);
+      levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
+      break;
+    case '2':
+      levelContainer->AddFloorCell(columnIndex, rowIndex);
+      levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
+      break;
+    case 'P':
+      levelContainer->AddFloorCell(columnIndex, rowIndex);
+      levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
+      levelContainer->CreatePlayer(POINT_2I { columnIndex, rowIndex });
+      break;
+    case ' ':
+      levelContainer->AddFloorCell(columnIndex, rowIndex);
+      break;
+    }
+  });
+
   m_currentLevel = std::move(level);
-  levelContainer = std::move(levelContainerLoader);
   levelContainer->AddWalls();
   
   m_status = status::starting;
