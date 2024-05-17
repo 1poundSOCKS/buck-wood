@@ -2,8 +2,6 @@
 
 #include "framework.h"
 #include "level_base.h"
-#include "level_boundary.h"
-#include "level_cell_collection.h"
 
 class level_1 : public level_base
 {
