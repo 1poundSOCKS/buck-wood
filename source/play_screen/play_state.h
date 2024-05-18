@@ -5,6 +5,7 @@
 #include "level_container.h"
 #include "play_events.h"
 #include "game_score.h"
+#include "game_world.h"
 
 class play_state
 {
@@ -34,6 +35,7 @@ private:
 
   status m_status { status::running };
   std::shared_ptr<game_score> m_score;
+  game_world m_gameWorld;
   std::shared_ptr<level_container> m_levelContainer;
 
 };

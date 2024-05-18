@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-game_level_data_loader::game_level_data_loader() : m_currentLevel { std::make_unique<level_1>() }
+game_level_data_loader::game_level_data_loader()
 {
 }
 

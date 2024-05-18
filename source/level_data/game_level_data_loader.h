@@ -14,7 +14,7 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  static auto loadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  static auto loadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -26,7 +26,7 @@ private:
 
   game_level_data_loader();
 
-  auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
@@ -46,8 +46,6 @@ private:
   std::vector<level_update_event>::iterator m_currentEvent;
   bool m_levelCanBeCompleted { false };
 
-  std::unique_ptr<level_base> m_currentLevel;
-
 };
 
 inline auto game_level_data_loader::create() -> void
@@ -62,9 +60,9 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::loadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::loadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
-  return m_instance->LoadLevel(levelIndex, std::forward<decltype(args)>(args)...);
+  return m_instance->LoadLevel(levelData, std::forward<decltype(args)>(args)...);
 }
 
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
@@ -92,23 +90,10 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_base> level;
-  
-  switch( levelIndex)
-  {
-    case 0:
-     level = std::make_unique<level_1>();
-     break;
-
-    default:
-     level = std::make_unique<level_2>();
-     break;
-  }
-
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
-  level->EnumerateCells([&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
+  levelData->EnumerateCells([&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -122,7 +107,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
     }
   });
 
-  level->EnumerateItems([&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
+  levelData->EnumerateItems([&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -147,7 +132,6 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
     }
   });
 
-  m_currentLevel = std::move(level);
   levelContainer->AddWalls();
   
   m_status = status::starting;

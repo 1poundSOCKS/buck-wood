@@ -11,14 +11,17 @@ play_state::play_state() :
 
 auto play_state::LoadCurrentLevel() -> void
 {
-  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
+  auto level = m_gameWorld.Level(game_state::level_index());
+  m_levelContainer = game_level_data_loader::loadLevel(level.get());
   player_state::set_status(player_state::status::active);
 }
 
 auto play_state::LoadNextLevel(POINT_2I exitCell) -> bool
 {
-  game_state::set_level_index(game_state::level_index() + 1);
-  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
+  auto levelIndex = m_gameWorld.LevelIndex(game_state::level_index(), exitCell);
+  game_state::set_level_index(levelIndex);
+  auto level = m_gameWorld.Level(levelIndex);
+  m_levelContainer = game_level_data_loader::loadLevel(level.get());
   player_state::set_status(player_state::status::active);
   return true;
 }
