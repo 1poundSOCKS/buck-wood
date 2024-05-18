@@ -151,7 +151,7 @@ auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy
   enemy.Destroy();
 }
 
-auto level_collision_handler::OnCollision(player_ship &ship, valid_cell& cell) -> void
+auto level_collision_handler::OnCollision(player_ship &ship, const valid_cell& cell) -> void
 {
   switch( cell.Type() )
   {
