@@ -52,6 +52,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
       break;
     case status::exit_level:
       LoadNextLevel();
+      m_status = status::running;
       break;
   }
 
@@ -79,10 +80,10 @@ auto play_state::Status() const -> status
     return status::end_of_game;
   }
   
-  if( game_level_data_loader::levelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
-  {
-    return game_level_data_loader::moreLevels(game_state::level_index()) ? status::end_of_level : status::end_of_game;
-  }
+  // if( game_level_data_loader::levelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
+  // {
+  //   return game_level_data_loader::moreLevels(game_state::level_index()) ? status::end_of_level : status::end_of_game;
+  // }
 
   if( m_levelContainer->Exit() )
   {
