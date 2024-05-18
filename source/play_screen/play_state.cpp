@@ -15,19 +15,12 @@ auto play_state::LoadCurrentLevel() -> void
   player_state::set_status(player_state::status::active);
 }
 
-auto play_state::LoadNextLevel() -> bool
+auto play_state::LoadNextLevel(POINT_2I exitCell) -> bool
 {
-  if( game_level_data_loader::nextLevel(game_state::level_index()) )
-  {
-    game_state::set_level_index(game_state::level_index() + 1);
-    m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
-    player_state::set_status(player_state::status::active);
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  game_state::set_level_index(game_state::level_index() + 1);
+  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
+  player_state::set_status(player_state::status::active);
+  return true;
 }
 
 auto play_state::Update(float interval, RECT_F view) -> void
@@ -51,7 +44,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
       player_state::set_status(player_state::status::celebrating);
       break;
     case status::exit_level:
-      LoadNextLevel();
+      LoadNextLevel(m_levelContainer->ExitCell());
       m_status = status::running;
       break;
   }
@@ -80,11 +73,6 @@ auto play_state::Status() const -> status
     return status::end_of_game;
   }
   
-  // if( game_level_data_loader::levelCanBeCompleted() && m_levelContainer->EnemyCount() == 0 )
-  // {
-  //   return game_level_data_loader::moreLevels(game_state::level_index()) ? status::end_of_level : status::end_of_game;
-  // }
-
   if( m_levelContainer->Exit() )
   {
     return status::exit_level;

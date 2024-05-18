@@ -162,7 +162,7 @@ auto level_collision_handler::OnCollision(player_ship &ship, const valid_cell& c
       break;
 
     case level_cell_type::exit:
-      m_levelContainer->SetExit(true);
+      m_levelContainer->SetExit(true, { cell.X(), cell.Y()});
       break;
   }
 }

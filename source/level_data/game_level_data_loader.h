@@ -94,8 +94,6 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
-
   std::unique_ptr<level_base> level;
   
   switch( levelIndex)
@@ -109,6 +107,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, auto&&...args) -> std::un
      break;
   }
 
+  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
   level->EnumerateCells([&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);

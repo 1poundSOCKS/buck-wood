@@ -56,7 +56,8 @@ public:
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
   
   [[nodiscard]] auto Exit() const noexcept -> bool;
-  auto SetExit(bool value) -> void;
+  [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
+  auto SetExit(bool value, POINT_2I cell) -> void;
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
   auto CreatePlayerObject(auto&&...args) -> void;
@@ -104,6 +105,7 @@ private:
   level_cell_collection m_cells;
 
   bool m_exit { false };
+  POINT_2I m_exitCell { 0, 0 };
 
   particle_collection m_particles;
 
@@ -289,9 +291,15 @@ inline auto level_container::Exit() const noexcept -> bool
   return m_exit;
 }
 
-inline auto level_container::SetExit(bool value) -> void
+inline auto level_container::ExitCell() const noexcept -> POINT_2I
+{
+  return m_exitCell;
+}
+
+inline auto level_container::SetExit(bool value, POINT_2I cell) -> void
 {
   m_exit = true;
+  m_exitCell = cell;
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
