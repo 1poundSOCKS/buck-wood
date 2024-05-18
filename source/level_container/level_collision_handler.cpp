@@ -32,18 +32,9 @@ auto level_collision_handler::OnCollision(auto& object, particle& particle) -> v
 
 auto level_collision_handler::operator()(default_object& object, const valid_cell& cell) -> void
 {
-  switch( cell.Type() )
-  {
-    case level_cell_type::wall:
-      m_levelContainer->CreateExplosion(object.Position());
-      play_events::set(play_events::event_type::explosion, true);
-      object.Destroy();
-      break;
-
-    case level_cell_type::exit:
-      m_levelContainer->SetExit(true);
-      break;
-  }
+  OnCollision<player_ship>(object, cell);
+  OnCollision<player_bullet>(object, cell);
+  OnCollision<enemy_bullet_1>(object, cell);
 }
 
 auto level_collision_handler::operator()(default_object& object) -> void
@@ -158,4 +149,20 @@ auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy
 
   play_events::set(play_events::event_type::explosion, true);
   enemy.Destroy();
+}
+
+auto level_collision_handler::OnCollision(player_ship &ship, valid_cell& cell) -> void
+{
+  switch( cell.Type() )
+  {
+    case level_cell_type::wall:
+      m_levelContainer->CreateExplosion(ship.Position());
+      play_events::set(play_events::event_type::explosion, true);
+      ship.Destroy();
+      break;
+
+    case level_cell_type::exit:
+      m_levelContainer->SetExit(true);
+      break;
+  }
 }
