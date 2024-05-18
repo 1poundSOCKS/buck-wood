@@ -54,7 +54,9 @@ public:
   [[nodiscard]] auto Particles() const -> const particle_collection&;
 
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
+  
   [[nodiscard]] auto Exit() const noexcept -> bool;
+  auto SetExit(bool value) -> void;
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
   auto CreatePlayerObject(auto&&...args) -> void;
@@ -100,6 +102,8 @@ private:
   static constexpr float m_maxTargetRange { 1000.0f };
 
   level_cell_collection m_cells;
+
+  bool m_exit { false };
 
   particle_collection m_particles;
 
@@ -282,7 +286,12 @@ inline auto level_container::Particles() const -> const particle_collection&
 
 inline auto level_container::Exit() const noexcept -> bool
 {
-  return false;
+  return m_exit;
+}
+
+inline auto level_container::SetExit(bool value) -> void
+{
+  m_exit = true;
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void

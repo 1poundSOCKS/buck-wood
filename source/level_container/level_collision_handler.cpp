@@ -39,6 +39,10 @@ auto level_collision_handler::operator()(default_object& object, const valid_cel
       play_events::set(play_events::event_type::explosion, true);
       object.Destroy();
       break;
+
+    case level_cell_type::exit:
+      m_levelContainer->SetExit(true);
+      break;
   }
 }
 
