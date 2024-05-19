@@ -89,5 +89,7 @@ private:
 
   game_world_data_translator m_dataTranslator;
   std::map<int, int> m_levelLinks;
+  std::map<int, POINT_2I> m_exits;
+  std::map<int, POINT_2I> m_entries;
 
 };

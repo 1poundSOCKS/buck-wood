@@ -5,29 +5,26 @@
 
 game_world::game_world()
 {
-  std::map<int, POINT_2I> exits;
-  std::map<int, POINT_2I> entries;
-
   auto levelData = LevelData(0);
   m_dataTranslator.SetLevelIndex(0);
-  m_dataTranslator.EnumerateCells(levelData.get(), [&exits](size_t column, size_t row, level_cell_type cellType) -> void
+  m_dataTranslator.EnumerateCells(levelData.get(), [this](size_t column, size_t row, level_cell_type cellType) -> void
   {
     switch( cellType )
     {
     case level_cell_type::exit:
-      exits[0] = { static_cast<int>(column), static_cast<int>(row) };
+      m_exits[0] = { static_cast<int>(column), static_cast<int>(row) };
       break;
     }
   });
 
   auto levelData1 = LevelData(1);
   m_dataTranslator.SetLevelIndex(1);
-  m_dataTranslator.EnumerateItems(levelData1.get(), [&entries](size_t column, size_t row, level_item_type objectType) -> void
+  m_dataTranslator.EnumerateItems(levelData1.get(), [this](size_t column, size_t row, level_item_type objectType) -> void
   {
     switch( objectType )
     {
     case level_item_type::portal:
-      entries[1] = { static_cast<int>(column), static_cast<int>(row) };
+      m_entries[1] = { static_cast<int>(column), static_cast<int>(row) };
       break;
     }
   });
