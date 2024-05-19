@@ -6,17 +6,30 @@
 
 game_world::game_world()
 {
-  // level_1 level1;
-  // level_2 level2;
+  std::map<char, POINT_2I> exits;
+  std::map<char, POINT_2I> entries;
 
-  // level1.Enumerate([]()
-  // {
+  level_1 level1;
+  level1.Enumerate([&exits](int column, int row, char data)
+  {
+    switch( data )
+    {
+    case 'E':
+      exits[data] = { column, row };
+      break;
+    }
+  });
 
-  // },
-  // []()
-  // {
-
-  // });
+  level_2 level2;
+  level2.Enumerate([&entries](int column, int row, char data)
+  {
+    switch( data )
+    {
+    case 'E':
+      entries[data] = { column, row };
+      break;
+    }
+  });
 
   m_levelLinks[0] = 1;
 }

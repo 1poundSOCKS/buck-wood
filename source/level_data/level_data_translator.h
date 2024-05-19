@@ -4,7 +4,8 @@
 #include "level_cell_data_translator.h"
 #include "level_object_data_translator.h"
 
-class level_data_translator
+template <typename cell_data_translator_type, typename object_data_translator_type>
+class level_data_translator_template
 {
 
 public:
@@ -14,12 +15,13 @@ public:
 
 private:
 
-  level_cell_data_translator m_cellDataTranslator;
-  level_object_data_translator m_objectDataTranslator;
+  cell_data_translator_type m_cellDataTranslator;
+  object_data_translator_type m_objectDataTranslator;
 
 };
 
-auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& visitor) const -> void
+template <typename cell_data_translator_type, typename object_data_translator_type>
+auto level_data_translator_template<cell_data_translator_type, object_data_translator_type>::EnumerateCells(const level_base* levelData, auto&& visitor) const -> void
 {
   levelData->Enumerate([this,&visitor](size_t column, size_t row, char cellType)
   {
@@ -27,10 +29,13 @@ auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& v
   });
 }
 
-auto level_data_translator::EnumerateItems(const level_base* levelData, auto&& visitor) const -> void
+template <typename cell_data_translator_type, typename object_data_translator_type>
+auto level_data_translator_template<cell_data_translator_type, object_data_translator_type>::EnumerateItems(const level_base* levelData, auto&& visitor) const -> void
 {
   levelData->Enumerate([this,&visitor](size_t column, size_t row, char itemType)
   {
     visitor(column, row, m_objectDataTranslator(itemType));
   });
 }
+
+using level_data_translator = level_data_translator_template<level_cell_data_translator, level_object_data_translator>;
