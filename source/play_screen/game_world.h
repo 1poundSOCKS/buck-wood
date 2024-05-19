@@ -26,7 +26,7 @@ public:
           case 'E':
             return level_cell_type::floor;
 
-          case 'P':
+          case 'F':
             return level_cell_type::entry;
 
           default:
