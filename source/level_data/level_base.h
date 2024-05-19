@@ -1,7 +1,6 @@
 #pragma once
 
 #include "framework.h"
-#include "level_types.h"
 
 class level_base
 {
@@ -13,11 +12,6 @@ public:
 
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateItems(auto&& visitor) const -> void;
-
-private:
-
-  static [[nodiscard]] auto CellType(char cellData) -> level_cell_type;
-  static [[nodiscard]] auto ItemType(char cellData) -> level_item_type;
 
 private:
 
@@ -39,7 +33,7 @@ auto level_base::EnumerateCells(auto&& visitor) const -> void
 
     for( auto columnIndex = 0; columnIndex < rowData.size(); ++columnIndex )
     {
-      visitor(columnIndex, rowIndex, CellType(rowData[columnIndex]));
+      visitor(columnIndex, rowIndex, rowData[columnIndex]);
     }
   }
 }
@@ -52,37 +46,7 @@ auto level_base::EnumerateItems(auto&& visitor) const -> void
 
     for( auto columnIndex = 0; columnIndex < rowData.size(); ++columnIndex )
     {
-      visitor(columnIndex, rowIndex, ItemType(rowData[columnIndex]));
+      visitor(columnIndex, rowIndex, rowData[columnIndex]);
     }
-  }
-}
-
-inline [[nodiscard]] auto level_base::CellType(char cellData) -> level_cell_type
-{
-  switch( cellData )
-  {
-    case '0':
-      return level_cell_type::none;
-    case 'E':
-      return level_cell_type::exit;
-    default:
-      return level_cell_type::floor;
-  }
-}
-
-inline [[nodiscard]] auto level_base::ItemType(char cellData) -> level_item_type
-{
-  switch( cellData )
-  {
-    case 'P':
-      return level_item_type::portal;
-    case '1':
-      return level_item_type::enemy_type_one;
-    case '2':
-      return level_item_type::enemy_type_two;
-    case '3':
-      return level_item_type::enemy_type_three;
-    default:
-      return level_item_type::none;
   }
 }

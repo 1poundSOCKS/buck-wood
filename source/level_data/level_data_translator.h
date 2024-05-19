@@ -1,5 +1,6 @@
 #pragma once
 
+#include "level_types.h"
 #include "level_base.h"
 
 class level_data_translator
@@ -19,17 +20,17 @@ private:
 
 auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& visitor) const -> void
 {
-  levelData->EnumerateCells([&visitor](size_t column, size_t row, level_cell_type cellType)
+  levelData->EnumerateCells([&visitor](size_t column, size_t row, char cellType)
   {
-    visitor(column, row, cellType);
+    visitor(column, row, CellType(cellType));
   });
 }
 
 auto level_data_translator::EnumerateItems(const level_base* levelData, auto&& visitor) const -> void
 {
-  levelData->EnumerateItems([&visitor](size_t column, size_t row, level_item_type itemType)
+  levelData->EnumerateItems([&visitor](size_t column, size_t row, char itemType)
   {
-    visitor(column, row, itemType);
+    visitor(column, row, ItemType(itemType));
   });
 }
 
