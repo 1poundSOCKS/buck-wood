@@ -3,6 +3,7 @@
 #include "level_update_event.h"
 #include "level_1.h"
 #include "level_2.h"
+#include "level_data_translator.h"
 
 class game_level_data_loader
 {
@@ -26,7 +27,7 @@ private:
 
   game_level_data_loader();
 
-  auto LoadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
@@ -90,10 +91,12 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-auto game_level_data_loader::LoadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
-  levelData->EnumerateCells([&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
+
+  level_data_translator levelDataTranslator;
+  levelDataTranslator.EnumerateCells(levelData, [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -107,7 +110,7 @@ auto game_level_data_loader::LoadLevel(level_base* levelData, auto&&...args) -> 
     }
   });
 
-  levelData->EnumerateItems([&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
+  levelDataTranslator.EnumerateItems(levelData, [&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
