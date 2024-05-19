@@ -4,6 +4,7 @@
 #include "level_1.h"
 #include "level_2.h"
 #include "level_data_translator.h"
+#include "game_world.h"
 
 class game_level_data_loader
 {
@@ -15,8 +16,8 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  static auto loadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
-  static auto loadLevel(level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  static auto loadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
+  static auto loadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -28,8 +29,8 @@ private:
 
   game_level_data_loader();
 
-  auto LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
-  auto LoadLevel(const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto EntryCell(const level_base* levelData) const -> POINT_2I;
@@ -64,14 +65,14 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::loadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::loadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
-  return m_instance->LoadLevel(levelData, std::forward<decltype(args)>(args)...);
+  return m_instance->LoadLevel(levelIndex, levelData, std::forward<decltype(args)>(args)...);
 }
 
-inline auto game_level_data_loader::loadLevel(level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::loadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
-  return m_instance->LoadLevel(levelData, entryCell, std::forward<decltype(args)>(args)...);
+  return m_instance->LoadLevel(levelIndex, levelData, entryCell, std::forward<decltype(args)>(args)...);
 }
 
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
@@ -99,17 +100,18 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
   auto entryCell = EntryCell(levelData);
-  return LoadLevel(levelData, entryCell, std::forward<decltype(args)>(args)...);
+  return LoadLevel(levelIndex, levelData, entryCell, std::forward<decltype(args)>(args)...);
 }
 
-auto game_level_data_loader::LoadLevel(const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 
-  level_data_translator levelDataTranslator;
+  game_world_data_translator levelDataTranslator;
+  levelDataTranslator.SetLevelIndex(levelIndex);
   levelDataTranslator.EnumerateCells(levelData, [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);
@@ -118,6 +120,8 @@ auto game_level_data_loader::LoadLevel(const level_base* levelData, POINT_2I ent
     switch( cellType )
     {
       case level_cell_type::floor:
+        levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
+        break;
       case level_cell_type::exit:
         levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
         break;

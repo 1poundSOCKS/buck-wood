@@ -13,8 +13,7 @@ public:
     {
       case '0':
         return level_cell_type::none;
-      case 'E':
-        return level_cell_type::exit;
+
       default:
         return level_cell_type::floor;
     }
