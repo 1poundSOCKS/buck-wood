@@ -21,7 +21,17 @@ public:
         return m_translator(cellData);
 
       case 1:
-        return cellData == 'E' ? level_cell_type::floor : m_translator(cellData);
+        switch( cellData )
+        {
+          case 'E':
+            return level_cell_type::floor;
+
+          case 'P':
+            return level_cell_type::entry;
+
+          default:
+            return m_translator(cellData);
+        }
 
       default:
         return m_translator(cellData);

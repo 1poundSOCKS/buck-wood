@@ -19,11 +19,11 @@ game_world::game_world()
 
   auto levelData1 = LevelData(1);
   m_dataTranslator.SetLevelIndex(1);
-  m_dataTranslator.EnumerateItems(levelData1.get(), [this](size_t column, size_t row, level_item_type objectType) -> void
+  m_dataTranslator.EnumerateCells(levelData1.get(), [this](size_t column, size_t row, level_cell_type objectType) -> void
   {
     switch( objectType )
     {
-    case level_item_type::portal:
+    case level_cell_type::entry:
       m_entries[1] = { static_cast<int>(column), static_cast<int>(row) };
       break;
     }
