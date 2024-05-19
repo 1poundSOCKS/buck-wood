@@ -1,7 +1,7 @@
 #pragma once
 
-#include "level_types.h"
 #include "level_base.h"
+#include "level_cell_data_translator.h"
 
 class level_data_translator
 {
@@ -13,16 +13,19 @@ public:
 
 private:
 
-  static [[nodiscard]] auto CellType(char cellData) -> level_cell_type;
   static [[nodiscard]] auto ItemType(char cellData) -> level_item_type;
+
+private:
+
+  level_cell_data_translator m_cellDataTranslator;
 
 };
 
 auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& visitor) const -> void
 {
-  levelData->EnumerateCells([&visitor](size_t column, size_t row, char cellType)
+  levelData->EnumerateCells([this,&visitor](size_t column, size_t row, char cellType)
   {
-    visitor(column, row, CellType(cellType));
+    visitor(column, row, m_cellDataTranslator(cellType));
   });
 }
 
@@ -32,19 +35,6 @@ auto level_data_translator::EnumerateItems(const level_base* levelData, auto&& v
   {
     visitor(column, row, ItemType(itemType));
   });
-}
-
-inline [[nodiscard]] auto level_data_translator::CellType(char cellData) -> level_cell_type
-{
-  switch( cellData )
-  {
-    case '0':
-      return level_cell_type::none;
-    case 'E':
-      return level_cell_type::exit;
-    default:
-      return level_cell_type::floor;
-  }
 }
 
 inline [[nodiscard]] auto level_data_translator::ItemType(char cellData) -> level_item_type
