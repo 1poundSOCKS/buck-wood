@@ -3,7 +3,8 @@
 #include "level_base.h"
 #include "level_data_translator.h"
 
-class game_world_cell_data_translator
+template <int level_index>
+class game_world_cell_data_translator_template
 {
 
 public:
@@ -25,10 +26,13 @@ public:
 
 private:
 
-  int m_levelIndex { -1 };
+  int m_levelIndex { level_index };
   level_cell_data_translator m_translator;
 
 };
+
+using game_world_cell_data_translator_0 = game_world_cell_data_translator_template<0>;
+using game_world_cell_data_translator_1= game_world_cell_data_translator_template<1>;
 
 class game_world_object_data_translator : public level_object_data_translator
 {
@@ -59,8 +63,10 @@ public:
 
 private:
 
-  using game_world_data_translator = level_data_translator_template<game_world_cell_data_translator, game_world_object_data_translator>;
-  game_world_data_translator m_dataTranslator;
+  using game_world_data_translator_0 = level_data_translator_template<game_world_cell_data_translator_0, game_world_object_data_translator>;
+  using game_world_data_translator_1 = level_data_translator_template<game_world_cell_data_translator_1, game_world_object_data_translator>;
+  game_world_data_translator_0 m_dataTranslator0;
+  game_world_data_translator_1 m_dataTranslator1;
   std::map<int, int> m_levelLinks;
 
 };

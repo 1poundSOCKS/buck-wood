@@ -60,18 +60,37 @@ auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
 
   POINT_2I entryCell { 0, 0 };
 
-  m_dataTranslator.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+  switch( index )
   {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    
-    switch( itemType )
-    {
-      case level_item_type::portal:
-        entryCell = { columnIndex, rowIndex };
-        break;
-    }
-  });
+    case 0:
+      m_dataTranslator0.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+      {
+        auto columnIndex = static_cast<int>(column);
+        auto rowIndex = static_cast<int>(row);
+        
+        switch( itemType )
+        {
+          case level_item_type::portal:
+            entryCell = { columnIndex, rowIndex };
+            break;
+        }
+      });
+      break;
+    case 1:
+      m_dataTranslator1.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+      {
+        auto columnIndex = static_cast<int>(column);
+        auto rowIndex = static_cast<int>(row);
+        
+        switch( itemType )
+        {
+          case level_item_type::portal:
+            entryCell = { columnIndex, rowIndex };
+            break;
+        }
+      });
+      break;
+  }
 
   return entryCell;
 }
