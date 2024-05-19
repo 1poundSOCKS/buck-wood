@@ -21,7 +21,7 @@ private:
 
 auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& visitor) const -> void
 {
-  levelData->EnumerateCells([this,&visitor](size_t column, size_t row, char cellType)
+  levelData->Enumerate([this,&visitor](size_t column, size_t row, char cellType)
   {
     visitor(column, row, m_cellDataTranslator(cellType));
   });
@@ -29,7 +29,7 @@ auto level_data_translator::EnumerateCells(const level_base* levelData, auto&& v
 
 auto level_data_translator::EnumerateItems(const level_base* levelData, auto&& visitor) const -> void
 {
-  levelData->EnumerateItems([this,&visitor](size_t column, size_t row, char itemType)
+  levelData->Enumerate([this,&visitor](size_t column, size_t row, char itemType)
   {
     visitor(column, row, m_objectDataTranslator(itemType));
   });
