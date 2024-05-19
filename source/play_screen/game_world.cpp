@@ -2,7 +2,6 @@
 #include "game_world.h"
 #include "level_1.h"
 #include "level_2.h"
-#include "level_data_translator.h"
 
 game_world::game_world()
 {
@@ -61,8 +60,7 @@ auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
 
   POINT_2I entryCell { 0, 0 };
 
-  level_data_translator levelDataTranslator;
-  levelDataTranslator.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+  m_dataTranslator.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
