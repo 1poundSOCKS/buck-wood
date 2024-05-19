@@ -13,7 +13,7 @@ public:
   auto EnumerateCells(const level_base* levelData, auto&& visitor) const -> void;
   auto EnumerateItems(const level_base* levelData, auto&& visitor) const -> void;
 
-private:
+protected:
 
   cell_data_translator_type m_cellDataTranslator;
   object_data_translator_type m_objectDataTranslator;

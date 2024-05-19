@@ -3,11 +3,15 @@
 #include "level_base.h"
 #include "level_data_translator.h"
 
-template <int level_index>
-class game_world_cell_data_translator_template
+class game_world_cell_data_translator
 {
 
 public:
+
+  auto SetLevelIndex(int value) -> void
+  {
+    m_levelIndex = value;
+  }
 
   [[nodiscard]] auto operator()(char cellData) const  -> level_cell_type
   {
@@ -26,18 +30,20 @@ public:
 
 private:
 
-  int m_levelIndex { level_index };
+  int m_levelIndex { -1 };
   level_cell_data_translator m_translator;
 
 };
-
-using game_world_cell_data_translator_0 = game_world_cell_data_translator_template<0>;
-using game_world_cell_data_translator_1= game_world_cell_data_translator_template<1>;
 
 class game_world_object_data_translator : public level_object_data_translator
 {
 
 public:
+
+  auto SetLevelIndex(int value) -> void
+  {
+    m_levelIndex = value;
+  }
 
   [[nodiscard]] auto operator()(char cellData) const  -> level_item_type
   {
@@ -46,7 +52,25 @@ public:
 
 private:
 
+  int m_levelIndex { -1 };
   level_object_data_translator m_translator;
+
+};
+
+class game_world_data_translator : public level_data_translator_template<game_world_cell_data_translator, game_world_object_data_translator>
+{
+
+public:
+
+  auto SetLevelIndex(int value) -> void
+  {
+    m_cellDataTranslator.SetLevelIndex(value);
+    m_objectDataTranslator.SetLevelIndex(value);
+  }
+
+private:
+
+  int m_levelIndex { -1 };
 
 };
 
@@ -63,10 +87,7 @@ public:
 
 private:
 
-  using game_world_data_translator_0 = level_data_translator_template<game_world_cell_data_translator_0, game_world_object_data_translator>;
-  using game_world_data_translator_1 = level_data_translator_template<game_world_cell_data_translator_1, game_world_object_data_translator>;
-  game_world_data_translator_0 m_dataTranslator0;
-  game_world_data_translator_1 m_dataTranslator1;
+  game_world_data_translator m_dataTranslator;
   std::map<int, int> m_levelLinks;
 
 };

@@ -5,16 +5,17 @@
 
 game_world::game_world()
 {
-  std::map<char, POINT_2I> exits;
-  std::map<char, POINT_2I> entries;
+  std::map<int, POINT_2I> exits;
+  std::map<int, POINT_2I> entries;
 
-  level_1 level1;
-  level1.Enumerate([&exits](int column, int row, char data)
+  auto levelData = LevelData(0);
+  m_dataTranslator.SetLevelIndex(0);
+  m_dataTranslator.EnumerateCells(levelData.get(), [&exits](size_t column, size_t row, level_cell_type cellType) -> void
   {
-    switch( data )
+    switch( cellType )
     {
-    case 'E':
-      exits[data] = { column, row };
+    case level_cell_type::exit:
+      exits[0] = { static_cast<int>(column), static_cast<int>(row) };
       break;
     }
   });
@@ -60,37 +61,22 @@ auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
 
   POINT_2I entryCell { 0, 0 };
 
-  switch( index )
+  m_dataTranslator.SetLevelIndex(index);
+  m_dataTranslator.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
   {
-    case 0:
-      m_dataTranslator0.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
-      {
-        auto columnIndex = static_cast<int>(column);
-        auto rowIndex = static_cast<int>(row);
-        
-        switch( itemType )
-        {
-          case level_item_type::portal:
-            entryCell = { columnIndex, rowIndex };
-            break;
-        }
-      });
-      break;
-    case 1:
-      m_dataTranslator1.EnumerateItems(levelData.get(), [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
-      {
-        auto columnIndex = static_cast<int>(column);
-        auto rowIndex = static_cast<int>(row);
-        
-        switch( itemType )
-        {
-          case level_item_type::portal:
-            entryCell = { columnIndex, rowIndex };
-            break;
-        }
-      });
-      break;
-  }
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    
+    switch( itemType )
+    {
+      case level_item_type::portal:
+        entryCell = { columnIndex, rowIndex };
+        break;
+
+      default:
+        break;
+    }
+  });
 
   return entryCell;
 }
