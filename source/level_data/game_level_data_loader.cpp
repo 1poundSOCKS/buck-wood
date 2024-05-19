@@ -25,6 +25,27 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
   }
 }
 
+auto game_level_data_loader::EntryCell(const level_base *levelData) const -> POINT_2I
+{
+  POINT_2I entryCell { 0, 0 };
+
+  level_data_translator levelDataTranslator;
+  levelDataTranslator.EnumerateItems(levelData, [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    
+    switch( itemType )
+    {
+      case level_item_type::portal:
+        entryCell = { columnIndex, rowIndex };
+        break;
+    }
+  });
+
+  return entryCell;
+}
+
 [[nodiscard]] auto game_level_data_loader::MoreLevels(int levelIndex) const -> bool
 {
   return levelIndex + 1 < m_levelCount;

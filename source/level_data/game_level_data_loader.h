@@ -32,6 +32,7 @@ private:
   auto LoadLevel(const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
+  [[nodiscard]] auto EntryCell(const level_base* levelData) const -> POINT_2I;
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
   [[nodiscard]] auto NextLevel(int levelIndex) -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;
@@ -100,22 +101,7 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
-  POINT_2I entryCell { 0, 0 };
-
-  level_data_translator levelDataTranslator;
-  levelDataTranslator.EnumerateItems(levelData, [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    
-    switch( itemType )
-    {
-      case level_item_type::portal:
-        entryCell = { columnIndex, rowIndex };
-        break;
-    }
-  });
-
+  auto entryCell = EntryCell(levelData);
   return LoadLevel(levelData, entryCell, std::forward<decltype(args)>(args)...);
 }
 
