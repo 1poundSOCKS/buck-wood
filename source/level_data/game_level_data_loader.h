@@ -16,6 +16,7 @@ public:
   static auto destroy() -> void;
 
   static auto loadLevel(level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
+  static auto loadLevel(level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -28,6 +29,7 @@ private:
   game_level_data_loader();
 
   auto LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
@@ -66,6 +68,11 @@ inline auto game_level_data_loader::loadLevel(level_base* levelData, auto&&...ar
   return m_instance->LoadLevel(levelData, std::forward<decltype(args)>(args)...);
 }
 
+inline auto game_level_data_loader::loadLevel(level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+{
+  return m_instance->LoadLevel(levelData, entryCell, std::forward<decltype(args)>(args)...);
+}
+
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
 {
   m_instance->UpdateLevel(levelIndex, levelContainer, interval);
@@ -93,6 +100,27 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 
 auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
 {
+  POINT_2I entryCell { 0, 0 };
+
+  level_data_translator levelDataTranslator;
+  levelDataTranslator.EnumerateItems(levelData, [&entryCell](size_t column, size_t row, level_item_type itemType) -> void
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    
+    switch( itemType )
+    {
+      case level_item_type::portal:
+        entryCell = { columnIndex, rowIndex };
+        break;
+    }
+  });
+
+  return LoadLevel(levelData, entryCell, std::forward<decltype(args)>(args)...);
+}
+
+auto game_level_data_loader::LoadLevel(const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+{
   std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 
   level_data_translator levelDataTranslator;
@@ -119,7 +147,6 @@ auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...arg
     {
       case level_item_type::portal:
         levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
-        levelContainer->CreatePlayer(POINT_2I { columnIndex, rowIndex });
         break;
 
       case level_item_type::enemy_type_one:
@@ -133,9 +160,12 @@ auto game_level_data_loader::LoadLevel(const level_base* levelData, auto&&...arg
       case level_item_type::enemy_type_three:
         break;
     }
+    
   });
 
   levelContainer->AddWalls();
+  
+  levelContainer->CreatePlayer(entryCell);
   
   m_status = status::starting;
   m_levelCanBeCompleted = true;

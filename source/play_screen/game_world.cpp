@@ -8,7 +8,7 @@ auto game_world::LevelIndex(int index, POINT_2I exitCell) const -> int
   return 1;
 }
 
-auto game_world::Level(int index) const -> std::unique_ptr<level_base>
+auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
 {
   switch( index )
   {
@@ -20,6 +20,10 @@ auto game_world::Level(int index) const -> std::unique_ptr<level_base>
 
     default:
       return std::make_unique<level_1>();
-      
   }
+}
+
+auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
+{
+  return { 0, 0 };
 }
