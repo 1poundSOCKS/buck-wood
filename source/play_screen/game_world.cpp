@@ -20,13 +20,14 @@ game_world::game_world()
     }
   });
 
-  level_2 level2;
-  level2.Enumerate([&entries](int column, int row, char data)
+  auto levelData1 = LevelData(1);
+  m_dataTranslator.SetLevelIndex(1);
+  m_dataTranslator.EnumerateItems(levelData1.get(), [&entries](size_t column, size_t row, level_item_type objectType) -> void
   {
-    switch( data )
+    switch( objectType )
     {
-    case 'E':
-      entries[data] = { column, row };
+    case level_item_type::portal:
+      entries[1] = { static_cast<int>(column), static_cast<int>(row) };
       break;
     }
   });
