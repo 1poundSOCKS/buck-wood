@@ -41,7 +41,7 @@ auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::t
 
 auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
-  m_dataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
+  m_cellDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
 
   auto levelData = LevelData(exitLevelIndex);
   std::optional<POINT_2I> exitCell;

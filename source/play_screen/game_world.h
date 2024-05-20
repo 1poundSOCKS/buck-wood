@@ -1,7 +1,7 @@
 #pragma once
 
 #include "level_base.h"
-#include "game_world_data_translator.h"
+#include "game_world_cell_data_translator.h"
 #include "level_container.h"
 
 class game_world
@@ -21,7 +21,8 @@ private:
 
 private:
 
-  game_world_data_translator m_dataTranslator;
+  game_world_cell_data_translator m_cellDataTranslator;
+  level_object_data_translator m_objectDataTranslator;
   std::map<std::tuple<int, int, int>,std::tuple<int, int, int>> m_links;
 
 };
@@ -32,12 +33,13 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
 
   auto levelData = LevelData(levelIndex);
 
-  m_dataTranslator.SetLevelIndex(levelIndex);
-  m_dataTranslator.EnumerateCells(levelData.get(), [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
+  m_cellDataTranslator.SetLevelIndex(levelIndex);
+  levelData->Enumerate([this,&levelContainer](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
-    
+    auto cellType = m_cellDataTranslator(cellData);
+
     switch( cellType )
     {
       case level_cell_type::floor:
@@ -49,30 +51,30 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
     }
   });
 
-  m_dataTranslator.EnumerateItems(levelData.get(), [&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
+  levelData->Enumerate([this,&levelContainer](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
-    
+    auto itemType = m_objectDataTranslator(cellData);
+
     switch( itemType )
-    {
-      case level_item_type::portal:
-        levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
-        break;
+      {
+        case level_item_type::portal:
+          levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
+          break;
 
-      case level_item_type::enemy_type_one:
-        levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
-        break;
-      
-      case level_item_type::enemy_type_two:
-        levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
-        break;
+        case level_item_type::enemy_type_one:
+          levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
+          break;
+        
+        case level_item_type::enemy_type_two:
+          levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
+          break;
 
-      case level_item_type::enemy_type_three:
-        break;
-    }
-    
-  });
+        case level_item_type::enemy_type_three:
+          break;
+      }
+    });
 
   levelContainer->AddWalls();
   levelContainer->CreatePlayer(entryCell);
