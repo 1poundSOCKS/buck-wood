@@ -34,12 +34,11 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
 
   auto levelData = LevelData(levelIndex);
 
-  m_cellDataTranslator.SetLevelIndex(levelIndex);
-  levelData->Enumerate([this,&levelContainer](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
-    auto cellType = m_cellDataTranslator(cellData);
+    auto cellType = m_cellDataTranslator(levelIndex, cellData);
 
     switch( cellType )
     {
