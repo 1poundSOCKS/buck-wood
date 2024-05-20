@@ -5,8 +5,8 @@
 
 game_world::game_world()
 {
-  SaveLevelLink(0, 'E', 1, 'F');
-  SaveLevelLink(1, 'E', 0, 'F');
+  CreateLevelLink(0, 'E', 1, 'F');
+  CreateLevelLink(1, 'E', 0, 'F');
 }
 
 auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
@@ -39,10 +39,10 @@ auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::t
   }
 }
 
-auto game_world::SaveLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
+auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
   m_dataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
-  
+
   auto levelData = LevelData(exitLevelIndex);
   std::optional<POINT_2I> exitCell;
 
