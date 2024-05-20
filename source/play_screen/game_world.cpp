@@ -6,6 +6,7 @@
 game_world::game_world()
 {
   SaveLevelLink(0, 'E', 1, 'F');
+  SaveLevelLink(1, 'E', 0, 'F');
 }
 
 auto game_world::LevelIndex(int index, POINT_2I exitCell) const -> int

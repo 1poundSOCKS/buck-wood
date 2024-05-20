@@ -24,7 +24,8 @@ private:
     std::string { "  00    00   " },
     std::string { "  00    00   " },
     std::string { "  00         " },
-    std::string { "PF00     1   " }
+    std::string { "PF00     1   " },
+    std::string { "0E00000000000" }
   };
 
 };

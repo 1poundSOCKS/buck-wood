@@ -15,9 +15,9 @@ private:
 
   inline static std::array m_levelData { 
     std::string { "00E00" },
+    std::string { "  F  " },
     std::string { "     " },
     std::string { "  2  " },
-    std::string { "     " },
     std::string { "     " },
     std::string { "0   0" },
     std::string { "0   0" },

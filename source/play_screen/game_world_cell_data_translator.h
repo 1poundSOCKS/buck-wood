@@ -18,6 +18,7 @@ public:
     switch( m_levelIndex )
     {
       case 0:
+      case 1:
         switch( cellData )
         {
           case 'E':
