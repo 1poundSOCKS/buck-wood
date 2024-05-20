@@ -6,26 +6,26 @@
 game_world::game_world()
 {
   auto levelData = LevelData(0);
-  m_dataTranslator.SetLevelIndex(0);
-  m_dataTranslator.EnumerateCells(levelData.get(), [this](size_t column, size_t row, level_cell_type cellType) -> void
+
+  levelData->Enumerate([this](size_t column, size_t row, char cellData)
   {
-    switch( cellType )
+    switch( cellData )
     {
-    case level_cell_type::exit:
-      m_exits[0] = { static_cast<int>(column), static_cast<int>(row) };
-      break;
+      case 'E':
+        m_exits[0] = { static_cast<int>(column), static_cast<int>(row) };
+        break;
     }
   });
 
   auto levelData1 = LevelData(1);
-  m_dataTranslator.SetLevelIndex(1);
-  m_dataTranslator.EnumerateCells(levelData1.get(), [this](size_t column, size_t row, level_cell_type objectType) -> void
+
+  levelData1->Enumerate([this](size_t column, size_t row, char cellData)
   {
-    switch( objectType )
+    switch( cellData )
     {
-    case level_cell_type::entry:
-      m_entries[1] = { static_cast<int>(column), static_cast<int>(row) };
-      break;
+      case 'F':
+        m_entries[1] = { static_cast<int>(column), static_cast<int>(row) };
+        break;
     }
   });
 
