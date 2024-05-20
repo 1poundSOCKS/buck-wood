@@ -16,8 +16,9 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  static auto loadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
-  static auto loadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  [[nodiscard]] static auto entryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
+  [[nodiscard]] static auto loadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  [[nodiscard]] static auto loadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -29,8 +30,9 @@ private:
 
   game_level_data_loader();
 
-  auto LoadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>;
-  auto LoadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
+  auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto EntryCell(const level_base* levelData) const -> POINT_2I;
@@ -44,6 +46,7 @@ private:
 
   inline static game_level_data_loader* m_instance { nullptr };
 
+  game_world m_gameWorld;
   status m_status { status::starting };
   inline static int m_levelCount { 9 };
 
@@ -65,14 +68,19 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::loadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::entryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
 {
-  return m_instance->LoadLevel(levelIndex, levelData, std::forward<decltype(args)>(args)...);
+  return m_instance->EntryData(index, exitCell);
 }
 
-inline auto game_level_data_loader::loadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::loadLevel(int levelIndex, auto &&...args) -> std::unique_ptr<level_container>
 {
-  return m_instance->LoadLevel(levelIndex, levelData, entryCell, std::forward<decltype(args)>(args)...);
+  return m_instance->LoadLevel(levelIndex, std::forward<decltype(args)>(args)...);
+}
+
+auto game_level_data_loader::loadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+{
+  return m_instance->LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
 }
 
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
@@ -100,63 +108,22 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-auto game_level_data_loader::LoadLevel(int levelIndex, const level_base* levelData, auto&&...args) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
 {
-  auto entryCell = EntryCell(levelData);
-  return LoadLevel(levelIndex, levelData, entryCell, std::forward<decltype(args)>(args)...);
+  return m_gameWorld.EntryData(index, exitCell);
 }
 
-auto game_level_data_loader::LoadLevel(int levelIndex, const level_base* levelData, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, auto &&...args) -> std::unique_ptr<level_container>
 {
-  std::unique_ptr<level_container> levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
+  auto levelData = m_gameWorld.LevelData(levelIndex);
+  auto entryCell = EntryCell(levelData.get());
+  return LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
+}
 
-  game_world_data_translator levelDataTranslator;
-  levelDataTranslator.SetLevelIndex(levelIndex);
-  levelDataTranslator.EnumerateCells(levelData, [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    
-    switch( cellType )
-    {
-      case level_cell_type::floor:
-        levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
-        break;
-      case level_cell_type::exit:
-        levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
-        break;
-    }
-  });
+auto game_level_data_loader::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+{
+  auto levelContainer = m_gameWorld.LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
 
-  levelDataTranslator.EnumerateItems(levelData, [&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    
-    switch( itemType )
-    {
-      case level_item_type::portal:
-        levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
-        break;
-
-      case level_item_type::enemy_type_one:
-        levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
-        break;
-      
-      case level_item_type::enemy_type_two:
-        levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
-        break;
-
-      case level_item_type::enemy_type_three:
-        break;
-    }
-    
-  });
-
-  levelContainer->AddWalls();
-  
-  levelContainer->CreatePlayer(entryCell);
-  
   m_status = status::starting;
   m_levelCanBeCompleted = true;
 
