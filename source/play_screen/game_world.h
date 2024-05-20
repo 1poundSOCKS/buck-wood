@@ -21,7 +21,7 @@ private:
 
 private:
 
-  // game_world_data_translator m_dataTranslator;
+  game_world_data_translator m_dataTranslator;
   std::map<std::tuple<int, int, int>,std::tuple<int, int, int>> m_links;
 
 };
@@ -32,9 +32,8 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
 
   auto levelData = LevelData(levelIndex);
 
-  game_world_data_translator levelDataTranslator;
-  levelDataTranslator.SetLevelIndex(levelIndex);
-  levelDataTranslator.EnumerateCells(levelData.get(), [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
+  m_dataTranslator.SetLevelIndex(levelIndex);
+  m_dataTranslator.EnumerateCells(levelData.get(), [&levelContainer](size_t column, size_t row, level_cell_type cellType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -50,7 +49,7 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
     }
   });
 
-  levelDataTranslator.EnumerateItems(levelData.get(), [&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
+  m_dataTranslator.EnumerateItems(levelData.get(), [&levelContainer](size_t column, size_t row, level_item_type itemType) -> void
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
