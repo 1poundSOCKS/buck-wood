@@ -13,29 +13,21 @@ public:
     m_levelIndex = value;
   }
 
+  auto AddExit(int levelIndex, char exitCellValue) -> void
+  {
+    m_exits.emplace(levelIndex, exitCellValue);
+  }
+
   [[nodiscard]] auto operator()(char cellData) const  -> level_cell_type
   {
-    switch( m_levelIndex )
-    {
-      case 0:
-      case 1:
-        switch( cellData )
-        {
-          case 'E':
-            return level_cell_type::exit;
-          default:
-            return m_translator(cellData);
-        }
-        break;
-
-      default:
-        return m_translator(cellData);
-    }
+    auto exitDataIterator = m_exits.find({m_levelIndex, cellData});
+    return exitDataIterator == std::end(m_exits) ? m_translator(cellData) : level_cell_type::exit;
   }
 
 private:
 
   int m_levelIndex { -1 };
   level_cell_data_translator m_translator;
+  std::set<std::tuple<int,char>> m_exits;
 
 };

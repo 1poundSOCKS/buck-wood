@@ -12,6 +12,11 @@ public:
     m_cellDataTranslator.SetLevelIndex(value);
   }
 
+  auto AddExit(int levelIndex, char exitCellValue) -> void
+  {
+    m_cellDataTranslator.AddExit(levelIndex, exitCellValue);
+  }
+
 private:
 
   int m_levelIndex { -1 };
