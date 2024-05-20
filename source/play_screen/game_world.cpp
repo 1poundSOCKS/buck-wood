@@ -2,11 +2,14 @@
 #include "game_world.h"
 #include "level_1.h"
 #include "level_2.h"
+#include "level_3.h"
 
 game_world::game_world()
 {
   CreateLevelLink(0, 'E', 1, 'F');
   CreateLevelLink(1, 'E', 0, 'F');
+  CreateLevelLink(1, 'G', 2, 'H');
+  CreateLevelLink(2, 'E', 1, 'H');
 }
 
 auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
@@ -18,6 +21,9 @@ auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
       
     case 1:
       return std::make_unique<level_2>();
+
+    case 2:
+      return std::make_unique<level_3>();
 
     default:
       return std::make_unique<level_1>();

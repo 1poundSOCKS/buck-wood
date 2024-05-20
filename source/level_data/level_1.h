@@ -26,3 +26,11 @@ private:
   };
 
 };
+
+inline level_1::level_1() : level_base { m_levelData }
+{
+}
+
+inline level_1::~level_1()
+{
+}

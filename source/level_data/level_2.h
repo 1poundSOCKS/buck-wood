@@ -14,8 +14,11 @@ public:
 private:
 
   inline static std::array m_levelData { 
-    std::string { "0000000000 2 " },
+    std::string { "00000000000G0" },
+    std::string { "0000000000 H " },
     std::string { "0000000000   " },
+    std::string { "0000000000   " },
+    std::string { "0000000000 2 " },
     std::string { "00000        " },
     std::string { "00000    0000" },
     std::string { "00000    0000" },
@@ -29,3 +32,11 @@ private:
   };
 
 };
+
+inline level_2::level_2() : level_base { m_levelData }
+{
+}
+
+inline level_2::~level_2()
+{
+}
