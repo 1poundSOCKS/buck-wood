@@ -18,13 +18,21 @@ auto play_state::LoadCurrentLevel() -> void
 
 auto play_state::LoadNextLevel(POINT_2I exitCell) -> bool
 {
-  auto levelIndex = m_gameWorld.LevelIndex(game_state::level_index(), exitCell);
-  auto entryCell = m_gameWorld.EntryCell(game_state::level_index(), exitCell);
-  game_state::set_level_index(levelIndex);
-  auto level = m_gameWorld.LevelData(levelIndex);
-  m_levelContainer = game_level_data_loader::loadLevel(levelIndex, level.get(), entryCell);
-  player_state::set_status(player_state::status::active);
-  return true;
+  const auto entryData = m_gameWorld.EntryData(game_state::level_index(), exitCell);
+
+  if( entryData )
+  {
+    const auto& [levelIndex, entryCell] = *entryData;
+    game_state::set_level_index(levelIndex);
+    auto level = m_gameWorld.LevelData(levelIndex);
+    m_levelContainer = game_level_data_loader::loadLevel(levelIndex, level.get(), entryCell);
+    player_state::set_status(player_state::status::active);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 auto play_state::Update(float interval, RECT_F view) -> void

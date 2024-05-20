@@ -9,21 +9,6 @@ game_world::game_world()
   SaveLevelLink(1, 'E', 0, 'F');
 }
 
-auto game_world::LevelIndex(int index, POINT_2I exitCell) const -> int
-{
-  auto entryIterator = m_links.find({index,exitCell.x, exitCell.y});
-  if( entryIterator == std::end(m_links) )
-  {
-    return -1;
-  }
-  else
-  {
-    const auto& [key, value] = *entryIterator;
-    const auto& [levelIndex, column, row] = value;
-    return levelIndex;
-  }
-}
-
 auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
 {
   switch( index )
@@ -39,18 +24,18 @@ auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
   }
 }
 
-auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
+auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
 {
   auto entryIterator = m_links.find({index,exitCell.x, exitCell.y});
   if( entryIterator == std::end(m_links) )
   {
-    return { 0, 0 };
+    return std::nullopt;
   }
   else
   {
     const auto& [key, value] = *entryIterator;
     const auto& [levelIndex, column, row] = value;
-    return { column, row };
+    return std::make_optional<std::tuple<int, POINT_2I>>(levelIndex, POINT_2I { column, row });
   }
 }
 
