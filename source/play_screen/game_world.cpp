@@ -11,7 +11,17 @@ game_world::game_world()
 
 auto game_world::LevelIndex(int index, POINT_2I exitCell) const -> int
 {
-  return m_levelLinks.at(index);
+  auto entryIterator = m_links.find({index,exitCell.x, exitCell.y});
+  if( entryIterator == std::end(m_links) )
+  {
+    return -1;
+  }
+  else
+  {
+    const auto& [key, value] = *entryIterator;
+    const auto& [levelIndex, column, row] = value;
+    return levelIndex;
+  }
 }
 
 auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
@@ -31,32 +41,45 @@ auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
 
 auto game_world::EntryCell(int index, POINT_2I exitCell) -> POINT_2I
 {
-  auto nextLevelIndex = m_levelLinks[index];
-  auto entryIterator = m_entries.find(nextLevelIndex);
-  return entryIterator != std::end(m_entries) ? entryIterator->second : POINT_2I { 0, 0 };
+  auto entryIterator = m_links.find({index,exitCell.x, exitCell.y});
+  if( entryIterator == std::end(m_links) )
+  {
+    return { 0, 0 };
+  }
+  else
+  {
+    const auto& [key, value] = *entryIterator;
+    const auto& [levelIndex, column, row] = value;
+    return { column, row };
+  }
 }
 
 auto game_world::SaveLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
   auto levelData = LevelData(exitLevelIndex);
+  std::optional<POINT_2I> exitCell;
 
-  levelData->Enumerate([this,exitLevelIndex,exitCellDataValue](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,exitLevelIndex,exitCellDataValue,&exitCell](size_t column, size_t row, char cellData)
   {
     if( cellData == exitCellDataValue )
     {
-      m_exits[exitLevelIndex] = { static_cast<int>(column), static_cast<int>(row) };
+      exitCell = POINT_2I { static_cast<int>(column), static_cast<int>(row) };
     }
   });
 
   auto levelData1 = LevelData(entryLevelIndex);
+  std::optional<POINT_2I> entryCell;
 
-  levelData1->Enumerate([this,entryLevelIndex,entryCellDataValue](size_t column, size_t row, char cellData)
+  levelData1->Enumerate([this,entryLevelIndex,entryCellDataValue,&entryCell](size_t column, size_t row, char cellData)
   {
     if( cellData == entryCellDataValue )
     {
-      m_entries[entryLevelIndex] = { static_cast<int>(column), static_cast<int>(row) };      
+      entryCell = POINT_2I { static_cast<int>(column), static_cast<int>(row) };
     }
   });
 
-  m_levelLinks[exitLevelIndex] = entryLevelIndex;
+  if( exitCell && entryCell )
+  {
+    m_links[std::make_tuple(exitLevelIndex, exitCell->x, exitCell->y)] = std::make_tuple(entryLevelIndex, entryCell->x, entryCell->y);
+  }
 }
