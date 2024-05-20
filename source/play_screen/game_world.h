@@ -2,6 +2,7 @@
 
 #include "level_base.h"
 #include "game_world_cell_data_translator.h"
+#include "level_object_data_translator.h"
 #include "level_container.h"
 
 class game_world

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "level_types.h"
-#include "level_data_translator.h"
+#include "level_cell_data_translator.h"
 
 class game_world_cell_data_translator
 {

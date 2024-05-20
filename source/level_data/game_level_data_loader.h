@@ -3,7 +3,7 @@
 #include "level_update_event.h"
 #include "level_1.h"
 #include "level_2.h"
-#include "level_data_translator.h"
+// #include "level_data_translator.h"
 #include "game_world.h"
 
 class game_level_data_loader
@@ -35,7 +35,7 @@ private:
   auto LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
-  [[nodiscard]] auto EntryCell(const level_base* levelData) const -> POINT_2I;
+  [[nodiscard]] auto PortalCell(const level_base* levelData) const -> POINT_2I;
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
   [[nodiscard]] auto NextLevel(int levelIndex) -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;
@@ -115,8 +115,7 @@ inline auto game_level_data_loader::EntryData(int index, POINT_2I exitCell) -> s
 
 auto game_level_data_loader::LoadLevel(int levelIndex, auto &&...args) -> std::unique_ptr<level_container>
 {
-  auto levelData = m_gameWorld.LevelData(levelIndex);
-  auto entryCell = EntryCell(levelData.get());
+  auto entryCell = POINT_2I { 2, 6 };
   return LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
 }
 
