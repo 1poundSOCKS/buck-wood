@@ -16,6 +16,10 @@ public:
 
 private:
 
+  auto SaveLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
+
+private:
+
   game_world_data_translator m_dataTranslator;
   std::map<int, int> m_levelLinks;
   std::map<int, POINT_2I> m_exits;
