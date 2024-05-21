@@ -53,7 +53,9 @@ public:
   [[nodiscard]] auto EnemyObjects() const -> const enemy_object_collection&;
   [[nodiscard]] auto Particles() const -> const particle_collection&;
 
-  auto EnumerateCells(auto&& visitor) -> void;
+  auto EnumerateCells(auto&& visitor) const -> void;
+  auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateParticles(auto&& visitor) const -> void;
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
   
   [[nodiscard]] auto Exit() const noexcept -> bool;
@@ -282,9 +284,25 @@ inline auto level_container::Particles() const -> const particle_collection&
   return m_particles;
 }
 
-inline auto level_container::EnumerateCells(auto &&visitor) -> void
+auto level_container::EnumerateCells(auto &&visitor) const -> void
 {
   m_cells.EnumerateCells(visitor);
+}
+
+auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
+{
+  for( const auto& object : m_noninteractiveObjects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
+{
+  for( const auto& particle : m_particles )
+  {
+    visitor(particle);
+  }
 }
 
 [[nodiscard]] auto level_container::EnemyObjects(auto &&unaryFunction)
