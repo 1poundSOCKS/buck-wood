@@ -18,19 +18,70 @@ auto level_container::AddWalls() -> void
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  update_object_visitor updateObjectVisitor { this, interval };
-  level_collision_handler collisionHandler { this };
-  
-  // Update(updateObjectVisitor, collisionHandler, viewRect);
-  UpdateNew(interval, collisionHandler, viewRect);
+  UpdateNew(interval, viewRect);
+}
 
-  // auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
+auto level_container::UpdateNew(float interval, D2D1_RECT_F viewRect) -> void
+{
+  auto collisionsStart = performance_counter::QueryValue();
+  DoCollisions();
+  auto collisionsEnd = performance_counter::QueryValue();
 
-  // for( auto& object : PlayerObjects )
-  // {
-  //   std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
-  //   object.UpdateGeometry();
-  // }
+  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
+
+  auto updateStart = performance_counter::QueryValue();
+  UpdateObjectsNew(interval);
+
+  for( const auto& object : m_playerObjects )
+  {
+    auto ship = object->GetIf<player_ship>();
+    m_playerState = ship ? *ship : m_playerState;
+  }
+
+  RemoveDestroyedObjects();
+
+  // m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
+
+  auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
+  {
+    return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
+  });
+
+  m_enemyCount = m_enemyObjects.size();//std::accumulate(std::begin(enemies), std::end(enemies), 0);
+
+  auto updateEnd = performance_counter::QueryValue();
+  diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
+}
+
+auto level_container::UpdateObjectsNew(float interval) -> void
+{
+  auto particles = std::ranges::views::filter(m_particles, [](const auto& particle) { return !particle.Destroyed(); } );
+
+  dynamic_object_functions::update(particles, interval);
+
+  auto NoninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : NoninteractiveObjects )
+  {
+    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
+    object.UpdateGeometry();
+  }
+
+  auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : PlayerObjects )
+  {
+    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
+    object.UpdateGeometry();
+  }
+
+  auto EnemyObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : EnemyObjects )
+  {
+    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
+    object.UpdateGeometry();
+  }
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
@@ -38,6 +89,15 @@ auto level_container::RemoveDestroyedObjects() -> void
   particle_functions::erase_destroyed(m_particles);
   dynamic_object_functions::erase_destroyed(m_enemyObjects);
   dynamic_object_functions::erase_destroyed(m_playerObjects);
+}
+
+auto level_container::DoCollisions() -> void
+{
+  level_collision_handler collisionHandler { this };
+  m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
+  m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
+  m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
+  m_collisionRunner(m_playerObjects, m_enemyObjects, collisionHandler);
 }
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
