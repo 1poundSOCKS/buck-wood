@@ -34,14 +34,16 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   RemoveDestroyedObjects();
 
-  // m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
+#if 0
+  m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
+#endif
 
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {
     return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
   });
 
-  m_enemyCount = m_enemyObjects.size();//std::accumulate(std::begin(enemies), std::end(enemies), 0);
+  m_enemyCount = m_enemyObjects.size();
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
@@ -53,29 +55,11 @@ auto level_container::UpdateObjects(float interval) -> void
 
   dynamic_object_functions::update(particles, interval);
 
-  auto NoninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [](const auto& object) { return !object->Destroyed(); } );
-
-  for( auto& object : NoninteractiveObjects )
+  EnumerateAllObjects([this, interval](auto& object)
   {
     std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
     object.UpdateGeometry();
-  }
-
-  auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
-
-  for( auto& object : PlayerObjects )
-  {
-    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
-    object.UpdateGeometry();
-  }
-
-  auto EnemyObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object) { return !object->Destroyed(); } );
-
-  for( auto& object : EnemyObjects )
-  {
-    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
-    object.UpdateGeometry();
-  }
+  });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void

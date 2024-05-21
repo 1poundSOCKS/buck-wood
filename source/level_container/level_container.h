@@ -52,6 +52,7 @@ public:
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateEnemies(auto&& visitor) const -> void;
+  auto EnumerateAllObjects(auto&& visitor) -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
@@ -295,6 +296,30 @@ inline auto level_container::EnumerateEnemies(auto &&visitor) const -> void
   });
 
   for( const auto& object : enemies )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateAllObjects(auto &&visitor) -> void
+{
+  auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : noninteractiveObjects )
+  {
+    visitor(object);
+  }
+
+  auto playerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : playerObjects )
+  {
+    visitor(object);
+  }
+
+  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  for( auto& object : enemyObjects )
   {
     visitor(object);
   }
