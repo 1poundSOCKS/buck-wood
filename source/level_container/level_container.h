@@ -53,6 +53,7 @@ public:
   [[nodiscard]] auto EnemyObjects() const -> const enemy_object_collection&;
   [[nodiscard]] auto Particles() const -> const particle_collection&;
 
+  auto EnumerateCells(auto&& visitor) -> void;
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
   
   [[nodiscard]] auto Exit() const noexcept -> bool;
@@ -281,7 +282,21 @@ inline auto level_container::Particles() const -> const particle_collection&
   return m_particles;
 }
 
-[[nodiscard]] auto level_container::EnemyObjects(auto&& unaryFunction)
+inline auto level_container::EnumerateCells(auto &&visitor) -> void
+{
+  auto cells = std::ranges::views::transform(m_cells.Get(), [](const auto& cell) -> valid_cell
+  {
+    const auto& [key, value] = cell;
+    return value;
+  });
+
+  for( const auto& cell : cells )
+  {
+    visitor(cell);
+  }
+}
+
+[[nodiscard]] auto level_container::EnemyObjects(auto &&unaryFunction)
 {
   return std::ranges::views::filter(m_enemyObjects, unaryFunction);
 }
