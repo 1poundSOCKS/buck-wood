@@ -41,6 +41,8 @@ public:
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
+  auto EnumerateCells(auto&& visitor) -> void;
+
 private:
 
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
@@ -66,4 +68,18 @@ inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> const c
 inline auto level_cell_collection::Get(cell_id cellId) const -> const valid_cell &
 {
   return m_cells.at(cellId);
+}
+
+auto level_cell_collection::EnumerateCells(auto &&visitor) -> void
+{
+  auto cells = std::ranges::views::transform(m_cells, [](const auto& cell) -> valid_cell
+  {
+    const auto& [key, value] = cell;
+    return value;
+  });
+
+  for( const auto& cell : cells )
+  {
+    visitor(cell);
+  }
 }

@@ -284,16 +284,7 @@ inline auto level_container::Particles() const -> const particle_collection&
 
 inline auto level_container::EnumerateCells(auto &&visitor) -> void
 {
-  auto cells = std::ranges::views::transform(m_cells.Get(), [](const auto& cell) -> valid_cell
-  {
-    const auto& [key, value] = cell;
-    return value;
-  });
-
-  for( const auto& cell : cells )
-  {
-    visitor(cell);
-  }
+  m_cells.EnumerateCells(visitor);
 }
 
 [[nodiscard]] auto level_container::EnemyObjects(auto &&unaryFunction)
