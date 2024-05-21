@@ -21,7 +21,16 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   update_object_visitor updateObjectVisitor { this, interval };
   level_collision_handler collisionHandler { this };
   
-  Update(updateObjectVisitor, collisionHandler, viewRect);
+  // Update(updateObjectVisitor, collisionHandler, viewRect);
+  UpdateNew(interval, collisionHandler, viewRect);
+
+  // auto PlayerObjects = std::ranges::views::filter(m_playerObjects, [](const auto& object) { return !object->Destroyed(); } );
+
+  // for( auto& object : PlayerObjects )
+  // {
+  //   std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
+  //   object.UpdateGeometry();
+  // }
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
