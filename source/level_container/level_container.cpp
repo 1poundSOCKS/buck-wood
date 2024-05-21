@@ -2,7 +2,6 @@
 #include "level_container.h"
 #include "renderers.h"
 #include "particle_functions.h"
-#include "update_object_visitor.h"
 #include "level_collision_handler.h"
 #include "player_state.h"
 
@@ -18,11 +17,6 @@ auto level_container::AddWalls() -> void
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  UpdateNew(interval, viewRect);
-}
-
-auto level_container::UpdateNew(float interval, D2D1_RECT_F viewRect) -> void
-{
   auto collisionsStart = performance_counter::QueryValue();
   DoCollisions();
   auto collisionsEnd = performance_counter::QueryValue();
@@ -30,7 +24,7 @@ auto level_container::UpdateNew(float interval, D2D1_RECT_F viewRect) -> void
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
 
   auto updateStart = performance_counter::QueryValue();
-  UpdateObjectsNew(interval);
+  UpdateObjects(interval);
 
   for( const auto& object : m_playerObjects )
   {
@@ -53,7 +47,7 @@ auto level_container::UpdateNew(float interval, D2D1_RECT_F viewRect) -> void
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
 
-auto level_container::UpdateObjectsNew(float interval) -> void
+auto level_container::UpdateObjects(float interval) -> void
 {
   auto particles = std::ranges::views::filter(m_particles, [](const auto& particle) { return !particle.Destroyed(); } );
 

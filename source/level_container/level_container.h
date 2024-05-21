@@ -80,15 +80,13 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
+private:
+
+  auto UpdateObjects(float interval) -> void;
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(player_missile& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
   auto UpdateObject(enemy_type_2& object, float interval) -> void;
-
-private:
-
-  auto UpdateNew(float interval, D2D1_RECT_F viewRect) -> void;
-  auto UpdateObjectsNew(float interval) -> void;
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
