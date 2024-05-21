@@ -45,7 +45,7 @@ auto play_scene::Update(__int64 ticks) -> bool
 
 auto play_scene::Render() const -> void
 {
-  render_target::get()->Clear(D2D1::ColorF(0, 0, 0, 1.0f));
+  render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
   render_target::get()->SetTransform(m_renderTransform);
 
   const auto& cellCollection = m_playState->LevelContainer().Cells().Get();

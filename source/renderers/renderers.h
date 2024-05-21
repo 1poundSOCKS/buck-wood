@@ -75,7 +75,7 @@ private:
   winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarBorderBrush { screen_render_brush_white.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarFillBrush { screen_render_brush_green.CreateBrush() };
-  geometry_renderer m_floorCellRenderer { screen_render_brush_very_dark_grey.CreateBrush(), screen_render_brush_grey.CreateBrush(), 5 };
+  geometry_renderer m_floorCellRenderer { screen_render_brush_black.CreateBrush() };
   geometry_renderer m_exitCellRenderer { screen_render_brush_yellow.CreateBrush(), screen_render_brush_grey.CreateBrush(), 5 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_grey.CreateBrush(), 5 };
 
