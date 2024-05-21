@@ -101,28 +101,7 @@ auto play_scene::RenderLevelContainer() const -> void
 {
   auto renderStart = performance_counter::QueryValue();
 
-  const auto& levelContainer = m_playState->LevelContainer();
-
-  levelContainer.EnumerateNonInteractiveObjects([](const auto& object)
-  {
-    renderer::render(object);
-  });
-
-  levelContainer.EnumerateParticles([](const auto& particle)
-  {
-    renderer::render(particle);
-  });
-
-  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
-  {
-    levelContainer.EnumerateInteractiveObjects([orderIndex](const auto& object)
-    {
-      if( render_order::get(object.Object()) == orderIndex )
-      {
-        renderer::render(object);    
-      }
-    });
-  }
+  renderer::render(m_playState->LevelContainer());
 
   auto renderEnd = performance_counter::QueryValue();
 

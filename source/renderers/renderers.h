@@ -4,6 +4,7 @@
 #include "hud_target.h"
 #include "target_position.h"
 #include "player_destination.h"
+#include "level_container.h"
 
 #include "default_object_renderer.h"
 
@@ -37,7 +38,6 @@ public:
   static auto render(const auto& object) -> void;
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
-  static auto ordered_render_all(std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void;
   static auto renderDiagnostics() -> void;
 
 private:
@@ -54,6 +54,7 @@ private:
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
   auto Render(const valid_cell& validCell) const -> void;
+  auto Render(const level_container& levelContainer) const -> void;
 
 private:
 
@@ -96,26 +97,6 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
   for( const auto& object : objects )
   {
     m_instance->Render(object);
-  }
-}
-
-auto renderer::ordered_render_all(std::ranges::input_range auto&& playerObjects, std::ranges::input_range auto&& enemyObjects) -> void
-{
-  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
-  {
-    auto renderPlayerObjects = std::ranges::views::filter(playerObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
-
-    for( const auto& object : renderPlayerObjects )
-    {
-      m_instance->Render(object);
-    }
-
-    auto renderEnemyObjects = std::ranges::views::filter(enemyObjects, [orderIndex](auto&& object) { return render_order::get(object.Object()) == orderIndex; });
-
-    for( const auto& object : renderEnemyObjects )
-    {
-      m_instance->Render(object);
-    }
   }
 }
 
@@ -204,5 +185,29 @@ inline auto renderer::Render(const valid_cell& validCell) const -> void
     m_floorCellRenderer.Write(validCell.Geometry().get());
     break;
 
+  }
+}
+
+inline auto renderer::Render(const level_container &levelContainer) const -> void
+{
+  levelContainer.EnumerateNonInteractiveObjects([this](const auto& object)
+  {
+    Render(object);
+  });
+
+  levelContainer.EnumerateParticles([this](const auto& particle)
+  {
+    Render(particle);
+  });
+
+  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  {
+    levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
+    {
+      if( render_order::get(object.Object()) == orderIndex )
+      {
+        Render(object);    
+      }
+    });
   }
 }
