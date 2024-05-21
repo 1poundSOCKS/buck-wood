@@ -33,7 +33,6 @@ protected:
   auto RenderLevelContainer() const -> void;
   auto RenderEnergyBars() const -> void;
   auto RenderGeometryBoundaries() const -> void;
-  auto RenderGeometryBoundaries(std::ranges::input_range auto&& objects) const -> void;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;
@@ -58,13 +57,3 @@ protected:
   D2D1::Matrix3x2F m_renderTransform { RenderTransform() };
 
 };
-
-auto play_scene::RenderGeometryBoundaries(std::ranges::input_range auto&& objects) const -> void
-{
-  auto boundaries = std::ranges::views::transform(objects, [this](const auto& enemy)
-  {
-    return ObjectRenderRect(enemy);
-  });
-
-  renderer::render_all(boundaries);
-}

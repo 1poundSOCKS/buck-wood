@@ -50,16 +50,14 @@ public:
   [[nodiscard]] auto Cells() const -> const level_cell_collection&;
   [[nodiscard]] auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
   [[nodiscard]] auto PlayerObjects() const -> const player_object_collection&;
-  [[nodiscard]] auto EnemyObjects() const -> const enemy_object_collection&;
   [[nodiscard]] auto Particles() const -> const particle_collection&;
 
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateEnemies(auto&& visitor) const -> void;
 
-  [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
-  
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
   auto SetExit(bool value, POINT_2I cell) -> void;
@@ -276,11 +274,6 @@ inline auto level_container::PlayerObjects() const -> const player_object_collec
   return m_playerObjects;
 }
 
-inline auto level_container::EnemyObjects() const -> const enemy_object_collection&
-{
-  return m_enemyObjects;
-}
-
 inline auto level_container::Particles() const -> const particle_collection&
 {
   return m_particles;
@@ -320,9 +313,17 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
   }
 }
 
-[[nodiscard]] auto level_container::EnemyObjects(auto &&unaryFunction)
+inline auto level_container::EnumerateEnemies(auto &&visitor) const -> void
 {
-  return std::ranges::views::filter(m_enemyObjects, unaryFunction);
+  auto enemies = std::ranges::views::filter(m_enemyObjects, [this](const auto& object)
+  {
+    return object->HoldsAlternative<enemy_type_1>() || object->HoldsAlternative<enemy_type_2>();
+  });
+
+  for( const auto& object : enemies )
+  {
+    visitor(object);
+  }
 }
 
 inline auto level_container::Exit() const noexcept -> bool

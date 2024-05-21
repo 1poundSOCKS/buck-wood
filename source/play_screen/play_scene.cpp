@@ -137,23 +137,18 @@ auto play_scene::PlaySoundEffects() const -> void
 
 auto play_scene::RenderEnergyBars() const -> void
 {
-  auto enemiesWithEnergyBars = std::ranges::views::filter(m_playState->LevelContainer().EnemyObjects(), [this](const auto& enemy)
+  m_playState->LevelContainer().EnumerateEnemies([this](const auto& object)
   {
-    return enemy->HoldsAlternative<enemy_type_1>() || enemy->HoldsAlternative<enemy_type_2>();
+     renderer::render(energy_bar { EnergyBarRenderRect(object), object->Health() } );
   });
-
-  auto energyBars = std::ranges::views::transform(enemiesWithEnergyBars, [this](const auto& enemy)
-  {
-    return energy_bar { EnergyBarRenderRect(enemy), enemy->Health() };
-  });
-
-  renderer::render_all(energyBars);
 }
 
 auto play_scene::RenderGeometryBoundaries() const -> void
 {
-  RenderGeometryBoundaries(m_playState->LevelContainer().PlayerObjects());
-  RenderGeometryBoundaries(m_playState->LevelContainer().EnemyObjects());
+  m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
+  {
+    renderer::render(ObjectRenderRect(object));
+  });
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
