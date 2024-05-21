@@ -113,7 +113,16 @@ auto play_scene::RenderLevelContainer() const -> void
     renderer::render(particle);
   });
 
-  renderer::ordered_render_all(levelContainer.PlayerObjects(), levelContainer.EnemyObjects());
+  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  {
+    levelContainer.EnumerateInteractiveObjects([orderIndex](const auto& object)
+    {
+      if( render_order::get(object.Object()) == orderIndex )
+      {
+        renderer::render(object);    
+      }
+    });
+  }
 
   auto renderEnd = performance_counter::QueryValue();
 

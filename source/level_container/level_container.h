@@ -56,6 +56,8 @@ public:
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
+  auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+
   [[nodiscard]] auto EnemyObjects(auto&& unaryFunction);
   
   [[nodiscard]] auto Exit() const noexcept -> bool;
@@ -302,6 +304,19 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
   for( const auto& particle : m_particles )
   {
     visitor(particle);
+  }
+}
+
+inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -> void
+{
+  for( const auto& object : m_playerObjects )
+  {
+    visitor(object);
+  }
+
+  for( const auto& object : m_enemyObjects )
+  {
+    visitor(object);
   }
 }
 
