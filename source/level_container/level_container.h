@@ -47,11 +47,6 @@ public:
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
 
-  [[nodiscard]] auto Cells() const -> const level_cell_collection&;
-  [[nodiscard]] auto NoninteractiveObjects() const -> const noninteractive_object_collection&;
-  [[nodiscard]] auto PlayerObjects() const -> const player_object_collection&;
-  [[nodiscard]] auto Particles() const -> const particle_collection&;
-
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
@@ -257,26 +252,6 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
   {
     m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
   }
-}
-
-inline auto level_container::Cells() const -> const level_cell_collection&
-{
-  return m_cells;
-}
-
-inline auto level_container::NoninteractiveObjects() const -> const noninteractive_object_collection &
-{
-  return m_noninteractiveObjects;
-}
-
-inline auto level_container::PlayerObjects() const -> const player_object_collection&
-{
-  return m_playerObjects;
-}
-
-inline auto level_container::Particles() const -> const particle_collection&
-{
-  return m_particles;
 }
 
 auto level_container::EnumerateCells(auto &&visitor) const -> void
