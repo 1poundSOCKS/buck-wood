@@ -22,6 +22,11 @@ namespace render_order
       return 1;
     }
 
+    constexpr auto operator()(const enemy_type_3&) -> int
+    {
+      return 1;
+    }
+
     constexpr auto operator()(auto&& object) -> int
     {
       return 0;
