@@ -228,10 +228,7 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
 
 inline auto renderer::Write(const portal &object) const -> void
 {
-  auto geometry = level_geometries::CircleGeometry();
-  auto transform = geometric_object_transform { object };
-  auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), transform.Get());
-  m_portalRenderer.Write(object, transformedGeometry.get());
+  m_portalRenderer.Write(object);
 }
 
 inline auto renderer::Write(const auto &object) const -> void

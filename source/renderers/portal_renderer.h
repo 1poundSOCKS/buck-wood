@@ -4,6 +4,7 @@
 #include "level_objects.h"
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
+#include "geometric_object_transform.h"
 
 class portal_renderer
 {
@@ -12,6 +13,13 @@ public:
 
   portal_renderer() : m_baseGeometry { level_geometries::CircleGeometry() }
   {
+  }
+
+  auto Write(const portal& object) const -> void
+  {
+    auto transform = geometric_object_transform { object };
+    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_baseGeometry.get(), transform.Get());
+    Write(object, transformedGeometry.get());
   }
 
   auto Write(const portal& object, ID2D1Geometry* geometry) const -> void
