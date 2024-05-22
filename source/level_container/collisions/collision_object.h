@@ -1,14 +1,26 @@
 #pragma once
 
 #include "objects/default_object.h"
-#include "level_object_geometry.h"
+#include "transformed_level_object_geometry.h"
+// #include "transformed_default_object_geometry.h"
+
+inline [[nodiscard]] auto ExtractGeometricObject(default_object& object) -> geometric_object&
+{
+  geometric_object* geometricObject { nullptr };
+  std::visit([&geometricObject](auto& levelObject)
+  {
+    geometricObject = &levelObject;
+  }, object.Get());
+
+  return *geometricObject;
+}
 
 class collision_object
 {
 
 public:
 
-  collision_object(default_object& object) : m_object { object }, m_geometry { object }
+  collision_object(default_object& object) : m_object { object }, m_geometry { ExtractGeometricObject(object) }
   {
   }
 
@@ -22,12 +34,12 @@ public:
     return m_object;
   }
 
-  [[nodiscard]] auto Geometry() noexcept -> level_object_geometry&
+  [[nodiscard]] auto Geometry() noexcept -> transformed_level_object_geometry&
   {
     return m_geometry;
   }
 
-  [[nodiscard]] auto Geometry() const noexcept -> const level_object_geometry&
+  [[nodiscard]] auto Geometry() const noexcept -> const transformed_level_object_geometry&
   {
     return m_geometry;
   }
@@ -35,6 +47,6 @@ public:
 private:
 
   default_object& m_object;
-  level_object_geometry m_geometry;
+  transformed_level_object_geometry m_geometry;
 
 };
