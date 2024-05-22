@@ -12,6 +12,26 @@ public:
   {
   }
 
+  [[nodiscard]] auto Object() noexcept -> default_object&
+  {
+    return m_object;
+  }
+
+  // [[nodiscard]] auto Object() noexcept const -> const default_object&
+  // {
+  //   return m_object;
+  // }
+
+  [[nodiscard]] auto Geometry() noexcept -> level_object_geometry&
+  {
+    return m_geometry;
+  }
+
+  [[nodiscard]] auto Geometry() const noexcept -> const level_object_geometry&
+  {
+    return m_geometry;
+  }
+
 private:
 
   default_object& m_object;

@@ -95,11 +95,11 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::DoCollisions() -> void
 {
-  // level_collision_handler collisionHandler;
+  level_collision_handler collisionHandler;
   // m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
   // m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
   // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
-  // m_collisionRunner(m_playerObjects, m_enemyObjects, collisionHandler);
+  m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
 
   // auto exitCell = collisionHandler.ExitCell();
   // m_exit = exitCell ? true : false;
