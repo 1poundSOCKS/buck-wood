@@ -78,8 +78,7 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
   });
 
   levelContainer->AddWalls();
-  // levelContainer->CreatePlayer(entryCell);
-  levelContainer->CreatePlayer2(entryCell);
+  levelContainer->CreatePlayer(entryCell);
 
   return levelContainer;
 }

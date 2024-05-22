@@ -218,10 +218,9 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
     Render(particle);
   });
 
-
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
   {
-    levelContainer.EnumerateInteractiveObjects2([this,orderIndex](const auto& object)
+    levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
     {
       if( render_order::get(object) == orderIndex )
       {
@@ -230,16 +229,16 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
     });
   }
 
-  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
-  {
-    levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
-    {
-      if( render_order::get(object.Object()) == orderIndex )
-      {
-        Render(object);    
-      }
-    });
-  }
+  // for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  // {
+  //   levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
+  //   {
+  //     if( render_order::get(object.Object()) == orderIndex )
+  //     {
+  //       Render(object);    
+  //     }
+  //   });
+  // }
 }
 
 inline auto renderer::Write(const default_object &object) const -> void

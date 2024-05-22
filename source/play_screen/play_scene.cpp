@@ -146,10 +146,10 @@ auto play_scene::RenderEnergyBars() const -> void
 
 auto play_scene::RenderGeometryBoundaries() const -> void
 {
-  m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
-  {
-    renderer::render(ObjectRenderRect(object));
-  });
+  // m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
+  // {
+  //   renderer::render(ObjectRenderRect(object));
+  // });
 }
 
 auto play_scene::SetCameraZoom(float value) -> void

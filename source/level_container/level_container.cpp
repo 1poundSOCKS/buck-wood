@@ -32,7 +32,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   //   m_playerState = ship ? *ship : m_playerState;
   // }
 
-  for( const auto& object : m_playerObjects2 )
+  for( const auto& object : m_playerObjects )
   {
     auto ship = object.GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
@@ -40,9 +40,9 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   EnumerateAllObjects(true, [this](const auto& object)
   {
-    if( object->Destroyed() )
+    if( object.Destroyed() )
     {
-      CreateExplosion(object->Position());
+      CreateExplosion(object.Position());
     }
   });
 
@@ -51,11 +51,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 #if 0
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 #endif
-
-  // auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
-  // {
-  //   return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
-  // });
 
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {
@@ -74,39 +69,20 @@ auto level_container::UpdateObjects(float interval) -> void
 
   dynamic_object_functions::update(particles, interval);
 
-  // EnumerateNonInteractiveObjects([this, interval](auto& defaultObject)
-  // {
-  //   std::visit([this, interval](auto& object)
-  //   {
-  //     UpdateObject(object, interval);
-  //   }, defaultObject.Get());
-  // });
-
-  EnumerateAllObjects2(false, [this, interval](auto& defaultObject)
+  EnumerateAllObjects(false, [this, interval](auto& defaultObject)
   {
     std::visit([this, interval](auto& object)
     {
       UpdateObject(object, interval);
     }, defaultObject.Get());
   });
-
-  // EnumerateAllObjects(false, [this, interval](auto& object)
-  // {
-  //   std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
-  //   object.UpdateGeometry();
-  // });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
   particle_functions::erase_destroyed(m_particles);
-
-  // dynamic_object_functions::erase_destroyed(m_enemyObjects);
-  // dynamic_object_functions::erase_destroyed(m_playerObjects);
-
   std::erase_if(m_enemyObjects, [](const auto& object) -> bool { return object.Destroyed(); });
-  std::erase_if(m_playerObjects2, [](const auto& object) -> bool { return object.Destroyed(); });
-
+  std::erase_if(m_playerObjects, [](const auto& object) -> bool { return object.Destroyed(); });
 }
 
 auto level_container::DoCollisions() -> void
@@ -165,8 +141,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    // CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
-    CreatePlayerBullet2(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
+    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
     play_events::set(play_events::event_type::shot, true);
   }
 
