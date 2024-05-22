@@ -58,24 +58,24 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
     auto itemType = m_objectDataTranslator(cellData);
 
     switch( itemType )
-      {
-        case level_item_type::portal:
-          levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
-          break;
+    {
+      case level_item_type::portal:
+        levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
+        break;
 
-        case level_item_type::enemy_type_one:
-          levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
-          break;
-        
-        case level_item_type::enemy_type_two:
-          levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
-          break;
+      case level_item_type::enemy_type_one:
+        levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
+        break;
+      
+      case level_item_type::enemy_type_two:
+        levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
+        break;
 
-        case level_item_type::enemy_type_three:
-          levelContainer->CreateEnemyType3(POINT_2I { columnIndex, rowIndex }, 3, 2.5f);
-          break;
-      }
-    });
+      case level_item_type::enemy_type_three:
+        levelContainer->CreateEnemyType3(POINT_2I { columnIndex, rowIndex }, 3, 2.5f);
+        break;
+    }
+  });
 
   levelContainer->AddWalls();
   levelContainer->CreatePlayer(entryCell);
