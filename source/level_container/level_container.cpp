@@ -52,9 +52,14 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 #endif
 
+  // auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
+  // {
+  //   return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
+  // });
+
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {
-    return std::holds_alternative<enemy_type_1>(object->Get()) || std::holds_alternative<enemy_type_2>(object->Get()) ? 1 : 0;
+    return std::holds_alternative<enemy_type_1>(object.Get()) || std::holds_alternative<enemy_type_2>(object.Get()) ? 1 : 0;
   });
 
   m_enemyCount = m_enemyObjects.size();
@@ -85,18 +90,23 @@ auto level_container::UpdateObjects(float interval) -> void
     }, defaultObject.Get());
   });
 
-  EnumerateAllObjects(false, [this, interval](auto& object)
-  {
-    std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
-    object.UpdateGeometry();
-  });
+  // EnumerateAllObjects(false, [this, interval](auto& object)
+  // {
+  //   std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
+  //   object.UpdateGeometry();
+  // });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
   particle_functions::erase_destroyed(m_particles);
-  dynamic_object_functions::erase_destroyed(m_enemyObjects);
+
+  // dynamic_object_functions::erase_destroyed(m_enemyObjects);
   // dynamic_object_functions::erase_destroyed(m_playerObjects);
+
+  std::erase_if(m_enemyObjects, [](const auto& object) -> bool { return object.Destroyed(); });
+  std::erase_if(m_playerObjects2, [](const auto& object) -> bool { return object.Destroyed(); });
+
 }
 
 auto level_container::DoCollisions() -> void
@@ -104,7 +114,7 @@ auto level_container::DoCollisions() -> void
   level_collision_handler collisionHandler;
   m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
   // m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
-  m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
+  // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
   // m_collisionRunner(m_playerObjects, m_enemyObjects, collisionHandler);
 
   auto exitCell = collisionHandler.ExitCell();
@@ -112,20 +122,29 @@ auto level_container::DoCollisions() -> void
   m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
 
+#if 0
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 {
 #if 0
   constexpr auto angleSpan = 40.0f;
 #endif
 
+  // auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
+  // {
+  //   return object->HoldsAlternative<enemy_type_1>();
+  // });
+
   auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
   {
-    return object->HoldsAlternative<enemy_type_1>();
+    return object.HoldsAlternative<enemy_type_1>();
   });
 
-  dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
-  static_cast<dynamic_object<default_object>*>(nullptr), 
-  [this](auto* nearest, auto& next) -> dynamic_object<default_object>*
+  // dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
+  default_object* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
+  // static_cast<dynamic_object<default_object>*>(nullptr), 
+  static_cast<default_object*>(nullptr), 
+  // [this](auto* nearest, auto& next) -> dynamic_object<default_object>*
+  [this](auto* nearest, auto& next) -> default_object*
   {
 #if 0
     auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
@@ -138,6 +157,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
   return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
 }
+#endif
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {

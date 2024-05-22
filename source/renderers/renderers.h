@@ -9,6 +9,8 @@
 #include "default_object_renderer.h"
 
 #include "geometric_object_transform.h"
+#include "level_object_geometry.h"
+#include "transformed_level_object_geometry.h"
 
 #include "particle_renderer.h"
 
@@ -255,7 +257,6 @@ inline auto renderer::Write(const portal &object) const -> void
 
 inline auto renderer::Write(const auto &object) const -> void
 {
-  auto transform = geometric_object_transform { object };
-  auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_defaultGeometry.get(), transform.Get());
-  m_defaultObjectRenderer.Write(object, transformedGeometry.get());
+  auto transformedGeometry = transformed_level_object_geometry { object };
+  m_defaultObjectRenderer.Write(object, transformedGeometry.GetRaw());
 }

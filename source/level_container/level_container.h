@@ -24,13 +24,14 @@ public:
   using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
   // using PlayerObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 20 }>;
   using PlayerObjectAllocator2 = linear_allocator<default_object, size_t { 20 }>;
-  using EnemyObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
+  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
   using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
   // using player_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
   using player_object_collection2 = std::list<default_object, PlayerObjectAllocator2>;
-  using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
+  // using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
+  using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   level_container();
@@ -66,7 +67,8 @@ public:
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
   // auto CreatePlayerObject(auto&&...args) -> void;
-  auto CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void;
+  // auto CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void;
+  auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
 
   auto CreatePlayerObject2(auto&&...args) -> void;
 
@@ -105,7 +107,7 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
   auto UpdateObject(auto &object, float interval) -> void;
-  auto GetTargettedObject() -> std::optional<targetted_object>;
+  // auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
 
@@ -181,9 +183,14 @@ auto level_container::CreateNoninteractiveObject(auto&&...args) -> void
 //   m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
 // }
 
-auto level_container::CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void
+// auto level_container::CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void
+// {
+//   m_enemyObjects.emplace_back(sourceGeometry, variantType, position, std::forward<decltype(args)>(args)...);
+// }
+
+auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void
 {
-  m_enemyObjects.emplace_back(sourceGeometry, variantType, position, std::forward<decltype(args)>(args)...);
+  m_enemyObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerObject2(auto &&...args) -> void
@@ -223,24 +230,28 @@ inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
 auto level_container::CreateEnemyType1(POINT_2I cell, auto&&...args) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, cellPosition, std::forward<decltype(args)>(args)...);
+  // CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_1>, cellPosition, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<enemy_type_1>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyType2(POINT_2I cell, auto&&...args) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
+  // CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateEnemyType3(POINT_2I cell, auto &&...args) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_3>, cellPosition, std::forward<decltype(args)>(args)...);
+  // CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_3>, cellPosition, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<enemy_type_3>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, position, std::forward<decltype(args)>(args)...);
+  // CreateEnemyObject(level_geometries::MineGeometry(), std::in_place_type<enemy_bullet_1>, position, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateParticle(auto&&...args) -> void
@@ -250,7 +261,8 @@ auto level_container::CreateParticle(auto&&...args) -> void
 
 auto level_container::CreatePowerUp(POINT_2F position, auto&&...args) -> void
 {
-  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, position, std::forward<decltype(args)>(args)...);
+  // CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<power_up>, position, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<power_up>, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayer2(POINT_2I cell) -> void
@@ -327,17 +339,18 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
   //   visitor(object);
   // }
 
-  for( const auto& object : m_enemyObjects )
-  {
-    visitor(object);
-  }
+  // for( const auto& object : m_enemyObjects )
+  // {
+  //   visitor(object);
+  // }
 }
 
 inline auto level_container::EnumerateEnemies(auto &&visitor) const -> void
 {
   auto enemies = std::ranges::views::filter(m_enemyObjects, [this](const auto& object)
   {
-    return object->HoldsAlternative<enemy_type_1>() || object->HoldsAlternative<enemy_type_2>();
+    // return object->HoldsAlternative<enemy_type_1>() || object->HoldsAlternative<enemy_type_2>();
+    return object.HoldsAlternative<enemy_type_1>() || object.HoldsAlternative<enemy_type_2>() || object.HoldsAlternative<enemy_type_3>();
   });
 
   for( const auto& object : enemies )
@@ -368,15 +381,15 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
   //   visitor(object);
   // }
 
-  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object->Destroyed();
-  });
+  // auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  // {
+  //   return includeDestroyedObjects || !object->Destroyed();
+  // });
 
-  for( auto& object : enemyObjects )
-  {
-    visitor(object);
-  }
+  // for( auto& object : enemyObjects )
+  // {
+  //   visitor(object);
+  // }
 }
 
 inline auto level_container::EnumerateAllObjects2(bool includeDestroyedObjects, auto &&visitor) -> void
@@ -400,11 +413,26 @@ inline auto level_container::EnumerateAllObjects2(bool includeDestroyedObjects, 
   {
     visitor(object);
   }
+
+  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  {
+    return includeDestroyedObjects || !object.Destroyed();
+  });
+
+  for( auto& object : enemyObjects )
+  {
+    visitor(object);
+  }
 }
 
 inline auto level_container::EnumerateInteractiveObjects2(auto &&visitor) const -> void
 {
   for( const auto& object : m_playerObjects2 )
+  {
+    visitor(object);
+  }
+
+  for( const auto& object : m_enemyObjects )
   {
     visitor(object);
   }

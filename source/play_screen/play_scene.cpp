@@ -139,7 +139,8 @@ auto play_scene::RenderEnergyBars() const -> void
 {
   m_playState->LevelContainer().EnumerateEnemies([this](const auto& object)
   {
-     renderer::render(energy_bar { EnergyBarRenderRect(object), object->Health() } );
+    //  renderer::render(energy_bar { EnergyBarRenderRect(object), object->Health() } );
+    //  renderer::render(energy_bar { EnergyBarRenderRect(object), object.Health() } );
   });
 }
 
