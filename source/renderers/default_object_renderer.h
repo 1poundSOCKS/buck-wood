@@ -14,9 +14,6 @@ class default_object_renderer
 public:
 
   auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
-
-private:
-
   auto Write(const background_object& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void;

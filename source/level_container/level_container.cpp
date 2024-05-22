@@ -26,9 +26,15 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  for( const auto& object : m_playerObjects )
+  // for( const auto& object : m_playerObjects )
+  // {
+  //   auto ship = object->GetIf<player_ship>();
+  //   m_playerState = ship ? *ship : m_playerState;
+  // }
+
+  for( const auto& object : m_playerObjects2 )
   {
-    auto ship = object->GetIf<player_ship>();
+    auto ship = object.GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
   }
 
@@ -63,7 +69,15 @@ auto level_container::UpdateObjects(float interval) -> void
 
   dynamic_object_functions::update(particles, interval);
 
-  EnumerateNonInteractiveObjects([this, interval](auto& defaultObject)
+  // EnumerateNonInteractiveObjects([this, interval](auto& defaultObject)
+  // {
+  //   std::visit([this, interval](auto& object)
+  //   {
+  //     UpdateObject(object, interval);
+  //   }, defaultObject.Get());
+  // });
+
+  EnumerateAllObjects2(false, [this, interval](auto& defaultObject)
   {
     std::visit([this, interval](auto& object)
     {
@@ -131,7 +145,8 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
+    // CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
+    CreatePlayerBullet2(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
     play_events::set(play_events::event_type::shot, true);
   }
 

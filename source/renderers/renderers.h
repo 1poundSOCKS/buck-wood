@@ -58,7 +58,8 @@ private:
   auto Render(const energy_bar& energyBar) const -> void;
   auto Render(const valid_cell& validCell) const -> void;
   auto Render(const level_container& levelContainer) const -> void;
-  auto Write(const portal& object) const -> void;
+  auto Write(const default_object& object) const -> void;
+  auto Write(const portal &object) const -> void;
   auto Write(const auto& object) const -> void;
 
 private:
@@ -215,6 +216,18 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
     Render(particle);
   });
 
+
+  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  {
+    levelContainer.EnumerateInteractiveObjects2([this,orderIndex](const auto& object)
+    {
+      if( render_order::get(object) == orderIndex )
+      {
+        Write(object);
+      }
+    });
+  }
+
   for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
   {
     levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
@@ -227,6 +240,14 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
   }
 }
 
+inline auto renderer::Write(const default_object &object) const -> void
+{
+  std::visit([this](const auto& object)
+  {
+    Write(object);
+  }, object.Get());
+}
+
 inline auto renderer::Write(const portal &object) const -> void
 {
   m_portalRenderer.Write(object);
@@ -236,5 +257,5 @@ inline auto renderer::Write(const auto &object) const -> void
 {
   auto transform = geometric_object_transform { object };
   auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_defaultGeometry.get(), transform.Get());
-  m_defaultGeometryRenderer.Write(transformedGeometry.get());
+  m_defaultObjectRenderer.Write(object, transformedGeometry.get());
 }
