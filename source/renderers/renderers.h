@@ -162,10 +162,6 @@ inline auto renderer::Render(const dynamic_object<default_object>& object) const
 
 inline auto renderer::Render(const default_object &object) const -> void
 {
-  // std::visit([this](const auto& levelObject)
-  // {
-  //   Render(levelObject);
-  // }, object.Get());
   const auto* levelObject = object.GetIf<portal>();
 
   if( levelObject )
