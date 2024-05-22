@@ -21,13 +21,11 @@ class level_container
 
 public:
 
-  // using NoninteractiveObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
   using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
   using PlayerObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 20 }>;
   using EnemyObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
-  // using noninteractive_object_collection = std::list<dynamic_object<default_object>, NoninteractiveObjectAllocator>;
   using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
   using player_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
   using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
