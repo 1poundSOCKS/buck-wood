@@ -17,10 +17,10 @@ public:
     return m_object;
   }
 
-  // [[nodiscard]] auto Object() noexcept const -> const default_object&
-  // {
-  //   return m_object;
-  // }
+  [[nodiscard]] auto Object() const noexcept -> const default_object&
+  {
+    return m_object;
+  }
 
   [[nodiscard]] auto Geometry() noexcept -> level_object_geometry&
   {
