@@ -59,8 +59,8 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
   auto SetExit(bool value, POINT_2I cell) -> void;
 
-  auto CreateNoninteractiveObject(auto&&...args) -> void;
-  auto CreatePlayerObject(auto&&...args) -> void;
+  auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
+  auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
 
   auto CreatePlayer(POINT_2I cell) -> void;
@@ -160,9 +160,9 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_co
   return m_enemyCount;
 }
 
-auto level_container::CreateNoninteractiveObject(auto&&...args) -> void
+auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void
 {
-  m_noninteractiveObjects.emplace_back(std::forward<decltype(args)>(args)...);
+  m_noninteractiveObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void
@@ -170,9 +170,9 @@ auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, aut
   m_enemyObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePlayerObject(auto &&...args) -> void
+inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, auto &&...args) -> void
 {
-  m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
+  m_playerObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePortal(POINT_2I cell) -> void
