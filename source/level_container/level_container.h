@@ -15,6 +15,7 @@
 #include "collisions/geometry_collision_binary.h"
 #include "collisions/geometry_collision_unary.h"
 #include "collisions/cell_collision_tests.h"
+#include "collisions/collision_object.h"
 
 class level_container
 {
@@ -22,14 +23,15 @@ class level_container
 public:
 
   using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
-  using PlayerObjectAllocator = linear_allocator<default_object, size_t { 20 }>;
-  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
+  using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
+  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
   using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
   using player_object_collection = std::list<default_object, PlayerObjectAllocator>;
   using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
+  using collision_object_collection = std::vector<collision_object>;
 
   level_container();
   level_container(const level_container& levelContainer) = delete;
@@ -50,8 +52,10 @@ public:
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
+  auto EnumeratPlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+  auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
-  auto EnumerateEnemies(auto&& visitor) const -> void;  
+  auto EnumerateEnemies(auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
 
@@ -118,6 +122,9 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
+  collision_object_collection m_playerCollisionObjects;
+  collision_object_collection m_enemyCollisionObjects;
+
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
   cell_collision_tests m_cellCollisionTests;
@@ -128,6 +135,8 @@ private:
 
 inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
+  m_playerCollisionObjects.reserve(50);
+  m_enemyCollisionObjects.reserve(100);
 }
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
@@ -279,6 +288,32 @@ auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> vo
 inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> void
 {
   for( auto& object : m_noninteractiveObjects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumeratPlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
+{
+  auto objects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
+  {
+    return includeDestroyedObjects || !object.Destroyed();
+  });
+
+  for( auto& object : objects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateEnemyObjects(bool includeDestroyedObjects, auto &&visitor) -> void
+{
+  auto objects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  {
+    return includeDestroyedObjects || !object.Destroyed();
+  });
+
+  for( auto& object : objects )
   {
     visitor(object);
   }

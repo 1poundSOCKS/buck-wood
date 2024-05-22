@@ -42,6 +42,20 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   RemoveDestroyedObjects();
 
+  m_playerCollisionObjects.clear();
+
+  EnumeratPlayerObjects(false, [this](auto& object)
+  {
+    m_playerCollisionObjects.emplace_back(object);
+  });
+
+  m_enemyCollisionObjects.clear();
+
+  EnumerateEnemyObjects(false, [this](auto& object)
+  {
+    m_enemyCollisionObjects.emplace_back(object);
+  });
+
 #if 0
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 #endif
