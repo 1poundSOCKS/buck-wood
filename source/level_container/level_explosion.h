@@ -73,6 +73,7 @@ inline auto const_level_explosion_iterator::operator++() -> const_level_explosio
   else
   {
     m_particle = particle { particle::type::explosion, m_position, GetRandomVelocity(), m_particleLifespan };
+    m_particle.Update(0.1f);
   }
 
   return *this;

@@ -2,14 +2,12 @@
 
 #include "level_objects.h"
 #include "play_events.h"
-#include "level_container.h"
 
 class level_collision_handler
 {
 
 public:
 
-  // level_collision_handler(level_container* levelContainer);
   level_collision_handler();
 
   auto operator()(default_object& object1, default_object& object2) -> void;
@@ -38,7 +36,6 @@ private:
 
 private:
 
-//   level_container* m_levelContainer;
   std::optional<POINT_2I> m_exitCell;
 
 };
