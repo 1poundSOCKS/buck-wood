@@ -72,6 +72,7 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
           break;
 
         case level_item_type::enemy_type_three:
+          levelContainer->CreateEnemyType3(POINT_2I { columnIndex, rowIndex }, 3, 2.5f);
           break;
       }
     });

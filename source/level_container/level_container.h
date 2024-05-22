@@ -67,6 +67,7 @@ public:
   auto CreateBackgroundObject(auto&&...args) -> void;
   auto CreateEnemyType1(POINT_2I cell, auto&&...args) -> void;
   auto CreateEnemyType2(POINT_2I cell, auto&&...args) -> void;
+  auto CreateEnemyType3(POINT_2I cell, auto&&...args) -> void;
   auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
@@ -211,6 +212,12 @@ auto level_container::CreateEnemyType2(POINT_2I cell, auto&&...args) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
   CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::CreateEnemyType3(POINT_2I cell, auto &&...args) -> void
+{
+  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
+  CreateEnemyObject(level_geometries::TargetGeometry(), std::in_place_type<enemy_type_3>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void
