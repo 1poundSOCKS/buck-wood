@@ -10,10 +10,11 @@ public:
   geometric_object_transform(const geometric_object& object)
   {
     auto objectScale = object.Scale();
+    auto objectAngle = object.Angle();
     auto objectPosition = object.Position();
     auto scale = D2D1::Size(objectScale.x, objectScale.y);
     auto translation = D2D1::Size(objectPosition.x, objectPosition.y);
-    m_value = D2D1::Matrix3x2F::Scale(scale) * D2D1::Matrix3x2F::Translation(translation);
+    m_value = D2D1::Matrix3x2F::Scale(scale) * D2D1::Matrix3x2F::Rotation(objectAngle) * D2D1::Matrix3x2F::Translation(translation);
   }
 
   [[nodiscard]] auto Get() const noexcept -> const D2D1::Matrix3x2F&

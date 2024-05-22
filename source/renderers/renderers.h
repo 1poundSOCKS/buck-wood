@@ -85,6 +85,7 @@ private:
   geometry_renderer m_exitCellRenderer { screen_render_brush_yellow.CreateBrush(), screen_render_brush_grey.CreateBrush(), 5 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_grey.CreateBrush(), 5 };
   portal_renderer m_portalRenderer;
+  winrt::com_ptr<ID2D1PathGeometry> m_defaultGeometry { level_geometries::TargetGeometry() };
 
 };
 
@@ -233,4 +234,7 @@ inline auto renderer::Write(const portal &object) const -> void
 
 inline auto renderer::Write(const auto &object) const -> void
 {
+  auto transform = geometric_object_transform { object };
+  auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_defaultGeometry.get(), transform.Get());
+  m_defaultGeometryRenderer.Write(transformedGeometry.get());
 }
