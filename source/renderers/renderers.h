@@ -43,6 +43,7 @@ public:
 private:
 
   auto Render(const dynamic_object<default_object>& object) const -> void;
+  auto Render(const default_object& object) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const health_status& playerShields) const -> void;
@@ -79,6 +80,7 @@ private:
   geometry_renderer m_floorCellRenderer { screen_render_brush_black.CreateBrush() };
   geometry_renderer m_exitCellRenderer { screen_render_brush_yellow.CreateBrush(), screen_render_brush_grey.CreateBrush(), 5 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_grey.CreateBrush(), 5 };
+  portal_renderer m_portalRenderer;
 
 };
 
@@ -156,6 +158,25 @@ inline auto renderer::Render(const level_title& levelTitle) const -> void
 inline auto renderer::Render(const dynamic_object<default_object>& object) const -> void
 {
   m_defaultObjectRenderer.Write(object.Object(), object.Geometry());
+}
+
+inline auto renderer::Render(const default_object &object) const -> void
+{
+  // std::visit([this](const auto& levelObject)
+  // {
+  //   Render(levelObject);
+  // }, object.Get());
+  const auto* levelObject = object.GetIf<portal>();
+
+  if( levelObject )
+  {
+    auto geometry = level_geometries::CircleGeometry();
+    auto scale = D2D1::Size(levelObject->Scale().x, levelObject->Scale().y);
+    auto translation = D2D1::Size(levelObject->Position().x, levelObject->Position().y);
+    auto transform = D2D1::Matrix3x2F::Scale(scale) * D2D1::Matrix3x2F::Translation(translation);
+    auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.get(), transform);
+    m_portalRenderer.Write(*levelObject, transformedGeometry.get());
+  }
 }
 
 inline auto renderer::Render(const line_to_target& lineToTarget) const -> void

@@ -10,6 +10,11 @@ public:
 
   enemy_type_1(POINT_2F position, int hitpoints);
 
+  auto Update(float interval) -> void
+  {
+    base_object::Update(interval);
+  }
+
   auto Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void;
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;

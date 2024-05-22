@@ -63,6 +63,14 @@ auto level_container::UpdateObjects(float interval) -> void
 
   dynamic_object_functions::update(particles, interval);
 
+  EnumerateNonInteractiveObjects([this, interval](auto& defaultObject)
+  {
+    std::visit([this, interval](auto& object)
+    {
+      UpdateObject(object, interval);
+    }, defaultObject.Get());
+  });
+
   EnumerateAllObjects(false, [this, interval](auto& object)
   {
     std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());

@@ -21,12 +21,14 @@ class level_container
 
 public:
 
-  using NoninteractiveObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
+  // using NoninteractiveObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 10 }>;
+  using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
   using PlayerObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 20 }>;
   using EnemyObjectAllocator = linear_allocator<dynamic_object<default_object>, size_t { 50 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
-  using noninteractive_object_collection = std::list<dynamic_object<default_object>, NoninteractiveObjectAllocator>;
+  // using noninteractive_object_collection = std::list<dynamic_object<default_object>, NoninteractiveObjectAllocator>;
+  using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
   using player_object_collection = std::list<dynamic_object<default_object>, PlayerObjectAllocator>;
   using enemy_object_collection = std::list<dynamic_object<default_object>, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
@@ -49,6 +51,7 @@ public:
 
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateEnemies(auto&& visitor) const -> void;
@@ -178,7 +181,8 @@ inline auto level_container::CreatePortal(POINT_2I cell) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
   m_playerState.SetPosition(cellPosition);
-  CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, cellPosition);
+  // CreateNoninteractiveObject(level_geometries::CircleGeometry(), std::in_place_type<portal>, cellPosition);
+  CreateNoninteractiveObject(std::in_place_type<portal>, cellPosition);
 }
 
 inline auto level_container::CreatePlayer(POINT_2I cell) -> void
@@ -275,6 +279,14 @@ auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> vo
   }
 }
 
+inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> void
+{
+  for( auto& object : m_noninteractiveObjects )
+  {
+    visitor(object);
+  }
+}
+
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 {
   for( const auto& particle : m_particles )
@@ -311,15 +323,15 @@ inline auto level_container::EnumerateEnemies(auto &&visitor) const -> void
 
 inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
-  auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object->Destroyed();
-  });
+  // auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [includeDestroyedObjects](const auto& object)
+  // {
+  //   return includeDestroyedObjects || !object->Destroyed();
+  // });
 
-  for( auto& object : noninteractiveObjects )
-  {
-    visitor(object);
-  }
+  // for( auto& object : noninteractiveObjects )
+  // {
+  //   visitor(object);
+  // }
 
   auto playerObjects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
   {
