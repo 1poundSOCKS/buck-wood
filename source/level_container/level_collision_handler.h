@@ -63,8 +63,6 @@ template <typename object_type> auto level_collision_handler::OnCollision(defaul
 
 auto level_collision_handler::OnCollision(auto&& object, const valid_cell& cell) -> void
 {
-  // m_levelContainer->CreateExplosion(object.Position());
-  // play_events::set(play_events::event_type::explosion, true);
   object.Destroy();
 }
 
