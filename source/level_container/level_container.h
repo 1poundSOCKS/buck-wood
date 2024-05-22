@@ -117,7 +117,6 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
-  geometry_containment m_geometryContainmentRunner;
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
   cell_collision_tests m_cellCollisionTests;
