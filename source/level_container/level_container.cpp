@@ -32,6 +32,14 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
     m_playerState = ship ? *ship : m_playerState;
   }
 
+  EnumerateAllObjects(true, [this](const auto& object)
+  {
+    if( object->Destroyed() )
+    {
+      CreateExplosion(object->Position());
+    }
+  });
+
   RemoveDestroyedObjects();
 
 #if 0
@@ -55,7 +63,7 @@ auto level_container::UpdateObjects(float interval) -> void
 
   dynamic_object_functions::update(particles, interval);
 
-  EnumerateAllObjects([this, interval](auto& object)
+  EnumerateAllObjects(false, [this, interval](auto& object)
   {
     std::visit([this, interval](auto& object){ UpdateObject(object, interval); }, object->Get());
     object.UpdateGeometry();
@@ -71,11 +79,16 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::DoCollisions() -> void
 {
-  level_collision_handler collisionHandler { this };
-  m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
+  // level_collision_handler collisionHandler { this };
+  level_collision_handler collisionHandler;
+  // m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
   m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
   m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
   m_collisionRunner(m_playerObjects, m_enemyObjects, collisionHandler);
+
+  auto exitCell = collisionHandler.ExitCell();
+  m_exit = exitCell ? true : false;
+  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
 
 auto level_container::GetTargettedObject() -> std::optional<targetted_object>

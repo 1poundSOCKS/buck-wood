@@ -9,13 +9,15 @@ class level_collision_handler
 
 public:
 
-  level_collision_handler(level_container* levelContainer);
+  // level_collision_handler(level_container* levelContainer);
+  level_collision_handler();
 
   auto operator()(default_object& object1, default_object& object2) -> void;
   auto operator()(default_object& object, particle& particle) -> void;
   auto operator()(default_object& object, const valid_cell& cell) -> void;
   auto operator()(default_object& object) -> void;
   auto operator()(particle& particle) -> void;
+  [[nodiscard]] auto ExitCell() -> std::optional<POINT_2I>;
 
 private:
 
@@ -36,7 +38,8 @@ private:
 
 private:
 
-  level_container* m_levelContainer;
+//   level_container* m_levelContainer;
+  std::optional<POINT_2I> m_exitCell;
 
 };
 
@@ -63,8 +66,8 @@ template <typename object_type> auto level_collision_handler::OnCollision(defaul
 
 auto level_collision_handler::OnCollision(auto&& object, const valid_cell& cell) -> void
 {
-  m_levelContainer->CreateExplosion(object.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(object.Position());
+  // play_events::set(play_events::event_type::explosion, true);
   object.Destroy();
 }
 

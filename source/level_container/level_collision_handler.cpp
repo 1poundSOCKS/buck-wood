@@ -2,7 +2,8 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
-level_collision_handler::level_collision_handler(level_container* levelContainer) : m_levelContainer { levelContainer }
+// level_collision_handler::level_collision_handler(level_container* levelContainer) : m_levelContainer { levelContainer }
+level_collision_handler::level_collision_handler()
 {
 }
 
@@ -26,7 +27,7 @@ auto level_collision_handler::operator()(default_object& object, particle& parti
 
 auto level_collision_handler::OnCollision(auto& object, particle& particle) -> void
 {
-  m_levelContainer->CreateImpact(particle.Position());
+  // m_levelContainer->CreateImpact(particle.Position());
   particle.Destroy();
 }
 
@@ -39,8 +40,8 @@ auto level_collision_handler::operator()(default_object& object, const valid_cel
 
 auto level_collision_handler::operator()(default_object& object) -> void
 {
-  m_levelContainer->CreateExplosion(object.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(object.Position());
+  // play_events::set(play_events::event_type::explosion, true);
   object.Destroy();
 }
 
@@ -49,16 +50,21 @@ auto level_collision_handler::operator()(particle& particle) -> void
   switch( particle.Type() )
   {
     case particle::type::explosion:
-      m_levelContainer->CreateImpact(particle.Position());
+      // m_levelContainer->CreateImpact(particle.Position());
       particle.Destroy();
       break;
   }
 }
 
+auto level_collision_handler::ExitCell() -> std::optional<POINT_2I>
+{
+  return m_exitCell;
+}
+
 auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bullet_1& enemyBullet) -> void
 {
-  m_levelContainer->CreateExplosion(enemyBullet.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(enemyBullet.Position());
+  // play_events::set(play_events::event_type::explosion, true);
   playerBullet.Destroy();
   enemyBullet.Destroy();
   play_events::increment(play_events::counter_type::bullets_destroyed);
@@ -67,31 +73,31 @@ auto level_collision_handler::OnCollision(player_bullet& playerBullet, enemy_bul
 auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {
   enemy.ApplyDamage(bullet.Damage());
-  m_levelContainer->CreateExplosion(bullet.Position());
+  // m_levelContainer->CreateExplosion(bullet.Position());
   bullet.Destroy();
-  m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
+  // play_events::set(play_events::event_type::explosion, true);
 }
 
 auto level_collision_handler::OnCollision(player_missile& missile, enemy_type_1& enemy) -> void
 {
   enemy.ApplyDamage(missile.Damage());
   missile.Destroy();
-  m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : missile.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : missile.Position());
+  // play_events::set(play_events::event_type::explosion, true);
 }
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
 {
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
-  m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
-  play_events::set(play_events::event_type::explosion, true);
+  // m_levelContainer->CreateExplosion(enemy.Destroyed() ? enemy.Position() : bullet.Position());
+  // play_events::set(play_events::event_type::explosion, true);
 
-  if( enemy.Destroyed() )
-  {
-    m_levelContainer->CreatePowerUp(enemy.Position(), VELOCITY_2F { 0, 0 });
-  }
+  // if( enemy.Destroyed() )
+  // {
+  //   m_levelContainer->CreatePowerUp(enemy.Position(), VELOCITY_2F { 0, 0 });
+  // }
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
@@ -99,15 +105,15 @@ auto level_collision_handler::OnCollision(player_ship& playerShip, enemy_bullet_
   switch( player_state::get_status() )
   {
     case player_state::status::active:
-      m_levelContainer->CreateExplosion(playerShip.Position());
+      // m_levelContainer->CreateExplosion(playerShip.Position());
       playerShip.Destroy();
       break;
     case player_state::status::celebrating:
-      m_levelContainer->CreateExplosion(enemyBullet.Position());
+      // m_levelContainer->CreateExplosion(enemyBullet.Position());
       break;
   }
 
-  play_events::set(play_events::event_type::explosion, true);
+  // play_events::set(play_events::event_type::explosion, true);
   enemyBullet.Destroy();
 }
 
@@ -116,21 +122,21 @@ auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_2& enemy
   switch( player_state::get_status() )
   {
     case player_state::status::active:
-      m_levelContainer->CreateExplosion(ship.Position());
+      // m_levelContainer->CreateExplosion(ship.Position());
       ship.Destroy();
       break;
     case player_state::status::celebrating:
-      m_levelContainer->CreateExplosion(enemy.Position());
+      // m_levelContainer->CreateExplosion(enemy.Position());
       break;
   }
 
-  play_events::set(play_events::event_type::explosion, true);
+  // play_events::set(play_events::event_type::explosion, true);
   enemy.Destroy();
 }
 
 auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
 {
-  play_events::increment(play_events::counter_type::power_ups_collected);
+  // play_events::increment(play_events::counter_type::power_ups_collected);
   powerUp.Destroy();
 }
 
@@ -139,15 +145,15 @@ auto level_collision_handler::OnCollision(player_ship& ship, enemy_type_1& enemy
   switch( player_state::get_status() )
   {
     case player_state::status::active:
-      m_levelContainer->CreateExplosion(ship.Position());
+      // m_levelContainer->CreateExplosion(ship.Position());
       ship.Destroy();
       break;
     case player_state::status::celebrating:
-      m_levelContainer->CreateExplosion(enemy.Position());
+      // m_levelContainer->CreateExplosion(enemy.Position());
       break;
   }
 
-  play_events::set(play_events::event_type::explosion, true);
+  // play_events::set(play_events::event_type::explosion, true);
   enemy.Destroy();
 }
 
@@ -156,13 +162,14 @@ auto level_collision_handler::OnCollision(player_ship &ship, const valid_cell& c
   switch( cell.Type() )
   {
     case level_cell_type::wall:
-      m_levelContainer->CreateExplosion(ship.Position());
-      play_events::set(play_events::event_type::explosion, true);
+      // m_levelContainer->CreateExplosion(ship.Position());
+      // play_events::set(play_events::event_type::explosion, true);
       ship.Destroy();
       break;
 
     case level_cell_type::exit:
-      m_levelContainer->SetExit(true, { cell.X(), cell.Y()});
+      // m_levelContainer->SetExit(true, { cell.X(), cell.Y()});
+      m_exitCell = { cell.X(), cell.Y() };
       break;
   }
 }
