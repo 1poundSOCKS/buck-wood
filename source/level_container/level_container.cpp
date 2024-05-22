@@ -26,12 +26,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  // for( const auto& object : m_playerObjects )
-  // {
-  //   auto ship = object->GetIf<player_ship>();
-  //   m_playerState = ship ? *ship : m_playerState;
-  // }
-
   for( const auto& object : m_playerObjects )
   {
     auto ship = object.GetIf<player_ship>();
@@ -87,15 +81,15 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::DoCollisions() -> void
 {
-  level_collision_handler collisionHandler;
-  m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
+  // level_collision_handler collisionHandler;
+  // m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
   // m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
   // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
   // m_collisionRunner(m_playerObjects, m_enemyObjects, collisionHandler);
 
-  auto exitCell = collisionHandler.ExitCell();
-  m_exit = exitCell ? true : false;
-  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
+  // auto exitCell = collisionHandler.ExitCell();
+  // m_exit = exitCell ? true : false;
+  // m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
 
 #if 0
