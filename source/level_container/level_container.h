@@ -65,13 +65,13 @@ public:
   auto SetExit(bool value, POINT_2I cell) -> void;
 
   auto CreateNoninteractiveObject(auto&&...args) -> void;
-  auto CreatePlayerObject(auto&&...args) -> void;
+  // auto CreatePlayerObject(auto&&...args) -> void;
   auto CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void;
 
   auto CreatePlayerObject2(auto&&...args) -> void;
 
   auto CreatePortal(POINT_2I cell) -> void;
-  auto CreatePlayer(POINT_2I cell) -> void;
+  // auto CreatePlayer(POINT_2I cell) -> void;
   auto CreateBackgroundObject(auto&&...args) -> void;
   auto CreateEnemyType1(POINT_2I cell, auto&&...args) -> void;
   auto CreateEnemyType2(POINT_2I cell, auto&&...args) -> void;
@@ -123,7 +123,7 @@ private:
   player_ship m_playerState;
 
   noninteractive_object_collection m_noninteractiveObjects;
-  player_object_collection m_playerObjects;
+  // player_object_collection m_playerObjects;
   player_object_collection2 m_playerObjects2;
   enemy_object_collection m_enemyObjects;
 
@@ -176,10 +176,10 @@ auto level_container::CreateNoninteractiveObject(auto&&...args) -> void
   m_noninteractiveObjects.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreatePlayerObject(auto&&...args) -> void
-{
-  m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
-}
+// auto level_container::CreatePlayerObject(auto&&...args) -> void
+// {
+//   m_playerObjects.emplace_back(std::forward<decltype(args)>(args)...);
+// }
 
 auto level_container::CreateEnemyObject(winrt::com_ptr<ID2D1Geometry> sourceGeometry, auto variantType, POINT_2F position, auto&&...args) -> void
 {
@@ -199,11 +199,11 @@ inline auto level_container::CreatePortal(POINT_2I cell) -> void
   CreateNoninteractiveObject(std::in_place_type<portal>, cellPosition);
 }
 
-inline auto level_container::CreatePlayer(POINT_2I cell) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreatePlayerObject(level_geometries::TargetGeometry(), std::in_place_type<player_ship>, cellPosition);
-}
+// inline auto level_container::CreatePlayer(POINT_2I cell) -> void
+// {
+//   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
+//   CreatePlayerObject(level_geometries::TargetGeometry(), std::in_place_type<player_ship>, cellPosition);
+// }
 
 auto level_container::CreateBackgroundObject(auto&&...args) -> void
 {
@@ -322,10 +322,10 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 
 inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_playerObjects )
-  {
-    visitor(object);
-  }
+  // for( const auto& object : m_playerObjects )
+  // {
+  //   visitor(object);
+  // }
 
   for( const auto& object : m_enemyObjects )
   {
