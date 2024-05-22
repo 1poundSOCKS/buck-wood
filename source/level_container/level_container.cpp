@@ -74,7 +74,7 @@ auto level_container::UpdateObjects(float interval) -> void
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
-  particle_functions::erase_destroyed(m_particles);
+  std::erase_if(m_particles, [](const auto& particle) -> bool { return particle.Destroyed(); });
   std::erase_if(m_enemyObjects, [](const auto& object) -> bool { return object.Destroyed(); });
   std::erase_if(m_playerObjects, [](const auto& object) -> bool { return object.Destroyed(); });
 }
