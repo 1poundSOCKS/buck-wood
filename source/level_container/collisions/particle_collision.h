@@ -17,7 +17,7 @@ public:
     if( particlePosition.x >= geometryBounds.left && particlePosition.x <= geometryBounds.right && 
         particlePosition.y >= geometryBounds.top && particlePosition.y <= geometryBounds.bottom )
     {
-      BOOL collision = FALSE;
+      BOOL collision = useGeometryBoundsOnly;
       HRESULT hr = useGeometryBoundsOnly ? S_OK : geometryObject.Geometry().Get()->FillContainsPoint({particleObject.Position().x, particleObject.Position().y}, D2D1::Matrix3x2F::Identity(), &collision);
 
       if( SUCCEEDED(hr) && collision )
