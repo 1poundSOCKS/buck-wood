@@ -112,8 +112,10 @@ auto level_container::DoCollisions() -> void
   // m_cellCollisionTests.particles(m_cells, m_particles, collisionHandler);
   // m_cellCollisionTests(m_cells, m_playerObjects, collisionHandler);
   // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
+
   m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
 
+  m_particleCollisionRunner(m_particles, m_wallCollisionObjects);
   m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
   m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
 

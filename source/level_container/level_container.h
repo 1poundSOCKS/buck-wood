@@ -12,6 +12,7 @@
 #include "dynamic_object_functions.h"
 #include "collisions/geometry_containment.h"
 #include "collisions/particle_containment.h"
+#include "collisions/particle_collision.h"
 #include "collisions/geometry_collision_binary.h"
 #include "collisions/geometry_collision_unary.h"
 #include "collisions/cell_collision_tests.h"
@@ -134,6 +135,7 @@ private:
 
   particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
+  particle_collision m_particleCollisionRunner;
   cell_collision_tests m_cellCollisionTests;
 
   enemy_object_collection::size_type m_enemyCount { 0 };
