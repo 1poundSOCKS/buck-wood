@@ -42,6 +42,7 @@ public:
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
   auto EnumerateCells(auto&& visitor) const -> void;
+  auto EnumerateWalls(auto&& visitor) const -> void;
 
 private:
 
@@ -82,4 +83,15 @@ auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
   {
     visitor(cell);
   }
+}
+
+inline auto level_cell_collection::EnumerateWalls(auto &&visitor) const -> void
+{
+  EnumerateCells([&visitor](const valid_cell& cell)
+  {
+    if( cell.Type() == level_cell_type::wall )
+    {
+      visitor(cell);
+    }
+  });
 }

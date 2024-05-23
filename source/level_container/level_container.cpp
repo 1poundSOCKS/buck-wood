@@ -14,6 +14,10 @@ auto level_container::AddWalls() -> void
 {
   m_cells.AddWalls();
 
+  m_cells.EnumerateWalls([](const auto& wall)
+  {
+  });
+
   m_enemyCollisionObjects.clear();
 
   EnumerateWallObjects([this](auto& object)
