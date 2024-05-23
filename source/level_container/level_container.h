@@ -133,10 +133,8 @@ private:
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
-  particle_containment m_particleContainmentRunner;
   geometry_collision_binary m_collisionRunner;
   particle_collision m_particleCollisionRunner;
-  cell_collision_tests m_cellCollisionTests;
 
   enemy_object_collection::size_type m_enemyCount { 0 };
 
