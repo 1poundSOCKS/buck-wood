@@ -28,14 +28,6 @@ public:
     }
   }
 
-  // auto operator()(auto&& geometryObject, std::ranges::input_range auto && particleObjectCollection, auto&& callable) -> void
-  // {
-  //   std::for_each(std::execution::par, std::begin(particleObjectCollection), std::end(particleObjectCollection), [this,&geometryObject](auto& particleObject)
-  //   {
-  //     (*this)(geometryObject, particleObject);
-  //   });
-  // }
-
   auto operator()(std::ranges::input_range auto && particleObjectCollection, std::ranges::input_range auto&& geometryObjectCollection, bool useGeometryBoundsOnly) -> void
   {
     std::for_each(std::execution::par, std::begin(geometryObjectCollection), std::end(geometryObjectCollection), [this,&particleObjectCollection,useGeometryBoundsOnly](auto& geometryObject)
