@@ -154,10 +154,16 @@ auto level_collision_handler::OnCollision(player_ship &ship, level_wall &wall) -
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, level_wall& wall) -> void
 {
-  bullet.Destroy();  
+  if( wall.Type() == level_cell_type::wall )
+  {
+    bullet.Destroy();  
+  }
 }
 
 auto level_collision_handler::OnCollision(enemy_bullet_1 &bullet, level_wall &wall) -> void
 {
-  bullet.Destroy();
+  if( wall.Type() == level_cell_type::wall )
+  {
+    bullet.Destroy();
+  }
 }

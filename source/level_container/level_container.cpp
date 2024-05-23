@@ -17,7 +17,7 @@ auto level_container::AddWalls() -> void
   m_cells.EnumerateWalls([this](const auto& wall)
   {
     auto scale = SCALE_2F { static_cast<float>(m_cells.CellWidth()), static_cast<float>(m_cells.CellHeight()) };
-    CreateWallObject(std::in_place_type<level_wall>, wall.Position(), scale, 0.0f);
+    CreateWallObject(std::in_place_type<level_wall>, wall.Position(), scale, 0.0f, level_cell_type::wall);
   });
 
   m_enemyCollisionObjects.clear();
