@@ -11,8 +11,8 @@ public:
   {
   }
 
-  auto operator()(auto&& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
-  {
+  // auto operator()(auto&& object, std::ranges::input_range auto&& objectCollection, auto&& callable) -> void
+  // {
     // if( !object->Destroyed() )
     // {
     //   auto activeObjects = std::ranges::views::filter(objectCollection, [](const auto& object) { return object->Destroyed() ? false : true; });
@@ -23,7 +23,7 @@ public:
     //     (*this)(object, collectionObject, callable);
     //   });
     // }
-  }
+  // }
 
   auto operator()(std::ranges::input_range auto&& objectCollection1, std::ranges::input_range auto&& objectCollection2, auto&& callable) -> void
   {

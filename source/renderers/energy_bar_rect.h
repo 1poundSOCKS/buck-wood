@@ -15,9 +15,6 @@ public:
     auto bottom = objectRect.top - 20;
     auto top = bottom - width / 8;
     m_value = { left, top, right, bottom };
-    // m_value = objectRect;
-    // m_value.bottom -= 20.0f;
-    // m_value.top = m_value.bottom - objectRectWidth / 8;
   }
 
   [[nodiscard]] auto Get() const noexcept -> RECT_F
