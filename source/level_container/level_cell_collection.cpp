@@ -35,6 +35,16 @@ auto level_cell_collection::AddWalls() noexcept -> void
   }
 }
 
+auto level_cell_collection::CellWidth() const -> int
+{
+  return m_cellWidth;
+}
+
+auto level_cell_collection::CellHeight() const -> int
+{
+  return m_cellHeight;
+}
+
 auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
 {
   return POINT_2F(static_cast<float>(x * m_cellWidth), static_cast<float>(y * m_cellHeight));

@@ -17,6 +17,7 @@ auto level_collision_handler::operator()(default_object& object1, default_object
   OnCollision<player_bullet, enemy_type_1>(object1, object2);
   OnCollision<player_missile, enemy_type_1>(object1, object2);
   OnCollision<player_missile, enemy_type_2>(object1, object2);
+  OnCollision<player_bullet, level_wall>(object1, object2);
 }
 
 auto level_collision_handler::operator()(default_object& object, particle& particle) -> void
@@ -140,4 +141,9 @@ auto level_collision_handler::OnCollision(player_ship &ship, const valid_cell& c
       m_exitCell = { cell.X(), cell.Y() };
       break;
   }
+}
+
+auto level_collision_handler::OnCollision(player_bullet& bullet, level_wall& wall) -> void
+{
+  bullet.Destroy();  
 }

@@ -6,6 +6,7 @@
 #include "objects/enemy_type_3.h"
 #include "objects/enemy_bullet_1.h"
 #include "objects/blank_object.h"
+#include "objects/level_wall.h"
 
 #include "objects/default_object.h"
 #include "objects/particle.h"

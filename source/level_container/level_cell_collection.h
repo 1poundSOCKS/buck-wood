@@ -26,6 +26,8 @@ public:
   auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
 
+  [[nodiscard]] auto CellWidth() const -> int;
+  [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;

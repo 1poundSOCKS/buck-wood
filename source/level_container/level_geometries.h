@@ -12,6 +12,7 @@ private:
   inline static level_geometries* m_instance { nullptr };
 
   level_geometries() : 
+    m_rectangleGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED) },
     m_playerShipGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerGeometryData(), D2D1_FIGURE_END_CLOSED) },
     m_playerBulletGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerBulletGeometryData(), D2D1_FIGURE_END_CLOSED) },
     m_playerShieldGeometry { direct2d::CreateEllipseGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerShieldElipse()) },
@@ -35,6 +36,11 @@ public:
       delete m_instance;
       m_instance = nullptr;
     }
+  }
+
+  static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_rectangleGeometry;
   }
 
   static [[nodiscard]] auto PlayerShipGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
@@ -110,6 +116,7 @@ private:
 
 private:
 
+  winrt::com_ptr<ID2D1PathGeometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_playerBulletGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_mineGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED) };
