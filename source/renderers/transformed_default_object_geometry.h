@@ -2,35 +2,16 @@
 
 #include "objects/default_object.h"
 #include "objects/geometric_object.h"
-
-inline [[nodiscard]] auto ExtractGeometricObject(const default_object& object) -> const geometric_object&
-{
-  const geometric_object* geometricObject { nullptr };
-  std::visit([&geometricObject](auto& levelObject)
-  {
-    geometricObject = &levelObject;
-  }, object.Get());
-
-  return *geometricObject;
-}
-
-inline [[nodiscard]] auto ExtractLevelObject(const default_object& object)
-{
-  std::visit([&geometricObject](auto& levelObject)
-  {
-    geometricObject = &levelObject;
-  }, object.Get());
-
-  return *geometricObject;
-}
+#include "transformed_level_object_geometry.h"
 
 class transformed_default_object_geometry
 {
 
 public:
 
-  transformed_default_object_geometry(const default_object& object) : m_value { GetGeometry(object) }
+  transformed_default_object_geometry(const default_object& object)
   {
+    SetGeometry(object);
   }
 
   [[nodiscard]] auto Get() const noexcept -> winrt::com_ptr<ID2D1Geometry>
@@ -45,12 +26,18 @@ public:
   
 private:
 
-  static [[nodiscard]] auto GetGeometry(const default_object& object) -> winrt::com_ptr<ID2D1Geometry>
+  [[nodiscard]] auto SetGeometry(const default_object& object) -> void
   {
-    const auto& geometricObject = ExtractGeometricObject(object);
-    auto transform = geometric_object_transform { geometricObject };
-    auto geometry = level_object_geometry { object };
-    return direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), geometry.GetRaw(), transform.Get());
+    std::visit([this](const auto& object)
+    {
+      SetGeometry(object);
+    }, object.Get());
+  }
+
+  [[nodiscard]] auto SetGeometry(const auto& object) -> void
+  {
+    transformed_level_object_geometry geometry { object };
+    m_value = geometry.Get();
   }
 
   winrt::com_ptr<ID2D1Geometry> m_value;
