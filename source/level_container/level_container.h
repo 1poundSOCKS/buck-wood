@@ -61,6 +61,7 @@ public:
   auto EnumerateEnemies(auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
@@ -401,6 +402,14 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
   }
 
   for( const auto& object : m_enemyObjects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateEnemyCollisionObjects(auto &&visitor) const -> void
+{
+  for( const auto& object : m_enemyCollisionObjects )
   {
     visitor(object);
   }

@@ -6,6 +6,7 @@
 #include "line_to_target.h"
 #include "game_settings.h"
 #include "game_state.h"
+#include "energy_bar_rect.h"
 
 play_scene::play_scene(std::shared_ptr<play_state> playState) : 
   m_playState { playState }, m_levelTitle { game_state::level_index() }
@@ -70,8 +71,9 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   RenderEnergyBars();
+
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( game_settings::showDiagnostics() )
   {
@@ -137,8 +139,16 @@ auto play_scene::PlaySoundEffects() const -> void
 
 auto play_scene::RenderEnergyBars() const -> void
 {
-  m_playState->LevelContainer().EnumerateEnemies([this](const auto& object)
+  m_playState->LevelContainer().EnumerateEnemyCollisionObjects([this](const auto& object)
   {
+    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() )
+    {
+      auto geometryBounds = object.Bounds();
+      auto energyBarRect = energy_bar_rect { geometryBounds };
+      auto health = object.Object().Health();
+      auto energyBar = energy_bar { energyBarRect.Get(), health };
+      renderer::render(energyBar);
+    }
     //  renderer::render(energy_bar { EnergyBarRenderRect(object), object->Health() } );
     //  renderer::render(energy_bar { EnergyBarRenderRect(object), object.Health() } );
   });

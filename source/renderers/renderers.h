@@ -26,11 +26,7 @@
 
 #include "render_order.h"
 
-struct energy_bar
-{
-  RECT_F position;
-  float value;
-};
+#include "energy_bar.h"
 
 class renderer
 {

@@ -9,7 +9,7 @@ class collision_object
 
 public:
 
-  collision_object(default_object& object) : m_object { object }, m_geometry { object }
+  collision_object(default_object& object) : m_object { object }, m_geometry { object }, m_bounds { direct2d::GetGeometryBounds(m_geometry.GetRaw()) }
   {
   }
 
@@ -33,9 +33,15 @@ public:
     return m_geometry;
   }
 
+  [[nodiscard]] auto Bounds() const noexcept -> RECT_F
+  {
+    return m_bounds;
+  }
+
 private:
 
   default_object& m_object;
   transformed_default_object_geometry m_geometry;
+  RECT_F m_bounds;
 
 };
