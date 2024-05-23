@@ -23,11 +23,13 @@ class level_container
 public:
 
   using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
+  using WallObjectAllocator = linear_allocator<default_object, size_t { 500 }>;
   using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
   using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
   using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
+  using wall_object_collection = std::list<default_object, WallObjectAllocator>;
   using player_object_collection = std::list<default_object, PlayerObjectAllocator>;
   using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
@@ -64,6 +66,7 @@ public:
   auto SetExit(bool value, POINT_2I cell) -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
+  auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
 
@@ -117,6 +120,7 @@ private:
   player_ship m_playerState;
 
   noninteractive_object_collection m_noninteractiveObjects;
+  wall_object_collection m_wallObjects;
   player_object_collection m_playerObjects;
   enemy_object_collection m_enemyObjects;
 
@@ -172,6 +176,11 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_co
 auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void
 {
   m_noninteractiveObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
+}
+
+inline auto level_container::CreateWallObject(auto variantType, POINT_2F position, auto &&...args) -> void
+{
+  m_wallObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void

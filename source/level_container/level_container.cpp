@@ -101,6 +101,9 @@ auto level_container::DoCollisions() -> void
   // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
   m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
 
+  // m_collisionRunner(m_playerCollisionObjects, m_wallObjects, collisionHandler);
+  // m_collisionRunner(m_enemyCollisionObjects, m_wallObjects, collisionHandler);
+
   // auto exitCell = collisionHandler.ExitCell();
   // m_exit = exitCell ? true : false;
   // m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
