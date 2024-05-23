@@ -30,7 +30,9 @@ private:
   auto OnCollision(player_ship& playerShip, power_up& powerUp) -> void;
   auto OnCollision(player_ship& ship, enemy_type_1& enemy) -> void;
   auto OnCollision(player_ship& ship, const valid_cell& cell) -> void;
+  auto OnCollision(player_ship& ship, level_wall& wall) -> void;
   auto OnCollision(player_bullet& bullet, level_wall& wall) -> void;
+  auto OnCollision(enemy_bullet_1& bullet, level_wall& wall) -> void;
   auto OnCollision(auto& object, particle& particle) -> void;
   auto OnCollision(auto&& object, const valid_cell& cell) -> void;
   auto OnCollision(auto&& object1, auto&& object2) -> void;
