@@ -13,6 +13,13 @@ auto level_container::AddFloorCell(int x, int y, level_cell_type cellType) -> vo
 auto level_container::AddWalls() -> void
 {
   m_cells.AddWalls();
+
+  m_enemyCollisionObjects.clear();
+
+  EnumerateWallObjects([this](auto& object)
+  {
+    m_wallCollisionObjects.emplace_back(object);
+  });
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
@@ -101,8 +108,8 @@ auto level_container::DoCollisions() -> void
   // m_cellCollisionTests(m_cells, m_enemyObjects, collisionHandler);
   m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
 
-  // m_collisionRunner(m_playerCollisionObjects, m_wallObjects, collisionHandler);
-  // m_collisionRunner(m_enemyCollisionObjects, m_wallObjects, collisionHandler);
+  m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
+  m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
 
   // auto exitCell = collisionHandler.ExitCell();
   // m_exit = exitCell ? true : false;

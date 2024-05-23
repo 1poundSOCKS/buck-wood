@@ -54,6 +54,7 @@ public:
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
+  auto EnumerateWallObjects(auto&& visitor) -> void;
   auto EnumeratPlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
@@ -126,6 +127,7 @@ private:
 
   std::optional<targetted_object> m_targettedObject;
 
+  collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
@@ -139,6 +141,7 @@ private:
 
 inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
+  m_wallCollisionObjects.reserve(500);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
 }
@@ -297,6 +300,14 @@ auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> vo
 inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> void
 {
   for( auto& object : m_noninteractiveObjects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateWallObjects(auto &&visitor) -> void
+{
+  for( auto& object : m_wallObjects )
   {
     visitor(object);
   }
