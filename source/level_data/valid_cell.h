@@ -5,8 +5,8 @@ class valid_cell
 
 public:
 
-  valid_cell(int x, int y, level_cell_type cellType, POINT_2F position/*, winrt::com_ptr<ID2D1TransformedGeometry> geometry*/) :
-    m_x { x }, m_y { y }, m_cellType { cellType }, m_position { position }//, m_geometry { geometry }
+  valid_cell(int x, int y, level_cell_type cellType, POINT_2F position) :
+    m_x { x }, m_y { y }, m_cellType { cellType }, m_position { position }
   {
   }
 
@@ -30,17 +30,11 @@ public:
     return m_position;
   }
 
-  // [[nodiscard]] auto Geometry() const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>
-  // {
-  //   return m_geometry;
-  // }
-
 private:
 
   level_cell_type m_cellType;
   int m_x;
   int m_y;
   POINT_2F m_position;
-  // winrt::com_ptr<ID2D1TransformedGeometry> m_geometry;
 
 };
