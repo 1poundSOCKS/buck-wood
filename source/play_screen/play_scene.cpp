@@ -141,7 +141,7 @@ auto play_scene::RenderEnergyBars() const -> void
 {
   m_playState->LevelContainer().EnumerateEnemyCollisionObjects([this](const auto& object)
   {
-    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() )
+    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() || object.Object().HoldsAlternative<enemy_type_3>() )
     {
       auto geometryBounds = object.Bounds();
       auto energyBarRect = energy_bar_rect { geometryBounds };
