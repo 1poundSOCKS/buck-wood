@@ -20,7 +20,7 @@ public:
 private:
 
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
-  template <typename object_type> auto OnCollision(default_object& object, const valid_cell& cell) -> void;
+  template <typename object_type> auto OnCollision(default_object& object, const level_cell_item& cell) -> void;
 
   auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
@@ -38,7 +38,7 @@ private:
   auto OnCollision(enemy_bullet_1& bullet, level_wall& wall) -> void;
 
   auto OnCollision(auto& object, particle& particle) -> void;
-  auto OnCollision(auto&& object, const valid_cell& cell) -> void;
+  auto OnCollision(auto&& object, const level_cell_item& cell) -> void;
   auto OnCollision(auto&& object1, auto&& object2) -> void;
 
 private:
@@ -60,7 +60,7 @@ template <typename object_type_1, typename object_type_2> auto level_collision_h
   }
 }
 
-auto level_collision_handler::OnCollision(auto&& object, const valid_cell& cell) -> void
+auto level_collision_handler::OnCollision(auto&& object, const level_cell_item& cell) -> void
 {
   object.Destroy();
 }

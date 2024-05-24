@@ -15,14 +15,14 @@ auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_coll
   m_destination = atDestination ? std::nullopt : m_destination;
 }
 
-auto enemy_type_1::MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool
+auto enemy_type_1::MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool
 {
   auto position = destination.Position();
   bool atDestination = MoveTowards(m_speed * interval, position);
   return atDestination;
 }
 
-auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& cells) -> std::optional<valid_cell>
+auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& cells) -> std::optional<level_cell_item>
 {
   auto distanceToTarget = direct2d::GetDistanceBetweenPoints(m_position, target);
 

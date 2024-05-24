@@ -38,14 +38,14 @@ auto enemy_type_2::Update(float interval, const level_cell_collection& cells) ->
   return finishedWaiting ? status::moving : status::waiting;
 }
 
-auto enemy_type_2::MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool
+auto enemy_type_2::MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool
 {
   auto position = destination.Position();
   bool atDestination = MoveTowards(m_speed * interval, position);
   return atDestination;
 }
 
-auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::optional<valid_cell>
+auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::optional<level_cell_item>
 {
   auto cellId = cells.CellId(m_position);
   auto adjacentFloorCells = adjacent_floor_cells(cells, cellId);

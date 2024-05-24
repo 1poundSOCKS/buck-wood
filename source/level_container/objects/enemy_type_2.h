@@ -13,7 +13,7 @@ public:
 
   auto Update(float interval, const level_cell_collection& cells) -> void;
 
-  [[nodiscard]] auto Destination() const -> std::optional<valid_cell>;
+  [[nodiscard]] auto Destination() const -> std::optional<level_cell_item>;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
@@ -23,21 +23,21 @@ private:
 
   [[nodiscard]] auto UpdateWhenMoving(float interval, const level_cell_collection& cells) noexcept -> status;
   [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
-  auto MoveTowardsDestination(valid_cell destination, float interval) noexcept -> bool;
-  [[nodiscard]] auto NewDestination(const level_cell_collection& cells) -> std::optional<valid_cell>;
+  auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;
+  [[nodiscard]] auto NewDestination(const level_cell_collection& cells) -> std::optional<level_cell_item>;
 
 private:
 
   status m_status;
   reload_timer m_waitTimer;
   float m_speed;
-  std::optional<valid_cell> m_destination;
+  std::optional<level_cell_item> m_destination;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
 
 };
 
-inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<valid_cell>
+inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<level_cell_item>
 {
   return m_destination;
 }

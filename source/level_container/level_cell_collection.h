@@ -11,8 +11,8 @@ class level_cell_collection
 public:
 
   using key_type = std::tuple<int, int>;
-  using collection_allocator_type = linear_allocator<std::pair<const key_type, valid_cell>, size_t { 200 }>;
-  using collection_type = std::map<key_type, valid_cell, std::less<key_type>, collection_allocator_type>;
+  using collection_allocator_type = linear_allocator<std::pair<const key_type, level_cell_item>, size_t { 200 }>;
+  using collection_type = std::map<key_type, level_cell_item, std::less<key_type>, collection_allocator_type>;
   enum class cell_type { empty, wall, floor };
   using cell_id = key_type;
 
@@ -21,7 +21,7 @@ public:
   level_cell_collection(int cellWidth, int cellHeight);
 
   [[nodiscard]] auto Get() const noexcept -> const collection_type&;
-  [[nodiscard]] auto Get(cell_id cellId) const -> const valid_cell&;
+  [[nodiscard]] auto Get(cell_id cellId) const -> const level_cell_item&;
 
   auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
@@ -66,14 +66,14 @@ inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> const c
   return m_cells;
 }
 
-inline auto level_cell_collection::Get(cell_id cellId) const -> const valid_cell &
+inline auto level_cell_collection::Get(cell_id cellId) const -> const level_cell_item &
 {
   return m_cells.at(cellId);
 }
 
 auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
 {
-  auto cells = std::ranges::views::transform(m_cells, [](const auto& cell) -> valid_cell
+  auto cells = std::ranges::views::transform(m_cells, [](const auto& cell) -> level_cell_item
   {
     const auto& [key, value] = cell;
     return value;
@@ -87,7 +87,7 @@ auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
 
 inline auto level_cell_collection::EnumerateWalls(auto &&visitor) const -> void
 {
-  EnumerateCells([&visitor](const valid_cell& cell)
+  EnumerateCells([&visitor](const level_cell_item& cell)
   {
     if( cell.Type() == level_cell_type::wall )
     {

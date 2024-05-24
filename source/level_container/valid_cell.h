@@ -1,11 +1,11 @@
 #pragma once
 
-class valid_cell
+class level_cell_item
 {
 
 public:
 
-  valid_cell(int x, int y, level_cell_type cellType, POINT_2F position) :
+  level_cell_item(int x, int y, level_cell_type cellType, POINT_2F position) :
     m_x { x }, m_y { y }, m_cellType { cellType }, m_position { position }
   {
   }

@@ -7,7 +7,7 @@ class valid_cell_collection
 
 public:
 
-  using value_type = std::vector<valid_cell>;
+  using value_type = std::vector<level_cell_item>;
   using back_inserter_type = std::back_insert_iterator<value_type>;
 
   auto Load(ID2D1Geometry* boundary, float cellWidth, float cellHeight) -> void;
