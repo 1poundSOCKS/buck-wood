@@ -54,7 +54,6 @@ private:
   auto Render(const level_title& levelTitle) const -> void;
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
-  auto Render(const valid_cell& validCell) const -> void;
   auto Render(const level_container& levelContainer) const -> void;
   auto Write(const default_object& object) const -> void;
   auto Write(const portal &object) const -> void;
@@ -183,23 +182,6 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
   fillRect.right = fillRect.left + ( fillRect.right - fillRect.left ) * energyBar.value;
   render_target::get()->FillRectangle(fillRect, m_energyBarFillBrush.get());
   render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
-}
-
-inline auto renderer::Render(const valid_cell& validCell) const -> void
-{
-  switch(validCell.Type() )
-  {
-  case level_cell_type::wall:
-    break;
-  
-  case level_cell_type::exit:
-    m_exitCellRenderer.Write(validCell.Geometry().get());
-    break;
-  case level_cell_type::floor:
-    m_floorCellRenderer.Write(validCell.Geometry().get());
-    break;
-
-  }
 }
 
 inline auto renderer::Render(const level_container &levelContainer) const -> void

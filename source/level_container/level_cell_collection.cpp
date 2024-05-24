@@ -6,14 +6,12 @@ level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_
   auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
   auto cellBottomLeft = POINT_2F { CellTopLeft().x, CellBottomRight().y };
   auto cellBoundary = std::array { CellTopLeft(), cellTopRight, CellBottomRight(), cellBottomLeft };
-  m_cellGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), cellBoundary, D2D1_FIGURE_END_CLOSED);
 }
 
 auto level_cell_collection::Add(int x, int y, level_cell_type cellType) noexcept -> void
 {
   POINT_2F position = CellPosition(x, y);
-  winrt::com_ptr<ID2D1TransformedGeometry> geometry = CellGeometry(x, y);
-  m_cells.insert({{x, y}, {x, y, cellType, position, geometry}});
+  m_cells.insert({{x, y}, {x, y, cellType, position}});
 }
 
 auto level_cell_collection::AddWalls() noexcept -> void
@@ -103,14 +101,6 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   auto adjustedDistance = POINT_2F { std::min(maxAdjustedDistance.x, maxXShift), std::min(maxAdjustedDistance.y, maxYShift) };
 
   return { position.x + adjustedDistance.x, position.y + adjustedDistance.y };
-}
-
-auto level_cell_collection::CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>
-{
-  auto cellPosition = CellPosition(x, y);
-  auto cellTranslation = SIZE_F { cellPosition.x, cellPosition.y };
-  auto cellTransform = D2D1::Matrix3x2F::Translation(cellTranslation);
-  return direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_cellGeometry.get(), cellTransform);
 }
 
 [[nodiscard]] auto level_cell_collection::CellTopLeft() const noexcept -> POINT_2F

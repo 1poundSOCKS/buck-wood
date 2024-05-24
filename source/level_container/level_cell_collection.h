@@ -51,14 +51,12 @@ private:
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
-  [[nodiscard]] auto CellGeometry(int x, int y) const noexcept -> winrt::com_ptr<ID2D1TransformedGeometry>;
   static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
 
 private:
 
   int m_cellWidth;
   int m_cellHeight;
-  winrt::com_ptr<ID2D1PathGeometry> m_cellGeometry;
   collection_type m_cells;
 
 };
