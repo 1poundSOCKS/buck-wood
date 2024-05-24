@@ -1,6 +1,5 @@
 #pragma once
 
-#include "level_geometries.h"
 #include "level_objects.h"
 #include "level_cell_collection.h"
 #include "level_explosion.h"

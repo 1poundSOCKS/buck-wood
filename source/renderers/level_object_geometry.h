@@ -1,7 +1,7 @@
 #pragma once
 
 #include "level_objects.h"
-#include "level_geometries.h"
+#include "geometry/level_geometries.h"
 
 class level_object_geometry
 {

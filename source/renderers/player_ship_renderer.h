@@ -3,7 +3,6 @@
 #include "level_objects.h"
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
-#include "level_geometries.h"
 
 class player_ship_renderer
 {
