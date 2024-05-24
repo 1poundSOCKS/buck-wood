@@ -71,8 +71,6 @@ auto play_scene::Render() const -> void
     renderer::render(hudTarget);
   }
 
-  RenderEnergyBars();
-
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( game_settings::showDiagnostics() )
@@ -104,6 +102,8 @@ auto play_scene::RenderLevelContainer() const -> void
   auto renderStart = performance_counter::QueryValue();
 
   renderer::render(m_playState->LevelContainer());
+
+  RenderEnergyBars();
 
   auto renderEnd = performance_counter::QueryValue();
 
@@ -149,17 +149,17 @@ auto play_scene::RenderEnergyBars() const -> void
       auto energyBar = energy_bar { energyBarRect.Get(), health };
       renderer::render(energyBar);
     }
-    //  renderer::render(energy_bar { EnergyBarRenderRect(object), object->Health() } );
-    //  renderer::render(energy_bar { EnergyBarRenderRect(object), object.Health() } );
   });
 }
 
 auto play_scene::RenderGeometryBoundaries() const -> void
 {
-  // m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
-  // {
-  //   renderer::render(ObjectRenderRect(object));
-  // });
+#if 0
+  m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
+  {
+    renderer::render(ObjectRenderRect(object));
+  });
+#endif
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
