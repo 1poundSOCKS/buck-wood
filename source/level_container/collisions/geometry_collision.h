@@ -13,8 +13,11 @@ public:
     auto position1 = object1.Object().Position();
     auto position2 = object2.Object().Position();
 
-    // auto possibleCollision = direct2d::CheckOverlap(object1.GeometryBounds(), object2.GeometryBounds());
-    auto possibleCollision = true;
+    auto bounds1 = object1.Bounds();
+    auto bounds2 = object2.Bounds();
+    auto overlapX = !(bounds1.left > bounds2.right || bounds1.right < bounds2.left);
+    auto overlapY = !(bounds1.top > bounds2.bottom || bounds1.bottom < bounds2.top);
+    auto possibleCollision = overlapX && overlapY;
 
     switch( game_settings::collisionDetectionType() )
     {
@@ -26,10 +29,10 @@ public:
         break;
 
       case game_settings::collision_detection_type::basic:
-        // if( possibleCollision )
-        // {
-        //   callable(object1.Object(), object2.Object());
-        // }
+        if( possibleCollision )
+        {
+          callable(object1.Object(), object2.Object());
+        }
         break;
     }
   }
@@ -60,56 +63,3 @@ public:
   }
 
 };
-
-// class geometry_collision
-// {
-
-// public:
-
-//   auto operator()(auto&& object1, auto&& object2, auto&& callable) -> void
-//   {
-//     auto position1 = object1->Position();
-//     auto position2 = object2->Position();
-
-//     auto possibleCollision = direct2d::CheckOverlap(object1.GeometryBounds(), object2.GeometryBounds());
-
-//     switch( game_settings::collisionDetectionType() )
-//     {
-//       case game_settings::collision_detection_type::direct2d:
-//         if( possibleCollision && CheckDirect2D(object1, object2) )
-//         {
-//           callable(object1.Object(), object2.Object());
-//         }
-//         break;
-//       case game_settings::collision_detection_type::basic:
-//         if( possibleCollision )
-//         {
-//           callable(object1.Object(), object2.Object());
-//         }
-//         break;
-//     }
-//   }
-
-//   [[nodiscard]] auto CheckDirect2D(auto&& object1, auto&& object2) const noexcept -> bool
-//   {
-//     D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
-//     HRESULT hr = object1.Geometry()->CompareWithGeometry(object2.Geometry(), D2D1::Matrix3x2F::Identity(), &relation);
-
-//     bool collided = false;
-
-//     if( SUCCEEDED(hr) )
-//     {
-//       switch( relation )
-//       {
-//         case D2D1_GEOMETRY_RELATION_IS_CONTAINED:
-//         case D2D1_GEOMETRY_RELATION_CONTAINS:
-//         case D2D1_GEOMETRY_RELATION_OVERLAP:
-//           collided = true;
-//           break;
-//       }
-//     }
-
-//     return collided;
-//   }
-
-// };
