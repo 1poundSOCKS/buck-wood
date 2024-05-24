@@ -8,7 +8,6 @@
 #include "game_score.h"
 #include "game_settings.h"
 #include "linear_allocator.h"
-#include "dynamic_object_functions.h"
 #include "collisions/geometry_containment.h"
 #include "collisions/particle_containment.h"
 #include "collisions/particle_collision.h"

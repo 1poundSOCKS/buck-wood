@@ -39,8 +39,6 @@ protected:
   auto CameraPosition() const -> camera_sequence::camera_position;
   [[nodiscard]] auto GetPlayCameraZoom() const -> float;
   static auto GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F;
-  [[nodiscard]] auto ObjectRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
-  [[nodiscard]] auto EnergyBarRenderRect(const dynamic_object<default_object>& enemy) const noexcept -> RECT_F;
 
 private:
 

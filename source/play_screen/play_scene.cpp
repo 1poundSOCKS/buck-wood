@@ -59,11 +59,11 @@ auto play_scene::Render() const -> void
 
 #if 0
     renderer::render(line_to_target { playerPosition, targettedObject->Position() });
-#endif
 
     auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
     hud_target hudTarget { bounds };
     renderer::render(hudTarget);
+#endif
   }
 
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -190,23 +190,4 @@ auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F
   auto [minY, maxY] = std::minmax({topLeft.y, bottomRight.y, bottomLeft.y, topRight.y});
 
   return { minX, minY, maxX, maxY };
-}
-
-[[nodiscard]] auto play_scene::ObjectRenderRect(const dynamic_object<default_object>& object) const noexcept -> RECT_F
-{
-  auto bounds = object.GeometryBounds();
-  auto topLeft = POINT_2F { bounds.left, bounds.top };
-  auto bottomRight = POINT_2F { bounds.right, bounds.bottom };
-  auto renderTopLeft = m_renderTransform.TransformPoint(topLeft);
-  auto renderBottomRight = m_renderTransform.TransformPoint(bottomRight);
-  return { renderTopLeft.x, renderTopLeft.y, renderBottomRight.x, renderBottomRight.y };
-}
-
-[[nodiscard]] auto play_scene::EnergyBarRenderRect(const dynamic_object<default_object>& object) const noexcept -> RECT_F
-{
-  auto objectRect = ObjectRenderRect(object);
-  auto objectRectWidth = objectRect.right - objectRect.left;
-  objectRect.top -= 20.0f;
-  objectRect.bottom = objectRect.top - objectRectWidth / 8;
-  return objectRect;
 }

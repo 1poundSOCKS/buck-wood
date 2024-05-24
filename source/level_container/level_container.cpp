@@ -86,14 +86,14 @@ auto level_container::UpdateObjects(float interval) -> void
 {
   auto particles = std::ranges::views::filter(m_particles, [](const auto& particle) { return !particle.Destroyed(); } );
 
-  dynamic_object_functions::update(particles, interval);
+  for( auto& particle : particles )
+  {
+    particle.Update(interval);
+  }
 
   EnumerateAllObjects(false, [this, interval](auto& defaultObject)
   {
-    std::visit([this, interval](auto& object)
-    {
-      UpdateObject(object, interval);
-    }, defaultObject.Get());
+    std::visit([this, interval](auto& object) { UpdateObject(object, interval); }, defaultObject.Get());
   });
 }
 
