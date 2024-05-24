@@ -73,10 +73,12 @@ auto play_scene::Render() const -> void
     RenderGeometryBoundaries();
   }
 
+#if 0
   if( !m_paused && m_renderLevelTitle )
   {
     renderer::render(m_levelTitle);
   }
+#endif
 }
 
 [[nodiscard]] auto play_scene::RenderTransform() const noexcept -> D2D1::Matrix3x2F
