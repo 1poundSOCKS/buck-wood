@@ -46,6 +46,7 @@ public:
 
   [[nodiscard]] auto PlayerDestroyed() const noexcept -> bool;
   [[nodiscard]] auto PlayerPosition() const noexcept -> POINT_2F;
+  [[nodiscard]] auto PlayerAngle() const noexcept -> float;
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
@@ -63,6 +64,8 @@ public:
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
+  auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
+  auto EnumerateExitCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
@@ -132,6 +135,7 @@ private:
   std::optional<targetted_object> m_targettedObject;
 
   collision_object_collection m_wallCollisionObjects;
+  collision_object_collection m_floorCollisionObjects;
   collision_object_collection m_exitCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
@@ -146,6 +150,7 @@ private:
 inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
   m_wallCollisionObjects.reserve(500);
+  m_floorCollisionObjects.reserve(500);
   m_exitCollisionObjects.reserve(10);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
@@ -159,6 +164,11 @@ inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> b
 inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> POINT_2F
 {
   return m_playerState.Position();
+}
+
+inline auto level_container::PlayerAngle() const noexcept -> float
+{
+  return m_playerState.Angle();
 }
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
@@ -419,6 +429,22 @@ inline auto level_container::EnumerateEnemyCollisionObjects(auto &&visitor) cons
   }
 }
 
+inline auto level_container::EnumerateFloorCollisionObjects(auto &&visitor) const -> void
+{
+  for( const auto& object : m_floorCollisionObjects )
+  {
+    visitor(object);
+  }
+}
+
+inline auto level_container::EnumerateExitCollisionObjects(auto &&visitor) const -> void
+{
+  for( const auto& object : m_exitCollisionObjects )
+  {
+    visitor(object);
+  }
+}
+
 inline auto level_container::Exit() const noexcept -> bool
 {
   return m_exit;
@@ -456,6 +482,10 @@ inline auto level_container::AddCellCollisionObject(default_object& object, leve
   {
     case level_cell_type::wall:
       m_wallCollisionObjects.emplace_back(object);
+      break;
+
+    case level_cell_type::floor:
+      m_floorCollisionObjects.emplace_back(object);
       break;
 
     case level_cell_type::exit:

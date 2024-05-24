@@ -204,6 +204,16 @@ inline auto renderer::Render(const valid_cell& validCell) const -> void
 
 inline auto renderer::Render(const level_container &levelContainer) const -> void
 {
+  levelContainer.EnumerateFloorCollisionObjects([this](const collision_object& object){
+    auto geometry = object.Geometry().GetRaw();
+    m_floorCellRenderer.Write(geometry);
+  });
+
+  levelContainer.EnumerateExitCollisionObjects([this](const collision_object& object){
+    auto geometry = object.Geometry().GetRaw();
+    m_exitCellRenderer.Write(geometry);
+  });
+
   levelContainer.EnumerateNonInteractiveObjects([this](const auto& object)
   {
     Render(object);
@@ -224,17 +234,6 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
       }
     });
   }
-
-  // for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
-  // {
-  //   levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
-  //   {
-  //     if( render_order::get(object.Object()) == orderIndex )
-  //     {
-  //       Render(object);    
-  //     }
-  //   });
-  // }
 }
 
 inline auto renderer::Write(const default_object &object) const -> void
