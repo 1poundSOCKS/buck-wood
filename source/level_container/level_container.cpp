@@ -14,17 +14,23 @@ auto level_container::AddWalls() -> void
 {
   m_cells.AddWalls();
 
-  m_cells.EnumerateWalls([this](const auto& wall)
+  auto scale = SCALE_2F { static_cast<float>(m_cells.CellWidth()), static_cast<float>(m_cells.CellHeight()) };
+  m_cells.EnumerateCells([this,&scale](const auto& cell)
   {
-    auto scale = SCALE_2F { static_cast<float>(m_cells.CellWidth()), static_cast<float>(m_cells.CellHeight()) };
-    CreateWallObject(std::in_place_type<level_wall>, wall.Position(), scale, 0.0f, level_cell_type::wall);
+    switch( cell.Type() )
+    {
+      case level_cell_type::wall:
+        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type());
+        break;
+      case level_cell_type::exit:
+        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type());
+        break;
+    }
   });
 
-  m_enemyCollisionObjects.clear();
-
-  EnumerateWallObjects([this](auto& object)
+  EnumerateWallObjects([this](default_object& object)
   {
-    m_wallCollisionObjects.emplace_back(object);
+    std::visit([this,&object](auto& cellObject){ AddCellCollisionObject(object, cellObject); }, object.Get());
   });
 }
 
@@ -113,11 +119,13 @@ auto level_container::DoCollisions() -> void
   m_particleCollisionRunner(m_particles, m_wallCollisionObjects, true);
   m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
   m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
+  m_collisionRunner(m_playerCollisionObjects, m_exitCollisionObjects, collisionHandler);
   m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
+  m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
 
-  // auto exitCell = collisionHandler.ExitCell();
-  // m_exit = exitCell ? true : false;
-  // m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
+  auto exitCell = collisionHandler.ExitCell();
+  m_exit = exitCell ? true : false;
+  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
 
 #if 0

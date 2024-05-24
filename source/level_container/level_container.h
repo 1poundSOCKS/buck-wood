@@ -108,6 +108,8 @@ private:
   // auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
+  auto AddCellCollisionObject(default_object& object, level_wall& cellObject) -> void;
+  auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
 
 private:
 
@@ -130,6 +132,7 @@ private:
   std::optional<targetted_object> m_targettedObject;
 
   collision_object_collection m_wallCollisionObjects;
+  collision_object_collection m_exitCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
@@ -143,6 +146,7 @@ private:
 inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
 {
   m_wallCollisionObjects.reserve(500);
+  m_exitCollisionObjects.reserve(10);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
 }
@@ -444,6 +448,24 @@ auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> 
 auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
+}
+
+inline auto level_container::AddCellCollisionObject(default_object& object, level_wall &cellObject) -> void
+{
+  switch( cellObject.Type() )
+  {
+    case level_cell_type::wall:
+      m_wallCollisionObjects.emplace_back(object);
+      break;
+
+    case level_cell_type::exit:
+      m_exitCollisionObjects.emplace_back(object);
+      break;
+  }
+}
+
+inline auto level_container::AddCellCollisionObject(default_object& object, auto &cellObject) -> void
+{
 }
 
 auto level_container::UpdateObject(auto& object, float interval) -> void

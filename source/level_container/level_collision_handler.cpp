@@ -150,20 +150,32 @@ auto level_collision_handler::OnCollision(player_ship &ship, const valid_cell& c
 
 auto level_collision_handler::OnCollision(player_ship &ship, level_wall &wall) -> void
 {
+  switch( wall.Type() )
+  {
+    case level_cell_type::exit:
+      ship.Destroy();
+      break;
+  }
 }
 
 auto level_collision_handler::OnCollision(player_bullet& bullet, level_wall& wall) -> void
 {
-  if( wall.Type() == level_cell_type::wall )
+  switch( wall.Type() )
   {
-    bullet.Destroy();  
+    case level_cell_type::wall:
+    case level_cell_type::exit:
+      bullet.Destroy();
+      break;
   }
 }
 
 auto level_collision_handler::OnCollision(enemy_bullet_1 &bullet, level_wall &wall) -> void
 {
-  if( wall.Type() == level_cell_type::wall )
+  switch( wall.Type() )
   {
-    bullet.Destroy();
+    case level_cell_type::wall:
+    case level_cell_type::exit:
+      bullet.Destroy();
+      break;
   }
 }
