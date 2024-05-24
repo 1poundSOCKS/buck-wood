@@ -41,7 +41,6 @@ public:
 
 private:
 
-  auto Render(const default_object& object) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const particle& particle) const -> void;
   auto Render(const health_status& playerShields) const -> void;
@@ -156,14 +155,6 @@ inline auto renderer::Render(const level_title& levelTitle) const -> void
   m_levelTitleRenderer.Write(levelTitle);
 }
 
-inline auto renderer::Render(const default_object &object) const -> void
-{
-  std::visit([this](const auto& levelObject)
-  {
-    Write(levelObject);
-  }, object.Get());
-}
-
 inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
 {
   render_target::get()->DrawLine(lineToTarget.m_start, lineToTarget.m_end, m_lineToTargetBrush.get(), 10);
@@ -191,7 +182,7 @@ inline auto renderer::Render(const level_container &levelContainer) const -> voi
 
   levelContainer.EnumerateNonInteractiveObjects([this](const auto& object)
   {
-    Render(object);
+    Write(object);
   });
 
   levelContainer.EnumerateParticles([this](const auto& particle)
