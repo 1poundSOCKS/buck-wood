@@ -2,7 +2,7 @@
 
 #include "framework.h"
 #include "level_types.h"
-#include "valid_cell.h"
+#include "level_cell_item.h"
 #include "linear_allocator.h"
 
 class level_cell_collection
