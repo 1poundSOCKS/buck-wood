@@ -42,7 +42,6 @@ public:
 
 private:
 
-  auto Render(const dynamic_object<default_object>& object) const -> void;
   auto Render(const default_object& object) const -> void;
   auto Render(const blank_object& blankObject) const -> void;
   auto Render(const particle& particle) const -> void;
@@ -156,11 +155,6 @@ inline auto renderer::Render(const game_score& gameScore) const -> void
 inline auto renderer::Render(const level_title& levelTitle) const -> void
 {
   m_levelTitleRenderer.Write(levelTitle);
-}
-
-inline auto renderer::Render(const dynamic_object<default_object>& object) const -> void
-{
-  m_defaultObjectRenderer.Write(object.Object(), object.Geometry());
 }
 
 inline auto renderer::Render(const default_object &object) const -> void
