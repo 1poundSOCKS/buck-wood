@@ -14,7 +14,7 @@ public:
 
   [[nodiscard]] auto LevelData(int index) const -> std::unique_ptr<level_base>;
   [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  auto LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 
 };
 
-auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
   auto levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 

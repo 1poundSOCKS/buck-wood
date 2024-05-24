@@ -11,7 +11,7 @@ play_state::play_state() :
 
 auto play_state::LoadCurrentLevel() -> void
 {
-  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
+  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index(), std::nullopt);
   player_state::set_status(player_state::status::active);
 }
 
