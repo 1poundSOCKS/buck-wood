@@ -17,7 +17,7 @@ private:
     std::string { "0000000000000" },
     std::string { " 2  1  2  1  " },
     std::string { "             " },
-    std::string { "             " },
+    std::string { "      P      " },
     std::string { "000000 000000" },
     std::string { "000000H000000" },
     std::string { "000000E000000" }

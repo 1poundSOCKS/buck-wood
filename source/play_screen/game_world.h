@@ -56,29 +56,30 @@ auto game_world::LoadLevel(int levelIndex, POINT_2I entryCell, auto&&...args) ->
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(cellData);
+    auto cellId = POINT_2I { columnIndex, rowIndex };
 
     switch( itemType )
     {
       case level_item_type::portal:
-        levelContainer->CreatePortal(POINT_2I { columnIndex, rowIndex });
+        levelContainer->CreatePortal(cellId);
+        levelContainer->CreatePlayer(cellId);
         break;
 
       case level_item_type::enemy_type_one:
-        levelContainer->CreateEnemyType1(POINT_2I { columnIndex, rowIndex }, 10);
+        levelContainer->CreateEnemyType1(cellId, 10);
         break;
       
       case level_item_type::enemy_type_two:
-        levelContainer->CreateEnemyType2(POINT_2I { columnIndex, rowIndex }, 3, 2.0f, 400.0f, 2.0f);
+        levelContainer->CreateEnemyType2(cellId, 3, 2.0f, 400.0f, 2.0f);
         break;
 
       case level_item_type::enemy_type_three:
-        levelContainer->CreateEnemyType3(POINT_2I { columnIndex, rowIndex }, 3, 2.5f);
+        levelContainer->CreateEnemyType3(cellId, 3, 2.5f);
         break;
     }
   });
 
   levelContainer->AddWalls();
-  levelContainer->CreatePlayer(entryCell);
 
   return levelContainer;
 }
