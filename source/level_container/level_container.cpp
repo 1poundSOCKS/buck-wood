@@ -15,15 +15,16 @@ auto level_container::AddWalls() -> void
   m_cells.AddWalls();
 
   auto scale = SCALE_2F { static_cast<float>(m_cells.CellWidth()), static_cast<float>(m_cells.CellHeight()) };
-  m_cells.EnumerateCells([this,&scale](const auto& cell)
+  m_cells.EnumerateCells([this,&scale](const valid_cell& cell)
   {
+    ;
     switch( cell.Type() )
     {
       case level_cell_type::wall:
-        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type());
+        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
         break;
       case level_cell_type::exit:
-        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type());
+        CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
         break;
     }
   });

@@ -153,7 +153,7 @@ auto level_collision_handler::OnCollision(player_ship &ship, level_wall &wall) -
   switch( wall.Type() )
   {
     case level_cell_type::exit:
-      ship.Destroy();
+      m_exitCell = wall.CellId();
       break;
   }
 }
