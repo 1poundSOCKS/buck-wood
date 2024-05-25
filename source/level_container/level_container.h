@@ -21,6 +21,8 @@ class level_container
 
 public:
 
+  enum class object_type { portal_entry, player, enemy_stalker, enemy_random, enemy_turret, power_up };
+
   level_container();
   level_container(const level_container& levelContainer) = delete;
 
@@ -55,6 +57,8 @@ public:
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
   auto SetExit(bool value, POINT_2I cell) -> void;
+
+  auto Create(object_type objectType, auto&&...args) -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
@@ -457,6 +461,22 @@ inline auto level_container::SetExit(bool value, POINT_2I cell) -> void
 {
   m_exit = true;
   m_exitCell = cell;
+}
+
+inline auto level_container::Create(object_type objectType, auto &&...args) -> void
+{
+  switch( objectType )
+  {
+    case object_type::portal_entry:
+      CreateNoninteractiveObject(std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+      break;
+    case object_type::player:
+      CreatePlayerObject(std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
+      break;
+    default:
+      CreateNoninteractiveObject(std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+      break;
+  }
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
