@@ -6,10 +6,10 @@
 
 game_world::game_world()
 {
-  CreateLevelLink(0, 'E', 1, 'F');
-  CreateLevelLink(1, 'E', 0, 'F');
-  CreateLevelLink(1, 'G', 2, 'H');
-  CreateLevelLink(2, 'E', 1, 'H');
+  CreateLevelLink(0, 'E', 1, 'P');
+  CreateLevelLink(1, 'E', 0, 'P');
+  CreateLevelLink(1, 'G', 2, 'P');
+  CreateLevelLink(2, 'E', 1, 'P');
 }
 
 auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
