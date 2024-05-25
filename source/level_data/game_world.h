@@ -66,24 +66,19 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     switch( itemType )
     {
       case level_item_type::portal:
-        // levelContainer->CreatePortal(cellId);
-        // levelContainer->CreatePlayer(cellId);
         levelContainer->CreatePortal(cellPosition);
         levelContainer->CreatePlayer(cellPosition);
         break;
 
       case level_item_type::enemy_type_one:
-        // levelContainer->CreateEnemyType1(cellId, 10);
         levelContainer->CreateEnemyType1(cellPosition, 10);
         break;
       
       case level_item_type::enemy_type_two:
-        // levelContainer->CreateEnemyType2(cellId, 3, 2.0f, 400.0f, 2.0f);
         levelContainer->CreateEnemyType2(cellPosition, 3, 2.0f, 400.0f, 2.0f);
         break;
 
       case level_item_type::enemy_type_three:
-        // levelContainer->CreateEnemyType3(cellId, 3, 2.5f);
         levelContainer->CreateEnemyType3(cellPosition, 3, 2.5f);
         break;
     }

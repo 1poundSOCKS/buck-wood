@@ -66,12 +66,6 @@ public:
   auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
 
-  auto CreatePlayer(POINT_2I cell) -> void;
-  auto CreatePortal(POINT_2I cell) -> void;
-  auto CreateEnemyType1(POINT_2I cell, auto&&...args) -> void;
-  auto CreateEnemyType2(POINT_2I cell, auto&&...args) -> void;
-  auto CreateEnemyType3(POINT_2I cell, auto&&...args) -> void;
-
   auto CreatePlayer(POINT_2F cell) -> void;
   auto CreatePortal(POINT_2F cell) -> void;
   auto CreateEnemyType1(POINT_2F cell, auto&&...args) -> void;
@@ -227,12 +221,6 @@ inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F posit
   m_playerObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePortal(POINT_2I cell) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateNoninteractiveObject(std::in_place_type<portal>, cellPosition);
-}
-
 auto level_container::CreateBackgroundObject(auto&&...args) -> void
 {
   CreateNoninteractiveObject(level_geometries::AsteroidGeometry(), std::in_place_type<background_object>, std::forward<decltype(args)>(args)...);
@@ -243,33 +231,9 @@ inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
   CreatePlayerObject(level_geometries::MineGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePlayer(POINT_2I cell) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreatePlayerObject(std::in_place_type<player_ship>, cellPosition);
-}
-
 inline auto level_container::CreatePortal(POINT_2F position) -> void
 {
   CreateNoninteractiveObject(std::in_place_type<portal>, position);
-}
-
-auto level_container::CreateEnemyType1(POINT_2I cell, auto&&...args) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(std::in_place_type<enemy_type_1>, cellPosition, std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateEnemyType2(POINT_2I cell, auto&&...args) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(std::in_place_type<enemy_type_2>, cellPosition, std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::CreateEnemyType3(POINT_2I cell, auto &&...args) -> void
-{
-  auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  CreateEnemyObject(std::in_place_type<enemy_type_3>, cellPosition, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayer(POINT_2F position) -> void
