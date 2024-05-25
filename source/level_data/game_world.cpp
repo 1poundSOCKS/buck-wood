@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "game_world.h"
+#include "level_0.h"
 #include "level_1.h"
 #include "level_2.h"
-#include "level_3.h"
 
 game_world::game_world()
 {
@@ -17,16 +17,16 @@ auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
   switch( index )
   {
     case 0:
-      return std::make_unique<level_1>();
+      return std::make_unique<level_0>();
       
     case 1:
-      return std::make_unique<level_2>();
+      return std::make_unique<level_1>();
 
     case 2:
-      return std::make_unique<level_3>();
+      return std::make_unique<level_2>();
 
     default:
-      return std::make_unique<level_1>();
+      return std::make_unique<level_0>();
   }
 }
 
