@@ -27,9 +27,6 @@ public:
   level_container(std::shared_ptr<level_cell_collection> cells);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddFloorCell(int x, int y, level_cell_type cellType) -> void;
-  auto AddWalls() -> void;
-
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto PlayerDestroyed() const noexcept -> bool;
@@ -66,11 +63,11 @@ public:
   auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
 
-  auto CreatePlayer(POINT_2F cell) -> void;
-  auto CreatePortal(POINT_2F cell) -> void;
-  auto CreateEnemyType1(POINT_2F cell, auto&&...args) -> void;
-  auto CreateEnemyType2(POINT_2F cell, auto&&...args) -> void;
-  auto CreateEnemyType3(POINT_2F cell, auto&&...args) -> void;
+  auto CreatePlayer(POINT_2F position) -> void;
+  auto CreatePortal(POINT_2F position) -> void;
+  auto CreateEnemyType1(POINT_2F position, auto&&...args) -> void;
+  auto CreateEnemyType2(POINT_2F position, auto&&...args) -> void;
+  auto CreateEnemyType3(POINT_2F position, auto&&...args) -> void;
 
   auto CreateBackgroundObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
@@ -90,6 +87,7 @@ public:
 
 private:
 
+  auto AddWalls() -> void;
   auto UpdateObjects(float interval) -> void;
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(player_missile& object, float interval) -> void;
@@ -123,7 +121,6 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  level_cell_collection m_cells;
   std::shared_ptr<level_cell_collection> m_cellsPtr;
 
   bool m_exit { false };
@@ -157,13 +154,15 @@ inline level_container::level_container() : level_container(std::make_shared<lev
 {
 }
 
-inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cells { 400, 400 }, m_cellsPtr { cells }, m_playerState { { 0, 0} }
+inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cellsPtr { cells }, m_playerState { { 0, 0} }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
   m_exitCollisionObjects.reserve(10);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
+
+  AddWalls();
 }
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
@@ -305,7 +304,7 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
 
 auto level_container::EnumerateCells(auto &&visitor) const -> void
 {
-  m_cells.EnumerateCells(visitor);
+  m_cellsPtr->EnumerateCells(visitor);
 }
 
 auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
