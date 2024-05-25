@@ -55,30 +55,36 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     }
   });
 
-  levelData->Enumerate([this,&levelContainer](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,&levelContainer,levelCells](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(cellData);
     auto cellId = POINT_2I { columnIndex, rowIndex };
+    auto cellPosition = levelCells->CellPosition(cellId.x, cellId.y);
 
     switch( itemType )
     {
       case level_item_type::portal:
-        levelContainer->CreatePortal(cellId);
-        levelContainer->CreatePlayer(cellId);
+        // levelContainer->CreatePortal(cellId);
+        // levelContainer->CreatePlayer(cellId);
+        levelContainer->CreatePortal(cellPosition);
+        levelContainer->CreatePlayer(cellPosition);
         break;
 
       case level_item_type::enemy_type_one:
-        levelContainer->CreateEnemyType1(cellId, 10);
+        // levelContainer->CreateEnemyType1(cellId, 10);
+        levelContainer->CreateEnemyType1(cellPosition, 10);
         break;
       
       case level_item_type::enemy_type_two:
-        levelContainer->CreateEnemyType2(cellId, 3, 2.0f, 400.0f, 2.0f);
+        // levelContainer->CreateEnemyType2(cellId, 3, 2.0f, 400.0f, 2.0f);
+        levelContainer->CreateEnemyType2(cellPosition, 3, 2.0f, 400.0f, 2.0f);
         break;
 
       case level_item_type::enemy_type_three:
-        levelContainer->CreateEnemyType3(cellId, 3, 2.5f);
+        // levelContainer->CreateEnemyType3(cellId, 3, 2.5f);
+        levelContainer->CreateEnemyType3(cellPosition, 3, 2.5f);
         break;
     }
   });

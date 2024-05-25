@@ -230,7 +230,6 @@ inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F posit
 inline auto level_container::CreatePortal(POINT_2I cell) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
-  m_playerState.SetPosition(cellPosition);
   CreateNoninteractiveObject(std::in_place_type<portal>, cellPosition);
 }
 
@@ -248,6 +247,11 @@ inline auto level_container::CreatePlayer(POINT_2I cell) -> void
 {
   auto cellPosition = m_cells.CellPosition(cell.x, cell.y);
   CreatePlayerObject(std::in_place_type<player_ship>, cellPosition);
+}
+
+inline auto level_container::CreatePortal(POINT_2F position) -> void
+{
+  CreateNoninteractiveObject(std::in_place_type<portal>, position);
 }
 
 auto level_container::CreateEnemyType1(POINT_2I cell, auto&&...args) -> void
