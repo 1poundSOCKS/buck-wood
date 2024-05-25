@@ -32,9 +32,11 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
 {
   auto levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
 
+  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(400, 400) };
+
   auto levelData = LevelData(levelIndex);
 
-  levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,levelIndex,&levelContainer,levelCells](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -44,9 +46,11 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     {
       case level_cell_type::floor:
         levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
+        levelCells->Add(columnIndex, rowIndex, cellType);
         break;
       case level_cell_type::exit:
         levelContainer->AddFloorCell(columnIndex, rowIndex, cellType);
+        levelCells->Add(columnIndex, rowIndex, cellType);
         break;
     }
   });
