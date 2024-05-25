@@ -473,8 +473,17 @@ inline auto level_container::Create(object_type objectType, auto &&...args) -> v
     case object_type::player:
       CreatePlayerObject(std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
       break;
-    default:
-      CreateNoninteractiveObject(std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+    case object_type::enemy_stalker:
+      CreatePlayerObject(std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
+      break;
+    case object_type::enemy_random:
+      CreatePlayerObject(std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
+      break;
+    case object_type::enemy_turret:
+      CreatePlayerObject(std::in_place_type<enemy_type_3>, std::forward<decltype(args)>(args)...);
+      break;
+    case object_type::power_up:
+      CreatePlayerObject(std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
       break;
   }
 }
