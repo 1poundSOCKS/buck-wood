@@ -24,6 +24,7 @@ public:
   enum class object_type { portal_entry, player, enemy_stalker, enemy_random, enemy_turret, power_up };
 
   level_container();
+  level_container(std::shared_ptr<level_cell_collection> cells);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddFloorCell(int x, int y, level_cell_type cellType) -> void;
@@ -121,6 +122,7 @@ private:
   static constexpr float m_maxTargetRange { 1000.0f };
 
   level_cell_collection m_cells;
+  std::shared_ptr<level_cell_collection> m_cellsPtr;
 
   bool m_exit { false };
   POINT_2I m_exitCell { 0, 0 };
@@ -149,7 +151,11 @@ private:
 
 };
 
-inline level_container::level_container() : m_cells { 400, 400 }, m_playerState { { 0, 0} }
+inline level_container::level_container() : level_container(std::make_shared<level_cell_collection>(400,400))
+{
+}
+
+inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cells { 400, 400 }, m_cellsPtr { cells }, m_playerState { { 0, 0} }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);

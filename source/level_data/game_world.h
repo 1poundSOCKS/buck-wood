@@ -30,9 +30,9 @@ private:
 
 auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
-  auto levelContainer = std::make_unique<level_container>(std::forward<decltype(args)>(args)...);
-
   std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(400, 400) };
+
+  auto levelContainer = std::make_unique<level_container>(levelCells, std::forward<decltype(args)>(args)...);
 
   auto levelData = LevelData(levelIndex);
 

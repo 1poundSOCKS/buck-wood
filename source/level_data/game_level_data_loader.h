@@ -29,7 +29,7 @@ private:
   game_level_data_loader();
 
   [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
+  // auto LoadLevel(int levelIndex, auto&&...args) -> std::unique_ptr<level_container>;
   auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
