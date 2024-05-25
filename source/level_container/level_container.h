@@ -21,19 +21,6 @@ class level_container
 
 public:
 
-  using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
-  using WallObjectAllocator = linear_allocator<default_object, size_t { 500 }>;
-  using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
-  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
-  using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
-
-  using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
-  using wall_object_collection = std::list<default_object, WallObjectAllocator>;
-  using player_object_collection = std::list<default_object, PlayerObjectAllocator>;
-  using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
-  using particle_collection = std::list<particle, ParticleAllocator>;
-  using collision_object_collection = std::vector<collision_object>;
-
   level_container();
   level_container(const level_container& levelContainer) = delete;
 
@@ -49,7 +36,7 @@ public:
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
-  [[nodiscard]] auto EnemyCount() const -> enemy_object_collection::size_type;
+  [[nodiscard]] auto EnemyCount() const -> size_t;
 
   auto EnumerateCells(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
@@ -113,6 +100,19 @@ private:
   auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
 
 private:
+
+  using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
+  using WallObjectAllocator = linear_allocator<default_object, size_t { 500 }>;
+  using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
+  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
+  using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
+
+  using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
+  using wall_object_collection = std::list<default_object, WallObjectAllocator>;
+  using player_object_collection = std::list<default_object, PlayerObjectAllocator>;
+  using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
+  using particle_collection = std::list<particle, ParticleAllocator>;
+  using collision_object_collection = std::vector<collision_object>;
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
