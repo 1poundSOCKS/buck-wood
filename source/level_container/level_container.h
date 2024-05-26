@@ -39,15 +39,20 @@ public:
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
   auto EnumerateCells(auto&& visitor) const -> void;
+
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
+
   auto EnumerateWallObjects(auto&& visitor) -> void;
   auto EnumeratPlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateEnemies(auto&& visitor) const -> void;
+
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+
+  auto EnumerateParticles(auto&& visitor) const -> void;
+
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
   auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
   auto EnumerateExitCollisionObjects(auto&& visitor) const -> void;
@@ -67,36 +72,36 @@ private:
   auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
-  auto CreatePlayer(POINT_2F position) -> void;
-  auto CreatePortal(POINT_2F position) -> void;
-  auto CreateEnemyType1(POINT_2F position, auto&&...args) -> void;
-  auto CreateEnemyType2(POINT_2F position, auto&&...args) -> void;
-  auto CreateEnemyType3(POINT_2F position, auto&&...args) -> void;
-  auto CreateBackgroundObject(auto&&...args) -> void;
+
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreatePlayerMissile(auto&&...args) -> void;
-  auto CreatePowerUp(POINT_2F position, auto&&...args) -> void;
+
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
   auto CreateExplosions(std::ranges::input_range auto&& positions) -> void;
   auto CreateImpacts(std::ranges::input_range auto&& positions) -> void;
 
-
   auto UpdateObjects(float interval) -> void;
+
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(player_missile& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
   auto UpdateObject(enemy_type_2& object, float interval) -> void;
   auto UpdateObject(enemy_type_3& object, float interval) -> void;
+  auto UpdateObject(auto &object, float interval) -> void;
+
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
-  auto UpdateObject(auto &object, float interval) -> void;
-  // auto GetTargettedObject() -> std::optional<targetted_object>;
+
+#if 0
+  auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
   auto DistanceFromTarget(auto&& object) const -> float;
+#endif
+
   auto AddCellCollisionObject(default_object& object, level_wall& cellObject) -> void;
   auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
 
@@ -215,39 +220,9 @@ inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F posit
   m_playerObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
 }
 
-auto level_container::CreateBackgroundObject(auto&&...args) -> void
-{
-  CreateNoninteractiveObject(level_geometries::AsteroidGeometry(), std::in_place_type<background_object>, std::forward<decltype(args)>(args)...);
-}
-
 inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
 {
   CreatePlayerObject(level_geometries::MineGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::CreatePortal(POINT_2F position) -> void
-{
-  CreateNoninteractiveObject(std::in_place_type<portal>, position);
-}
-
-inline auto level_container::CreatePlayer(POINT_2F position) -> void
-{
-  CreatePlayerObject(std::in_place_type<player_ship>, position);
-}
-
-auto level_container::CreateEnemyType1(POINT_2F position, auto&&...args) -> void
-{
-  CreateEnemyObject(std::in_place_type<enemy_type_1>, position, std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateEnemyType2(POINT_2F position, auto&&...args) -> void
-{
-  CreateEnemyObject(std::in_place_type<enemy_type_2>, position, std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::CreateEnemyType3(POINT_2F position, auto &&...args) -> void
-{
-  CreateEnemyObject(std::in_place_type<enemy_type_3>, position, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void
@@ -258,11 +233,6 @@ auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> voi
 auto level_container::CreateParticle(auto&&...args) -> void
 {
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreatePowerUp(POINT_2F position, auto&&...args) -> void
-{
-  CreateEnemyObject(std::in_place_type<power_up>, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreatePlayerBullet(auto &&...args) -> void
@@ -494,6 +464,7 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
   m_playerState = playerState;
 }
 
+#if 0
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
 {
   return DistanceFromTarget(object2) < DistanceFromTarget(object1) ? object2 : object1;
@@ -503,6 +474,7 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 {
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
 }
+#endif
 
 inline auto level_container::AddCellCollisionObject(default_object& object, level_wall &cellObject) -> void
 {
