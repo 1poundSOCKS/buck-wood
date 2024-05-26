@@ -29,6 +29,11 @@ private:
     return level_geometries::RectangleGeometry();
   }
 
+  static [[nodiscard]] auto GetGeometry(const enemy_type_3& object) -> winrt::com_ptr<ID2D1Geometry>
+  {
+    return level_geometries::RectangleGeometry();
+  }
+
   static [[nodiscard]] auto GetGeometry(const enemy_bullet_1& object) -> winrt::com_ptr<ID2D1Geometry>
   {
     return level_geometries::MineGeometry();

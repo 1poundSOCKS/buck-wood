@@ -53,6 +53,11 @@ public:
     m_angle = direct2d::RotateAngle(m_angle, angle);
   }
 
+  [[nodiscard]] auto DirectionTo(POINT_2F target) const -> float
+  {
+    return direct2d::GetAngleBetweenPoints(m_position, target);
+  }
+
 protected:
 
   POINT_2F m_position;

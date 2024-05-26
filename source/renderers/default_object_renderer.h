@@ -15,8 +15,9 @@ public:
 
   auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const background_object& object, ID2D1Geometry* geometry) const -> void;
-  auto Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void;
+  auto Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void;
+  auto Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const player_missile& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void;
@@ -32,6 +33,7 @@ private:
   flashing_geometry_renderer m_playerMissileRenderer { color_scale { screen_render_brush_yellow.Get(), screen_render_brush_black.Get(), 20 } };
   flashing_geometry_renderer m_enemyType1_renderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   flashing_geometry_renderer m_enemyType2_renderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 }, 10 };
+  flashing_geometry_renderer m_enemyType3_renderer { color_scale { screen_render_brush_cyan.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   mine_renderer m_mineRenderer;
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
@@ -61,14 +63,19 @@ inline auto default_object_renderer::Write(const background_object& object, ID2D
   m_backgroundObjectRenderer.Write(geometry);
 }
 
+inline auto default_object_renderer::Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void
+{
+  m_enemyType1_renderer.Write(object, geometry);
+}
+
 inline auto default_object_renderer::Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void
 {
   m_enemyType2_renderer.Write(object, geometry);
 }
 
-inline auto default_object_renderer::Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void
+inline auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void
 {
-  m_enemyType1_renderer.Write(object, geometry);
+  m_enemyType3_renderer.Write(object, geometry);
 }
 
 inline auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* geometry) const -> void

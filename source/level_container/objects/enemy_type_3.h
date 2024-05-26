@@ -10,7 +10,7 @@ public:
 
   enemy_type_3(POINT_2F position, int hitpoints, float reloadTime);
 
-  auto Update(float interval) noexcept -> void;
+  auto Update(float interval, POINT_2F targetPosition) noexcept -> void;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
 
 private:
