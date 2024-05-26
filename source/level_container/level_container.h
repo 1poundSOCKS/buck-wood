@@ -78,8 +78,6 @@ private:
 
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
-  auto CreateExplosions(std::ranges::input_range auto&& positions) -> void;
-  auto CreateImpacts(std::ranges::input_range auto&& positions) -> void;
 
   auto UpdateObjects(float interval) -> void;
 
@@ -277,22 +275,6 @@ inline auto level_container::CreateExplosion(POINT_2F position) -> void
 inline auto level_container::CreateImpact(POINT_2F position) -> void
 {
   m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
-}
-
-auto level_container::CreateExplosions(std::ranges::input_range auto&& positions) -> void
-{
-  for( const auto& position : positions )
-  {
-    std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
-  }
-}
-
-auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -> void
-{
-  for( const auto& position : positions )
-  {
-    m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
-  }
 }
 
 auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
