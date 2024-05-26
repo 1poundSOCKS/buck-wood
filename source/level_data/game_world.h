@@ -14,10 +14,11 @@ public:
 
   [[nodiscard]] auto LevelData(int index) const -> std::unique_ptr<level_base>;
   [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>;
 
 private:
 
+  [[nodiscard]] auto CreateCellsCollection(int levelIndex, level_base* levelData) const -> std::shared_ptr<level_cell_collection>;
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
 
 private:
@@ -28,30 +29,11 @@ private:
 
 };
 
-auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>
 {
-  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(400, 400) };
-
   auto levelData = LevelData(levelIndex);
 
-  levelData->Enumerate([this,levelIndex,levelCells](size_t column, size_t row, char cellData)
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    auto cellType = m_cellDataTranslator(levelIndex, cellData);
-
-    switch( cellType )
-    {
-      case level_cell_type::floor:
-        levelCells->Add(columnIndex, rowIndex, cellType);
-        break;
-      case level_cell_type::exit:
-        levelCells->Add(columnIndex, rowIndex, cellType);
-        break;
-    }
-  });
-
-  levelCells->AddWalls();
+  auto levelCells = CreateCellsCollection(levelIndex, levelData.get());
 
   auto levelContainer = std::make_unique<level_container>(levelCells, std::forward<decltype(args)>(args)...);
 

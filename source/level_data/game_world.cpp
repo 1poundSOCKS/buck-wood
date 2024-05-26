@@ -45,6 +45,32 @@ auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::t
   }
 }
 
+auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) const -> std::shared_ptr<level_cell_collection>
+{
+  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(400, 400) };
+
+  levelData->Enumerate([this,levelIndex,levelCells](size_t column, size_t row, char cellData)
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    auto cellType = m_cellDataTranslator(levelIndex, cellData);
+
+    switch( cellType )
+    {
+      case level_cell_type::floor:
+        levelCells->Add(columnIndex, rowIndex, cellType);
+        break;
+      case level_cell_type::exit:
+        levelCells->Add(columnIndex, rowIndex, cellType);
+        break;
+    }
+  });
+
+  levelCells->AddWalls();
+
+  return levelCells;
+}
+
 auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
   m_cellDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
