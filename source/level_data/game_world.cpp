@@ -58,8 +58,6 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) co
     switch( cellType )
     {
       case level_cell_type::floor:
-        levelCells->Add(columnIndex, rowIndex, cellType);
-        break;
       case level_cell_type::exit:
         levelCells->Add(columnIndex, rowIndex, cellType);
         break;

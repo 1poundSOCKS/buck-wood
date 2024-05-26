@@ -38,8 +38,6 @@ public:
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
-  auto EnumerateCells(auto&& visitor) const -> void;
-
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
 
@@ -199,6 +197,36 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_co
   return m_enemyCount;
 }
 
+inline auto level_container::Create(object_type objectType, POINT_2F position) -> void
+{
+  switch( objectType )
+  {
+    case object_type::portal_entry:
+      CreateNoninteractiveObject(std::in_place_type<portal>, position);
+      break;
+    case object_type::player:
+      CreatePlayerObject(std::in_place_type<player_ship>, position);
+      break;
+    case object_type::enemy_stalker:
+      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, 10);
+      break;
+    case object_type::enemy_random:
+      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, 3, 2.0f, 400.0f, 2.0f);
+      break;
+    case object_type::enemy_turret:
+      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, 3, 2.5f);
+      break;
+    case object_type::power_up:
+      CreateEnemyObject(std::in_place_type<power_up>, position, VELOCITY_2F { 0, 0 });
+      break;
+  }
+}
+
+inline auto level_container::CreateWall(POINT_2F position, auto &&...args) -> void
+{
+  CreateWallObject(std::in_place_type<level_wall>, position, std::forward<decltype(args)>(args)...);
+}
+
 auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void
 {
   m_noninteractiveObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
@@ -265,11 +293,6 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
   {
     m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
   }
-}
-
-auto level_container::EnumerateCells(auto &&visitor) const -> void
-{
-  m_cells->EnumerateCells(visitor);
 }
 
 auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
@@ -429,36 +452,6 @@ inline auto level_container::SetExit(bool value, POINT_2I cell) -> void
   m_exitCell = cell;
 }
 
-inline auto level_container::Create(object_type objectType, POINT_2F position) -> void
-{
-  switch( objectType )
-  {
-    case object_type::portal_entry:
-      CreateNoninteractiveObject(std::in_place_type<portal>, position);
-      break;
-    case object_type::player:
-      CreatePlayerObject(std::in_place_type<player_ship>, position);
-      break;
-    case object_type::enemy_stalker:
-      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, 10);
-      break;
-    case object_type::enemy_random:
-      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, 3, 2.0f, 400.0f, 2.0f);
-      break;
-    case object_type::enemy_turret:
-      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, 3, 2.5f);
-      break;
-    case object_type::power_up:
-      CreateEnemyObject(std::in_place_type<power_up>, position, VELOCITY_2F { 0, 0 });
-      break;
-  }
-}
-
-inline auto level_container::CreateWall(POINT_2F position, auto &&...args) -> void
-{
-  CreateWallObject(std::in_place_type<level_wall>, position, std::forward<decltype(args)>(args)...);
-}
-
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
 {
   m_playerState = playerState;
@@ -475,24 +468,6 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
 }
 #endif
-
-inline auto level_container::AddCellCollisionObject(default_object& object, level_wall &cellObject) -> void
-{
-  switch( cellObject.Type() )
-  {
-    case level_cell_type::wall:
-      m_wallCollisionObjects.emplace_back(object);
-      break;
-
-    case level_cell_type::floor:
-      m_floorCollisionObjects.emplace_back(object);
-      break;
-
-    case level_cell_type::exit:
-      m_exitCollisionObjects.emplace_back(object);
-      break;
-  }
-}
 
 inline auto level_container::AddCellCollisionObject(default_object& object, auto &cellObject) -> void
 {

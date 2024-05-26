@@ -201,3 +201,21 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
     play_events::set(play_events::event_type::shot, true);
   }
 }
+
+auto level_container::AddCellCollisionObject(default_object& object, level_wall &cellObject) -> void
+{
+  switch( cellObject.Type() )
+  {
+    case level_cell_type::wall:
+      m_wallCollisionObjects.emplace_back(object);
+      break;
+
+    case level_cell_type::floor:
+      m_floorCollisionObjects.emplace_back(object);
+      break;
+
+    case level_cell_type::exit:
+      m_exitCollisionObjects.emplace_back(object);
+      break;
+  }
+}
