@@ -5,14 +5,8 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
-auto level_container::AddWalls() -> void
+auto level_container::AddWallCollsionObjects() -> void
 {
-  auto scale = SCALE_2F { static_cast<float>(m_cellsPtr->CellWidth()), static_cast<float>(m_cellsPtr->CellHeight()) };
-  m_cellsPtr->EnumerateCells([this,&scale](const level_cell_item& cell)
-  {
-    CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
-  });
-
   EnumerateWallObjects([this](default_object& object)
   {
     std::visit([this,&object](auto& cellObject){ AddCellCollisionObject(object, cellObject); }, object.Get());
@@ -152,7 +146,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {
-  const auto& cells = *m_cellsPtr;
+  const auto& cells = *m_cells;
   object.Update(interval, cells);
 
   if( object.CanShoot() )
@@ -177,7 +171,7 @@ auto level_container::UpdateObject(player_missile& object, float interval) -> vo
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
-  const auto& cells = *m_cellsPtr;
+  const auto& cells = *m_cells;
   object.Update(interval, m_playerState.Position(), cells);
 
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
@@ -191,7 +185,7 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
-  const auto& cells = *m_cellsPtr;
+  const auto& cells = *m_cells;
   object.Update(interval, cells);
 
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )

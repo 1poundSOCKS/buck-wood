@@ -85,9 +85,10 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
+  auto AddWallCollsionObjects() -> void;
+
 private:
 
-  auto AddWalls() -> void;
   auto UpdateObjects(float interval) -> void;
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(player_missile& object, float interval) -> void;
@@ -121,7 +122,7 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  std::shared_ptr<level_cell_collection> m_cellsPtr;
+  std::shared_ptr<level_cell_collection> m_cells;
 
   bool m_exit { false };
   POINT_2I m_exitCell { 0, 0 };
@@ -154,15 +155,13 @@ inline level_container::level_container() : level_container(std::make_shared<lev
 {
 }
 
-inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cellsPtr { cells }, m_playerState { { 0, 0} }
+inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cells { cells }, m_playerState { { 0, 0} }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
   m_exitCollisionObjects.reserve(10);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
-
-  AddWalls();
 }
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
@@ -304,7 +303,7 @@ auto level_container::CreateImpacts(std::ranges::input_range auto&& positions) -
 
 auto level_container::EnumerateCells(auto &&visitor) const -> void
 {
-  m_cellsPtr->EnumerateCells(visitor);
+  m_cells->EnumerateCells(visitor);
 }
 
 auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
