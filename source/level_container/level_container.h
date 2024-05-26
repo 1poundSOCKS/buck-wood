@@ -35,7 +35,7 @@ public:
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
 
   [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
-  [[nodiscard]] auto LevelSize() const -> D2D1_SIZE_F;
+  [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
   auto EnumerateCells(auto&& visitor) const -> void;
@@ -189,7 +189,7 @@ inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optio
   return m_targettedObject;
 }
 
-inline [[nodiscard]] auto level_container::LevelSize() const -> D2D1_SIZE_F
+inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
 {
   return { 4000, 4000 };
 }
