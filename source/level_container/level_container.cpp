@@ -5,14 +5,6 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
-auto level_container::AddWallCollsionObjects() -> void
-{
-  EnumerateWallObjects([this](default_object& object)
-  {
-    std::visit([this,&object](auto& cellObject){ AddCellCollisionObject(object, cellObject); }, object.Get());
-  });
-}
-
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto collisionsStart = performance_counter::QueryValue();

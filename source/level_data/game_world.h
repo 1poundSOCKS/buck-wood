@@ -43,8 +43,6 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     levelContainer->CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
   });
 
-  levelContainer->AddWallCollsionObjects();
-
   levelData->Enumerate([this,&levelContainer,levelCells](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);

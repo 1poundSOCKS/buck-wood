@@ -85,8 +85,6 @@ public:
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
-  auto AddWallCollsionObjects() -> void;
-
 private:
 
   auto UpdateObjects(float interval) -> void;
@@ -206,7 +204,8 @@ auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F posi
 
 inline auto level_container::CreateWallObject(auto variantType, POINT_2F position, auto &&...args) -> void
 {
-  m_wallObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
+  auto& object = m_wallObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
+  std::visit([this,&object](auto& cellObject){ AddCellCollisionObject(object, cellObject); }, object.Get());
 }
 
 auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void
