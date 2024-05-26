@@ -56,7 +56,7 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
   auto SetExit(bool value, POINT_2I cell) -> void;
 
-  auto Create(object_type objectType, auto&&...args) -> void;
+  auto Create(object_type objectType, POINT_2F position, auto&&...args) -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
@@ -462,27 +462,27 @@ inline auto level_container::SetExit(bool value, POINT_2I cell) -> void
   m_exitCell = cell;
 }
 
-inline auto level_container::Create(object_type objectType, auto &&...args) -> void
+inline auto level_container::Create(object_type objectType, POINT_2F position, auto &&...args) -> void
 {
   switch( objectType )
   {
     case object_type::portal_entry:
-      CreateNoninteractiveObject(std::in_place_type<portal>, std::forward<decltype(args)>(args)...);
+      CreateNoninteractiveObject(std::in_place_type<portal>, position, std::forward<decltype(args)>(args)...);
       break;
     case object_type::player:
-      CreatePlayerObject(std::in_place_type<player_ship>, std::forward<decltype(args)>(args)...);
+      CreatePlayerObject(std::in_place_type<player_ship>, position, std::forward<decltype(args)>(args)...);
       break;
     case object_type::enemy_stalker:
-      CreateEnemyObject(std::in_place_type<enemy_type_1>, std::forward<decltype(args)>(args)...);
+      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, 10, std::forward<decltype(args)>(args)...);
       break;
     case object_type::enemy_random:
-      CreateEnemyObject(std::in_place_type<enemy_type_2>, std::forward<decltype(args)>(args)...);
+      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, 3, 2.0f, 400.0f, 2.0f, std::forward<decltype(args)>(args)...);
       break;
     case object_type::enemy_turret:
-      CreateEnemyObject(std::in_place_type<enemy_type_3>, std::forward<decltype(args)>(args)...);
+      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, 3, 2.5f, std::forward<decltype(args)>(args)...);
       break;
     case object_type::power_up:
-      CreateEnemyObject(std::in_place_type<power_up>, std::forward<decltype(args)>(args)...);
+      CreateEnemyObject(std::in_place_type<power_up>, position, VELOCITY_2F { 0, 0 }, std::forward<decltype(args)>(args)...);
       break;
   }
 }

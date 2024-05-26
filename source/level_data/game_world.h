@@ -54,20 +54,20 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     switch( itemType )
     {
       case level_item_type::portal:
-        levelContainer->CreatePortal(cellPosition);
-        levelContainer->CreatePlayer(cellPosition);
+        levelContainer->Create(level_container::object_type::portal_entry, cellPosition);
+        levelContainer->Create(level_container::object_type::player, cellPosition);
         break;
 
       case level_item_type::enemy_type_one:
-        levelContainer->CreateEnemyType1(cellPosition, 10);
+        levelContainer->Create(level_container::object_type::enemy_stalker, cellPosition);
         break;
       
       case level_item_type::enemy_type_two:
-        levelContainer->CreateEnemyType2(cellPosition, 3, 2.0f, 400.0f, 2.0f);
+        levelContainer->Create(level_container::object_type::enemy_random, cellPosition);
         break;
 
       case level_item_type::enemy_type_three:
-        levelContainer->CreateEnemyType3(cellPosition, 3, 2.5f);
+        levelContainer->Create(level_container::object_type::enemy_turret, cellPosition);
         break;
     }
   });
