@@ -76,6 +76,11 @@ inline auto default_object_renderer::Write(const enemy_type_2& object, ID2D1Geom
 inline auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void
 {
   m_enemyType3_renderer.Write(object, geometry);
+  auto baseGeometry = level_geometries::RectangleGeometry();
+  auto objectTransform = geometric_object_transform { object };
+  auto transform = D2D1::Matrix3x2F::Scale({0.3,0.4}) * D2D1::Matrix3x2F::Translation({0, -0.4}) * objectTransform.Get();
+  auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), transform);
+  m_defaultGeometryRenderer.Write(transformedGeometry.get());
 }
 
 inline auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
