@@ -57,35 +57,32 @@ public:
   auto SetExit(bool value, POINT_2I cell) -> void;
 
   auto Create(object_type objectType, POINT_2F position, auto&&...args) -> void;
+  auto CreateWall(POINT_2F position, auto&&...args) -> void;
+
+  auto SavePlayerState(player_ship playerShip) -> void;
+
+private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
-
   auto CreatePlayer(POINT_2F position) -> void;
   auto CreatePortal(POINT_2F position) -> void;
   auto CreateEnemyType1(POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyType2(POINT_2F position, auto&&...args) -> void;
   auto CreateEnemyType3(POINT_2F position, auto&&...args) -> void;
-
   auto CreateBackgroundObject(auto&&...args) -> void;
   auto CreatePlayerBullet(auto&&...args) -> void;
-
   auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
   auto CreatePlayerMissile(auto&&...args) -> void;
   auto CreatePowerUp(POINT_2F position, auto&&...args) -> void;
-
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
-
   auto CreateExplosions(std::ranges::input_range auto&& positions) -> void;
   auto CreateImpacts(std::ranges::input_range auto&& positions) -> void;
 
-  auto SavePlayerState(player_ship playerShip) -> void;
-
-private:
 
   auto UpdateObjects(float interval) -> void;
   auto UpdateObject(player_ship& object, float interval) -> void;
@@ -485,6 +482,11 @@ inline auto level_container::Create(object_type objectType, POINT_2F position, a
       CreateEnemyObject(std::in_place_type<power_up>, position, VELOCITY_2F { 0, 0 }, std::forward<decltype(args)>(args)...);
       break;
   }
+}
+
+inline auto level_container::CreateWall(POINT_2F position, auto &&...args) -> void
+{
+  CreateWallObject(std::in_place_type<level_wall>, position, std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::SavePlayerState(player_ship playerState) -> void

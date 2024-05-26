@@ -40,7 +40,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
   auto scale = SCALE_2F { static_cast<float>(levelCells->CellWidth()), static_cast<float>(levelCells->CellHeight()) };
   levelCells->EnumerateCells([this,&levelContainer,&scale](const level_cell_item& cell)
   {
-    levelContainer->CreateWallObject(std::in_place_type<level_wall>, cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
+    levelContainer->CreateWall(cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
   });
 
   levelData->Enumerate([this,&levelContainer,levelCells](size_t column, size_t row, char cellData)
