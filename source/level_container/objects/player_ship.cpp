@@ -1,9 +1,10 @@
 #include "pch.h"
 #include "player_ship.h"
 #include "player_state.h"
+#include "geometry/level_geometry_scale.h"
 
 player_ship::player_ship(POINT_2F position) : 
-  base_object { position, { 1.5f, 1.5f }, 0 }, m_shootAngle { 0 }
+  base_object { position, level_geometry_scale::get(*this), 0 }, m_shootAngle { 0 }
 {
 }
 
