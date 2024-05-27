@@ -7,9 +7,36 @@ class level_geometry_scale
 
 public:
 
-  static [[nodiscard]] auto get(auto&& object) -> SCALE_2F
+  static auto create() -> void
   {
-    return { 1.5f, 1.5f };
+    destroy();
+    m_instance = new level_geometry_scale();
   }
+
+  static auto destroy() -> void
+  {
+    if( m_instance )
+    {
+      delete m_instance;
+      m_instance = nullptr;
+    }
+  }
+
+  static [[nodiscard]] auto get(const player_ship& object) -> SCALE_2F
+  {
+    return m_instance->m_playerScale;
+  }
+
+private:
+
+  level_geometry_scale();
+
+  static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F objectSize) -> SCALE_2F;
+
+private:
+
+  inline static level_geometry_scale* m_instance { nullptr };
+
+  SCALE_2F m_playerScale;
 
 };

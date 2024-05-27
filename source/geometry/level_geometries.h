@@ -93,6 +93,11 @@ public:
     return m_instance->m_rectangleGeometry;
   }
 
+  static [[nodiscard]] auto player() -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
     return m_instance->m_rectangleGeometry;
