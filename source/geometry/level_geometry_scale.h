@@ -22,7 +22,7 @@ public:
     }
   }
 
-  static [[nodiscard]] auto get(const player_ship& object) -> SCALE_2F
+  static [[nodiscard]] auto player() -> SCALE_2F
   {
     return m_instance->m_playerScale;
   }
@@ -31,7 +31,7 @@ private:
 
   level_geometry_scale();
 
-  static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F objectSize) -> SCALE_2F;
+  static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, float objectWidth) -> SCALE_2F;
 
 private:
 

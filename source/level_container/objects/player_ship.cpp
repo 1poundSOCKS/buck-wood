@@ -4,7 +4,7 @@
 #include "geometry/level_geometry_scale.h"
 
 player_ship::player_ship(POINT_2F position) : 
-  base_object { position, level_geometry_scale::get(*this), 0 }, m_shootAngle { 0 }
+  base_object { position, level_geometry_scale::player(), 0 }, m_shootAngle { 0 }
 {
 }
 
