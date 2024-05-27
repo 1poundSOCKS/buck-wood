@@ -24,25 +24,30 @@ public:
 
 private:
 
-  static [[nodiscard]] auto GetGeometry(const level_wall& object) -> winrt::com_ptr<ID2D1Geometry>
+  static [[nodiscard]] auto GetGeometry(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return level_geometries::RectangleGeometry();
+    return level_geometries::get(object);
   }
 
-  static [[nodiscard]] auto GetGeometry(const enemy_type_3& object) -> winrt::com_ptr<ID2D1Geometry>
-  {
-    return level_geometries::RectangleGeometry();
-  }
+  // static [[nodiscard]] auto GetGeometry(const level_wall& object) -> winrt::com_ptr<ID2D1Geometry>
+  // {
+  //   return level_geometries::RectangleGeometry();
+  // }
 
-  static [[nodiscard]] auto GetGeometry(const enemy_bullet_1& object) -> winrt::com_ptr<ID2D1Geometry>
-  {
-    return level_geometries::MineGeometry();
-  }
+  // static [[nodiscard]] auto GetGeometry(const enemy_type_3& object) -> winrt::com_ptr<ID2D1Geometry>
+  // {
+  //   return level_geometries::RectangleGeometry();
+  // }
 
-  static [[nodiscard]] auto GetGeometry(const auto& object) -> winrt::com_ptr<ID2D1Geometry>
-  {
-    return level_geometries::TargetGeometry();
-  }
+  // static [[nodiscard]] auto GetGeometry(const enemy_bullet_1& object) -> winrt::com_ptr<ID2D1Geometry>
+  // {
+  //   return level_geometries::MineGeometry();
+  // }
+
+  // static [[nodiscard]] auto GetGeometry(const auto& object) -> winrt::com_ptr<ID2D1Geometry>
+  // {
+  //   return level_geometries::TargetGeometry();
+  // }
 
 private:
 

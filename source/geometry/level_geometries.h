@@ -38,6 +38,61 @@ public:
     }
   }
 
+  static [[nodiscard]] auto get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return std::visit([](const auto& object) { return get(object); }, defaultObject.Get());
+  }
+
+  static [[nodiscard]] auto get(const player_ship& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const player_bullet& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const portal& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const power_up& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const enemy_type_1& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const enemy_type_2& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_targetGeometry;
+  }
+
+  static [[nodiscard]] auto get(const enemy_type_3& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_rectangleGeometry;
+  }
+
+  static [[nodiscard]] auto get(const enemy_bullet_1& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_mineGeometry;
+  }
+
+  static [[nodiscard]] auto get(const level_wall& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_rectangleGeometry;
+  }
+
+  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    return m_instance->m_rectangleGeometry;
+  }
+
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
   {
     return m_instance->m_rectangleGeometry;
@@ -83,10 +138,10 @@ public:
     return m_instance->m_hudTargetGeometries;
   }
 
-  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>
-  {
-    return m_instance->Get(object);
-  }
+  // static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>
+  // {
+  //   return m_instance->Get(object);
+  // }
 
 private:
 
