@@ -80,7 +80,7 @@ private:
   geometry_renderer m_exitCellRenderer { screen_render_brush_yellow.CreateBrush(), screen_render_brush_grey.CreateBrush(), 5 };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_grey.CreateBrush(), 5 };
   portal_renderer m_portalRenderer;
-  winrt::com_ptr<ID2D1PathGeometry> m_defaultGeometry { level_geometries::TargetGeometry() };
+  winrt::com_ptr<ID2D1PathGeometry> m_defaultGeometry { level_geometries::RectangleGeometry() };
 
 };
 
