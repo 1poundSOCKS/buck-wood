@@ -1,6 +1,5 @@
 #pragma once
 
-#include "framework.h"
 #include "level_objects.h"
 #include "level_geometry_functions.h"
 

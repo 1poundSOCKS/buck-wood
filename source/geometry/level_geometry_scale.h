@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_geometries.h"
+#include "framework.h"
 
 class level_geometry_scale
 {

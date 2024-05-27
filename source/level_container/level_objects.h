@@ -1,6 +1,7 @@
 #pragma once
 
 #include "objects/player_ship.h"
+#include "objects/player_bullet.h"
 #include "objects/enemy_type_1.h"
 #include "objects/enemy_type_2.h"
 #include "objects/enemy_type_3.h"
