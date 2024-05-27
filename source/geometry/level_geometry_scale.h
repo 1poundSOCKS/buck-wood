@@ -7,25 +7,11 @@ class level_geometry_scale
 
 public:
 
-  static auto create() -> void
-  {
-    destroy();
-    m_instance = new level_geometry_scale();
-  }
+  static auto create() -> void;
+  static auto destroy() -> void;
 
-  static auto destroy() -> void
-  {
-    if( m_instance )
-    {
-      delete m_instance;
-      m_instance = nullptr;
-    }
-  }
-
-  static [[nodiscard]] auto player() -> SCALE_2F
-  {
-    return m_instance->m_playerScale;
-  }
+  static [[nodiscard]] auto player() -> SCALE_2F;
+  static [[nodiscard]] auto playerBullet() -> SCALE_2F;
 
 private:
 
@@ -37,6 +23,7 @@ private:
 
   inline static level_geometry_scale* m_instance { nullptr };
 
-  SCALE_2F m_playerScale;
+  SCALE_2F m_player;
+  SCALE_2F m_playerBullet;
 
 };

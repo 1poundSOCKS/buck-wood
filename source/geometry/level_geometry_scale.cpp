@@ -3,8 +3,34 @@
 #include "level_geometries.h"
 #include "direct2d_functions.h"
 
+auto level_geometry_scale::create() -> void
+{
+  destroy();
+  m_instance = new level_geometry_scale();
+}
+
+auto level_geometry_scale::destroy() -> void
+{
+  if( m_instance )
+  {
+    delete m_instance;
+    m_instance = nullptr;
+  }
+}
+
+auto level_geometry_scale::player() -> SCALE_2F
+{
+  return m_instance->m_player;
+}
+
+auto level_geometry_scale::playerBullet() -> SCALE_2F
+{
+  return m_instance->m_playerBullet;
+}
+
 level_geometry_scale::level_geometry_scale() : 
-  m_playerScale { Scale(level_geometries::player().get(), { 120, 120 }) }
+  m_player { Scale(level_geometries::player().get(), { 120, 120 }) },
+  m_playerBullet { Scale(level_geometries::playerBullet().get(), { 60, 60 }) }
 {
 }
 
