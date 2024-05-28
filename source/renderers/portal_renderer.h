@@ -11,7 +11,7 @@ class portal_renderer
 
 public:
 
-  portal_renderer() : m_baseGeometry { level_geometries::CircleGeometry() }
+  portal_renderer() : m_baseGeometry { level_geometries::get(object_type::portal) }
   {
   }
 
@@ -36,7 +36,7 @@ public:
 
 private:
 
-  winrt::com_ptr<ID2D1EllipseGeometry> m_baseGeometry;
+  winrt::com_ptr<ID2D1Geometry> m_baseGeometry;
   geometry_renderer m_portalRenderer { screen_render_brush_dark_grey.CreateBrush(), 10 };
 
 };

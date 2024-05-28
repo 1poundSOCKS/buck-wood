@@ -24,7 +24,7 @@ public:
 
 private:
 
-  static [[nodiscard]] auto GetGeometry(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  static [[nodiscard]] auto GetGeometry(auto&& object) -> winrt::com_ptr<ID2D1Geometry>
   {
     return level_geometries::get(object);
   }

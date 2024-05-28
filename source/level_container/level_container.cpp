@@ -4,7 +4,6 @@
 #include "particle_functions.h"
 #include "level_collision_handler.h"
 #include "player_state.h"
-#include "geometry/level_geometry_scale.h"
 
 level_container::level_container() : level_container(std::make_shared<level_cell_collection>(400,400))
 {

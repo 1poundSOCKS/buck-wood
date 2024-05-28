@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "geometry/level_geometries.h"
-#include "geometry/level_geometry_scale.h"
 #include "renderers.h"
 #include "game_settings.h"
 #include "game_clock.h"
@@ -97,7 +96,6 @@ auto initialize_all(HINSTANCE instance) -> void
   xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
 
   level_geometries::create();
-  level_geometry_scale::create();
   renderer::create();
   diagnostics::create();
 
@@ -141,7 +139,6 @@ auto destroy_all() -> void
 
   diagnostics::destroy();
   renderer::destroy();
-  level_geometry_scale::destroy();
   level_geometries::destroy();
   xaudio2_masteringvoice::destroy();
   xaudio2_engine::destroy();
