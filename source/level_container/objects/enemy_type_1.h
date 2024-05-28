@@ -8,8 +8,7 @@ class enemy_type_1 : public enemy_object
 
 public:
 
-  // enemy_type_1(POINT_2F position, int hitpoints);
-  enemy_type_1(POINT_2F position, SCALE_2F scale, float angle);
+  enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
   auto Update(float interval) -> void
   {

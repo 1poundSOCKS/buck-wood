@@ -9,8 +9,7 @@ class player_bullet : public base_object
 
 public:
 
-  // player_bullet(POINT_2F position, VELOCITY_2F velocity, int damage);
-  player_bullet(POINT_2F position, SCALE_2F scale, float angle);
+  player_bullet(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
   [[nodiscard]] auto Damage()
   {

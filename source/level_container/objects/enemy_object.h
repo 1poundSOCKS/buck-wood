@@ -8,8 +8,6 @@ class enemy_object : public base_object
 
 public:
 
-  // enemy_object(POINT_2F position, SCALE_2F scale, float angle, int hitPoints) noexcept : 
-  //   base_object { position, scale, angle }, m_maxHitpoints { hitPoints }, m_hitpoints { hitPoints }
   enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
     base_object { position, scale, angle }, m_maxHitpoints { 1 }, m_hitpoints { 1 }
   {

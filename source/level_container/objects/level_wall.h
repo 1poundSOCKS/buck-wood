@@ -8,15 +8,10 @@ class level_wall : public base_object
 
 public:
 
-  level_wall(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
+  level_wall(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept : 
     base_object { position, scale, angle }, m_type { level_cell_type::floor }, m_cellId { 0, 0 }
   {
   }
-
-  // level_wall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type type, POINT_2I cellId) noexcept : 
-  //   base_object { position, scale, angle }, m_type { type }, m_cellId { cellId }
-  // {
-  // }
 
   auto SetType(level_cell_type cellType) -> void
   {

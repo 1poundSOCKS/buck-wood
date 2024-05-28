@@ -2,9 +2,7 @@
 #include "player_ship.h"
 #include "player_state.h"
 
-// player_ship::player_ship(POINT_2F position) : 
-//   base_object { position, level_geometry_scale::player(), 0 }, m_shootAngle { 0 }
-player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle) : 
+player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
   base_object { position, scale, angle }, m_shootAngle { 0 }
 {
 }

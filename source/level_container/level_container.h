@@ -68,11 +68,11 @@ private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
   auto CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void;
-  auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
-  auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
+  auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> void;
+  auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> void;
 
-  auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle) -> void;
-  auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle) -> void;
+  auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void;
+  auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void;
   auto CreateParticle(auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
@@ -187,31 +187,32 @@ inline auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float
 
 inline auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  m_noninteractiveObjects.emplace_back(variantType, position, scale, angle);
+  m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
 }
 
 inline auto level_container::CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
 {
-  auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle);
+  auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
   auto object = defaultObject.GetIf<level_wall>();
   object->SetType(cellType);
   object->SetId(cellId);
   std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
 }
 
-inline auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
+inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> void
 {
-  m_enemyObjects.emplace_back(variantType, position, scale, angle);
+  m_playerObjects.emplace_back(variantType, position, scale, angle, velocity);
 }
 
-inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
+inline auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> void
 {
-  m_playerObjects.emplace_back(variantType, position, scale, angle);
+  m_enemyObjects.emplace_back(variantType, position, scale, angle, velocity);
 }
 
-inline auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle) -> void
+inline auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void
 {
-  CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle);
+  auto velocity = direct2d::CalculateVelocity(1200, angle);
+  CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle, velocity);
 }
 
 auto level_container::CreateParticle(auto&&...args) -> void
@@ -219,9 +220,10 @@ auto level_container::CreateParticle(auto&&...args) -> void
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle) -> void
+inline auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void
 {
-  CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle);
+  auto velocity = direct2d::CalculateVelocity(1200, angle);
+  CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle, velocity);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
