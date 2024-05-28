@@ -29,8 +29,10 @@ auto level_geometry_scale::playerBullet() -> SCALE_2F
 }
 
 level_geometry_scale::level_geometry_scale() : 
-  m_player { Scale(level_geometries::player().get(), { 120, 120 }) },
-  m_playerBullet { Scale(level_geometries::playerBullet().get(), { 60, 60 }) }
+  // m_player { Scale(level_geometries::player().get(), { 120, 120 }) },
+  // m_playerBullet { Scale(level_geometries::playerBullet().get(), { 60, 60 }) }
+  m_player { Scale(level_geometries::get(object_type::player).get(), { 120, 120 }) },
+  m_playerBullet { Scale(level_geometries::get(object_type::player_bullet).get(), { 60, 60 }) }
 {
 }
 

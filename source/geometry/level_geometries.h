@@ -6,20 +6,6 @@
 class level_geometries
 {
 
-private:
-
-  inline static level_geometries* m_instance { nullptr };
-
-  level_geometries() : 
-    m_rectangleGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED) },
-    m_playerShipGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerGeometryData(), D2D1_FIGURE_END_CLOSED) },
-    m_playerBulletGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerBulletGeometryData(), D2D1_FIGURE_END_CLOSED) },
-    m_playerShieldGeometry { direct2d::CreateEllipseGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerShieldElipse()) },
-    m_circleGeometry { direct2d::CreateEllipseGeometry(d2d_factory::get_raw(), level_geometry_functions::GetCircle()) }
-  {
-    LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
-  }
-
 public:
 
   static auto create() -> void
@@ -42,64 +28,37 @@ public:
     return std::visit([](const auto& object) { return get(object); }, defaultObject.Get());
   }
 
-  static [[nodiscard]] auto get(const player_ship& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const player_bullet& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const portal& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const power_up& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const enemy_type_1& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const enemy_type_2& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto get(const enemy_type_3& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_rectangleGeometry;
-  }
-
-  static [[nodiscard]] auto get(const enemy_bullet_1& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_mineGeometry;
-  }
-
-  static [[nodiscard]] auto get(const level_wall& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_rectangleGeometry;
-  }
-
   static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_rectangleGeometry;
+    auto objectType = level_objects::Type(object);
+    return get(objectType);
   }
 
-  static [[nodiscard]] auto player() -> winrt::com_ptr<ID2D1PathGeometry>
+  static [[nodiscard]] auto get(object_type objectType) -> winrt::com_ptr<ID2D1PathGeometry>
   {
-    return m_instance->m_targetGeometry;
-  }
-
-  static [[nodiscard]] auto playerBullet() -> winrt::com_ptr<ID2D1PathGeometry>
-  {
-    return m_instance->m_targetGeometry;
+    switch( objectType )
+    {
+      case object_type::player:
+        return m_instance->m_targetGeometry;
+      case object_type::player_bullet:
+        return m_instance->m_targetGeometry;
+      case object_type::enemy_1:
+        return m_instance->m_targetGeometry;
+      case object_type::enemy_2:
+        return m_instance->m_targetGeometry;
+      case object_type::enemy_3:
+        return m_instance->m_rectangleGeometry;
+      case object_type::enemy_bullet_1:
+        return m_instance->m_mineGeometry;
+      case object_type::portal:
+        return m_instance->m_targetGeometry;
+      case object_type::power_up:
+        return m_instance->m_targetGeometry;
+      case object_type::wall:
+        return m_instance->m_rectangleGeometry;
+      default:
+        return m_instance->m_rectangleGeometry;
+    }
   }
 
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1PathGeometry>
@@ -118,6 +77,16 @@ public:
   }
 
 private:
+
+  level_geometries() : 
+    m_rectangleGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED) },
+    m_playerShipGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerGeometryData(), D2D1_FIGURE_END_CLOSED) },
+    m_playerBulletGeometry { direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerBulletGeometryData(), D2D1_FIGURE_END_CLOSED) },
+    m_playerShieldGeometry { direct2d::CreateEllipseGeometry(d2d_factory::get_raw(), level_geometry_functions::GetPlayerShieldElipse()) },
+    m_circleGeometry { direct2d::CreateEllipseGeometry(d2d_factory::get_raw(), level_geometry_functions::GetCircle()) }
+  {
+    LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
+  }
 
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void
   {
@@ -144,6 +113,8 @@ private:
   }
 
 private:
+
+  inline static level_geometries* m_instance { nullptr };
 
   winrt::com_ptr<ID2D1PathGeometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1PathGeometry> m_playerShipGeometry;
