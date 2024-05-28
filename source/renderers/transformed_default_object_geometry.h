@@ -1,7 +1,6 @@
 #pragma once
 
-#include "objects/default_object.h"
-#include "objects/geometric_object.h"
+#include "default_object.h"
 #include "transformed_level_object_geometry.h"
 
 class transformed_default_object_geometry

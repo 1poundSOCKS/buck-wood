@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_objects.h"
+#include "default_object.h"
 #include "level_cell_collection.h"
 #include "level_explosion.h"
 #include "targetted_object.h"
@@ -74,7 +74,6 @@ private:
   auto CreatePlayerBullet(auto&&...args) -> void;
   auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
   auto CreateParticle(auto&&...args) -> void;
-  auto CreatePlayerMissile(auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
@@ -82,7 +81,6 @@ private:
   auto UpdateObjects(float interval) -> void;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
-  auto UpdateObject(player_missile& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
   auto UpdateObject(enemy_type_2& object, float interval) -> void;
   auto UpdateObject(enemy_type_3& object, float interval) -> void;
@@ -244,11 +242,6 @@ auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, aut
 inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, auto &&...args) -> void
 {
   m_playerObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
-}
-
-inline auto level_container::CreatePlayerMissile(auto&&...args) -> void
-{
-  CreatePlayerObject(level_geometries::MineGeometry(), std::in_place_type<player_missile>, std::forward<decltype(args)>(args)...);
 }
 
 auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void

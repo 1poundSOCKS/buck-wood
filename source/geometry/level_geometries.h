@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_objects.h"
+#include "default_object.h"
 #include "level_geometry_functions.h"
 
 class level_geometries

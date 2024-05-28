@@ -1,7 +1,6 @@
 #pragma once
 
-#include "enemy_type_1.h"
-#include "enemy_type_2.h"
+#include "level_objects.h"
 
 struct scale_visitor
 {

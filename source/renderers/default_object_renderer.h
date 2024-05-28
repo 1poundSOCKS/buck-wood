@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_objects.h"
+#include "default_object.h"
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
 #include "player_ship_renderer.h"
@@ -19,7 +19,6 @@ public:
   auto Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void;
-  auto Write(const player_missile& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const portal& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const power_up& object, ID2D1Geometry* geometry) const -> void;
@@ -86,11 +85,6 @@ inline auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geom
 inline auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
 {
   m_playerShipRenderer.Write(object, geometry);
-}
-
-inline auto default_object_renderer::Write(const player_missile& object, ID2D1Geometry* geometry) const -> void
-{
-  m_playerMissileRenderer.Write(object, geometry);
 }
 
 inline auto default_object_renderer::Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "level_objects.h"
+#include "default_object.h"
 #include "play_events.h"
 
 class level_collision_handler
