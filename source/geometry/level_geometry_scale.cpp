@@ -18,16 +18,6 @@ auto level_geometry_scale::destroy() -> void
   }
 }
 
-// auto level_geometry_scale::player() -> SCALE_2F
-// {
-//   return m_instance->m_player;
-// }
-
-// auto level_geometry_scale::playerBullet() -> SCALE_2F
-// {
-//   return m_instance->m_playerBullet;
-// }
-
 level_geometry_scale::level_geometry_scale() : 
   m_player { Scale(object_type::player, { 120, 120 }) },
   m_playerBullet { Scale(object_type::player_bullet, { 60, 60 }) },

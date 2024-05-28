@@ -11,9 +11,6 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  // static [[nodiscard]] auto player() -> SCALE_2F;
-  // static [[nodiscard]] auto playerBullet() -> SCALE_2F;
-
   static [[nodiscard]] auto get(object_type objectType) -> SCALE_2F
   {
     switch( objectType )
@@ -41,11 +38,11 @@ public:
     }
   }
 
-  // static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
-  // {
-  //   auto objectType = level_objects::Type(object);
-  //   return get(objectType);
-  // }
+  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1PathGeometry>
+  {
+    auto objectType = level_objects::Type(object);
+    return get(objectType);
+  }
 
 private:
 
