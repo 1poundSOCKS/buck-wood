@@ -3,7 +3,7 @@
 #include "framework.h"
 #include "base_object.h"
 
-class player_missile : public base_object, object_velocity
+class player_missile : public base_object
 {
 
 public:

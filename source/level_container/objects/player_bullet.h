@@ -2,7 +2,7 @@
 
 #include "geometry/level_geometry_scale.h"
 
-class player_bullet : public base_object, public object_velocity
+class player_bullet : public base_object
 {
 
 public:
@@ -27,7 +27,7 @@ public:
   }
 
 private:
-
+ 
   int m_damage;
   object_velocity m_velocity;
 
