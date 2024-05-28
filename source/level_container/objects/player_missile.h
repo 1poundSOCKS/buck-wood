@@ -8,7 +8,8 @@ class player_missile : public base_object
 
 public:
 
-  player_missile(POINT_2F position, VELOCITY_2F velocity, int damage) : base_object { position, { 0.6f, 0.6f }, direct2d::CalculateDirection(velocity) }, m_velocity { velocity },
+  player_missile(POINT_2F position, VELOCITY_2F velocity, int damage) : 
+    base_object { position, { 0.6f, 0.6f }, direct2d::CalculateDirection(velocity) }, m_velocity { velocity },
     m_damage { damage }
   {
   }
