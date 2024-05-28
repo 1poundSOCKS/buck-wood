@@ -2,7 +2,7 @@
 #include "enemy_type_3.h"
 
 enemy_type_3::enemy_type_3(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) :
-  enemy_object { position, scale, angle }, m_reloadTimer { 0.5f }
+  enemy_object { position, scale, angle }, m_reloadTimer { 3.0f }
 {
 }
 

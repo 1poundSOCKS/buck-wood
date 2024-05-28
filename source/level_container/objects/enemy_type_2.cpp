@@ -4,7 +4,7 @@
 
 enemy_type_2::enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
   enemy_object { position, scale, angle }, m_status { status::moving }, 
-  m_waitTimer { 1 }, m_speed { 100 }, m_reloadTimer { 0.5f }, m_destination { std::nullopt }
+  m_waitTimer { 1 }, m_speed { 150 }, m_reloadTimer { 5.0f }, m_destination { std::nullopt }
 {
 }
 

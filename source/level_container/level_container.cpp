@@ -183,7 +183,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), { 1, 1 }, object.ShootAngle(), 1200);
+    CreatePlayerBullet(object.Position(), { 1, 1 }, object.ShootAngle(), 750);
     play_events::set(play_events::event_type::shot, true);
   }
 
@@ -204,7 +204,7 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
-    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 300);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 500);
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -217,7 +217,7 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
-    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 300);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 500);
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -229,7 +229,7 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
-    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 300);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, angle, 500);
     play_events::set(play_events::event_type::shot, true);
   }
 }

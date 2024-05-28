@@ -211,7 +211,7 @@ inline auto level_container::CreateEnemyObject(auto variantType, POINT_2F positi
 
 inline auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void
 {
-  auto velocity = direct2d::CalculateVelocity(1200, angle);
+  auto velocity = direct2d::CalculateVelocity(speed, angle);
   CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle, velocity);
 }
 
@@ -222,7 +222,7 @@ auto level_container::CreateParticle(auto&&...args) -> void
 
 inline auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> void
 {
-  auto velocity = direct2d::CalculateVelocity(1200, angle);
+  auto velocity = direct2d::CalculateVelocity(speed, angle);
   CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle, velocity);
 }
 
