@@ -4,6 +4,47 @@
 #include "particle_functions.h"
 #include "level_collision_handler.h"
 #include "player_state.h"
+#include "geometry/level_geometry_scale.h"
+
+level_container::level_container() : level_container(std::make_shared<level_cell_collection>(400,400))
+{
+}
+
+level_container::level_container(std::shared_ptr<level_cell_collection> cells) : 
+  // m_cells { cells }, m_playerState { { 0, 0}, level_geometry_scale::get(object_type::player), 0 }
+  m_cells { cells }, m_playerState { { 0, 0 }, { 1, 1 }, 0 }
+{
+  m_wallCollisionObjects.reserve(500);
+  m_floorCollisionObjects.reserve(500);
+  m_exitCollisionObjects.reserve(10);
+  m_playerCollisionObjects.reserve(50);
+  m_enemyCollisionObjects.reserve(100);
+}
+
+auto level_container::Create(object_type objectType, POINT_2F position) -> void
+{
+  switch( objectType )
+  {
+    case object_type::portal_entry:
+      CreateNoninteractiveObject(std::in_place_type<portal>, position, { 1, 1 }, 0);
+      break;
+    case object_type::player:
+      CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0);
+      break;
+    case object_type::enemy_stalker:
+      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0);
+      break;
+    case object_type::enemy_random:
+      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, { 1, 1 }, 0);
+      break;
+    case object_type::enemy_turret:
+      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0);
+      break;
+    case object_type::power_up:
+      CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0);
+      break;
+  }
+}
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
@@ -143,7 +184,8 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
+    // CreatePlayerBullet(object.Position(), direct2d::CalculateVelocity(1200, object.ShootAngle()), 1);
+    CreatePlayerBullet(object.Position(), { 1, 1 }, 0);
     play_events::set(play_events::event_type::shot, true);
   }
 
@@ -165,7 +207,8 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-    CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    // CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, 0);
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -179,7 +222,8 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(600.0f, direction);
-    CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    // CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, 0);
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -192,7 +236,8 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
   {
     auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-    CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    // CreateEnemyBullet(object.Position(), enemy_bullet_1::type::two, velocity);
+    CreateEnemyBullet(object.Position(), { 1, 1 }, 0);
     play_events::set(play_events::event_type::shot, true);
   }
 }

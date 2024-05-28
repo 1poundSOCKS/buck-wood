@@ -8,8 +8,8 @@ class enemy_type_3 : public enemy_object
 
 public:
 
-  enemy_type_3(POINT_2F position, int hitpoints, float reloadTime);
-
+  // enemy_type_3(POINT_2F position, int hitpoints, float reloadTime);
+  enemy_type_3(POINT_2F position, SCALE_2F scale, float angle);
   auto Update(float interval, POINT_2F targetPosition) noexcept -> void;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
 

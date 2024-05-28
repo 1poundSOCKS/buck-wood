@@ -18,22 +18,31 @@ auto level_geometry_scale::destroy() -> void
   }
 }
 
-auto level_geometry_scale::player() -> SCALE_2F
-{
-  return m_instance->m_player;
-}
+// auto level_geometry_scale::player() -> SCALE_2F
+// {
+//   return m_instance->m_player;
+// }
 
-auto level_geometry_scale::playerBullet() -> SCALE_2F
-{
-  return m_instance->m_playerBullet;
-}
+// auto level_geometry_scale::playerBullet() -> SCALE_2F
+// {
+//   return m_instance->m_playerBullet;
+// }
 
 level_geometry_scale::level_geometry_scale() : 
-  // m_player { Scale(level_geometries::player().get(), { 120, 120 }) },
-  // m_playerBullet { Scale(level_geometries::playerBullet().get(), { 60, 60 }) }
-  m_player { Scale(level_geometries::get(object_type::player).get(), { 120, 120 }) },
-  m_playerBullet { Scale(level_geometries::get(object_type::player_bullet).get(), { 60, 60 }) }
+  m_player { Scale(object_type::player, { 120, 120 }) },
+  m_playerBullet { Scale(object_type::player_bullet, { 60, 60 }) },
+  m_enemy1 { Scale(object_type::enemy_1, { 160, 160 }) },
+  m_enemy2 { Scale(object_type::enemy_2, { 140, 140 }) },
+  m_enemy3 { Scale(object_type::enemy_3, { 160, 160 }) },
+  m_enemyBullet1 { Scale(object_type::enemy_bullet_1, { 60, 60 }) },
+  m_portal { Scale(object_type::portal, { 200, 200 }) },
+  m_powerUp { Scale(object_type::power_up, { 60, 60 }) }
 {
+}
+
+[[nodiscard]] auto level_geometry_scale::Scale(object_type objectType, SIZE_F objectSize) -> SCALE_2F
+{
+  return Scale(level_geometries::get(objectType).get(), objectSize);
 }
 
 auto level_geometry_scale::Scale(ID2D1Geometry *geometry, SIZE_F objectSize) -> SCALE_2F

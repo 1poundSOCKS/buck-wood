@@ -19,7 +19,7 @@ public:
 
 public:
 
-  player_ship(POINT_2F position);
+  player_ship(POINT_2F position, SCALE_2F scale, float angle);
 
   auto Update(float interval, const level_cell_collection& cells) -> void;
 

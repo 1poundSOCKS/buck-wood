@@ -2,7 +2,8 @@
 #include "enemy_type_1.h"
 #include "adjacent_floor_cells.h"
 
-enemy_type_1::enemy_type_1(POINT_2F position, int hitpoints) : enemy_object { position, { 2, 2 }, 0, hitpoints }
+// enemy_type_1::enemy_type_1(POINT_2F position, int hitpoints) : enemy_object { position, { 2, 2 }, 0, hitpoints }
+enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle) : enemy_object { position, scale, angle }
 {
 }
 

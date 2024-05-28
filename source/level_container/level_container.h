@@ -60,19 +60,19 @@ public:
   auto SetExit(bool value, POINT_2I cell) -> void;
 
   auto Create(object_type objectType, POINT_2F position) -> void;
-  auto CreateWall(POINT_2F position, auto&&...args) -> void;
+  auto CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
 private:
 
-  auto CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void;
-  auto CreateWallObject(auto variantType, POINT_2F position, auto&&...args) -> void;
-  auto CreatePlayerObject(auto variantType, POINT_2F position, auto&&...args) -> void;
-  auto CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void;
+  auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
+  auto CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void;
+  auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
+  auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void;
 
-  auto CreatePlayerBullet(auto&&...args) -> void;
-  auto CreateEnemyBullet(POINT_2F position, auto&&...args) -> void;
+  auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle) -> void;
+  auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle) -> void;
   auto CreateParticle(auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
@@ -145,19 +145,6 @@ private:
 
 };
 
-inline level_container::level_container() : level_container(std::make_shared<level_cell_collection>(400,400))
-{
-}
-
-inline level_container::level_container(std::shared_ptr<level_cell_collection> cells) : m_cells { cells }, m_playerState { { 0, 0} }
-{
-  m_wallCollisionObjects.reserve(500);
-  m_floorCollisionObjects.reserve(500);
-  m_exitCollisionObjects.reserve(10);
-  m_playerCollisionObjects.reserve(50);
-  m_enemyCollisionObjects.reserve(100);
-}
-
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
 {
   return m_playerState.Destroyed();
@@ -193,60 +180,38 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_co
   return m_enemyCount;
 }
 
-inline auto level_container::Create(object_type objectType, POINT_2F position) -> void
+inline auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
 {
-  switch( objectType )
-  {
-    case object_type::portal_entry:
-      CreateNoninteractiveObject(std::in_place_type<portal>, position);
-      break;
-    case object_type::player:
-      CreatePlayerObject(std::in_place_type<player_ship>, position);
-      break;
-    case object_type::enemy_stalker:
-      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, 10);
-      break;
-    case object_type::enemy_random:
-      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, 3, 2.0f, 400.0f, 2.0f);
-      break;
-    case object_type::enemy_turret:
-      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, 3, 2.5f);
-      break;
-    case object_type::power_up:
-      CreateEnemyObject(std::in_place_type<power_up>, position, VELOCITY_2F { 0, 0 });
-      break;
-  }
+  CreateWallObject(position, scale, angle, cellType, cellId);
 }
 
-inline auto level_container::CreateWall(POINT_2F position, auto &&...args) -> void
+inline auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  CreateWallObject(std::in_place_type<level_wall>, position, std::forward<decltype(args)>(args)...);
+  m_noninteractiveObjects.emplace_back(variantType, position, scale, angle);
 }
 
-auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, auto&&...args) -> void
+inline auto level_container::CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
 {
-  m_noninteractiveObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
+  auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle);
+  auto object = defaultObject.GetIf<level_wall>();
+  object->SetType(cellType);
+  object->SetId(cellId);
+  std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
 }
 
-inline auto level_container::CreateWallObject(auto variantType, POINT_2F position, auto &&...args) -> void
+inline auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  auto& object = m_wallObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
-  std::visit([this,&object](auto& cellObject){ AddCellCollisionObject(object, cellObject); }, object.Get());
+  m_enemyObjects.emplace_back(variantType, position, scale, angle);
 }
 
-auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, auto&&...args) -> void
+inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  m_enemyObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
+  m_playerObjects.emplace_back(variantType, position, scale, angle);
 }
 
-inline auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, auto &&...args) -> void
+inline auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  m_playerObjects.emplace_back(variantType, position, std::forward<decltype(args)>(args)...);
-}
-
-auto level_container::CreateEnemyBullet(POINT_2F position, auto&&...args) -> void
-{
-  CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, std::forward<decltype(args)>(args)...);
+  CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle);
 }
 
 auto level_container::CreateParticle(auto&&...args) -> void
@@ -254,9 +219,9 @@ auto level_container::CreateParticle(auto&&...args) -> void
   m_particles.emplace_back(std::forward<decltype(args)>(args)...);
 }
 
-inline auto level_container::CreatePlayerBullet(auto &&...args) -> void
+inline auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle) -> void
 {
-  CreatePlayerObject(std::in_place_type<player_bullet>, std::forward<decltype(args)>(args)...);
+  CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void

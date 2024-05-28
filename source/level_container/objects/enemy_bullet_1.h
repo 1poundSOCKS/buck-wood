@@ -9,25 +9,16 @@ class enemy_bullet_1 : public base_object
 
 public:
 
-  enum type { one, two };
-
-  enemy_bullet_1(POINT_2F position, type type, VELOCITY_2F velocity);
+  // enemy_bullet_1(POINT_2F position, type type, VELOCITY_2F velocity);
+  enemy_bullet_1(POINT_2F position, SCALE_2F scale, float angle);
 
   auto Update(float interval) -> void;
-
-  [[nodiscard]] auto Type() const -> type;
 
 private:
 
   static constexpr float m_spinRate { 400 };
   static constexpr float rotationSpeed { 300.0f };
 
-  type m_type;
   object_velocity m_velocity;
 
 };
-
-inline [[nodiscard]] auto enemy_bullet_1::Type() const -> type
-{
-  return m_type;
-}

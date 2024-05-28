@@ -2,8 +2,11 @@
 #include "enemy_type_2.h"
 #include "adjacent_floor_cells.h"
 
-enemy_type_2::enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime) : 
-  enemy_object { position, { 1.5, 1.5 }, 0, hitpoints }, m_status { status::moving }, m_waitTimer { waitTime }, m_speed { speed }, m_reloadTimer { reloadTime }, m_destination { std::nullopt }
+// enemy_type_2::enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime) : 
+//   enemy_object { position, { 1.5, 1.5 }, 0, hitpoints }, m_status { status::moving }, m_waitTimer { waitTime }, m_speed { speed }, m_reloadTimer { reloadTime }, m_destination { std::nullopt }
+enemy_type_2::enemy_type_2(POINT_2F position, SCALE_2F scale, float angle) : 
+  enemy_object { position, scale, angle }, m_status { status::moving }, 
+  m_waitTimer { 1 }, m_speed { 100 }, m_reloadTimer { 0.5f }, m_destination { std::nullopt }
 {
 }
 

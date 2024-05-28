@@ -8,7 +8,7 @@ class portal : public base_object
 
 public:
 
-  portal(POINT_2F position) : base_object { position, { 150.0f, 150.0f }, 0 }
+  portal(POINT_2F position, SCALE_2F scale, float angle) : base_object { position, scale, angle }
   {
   }
 

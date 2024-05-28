@@ -8,6 +8,7 @@ class object_velocity
 public:
 
   object_velocity() = default;
+  object_velocity(float x, float y);
   object_velocity(VELOCITY_2F value);
 
   [[nodiscard]] auto Get() const noexcept -> VELOCITY_2F;
@@ -24,7 +25,11 @@ private:
 
 };
 
-inline object_velocity::object_velocity(VELOCITY_2F value) : m_value { value }
+inline object_velocity::object_velocity(float x, float y) : m_value { x, y }
+{
+}
+
+inline object_velocity::object_velocity(VELOCITY_2F value) : m_value{value}
 {
 }
 

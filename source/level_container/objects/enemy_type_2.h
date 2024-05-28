@@ -9,7 +9,8 @@ class enemy_type_2 : public enemy_object
 
 public:
 
-  enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime);
+  // enemy_type_2(POINT_2F position, int hitpoints, float waitTime, float speed, float reloadTime);
+  enemy_type_2(POINT_2F position, SCALE_2F scale, float angle);
 
   auto Update(float interval, const level_cell_collection& cells) -> void;
 
