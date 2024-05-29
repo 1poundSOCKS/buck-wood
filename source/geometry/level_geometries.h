@@ -12,8 +12,8 @@ public:
   static auto destroy() -> void;
 
   static [[nodiscard]] auto get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1Geometry>;
-  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto get(object_type objectType) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&;
 
@@ -53,15 +53,15 @@ inline [[nodiscard]] auto level_geometries::get(const default_object& defaultObj
   return std::visit([](const auto& object) { return get(object); }, defaultObject.Get());
 }
 
+inline [[nodiscard]] auto level_geometries::get(object_type objectType) -> winrt::com_ptr<ID2D1Geometry>
+{
+  return m_instance->Get(objectType);
+}
+
 [[nodiscard]] auto level_geometries::get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>
 {
   auto objectType = level_objects::Type(object);
   return get(objectType);
-}
-
-inline [[nodiscard]] auto level_geometries::get(object_type objectType) -> winrt::com_ptr<ID2D1Geometry>
-{
-  return m_instance->Get(objectType);
 }
 
 inline [[nodiscard]] auto level_geometries::RectangleGeometry() -> winrt::com_ptr<ID2D1Geometry>
