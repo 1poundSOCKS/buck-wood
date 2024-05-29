@@ -182,7 +182,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
   if( object.CanShoot() )
   {
-    CreatePlayerBullet(object.Position(), { 1, 1 }, object.ShootAngle(), 750);
+    CreatePlayerBullet(object.Position(), { 1, 1 }, object.ShootAngle(), 1000);
     play_events::set(play_events::event_type::shot, true);
   }
 
