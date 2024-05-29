@@ -72,6 +72,7 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) co
 auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
   m_cellDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
+  m_objectDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
 
   auto levelData = LevelData(exitLevelIndex);
   std::optional<POINT_2I> exitCell;

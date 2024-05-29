@@ -37,6 +37,8 @@ private:
   auto OnCollision(player_bullet& bullet, level_wall& wall) -> void;
   auto OnCollision(enemy_bullet_1& bullet, level_wall& wall) -> void;
 
+  auto OnCollision(player_ship& ship, portal& portalObject) -> void;
+
   auto OnCollision(auto& object, particle& particle) -> void;
   auto OnCollision(auto&& object, const level_cell_item& cell) -> void;
   auto OnCollision(auto&& object1, auto&& object2) -> void;

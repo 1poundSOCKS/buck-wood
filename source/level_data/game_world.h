@@ -2,7 +2,6 @@
 
 #include "level_base.h"
 #include "game_world_cell_data_translator.h"
-// #include "level_object_data_translator.h"
 #include "game_world_object_data_translator.h"
 #include "level_container.h"
 
@@ -25,7 +24,6 @@ private:
 private:
 
   game_world_cell_data_translator m_cellDataTranslator;
-  // level_object_data_translator m_objectDataTranslator;
   game_world_object_data_translator m_objectDataTranslator;
   std::map<std::tuple<int, int, int>,std::tuple<int, int, int>> m_links;
 
@@ -55,9 +53,13 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
 
     switch( itemType )
     {
-      case level_item_type::portal:
+      case level_item_type::entry_portal:
         levelContainer->Create(level_container::object_type::portal_entry, cellPosition);
         levelContainer->Create(level_container::object_type::player, cellPosition);
+        break;
+
+      case level_item_type::exit_portal:
+        levelContainer->Create(level_container::object_type::portal_exit, cellPosition);
         break;
 
       case level_item_type::enemy_type_one:

@@ -39,7 +39,7 @@ auto game_level_data_loader::PortalCell(const level_base *levelData) const -> PO
     
     switch( objectType )
     {
-      case level_item_type::portal:
+      case level_item_type::entry_portal:
         portalCell = { columnIndex, rowIndex };
         break;
     }

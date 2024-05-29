@@ -12,7 +12,7 @@ public:
     switch( cellData )
     {
       case 'P':
-        return level_item_type::portal;
+        return level_item_type::entry_portal;
       case '1':
         return level_item_type::enemy_type_one;
       case '2':

@@ -21,7 +21,7 @@ class level_container
 
 public:
 
-  enum class object_type { portal_entry, player, enemy_stalker, enemy_random, enemy_turret, power_up };
+  enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up };
 
   level_container();
   level_container(std::shared_ptr<level_cell_collection> cells);
