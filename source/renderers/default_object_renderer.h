@@ -13,6 +13,8 @@ class default_object_renderer
 
 public:
 
+  default_object_renderer();
+
   auto Write(const default_object& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const background_object& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void;
@@ -38,6 +40,8 @@ private:
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
+  winrt::com_ptr<ID2D1Geometry> m_enemy3_turretGeometry;
+
   friend struct default_object_renderer_visitor;
 };
 
@@ -51,6 +55,13 @@ struct default_object_renderer_visitor
     m_renderer.Write(object, m_geometry);
   }
 };
+
+inline default_object_renderer::default_object_renderer()
+{
+  auto baseGeometry = level_geometries::RectangleGeometry();
+  auto transform = D2D1::Matrix3x2F::Scale({30,60}) * D2D1::Matrix3x2F::Translation({0, -60});
+  m_enemy3_turretGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), transform);
+}
 
 inline auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
 {
@@ -75,10 +86,9 @@ inline auto default_object_renderer::Write(const enemy_type_2& object, ID2D1Geom
 inline auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void
 {
   m_enemyType3_renderer.Write(object, geometry);
-  auto baseGeometry = level_geometries::RectangleGeometry();
   auto objectTransform = geometric_object_transform { object };
-  auto transform = D2D1::Matrix3x2F::Scale({30,60}) * D2D1::Matrix3x2F::Translation({0, -60}) * objectTransform.Get();
-  auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), transform);
+  // auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_enemy3_turretGeometry.get(), objectTransform.Get());
+  auto transformedGeometry = objectTransform.CreateGeometry(d2d_factory::get_raw(), m_enemy3_turretGeometry.get());
   m_defaultGeometryRenderer.Write(transformedGeometry.get());
 }
 
