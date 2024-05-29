@@ -87,7 +87,6 @@ inline auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geom
 {
   m_enemyType3_renderer.Write(object, geometry);
   auto objectTransform = geometric_object_transform { object };
-  // auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_enemy3_turretGeometry.get(), objectTransform.Get());
   auto transformedGeometry = objectTransform.CreateGeometry(d2d_factory::get_raw(), m_enemy3_turretGeometry.get());
   m_defaultGeometryRenderer.Write(transformedGeometry.get());
 }
