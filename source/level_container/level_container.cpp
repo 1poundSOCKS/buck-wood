@@ -19,32 +19,74 @@ level_container::level_container(std::shared_ptr<level_cell_collection> cells) :
   m_enemyCollisionObjects.reserve(100);
 }
 
-auto level_container::Create(object_type objectType, POINT_2F position) -> void
+auto level_container::Create(object_type objectType, POINT_2F position) -> default_object&
 {
   switch( objectType )
   {
     case object_type::portal_entry:
-      CreateNoninteractiveObject(std::in_place_type<portal>, position, { 1, 1 }, 0);
+      return CreateNoninteractiveObject(std::in_place_type<portal>, position, { 1, 1 }, 0);
       break;
     case object_type::portal_exit:
-      CreateEnemyObject(std::in_place_type<portal>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<portal>, position, { 1, 1 }, 0, { 0, 0 });
       break;
     case object_type::player:
-      CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
       break;
     case object_type::enemy_stalker:
-      CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0, { 0, 0 });
       break;
     case object_type::enemy_random:
-      CreateEnemyObject(std::in_place_type<enemy_type_2>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_2>, position, { 1, 1 }, 0, { 0, 0 });
       break;
     case object_type::enemy_turret:
-      CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0, { 0, 0 });
       break;
     case object_type::power_up:
-      CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
+      return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
+    default:
+      return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
   }
+}
+
+auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
+{
+  CreateWallObject(position, scale, angle, cellType, cellId);
+}
+
+auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
+{
+  return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
+}
+
+auto level_container::CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
+{
+  auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
+  auto object = defaultObject.GetIf<level_wall>();
+  object->SetType(cellType);
+  object->SetId(cellId);
+  std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
+}
+
+auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  return m_playerObjects.emplace_back(variantType, position, scale, angle, velocity);
+}
+
+auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  return m_enemyObjects.emplace_back(variantType, position, scale, angle, velocity);
+}
+
+auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
+{
+  auto velocity = direct2d::CalculateVelocity(speed, angle);
+  return CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle, velocity);
+}
+
+auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
+{
+  auto velocity = direct2d::CalculateVelocity(speed, angle);
+  return CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle, velocity);
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void

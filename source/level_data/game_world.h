@@ -20,6 +20,8 @@ private:
 
   [[nodiscard]] auto CreateCellsCollection(int levelIndex, level_base* levelData) const -> std::shared_ptr<level_cell_collection>;
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
+  static auto SetCellId(portal& object, POINT_2I cellId) -> void;
+  static auto SetCellId(auto&& object, POINT_2I cellId) -> void;
 
 private:
 
@@ -59,8 +61,11 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
         break;
 
       case level_item_type::exit_portal:
-        levelContainer->Create(level_container::object_type::portal_exit, cellPosition);
-        break;
+        {
+          auto& exitPortal = levelContainer->Create(level_container::object_type::portal_exit, cellPosition);
+          std::visit([cellId](auto&& object) { SetCellId(object, cellId); }, exitPortal.Get());
+          break;
+        }
 
       case level_item_type::enemy_type_one:
         levelContainer->Create(level_container::object_type::enemy_stalker, cellPosition);
@@ -77,4 +82,13 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
   });
 
   return levelContainer;
+}
+
+inline auto game_world::SetCellId(portal &object, POINT_2I cellId) -> void
+{
+  object.SetCellId(cellId);
+}
+
+auto game_world::SetCellId(auto &&object, POINT_2I cellId) -> void
+{
 }
