@@ -169,5 +169,5 @@ auto level_collision_handler::OnCollision(enemy_bullet_1 &bullet, level_wall &wa
 
 auto level_collision_handler::OnCollision(player_ship &ship, portal &portalObject) -> void
 {
-  portalObject.Destroy();
+  m_exitCell = portalObject.CellId();
 }
