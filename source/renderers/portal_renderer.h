@@ -28,7 +28,7 @@ public:
 
     constexpr static cyclic_interval cyclicInterval { 1.0f };
 
-    float scale = cyclicInterval.get(object.Age()) * 150;
+    float scale = cyclicInterval.get(object.Age());
     auto transform = D2D1::Matrix3x2F::Scale({scale, scale}) * D2D1::Matrix3x2F::Translation({object.Position().x, object.Position().y});
     auto transformedGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), m_baseGeometry.get(), transform);
     m_portalRenderer.Write(transformedGeometry.get());
