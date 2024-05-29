@@ -2,7 +2,8 @@
 
 #include "level_base.h"
 #include "game_world_cell_data_translator.h"
-#include "level_object_data_translator.h"
+// #include "level_object_data_translator.h"
+#include "game_world_object_data_translator.h"
 #include "level_container.h"
 
 class game_world
@@ -24,7 +25,8 @@ private:
 private:
 
   game_world_cell_data_translator m_cellDataTranslator;
-  level_object_data_translator m_objectDataTranslator;
+  // level_object_data_translator m_objectDataTranslator;
+  game_world_object_data_translator m_objectDataTranslator;
   std::map<std::tuple<int, int, int>,std::tuple<int, int, int>> m_links;
 
 };
@@ -43,11 +45,11 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, au
     levelContainer->CreateWall(cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
   });
 
-  levelData->Enumerate([this,&levelContainer,levelCells](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,&levelContainer,levelCells,levelIndex](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
-    auto itemType = m_objectDataTranslator(cellData);
+    auto itemType = m_objectDataTranslator(levelIndex, cellData);
     auto cellId = POINT_2I { columnIndex, rowIndex };
     auto cellPosition = levelCells->CellPosition(cellId.x, cellId.y);
 

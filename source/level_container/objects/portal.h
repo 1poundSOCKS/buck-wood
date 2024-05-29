@@ -8,8 +8,23 @@ class portal : public base_object
 
 public:
 
-  portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : base_object { position, scale, angle }
-  {
-  }
+  enum class type { exit, entry };
+
+  portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
+
+  [[nodiscard]] auto Type() const -> type;
+
+private:
+
+  type m_type { type::exit };
 
 };
+
+inline portal::portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : base_object { position, scale, angle }
+{
+}
+
+inline auto portal::Type() const -> type
+{
+  return m_type;
+}
