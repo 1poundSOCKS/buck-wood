@@ -15,9 +15,9 @@ auto play_state::LoadCurrentLevel() -> void
   player_state::set_status(player_state::status::active);
 }
 
-auto play_state::LoadNextLevel(POINT_2I exitCell) -> bool
+auto play_state::LoadNextLevel(std::optional<POINT_2I> exitCell) -> bool
 {
-  const auto entryData = game_level_data_loader::entryData(game_state::level_index(), exitCell);
+  const auto entryData = exitCell ? game_level_data_loader::entryData(game_state::level_index(), *exitCell) : std::nullopt;
 
   if( entryData )
   {

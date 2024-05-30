@@ -15,8 +15,6 @@ public:
 
   [[nodiscard]] auto operator()(int levelIndex, char cellData) const  -> level_cell_type
   {
-    // auto exitDataIterator = m_exits.find({levelIndex, cellData});
-    // return exitDataIterator == std::end(m_exits) ? m_translator(cellData) : level_cell_type::exit;
     return m_translator(cellData);
   }
 
