@@ -5,6 +5,7 @@
 #include "geometry_renderer.h"
 #include "screen_render_brush_defs.h"
 #include "geometric_object_transform.h"
+#include "geometry/level_geometries.h"
 
 class portal_renderer
 {
