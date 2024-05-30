@@ -72,7 +72,7 @@ auto level_geometries::GetBase(object_type objectType) -> winrt::com_ptr<ID2D1Ge
     case object_type::enemy_2:
       return m_targetGeometry;
     case object_type::enemy_3:
-      return m_rectangleGeometry;
+      return m_targetGeometry;
     case object_type::enemy_bullet_1:
       return m_mineGeometry;
     case object_type::portal:

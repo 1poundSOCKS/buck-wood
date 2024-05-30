@@ -15,7 +15,7 @@ struct default_object_renderer_visitor
 default_object_renderer::default_object_renderer()
 {
   auto baseGeometry = level_geometries::RectangleGeometry();
-  auto transform = D2D1::Matrix3x2F::Scale({30,30}) * D2D1::Matrix3x2F::Translation({0, -80});
+  auto transform = D2D1::Matrix3x2F::Scale({30,30}) * D2D1::Matrix3x2F::Translation({0, -70});
   m_enemy3_turretGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), baseGeometry.get(), transform);
 }
 
