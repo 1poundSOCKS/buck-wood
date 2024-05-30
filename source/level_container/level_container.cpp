@@ -5,12 +5,7 @@
 #include "level_collision_handler.h"
 #include "player_state.h"
 
-level_container::level_container() : level_container(std::make_shared<level_cell_collection>(400,400))
-{
-}
-
-level_container::level_container(std::shared_ptr<level_cell_collection> cells) : 
-  m_cells { cells }, m_playerState { { 0, 0 }, { 1, 1 }, 0, { 0, 0 } }
+level_container::level_container() : m_playerState { { 0, 0 }, { 1, 1 }, 0, { 0, 0 } }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
@@ -222,8 +217,7 @@ auto level_container::GetTargettedObject() -> std::optional<targetted_object>
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {
-  const auto& cells = *m_cells;
-  object.Update(interval, cells);
+  object.Update(interval);
 
   if( object.CanShoot() )
   {
@@ -242,8 +236,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
-  const auto& cells = *m_cells;
-  object.Update(interval, m_playerState.Position(), cells);
+  object.Update(interval, m_playerState.Position());
 
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
@@ -255,8 +248,7 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
-  const auto& cells = *m_cells;
-  object.Update(interval, cells);
+  object.Update(interval);
 
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {

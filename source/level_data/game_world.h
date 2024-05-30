@@ -14,7 +14,7 @@ public:
 
   [[nodiscard]] auto LevelData(int index) const -> std::unique_ptr<level_base>;
   [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>;
+  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) const -> std::unique_ptr<level_container>;
 
 private:
 
@@ -22,6 +22,11 @@ private:
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
   static auto SetCellId(portal& object, POINT_2I cellId) -> void;
   static auto SetCellId(auto&& object, POINT_2I cellId) -> void;
+  static auto SetCells(player_ship& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  static auto SetCells(enemy_type_1& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  static auto SetCells(enemy_type_2& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  static auto SetCells(enemy_type_3& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  static auto SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void;
 
 private:
 
@@ -31,65 +36,36 @@ private:
 
 };
 
-auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>
-{
-  auto levelData = LevelData(levelIndex);
-
-  auto levelCells = CreateCellsCollection(levelIndex, levelData.get());
-
-  auto levelContainer = std::make_unique<level_container>(levelCells, std::forward<decltype(args)>(args)...);
-
-  auto scale = SCALE_2F { static_cast<float>(levelCells->CellWidth()), static_cast<float>(levelCells->CellHeight()) };
-  
-  levelCells->EnumerateCells([this,&levelContainer,&scale](const level_cell_item& cell)
-  {
-    levelContainer->CreateWall(cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
-  });
-
-  levelData->Enumerate([this,&levelContainer,levelCells,levelIndex](size_t column, size_t row, char cellData)
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    auto itemType = m_objectDataTranslator(levelIndex, cellData);
-    auto cellId = POINT_2I { columnIndex, rowIndex };
-    auto cellPosition = levelCells->CellPosition(cellId.x, cellId.y);
-
-    switch( itemType )
-    {
-      case level_item_type::entry_portal:
-        levelContainer->Create(level_container::object_type::portal_entry, cellPosition);
-        levelContainer->Create(level_container::object_type::player, cellPosition);
-        break;
-
-      case level_item_type::exit_portal:
-        {
-          auto& exitPortal = levelContainer->Create(level_container::object_type::portal_exit, cellPosition);
-          std::visit([cellId](auto&& object) { SetCellId(object, cellId); }, exitPortal.Get());
-          break;
-        }
-
-      case level_item_type::enemy_type_one:
-        levelContainer->Create(level_container::object_type::enemy_stalker, cellPosition);
-        break;
-      
-      case level_item_type::enemy_type_two:
-        levelContainer->Create(level_container::object_type::enemy_random, cellPosition);
-        break;
-
-      case level_item_type::enemy_type_three:
-        levelContainer->Create(level_container::object_type::enemy_turret, cellPosition);
-        break;
-    }
-  });
-
-  return levelContainer;
-}
-
+// auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>
 inline auto game_world::SetCellId(portal &object, POINT_2I cellId) -> void
 {
   object.SetCellId(cellId);
 }
 
 auto game_world::SetCellId(auto &&object, POINT_2I cellId) -> void
+{
+}
+
+inline auto game_world::SetCells(player_ship &object, std::shared_ptr<level_cell_collection> cells) -> void
+{
+  object.SetCells(cells);
+}
+
+inline auto game_world::SetCells(enemy_type_1 &object, std::shared_ptr<level_cell_collection> cells) -> void
+{
+  object.SetCells(cells);
+}
+
+inline auto game_world::SetCells(enemy_type_2 &object, std::shared_ptr<level_cell_collection> cells) -> void
+{
+  object.SetCells(cells);
+}
+
+inline auto game_world::SetCells(enemy_type_3 &object, std::shared_ptr<level_cell_collection> cells) -> void
+{
+  object.SetCells(cells);
+}
+
+auto game_world::SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void
 {
 }

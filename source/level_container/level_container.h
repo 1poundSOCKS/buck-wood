@@ -24,7 +24,6 @@ public:
   enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up };
 
   level_container();
-  level_container(std::shared_ptr<level_cell_collection> cells);
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -116,7 +115,7 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  std::shared_ptr<level_cell_collection> m_cells;
+  // std::shared_ptr<level_cell_collection> m_cells;
 
   bool m_exit { false };
   POINT_2I m_exitCell { 0, 0 };

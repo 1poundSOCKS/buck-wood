@@ -21,11 +21,12 @@ public:
 
   player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Update(float interval, const level_cell_collection& cells) -> void;
+  auto Update(float interval) -> void;
 
   auto Rotate(float angle) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
+  auto SetCells(std::shared_ptr<level_cell_collection> cells) -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
@@ -56,6 +57,7 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
   std::optional<POINT_2F> m_leftThumbstickPosition;
+  std::shared_ptr<level_cell_collection> m_cells;
 
 };
 

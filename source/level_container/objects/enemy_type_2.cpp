@@ -4,11 +4,11 @@
 
 enemy_type_2::enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
   enemy_object { position, scale, angle }, m_status { status::moving }, 
-  m_waitTimer { 1 }, m_speed { 150 }, m_reloadTimer { 5.0f }, m_destination { std::nullopt }
+  m_waitTimer { 1 }, m_speed { 300 }, m_reloadTimer { 5.0f }, m_destination { std::nullopt }
 {
 }
 
-auto enemy_type_2::Update(float interval, const level_cell_collection& cells) -> void
+auto enemy_type_2::Update(float interval) -> void
 {
   base_object::Update(interval);
   m_reloaded = m_reloadTimer.Update(interval);
@@ -16,7 +16,7 @@ auto enemy_type_2::Update(float interval, const level_cell_collection& cells) ->
   switch( m_status )
   {
     case status::moving:
-      m_status = UpdateWhenMoving(interval, cells);
+      m_status = UpdateWhenMoving(interval, *m_cells);
       break;
     case status::waiting:
       m_status = UpdateWhenWaiting(interval);

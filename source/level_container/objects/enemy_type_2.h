@@ -11,7 +11,7 @@ public:
 
   enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Update(float interval, const level_cell_collection& cells) -> void;
+  auto Update(float interval) -> void;
 
   [[nodiscard]] auto Destination() const -> std::optional<level_cell_item>;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;

@@ -3,16 +3,21 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
-  base_object { position, scale, angle }, m_shootAngle { 0 }
+  base_object { position, scale, angle }, m_shootAngle { 0 }, m_cells { std::make_shared<level_cell_collection>(1, 1) }
 {
 }
 
-auto player_ship::Update(float interval, const level_cell_collection& cells) -> void
+auto player_ship::SetCells(std::shared_ptr<level_cell_collection> cells) -> void
+{
+  m_cells = cells;
+}
+
+auto player_ship::Update(float interval) -> void
 {
   switch( player_state::get_status() )
   {
     case player_state::status::active:
-      UpdateWhenActive(interval, cells);
+      UpdateWhenActive(interval, *m_cells);
       break;
     case player_state::status::celebrating:
       UpdateWhenCelebrating(interval);

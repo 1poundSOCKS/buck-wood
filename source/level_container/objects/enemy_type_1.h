@@ -15,7 +15,7 @@ public:
     base_object::Update(interval);
   }
 
-  auto Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void;
+  auto Update(float interval, POINT_2F target) -> void;
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
@@ -27,7 +27,7 @@ private:
 
 private:
 
-  inline static constexpr float m_speed { 200 };
+  inline static constexpr float m_speed { 400 };
   std::optional<level_cell_item> m_destination;
 
 };
