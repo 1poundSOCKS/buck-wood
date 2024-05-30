@@ -17,7 +17,7 @@ private:
     std::string { "00000" },
     std::string { "     " },
     std::string { "  E  " },
-    std::string { "  3  " },
+    std::string { "     " },
     std::string { "     " },
     std::string { "0   0" },
     std::string { "0   0" },

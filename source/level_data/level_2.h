@@ -18,9 +18,9 @@ private:
     std::string { " 2  1  2  1  " },
     std::string { "  E          " },
     std::string { "            2" },
-    std::string { "000000 000000" },
-    std::string { "000000 000000" },
-    std::string { "000000P000000" }
+    std::string { "0000000000   " },
+    std::string { "0000000000   " },
+    std::string { "0000000000 P " }
   };
 
 };
