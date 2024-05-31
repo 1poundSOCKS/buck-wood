@@ -9,10 +9,8 @@
 #include "game_settings.h"
 #include "linear_allocator.h"
 #include "collisions/geometry_containment.h"
-#include "collisions/particle_containment.h"
 #include "collisions/particle_collision.h"
 #include "collisions/geometry_collision_binary.h"
-#include "collisions/geometry_collision_unary.h"
 #include "collisions/cell_collision_tests.h"
 #include "collisions/collision_object.h"
 
@@ -139,6 +137,7 @@ private:
   collision_object_collection m_enemyCollisionObjects;
 
   geometry_collision_binary m_collisionRunner;
+  geometry_containment m_containmentRunner;
   particle_collision m_particleCollisionRunner;
 
   enemy_object_collection::size_type m_enemyCount { 0 };
