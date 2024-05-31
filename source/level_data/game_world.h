@@ -38,7 +38,6 @@ private:
 
 };
 
-// auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) const -> std::unique_ptr<level_container>
 inline auto game_world::SetCellId(portal &object, POINT_2I cellId) -> void
 {
   object.SetCellId(cellId);
