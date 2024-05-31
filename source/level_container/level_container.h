@@ -14,6 +14,7 @@
 #include "collisions/geometry_containment_runner.h"
 #include "collisions/cell_collision_tests.h"
 #include "collisions/collision_object.h"
+#include "collisions/range_comparision_runner.h"
 
 class level_container
 {
@@ -89,6 +90,11 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
 
+  template <typename object_type_1, typename object_type_2> auto OnContainment(default_object& object1, default_object& object2) -> void;
+
+  auto OnContainment(player_ship& player, portal& portalObj) -> void;
+  auto OnContainment(auto&& object1, auto&& object2) -> void;
+
 #if 0
   auto GetTargettedObject() -> std::optional<targetted_object>;
   auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
@@ -140,6 +146,10 @@ private:
   geometry_collision_binary m_collisionRunner;
   geometry_containment_runner m_containmentRunner;
   particle_collision m_particleCollisionRunner;
+
+  range_comparison_runner m_compare;
+  geometry_containment m_containmentTest;
+  
 
   enemy_object_collection::size_type m_enemyCount { 0 };
 
@@ -377,4 +387,21 @@ inline auto level_container::AddCellCollisionObject(default_object& object, auto
 auto level_container::UpdateObject(auto& object, float interval) -> void
 {
   object.Update(interval);
+}
+
+template <typename object_type_1, typename object_type_2> auto level_container::OnContainment(default_object& object1, default_object& object2) -> void
+{
+  if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
+  {
+    return OnContainment(std::get<object_type_1>(object1.Get()), std::get<object_type_2>(object2.Get()));
+  }
+
+  if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
+  {
+    return OnContainment(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
+  }
+}
+
+auto level_container::OnContainment(auto&& object1, auto&& object2) -> void
+{
 }

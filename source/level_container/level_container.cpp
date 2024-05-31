@@ -11,7 +11,8 @@ level_container::level_container() : level_container(collision_type::boundary)
 }
 
 level_container::level_container(collision_type collisionType) : 
-  m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionRunner { collisionType }, m_containmentRunner { collisionType }
+  m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionRunner { collisionType }, m_containmentRunner { collisionType }, 
+  m_containmentTest { collisionType }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
@@ -179,12 +180,13 @@ auto level_container::DoCollisions() -> void
   m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
   m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
 
-  level_containment_handler containmentHandler;
-  m_containmentRunner(m_playerCollisionObjects, m_enemyCollisionObjects, containmentHandler);
-
-  auto exitCell = containmentHandler.ExitCell();
-  m_exit = exitCell ? true : false;
-  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
+  m_compare(m_playerCollisionObjects, m_enemyCollisionObjects, [this](auto& object1, auto& object2)
+  {
+    if( m_containmentTest(object1, object2) )
+    {
+      OnContainment<player_ship, portal>(object1.Object(), object2.Object());
+    }
+  });
 }
 
 #if 0
@@ -295,4 +297,11 @@ auto level_container::AddCellCollisionObject(default_object& object, level_wall 
       m_exitCollisionObjects.emplace_back(object);
       break;
   }
+}
+
+auto level_container::OnContainment(player_ship &player, portal &portalObj) -> void
+{
+  auto exitCell = portalObj.CellId();
+  m_exit = exitCell ? true : false;
+  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
