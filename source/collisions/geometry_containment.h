@@ -32,8 +32,10 @@ auto geometry_containment::operator()(collision_object &containedObject, collisi
   auto containedBounds = containedObject.Bounds();
   auto containerBounds = containmentObject.Bounds();
 
-  auto containedX = containedBounds.left < containerBounds.right && containedBounds.right > containerBounds.left;
-  auto containedY = containedBounds.top < containerBounds.bottom && containedBounds.bottom > containerBounds.top;
+  // auto containedX = containedBounds.left < containerBounds.right && containedBounds.right > containerBounds.left;
+  // auto containedY = containedBounds.top < containerBounds.bottom && containedBounds.bottom > containerBounds.top;
+  auto containedX = containerBounds.right > containedBounds.right && containerBounds.left < containedBounds.left;
+  auto containedY = containerBounds.top < containedBounds.top && containerBounds.bottom > containedBounds.bottom;
   auto possibleCollision = containedX && containedY;
 
   switch( m_type )

@@ -182,7 +182,7 @@ auto level_container::DoCollisions() -> void
   level_containment_handler containmentHandler;
   m_containmentRunner(m_playerCollisionObjects, m_enemyCollisionObjects, containmentHandler);
 
-  auto exitCell = collisionHandler.ExitCell();
+  auto exitCell = containmentHandler.ExitCell();
   m_exit = exitCell ? true : false;
   m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
 }
