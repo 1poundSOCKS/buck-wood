@@ -1,9 +1,27 @@
 #pragma once
 
-// #include "game_settings.h"
+#include "collision_type.h"
+#include "collision_object.h"
 
 class geometry_containment
 {
+
+public:
+
+  geometry_containment(collision_type collisionType) : m_type { collisionType }
+  {
+  }
+
+  auto operator()(collision_object& containedObject, collision_object& containmentObject, auto&& callable) -> void;
+
+private:
+
+  [[nodiscard]] auto CheckDirect2D(collision_object &containedObject, collision_object &containmentObject) const noexcept -> bool;
+
+private:
+
+  collision_type m_type;
+
 };
 
 // class geometry_containment
