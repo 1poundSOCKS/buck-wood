@@ -13,7 +13,7 @@ public:
 
 private:
 
-  [[nodiscard]] auto CheckDirect2D(collision_object& object1, collision_object& object2) const noexcept -> bool;
+  static [[nodiscard]] auto CheckDirect2D(collision_object& object1, collision_object& object2) noexcept -> bool;
 
 private:
 
@@ -54,7 +54,7 @@ inline auto geometry_collision::operator()(collision_object& object1, collision_
   }
 }
 
-inline [[nodiscard]] auto geometry_collision::CheckDirect2D(collision_object& object1, collision_object& object2) const noexcept -> bool
+inline [[nodiscard]] auto geometry_collision::CheckDirect2D(collision_object& object1, collision_object& object2) noexcept -> bool
 {
   auto geometry1 = object1.Geometry().GetRaw();
   auto geometry2 = object2.Geometry().GetRaw();

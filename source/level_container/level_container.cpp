@@ -3,6 +3,7 @@
 #include "renderers.h"
 #include "particle_functions.h"
 #include "level_collision_handler.h"
+#include "level_containment_handler.h"
 #include "player_state.h"
 
 level_container::level_container() : level_container(collision_type::boundary)
@@ -177,6 +178,9 @@ auto level_container::DoCollisions() -> void
   m_collisionRunner(m_playerCollisionObjects, m_exitCollisionObjects, collisionHandler);
   m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
   m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
+
+  level_containment_handler containmentHandler;
+  m_containmentRunner(m_playerCollisionObjects, m_enemyCollisionObjects, containmentHandler);
 
   auto exitCell = collisionHandler.ExitCell();
   m_exit = exitCell ? true : false;
