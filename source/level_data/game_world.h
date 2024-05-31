@@ -18,6 +18,7 @@ public:
 
 private:
 
+  static [[nodiscard]] auto CollisionType() -> collision_type;
   [[nodiscard]] auto CreateCellsCollection(int levelIndex, level_base* levelData) const -> std::shared_ptr<level_cell_collection>;
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
   static auto SetCellId(portal& object, POINT_2I cellId) -> void;
@@ -33,6 +34,7 @@ private:
   game_world_cell_data_translator m_cellDataTranslator;
   game_world_object_data_translator m_objectDataTranslator;
   std::map<std::tuple<int, int, int>,std::tuple<int, int, int>> m_links;
+  collision_type m_collisionType;
 
 };
 

@@ -4,7 +4,7 @@
 #include "level_1.h"
 #include "level_2.h"
 
-game_world::game_world()
+game_world::game_world() : m_collisionType { CollisionType() }
 {
   CreateLevelLink(0, 'E', 1, 'P');
   CreateLevelLink(1, 'E', 0, 'P');
@@ -109,6 +109,19 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) co
   });
 
   return levelContainer;
+}
+
+auto game_world::CollisionType() -> collision_type
+{
+  switch( game_settings::collisionDetectionType() )
+  {
+    case game_settings::collision_detection_type::direct2d:
+      return collision_type::direct2d;
+
+    case game_settings::collision_detection_type::basic:
+    default:
+      return collision_type::boundary;
+  }
 }
 
 auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) const -> std::shared_ptr<level_cell_collection>

@@ -1,12 +1,17 @@
 #pragma once
 
-#include "game_settings.h"
+// #include "game_settings.h"
+#include "collision_type.h"
 #include "collision_object.h"
 
 class geometry_collision
 {
 
 public:
+
+  geometry_collision(collision_type collsionType) : m_type { collsionType }
+  {
+  }
 
   auto operator()(collision_object& object1, collision_object& object2, auto&& callable) -> void
   {
@@ -19,16 +24,19 @@ public:
     auto overlapY = !(bounds1.top > bounds2.bottom || bounds1.bottom < bounds2.top);
     auto possibleCollision = overlapX && overlapY;
 
-    switch( game_settings::collisionDetectionType() )
+    // switch( game_settings::collisionDetectionType() )
+    switch( m_type )
     {
-      case game_settings::collision_detection_type::direct2d:
+      // case game_settings::collision_detection_type::direct2d:
+      case collision_type::direct2d:
         if( possibleCollision && CheckDirect2D(object1, object2) )
         {
           callable(object1.Object(), object2.Object());
         }
         break;
 
-      case game_settings::collision_detection_type::basic:
+      // case game_settings::collision_detection_type::basic:
+      case collision_type::boundary:
         if( possibleCollision )
         {
           callable(object1.Object(), object2.Object());
@@ -61,5 +69,7 @@ public:
 
     return collided;
   }
+
+  collision_type m_type;
 
 };

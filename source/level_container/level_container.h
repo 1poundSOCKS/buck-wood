@@ -24,6 +24,7 @@ public:
   enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up };
 
   level_container();
+  level_container(collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;

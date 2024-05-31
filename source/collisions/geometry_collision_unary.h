@@ -7,7 +7,7 @@ class geometry_collision_unary
 
 public:
 
-  geometry_collision_unary()
+  geometry_collision_unary(collision_type collisionType) : m_geometryCollision { collisionType }
   {
   }
 
