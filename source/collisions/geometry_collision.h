@@ -10,6 +10,7 @@ public:
 
   geometry_collision(collision_type collsionType);
   auto operator()(collision_object& object1, collision_object& object2, auto&& callable) -> void;
+  auto operator()(collision_object& object1, collision_object& object2) -> bool;
 
 private:
 
@@ -20,10 +21,6 @@ private:
   collision_type m_type;
 
 };
-
-inline geometry_collision::geometry_collision(collision_type collisionType) : m_type { collisionType }
-{
-}
 
 inline auto geometry_collision::operator()(collision_object& object1, collision_object& object2, auto&& callable) -> void
 {
@@ -52,29 +49,4 @@ inline auto geometry_collision::operator()(collision_object& object1, collision_
       }
       break;
   }
-}
-
-inline [[nodiscard]] auto geometry_collision::CheckDirect2D(collision_object& object1, collision_object& object2) noexcept -> bool
-{
-  auto geometry1 = object1.Geometry().GetRaw();
-  auto geometry2 = object2.Geometry().GetRaw();
-
-  D2D1_GEOMETRY_RELATION relation = D2D1_GEOMETRY_RELATION_UNKNOWN;
-  HRESULT hr = geometry1->CompareWithGeometry(geometry2, D2D1::Matrix3x2F::Identity(), &relation);
-
-  bool collided = false;
-
-  if( SUCCEEDED(hr) )
-  {
-    switch( relation )
-    {
-      case D2D1_GEOMETRY_RELATION_IS_CONTAINED:
-      case D2D1_GEOMETRY_RELATION_CONTAINS:
-      case D2D1_GEOMETRY_RELATION_OVERLAP:
-        collided = true;
-        break;
-    }
-  }
-
-  return collided;
 }

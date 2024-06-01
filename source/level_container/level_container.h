@@ -90,8 +90,10 @@ private:
   auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
 
-  template <typename object_type_1, typename object_type_2> auto OnContainment(default_object& object1, default_object& object2) -> void;
+  template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
+  auto OnCollision(auto&& object1, auto&& object2) -> void;
 
+  template <typename object_type_1, typename object_type_2> auto OnContainment(default_object& object1, default_object& object2) -> void;
   auto OnContainment(player_ship& player, portal& portalObj) -> void;
   auto OnContainment(auto&& object1, auto&& object2) -> void;
 
@@ -121,8 +123,6 @@ private:
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
-  // std::shared_ptr<level_cell_collection> m_cells;
-
   bool m_exit { false };
   POINT_2I m_exitCell { 0, 0 };
 
@@ -148,8 +148,8 @@ private:
   particle_collision m_particleCollisionRunner;
 
   range_comparison_runner m_compare;
+  geometry_collision m_collisionTest;
   geometry_containment m_containmentTest;
-  
 
   enemy_object_collection::size_type m_enemyCount { 0 };
 
@@ -389,6 +389,19 @@ auto level_container::UpdateObject(auto& object, float interval) -> void
   object.Update(interval);
 }
 
+template <typename object_type_1, typename object_type_2> auto level_container::OnCollision(default_object& object1, default_object& object2) -> void
+{
+  if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
+  {
+    return OnCollision(std::get<object_type_1>(object1.Get()), std::get<object_type_2>(object2.Get()));
+  }
+
+  if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
+  {
+    return OnCollision(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
+  }
+}
+
 template <typename object_type_1, typename object_type_2> auto level_container::OnContainment(default_object& object1, default_object& object2) -> void
 {
   if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
@@ -400,6 +413,12 @@ template <typename object_type_1, typename object_type_2> auto level_container::
   {
     return OnContainment(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
   }
+}
+
+auto level_container::OnCollision(auto&& object1, auto&& object2) -> void
+{
+  object1.Destroy();
+  object2.Destroy();
 }
 
 auto level_container::OnContainment(auto&& object1, auto&& object2) -> void

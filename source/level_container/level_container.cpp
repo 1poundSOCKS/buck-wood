@@ -12,7 +12,7 @@ level_container::level_container() : level_container(collision_type::boundary)
 
 level_container::level_container(collision_type collisionType) : 
   m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionRunner { collisionType }, m_containmentRunner { collisionType }, 
-  m_containmentTest { collisionType }
+  m_collisionTest { collisionType }, m_containmentTest { collisionType }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
@@ -174,14 +174,42 @@ auto level_container::DoCollisions() -> void
   level_collision_handler collisionHandler;
 
   m_particleCollisionRunner(m_particles, m_wallCollisionObjects, true);
-  m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
-  m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
-  m_collisionRunner(m_playerCollisionObjects, m_exitCollisionObjects, collisionHandler);
-  m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
-  m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
+  // m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
+  // m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
+  // m_collisionRunner(m_playerCollisionObjects, m_exitCollisionObjects, collisionHandler);
+  // m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
+  // m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
+
+  m_compare(m_playerCollisionObjects, m_wallCollisionObjects, [this](auto& object1, auto& object2)
+  {
+    if( m_collisionTest(object1, object2) )
+    {
+      OnCollision<player_bullet, level_wall>(object1.Object(), object2.Object());
+    }
+  });
+
+  m_compare(m_enemyCollisionObjects, m_wallCollisionObjects, [this](auto& object1, auto& object2)
+  {
+    if( m_collisionTest(object1, object2) )
+    {
+      OnCollision<enemy_bullet_1, level_wall>(object1.Object(), object2.Object());
+    }
+  });
 
   m_compare(m_playerCollisionObjects, m_enemyCollisionObjects, [this](auto& object1, auto& object2)
   {
+    if( m_collisionTest(object1, object2) )
+    {
+      OnCollision<player_bullet, enemy_type_1>(object1.Object(), object2.Object());
+      OnCollision<player_bullet, enemy_type_2>(object1.Object(), object2.Object());
+      OnCollision<player_bullet, enemy_type_3>(object1.Object(), object2.Object());      
+      OnCollision<player_ship, enemy_type_1>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_type_2>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_type_3>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_bullet_1>(object1.Object(), object2.Object());
+      OnCollision<player_ship, power_up>(object1.Object(), object2.Object());
+    }
+    
     if( m_containmentTest(object1, object2) )
     {
       OnContainment<player_ship, portal>(object1.Object(), object2.Object());
