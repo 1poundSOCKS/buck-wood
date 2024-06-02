@@ -27,7 +27,7 @@ private:
 
 private:
 
-  inline static constexpr float m_speed { 400 };
+  inline static constexpr float m_speed { 600 };
   std::optional<level_cell_item> m_destination;
 
 };
