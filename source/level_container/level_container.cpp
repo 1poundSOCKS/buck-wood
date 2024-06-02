@@ -2,8 +2,6 @@
 #include "level_container.h"
 #include "renderers.h"
 #include "particle_functions.h"
-#include "level_collision_handler.h"
-#include "level_containment_handler.h"
 #include "player_state.h"
 
 level_container::level_container() : level_container(collision_type::boundary)
@@ -171,14 +169,7 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::DoCollisions() -> void
 {
-  level_collision_handler collisionHandler;
-
   m_particleCollisionRunner(m_particles, m_wallCollisionObjects, true);
-  // m_collisionRunner(m_playerCollisionObjects, m_enemyCollisionObjects, collisionHandler);
-  // m_collisionRunner(m_playerCollisionObjects, m_wallCollisionObjects, collisionHandler);
-  // m_collisionRunner(m_playerCollisionObjects, m_exitCollisionObjects, collisionHandler);
-  // m_collisionRunner(m_enemyCollisionObjects, m_wallCollisionObjects, collisionHandler);
-  // m_collisionRunner(m_enemyCollisionObjects, m_exitCollisionObjects, collisionHandler);
 
   m_compare(m_playerCollisionObjects, m_wallCollisionObjects, [this](auto& object1, auto& object2)
   {
@@ -323,6 +314,95 @@ auto level_container::AddCellCollisionObject(default_object& object, level_wall 
 
     case level_cell_type::exit:
       m_exitCollisionObjects.emplace_back(object);
+      break;
+  }
+}
+
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
+{
+  enemy.ApplyDamage(bullet.Damage());
+  bullet.Destroy();
+}
+
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void
+{
+  bullet.Destroy();
+  enemy.ApplyDamage(bullet.Damage());
+}
+
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void
+{
+  bullet.Destroy();
+  enemy.ApplyDamage(bullet.Damage());
+}
+
+auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
+{
+  switch( player_state::get_status() )
+  {
+    case player_state::status::active:
+      ship.Destroy();
+      break;
+    case player_state::status::celebrating:
+      break;
+  }
+
+  enemy.Destroy();
+}
+
+auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy) -> void
+{
+  switch( player_state::get_status() )
+  {
+    case player_state::status::active:
+      ship.Destroy();
+      break;
+    case player_state::status::celebrating:
+      break;
+  }
+
+  enemy.Destroy();
+}
+
+auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy) -> void
+{
+  switch( player_state::get_status() )
+  {
+    case player_state::status::active:
+      ship.Destroy();
+      break;
+    case player_state::status::celebrating:
+      break;
+  }
+
+  enemy.Destroy();
+}
+
+auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void
+{
+  switch( player_state::get_status() )
+  {
+    case player_state::status::active:
+      playerShip.Destroy();
+      break;
+    case player_state::status::celebrating:
+      break;
+  }
+
+  enemyBullet.Destroy();
+}
+
+auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp) -> void
+{
+  powerUp.Destroy();
+}
+
+auto level_container::OnCollision(player_ship &ship, level_wall &wall) -> void
+{
+  switch( wall.Type() )
+  {
+    case level_cell_type::exit:
+      m_exitCell = wall.CellId();
       break;
   }
 }
