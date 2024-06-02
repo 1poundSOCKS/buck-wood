@@ -25,22 +25,16 @@ auto level_container::Create(object_type objectType, POINT_2F position) -> defau
   {
     case object_type::portal_entry:
       return CreateNoninteractiveObject(std::in_place_type<portal>, position, { 1, 1 }, 0);
-      break;
     case object_type::portal_exit:
       return CreateEnemyObject(std::in_place_type<portal>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
     case object_type::player:
       return CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
     case object_type::enemy_stalker:
       return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
     case object_type::enemy_random:
       return CreateEnemyObject(std::in_place_type<enemy_type_2>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
     case object_type::enemy_turret:
       return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0, { 0, 0 });
-      break;
     case object_type::power_up:
       return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
     default:
