@@ -9,12 +9,11 @@
 #include "game_settings.h"
 #include "linear_allocator.h"
 #include "collisions/particle_collision.h"
-#include "collisions/geometry_collision_binary.h"
-#include "collisions/geometry_containment.h"
-#include "collisions/geometry_containment_runner.h"
 #include "collisions/cell_collision_tests.h"
 #include "collisions/collision_object.h"
 #include "collisions/range_comparision_runner.h"
+#include "collisions/geometry_collision.h"
+#include "collisions/geometry_containment.h"
 
 class level_container
 {
@@ -149,10 +148,7 @@ private:
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
-  geometry_collision_binary m_collisionRunner;
-  geometry_containment_runner m_containmentRunner;
   particle_collision m_particleCollisionRunner;
-
   range_comparison_runner m_compare;
   geometry_collision m_collisionTest;
   geometry_containment m_containmentTest;
