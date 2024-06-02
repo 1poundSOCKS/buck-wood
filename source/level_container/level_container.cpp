@@ -118,7 +118,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_playerCollisionObjects.clear();
 
-  EnumeratPlayerObjects(false, [this](auto& object)
+  EnumeratePlayerObjects(false, [this](auto& object)
   {
     m_playerCollisionObjects.emplace_back(object);
   });

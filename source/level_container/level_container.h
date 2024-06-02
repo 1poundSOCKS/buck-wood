@@ -41,14 +41,11 @@ public:
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
 
-  auto EnumerateWallObjects(auto&& visitor) -> void;
-  auto EnumeratPlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+  auto EnumeratePlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateEnemies(auto&& visitor) const -> void;
-
+  auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
-
   auto EnumerateParticles(auto&& visitor) const -> void;
 
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
@@ -231,15 +228,7 @@ inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> v
   }
 }
 
-inline auto level_container::EnumerateWallObjects(auto &&visitor) -> void
-{
-  for( auto& object : m_wallObjects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumeratPlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
+inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
   auto objects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
   {
@@ -273,14 +262,19 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
   }
 }
 
-inline auto level_container::EnumerateEnemies(auto &&visitor) const -> void
+inline auto level_container::EnumerateEnemies(bool includeDestroyedObjects, auto &&visitor) const -> void
 {
   auto enemies = std::ranges::views::filter(m_enemyObjects, [this](const auto& object)
   {
     return object.HoldsAlternative<enemy_type_1>() || object.HoldsAlternative<enemy_type_2>() || object.HoldsAlternative<enemy_type_3>();
   });
 
-  for( const auto& object : enemies )
+  auto objects = std::ranges::views::filter(enemies, [includeDestroyedObjects](const auto& object)
+  {
+    return includeDestroyedObjects || !object.Destroyed();
+  });
+
+  for( const auto& object : objects )
   {
     visitor(object);
   }
