@@ -15,10 +15,6 @@ class player_ship : public base_object
 
 public:
 
-  using points_collection = std::vector<D2D1_POINT_2F>;
-
-public:
-
   player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
   auto Update(float interval) -> void;
@@ -44,7 +40,7 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 2000.0f };
+  static constexpr float m_thrustPower { 4000.0f };
   static constexpr float m_friction { 0.95f };
   static constexpr SIZE_F m_objectSize { 60, 60 };
 
