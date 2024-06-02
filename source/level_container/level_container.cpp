@@ -390,16 +390,6 @@ auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp) ->
   powerUp.Destroy();
 }
 
-auto level_container::OnCollision(player_ship &ship, level_wall &wall) -> void
-{
-  switch( wall.Type() )
-  {
-    case level_cell_type::exit:
-      m_exitCell = wall.CellId();
-      break;
-  }
-}
-
 auto level_container::OnContainment(player_ship &player, portal &portalObj) -> void
 {
   auto exitCell = portalObj.CellId();

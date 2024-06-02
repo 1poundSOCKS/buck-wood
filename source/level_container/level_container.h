@@ -95,7 +95,6 @@ private:
   auto OnCollision(player_ship& playerShip, enemy_type_3& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp) -> void;
-  auto OnCollision(player_ship& ship, level_wall& wall) -> void;
   auto OnCollision(auto&& object1, auto&& object2) -> void;
 
   template <typename object_type_1, typename object_type_2> auto OnContainment(default_object& object1, default_object& object2) -> void;
@@ -416,8 +415,6 @@ template <typename object_type_1, typename object_type_2> auto level_container::
 
 auto level_container::OnCollision(auto&& object1, auto&& object2) -> void
 {
-  object1.Destroy();
-  object2.Destroy();
 }
 
 auto level_container::OnContainment(auto&& object1, auto&& object2) -> void
