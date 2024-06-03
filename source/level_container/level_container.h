@@ -14,6 +14,7 @@
 #include "collisions/range_comparision_runner.h"
 #include "collisions/geometry_collision.h"
 #include "collisions/geometry_containment.h"
+#include "linear_allocator_2.h"
 
 class level_container
 {
@@ -117,7 +118,8 @@ private:
   using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
   using WallObjectAllocator = linear_allocator<default_object, size_t { 500 }>;
   using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
-  using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
+  // using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
+  using EnemyObjectAllocator = linear_allocator_2<default_object>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
 
   using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
@@ -135,6 +137,9 @@ private:
   particle_collection m_particles;
 
   player_ship m_playerState;
+
+  linear_allocator_state m_defaultObjectBuffer;
+  EnemyObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
 
   noninteractive_object_collection m_noninteractiveObjects;
   wall_object_collection m_wallObjects;

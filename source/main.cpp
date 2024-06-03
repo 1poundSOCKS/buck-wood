@@ -13,6 +13,8 @@
 #include "game_state.h"
 #include "game_level_data_loader.h"
 #include "player_state.h"
+// #include "linear_allocator_2.h"
+// #include "default_object.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -23,6 +25,8 @@
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"RuntimeObject.lib")
 #pragma comment(lib,"Shell32.lib")
+
+// linear_allocator_state<default_object>* linear_allocator_2<default_object>::m_state { nullptr };
 
 auto initialize_all(HINSTANCE instance) -> void;
 auto destroy_all() -> void;
@@ -66,6 +70,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
   initialize_all(instance);
 
   game_clock::setMultiplier(1.6f);
+
+  // linear_allocator_2<default_object>::init();
 
   run_main_menu_screen();
 

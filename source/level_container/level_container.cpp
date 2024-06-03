@@ -9,7 +9,7 @@ level_container::level_container() : level_container(collision_type::boundary)
 }
 
 level_container::level_container(collision_type collisionType) : 
-  m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }
+  m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }, m_enemyObjects { m_defaultObjectAllocator }
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
