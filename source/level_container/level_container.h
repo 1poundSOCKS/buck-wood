@@ -115,17 +115,13 @@ private:
 
 private:
 
-  using NoninteractiveObjectAllocator = linear_allocator<default_object, size_t { 10 }>;
-  using WallObjectAllocator = linear_allocator<default_object, size_t { 500 }>;
-  using PlayerObjectAllocator = linear_allocator<default_object, size_t { 50 }>;
-  // using EnemyObjectAllocator = linear_allocator<default_object, size_t { 100 }>;
-  using EnemyObjectAllocator = linear_allocator_2<default_object>;
   using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
+  using DefaultObjectAllocator = linear_allocator_2<default_object>;
 
-  using noninteractive_object_collection = std::list<default_object, NoninteractiveObjectAllocator>;
-  using wall_object_collection = std::list<default_object, WallObjectAllocator>;
-  using player_object_collection = std::list<default_object, PlayerObjectAllocator>;
-  using enemy_object_collection = std::list<default_object, EnemyObjectAllocator>;
+  using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
+  using wall_object_collection = std::list<default_object, DefaultObjectAllocator>;
+  using player_object_collection = std::list<default_object, DefaultObjectAllocator>;
+  using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using particle_collection = std::list<particle, ParticleAllocator>;
   using collision_object_collection = std::vector<collision_object>;
 
@@ -139,7 +135,7 @@ private:
   player_ship m_playerState;
 
   linear_allocator_state m_defaultObjectBuffer;
-  EnemyObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
+  DefaultObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
 
   noninteractive_object_collection m_noninteractiveObjects;
   wall_object_collection m_wallObjects;

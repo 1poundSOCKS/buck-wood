@@ -14,6 +14,11 @@ public:
     BYTE* allocate(const size_t size, const size_t n);
     void deallocate(BYTE* const p, size_t) noexcept;
 
+    [[nodiscard]] auto AllocationCount() const -> size_t
+    {
+        return m_count - m_freeMemory.size();
+    }
+
 private:
 
     [[nodiscard]] auto get(size_t index) const noexcept -> BYTE*
@@ -26,7 +31,7 @@ private:
       return object >= m_buffer.get() && object < m_buffer.get() + m_count * m_size;
     }
 
-    inline static constexpr size_t m_count { 5000 };
+    inline static constexpr size_t m_count { 1000 };
     size_t m_size { 0 };
     std::unique_ptr<BYTE[]> m_buffer;
     std::stack<BYTE*,std::vector<BYTE*>> m_freeMemory;
