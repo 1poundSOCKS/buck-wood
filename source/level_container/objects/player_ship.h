@@ -40,7 +40,7 @@ private:
 
 private:
 
-  static constexpr float m_thrustPower { 4000.0f };
+  static constexpr float m_thrustPower { 3000.0f };
   static constexpr float m_friction { 0.95f };
   static constexpr SIZE_F m_objectSize { 60, 60 };
 
