@@ -90,6 +90,8 @@ private:
   auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void;
+  auto OnCollision(player_bullet& bullet, level_wall& wall) -> void;
+  auto OnCollision(enemy_bullet_1& bullet, level_wall& wall) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_1& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_3& enemy) -> void;

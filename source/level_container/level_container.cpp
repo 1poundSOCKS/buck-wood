@@ -329,6 +329,16 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy) ->
   enemy.ApplyDamage(bullet.Damage());
 }
 
+auto level_container::OnCollision(player_bullet &bullet, level_wall &wall) -> void
+{
+  bullet.Destroy();
+}
+
+auto level_container::OnCollision(enemy_bullet_1 &bullet, level_wall &wall) -> void
+{
+  bullet.Destroy();
+}
+
 auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy) -> void
 {
   switch( player_state::get_status() )
