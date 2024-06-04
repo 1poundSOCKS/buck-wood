@@ -1,5 +1,6 @@
 #pragma once
 
+#include "framework.h"
 #include "default_object.h"
 #include "level_cell_collection.h"
 #include "level_explosion.h"
@@ -7,14 +8,12 @@
 #include "play_events.h"
 #include "game_score.h"
 #include "game_settings.h"
-#include "linear_allocator.h"
 #include "collisions/particle_collision.h"
 #include "collisions/cell_collision_tests.h"
 #include "collisions/collision_object.h"
 #include "collisions/range_comparision_runner.h"
 #include "collisions/geometry_collision.h"
 #include "collisions/geometry_containment.h"
-#include "linear_allocator_2.h"
 
 class level_container
 {
@@ -115,34 +114,35 @@ private:
 
 private:
 
-  using ParticleAllocator = linear_allocator<particle, size_t { 1000 }>;
   using DefaultObjectAllocator = linear_allocator_2<default_object>;
-
   using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using wall_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using player_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
+
+  linear_allocator_state m_defaultObjectBuffer;
+  DefaultObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
+
+  using ParticleAllocator = linear_allocator_2<particle>;
   using particle_collection = std::list<particle, ParticleAllocator>;
-  using collision_object_collection = std::vector<collision_object>;
+
+  linear_allocator_state m_particleBuffer;
+  ParticleAllocator m_particleAllocator { m_particleBuffer };
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
   bool m_exit { false };
   POINT_2I m_exitCell { 0, 0 };
 
-  particle_collection m_particles;
-
   player_ship m_playerState;
-
-  linear_allocator_state m_defaultObjectBuffer;
-  DefaultObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
 
   noninteractive_object_collection m_noninteractiveObjects;
   wall_object_collection m_wallObjects;
   player_object_collection m_playerObjects;
   enemy_object_collection m_enemyObjects;
+  particle_collection m_particles;
 
-  std::optional<targetted_object> m_targettedObject;
+  using collision_object_collection = std::vector<collision_object>;
 
   collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_floorCollisionObjects;
@@ -157,6 +157,7 @@ private:
 
   enemy_object_collection::size_type m_enemyCount { 0 };
 
+  std::optional<targetted_object> m_targettedObject;
 };
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
