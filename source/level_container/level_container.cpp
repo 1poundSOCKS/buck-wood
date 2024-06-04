@@ -32,7 +32,12 @@ auto level_container::Create(object_type objectType, POINT_2F position) -> defau
     case object_type::portal_exit:
       return CreateEnemyObject(std::in_place_type<portal>, position, { 1, 1 }, 0, { 0, 0 });
     case object_type::player:
-      return CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
+    {
+      auto& defaultObject = CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
+      auto* player = defaultObject.GetIf<player_ship>();
+      m_playerState = *player;
+      return defaultObject;
+    }
     case object_type::enemy_stalker:
       return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0, { 0, 0 });
     case object_type::enemy_random:
