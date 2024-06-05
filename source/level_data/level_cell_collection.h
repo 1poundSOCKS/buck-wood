@@ -9,13 +9,8 @@ class level_cell_collection
 
 public:
 
-  using key_type = std::tuple<int, int>;
-  using map_entry_type = std::pair<const key_type, level_cell_item>;
-  using cell_allocator_type = custom_allocator<map_entry_type>;
-  using collection_allocator_type = custom_allocator<map_entry_type>;
-  using collection_type = std::map<key_type, level_cell_item, std::less<key_type>, collection_allocator_type>;
   enum class cell_type { empty, wall, floor };
-  using cell_id = key_type;
+  using cell_id = std::tuple<int, int>;
 
 public:
 
@@ -29,7 +24,6 @@ public:
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
-  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
@@ -48,6 +42,15 @@ public:
 
 private:
 
+  using key_type = cell_id;
+  using map_entry_type = std::pair<const key_type, level_cell_item>;
+  using cell_allocator_type = custom_allocator<map_entry_type>;
+  using collection_allocator_type = custom_allocator<map_entry_type>;
+  using collection_type = std::map<key_type, level_cell_item, std::less<key_type>, collection_allocator_type>;
+
+private:
+
+  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
