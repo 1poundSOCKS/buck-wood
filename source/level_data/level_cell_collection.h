@@ -11,7 +11,7 @@ public:
 
   using key_type = std::tuple<int, int>;
   using map_entry_type = std::pair<const key_type, level_cell_item>;
-  using CellAllocator = custom_allocator<map_entry_type>;
+  using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
   using collection_type = std::map<key_type, level_cell_item, std::less<key_type>, collection_allocator_type>;
   enum class cell_type { empty, wall, floor };
@@ -60,7 +60,7 @@ private:
   int m_cellHeight;
 
   custom_allocator_state m_cellBuffer;
-  CellAllocator m_cellAllocator;
+  cell_allocator_type m_cellAllocator;
   collection_type m_cells;
 
 };
