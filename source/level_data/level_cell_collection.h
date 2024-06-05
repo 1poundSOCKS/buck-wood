@@ -21,7 +21,6 @@ public:
 
   level_cell_collection(int cellWidth, int cellHeight);
 
-  [[nodiscard]] auto Get() const noexcept -> const collection_type&;
   [[nodiscard]] auto Get(cell_id cellId) const -> const level_cell_item&;
 
   auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
@@ -64,11 +63,6 @@ private:
   collection_type m_cells;
 
 };
-
-inline [[nodiscard]] auto level_cell_collection::Get() const noexcept -> const collection_type&
-{
-  return m_cells;
-}
 
 inline auto level_cell_collection::Get(cell_id cellId) const -> const level_cell_item &
 {
