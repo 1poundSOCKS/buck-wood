@@ -114,19 +114,19 @@ private:
 
 private:
 
-  using DefaultObjectAllocator = linear_allocator_2<default_object>;
+  using DefaultObjectAllocator = custom_allocator<default_object>;
   using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using wall_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using player_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
 
-  linear_allocator_state m_defaultObjectBuffer;
+  custom_allocator_state m_defaultObjectBuffer;
   DefaultObjectAllocator m_defaultObjectAllocator;
 
-  using ParticleAllocator = linear_allocator_2<particle>;
+  using ParticleAllocator = custom_allocator<particle>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
-  linear_allocator_state m_particleBuffer;
+  custom_allocator_state m_particleBuffer;
   ParticleAllocator m_particleAllocator;
 
   static constexpr float m_maxTargetRange { 1000.0f };

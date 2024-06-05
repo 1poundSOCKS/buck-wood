@@ -1,11 +1,11 @@
 #pragma once
 
-class linear_allocator_state
+class custom_allocator_state
 {
 
 public:
 
-    linear_allocator_state(size_t size, size_t count) noexcept : m_size { size }, m_count { count }
+    custom_allocator_state(size_t size, size_t count) noexcept : m_size { size }, m_count { count }
     {
         m_buffer = std::make_unique<BYTE[]>(m_size * m_count);
 
@@ -47,7 +47,7 @@ private:
     size_t m_heapAllocations { 0 };
 };
 
-inline BYTE* linear_allocator_state::allocate(const size_t size, const size_t n)
+inline BYTE* custom_allocator_state::allocate(const size_t size, const size_t n)
 {
     auto requiredBufferSize = size * n;
 
@@ -64,7 +64,7 @@ inline BYTE* linear_allocator_state::allocate(const size_t size, const size_t n)
     }
 }
 
-inline void linear_allocator_state::deallocate(BYTE * const p, size_t) noexcept
+inline void custom_allocator_state::deallocate(BYTE * const p, size_t) noexcept
 {
     if( contains(p) )
     {
