@@ -35,5 +35,4 @@
 
 #include "color_scale_brushes.h"
 
-#include "linear_allocator.h"
 #include "linear_allocator_2.h"

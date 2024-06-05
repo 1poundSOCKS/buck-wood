@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "level_cell_collection.h"
 
-level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : m_cellWidth { cellWidth}, m_cellHeight { cellHeight }
+level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : 
+  m_cellWidth { cellWidth}, m_cellHeight { cellHeight }, 
+  m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }
 {
   auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
   auto cellBottomLeft = POINT_2F { CellTopLeft().x, CellBottomRight().y };

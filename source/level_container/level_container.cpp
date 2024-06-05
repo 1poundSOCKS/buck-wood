@@ -11,11 +11,13 @@ level_container::level_container() : level_container(collision_type::boundary)
 level_container::level_container(collision_type collisionType) : 
   m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }, 
   m_defaultObjectBuffer { 128, 0 },
-  m_particleBuffer { 64, 0 },
+  m_defaultObjectAllocator { m_defaultObjectBuffer },
   m_noninteractiveObjects { m_defaultObjectAllocator },
   m_wallObjects { m_defaultObjectAllocator },
   m_playerObjects { m_defaultObjectAllocator },
   m_enemyObjects { m_defaultObjectAllocator },
+  m_particleBuffer { 64, 0 },
+  m_particleAllocator { m_particleBuffer },
   m_particles { m_particleAllocator }
 {
   m_wallCollisionObjects.reserve(500);

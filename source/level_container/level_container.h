@@ -121,13 +121,13 @@ private:
   using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
 
   linear_allocator_state m_defaultObjectBuffer;
-  DefaultObjectAllocator m_defaultObjectAllocator { m_defaultObjectBuffer };
+  DefaultObjectAllocator m_defaultObjectAllocator;
 
   using ParticleAllocator = linear_allocator_2<particle>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
   linear_allocator_state m_particleBuffer;
-  ParticleAllocator m_particleAllocator { m_particleBuffer };
+  ParticleAllocator m_particleAllocator;
 
   static constexpr float m_maxTargetRange { 1000.0f };
 
