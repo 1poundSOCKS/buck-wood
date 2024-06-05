@@ -5,8 +5,14 @@ class linear_allocator_state
 
 public:
 
-    linear_allocator_state() noexcept
+    linear_allocator_state(size_t size, size_t count) noexcept : m_size { size }, m_count { count }
     {
+        m_buffer = std::make_unique<BYTE[]>(m_size * m_count);
+
+        for( size_t i = m_count; i > 0; --i )
+        {
+            m_freeMemory.push(get(i-1));
+        }
     }
 
     BYTE* allocate(const size_t size, const size_t n);
@@ -16,6 +22,11 @@ public:
     {
         return m_count - m_freeMemory.size();
     }
+
+    [[nodiscard]] auto HeapAllocationCount() const -> size_t
+    {
+        return m_heapAllocations;
+    }    
 
 private:
 
@@ -29,33 +40,28 @@ private:
       return object >= m_buffer.get() && object < m_buffer.get() + m_count * m_size;
     }
 
-    inline static constexpr size_t m_count { 1000 };
-    size_t m_size { 0 };
+    size_t m_size;
+    size_t m_count;
     std::unique_ptr<BYTE[]> m_buffer;
     std::stack<BYTE*,std::vector<BYTE*>> m_freeMemory;
+    size_t m_heapAllocations { 0 };
 };
 
 inline BYTE* linear_allocator_state::allocate(const size_t size, const size_t n)
 {
-    if( m_buffer == nullptr )
+    auto requiredBufferSize = size * n;
+
+    if( requiredBufferSize > m_size || m_freeMemory.size() == 0 )
     {
-        m_size = size;
-        m_buffer = std::make_unique<BYTE[]>(m_size * m_count);
-
-        for( size_t i = m_count; i > 0; --i )
-        {
-            m_freeMemory.push(get(i-1));
-        }
+        ++m_heapAllocations;
+        return new BYTE[requiredBufferSize];
     }
-
-    if( size != m_size )
+    else
     {
-        return new BYTE[size * n];
+        auto allocated = m_freeMemory.top();
+        m_freeMemory.pop();
+        return allocated;
     }
-
-    auto allocated = m_freeMemory.top();
-    m_freeMemory.pop();
-    return allocated;
 }
 
 inline void linear_allocator_state::deallocate(BYTE * const p, size_t) noexcept
@@ -66,6 +72,7 @@ inline void linear_allocator_state::deallocate(BYTE * const p, size_t) noexcept
     }
     else
     {
+        --m_heapAllocations;
         delete [] reinterpret_cast<BYTE*>(p);
     }
 }

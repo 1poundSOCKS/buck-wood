@@ -10,6 +10,8 @@ level_container::level_container() : level_container(collision_type::boundary)
 
 level_container::level_container(collision_type collisionType) : 
   m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }, 
+  m_defaultObjectBuffer { 128, 0 },
+  m_particleBuffer { 64, 0 },
   m_noninteractiveObjects { m_defaultObjectAllocator },
   m_wallObjects { m_defaultObjectAllocator },
   m_playerObjects { m_defaultObjectAllocator },
@@ -147,7 +149,11 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
   
-  diagnostics::add(L"allocated buffers", static_cast<int>(m_defaultObjectBuffer.AllocationCount()));
+  diagnostics::add(L"default object - allocated buffers", static_cast<int>(m_defaultObjectBuffer.AllocationCount()));
+  diagnostics::add(L"default object - heap allocations", static_cast<int>(m_defaultObjectBuffer.HeapAllocationCount()));
+  
+  diagnostics::add(L"particle - allocated buffers", static_cast<int>(m_particleBuffer.AllocationCount()));
+  diagnostics::add(L"particle - heap allocations", static_cast<int>(m_particleBuffer.HeapAllocationCount()));
 }
 
 auto level_container::UpdateObjects(float interval) -> void
