@@ -3,28 +3,27 @@
 
 adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, cell_id cellId) : m_cells { cells }, m_cellId { cellId }
 {
-  auto aboveId = m_cellId.Get(cell_id::relative_position::above);
-  auto rightId = m_cellId.Get(cell_id::relative_position::right);
-  auto belowId = m_cellId.Get(cell_id::relative_position::below);
-  auto leftId = m_cellId.Get(cell_id::relative_position::left);
+  auto cellPositions = std::array {
+    cell_id::relative_position::above,
+    cell_id::relative_position::right,
+    cell_id::relative_position::below,
+    cell_id::relative_position::left
+  };
 
-  bool aboveIsFloor = m_cells.IsTypeOf(aboveId, level_cell_type::floor);
-  bool rightIsFloor = m_cells.IsTypeOf(rightId, level_cell_type::floor);
-  bool belowIsFloor = m_cells.IsTypeOf(belowId, level_cell_type::floor);
-  bool leftIsFloor = m_cells.IsTypeOf(leftId, level_cell_type::floor);
+  auto cellIds = std::ranges::views::transform(cellPositions, [this](auto position)
+  {
+    return m_cellId.Get(position);
+  });
 
-  auto adjacentFloorCellCount = 0;
-  adjacentFloorCellCount += aboveIsFloor ? 1 : 0;
-  adjacentFloorCellCount += rightIsFloor ? 1 : 0;
-  adjacentFloorCellCount += belowIsFloor ? 1 : 0;
-  adjacentFloorCellCount += leftIsFloor ? 1 : 0;
+  auto floorCellIds = std::ranges::views::filter(cellIds, [this](auto cellId)
+  {
+    return m_cells.IsTypeOf(cellId, level_cell_type::floor);
+  });
 
-  m_adjacentCellIds.reserve(adjacentFloorCellCount);
+  auto floorCellCount = std::ranges::distance(floorCellIds);
 
-  if( aboveIsFloor ) m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::above));
-  if( rightIsFloor ) m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::right));
-  if( belowIsFloor ) m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::below));
-  if( leftIsFloor ) m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::left));
+  m_adjacentCellIds.reserve(floorCellCount);
+  std::ranges::copy(floorCellIds, std::back_inserter(m_adjacentCellIds));
 }
 
 auto adjacent_floor_cells::Count() const noexcept -> size_t
