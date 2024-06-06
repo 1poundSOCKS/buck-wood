@@ -9,7 +9,6 @@ class level_cell_collection
 
 public:
 
-  enum class cell_type { empty, wall, floor };
   using cell_id = std::tuple<int, int>;
 
 public:
@@ -23,8 +22,7 @@ public:
 
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
-  [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
-  static [[nodiscard]] auto LevelCellType(cell_type cellType) -> level_cell_type;
+  [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
@@ -33,7 +31,7 @@ public:
   [[nodiscard]] auto MinRow() const noexcept -> int;
   [[nodiscard]] auto MaxRow() const noexcept -> int;
 
-  [[nodiscard]] auto IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool;
+  [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
@@ -51,7 +49,7 @@ private:
 
 private:
 
-  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> cell_type;
+  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;

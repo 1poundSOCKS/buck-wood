@@ -45,6 +45,13 @@ auto level_cell_collection::CellHeight() const -> int
   return m_cellHeight;
 }
 
+auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
+{
+  const auto& [column, row] = CellId(position);
+  auto cell = m_cells.find({column, row});
+  return cell != m_cells.end() ? CellType(cell) : level_cell_type::none;
+}
+
 auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
 {
   return POINT_2F(static_cast<float>(x * m_cellWidth), static_cast<float>(y * m_cellHeight));
@@ -72,21 +79,21 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   auto aboveRightCellRect = ExpandRect(CellRect(aboveRightCellId), objectSize);
   auto belowRightCellRect = ExpandRect(CellRect(belowRightCellId), objectSize);
 
-  auto wallLeft = IsTypeOf(leftCellId, cell_type::wall) ? leftCellRect.right : leftCellRect.left;
-  auto wallLeftAbove = IsTypeOf(aboveLeftCellId, cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
-  auto wallLeftBelow = IsTypeOf(belowLeftCellId, cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
+  auto wallLeft = IsTypeOf(leftCellId, level_cell_type::wall) ? leftCellRect.right : leftCellRect.left;
+  auto wallLeftAbove = IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
+  auto wallLeftBelow = IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
 
-  auto wallAbove = IsTypeOf(aboveCellId, cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
-  auto wallAboveLeft = IsTypeOf(aboveLeftCellId, cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
-  auto wallAboveRight = IsTypeOf(aboveRightCellId, cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
+  auto wallAbove = IsTypeOf(aboveCellId, level_cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
+  auto wallAboveLeft = IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
+  auto wallAboveRight = IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
 
-  auto wallRight = IsTypeOf(rightCellId, cell_type::wall) ? rightCellRect.left : rightCellRect.right;
-  auto wallRightAbove = IsTypeOf(aboveRightCellId, cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
-  auto wallRightBelow = IsTypeOf(belowRightCellId, cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
+  auto wallRight = IsTypeOf(rightCellId, level_cell_type::wall) ? rightCellRect.left : rightCellRect.right;
+  auto wallRightAbove = IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
+  auto wallRightBelow = IsTypeOf(belowRightCellId, level_cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
 
-  auto wallBelow = IsTypeOf(belowCellId, cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
-  auto wallBelowLeft = IsTypeOf(belowLeftCellId, cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
-  auto wallBelowRight = IsTypeOf(belowRightCellId, cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
+  auto wallBelow = IsTypeOf(belowCellId, level_cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
+  auto wallBelowLeft = IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
+  auto wallBelowRight = IsTypeOf(belowRightCellId, level_cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
 
   wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
   wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
@@ -120,41 +127,10 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
 
-[[nodiscard]] auto level_cell_collection::CellType(POINT_2F position) const -> cell_type
-{
-  const auto& [column, row] = CellId(position);
-  auto cell = m_cells.find({column, row});
-  return cell != m_cells.end() ? CellType(cell) : cell_type::empty;
-}
-
-auto level_cell_collection::LevelCellType(cell_type cellType) -> level_cell_type
-{
-  switch( cellType )
-  {
-    case cell_type::wall:
-      return level_cell_type::wall;
-    case cell_type::floor:
-      return level_cell_type::floor;
-    default:
-      return level_cell_type::none;
-  }
-}
-
-auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> cell_type
+auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> level_cell_type
 {
   const auto& [celId, cellType] = *cell;
-
-  switch( cellType )
-  {
-    case level_cell_type::floor:
-      return cell_type::floor;
-    case level_cell_type::wall:
-      return cell_type::wall;
-    case level_cell_type::exit:
-      return cell_type::wall;
-    default:
-      return cell_type::empty;
-  }
+  return cellType;
 }
 
 [[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
@@ -230,26 +206,10 @@ auto level_cell_collection::MaxRow() const noexcept -> int
   return *maxElement;
 }
 
-auto level_cell_collection::IsTypeOf(cell_id cellId, cell_type cellType) const noexcept -> bool
+auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool
 {
   auto cellIterator = m_cells.find(cellId);
-
-  if( cellIterator == std::end(m_cells) )
-  {
-    return false;
-  }
-  else
-  {
-    switch( cellIterator->second )
-    {
-      case level_cell_type::wall:
-        return cellType == cell_type::wall;
-      case level_cell_type::floor:
-        return cellType == cell_type::floor;
-      default:
-        return false;
-    }
-  }
+  return cellIterator == std::end(m_cells) ? false : cellIterator->second == cellType;
 }
 
 [[nodiscard]] auto level_cell_collection::ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F

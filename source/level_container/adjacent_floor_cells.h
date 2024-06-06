@@ -13,7 +13,7 @@
 
   auto adjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [&cells](auto cellId)
   {
-    return cells.IsTypeOf(cellId, level_cell_collection::cell_type::floor);
+    return cells.IsTypeOf(cellId, level_cell_type::floor);
   });
 
   for( const auto& adjacentCellId : adjacentFloorCellIds )
