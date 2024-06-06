@@ -17,14 +17,21 @@ private:
 
   const level_cell_collection& m_cells;
   const cell_id m_cellId;
-  std::vector<cell_id> m_adjacentCellIds;
+  std::vector<cell_id> m_cellIds;
+
+  inline static constexpr auto m_cellPositions = std::array {
+    cell_id::relative_position::above,
+    cell_id::relative_position::right,
+    cell_id::relative_position::below,
+    cell_id::relative_position::left
+  };
 
 };
 
 auto adjacent_floor_cells::Enumerate(auto&& callable) -> void
 {
-  for( const auto& cell : m_adjacentCellIds )
+  for( const auto& cellId : m_cellIds )
   {
-    callable(cell);
+    callable(cellId);
   }
 }

@@ -10,7 +10,7 @@ adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, c
   //   cell_id::relative_position::left
   // };
 
-  auto cellIds = std::ranges::views::transform(cellPositions, [this](auto position)
+  auto cellIds = std::ranges::views::transform(m_cellPositions, [this](auto position)
   {
     return m_cellId.Get(position);
   });
@@ -22,16 +22,16 @@ adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, c
 
   auto floorCellCount = std::ranges::distance(floorCellIds);
 
-  m_adjacentCellIds.reserve(floorCellCount);
-  std::ranges::copy(floorCellIds, std::back_inserter(m_adjacentCellIds));
+  m_cellIds.reserve(floorCellCount);
+  std::ranges::copy(floorCellIds, std::back_inserter(m_cellIds));
 }
 
 auto adjacent_floor_cells::Count() const noexcept -> size_t
 {
-  return m_adjacentCellIds.size();
+  return m_cellIds.size();
 }
 
 auto adjacent_floor_cells::operator[](size_t index) -> cell_id
 {
-  return m_adjacentCellIds[index];
+  return m_cellIds[index];
 }
