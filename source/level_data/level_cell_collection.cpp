@@ -61,14 +61,14 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
 {
   auto [column, row] = CellId(position);
 
-  auto aboveCellId = cell_id { column, row - 1 };
-  auto belowCellId = cell_id { column, row + 1 };
-  auto leftCellId = cell_id { column - 1, row };
-  auto rightCellId = cell_id { column + 1, row };
-  auto aboveLeftCellId = cell_id { column - 1, row - 1};
-  auto belowLeftCellId = cell_id { column - 1, row + 1};
-  auto aboveRightCellId = cell_id { column + 1, row - 1};
-  auto belowRightCellId = cell_id { column + 1, row + 1};
+  auto aboveCellId = cell_id_key { column, row - 1 };
+  auto belowCellId = cell_id_key { column, row + 1 };
+  auto leftCellId = cell_id_key { column - 1, row };
+  auto rightCellId = cell_id_key { column + 1, row };
+  auto aboveLeftCellId = cell_id_key { column - 1, row - 1};
+  auto belowLeftCellId = cell_id_key { column - 1, row + 1};
+  auto aboveRightCellId = cell_id_key { column + 1, row - 1};
+  auto belowRightCellId = cell_id_key { column + 1, row + 1};
 
   auto aboveCellRect = ExpandRect(CellRect(aboveCellId), objectSize);
   auto belowCellRect = ExpandRect(CellRect(belowCellId), objectSize);
@@ -133,7 +133,7 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   return cellType;
 }
 
-[[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
+[[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id_key
 {
   auto halfCellWidth = m_cellWidth / 2;
   auto halfCellHeight = m_cellHeight / 2;
@@ -142,7 +142,7 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   return { cellColumn, cellRow };
 }
 
-auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
+auto level_cell_collection::CellRect(cell_id_key cellId) const -> RECT_F
 {
   auto [column, row] = cellId;
   auto orignCellRect = CellRect();
@@ -206,7 +206,7 @@ auto level_cell_collection::MaxRow() const noexcept -> int
   return *maxElement;
 }
 
-auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool
+auto level_cell_collection::IsTypeOf(cell_id_key cellId, level_cell_type cellType) const noexcept -> bool
 {
   auto cellIterator = m_cells.find(cellId);
   return cellIterator == std::end(m_cells) ? false : cellIterator->second == cellType;

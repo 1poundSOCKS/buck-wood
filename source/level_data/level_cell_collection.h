@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "level_types.h"
+#include "level_cell_size.h"
 #include "level_cell_item.h"
 
 class level_cell_collection
@@ -9,13 +10,13 @@ class level_cell_collection
 
 public:
 
-  using cell_id = std::tuple<int, int>;
+  using cell_id_key = std::tuple<int, int>;
 
 public:
 
   level_cell_collection(int cellWidth, int cellHeight);
 
-  [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
+  [[nodiscard]] auto Get(cell_id_key cellId) const -> level_cell_item;
 
   auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
@@ -23,15 +24,15 @@ public:
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
-  [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
-  [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
+  [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id_key;
+  [[nodiscard]] auto CellRect(cell_id_key cellId) const -> RECT_F;
 
   [[nodiscard]] auto MinColumn() const noexcept -> int;
   [[nodiscard]] auto MaxColumn() const noexcept -> int;
   [[nodiscard]] auto MinRow() const noexcept -> int;
   [[nodiscard]] auto MaxRow() const noexcept -> int;
 
-  [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
+  [[nodiscard]] auto IsTypeOf(cell_id_key cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
@@ -41,7 +42,7 @@ public:
 
 private:
 
-  using key_type = cell_id;
+  using key_type = cell_id_key;
   using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
@@ -66,7 +67,7 @@ private:
 
 };
 
-inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
+inline auto level_cell_collection::Get(cell_id_key cellId) const -> level_cell_item
 {
   auto cellType = m_cells.at(cellId);
   auto& [column, row] = cellId;

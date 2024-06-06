@@ -7,7 +7,7 @@ class adjacent_cell_visitor
 
 public:
 
-  adjacent_cell_visitor(level_cell_collection::cell_id cellId) : m_cellId { cellId }
+  adjacent_cell_visitor(level_cell_collection::cell_id_key cellId) : m_cellId { cellId }
   {
   }
 
@@ -32,7 +32,7 @@ public:
     auto adjacentCellIterators = std::ranges::views::transform(adjacentCellIds, [&cellsMap,objectColumn,objectRow](const auto& cellId)
     {
       const auto& [column, row] = cellId;
-      level_cell_collection::cell_id id = { column + objectColumn, row + objectRow };
+      level_cell_collection::cell_id_key id = { column + objectColumn, row + objectRow };
       return cellsMap.find(id);
     });
 
@@ -45,6 +45,6 @@ public:
 
 private:
 
-  level_cell_collection::cell_id m_cellId;
+  level_cell_collection::cell_id_key m_cellId;
 
 };

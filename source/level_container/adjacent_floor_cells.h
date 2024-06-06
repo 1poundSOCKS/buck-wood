@@ -2,13 +2,13 @@
 
 #include "level_cell_collection.h"
 
-[[nodiscard]] auto AdjacentFloorCellIdView(std::ranges::input_range auto&& cellIds, const level_cell_collection& cells, level_cell_collection::cell_id originCellId, auto&& callable) -> void
+[[nodiscard]] auto AdjacentFloorCellIdView(std::ranges::input_range auto&& cellIds, const level_cell_collection& cells, level_cell_collection::cell_id_key originCellId, auto&& callable) -> void
 {
   auto adjacentCellIds = std::ranges::views::transform(cellIds, [originCellId](auto cellId)
   {
     const auto& [column, row] = originCellId;
     const auto& [columnShift, rowShift] = cellId;
-    return level_cell_collection::cell_id { column + columnShift, row + rowShift };
+    return level_cell_collection::cell_id_key { column + columnShift, row + rowShift };
   });
 
   auto adjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [&cells](auto cellId)
@@ -27,23 +27,23 @@ class adjacent_floor_cells
 
 public:
 
-  adjacent_floor_cells(const level_cell_collection& cells, level_cell_collection::cell_id cellId);
+  adjacent_floor_cells(const level_cell_collection& cells, level_cell_collection::cell_id_key cellId);
 
   [[nodiscard]] auto Count() const noexcept -> size_t;
-  [[nodiscard]] auto operator[](size_t index) -> level_cell_collection::cell_id;
+  [[nodiscard]] auto operator[](size_t index) -> level_cell_collection::cell_id_key;
   auto ForEach(auto&& callable) -> void;
 
 private:
 
   const level_cell_collection& m_cells;
-  const level_cell_collection::cell_id m_cellId;
+  const level_cell_collection::cell_id_key m_cellId;
 
   inline static auto m_adjacentCellIdsatOrigin = std::array
   {
-    level_cell_collection::cell_id { 0, -1 },
-    level_cell_collection::cell_id { 1, 0 },
-    level_cell_collection::cell_id { 0, 1 },
-    level_cell_collection::cell_id { -1, 0 }
+    level_cell_collection::cell_id_key { 0, -1 },
+    level_cell_collection::cell_id_key { 1, 0 },
+    level_cell_collection::cell_id_key { 0, 1 },
+    level_cell_collection::cell_id_key { -1, 0 }
   };
 
 };

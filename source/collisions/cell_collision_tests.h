@@ -50,7 +50,7 @@ auto cell_collision_tests::operator()(const level_cell_collection& cells, auto&&
     auto adjacentCellIterators = std::ranges::views::transform(adjacentCellIds, [&cellsMap,objectColumn,objectRow](const auto& cellId)
     {
       const auto& [column, row] = cellId;
-      level_cell_collection::cell_id id = { column + objectColumn, row + objectRow };
+      level_cell_collection::cell_id_key id = { column + objectColumn, row + objectRow };
       return cellsMap.find(id);
     });
 
