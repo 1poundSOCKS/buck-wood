@@ -16,7 +16,7 @@ public:
 
   level_cell_collection(int cellWidth, int cellHeight);
 
-  [[nodiscard]] auto Get(cell_id cellId) const -> const level_cell_item&;
+  [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
   auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
@@ -24,6 +24,7 @@ public:
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> cell_type;
+  static [[nodiscard]] auto LevelCellType(cell_type cellType) -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
@@ -43,10 +44,10 @@ public:
 private:
 
   using key_type = cell_id;
-  using map_entry_type = std::pair<const key_type, level_cell_item>;
+  using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
-  using collection_type = std::map<key_type, level_cell_item, std::less<key_type>, collection_allocator_type>;
+  using collection_type = std::map<key_type, level_cell_type, std::less<key_type>, collection_allocator_type>;
 
 private:
 
@@ -67,17 +68,20 @@ private:
 
 };
 
-inline auto level_cell_collection::Get(cell_id cellId) const -> const level_cell_item &
+inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  return m_cells.at(cellId);
+  auto cellType = m_cells.at(cellId);
+  auto& [column, row] = cellId;
+  auto position = CellPosition(column, row);
+  return { column, row, cellType, position };
 }
 
 auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
 {
-  auto cells = std::ranges::views::transform(m_cells, [](const auto& cell) -> level_cell_item
+  auto cells = std::ranges::views::transform(m_cells, [this](const auto& cell) -> level_cell_item
   {
     const auto& [key, value] = cell;
-    return value;
+    return Get(key);
   });
 
   for( const auto& cell : cells )

@@ -13,7 +13,7 @@ level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) :
 auto level_cell_collection::Add(int x, int y, level_cell_type cellType) noexcept -> void
 {
   POINT_2F position = CellPosition(x, y);
-  m_cells.insert({{x, y}, {x, y, cellType, position}});
+  m_cells.insert({{x, y}, cellType});
 }
 
 auto level_cell_collection::AddWalls() noexcept -> void
@@ -54,14 +54,14 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
 {
   auto [column, row] = CellId(position);
 
-  auto aboveCellId = level_cell_collection::cell_id { column, row - 1 };
-  auto belowCellId = level_cell_collection::cell_id { column, row + 1 };
-  auto leftCellId = level_cell_collection::cell_id { column - 1, row };
-  auto rightCellId = level_cell_collection::cell_id { column + 1, row };
-  auto aboveLeftCellId = level_cell_collection::cell_id { column - 1, row - 1};
-  auto belowLeftCellId = level_cell_collection::cell_id { column - 1, row + 1};
-  auto aboveRightCellId = level_cell_collection::cell_id { column + 1, row - 1};
-  auto belowRightCellId = level_cell_collection::cell_id { column + 1, row + 1};
+  auto aboveCellId = cell_id { column, row - 1 };
+  auto belowCellId = cell_id { column, row + 1 };
+  auto leftCellId = cell_id { column - 1, row };
+  auto rightCellId = cell_id { column + 1, row };
+  auto aboveLeftCellId = cell_id { column - 1, row - 1};
+  auto belowLeftCellId = cell_id { column - 1, row + 1};
+  auto aboveRightCellId = cell_id { column + 1, row - 1};
+  auto belowRightCellId = cell_id { column + 1, row + 1};
 
   auto aboveCellRect = ExpandRect(CellRect(aboveCellId), objectSize);
   auto belowCellRect = ExpandRect(CellRect(belowCellId), objectSize);
@@ -72,21 +72,21 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   auto aboveRightCellRect = ExpandRect(CellRect(aboveRightCellId), objectSize);
   auto belowRightCellRect = ExpandRect(CellRect(belowRightCellId), objectSize);
 
-  auto wallLeft = IsTypeOf(leftCellId, level_cell_collection::cell_type::wall) ? leftCellRect.right : leftCellRect.left;
-  auto wallLeftAbove = IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
-  auto wallLeftBelow = IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
+  auto wallLeft = IsTypeOf(leftCellId, cell_type::wall) ? leftCellRect.right : leftCellRect.left;
+  auto wallLeftAbove = IsTypeOf(aboveLeftCellId, cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
+  auto wallLeftBelow = IsTypeOf(belowLeftCellId, cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
 
-  auto wallAbove = IsTypeOf(aboveCellId, level_cell_collection::cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
-  auto wallAboveLeft = IsTypeOf(aboveLeftCellId, level_cell_collection::cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
-  auto wallAboveRight = IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
+  auto wallAbove = IsTypeOf(aboveCellId, cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
+  auto wallAboveLeft = IsTypeOf(aboveLeftCellId, cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
+  auto wallAboveRight = IsTypeOf(aboveRightCellId, cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
 
-  auto wallRight = IsTypeOf(rightCellId, level_cell_collection::cell_type::wall) ? rightCellRect.left : rightCellRect.right;
-  auto wallRightAbove = IsTypeOf(aboveRightCellId, level_cell_collection::cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
-  auto wallRightBelow = IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
+  auto wallRight = IsTypeOf(rightCellId, cell_type::wall) ? rightCellRect.left : rightCellRect.right;
+  auto wallRightAbove = IsTypeOf(aboveRightCellId, cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
+  auto wallRightBelow = IsTypeOf(belowRightCellId, cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
 
-  auto wallBelow = IsTypeOf(belowCellId, level_cell_collection::cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
-  auto wallBelowLeft = IsTypeOf(belowLeftCellId, level_cell_collection::cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
-  auto wallBelowRight = IsTypeOf(belowRightCellId, level_cell_collection::cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
+  auto wallBelow = IsTypeOf(belowCellId, cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
+  auto wallBelowLeft = IsTypeOf(belowLeftCellId, cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
+  auto wallBelowRight = IsTypeOf(belowRightCellId, cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
 
   wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
   wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});
@@ -127,11 +127,24 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   return cell != m_cells.end() ? CellType(cell) : cell_type::empty;
 }
 
+auto level_cell_collection::LevelCellType(cell_type cellType) -> level_cell_type
+{
+  switch( cellType )
+  {
+    case cell_type::wall:
+      return level_cell_type::wall;
+    case cell_type::floor:
+      return level_cell_type::floor;
+    default:
+      return level_cell_type::none;
+  }
+}
+
 auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> cell_type
 {
-  const auto& [key, value] = *cell;
+  const auto& [celId, cellType] = *cell;
 
-  switch( value.Type() )
+  switch( cellType )
   {
     case level_cell_type::floor:
       return cell_type::floor;
@@ -166,8 +179,9 @@ auto level_cell_collection::MinColumn() const noexcept -> int
 {
   auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
   {
-    const auto& [key, value] = cellEntry;
-    return value.X();
+    const auto& [cellId, cellType] = cellEntry;
+    auto [column, row] = cellId;
+    return column;
   });
 
   std::vector<int> columns;
@@ -181,8 +195,9 @@ auto level_cell_collection::MaxColumn() const noexcept -> int
 {
   auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
   {
-    const auto& [key, value] = cellEntry;
-    return value.X();
+    const auto& [cellId, cellType] = cellEntry;
+    auto [column, row] = cellId;
+    return column;
   });
 
   auto maxElement = std::ranges::max_element(cellColumns);
@@ -193,8 +208,9 @@ auto level_cell_collection::MinRow() const noexcept -> int
 {
   auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
   {
-    const auto& [key, value] = cellEntry;
-    return value.Y();
+    const auto& [cellId, cellType] = cellEntry;
+    auto [column, row] = cellId;
+    return row;
   });
 
   auto minElement = std::ranges::min_element(cellRows);
@@ -205,8 +221,9 @@ auto level_cell_collection::MaxRow() const noexcept -> int
 {
   auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
   {
-    const auto& [key, value] = cellEntry;
-    return value.Y();
+    const auto& [cellId, cellType] = cellEntry;
+    auto [column, row] = cellId;
+    return row;
   });
 
   auto maxElement = std::ranges::max_element(cellRows);
@@ -223,18 +240,14 @@ auto level_cell_collection::IsTypeOf(cell_id cellId, cell_type cellType) const n
   }
   else
   {
-    switch( cellIterator->second.Type() )
+    switch( cellIterator->second )
     {
-
       case level_cell_type::wall:
         return cellType == cell_type::wall;
-
       case level_cell_type::floor:
         return cellType == cell_type::floor;
-        
       default:
         return false;
-
     }
   }
 }
