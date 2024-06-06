@@ -5,6 +5,11 @@ class level_cell_item
 
 public:
 
+  level_cell_item(int x, int y, level_cell_type cellType, POINT_2I position) : 
+    level_cell_item { x, y, cellType, POINT_2F { static_cast<float>(position.x), static_cast<float>(position.y) } }
+  {
+  }
+
   level_cell_item(int x, int y, level_cell_type cellType, POINT_2F position) :
     m_x { x }, m_y { y }, m_cellType { cellType }, m_position { position }
   {

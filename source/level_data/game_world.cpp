@@ -138,7 +138,7 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) co
     {
       case level_cell_type::floor:
       case level_cell_type::exit:
-        levelCells->Add(columnIndex, rowIndex, cellType);
+        levelCells->Add({columnIndex, rowIndex}, cellType);
         break;
     }
   });

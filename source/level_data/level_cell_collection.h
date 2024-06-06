@@ -2,7 +2,7 @@
 
 #include "framework.h"
 #include "level_types.h"
-#include "level_cell_size.h"
+#include "cell_size.h"
 #include "level_cell_item.h"
 
 class level_cell_collection
@@ -10,29 +10,28 @@ class level_cell_collection
 
 public:
 
-  using cell_id_key = std::tuple<int, int>;
-
-public:
-
   level_cell_collection(int cellWidth, int cellHeight);
 
-  [[nodiscard]] auto Get(cell_id_key cellId) const -> level_cell_item;
+  // [[nodiscard]] auto Get(cell_id_key cellId) const -> level_cell_item;
+  [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
-  auto Add(int x, int y, level_cell_type cellType) noexcept -> void;
+  auto Add(cell_id cellId, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
 
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
-  [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id_key;
-  [[nodiscard]] auto CellRect(cell_id_key cellId) const -> RECT_F;
+  // [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id_key;
+  [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
+  // [[nodiscard]] auto CellRect(cell_id_key cellId) const -> RECT_F;
+  [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
   [[nodiscard]] auto MinColumn() const noexcept -> int;
   [[nodiscard]] auto MaxColumn() const noexcept -> int;
   [[nodiscard]] auto MinRow() const noexcept -> int;
   [[nodiscard]] auto MaxRow() const noexcept -> int;
 
-  [[nodiscard]] auto IsTypeOf(cell_id_key cellId, level_cell_type cellType) const noexcept -> bool;
+  [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
@@ -42,6 +41,7 @@ public:
 
 private:
 
+  using cell_id_key = std::tuple<int32_t, int32_t>;
   using key_type = cell_id_key;
   using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
@@ -50,16 +50,19 @@ private:
 
 private:
 
+  [[nodiscard]] auto Key(cell_id cellId) const noexcept -> cell_id_key;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
+  static [[nodiscard]] auto ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F;
 
 private:
 
   int m_cellWidth;
   int m_cellHeight;
+  cell_size m_cellSize;
 
   custom_allocator_state m_cellBuffer;
   cell_allocator_type m_cellAllocator;
@@ -67,20 +70,33 @@ private:
 
 };
 
-inline auto level_cell_collection::Get(cell_id_key cellId) const -> level_cell_item
+// inline auto level_cell_collection::Get(cell_id_key cellId) const -> level_cell_item
+// {
+//   auto cellType = m_cells.at(cellId);
+//   auto& [column, row] = cellId;
+//   auto position = CellPosition(column, row);
+//   return { column, row, cellType, position };
+// }
+
+inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  auto cellType = m_cells.at(cellId);
-  auto& [column, row] = cellId;
-  auto position = CellPosition(column, row);
-  return { column, row, cellType, position };
+  auto key = Key(cellId);
+  auto [column, row] = key;
+  auto type = m_cells.at(key);
+  auto position = m_cellSize.CellPosition(cellId);
+  return { column, row, type, position };
 }
 
 auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
 {
   auto cells = std::ranges::views::transform(m_cells, [this](const auto& cell) -> level_cell_item
   {
-    const auto& [key, value] = cell;
-    return Get(key);
+    const auto& [key, type] = cell;
+    auto [column, row] = key;
+    auto id = cell_id { column, row };
+    // return Get(key);
+    auto position = m_cellSize.CellPosition(id);
+    return { column, row, type, position };
   });
 
   for( const auto& cell : cells )

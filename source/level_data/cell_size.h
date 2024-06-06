@@ -3,14 +3,15 @@
 #include "framework.h"
 #include "cell_id.h"
 
-class level_cell_size
+class cell_size
 {
 
 public:
 
-  level_cell_size(int width, int height);
+  cell_size(int width, int height);
 
   [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2I;
+  [[nodiscard]] auto CellRect(cell_id cellId) const noexcept -> RECT_I;
 
 private:
 

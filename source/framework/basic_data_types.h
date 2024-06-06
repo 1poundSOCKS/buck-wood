@@ -21,3 +21,16 @@ struct POINT_2I
   int32_t x;
   int32_t y;
 };
+
+struct RECT_I
+{
+  int32_t left;
+  int32_t top;
+  int32_t right;
+  int32_t bottom;
+};
+
+inline [[nodiscard]] auto ToRectF(RECT_I rect) -> RECT_F
+{
+  return { static_cast<float>(rect.left), static_cast<float>(rect.top), static_cast<float>(rect.right), static_cast<float>(rect.bottom) };
+}

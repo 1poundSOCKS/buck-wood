@@ -2,53 +2,58 @@
 
 #include "level_cell_collection.h"
 
-[[nodiscard]] auto AdjacentFloorCellIdView(std::ranges::input_range auto&& cellIds, const level_cell_collection& cells, level_cell_collection::cell_id_key originCellId, auto&& callable) -> void
-{
-  auto adjacentCellIds = std::ranges::views::transform(cellIds, [originCellId](auto cellId)
-  {
-    const auto& [column, row] = originCellId;
-    const auto& [columnShift, rowShift] = cellId;
-    return level_cell_collection::cell_id_key { column + columnShift, row + rowShift };
-  });
+// [[nodiscard]] auto AdjacentFloorCellIdView(std::ranges::input_range auto&& cellIds, const level_cell_collection& cells, level_cell_collection::cell_id_key originCellId, auto&& callable) -> void
+// {
+//   auto adjacentCellIds = std::ranges::views::transform(cellIds, [originCellId](auto cellId)
+//   {
+//     const auto& [column, row] = originCellId;
+//     const auto& [columnShift, rowShift] = cellId;
+//     return level_cell_collection::cell_id_key { column + columnShift, row + rowShift };
+//   });
 
-  auto adjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [&cells](auto cellId)
-  {
-    return cells.IsTypeOf(cellId, level_cell_type::floor);
-  });
+//   auto adjacentFloorCellIds = std::ranges::views::filter(adjacentCellIds, [&cells](auto cellId)
+//   {
+//     return cells.IsTypeOf(cellId, level_cell_type::floor);
+//   });
 
-  for( const auto& adjacentCellId : adjacentFloorCellIds )
-  {
-    callable(adjacentCellId);
-  }
-}
+//   for( const auto& adjacentCellId : adjacentFloorCellIds )
+//   {
+//     callable(adjacentCellId);
+//   }
+// }
 
 class adjacent_floor_cells
 {
 
 public:
 
-  adjacent_floor_cells(const level_cell_collection& cells, level_cell_collection::cell_id_key cellId);
+  adjacent_floor_cells(const level_cell_collection& cells, cell_id cellId);
 
   [[nodiscard]] auto Count() const noexcept -> size_t;
-  [[nodiscard]] auto operator[](size_t index) -> level_cell_collection::cell_id_key;
+  [[nodiscard]] auto operator[](size_t index) -> cell_id;
   auto ForEach(auto&& callable) -> void;
 
 private:
 
   const level_cell_collection& m_cells;
-  const level_cell_collection::cell_id_key m_cellId;
+  const cell_id m_cellId;
+  std::vector<cell_id> m_adjacentCellIds;
 
-  inline static auto m_adjacentCellIdsatOrigin = std::array
-  {
-    level_cell_collection::cell_id_key { 0, -1 },
-    level_cell_collection::cell_id_key { 1, 0 },
-    level_cell_collection::cell_id_key { 0, 1 },
-    level_cell_collection::cell_id_key { -1, 0 }
-  };
+  // inline static auto m_adjacentCellIdsatOrigin = std::array
+  // {
+  //   level_cell_collection::cell_id_key { 0, -1 },
+  //   level_cell_collection::cell_id_key { 1, 0 },
+  //   level_cell_collection::cell_id_key { 0, 1 },
+  //   level_cell_collection::cell_id_key { -1, 0 }
+  // };
 
 };
 
 auto adjacent_floor_cells::ForEach(auto&& callable) -> void
 {
-  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, callable);
+  // AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, callable);
+  for( const auto& cell : m_adjacentCellIds )
+  {
+    callable(cell);
+  }
 }

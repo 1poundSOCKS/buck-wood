@@ -1,35 +1,21 @@
 #include "pch.h"
 #include "adjacent_floor_cells.h"
 
-adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, level_cell_collection::cell_id_key cellId) : m_cells { cells }, m_cellId { cellId }
+adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, cell_id cellId) : m_cells { cells }, m_cellId { cellId }
 {
+  m_adjacentCellIds.reserve(4);
+  m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::above));
+  m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::right));
+  m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::below));
+  m_adjacentCellIds.emplace_back(m_cellId.Get(cell_id::relative_position::left));
 }
 
 auto adjacent_floor_cells::Count() const noexcept -> size_t
 {
-  size_t adjacentFloorCellCount = 0;
-
-  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentFloorCellCount](const auto& cellId)
-  {
-    ++adjacentFloorCellCount;
-  });
-
-  return adjacentFloorCellCount;
+  return m_adjacentCellIds.size();
 }
 
-auto adjacent_floor_cells::operator[](size_t index) -> level_cell_collection::cell_id_key
+auto adjacent_floor_cells::operator[](size_t index) -> cell_id
 {
-  level_cell_collection::cell_id_key adjacentCellId { m_cellId };
-
-  AdjacentFloorCellIdView(m_adjacentCellIdsatOrigin, m_cells, m_cellId, [&adjacentCellId, &index](const auto& cellId)
-  {
-    if( index == 0 )
-    {
-      adjacentCellId = cellId;
-    }
-
-    --index;
-  });
-
-  return adjacentCellId;
+  return m_adjacentCellIds[index];
 }
