@@ -3,12 +3,12 @@
 
 adjacent_floor_cells::adjacent_floor_cells(const level_cell_collection &cells, cell_id cellId) : m_cells { cells }, m_cellId { cellId }
 {
-  auto cellPositions = std::array {
-    cell_id::relative_position::above,
-    cell_id::relative_position::right,
-    cell_id::relative_position::below,
-    cell_id::relative_position::left
-  };
+  // auto cellPositions = std::array {
+  //   cell_id::relative_position::above,
+  //   cell_id::relative_position::right,
+  //   cell_id::relative_position::below,
+  //   cell_id::relative_position::left
+  // };
 
   auto cellIds = std::ranges::views::transform(cellPositions, [this](auto position)
   {
