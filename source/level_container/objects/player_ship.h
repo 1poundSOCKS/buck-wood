@@ -8,7 +8,6 @@
 #include "reload_counter.h"
 #include "health_status.h"
 #include "level_cell_collection.h"
-// #include "adjacent_cell_visitor.h"
 
 class player_ship : public base_object
 {

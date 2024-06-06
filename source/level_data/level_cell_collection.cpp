@@ -13,7 +13,6 @@ level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) :
 
 auto level_cell_collection::Add(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
-  // POINT_2F position = CellPosition(x, y);
   m_cells.insert({Key(cellId), cellType});
 }
 
@@ -61,17 +60,8 @@ auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2
 
 auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
 {
-  // auto [column, row] = CellId(position).Position();
   auto cellId = CellId(position);
 
-  // auto aboveCellId = cell_id_key { column, row - 1 };
-  // auto belowCellId = cell_id_key { column, row + 1 };
-  // auto leftCellId = cell_id_key { column - 1, row };
-  // auto rightCellId = cell_id_key { column + 1, row };
-  // auto aboveLeftCellId = cell_id_key { column - 1, row - 1};
-  // auto belowLeftCellId = cell_id_key { column - 1, row + 1};
-  // auto aboveRightCellId = cell_id_key { column + 1, row - 1};
-  // auto belowRightCellId = cell_id_key { column + 1, row + 1};
   auto aboveCellId = cellId.Get(cell_id::relative_position::above);
   auto belowCellId = cellId.Get(cell_id::relative_position::below);
   auto leftCellId = cellId.Get(cell_id::relative_position::left);
@@ -81,14 +71,6 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   auto aboveRightCellId = cellId.Get(cell_id::relative_position::above_right);
   auto belowRightCellId = cellId.Get(cell_id::relative_position::below_right);
 
-  // auto aboveCellRect = ExpandRect(CellRect(aboveCellId), objectSize);
-  // auto belowCellRect = ExpandRect(CellRect(belowCellId), objectSize);
-  // auto leftCellRect = ExpandRect(CellRect(leftCellId), objectSize);
-  // auto rightCellRect = ExpandRect(CellRect(rightCellId), objectSize);
-  // auto aboveLeftCellRect = ExpandRect(CellRect(aboveLeftCellId), objectSize);
-  // auto belowLeftCellRect = ExpandRect(CellRect(belowLeftCellId), objectSize);
-  // auto aboveRightCellRect = ExpandRect(CellRect(aboveRightCellId), objectSize);
-  // auto belowRightCellRect = ExpandRect(CellRect(belowRightCellId), objectSize);
   auto aboveCellRect = ExpandRect(m_cellSize.CellRect(aboveCellId), objectSize);
   auto belowCellRect = ExpandRect(m_cellSize.CellRect(belowCellId), objectSize);
   auto leftCellRect = ExpandRect(m_cellSize.CellRect(leftCellId), objectSize);
@@ -158,15 +140,6 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   return cellType;
 }
 
-// [[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id_key
-// {
-//   auto halfCellWidth = m_cellWidth / 2;
-//   auto halfCellHeight = m_cellHeight / 2;
-//   auto cellColumn = ( position.x < 0) ? static_cast<int>((position.x - halfCellWidth) / m_cellWidth) : static_cast<int>((position.x + halfCellWidth) / m_cellWidth);
-//   auto cellRow = ( position.y < 0) ? static_cast<int>((position.y - halfCellHeight ) / m_cellHeight) : static_cast<int>((position.y + halfCellHeight ) / m_cellHeight);
-//   return { cellColumn, cellRow };
-// }
-
 [[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
 {
   auto halfCellWidth = m_cellWidth / 2;
@@ -176,24 +149,10 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
   return { cellColumn, cellRow };
 }
 
-// auto level_cell_collection::CellRect(cell_id_key cellId) const -> RECT_F
-// {
-//   auto [column, row] = cellId;
-//   auto orignCellRect = CellRect();
-//   auto shiftX = column * m_cellWidth;
-//   auto shiftY = row * m_cellHeight;
-//   return RECT_F { orignCellRect.left + shiftX, orignCellRect.top + shiftY, orignCellRect.right + shiftX, orignCellRect.bottom + shiftY };
-// }
-
 auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
 {
   auto rect = m_cellSize.CellRect(cellId);
   return { static_cast<float>(rect.left), static_cast<float>(rect.top), static_cast<float>(rect.right), static_cast<float>(rect.bottom) };
-  // auto [column, row] = cellId;
-  // auto originCellRect = CellRect();
-  // auto shiftX = column * m_cellWidth;
-  // auto shiftY = row * m_cellHeight;
-  // return RECT_F { originCellRect.left + shiftX, originCellRect.top + shiftY, originCellRect.right + shiftX, originCellRect.bottom + shiftY };
 }
 
 auto level_cell_collection::MinColumn() const noexcept -> int

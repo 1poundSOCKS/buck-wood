@@ -30,7 +30,7 @@ auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& 
   auto destinationCellId = currentCellId;
   
   adjacent_floor_cells adjacentFloorCells { cells, currentCellId };
-  adjacentFloorCells.ForEach([&cells,&currentCellId,&destinationCellId,&target,distanceToTarget](const auto& cellId)
+  adjacentFloorCells.Enumerate([&cells,&currentCellId,&destinationCellId,&target,distanceToTarget](const auto& cellId)
   {
     const auto& cell = cells.Get(cellId);
     auto positionOfCell = cell.Position();

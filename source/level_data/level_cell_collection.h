@@ -12,7 +12,6 @@ public:
 
   level_cell_collection(int cellWidth, int cellHeight);
 
-  // [[nodiscard]] auto Get(cell_id_key cellId) const -> level_cell_item;
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
   auto Add(cell_id cellId, level_cell_type cellType) noexcept -> void;
@@ -21,9 +20,7 @@ public:
   [[nodiscard]] auto CellWidth() const -> int;
   [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
-  // [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id_key;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
-  // [[nodiscard]] auto CellRect(cell_id_key cellId) const -> RECT_F;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
   [[nodiscard]] auto MinColumn() const noexcept -> int;
@@ -70,14 +67,6 @@ private:
 
 };
 
-// inline auto level_cell_collection::Get(cell_id_key cellId) const -> level_cell_item
-// {
-//   auto cellType = m_cells.at(cellId);
-//   auto& [column, row] = cellId;
-//   auto position = CellPosition(column, row);
-//   return { column, row, cellType, position };
-// }
-
 inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
   auto key = Key(cellId);
@@ -94,7 +83,6 @@ auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
     const auto& [key, type] = cell;
     auto [column, row] = key;
     auto id = cell_id { column, row };
-    // return Get(key);
     auto position = m_cellSize.CellPosition(id);
     return { column, row, type, position };
   });

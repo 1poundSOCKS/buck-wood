@@ -13,16 +13,6 @@ public:
   {
   }
 
-  // [[nodiscard]] auto Column() const noexcept -> int
-  // {
-  //   return m_column;
-  // }
-
-  // [[nodiscard]] auto Row() const noexcept -> int
-  // {
-  //   return m_row;
-  // }
-
   [[nodiscard]] auto Position() const noexcept -> POINT_2I
   {
     return { m_column, m_row };
@@ -52,11 +42,6 @@ public:
         return { m_column, m_row };
     }
   }
-
-  // [[nodiscard]] auto ToTuple() const noexcept -> std::tuple<int, int>
-  // {
-  //   return { m_column, m_row };
-  // }
 
 private:
 
