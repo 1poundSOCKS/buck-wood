@@ -38,8 +38,7 @@ public:
 
 private:
 
-  using cell_id_key = std::tuple<int32_t, int32_t>;
-  using key_type = cell_id_key;
+  using key_type = std::tuple<int32_t, int32_t>;
   using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
@@ -47,7 +46,7 @@ private:
 
 private:
 
-  [[nodiscard]] auto Key(cell_id cellId) const noexcept -> cell_id_key;
+  [[nodiscard]] auto Key(cell_id cellId) const noexcept -> key_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;

@@ -128,7 +128,7 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
 
-auto level_cell_collection::Key(cell_id cellId) const noexcept -> cell_id_key
+auto level_cell_collection::Key(cell_id cellId) const noexcept -> key_type
 {
   auto position = cellId.Position();
   return std::make_tuple(position.x, position.y);
