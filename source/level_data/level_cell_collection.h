@@ -21,11 +21,6 @@ public:
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
-  [[nodiscard]] auto MinColumn() const noexcept -> int;
-  [[nodiscard]] auto MaxColumn() const noexcept -> int;
-  [[nodiscard]] auto MinRow() const noexcept -> int;
-  [[nodiscard]] auto MaxRow() const noexcept -> int;
-
   [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
 
@@ -43,6 +38,11 @@ private:
   using collection_type = std::map<key_type, level_cell_type, std::less<key_type>, collection_allocator_type>;
 
 private:
+
+  [[nodiscard]] auto MinColumn() const noexcept -> int;
+  [[nodiscard]] auto MaxColumn() const noexcept -> int;
+  [[nodiscard]] auto MinRow() const noexcept -> int;
+  [[nodiscard]] auto MaxRow() const noexcept -> int;
 
   [[nodiscard]] auto Key(cell_id cellId) const noexcept -> key_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
