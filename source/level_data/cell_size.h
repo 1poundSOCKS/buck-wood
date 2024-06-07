@@ -10,6 +10,7 @@ public:
 
   cell_size(int width, int height);
 
+  [[nodiscard]] auto CellId(POINT_2I position) const noexcept -> cell_id;
   [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2I;
   [[nodiscard]] auto CellRect(cell_id cellId) const noexcept -> RECT_I;
 

@@ -10,15 +10,13 @@ class level_cell_collection
 
 public:
 
-  level_cell_collection(int cellWidth, int cellHeight);
+  level_cell_collection(cell_size cellSize);
 
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
   auto Add(cell_id cellId, level_cell_type cellType) noexcept -> void;
   auto AddWalls() noexcept -> void;
 
-  [[nodiscard]] auto CellWidth() const -> int;
-  [[nodiscard]] auto CellHeight() const -> int;
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
@@ -56,8 +54,6 @@ private:
 
 private:
 
-  int m_cellWidth;
-  int m_cellHeight;
   cell_size m_cellSize;
 
   custom_allocator_state m_cellBuffer;

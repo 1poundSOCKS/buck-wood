@@ -49,11 +49,12 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) co
 {
   auto levelData = LevelData(levelIndex);
 
-  auto levelCells = CreateCellsCollection(levelIndex, levelData.get());
+  auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cell_size { 400, 400 });
 
   auto levelContainer = std::make_unique<level_container>();
 
-  auto scale = SCALE_2F { static_cast<float>(levelCells->CellWidth()), static_cast<float>(levelCells->CellHeight()) };
+  auto cellRect = levelCells->CellRect({0,0});
+  auto scale = SCALE_2F { cellRect.right - cellRect.left, cellRect.bottom - cellRect.top };
   
   levelCells->EnumerateCells([this,&levelContainer,&scale](const level_cell_item& cell)
   {
@@ -124,9 +125,9 @@ auto game_world::CollisionType() -> collision_type
   }
 }
 
-auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData) const -> std::shared_ptr<level_cell_collection>
+auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData, cell_size cellSize) const -> std::shared_ptr<level_cell_collection>
 {
-  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(400, 400) };
+  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(cellSize) };
 
   levelData->Enumerate([this,levelIndex,levelCells](size_t column, size_t row, char cellData)
   {

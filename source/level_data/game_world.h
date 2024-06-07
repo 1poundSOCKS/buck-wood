@@ -19,7 +19,7 @@ public:
 private:
 
   static [[nodiscard]] auto CollisionType() -> collision_type;
-  [[nodiscard]] auto CreateCellsCollection(int levelIndex, level_base* levelData) const -> std::shared_ptr<level_cell_collection>;
+  [[nodiscard]] auto CreateCellsCollection(int levelIndex, level_base* levelData, cell_size cellSize) const -> std::shared_ptr<level_cell_collection>;
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
   static auto SetCellId(portal& object, POINT_2I cellId) -> void;
   static auto SetCellId(auto&& object, POINT_2I cellId) -> void;

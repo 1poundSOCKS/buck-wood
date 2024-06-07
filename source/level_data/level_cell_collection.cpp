@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "level_cell_collection.h"
 
-level_cell_collection::level_cell_collection(int cellWidth, int cellHeight) : 
-  m_cellWidth { cellWidth}, m_cellHeight { cellHeight }, 
-  m_cellSize { cellWidth, cellHeight },
+level_cell_collection::level_cell_collection(cell_size cellSize) : 
+  m_cellSize { cellSize },
   m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }
 {
   auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
@@ -35,16 +34,6 @@ auto level_cell_collection::AddWalls() noexcept -> void
   }
 }
 
-auto level_cell_collection::CellWidth() const -> int
-{
-  return m_cellWidth;
-}
-
-auto level_cell_collection::CellHeight() const -> int
-{
-  return m_cellHeight;
-}
-
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 {
   auto id = CellId(position);
@@ -55,7 +44,7 @@ auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 
 auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
 {
-  return POINT_2F(static_cast<float>(x * m_cellWidth), static_cast<float>(y * m_cellHeight));
+  return ToFloat(m_cellSize.CellPosition(cell_id { x, y }));
 }
 
 auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
@@ -115,12 +104,14 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
 
 [[nodiscard]] auto level_cell_collection::CellTopLeft() const noexcept -> POINT_2F
 {
-  return { static_cast<float>(-m_cellWidth / 2), static_cast<float>(-m_cellHeight / 2) };
+  auto cellRect = ToFloat(m_cellSize.CellRect({0, 0}));
+  return { cellRect.left, cellRect.top };
 }
 
 [[nodiscard]] auto level_cell_collection::CellBottomRight() const noexcept -> POINT_2F
 {
-  return { static_cast<float>(m_cellWidth / 2), static_cast<float>(m_cellHeight / 2) };
+  auto cellRect = ToFloat(m_cellSize.CellRect({0, 0}));
+  return { cellRect.right, cellRect.bottom };
 }
 
 [[nodiscard]] auto level_cell_collection::CellRect() const noexcept -> RECT_F
@@ -142,17 +133,12 @@ auto level_cell_collection::CellType(collection_type::const_iterator cell) const
 
 [[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
 {
-  auto halfCellWidth = m_cellWidth / 2;
-  auto halfCellHeight = m_cellHeight / 2;
-  auto cellColumn = ( position.x < 0) ? static_cast<int>((position.x - halfCellWidth) / m_cellWidth) : static_cast<int>((position.x + halfCellWidth) / m_cellWidth);
-  auto cellRow = ( position.y < 0) ? static_cast<int>((position.y - halfCellHeight ) / m_cellHeight) : static_cast<int>((position.y + halfCellHeight ) / m_cellHeight);
-  return { cellColumn, cellRow };
+  return m_cellSize.CellId(ToInt(position));
 }
 
 auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
 {
-  auto rect = m_cellSize.CellRect(cellId);
-  return { static_cast<float>(rect.left), static_cast<float>(rect.top), static_cast<float>(rect.right), static_cast<float>(rect.bottom) };
+  return ToFloat(m_cellSize.CellRect(cellId));
 }
 
 auto level_cell_collection::MinColumn() const noexcept -> int
@@ -224,6 +210,6 @@ auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) c
 
 auto level_cell_collection::ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F
 {
-  auto rectF = ToRectF(rect);
+  auto rectF = ToFloat(rect);
   return { rectF.left - size.width, rectF.top - size.height, rectF.right + size.width, rectF.bottom + size.height };
 }

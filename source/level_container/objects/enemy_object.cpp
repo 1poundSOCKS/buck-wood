@@ -2,7 +2,7 @@
 #include "enemy_object.h"
 
 enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
-  base_object { position, scale, angle }, m_maxHitpoints { 1 }, m_hitpoints { 1 }, m_cells { std::make_shared<level_cell_collection>(1, 1) }
+  base_object { position, scale, angle }, m_maxHitpoints { 1 }, m_hitpoints { 1 }, m_cells { std::make_shared<level_cell_collection>(cell_size {1, 1}) }
 {
 }
 

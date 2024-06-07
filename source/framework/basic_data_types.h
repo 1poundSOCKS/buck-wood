@@ -30,7 +30,22 @@ struct RECT_I
   int32_t bottom;
 };
 
-inline [[nodiscard]] auto ToRectF(RECT_I rect) -> RECT_F
+inline [[nodiscard]] auto ToFloat(POINT_2I value) -> POINT_2F
 {
-  return { static_cast<float>(rect.left), static_cast<float>(rect.top), static_cast<float>(rect.right), static_cast<float>(rect.bottom) };
+  return { static_cast<float>(value.x), static_cast<float>(value.y) };
+}
+
+inline [[nodiscard]] auto ToInt(POINT_2F value) -> POINT_2I
+{
+  return { static_cast<int>(value.x), static_cast<int>(value.y) };
+}
+
+inline [[nodiscard]] auto ToFloat(RECT_I value) -> RECT_F
+{
+  return { static_cast<float>(value.left), static_cast<float>(value.top), static_cast<float>(value.right), static_cast<float>(value.bottom) };
+}
+
+inline [[nodiscard]] auto ToInt(RECT_F value) -> RECT_I
+{
+  return { static_cast<int>(value.left), static_cast<int>(value.top), static_cast<int>(value.right), static_cast<int>(value.bottom) };
 }
