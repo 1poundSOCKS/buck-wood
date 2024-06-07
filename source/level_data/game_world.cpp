@@ -67,7 +67,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) co
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(levelIndex, cellData);
     auto cellId = POINT_2I { columnIndex, rowIndex };
-    auto cellPosition = levelCells->CellPosition(cellId.x, cellId.y);
+    auto cellPosition = levelCells->CellPosition({cellId.x, cellId.y});
 
     switch( itemType )
     {

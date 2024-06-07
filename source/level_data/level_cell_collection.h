@@ -22,7 +22,7 @@ public:
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;
 
   [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
-  [[nodiscard]] auto CellPosition(int x, int y) const noexcept -> POINT_2F;
+  [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2F;
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 

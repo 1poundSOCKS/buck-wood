@@ -42,9 +42,9 @@ auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
   return cell != m_cells.end() ? CellType(cell) : level_cell_type::none;
 }
 
-auto level_cell_collection::CellPosition(int x, int y) const noexcept -> POINT_2F
+auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT_2F
 {
-  return ToFloat(m_cellSize.CellPosition(cell_id { x, y }));
+  return ToFloat(m_cellSize.CellPosition(cellId));
 }
 
 auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
