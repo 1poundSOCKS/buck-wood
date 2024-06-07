@@ -51,8 +51,16 @@ auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::op
   auto cellId = cells.CellId(m_position);
   auto adjacentFloorCells = adjacent_floor_cells(cells, cellId);
   auto adjacentFloorCellsCount = adjacentFloorCells.Count();
-  std::uniform_int_distribution<size_t> floorCellDistribution { 0, adjacentFloorCellsCount - 1 };
-  auto randomCellIndex = floorCellDistribution(pseudo_random_generator::get());
-  auto randomCellId = adjacentFloorCells[randomCellIndex];
-  return cells.Get(randomCellId);
+
+  if( adjacentFloorCellsCount )
+  {
+    std::uniform_int_distribution<size_t> floorCellDistribution { 0, adjacentFloorCellsCount - 1 };
+    auto randomCellIndex = floorCellDistribution(pseudo_random_generator::get());
+    auto randomCellId = adjacentFloorCells[randomCellIndex];
+    return cells.Get(randomCellId);
+  }
+  else
+  {
+    return std::nullopt;
+  }
 }

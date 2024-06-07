@@ -30,9 +30,9 @@ auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
   }
 }
 
-auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
+auto game_world::EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>
 {
-  auto entryIterator = m_links.find({index,exitCell.x, exitCell.y});
+  auto entryIterator = m_links.find({index,exitCell});
   if( entryIterator == std::end(m_links) )
   {
     return std::nullopt;
@@ -41,15 +41,16 @@ auto game_world::EntryData(int index, POINT_2I exitCell) -> std::optional<std::t
   {
     const auto& [key, value] = *entryIterator;
     const auto& [levelIndex, column, row] = value;
-    return std::make_optional<std::tuple<int, POINT_2I>>(levelIndex, POINT_2I { column, row });
+    return std::make_optional<std::tuple<int, cell_id>>(levelIndex, cell_id { column, row });
   }
 }
 
-auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) const -> std::unique_ptr<level_container>
+auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) const -> std::unique_ptr<level_container>
 {
   auto levelData = LevelData(levelIndex);
 
-  auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cell_size { 400, 400 });
+  auto cellSize = cell_size { 400, 400 };
+  auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
 
   auto levelContainer = std::make_unique<level_container>();
 
@@ -61,13 +62,13 @@ auto game_world::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell) co
     levelContainer->CreateWall(cell.Position(), scale, 0.0f, cell.Type(), POINT_2I { cell.X(), cell.Y() });
   });
 
-  levelData->Enumerate([this,&levelContainer,levelCells,levelIndex](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,&levelContainer,cellSize,levelCells,levelIndex](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(levelIndex, cellData);
-    auto cellId = POINT_2I { columnIndex, rowIndex };
-    auto cellPosition = levelCells->CellPosition({cellId.x, cellId.y});
+    auto cellId = cell_id { columnIndex, rowIndex };
+    auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
 
     switch( itemType )
     {
@@ -155,13 +156,13 @@ auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int
   m_objectDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
 
   auto levelData = LevelData(exitLevelIndex);
-  std::optional<POINT_2I> exitCell;
+  std::optional<cell_id> exitCell;
 
   levelData->Enumerate([this,exitLevelIndex,exitCellDataValue,&exitCell](size_t column, size_t row, char cellData)
   {
     if( cellData == exitCellDataValue )
     {
-      exitCell = POINT_2I { static_cast<int>(column), static_cast<int>(row) };
+      exitCell = cell_id { static_cast<int>(column), static_cast<int>(row) };
     }
   });
 
@@ -178,6 +179,6 @@ auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int
 
   if( exitCell && entryCell )
   {
-    m_links[std::make_tuple(exitLevelIndex, exitCell->x, exitCell->y)] = std::make_tuple(entryLevelIndex, entryCell->x, entryCell->y);
+    m_links[std::make_tuple(exitLevelIndex, *exitCell)] = std::make_tuple(entryLevelIndex, entryCell->x, entryCell->y);
   }
 }

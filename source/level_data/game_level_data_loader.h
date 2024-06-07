@@ -15,8 +15,8 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  [[nodiscard]] static auto entryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  [[nodiscard]] static auto loadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  [[nodiscard]] static auto entryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>;
+  [[nodiscard]] static auto loadLevel(int levelIndex, std::optional<cell_id> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -28,8 +28,8 @@ private:
 
   game_level_data_loader();
 
-  [[nodiscard]] auto EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>;
-  auto LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
+  [[nodiscard]] auto EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>;
+  auto LoadLevel(int levelIndex, std::optional<cell_id> entryCell, auto&&...args) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto PortalCell(const level_base* levelData) const -> POINT_2I;
@@ -65,12 +65,12 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::entryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
+inline auto game_level_data_loader::entryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>
 {
   return m_instance->EntryData(index, exitCell);
 }
 
-auto game_level_data_loader::loadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::loadLevel(int levelIndex, std::optional<cell_id> entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
   return m_instance->LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
 }
@@ -100,12 +100,12 @@ inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
   return m_instance->LevelCanBeCompleted();
 }
 
-inline auto game_level_data_loader::EntryData(int index, POINT_2I exitCell) -> std::optional<std::tuple<int, POINT_2I>>
+inline auto game_level_data_loader::EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>
 {
   return m_gameWorld.EntryData(index, exitCell);
 }
 
-auto game_level_data_loader::LoadLevel(int levelIndex, std::optional<POINT_2I> entryCell, auto&&...args) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, std::optional<cell_id> entryCell, auto&&...args) -> std::unique_ptr<level_container>
 {
   auto levelContainer = m_gameWorld.LoadLevel(levelIndex, entryCell, std::forward<decltype(args)>(args)...);
 

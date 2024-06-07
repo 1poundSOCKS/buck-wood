@@ -17,7 +17,7 @@ public:
   play_state();
 
   auto LoadCurrentLevel() -> void;
-  auto LoadNextLevel(std::optional<POINT_2I> exitCell) -> bool;
+  auto LoadNextLevel(std::optional<cell_id> exitCell) -> bool;
   auto Update(float interval, RECT_F view) -> void;
   auto SaveGameState() noexcept -> void;
 

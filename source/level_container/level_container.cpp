@@ -424,5 +424,5 @@ auto level_container::OnContainment(player_ship &player, portal &portalObj) -> v
 {
   auto exitCell = portalObj.CellId();
   m_exit = exitCell ? true : false;
-  m_exitCell = exitCell ? *exitCell : POINT_2I { 0, 0 };
+  m_exitCell = exitCell ? *exitCell : cell_id {};
 }

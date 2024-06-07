@@ -2,6 +2,7 @@
 
 #include "framework.h"
 #include "base_object.h"
+#include "cell_id.h"
 
 class portal : public base_object
 {
@@ -10,13 +11,13 @@ public:
 
   portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto SetCellId(POINT_2I cellId) -> void;
+  auto SetCellId(cell_id cellId) -> void;
 
-  [[nodiscard]] auto CellId() const -> std::optional<POINT_2I>;
+  [[nodiscard]] auto CellId() const -> std::optional<cell_id>;
 
 private:
 
-  std::optional<POINT_2I> m_cellId;
+  std::optional<cell_id> m_cellId;
 
 };
 
@@ -24,12 +25,12 @@ inline portal::portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2
 {
 }
 
-inline auto portal::SetCellId(POINT_2I cellId) -> void
+inline auto portal::SetCellId(cell_id cellId) -> void
 {
   m_cellId = cellId;
 }
 
-inline auto portal::CellId() const -> std::optional<POINT_2I>
+inline auto portal::CellId() const -> std::optional<cell_id>
 {
   return m_cellId;
 }

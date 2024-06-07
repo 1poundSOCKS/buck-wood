@@ -9,6 +9,10 @@ public:
 
   enum class relative_position { above, above_right, right, below_right, below, below_left, left, above_left };
 
+  cell_id() : m_column { 0 }, m_row { 0 }
+  {
+  }
+
   cell_id(int column, int row) : m_column { column }, m_row { row }
   {
   }
@@ -41,6 +45,11 @@ public:
       default:
         return { m_column, m_row };
     }
+  }
+
+  auto operator <(const cell_id& cellId) const -> bool
+  {
+    return m_row < cellId.m_row || ( m_row == cellId.m_row && m_column < cellId.m_column );
   }
 
 private:

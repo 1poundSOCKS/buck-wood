@@ -51,8 +51,8 @@ public:
   auto EnumerateExitCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
-  [[nodiscard]] auto ExitCell() const noexcept -> POINT_2I;
-  auto SetExit(bool value, POINT_2I cell) -> void;
+  [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
+  auto SetExit(bool value, cell_id cell) -> void;
 
   auto Create(object_type objectType, POINT_2F position) -> default_object&;
   auto CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void;
@@ -131,7 +131,7 @@ private:
   static constexpr float m_maxTargetRange { 1000.0f };
 
   bool m_exit { false };
-  POINT_2I m_exitCell { 0, 0 };
+  cell_id m_exitCell;
 
   player_ship m_playerState;
 
@@ -353,12 +353,12 @@ inline auto level_container::Exit() const noexcept -> bool
   return m_exit;
 }
 
-inline auto level_container::ExitCell() const noexcept -> POINT_2I
+inline auto level_container::ExitCell() const noexcept -> cell_id
 {
   return m_exitCell;
 }
 
-inline auto level_container::SetExit(bool value, POINT_2I cell) -> void
+inline auto level_container::SetExit(bool value, cell_id cell) -> void
 {
   m_exit = true;
   m_exitCell = cell;
