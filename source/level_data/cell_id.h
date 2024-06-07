@@ -17,11 +17,6 @@ public:
   {
   }
 
-  // [[nodiscard]] auto Position() const noexcept -> POINT_2I
-  // {
-  //   return { m_column, m_row };
-  // }
-
   [[nodiscard]] auto Get(relative_position relativePosition) const noexcept -> cell_id
   {
     switch( relativePosition )

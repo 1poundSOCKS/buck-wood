@@ -22,7 +22,6 @@ level_container::level_container(collision_type collisionType) :
 {
   m_wallCollisionObjects.reserve(500);
   m_floorCollisionObjects.reserve(500);
-  m_exitCollisionObjects.reserve(10);
   m_playerCollisionObjects.reserve(50);
   m_enemyCollisionObjects.reserve(100);
 }
@@ -323,10 +322,6 @@ auto level_container::AddCellCollisionObject(default_object& object, level_wall 
 
     case level_cell_type::floor:
       m_floorCollisionObjects.emplace_back(object);
-      break;
-
-    case level_cell_type::exit:
-      m_exitCollisionObjects.emplace_back(object);
       break;
   }
 }

@@ -48,7 +48,6 @@ public:
 
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
   auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
-  auto EnumerateExitCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -145,7 +144,7 @@ private:
 
   collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_floorCollisionObjects;
-  collision_object_collection m_exitCollisionObjects;
+  // collision_object_collection m_exitCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
@@ -335,14 +334,6 @@ inline auto level_container::EnumerateEnemyCollisionObjects(auto &&visitor) cons
 inline auto level_container::EnumerateFloorCollisionObjects(auto &&visitor) const -> void
 {
   for( const auto& object : m_floorCollisionObjects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumerateExitCollisionObjects(auto &&visitor) const -> void
-{
-  for( const auto& object : m_exitCollisionObjects )
   {
     visitor(object);
   }

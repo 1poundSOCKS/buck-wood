@@ -36,11 +36,6 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     m_floorCellRenderer.Write(geometry);
   });
 
-  levelContainer.EnumerateExitCollisionObjects([this](const collision_object& object){
-    auto geometry = object.Geometry().GetRaw();
-    m_exitCellRenderer.Write(geometry);
-  });
-
   levelContainer.EnumerateNonInteractiveObjects([this](const auto& object)
   {
     Write(object);
