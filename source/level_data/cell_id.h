@@ -17,10 +17,10 @@ public:
   {
   }
 
-  [[nodiscard]] auto Position() const noexcept -> POINT_2I
-  {
-    return { m_column, m_row };
-  }
+  // [[nodiscard]] auto Position() const noexcept -> POINT_2I
+  // {
+  //   return { m_column, m_row };
+  // }
 
   [[nodiscard]] auto Get(relative_position relativePosition) const noexcept -> cell_id
   {
@@ -56,5 +56,7 @@ private:
 
   int m_column;
   int m_row;
+
+  friend class cell_size;
 
 };

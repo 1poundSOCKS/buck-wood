@@ -12,33 +12,33 @@ level_cell_collection::level_cell_collection(cell_size cellSize) :
 
 auto level_cell_collection::Add(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
-  m_cells.insert({Key(cellId), cellType});
+  m_cells.insert({cellId, cellType});
 }
 
 auto level_cell_collection::AddWalls() noexcept -> void
 {
-  auto minColumn = MinColumn();
-  auto maxColumn = MaxColumn();
+  // auto minColumn = MinColumn();
+  // auto maxColumn = MaxColumn();
 
-  auto minRow = MinRow();
-  auto maxRow = MaxRow();
+  // auto minRow = MinRow();
+  // auto maxRow = MaxRow();
 
-  minColumn;maxColumn;minRow;maxRow;
+  // minColumn;maxColumn;minRow;maxRow;
 
-  for( int column = minColumn - 1; column <= maxColumn + 1; ++column )
-  {
-    for( int row = minRow - 1; row <= maxRow + 1; ++row )
-    {
-      Add({column, row}, level_cell_type::wall);
-    }
-  }
+  // for( int column = minColumn - 1; column <= maxColumn + 1; ++column )
+  // {
+  //   for( int row = minRow - 1; row <= maxRow + 1; ++row )
+  //   {
+  //     Add({column, row}, level_cell_type::wall);
+  //   }
+  // }
 }
 
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 {
   auto id = CellId(position);
-  auto key = Key(id);
-  auto cell = m_cells.find(key);
+  // auto key = Key(id);
+  auto cell = m_cells.find(id);
   return cell != m_cells.end() ? CellType(cell) : level_cell_type::none;
 }
 
@@ -119,11 +119,11 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
 
-auto level_cell_collection::Key(cell_id cellId) const noexcept -> key_type
-{
-  auto position = cellId.Position();
-  return std::make_tuple(position.x, position.y);
-}
+// auto level_cell_collection::Key(cell_id cellId) const noexcept -> key_type
+// {
+//   auto position = cellId.Position();
+//   return std::make_tuple(position.x, position.y);
+// }
 
 auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> level_cell_type
 {
@@ -141,65 +141,65 @@ auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
   return ToFloat(m_cellSize.CellRect(cellId));
 }
 
-auto level_cell_collection::MinColumn() const noexcept -> int
-{
-  auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
-  {
-    const auto& [cellId, cellType] = cellEntry;
-    auto [column, row] = cellId;
-    return column;
-  });
+// auto level_cell_collection::MinColumn() const noexcept -> int
+// {
+//   auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+//   {
+//     const auto& [cellId, cellType] = cellEntry;
+//     auto [column, row] = cellId;
+//     return column;
+//   });
 
-  std::vector<int> columns;
-  std::ranges::copy(cellColumns, std::back_inserter(columns));
+//   std::vector<int> columns;
+//   std::ranges::copy(cellColumns, std::back_inserter(columns));
 
-  auto minElement = std::ranges::min_element(cellColumns);
-  return *minElement;
-}
+//   auto minElement = std::ranges::min_element(cellColumns);
+//   return *minElement;
+// }
 
-auto level_cell_collection::MaxColumn() const noexcept -> int
-{
-  auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
-  {
-    const auto& [cellId, cellType] = cellEntry;
-    auto [column, row] = cellId;
-    return column;
-  });
+// auto level_cell_collection::MaxColumn() const noexcept -> int
+// {
+//   auto cellColumns = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+//   {
+//     const auto& [cellId, cellType] = cellEntry;
+//     auto [column, row] = cellId;
+//     return column;
+//   });
 
-  auto maxElement = std::ranges::max_element(cellColumns);
-  return *maxElement;
-}
+//   auto maxElement = std::ranges::max_element(cellColumns);
+//   return *maxElement;
+// }
 
-auto level_cell_collection::MinRow() const noexcept -> int
-{
-  auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
-  {
-    const auto& [cellId, cellType] = cellEntry;
-    auto [column, row] = cellId;
-    return row;
-  });
+// auto level_cell_collection::MinRow() const noexcept -> int
+// {
+//   auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+//   {
+//     const auto& [cellId, cellType] = cellEntry;
+//     auto [column, row] = cellId;
+//     return row;
+//   });
 
-  auto minElement = std::ranges::min_element(cellRows);
-  return *minElement;
-}
+//   auto minElement = std::ranges::min_element(cellRows);
+//   return *minElement;
+// }
 
-auto level_cell_collection::MaxRow() const noexcept -> int
-{
-  auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
-  {
-    const auto& [cellId, cellType] = cellEntry;
-    auto [column, row] = cellId;
-    return row;
-  });
+// auto level_cell_collection::MaxRow() const noexcept -> int
+// {
+//   auto cellRows = std::ranges::views::transform(m_cells, [](const auto& cellEntry) -> int
+//   {
+//     const auto& [cellId, cellType] = cellEntry;
+//     auto [column, row] = cellId;
+//     return row;
+//   });
 
-  auto maxElement = std::ranges::max_element(cellRows);
-  return *maxElement;
-}
+//   auto maxElement = std::ranges::max_element(cellRows);
+//   return *maxElement;
+// }
 
 auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool
 {
-  auto key = Key(cellId);
-  auto cellIterator = m_cells.find(key);
+  // auto key = Key(cellId);
+  auto cellIterator = m_cells.find(cellId);
   return cellIterator == std::end(m_cells) ? false : cellIterator->second == cellType;
 }
 

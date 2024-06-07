@@ -13,8 +13,7 @@ auto cell_size::CellId(POINT_2I position) const noexcept -> cell_id
 
 auto cell_size::CellPosition(cell_id cellId) const noexcept -> POINT_2I
 {
-  auto position = cellId.Position();
-  return { position.x * m_width, position.y * m_height };
+  return { cellId.m_column * m_width, cellId.m_row * m_height };
 }
 
 auto cell_size::CellRect(cell_id cellId) const noexcept -> RECT_I

@@ -55,7 +55,7 @@ auto level_container::Create(object_type objectType, POINT_2F position) -> defau
   }
 }
 
-auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
+auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 {
   CreateWallObject(position, scale, angle, cellType, cellId);
 }
@@ -65,7 +65,7 @@ auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F posi
   return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
 }
 
-auto level_container::CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, POINT_2I cellId) -> void
+auto level_container::CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 {
   auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
   auto object = defaultObject.GetIf<level_wall>();

@@ -31,7 +31,7 @@ public:
 
 private:
 
-  using key_type = std::tuple<int32_t, int32_t>;
+  using key_type = cell_id;
   using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
@@ -39,12 +39,12 @@ private:
 
 private:
 
-  [[nodiscard]] auto MinColumn() const noexcept -> int;
-  [[nodiscard]] auto MaxColumn() const noexcept -> int;
-  [[nodiscard]] auto MinRow() const noexcept -> int;
-  [[nodiscard]] auto MaxRow() const noexcept -> int;
+  // [[nodiscard]] auto MinColumn() const noexcept -> int;
+  // [[nodiscard]] auto MaxColumn() const noexcept -> int;
+  // [[nodiscard]] auto MinRow() const noexcept -> int;
+  // [[nodiscard]] auto MaxRow() const noexcept -> int;
 
-  [[nodiscard]] auto Key(cell_id cellId) const noexcept -> key_type;
+  // [[nodiscard]] auto Key(cell_id cellId) const noexcept -> key_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
@@ -64,20 +64,21 @@ private:
 
 inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  auto key = Key(cellId);
-  auto [column, row] = key;
+  // auto key = Key(cellId);
+  // auto [column, row] = key;
   auto position = m_cellSize.CellPosition(cellId);
 
-  auto cellEntry = m_cells.find(key);
+  // auto cellEntry = m_cells.find(key);
+  auto cellEntry = m_cells.find(cellId);
 
   if( cellEntry == std::end(m_cells) )
   {
-    return { column, row, level_cell_type::none, position };
+    return { cellId, level_cell_type::none, position };
   }
   else
   {
     const auto& [id,type] = *cellEntry;
-    return { column, row, type, position };
+    return { cellId, type, position };
   }
 }
 
@@ -85,11 +86,11 @@ auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
 {
   auto cells = std::ranges::views::transform(m_cells, [this](const auto& cell) -> level_cell_item
   {
-    const auto& [key, type] = cell;
-    auto [column, row] = key;
-    auto id = cell_id { column, row };
+    const auto& [id, type] = cell;
+    // auto [column, row] = key;
+    // auto id = cell_id { column, row };
     auto position = m_cellSize.CellPosition(id);
-    return { column, row, type, position };
+    return { id, type, position };
   });
 
   for( const auto& cell : cells )
