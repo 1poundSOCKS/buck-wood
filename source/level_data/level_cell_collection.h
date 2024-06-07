@@ -70,9 +70,19 @@ inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
   auto key = Key(cellId);
   auto [column, row] = key;
-  auto type = m_cells.at(key);
   auto position = m_cellSize.CellPosition(cellId);
-  return { column, row, type, position };
+
+  auto cellEntry = m_cells.find(key);
+
+  if( cellEntry == std::end(m_cells) )
+  {
+    return { column, row, level_cell_type::none, position };
+  }
+  else
+  {
+    const auto& [id,type] = *cellEntry;
+    return { column, row, type, position };
+  }
 }
 
 auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
