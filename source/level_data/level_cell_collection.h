@@ -26,8 +26,7 @@ public:
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
-  auto EnumerateCells(auto&& visitor) const -> void;
-  auto EnumerateWalls(auto&& visitor) const -> void;
+  auto Enumerate(auto&& visitor) const -> void;
 
 private:
 
@@ -39,12 +38,6 @@ private:
 
 private:
 
-  // [[nodiscard]] auto MinColumn() const noexcept -> int;
-  // [[nodiscard]] auto MaxColumn() const noexcept -> int;
-  // [[nodiscard]] auto MinRow() const noexcept -> int;
-  // [[nodiscard]] auto MaxRow() const noexcept -> int;
-
-  // [[nodiscard]] auto Key(cell_id cellId) const noexcept -> key_type;
   [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
@@ -64,11 +57,8 @@ private:
 
 inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  // auto key = Key(cellId);
-  // auto [column, row] = key;
   auto position = m_cellSize.CellPosition(cellId);
 
-  // auto cellEntry = m_cells.find(key);
   auto cellEntry = m_cells.find(cellId);
 
   if( cellEntry == std::end(m_cells) )
@@ -82,13 +72,11 @@ inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
   }
 }
 
-auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
+auto level_cell_collection::Enumerate(auto &&visitor) const -> void
 {
   auto cells = std::ranges::views::transform(m_cells, [this](const auto& cell) -> level_cell_item
   {
     const auto& [id, type] = cell;
-    // auto [column, row] = key;
-    // auto id = cell_id { column, row };
     auto position = m_cellSize.CellPosition(id);
     return { id, type, position };
   });
@@ -97,15 +85,30 @@ auto level_cell_collection::EnumerateCells(auto &&visitor) const -> void
   {
     visitor(cell);
   }
-}
 
-inline auto level_cell_collection::EnumerateWalls(auto &&visitor) const -> void
-{
-  EnumerateCells([&visitor](const level_cell_item& cell)
+  std::map<cell_id, level_cell_item> wallCollection;
+
+  for( const auto& cell : cells )
   {
-    if( cell.Type() == level_cell_type::wall )
+    auto cellId = cell.CellId();
+    auto aboveCellId = cellId.Get(cell_id::relative_position::above);
+    auto aboveCellItem = Get(aboveCellId);
+    
+    if( aboveCellItem.Type() == level_cell_type::none )
     {
-      visitor(cell);
+      wallCollection.insert({aboveCellId, level_cell_item { aboveCellId, level_cell_type::wall, cell.Position() }});
     }
+  }
+
+  auto walls = std::ranges::views::transform(wallCollection, [this](const auto& cell) -> level_cell_item
+  {
+    const auto& [id, item] = cell;
+    auto position = m_cellSize.CellPosition(id);
+    return item;
   });
+
+  for( const auto& wall : walls )
+  {
+    visitor(wall);
+  }
 }
