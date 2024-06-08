@@ -25,7 +25,7 @@ public:
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
-  auto Enumerate(auto&& visitor) const -> void;
+  auto Enumerate(auto&& visitor) -> void;
 
 private:
 
@@ -43,7 +43,7 @@ private:
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F;
-  auto InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto&& inserter) const noexcept -> void;
+  auto InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto&& inserter) noexcept -> void;
 
 private:
 
@@ -52,6 +52,7 @@ private:
   custom_allocator_state m_cellBuffer;
   cell_allocator_type m_cellAllocator;
   collection_type m_cells;
+  collection_type m_walls;
 
 };
 
@@ -72,50 +73,50 @@ inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
   }
 }
 
-auto level_cell_collection::Enumerate(auto &&visitor) const -> void
+auto level_cell_collection::Enumerate(auto &&visitor) -> void
 {
-  auto cells = std::ranges::views::transform(m_cells, [this](const auto& cell) -> level_cell_item
+  auto cells = std::ranges::views::transform(m_cells, [this](auto& cell) -> level_cell_item
   {
-    const auto& [id, type] = cell;
+    auto& [id, type] = cell;
     auto position = m_cellSize.CellPosition(id);
     return { id, type, position };
   });
 
-  for( const auto& cell : cells )
+  for( auto cell : cells )
   {
     visitor(cell);
   }
 
-  std::map<cell_id, level_cell_item> wallCollection;
+  m_walls.clear();
 
   for( const auto& cell : cells )
   {
-    InsertCell(cell.CellId(), cell_id::relative_position::above, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
-    InsertCell(cell.CellId(), cell_id::relative_position::right, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
-    InsertCell(cell.CellId(), cell_id::relative_position::below, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
-    InsertCell(cell.CellId(), cell_id::relative_position::left, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
+    InsertCell(cell.CellId(), cell_id::relative_position::above, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
+    InsertCell(cell.CellId(), cell_id::relative_position::right, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
+    InsertCell(cell.CellId(), cell_id::relative_position::below, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
+    InsertCell(cell.CellId(), cell_id::relative_position::left, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
   }
 
-  auto walls = std::ranges::views::transform(wallCollection, [this](const auto& cell) -> level_cell_item
+  auto walls = std::ranges::views::transform(m_walls, [this](auto& cell) -> level_cell_item
   {
-    const auto& [id, item] = cell;
+    auto& [id, type] = cell;
     auto position = m_cellSize.CellPosition(id);
-    return item;
+    return { id, type, position };
   });
 
-  for( const auto& wall : walls )
+  for( auto wall : walls )
   {
     visitor(wall);
   }
 }
 
-auto level_cell_collection::InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto &&inserter) const noexcept -> void
+auto level_cell_collection::InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto &&inserter) noexcept -> void
 {
   auto aboveCellId = cellId.Get(position);
   auto aboveCellItem = Get(aboveCellId);
   
   if( aboveCellItem.Type() == level_cell_type::none )
   {
-    inserter = std::make_pair(aboveCellId, level_cell_item { aboveCellId, level_cell_type::wall, cellPosition });
+    inserter = std::make_pair(aboveCellId, level_cell_type::wall);
   }
 }

@@ -3,7 +3,7 @@
 
 level_cell_collection::level_cell_collection(cell_size cellSize) : 
   m_cellSize { cellSize },
-  m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }
+  m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }, m_walls { m_cellAllocator }
 {
   auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
   auto cellBottomLeft = POINT_2F { CellTopLeft().x, CellBottomRight().y };
