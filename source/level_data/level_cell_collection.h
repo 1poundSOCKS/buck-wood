@@ -44,6 +44,7 @@ private:
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F;
+  auto InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto&& inserter) const noexcept -> void;
 
 private:
 
@@ -90,14 +91,10 @@ auto level_cell_collection::Enumerate(auto &&visitor) const -> void
 
   for( const auto& cell : cells )
   {
-    auto cellId = cell.CellId();
-    auto aboveCellId = cellId.Get(cell_id::relative_position::above);
-    auto aboveCellItem = Get(aboveCellId);
-    
-    if( aboveCellItem.Type() == level_cell_type::none )
-    {
-      wallCollection.insert({aboveCellId, level_cell_item { aboveCellId, level_cell_type::wall, cell.Position() }});
-    }
+    InsertCell(cell.CellId(), cell_id::relative_position::above, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
+    InsertCell(cell.CellId(), cell_id::relative_position::right, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
+    InsertCell(cell.CellId(), cell_id::relative_position::below, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
+    InsertCell(cell.CellId(), cell_id::relative_position::left, cell.Position(), std::inserter(wallCollection, std::end(wallCollection)));
   }
 
   auto walls = std::ranges::views::transform(wallCollection, [this](const auto& cell) -> level_cell_item
@@ -110,5 +107,16 @@ auto level_cell_collection::Enumerate(auto &&visitor) const -> void
   for( const auto& wall : walls )
   {
     visitor(wall);
+  }
+}
+
+auto level_cell_collection::InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto &&inserter) const noexcept -> void
+{
+  auto aboveCellId = cellId.Get(position);
+  auto aboveCellItem = Get(aboveCellId);
+  
+  if( aboveCellItem.Type() == level_cell_type::none )
+  {
+    inserter = std::make_pair(aboveCellId, level_cell_item { aboveCellId, level_cell_type::wall, cellPosition });
   }
 }
