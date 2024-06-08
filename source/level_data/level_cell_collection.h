@@ -15,7 +15,6 @@ public:
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
   auto Add(cell_id cellId, level_cell_type cellType) noexcept -> void;
-  auto AddWalls() noexcept -> void;
 
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;

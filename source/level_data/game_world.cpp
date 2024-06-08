@@ -145,8 +145,6 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData, ce
     }
   });
 
-  // levelCells->AddWalls();
-
   return levelCells;
 }
 

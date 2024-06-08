@@ -15,25 +15,6 @@ auto level_cell_collection::Add(cell_id cellId, level_cell_type cellType) noexce
   m_cells.insert({cellId, cellType});
 }
 
-auto level_cell_collection::AddWalls() noexcept -> void
-{
-  // auto minColumn = MinColumn();
-  // auto maxColumn = MaxColumn();
-
-  // auto minRow = MinRow();
-  // auto maxRow = MaxRow();
-
-  // minColumn;maxColumn;minRow;maxRow;
-
-  // for( int column = minColumn - 1; column <= maxColumn + 1; ++column )
-  // {
-  //   for( int row = minRow - 1; row <= maxRow + 1; ++row )
-  //   {
-  //     Add({column, row}, level_cell_type::wall);
-  //   }
-  // }
-}
-
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 {
   auto id = CellId(position);
