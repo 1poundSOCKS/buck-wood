@@ -4,6 +4,7 @@
 #include "cell_collection.h"
 #include "cell_size.h"
 #include "level_cell_item.h"
+#include "level_cell_movement.h"
 
 class level_cell_collection
 {
@@ -29,17 +30,13 @@ public:
 
 private:
 
-  [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
-  [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
-  [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
-  static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
-  static [[nodiscard]] auto ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F;
-  auto InsertWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
+  auto SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
 
 private:
 
   cell_size m_cellSize;
   cell_collection m_cells;
+  level_cell_movement m_cellMovement;
 
 };
 
