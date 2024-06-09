@@ -51,7 +51,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 
   auto cellSize = cell_size { 400, 400 };
   auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
-
+  
   auto levelContainer = std::make_unique<level_container>();
 
   auto cellRect = levelCells->CellRect({0,0});
@@ -63,7 +63,9 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     levelContainer->CreateWall(ToFloat(position), scale, 0.0f, item.Type(), item.CellId());
   });
 
-  levelData->Enumerate([this,&levelContainer,cellSize,levelCells,levelIndex](size_t column, size_t row, char cellData)
+  auto levelCellMovement = std::make_shared<level_cell_movement>(levelCells, cellSize);
+
+  levelData->Enumerate([this,&levelContainer,cellSize,levelCells,levelCellMovement,levelIndex](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -77,7 +79,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
       {
         levelContainer->Create(level_container::object_type::portal_entry, cellPosition);
         auto& player = levelContainer->Create(level_container::object_type::player, cellPosition);
-        std::visit([levelCells](auto&& object) { SetCells(object, levelCells); }, player.Get());
+        std::visit([levelCellMovement](auto&& object) { SetObjectProperty(object, levelCellMovement); }, player.Get());
         break;
       }
 

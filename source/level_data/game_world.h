@@ -4,6 +4,7 @@
 #include "game_world_cell_data_translator.h"
 #include "game_world_object_data_translator.h"
 #include "level_container.h"
+#include "level_cell_movement.h"
 
 class game_world
 {
@@ -23,11 +24,13 @@ private:
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
   static auto SetCellId(portal& object, cell_id cellId) -> void;
   static auto SetCellId(auto&& object, cell_id cellId) -> void;
-  static auto SetCells(player_ship& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  // static auto SetCells(player_ship& object, std::shared_ptr<level_cell_collection> cells) -> void;
   static auto SetCells(enemy_type_1& object, std::shared_ptr<level_cell_collection> cells) -> void;
   static auto SetCells(enemy_type_2& object, std::shared_ptr<level_cell_collection> cells) -> void;
   static auto SetCells(enemy_type_3& object, std::shared_ptr<level_cell_collection> cells) -> void;
   static auto SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void;
+  static auto SetObjectProperty(player_ship& object, std::shared_ptr<level_cell_movement> value) -> void;
+  static auto SetObjectProperty(auto&& object, std::shared_ptr<level_cell_movement> value) -> void;
 
 private:
 
@@ -47,10 +50,10 @@ auto game_world::SetCellId(auto &&object, cell_id cellId) -> void
 {
 }
 
-inline auto game_world::SetCells(player_ship &object, std::shared_ptr<level_cell_collection> cells) -> void
-{
-  object.SetCells(cells);
-}
+// inline auto game_world::SetCells(player_ship &object, std::shared_ptr<level_cell_collection> cells) -> void
+// {
+//   object.SetCells(cells);
+// }
 
 inline auto game_world::SetCells(enemy_type_1 &object, std::shared_ptr<level_cell_collection> cells) -> void
 {
@@ -68,5 +71,14 @@ inline auto game_world::SetCells(enemy_type_3 &object, std::shared_ptr<level_cel
 }
 
 auto game_world::SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void
+{
+}
+
+inline auto game_world::SetObjectProperty(player_ship &object, std::shared_ptr<level_cell_movement> value) -> void
+{
+  object.Set(value);
+}
+
+auto game_world::SetObjectProperty(auto&& object, std::shared_ptr<level_cell_movement> cells) -> void
 {
 }

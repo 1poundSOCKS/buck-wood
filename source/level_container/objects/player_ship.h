@@ -7,7 +7,7 @@
 #include "reload_timer.h"
 #include "reload_counter.h"
 #include "health_status.h"
-#include "level_cell_collection.h"
+#include "level_cell_movement.h"
 
 class player_ship : public base_object
 {
@@ -21,7 +21,8 @@ public:
   auto Rotate(float angle) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  auto SetCells(std::shared_ptr<level_cell_collection> cells) -> void;
+  // auto SetCells(std::shared_ptr<level_cell_collection> cells) -> void;
+  auto Set(std::shared_ptr<level_cell_movement> value) -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
@@ -34,7 +35,7 @@ public:
 
 private:
 
-  auto UpdateWhenActive(float interval, const level_cell_collection& cells) -> void;
+  auto UpdateWhenActive(float interval) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
 private:
@@ -52,7 +53,8 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
   std::optional<POINT_2F> m_leftThumbstickPosition;
-  std::shared_ptr<level_cell_collection> m_cells;
+  // std::shared_ptr<level_cell_collection> m_cells;
+  std::shared_ptr<level_cell_movement> m_levelCellMovement;
 
 };
 
@@ -73,6 +75,11 @@ inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus.ApplyFatalDamage();
   m_destroyed = true;
+}
+
+inline auto player_ship::Set(std::shared_ptr<level_cell_movement> value) -> void
+{
+  m_levelCellMovement = value;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const noexcept -> VELOCITY_2F

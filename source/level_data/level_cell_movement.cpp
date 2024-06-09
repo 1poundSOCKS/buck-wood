@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "level_cell_movement.h"
 
-level_cell_movement::level_cell_movement(const cell_collection &cells, cell_size cellSize) : m_cells { cells }, m_cellSize { cellSize }
+level_cell_movement::level_cell_movement() : m_cells { std::make_shared<level_cell_collection>(cell_size { 0, 0 }) }, m_cellSize{0, 0 }
+{
+}
+
+level_cell_movement::level_cell_movement(std::shared_ptr<level_cell_collection> cells, cell_size cellSize) : m_cells{cells}, m_cellSize{cellSize}
 {
 }
 
@@ -27,21 +31,21 @@ auto level_cell_movement::UpdatePosition(POINT_2F position, POINT_2F distance, S
   auto aboveRightCellRect = ExpandRect(m_cellSize.CellRect(aboveRightCellId), objectSize);
   auto belowRightCellRect = ExpandRect(m_cellSize.CellRect(belowRightCellId), objectSize);
 
-  auto wallLeft = m_cells.IsTypeOf(leftCellId, level_cell_type::wall) ? leftCellRect.right : leftCellRect.left;
-  auto wallLeftAbove = m_cells.IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
-  auto wallLeftBelow = m_cells.IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
+  auto wallLeft = m_cells->IsTypeOf(leftCellId, level_cell_type::wall) ? leftCellRect.right : leftCellRect.left;
+  auto wallLeftAbove = m_cells->IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.y < aboveLeftCellRect.bottom ? aboveLeftCellRect.right : aboveLeftCellRect.left;
+  auto wallLeftBelow = m_cells->IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.y > belowLeftCellRect.top ? belowLeftCellRect.right : belowLeftCellRect.left;
 
-  auto wallAbove = m_cells.IsTypeOf(aboveCellId, level_cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
-  auto wallAboveLeft = m_cells.IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
-  auto wallAboveRight = m_cells.IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
+  auto wallAbove = m_cells->IsTypeOf(aboveCellId, level_cell_type::wall) ? aboveCellRect.bottom : aboveCellRect.top;
+  auto wallAboveLeft = m_cells->IsTypeOf(aboveLeftCellId, level_cell_type::wall) && position.x < aboveLeftCellRect.right ? aboveLeftCellRect.bottom : aboveLeftCellRect.top;
+  auto wallAboveRight = m_cells->IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.x > aboveRightCellRect.left ? aboveRightCellRect.bottom : aboveRightCellRect.top;
 
-  auto wallRight = m_cells.IsTypeOf(rightCellId, level_cell_type::wall) ? rightCellRect.left : rightCellRect.right;
-  auto wallRightAbove = m_cells.IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
-  auto wallRightBelow = m_cells.IsTypeOf(belowRightCellId, level_cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
+  auto wallRight = m_cells->IsTypeOf(rightCellId, level_cell_type::wall) ? rightCellRect.left : rightCellRect.right;
+  auto wallRightAbove = m_cells->IsTypeOf(aboveRightCellId, level_cell_type::wall) && position.y < aboveRightCellRect.bottom ? aboveRightCellRect.left : aboveRightCellRect.right;
+  auto wallRightBelow = m_cells->IsTypeOf(belowRightCellId, level_cell_type::wall) && position.y > belowRightCellRect.top ? belowRightCellRect.left : belowRightCellRect.right;
 
-  auto wallBelow = m_cells.IsTypeOf(belowCellId, level_cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
-  auto wallBelowLeft = m_cells.IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
-  auto wallBelowRight = m_cells.IsTypeOf(belowRightCellId, level_cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
+  auto wallBelow = m_cells->IsTypeOf(belowCellId, level_cell_type::wall) ? belowCellRect.top : belowCellRect.bottom;
+  auto wallBelowLeft = m_cells->IsTypeOf(belowLeftCellId, level_cell_type::wall) && position.x < belowLeftCellRect.right ? belowLeftCellRect.top : belowLeftCellRect.bottom;
+  auto wallBelowRight = m_cells->IsTypeOf(belowRightCellId, level_cell_type::wall) && position.x > belowRightCellRect.left ? belowRightCellRect.top : belowRightCellRect.bottom;
 
   wallLeft = std::max({wallLeft, wallLeftAbove, wallLeftBelow});
   wallAbove = std::max({wallAbove, wallAboveLeft, wallAboveRight});

@@ -2,7 +2,8 @@
 #include "level_cell_collection.h"
 
 level_cell_collection::level_cell_collection(cell_size cellSize) : 
-  m_cellSize { cellSize }, m_cellMovement { m_cells, cellSize }
+  // m_cellSize { cellSize }, m_cellMovement { m_cells, cellSize }
+  m_cellSize { cellSize }
 {
 }
 
@@ -36,10 +37,10 @@ auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT
   return ToFloat(m_cellSize.CellPosition(cellId));
 }
 
-auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
-{
-  return m_cellMovement.UpdatePosition(position, distance, objectSize);
-}
+// auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F
+// {
+//   return m_cellMovement.UpdatePosition(position, distance, objectSize);
+// }
 
 auto level_cell_collection::SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void
 {
