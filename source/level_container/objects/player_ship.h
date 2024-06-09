@@ -21,7 +21,6 @@ public:
   auto Rotate(float angle) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  // auto SetCells(std::shared_ptr<level_cell_collection> cells) -> void;
   auto Set(std::shared_ptr<level_cell_movement> value) -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
@@ -53,7 +52,6 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
   std::optional<POINT_2F> m_leftThumbstickPosition;
-  // std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<level_cell_movement> m_levelCellMovement;
 
 };

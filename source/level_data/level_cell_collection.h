@@ -4,7 +4,6 @@
 #include "cell_collection.h"
 #include "cell_size.h"
 #include "level_cell_item.h"
-// #include "level_cell_movement.h"
 
 class level_cell_collection
 {
@@ -24,8 +23,6 @@ public:
   [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2F;
 
-  // [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
-
   auto Enumerate(auto&& visitor) const noexcept -> void;
 
 private:
@@ -36,7 +33,6 @@ private:
 
   cell_size m_cellSize;
   cell_collection m_cells;
-  // level_cell_movement m_cellMovement;
 
 };
 
