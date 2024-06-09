@@ -2,24 +2,30 @@
 #include "level_cell_collection.h"
 
 level_cell_collection::level_cell_collection(cell_size cellSize) : 
-  m_cellSize { cellSize },
-  m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }, m_walls { m_cellAllocator }
+  m_cellSize { cellSize }
 {
-  auto cellTopRight = POINT_2F { CellBottomRight().x, CellTopLeft().y };
-  auto cellBottomLeft = POINT_2F { CellTopLeft().x, CellBottomRight().y };
-  auto cellBoundary = std::array { CellTopLeft(), cellTopRight, CellBottomRight(), cellBottomLeft };
 }
 
-auto level_cell_collection::Add(cell_id cellId, level_cell_type cellType) noexcept -> void
+auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  m_cells.insert({cellId, cellType});
+  auto type = m_cells.GetType(cellId);
+  auto position = m_cellSize.CellPosition(cellId);
+  return { cellId, type, position };
+}
+
+auto level_cell_collection::Set(cell_id cellId, level_cell_type cellType) noexcept -> void
+{
+  m_cells.Set(cellId, cellType);
+  InsertWall(cellId, cell_id::relative_position::above);
+  InsertWall(cellId, cell_id::relative_position::right);
+  InsertWall(cellId, cell_id::relative_position::below);
+  InsertWall(cellId, cell_id::relative_position::left);
 }
 
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 {
-  auto id = CellId(position);
-  auto cell = m_cells.find(id);
-  return cell != m_cells.end() ? CellType(cell) : level_cell_type::none;
+  auto cellId = CellId(position);
+  return m_cells.GetType(cellId);
 }
 
 auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT_2F
@@ -99,12 +105,6 @@ auto level_cell_collection::UpdatePosition(POINT_2F position, POINT_2F distance,
   return { CellTopLeft().x, CellTopLeft().y, CellBottomRight().x, CellBottomRight().y };
 }
 
-auto level_cell_collection::CellType(collection_type::const_iterator cell) const -> level_cell_type
-{
-  const auto& [celId, cellType] = *cell;
-  return cellType;
-}
-
 [[nodiscard]] auto level_cell_collection::CellId(POINT_2F position) const -> cell_id
 {
   return m_cellSize.CellId(ToInt(position));
@@ -117,8 +117,7 @@ auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
 
 auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool
 {
-  auto cellIterator = m_cells.find(cellId);
-  return cellIterator == std::end(m_cells) ? false : cellIterator->second == cellType;
+  return m_cells.IsTypeOf(cellId, cellType);
 }
 
 [[nodiscard]] auto level_cell_collection::ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F
@@ -130,4 +129,14 @@ auto level_cell_collection::ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F
 {
   auto rectF = ToFloat(rect);
   return { rectF.left - size.width, rectF.top - size.height, rectF.right + size.width, rectF.bottom + size.height };
+}
+
+auto level_cell_collection::InsertWall(cell_id cellId, cell_id::relative_position position) noexcept -> void
+{
+  auto wallCellId = cellId.Get(position);
+  
+  if( m_cells.IsTypeOf(wallCellId, level_cell_type::none) )
+  {
+    m_cells.Set(wallCellId, level_cell_type::wall);
+  }
 }

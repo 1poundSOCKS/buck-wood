@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "level_types.h"
+#include "cell_collection.h"
 #include "cell_size.h"
 #include "level_cell_item.h"
 
@@ -14,7 +14,7 @@ public:
 
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 
-  auto Add(cell_id cellId, level_cell_type cellType) noexcept -> void;
+  auto Set(cell_id cellId, level_cell_type cellType) noexcept -> void;
 
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
@@ -25,98 +25,30 @@ public:
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
-  auto Enumerate(auto&& visitor) -> void;
+  auto Enumerate(auto&& visitor) const noexcept -> void;
 
 private:
 
-  using key_type = cell_id;
-  using map_entry_type = std::pair<const key_type, level_cell_type>;
-  using cell_allocator_type = custom_allocator<map_entry_type>;
-  using collection_allocator_type = custom_allocator<map_entry_type>;
-  using collection_type = std::map<key_type, level_cell_type, std::less<key_type>, collection_allocator_type>;
-
-private:
-
-  [[nodiscard]] auto CellType(collection_type::const_iterator cell) const -> level_cell_type;
   [[nodiscard]] auto CellTopLeft() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellBottomRight() const noexcept -> POINT_2F;
   [[nodiscard]] auto CellRect() const noexcept -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_F rect, SIZE_F size) -> RECT_F;
   static [[nodiscard]] auto ExpandRect(RECT_I rect, SIZE_F size) -> RECT_F;
-  auto InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto&& inserter) noexcept -> void;
+  auto InsertWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
 
 private:
 
   cell_size m_cellSize;
-
-  custom_allocator_state m_cellBuffer;
-  cell_allocator_type m_cellAllocator;
-  collection_type m_cells;
-  collection_type m_walls;
+  cell_collection m_cells;
 
 };
 
-inline auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
+auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 {
-  auto position = m_cellSize.CellPosition(cellId);
-
-  auto cellEntry = m_cells.find(cellId);
-
-  if( cellEntry == std::end(m_cells) )
+  m_cells.Enumerate([this,visitor](auto cellId, auto cellType) -> void
   {
-    return { cellId, level_cell_type::none, position };
-  }
-  else
-  {
-    const auto& [id,type] = *cellEntry;
-    return { cellId, type, position };
-  }
-}
-
-auto level_cell_collection::Enumerate(auto &&visitor) -> void
-{
-  auto cells = std::ranges::views::transform(m_cells, [this](auto& cell) -> level_cell_item
-  {
-    auto& [id, type] = cell;
-    auto position = m_cellSize.CellPosition(id);
-    return { id, type, position };
+    auto cellPosition = m_cellSize.CellPosition(cellId);
+    level_cell_item cellItem { cellId, cellType, cellPosition };
+    visitor(cellItem);
   });
-
-  for( auto cell : cells )
-  {
-    visitor(cell);
-  }
-
-  m_walls.clear();
-
-  for( const auto& cell : cells )
-  {
-    InsertCell(cell.CellId(), cell_id::relative_position::above, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
-    InsertCell(cell.CellId(), cell_id::relative_position::right, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
-    InsertCell(cell.CellId(), cell_id::relative_position::below, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
-    InsertCell(cell.CellId(), cell_id::relative_position::left, cell.Position(), std::inserter(m_walls, std::end(m_walls)));
-  }
-
-  auto walls = std::ranges::views::transform(m_walls, [this](auto& cell) -> level_cell_item
-  {
-    auto& [id, type] = cell;
-    auto position = m_cellSize.CellPosition(id);
-    return { id, type, position };
-  });
-
-  for( auto wall : walls )
-  {
-    visitor(wall);
-  }
-}
-
-auto level_cell_collection::InsertCell(cell_id cellId, cell_id::relative_position position, POINT_2F cellPosition, auto &&inserter) noexcept -> void
-{
-  auto aboveCellId = cellId.Get(position);
-  auto aboveCellItem = Get(aboveCellId);
-  
-  if( aboveCellItem.Type() == level_cell_type::none )
-  {
-    inserter = std::make_pair(aboveCellId, level_cell_type::wall);
-  }
 }
