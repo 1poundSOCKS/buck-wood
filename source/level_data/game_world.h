@@ -30,6 +30,10 @@ private:
   static auto SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void;
   static auto SetObjectProperty(player_ship& object, std::shared_ptr<level_cell_movement> value) -> void;
   static auto SetObjectProperty(auto&& object, std::shared_ptr<level_cell_movement> value) -> void;
+  static auto SetObjectProperty(level_cell& object, cell_id value) -> void;
+  static auto SetObjectProperty(auto&& object, cell_id cellId) -> void;
+  static auto SetObjectProperty(level_cell& object, level_cell_type value) -> void;
+  static auto SetObjectProperty(auto&& object, level_cell_type value) -> void;
 
 private:
 
@@ -74,5 +78,23 @@ inline auto game_world::SetObjectProperty(player_ship &object, std::shared_ptr<l
 }
 
 auto game_world::SetObjectProperty(auto&& object, std::shared_ptr<level_cell_movement> cells) -> void
+{
+}
+
+inline auto game_world::SetObjectProperty(level_cell &object, cell_id value) -> void
+{
+  object.SetId(value);
+}
+
+inline auto game_world::SetObjectProperty(auto &&object, cell_id cellId) -> void
+{
+}
+
+inline auto game_world::SetObjectProperty(level_cell &object, level_cell_type value) -> void
+{
+  object.SetType(value);
+}
+
+inline auto game_world::SetObjectProperty(auto &&object, level_cell_type value) -> void
 {
 }

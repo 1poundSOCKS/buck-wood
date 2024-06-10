@@ -52,7 +52,7 @@ auto level_geometries::Get(object_type objectType) -> winrt::com_ptr<ID2D1Geomet
       return m_portal;
     case object_type::power_up:
       return m_powerUp;
-    case object_type::wall:
+    case object_type::cell:
       return m_rectangleGeometry;
     default:
       return m_rectangleGeometry;
@@ -79,7 +79,7 @@ auto level_geometries::GetBase(object_type objectType) -> winrt::com_ptr<ID2D1Ge
       return m_targetGeometry;
     case object_type::power_up:
       return m_targetGeometry;
-    case object_type::wall:
+    case object_type::cell:
       return m_rectangleGeometry;
     default:
       return m_rectangleGeometry;

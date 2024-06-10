@@ -19,7 +19,7 @@ class level_container
 
 public:
 
-  enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up };
+  enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell };
 
   level_container();
   level_container(collision_type collisionType);
@@ -53,15 +53,16 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
 
-  auto Create(object_type objectType, POINT_2F position) -> default_object&;
-  auto CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
+  auto Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
+  // auto CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
 private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
+  // auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
+  auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 

@@ -26,7 +26,7 @@ level_container::level_container(collision_type collisionType) :
   m_enemyCollisionObjects.reserve(100);
 }
 
-auto level_container::Create(object_type objectType, POINT_2F position) -> default_object&
+auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
 {
   switch( objectType )
   {
@@ -49,28 +49,32 @@ auto level_container::Create(object_type objectType, POINT_2F position) -> defau
       return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0, { 0, 0 });
     case object_type::power_up:
       return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
+    case object_type::cell:
+      return CreateCellObject(position, scale, angle);
     default:
       return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
   }
 }
 
-auto level_container::CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
-{
-  CreateCellObject(position, scale, angle, cellType, cellId);
-}
+// auto level_container::CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
+// {
+//   CreateCellObject(position, scale, angle, cellType, cellId);
+// }
 
 auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
 {
   return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
 }
 
-auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
+// auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
+auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle) -> default_object&
 {
   auto& defaultObject = m_cellObjects.emplace_back(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
-  auto object = defaultObject.GetIf<level_cell>();
-  object->SetType(cellType);
-  object->SetId(cellId);
+  // auto object = defaultObject.GetIf<level_cell>();
+  // object->SetType(cellType);
+  // object->SetId(cellId);
   std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
+  return defaultObject;
 }
 
 auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&

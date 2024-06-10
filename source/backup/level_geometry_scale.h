@@ -31,7 +31,7 @@ public:
         return m_instance->m_portal;
       case object_type::power_up:
         return m_instance->m_powerUp;
-      case object_type::wall:
+      case object_type::cell:
         return m_instance->m_wall;
       default:
         return SCALE_2F { 1, 1 };
