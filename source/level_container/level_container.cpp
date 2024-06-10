@@ -13,7 +13,7 @@ level_container::level_container(collision_type collisionType) :
   m_defaultObjectBuffer { 128, 0 },
   m_defaultObjectAllocator { m_defaultObjectBuffer },
   m_noninteractiveObjects { m_defaultObjectAllocator },
-  m_wallObjects { m_defaultObjectAllocator },
+  m_cellObjects { m_defaultObjectAllocator },
   m_playerObjects { m_defaultObjectAllocator },
   m_enemyObjects { m_defaultObjectAllocator },
   m_particleBuffer { 64, 0 },
@@ -66,7 +66,7 @@ auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F posi
 
 auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 {
-  auto& defaultObject = m_wallObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
+  auto& defaultObject = m_cellObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
   auto object = defaultObject.GetIf<level_wall>();
   object->SetType(cellType);
   object->SetId(cellId);

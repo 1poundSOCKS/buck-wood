@@ -114,7 +114,7 @@ private:
 
   using DefaultObjectAllocator = custom_allocator<default_object>;
   using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
-  using wall_object_collection = std::list<default_object, DefaultObjectAllocator>;
+  using cell_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using player_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
 
@@ -135,7 +135,7 @@ private:
   player_ship m_playerState;
 
   noninteractive_object_collection m_noninteractiveObjects;
-  wall_object_collection m_wallObjects;
+  cell_object_collection m_cellObjects;
   player_object_collection m_playerObjects;
   enemy_object_collection m_enemyObjects;
   particle_collection m_particles;
@@ -144,7 +144,6 @@ private:
 
   collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_floorCollisionObjects;
-  // collision_object_collection m_exitCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
