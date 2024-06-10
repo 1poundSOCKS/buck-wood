@@ -38,10 +38,5 @@ private:
 
 auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 {
-  m_cells.Enumerate([this,visitor](auto cellId, auto cellType) -> void
-  {
-    auto cellPosition = m_cellSize.CellPosition(cellId);
-    level_cell_item cellItem { cellId, cellType, cellPosition };
-    visitor(cellItem);
-  });
+  m_cells.Enumerate(visitor);
 }
