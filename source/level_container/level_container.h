@@ -61,7 +61,7 @@ public:
 private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  auto CreateWallObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
+  auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
   auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
