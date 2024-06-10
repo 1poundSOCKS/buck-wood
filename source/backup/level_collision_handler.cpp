@@ -19,9 +19,9 @@ auto level_collision_handler::operator()(default_object& object1, default_object
   OnCollision<player_ship, enemy_bullet_1>(object1, object2);
   OnCollision<player_ship, power_up>(object1, object2);
   
-  OnCollision<player_ship, level_wall>(object1, object2);
-  OnCollision<player_bullet, level_wall>(object1, object2);
-  OnCollision<enemy_bullet_1, level_wall>(object1, object2);
+  OnCollision<player_ship, level_cell>(object1, object2);
+  OnCollision<player_bullet, level_cell>(object1, object2);
+  OnCollision<enemy_bullet_1, level_cell>(object1, object2);
 }
 
 auto level_collision_handler::operator()(default_object& object, particle& particle) -> void
@@ -133,7 +133,7 @@ auto level_collision_handler::OnCollision(player_ship& playerShip, power_up& pow
   powerUp.Destroy();
 }
 
-auto level_collision_handler::OnCollision(player_ship &ship, level_wall &wall) -> void
+auto level_collision_handler::OnCollision(player_ship &ship, level_cell &wall) -> void
 {
   switch( wall.Type() )
   {
@@ -143,7 +143,7 @@ auto level_collision_handler::OnCollision(player_ship &ship, level_wall &wall) -
   }
 }
 
-auto level_collision_handler::OnCollision(player_bullet& bullet, level_wall& wall) -> void
+auto level_collision_handler::OnCollision(player_bullet& bullet, level_cell& wall) -> void
 {
   switch( wall.Type() )
   {
@@ -154,7 +154,7 @@ auto level_collision_handler::OnCollision(player_bullet& bullet, level_wall& wal
   }
 }
 
-auto level_collision_handler::OnCollision(enemy_bullet_1 &bullet, level_wall &wall) -> void
+auto level_collision_handler::OnCollision(enemy_bullet_1 &bullet, level_cell &wall) -> void
 {
   switch( wall.Type() )
   {

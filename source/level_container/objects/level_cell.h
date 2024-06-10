@@ -2,13 +2,14 @@
 
 #include "base_object.h"
 #include "level_types.h"
+#include "cell_id.h"
 
-class level_wall : public base_object
+class level_cell : public base_object
 {
 
 public:
 
-  level_wall(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept : 
+  level_cell(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept : 
     base_object { position, scale, angle }, m_type { level_cell_type::floor }
   {
   }

@@ -88,8 +88,8 @@ private:
   auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void;
-  auto OnCollision(player_bullet& bullet, level_wall& wall) -> void;
-  auto OnCollision(enemy_bullet_1& bullet, level_wall& wall) -> void;
+  auto OnCollision(player_bullet& bullet, level_cell& wall) -> void;
+  auto OnCollision(enemy_bullet_1& bullet, level_cell& wall) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_1& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_3& enemy) -> void;
@@ -107,7 +107,7 @@ private:
   auto DistanceFromTarget(auto&& object) const -> float;
 #endif
 
-  auto AddCellCollisionObject(default_object& object, level_wall& cellObject) -> void;
+  auto AddCellCollisionObject(default_object& object, level_cell& cellObject) -> void;
   auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
 
 private:

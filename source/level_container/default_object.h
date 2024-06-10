@@ -8,7 +8,7 @@ class default_object
 
 public:
 
-  using object_type = std::variant<level_wall, player_ship, player_bullet, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2, enemy_type_3>;
+  using object_type = std::variant<level_cell, player_ship, player_bullet, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2, enemy_type_3>;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) :
     m_object { variantType, position, scale, angle, velocity }

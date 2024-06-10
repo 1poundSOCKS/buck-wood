@@ -66,8 +66,8 @@ auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F posi
 
 auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 {
-  auto& defaultObject = m_cellObjects.emplace_back(std::in_place_type<level_wall>, position, scale, angle, VELOCITY_2F { 0, 0 });
-  auto object = defaultObject.GetIf<level_wall>();
+  auto& defaultObject = m_cellObjects.emplace_back(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
+  auto object = defaultObject.GetIf<level_cell>();
   object->SetType(cellType);
   object->SetId(cellId);
   std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
@@ -187,7 +187,7 @@ auto level_container::DoCollisions() -> void
   {
     if( m_collisionTest(object1, object2) )
     {
-      OnCollision<player_bullet, level_wall>(object1.Object(), object2.Object());
+      OnCollision<player_bullet, level_cell>(object1.Object(), object2.Object());
     }
   });
 
@@ -195,7 +195,7 @@ auto level_container::DoCollisions() -> void
   {
     if( m_collisionTest(object1, object2) )
     {
-      OnCollision<enemy_bullet_1, level_wall>(object1.Object(), object2.Object());
+      OnCollision<enemy_bullet_1, level_cell>(object1.Object(), object2.Object());
     }
   });
 
@@ -312,7 +312,7 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
   }
 }
 
-auto level_container::AddCellCollisionObject(default_object& object, level_wall &cellObject) -> void
+auto level_container::AddCellCollisionObject(default_object& object, level_cell &cellObject) -> void
 {
   switch( cellObject.Type() )
   {
@@ -344,12 +344,12 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy) ->
   enemy.ApplyDamage(bullet.Damage());
 }
 
-auto level_container::OnCollision(player_bullet &bullet, level_wall &wall) -> void
+auto level_container::OnCollision(player_bullet &bullet, level_cell &wall) -> void
 {
   bullet.Destroy();
 }
 
-auto level_container::OnCollision(enemy_bullet_1 &bullet, level_wall &wall) -> void
+auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall) -> void
 {
   bullet.Destroy();
 }

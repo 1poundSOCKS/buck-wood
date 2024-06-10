@@ -10,7 +10,7 @@
 #include "objects/power_up.h"
 #include "objects/blank_object.h"
 #include "objects/background_object.h"
-#include "objects/level_wall.h"
+#include "objects/level_cell.h"
 #include "objects/particle.h"
 
 enum class object_type { player, player_bullet, enemy_1, enemy_2, enemy_3, enemy_bullet_1, portal, power_up, wall };
@@ -58,7 +58,7 @@ namespace level_objects
     return object_type::power_up;
   }
 
-  inline auto Type(const level_wall&) -> object_type
+  inline auto Type(const level_cell&) -> object_type
   {
     return object_type::wall;
   }
