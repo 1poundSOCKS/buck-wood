@@ -54,7 +54,7 @@ public:
   auto SetExit(bool value, cell_id cell) -> void;
 
   auto Create(object_type objectType, POINT_2F position) -> default_object&;
-  auto CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
+  auto CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 

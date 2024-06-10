@@ -49,11 +49,6 @@ auto game_world::SetCellId(auto &&object, cell_id cellId) -> void
 {
 }
 
-// inline auto game_world::SetCells(player_ship &object, std::shared_ptr<level_cell_collection> cells) -> void
-// {
-//   object.SetCells(cells);
-// }
-
 inline auto game_world::SetCells(enemy_type_1 &object, std::shared_ptr<level_cell_collection> cells) -> void
 {
   object.SetCells(cells);

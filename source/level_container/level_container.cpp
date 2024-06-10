@@ -54,7 +54,7 @@ auto level_container::Create(object_type objectType, POINT_2F position) -> defau
   }
 }
 
-auto level_container::CreateWall(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
+auto level_container::CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 {
   CreateWallObject(position, scale, angle, cellType, cellId);
 }

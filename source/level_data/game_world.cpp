@@ -60,7 +60,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
   levelCells->Enumerate([this,&levelContainer,&cellSize,&scale](cell_id cellId, level_cell_type cellType)
   {
     auto position = cellSize.CellPosition(cellId);
-    levelContainer->CreateWall(ToFloat(position), scale, 0.0f, cellType, cellId);
+    levelContainer->CreateCell(ToFloat(position), scale, 0.0f, cellType, cellId);
   });
 
   auto levelCellMovement = std::make_shared<level_cell_movement>(levelCells, cellSize);
