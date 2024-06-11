@@ -59,8 +59,6 @@ private:
   auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
 
-  auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
-
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -144,7 +142,6 @@ private:
   using collision_object_collection = std::vector<collision_object>;
 
   collision_object_collection m_wallCollisionObjects;
-  collision_object_collection m_floorCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
 
@@ -344,14 +341,6 @@ inline auto level_container::EnumerateEnemyCollisionObjects(auto &&visitor) cons
   }
 }
 
-inline auto level_container::EnumerateFloorCollisionObjects(auto &&visitor) const -> void
-{
-  for( const auto& object : m_floorCollisionObjects )
-  {
-    visitor(object);
-  }
-}
-
 inline auto level_container::Exit() const noexcept -> bool
 {
   return m_exit;
@@ -378,15 +367,9 @@ auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F posi
   return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
 }
 
-// auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
 auto level_container::CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  auto& defaultObject = m_cellObjects.emplace_back(variantType, position, scale, angle, velocity);
-  // auto object = defaultObject.GetIf<level_cell>();
-  // object->SetType(cellType);
-  // object->SetId(cellId);
-  // std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
-  return defaultObject;
+  return m_cellObjects.emplace_back(variantType, position, scale, angle, velocity);
 }
 
 #if 0
