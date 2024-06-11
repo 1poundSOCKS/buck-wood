@@ -24,6 +24,11 @@ auto default_object_renderer::Write(const default_object& object, ID2D1Geometry*
   std::visit(default_object_renderer_visitor { *this, geometry }, object.Get());
 }
 
+auto default_object_renderer::Write(const level_cell &object, ID2D1Geometry *geometry) const -> void
+{
+  m_floorCellRenderer.Write(geometry);
+}
+
 auto default_object_renderer::Write(const background_object& object, ID2D1Geometry* geometry) const -> void
 {
   m_backgroundObjectRenderer.Write(geometry);

@@ -50,7 +50,7 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
     case object_type::power_up:
       return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
     case object_type::cell:
-      return CreateCellObject(position, scale, angle);
+      return CreateCellObject(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
     default:
       return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
   }
@@ -60,22 +60,6 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
 // {
 //   CreateCellObject(position, scale, angle, cellType, cellId);
 // }
-
-auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
-{
-  return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
-}
-
-// auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
-auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle) -> default_object&
-{
-  auto& defaultObject = m_cellObjects.emplace_back(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
-  // auto object = defaultObject.GetIf<level_cell>();
-  // object->SetType(cellType);
-  // object->SetId(cellId);
-  std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
-  return defaultObject;
-}
 
 auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
@@ -125,6 +109,27 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   });
 
   RemoveDestroyedObjects();
+
+ m_wallCollisionObjects.clear();
+
+  // EnumerateCellObjects(false, [this](auto& object)
+  // {
+    // std::visit([this,&object](auto& cellObject) { AddCollisionObject(object, cellObject); }, object.Get());
+    // switch( cellType )
+    // {
+    //   case level_cell_type::wall:
+    //     m_wallCollisionObjects.emplace_back(object);
+    //     break;
+    //   case level_cell_type::floor:
+    //     m_floorCollisionObjects.emplace_back(object);
+    //     break;
+    // }
+  // });
+
+  for( auto& object : m_cellObjects )
+  {
+    std::visit([this,&object](auto& cellObject) { AddCollisionObject(object, cellObject); }, object.Get());
+  }
 
   m_playerCollisionObjects.clear();
 
@@ -316,19 +321,19 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
   }
 }
 
-auto level_container::AddCellCollisionObject(default_object& object, level_cell &cellObject) -> void
-{
-  switch( cellObject.Type() )
-  {
-    case level_cell_type::wall:
-      m_wallCollisionObjects.emplace_back(object);
-      break;
+// auto level_container::AddCellCollisionObject(default_object& object, level_cell &cellObject) -> void
+// {
+  // switch( cellObject.Type() )
+  // {
+  //   case level_cell_type::wall:
+  //     m_wallCollisionObjects.emplace_back(object);
+  //     break;
 
-    case level_cell_type::floor:
-      m_floorCollisionObjects.emplace_back(object);
-      break;
-  }
-}
+  //   case level_cell_type::floor:
+  //     m_floorCollisionObjects.emplace_back(object);
+  //     break;
+  // }
+// }
 
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void
 {

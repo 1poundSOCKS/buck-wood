@@ -38,13 +38,14 @@ public:
 
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
+  auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateParticles(auto&& visitor) const -> void;
+  auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
 
   auto EnumeratePlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
   auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
-  auto EnumerateParticles(auto&& visitor) const -> void;
 
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
   auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
@@ -62,7 +63,7 @@ private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   // auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
-  auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
+  auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
@@ -108,8 +109,10 @@ private:
   auto DistanceFromTarget(auto&& object) const -> float;
 #endif
 
-  auto AddCellCollisionObject(default_object& object, level_cell& cellObject) -> void;
+  // auto AddCellCollisionObject(default_object& object, level_cell& cellObject) -> void;
   auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
+  // auto AddCollisionObject(default_object& defaultObject, level_cell& object) -> void;
+  auto AddCollisionObject(default_object& defaultObject, auto&& object) -> void;
 
 private:
 
@@ -225,6 +228,14 @@ inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> v
   }
 }
 
+// inline auto level_container::EnumerateCellObjects(bool includeDestroyedObjects, auto &&visitor) -> void
+// {
+//   for( auto& object : m_cellObjects )
+//   {
+//     std::visit([this,&object,visitor](auto& cellObject){ visitor(object); }, object.Get());
+//   }
+// }
+
 inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
   auto objects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
@@ -256,6 +267,19 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
   for( const auto& particle : m_particles )
   {
     visitor(particle);
+  }
+}
+
+inline auto level_container::EnumerateCellObjects(level_cell_type cellType, auto &&visitor) const -> void
+{
+  for( const auto& object : m_cellObjects )
+  {
+    const auto* cellObject = object.GetIf<level_cell>();
+
+    if( cellObject && cellObject->Type() == cellType )
+    {
+      visitor(object);
+    }
   }
 }
 
@@ -360,6 +384,22 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
   m_playerState = playerState;
 }
 
+auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
+{
+  return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
+}
+
+// auto level_container::CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
+auto level_container::CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  auto& defaultObject = m_cellObjects.emplace_back(variantType, position, scale, angle, velocity);
+  // auto object = defaultObject.GetIf<level_cell>();
+  // object->SetType(cellType);
+  // object->SetId(cellId);
+  // std::visit([this,&defaultObject](auto& cellObject){ AddCellCollisionObject(defaultObject, cellObject); }, defaultObject.Get());
+  return defaultObject;
+}
+
 #if 0
 auto level_container::GetNearestToTarget(auto& object1, auto& object2) const -> auto&
 {
@@ -373,6 +413,24 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 #endif
 
 inline auto level_container::AddCellCollisionObject(default_object& object, auto &cellObject) -> void
+{
+}
+
+// inline auto level_container::AddCollisionObject(default_object &defaultObject, level_cell &object) -> void
+// {
+//   switch( object.Type() )
+//   {
+//     case level_cell_type::wall:
+//       m_wallCollisionObjects.emplace_back(object);
+//       break;
+
+//     case level_cell_type::floor:
+//       m_floorCollisionObjects.emplace_back(object);
+//       break;
+//   }
+// }
+
+inline auto level_container::AddCollisionObject(default_object &defaultObject, auto &&object) -> void
 {
 }
 
