@@ -56,11 +56,6 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
   }
 }
 
-// auto level_container::CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void
-// {
-//   CreateCellObject(position, scale, angle, cellType, cellId);
-// }
-
 auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
   return m_playerObjects.emplace_back(variantType, position, scale, angle, velocity);
@@ -111,20 +106,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   RemoveDestroyedObjects();
 
  m_wallCollisionObjects.clear();
-
-  // EnumerateCellObjects(false, [this](auto& object)
-  // {
-    // std::visit([this,&object](auto& cellObject) { AddCollisionObject(object, cellObject); }, object.Get());
-    // switch( cellType )
-    // {
-    //   case level_cell_type::wall:
-    //     m_wallCollisionObjects.emplace_back(object);
-    //     break;
-    //   case level_cell_type::floor:
-    //     m_floorCollisionObjects.emplace_back(object);
-    //     break;
-    // }
-  // });
 
   for( auto& object : m_cellObjects )
   {

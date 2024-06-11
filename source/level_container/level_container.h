@@ -55,14 +55,12 @@ public:
   auto SetExit(bool value, cell_id cell) -> void;
 
   auto Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  // auto CreateCell(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 
 private:
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  // auto CreateCellObject(POINT_2F position, SCALE_2F scale, float angle, level_cell_type cellType, cell_id cellId) -> void;
   auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -109,9 +107,7 @@ private:
   auto DistanceFromTarget(auto&& object) const -> float;
 #endif
 
-  // auto AddCellCollisionObject(default_object& object, level_cell& cellObject) -> void;
-  auto AddCellCollisionObject(default_object& object, auto& cellObject) -> void;
-  // auto AddCollisionObject(default_object& defaultObject, level_cell& object) -> void;
+  auto AddCollisionObject(default_object& defaultObject, level_cell& object) -> void;
   auto AddCollisionObject(default_object& defaultObject, auto&& object) -> void;
 
 private:
@@ -227,14 +223,6 @@ inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> v
     visitor(object);
   }
 }
-
-// inline auto level_container::EnumerateCellObjects(bool includeDestroyedObjects, auto &&visitor) -> void
-// {
-//   for( auto& object : m_cellObjects )
-//   {
-//     std::visit([this,&object,visitor](auto& cellObject){ visitor(object); }, object.Get());
-//   }
-// }
 
 inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
@@ -412,23 +400,15 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 }
 #endif
 
-inline auto level_container::AddCellCollisionObject(default_object& object, auto &cellObject) -> void
+inline auto level_container::AddCollisionObject(default_object &defaultObject, level_cell &object) -> void
 {
+  switch( object.Type() )
+  {
+    case level_cell_type::wall:
+      m_wallCollisionObjects.emplace_back(defaultObject);
+      break;
+  }
 }
-
-// inline auto level_container::AddCollisionObject(default_object &defaultObject, level_cell &object) -> void
-// {
-//   switch( object.Type() )
-//   {
-//     case level_cell_type::wall:
-//       m_wallCollisionObjects.emplace_back(object);
-//       break;
-
-//     case level_cell_type::floor:
-//       m_floorCollisionObjects.emplace_back(object);
-//       break;
-//   }
-// }
 
 inline auto level_container::AddCollisionObject(default_object &defaultObject, auto &&object) -> void
 {

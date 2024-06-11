@@ -31,11 +31,6 @@ auto renderer::Render(const hud_target& hudTarget) const -> void
 
 auto renderer::Render(const level_container &levelContainer) const -> void
 {
-  // levelContainer.EnumerateFloorCollisionObjects([this](const collision_object& object){
-  //   auto geometry = object.Geometry().GetRaw();
-  //   m_floorCellRenderer.Write(geometry);
-  // });
-
   levelContainer.EnumerateCellObjects(level_cell_type::floor, [this](const auto& object)
   {
     Write(object);
