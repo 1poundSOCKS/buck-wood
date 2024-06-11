@@ -42,13 +42,7 @@ public:
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
 
-  auto EnumeratePlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
-  auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
-  auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -59,6 +53,13 @@ public:
   auto SavePlayerState(player_ship playerShip) -> void;
 
 private:
+
+  auto EnumeratePlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+  auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+  auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
+  auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+
+  auto EnumerateFloorCollisionObjects(auto&& visitor) const -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
