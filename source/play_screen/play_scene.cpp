@@ -100,8 +100,6 @@ auto play_scene::RenderLevelContainer() const -> void
 
   renderer::render(m_playState->LevelContainer());
 
-  RenderEnergyBars();
-
   auto renderEnd = performance_counter::QueryValue();
 
   diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
@@ -132,21 +130,6 @@ auto play_scene::PlaySoundEffects() const -> void
   {
     audio_events::PowerUpCollected();
   }
-}
-
-auto play_scene::RenderEnergyBars() const -> void
-{
-  m_playState->LevelContainer().EnumerateEnemyCollisionObjects([this](const auto& object)
-  {
-    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() || object.Object().HoldsAlternative<enemy_type_3>() )
-    {
-      auto geometryBounds = object.Bounds();
-      auto energyBarRect = energy_bar_rect { geometryBounds };
-      auto health = object.Object().Health();
-      auto energyBar = energy_bar { energyBarRect.Get(), health };
-      renderer::render(energyBar);
-    }
-  });
 }
 
 auto play_scene::RenderGeometryBoundaries() const -> void

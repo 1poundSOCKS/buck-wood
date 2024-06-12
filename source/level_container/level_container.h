@@ -25,6 +25,7 @@ public:
   level_container(collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
+  auto Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto PlayerDestroyed() const noexcept -> bool;
@@ -41,14 +42,11 @@ public:
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
-
   auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
-
-  auto Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
 
   auto SavePlayerState(player_ship playerShip) -> void;
 

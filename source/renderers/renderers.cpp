@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "renderers.h"
+#include "energy_bar_rect.h"
 
 auto renderer::create() -> void
 {
@@ -56,4 +57,16 @@ auto renderer::Render(const level_container &levelContainer) const -> void
       }
     });
   }
+
+  levelContainer.EnumerateEnemyCollisionObjects([this](const auto& object)
+  {
+    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() || object.Object().HoldsAlternative<enemy_type_3>() )
+    {
+      auto geometryBounds = object.Bounds();
+      auto energyBarRect = energy_bar_rect { geometryBounds };
+      auto health = object.Object().Health();
+      auto energyBar = energy_bar { energyBarRect.Get(), health };
+      Render(energyBar);
+    }
+  });
 }
