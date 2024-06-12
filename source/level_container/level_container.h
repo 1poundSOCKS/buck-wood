@@ -10,6 +10,7 @@
 #include "game_settings.h"
 #include "collisions/particle_collision.h"
 #include "collisions/default_object_geometry.h"
+#include "collisions/default_object_geometry_collection.h"
 #include "collisions/range_comparision_runner.h"
 #include "collisions/geometry_collision.h"
 #include "collisions/geometry_containment.h"
@@ -142,6 +143,9 @@ private:
   collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_playerCollisionObjects;
   collision_object_collection m_enemyCollisionObjects;
+
+  default_object_geometry_collection m_playerGeometries;
+  default_object_geometry_collection m_enemyGeometries;
 
   particle_collision m_particleCollisionRunner;
   range_comparison_runner m_compare;

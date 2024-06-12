@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "geometry_containment.h"
 
-auto geometry_containment::operator()(default_object_geometry &containedObject, default_object_geometry &containmentObject) -> bool
+auto geometry_containment::operator()(const default_object_geometry &containedObject, const default_object_geometry &containmentObject) const -> bool
 {
   auto containedPosition = containedObject.Object().Position();
   auto containmentPosition = containmentObject.Object().Position();
@@ -25,7 +25,7 @@ auto geometry_containment::operator()(default_object_geometry &containedObject, 
   }
 }
 
-auto geometry_containment::CheckDirect2D(default_object_geometry &containedObject, default_object_geometry &containmentObject) noexcept -> bool
+auto geometry_containment::CheckDirect2D(const default_object_geometry &containedObject, const default_object_geometry &containmentObject) noexcept -> bool
 {
   auto containedGeometry = containedObject.Geometry().GetRaw();
   auto containmentGeometry = containmentObject.Geometry().GetRaw();

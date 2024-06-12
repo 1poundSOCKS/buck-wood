@@ -12,11 +12,11 @@ public:
   {
   }
 
-  auto operator()(default_object_geometry& containedObject, default_object_geometry& containmentObject) -> bool;
+  auto operator()(const default_object_geometry& containedObject, const default_object_geometry& containmentObject) const -> bool;
 
 private:
 
-  static [[nodiscard]] auto CheckDirect2D(default_object_geometry &containedObject, default_object_geometry &containmentObject) noexcept -> bool;
+  static [[nodiscard]] auto CheckDirect2D(const default_object_geometry &containedObject, const default_object_geometry &containmentObject) noexcept -> bool;
 
 private:
 

@@ -5,7 +5,7 @@ geometry_collision::geometry_collision(collision_type collisionType) : m_type { 
 {
 }
 
-auto geometry_collision::operator()(default_object_geometry &object1, default_object_geometry &object2) -> bool
+auto geometry_collision::operator()(const default_object_geometry &object1, const default_object_geometry &object2) const -> bool
 {
   auto position1 = object1.Object().Position();
   auto position2 = object2.Object().Position();
@@ -27,7 +27,7 @@ auto geometry_collision::operator()(default_object_geometry &object1, default_ob
   }
 }
 
-[[nodiscard]] auto geometry_collision::CheckDirect2D(default_object_geometry& object1, default_object_geometry& object2) noexcept -> bool
+[[nodiscard]] auto geometry_collision::CheckDirect2D(const default_object_geometry& object1, const default_object_geometry& object2) noexcept -> bool
 {
   auto geometry1 = object1.Geometry().GetRaw();
   auto geometry2 = object2.Geometry().GetRaw();

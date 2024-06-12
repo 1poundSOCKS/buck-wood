@@ -9,11 +9,11 @@ class geometry_collision
 public:
 
   geometry_collision(collision_type collsionType);
-  auto operator()(default_object_geometry& object1, default_object_geometry& object2) -> bool;
+  auto operator()(const default_object_geometry& object1, const default_object_geometry& object2) const -> bool;
 
 private:
 
-  static [[nodiscard]] auto CheckDirect2D(default_object_geometry& object1, default_object_geometry& object2) noexcept -> bool;
+  static [[nodiscard]] auto CheckDirect2D(const default_object_geometry& object1, const default_object_geometry& object2) noexcept -> bool;
 
 private:
 
