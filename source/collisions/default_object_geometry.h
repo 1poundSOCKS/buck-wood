@@ -4,12 +4,12 @@
 #include "transformed_level_object_geometry.h"
 #include "transformed_default_object_geometry.h"
 
-class collision_object
+class default_object_geometry
 {
 
 public:
 
-  collision_object(default_object& object) : m_object { object }, m_geometry { object }, m_bounds { direct2d::GetGeometryBounds(m_geometry.GetRaw()) }
+  default_object_geometry(default_object& object) : m_object { object }, m_geometry { object }, m_bounds { direct2d::GetGeometryBounds(m_geometry.GetRaw()) }
   {
   }
 

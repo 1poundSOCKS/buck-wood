@@ -9,7 +9,7 @@
 #include "game_score.h"
 #include "game_settings.h"
 #include "collisions/particle_collision.h"
-#include "collisions/collision_object.h"
+#include "collisions/default_object_geometry.h"
 #include "collisions/range_comparision_runner.h"
 #include "collisions/geometry_collision.h"
 #include "collisions/geometry_containment.h"
@@ -137,7 +137,7 @@ private:
   enemy_object_collection m_enemyObjects;
   particle_collection m_particles;
 
-  using collision_object_collection = std::vector<collision_object>;
+  using collision_object_collection = std::vector<default_object_geometry>;
 
   collision_object_collection m_wallCollisionObjects;
   collision_object_collection m_playerCollisionObjects;

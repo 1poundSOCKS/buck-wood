@@ -1,7 +1,7 @@
 #pragma once
 
 #include "collision_type.h"
-#include "collision_object.h"
+#include "default_object_geometry.h"
 
 class geometry_containment
 {
@@ -12,11 +12,11 @@ public:
   {
   }
 
-  auto operator()(collision_object& containedObject, collision_object& containmentObject) -> bool;
+  auto operator()(default_object_geometry& containedObject, default_object_geometry& containmentObject) -> bool;
 
 private:
 
-  static [[nodiscard]] auto CheckDirect2D(collision_object &containedObject, collision_object &containmentObject) noexcept -> bool;
+  static [[nodiscard]] auto CheckDirect2D(default_object_geometry &containedObject, default_object_geometry &containmentObject) noexcept -> bool;
 
 private:
 
