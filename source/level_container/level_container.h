@@ -41,9 +41,9 @@ public:
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
+  auto EnumerateEnemyObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
-  auto EnumerateEnemyGeometry(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -321,9 +321,9 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
   }
 }
 
-inline auto level_container::EnumerateEnemyGeometry(auto &&visitor) const -> void
+inline auto level_container::EnumerateEnemyObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_enemyGeometries )
+  for( const auto& object : m_enemyObjects )
   {
     visitor(object);
   }

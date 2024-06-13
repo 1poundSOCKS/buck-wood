@@ -58,13 +58,13 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     });
   }
 
-  levelContainer.EnumerateEnemyGeometry([this](const auto& object)
+  levelContainer.EnumerateEnemyObjects([this](const auto& object)
   {
-    if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() || object.Object().HoldsAlternative<enemy_type_3>() )
+    if( object.HoldsAlternative<enemy_type_1>() || object.HoldsAlternative<enemy_type_2>() || object.HoldsAlternative<enemy_type_3>() )
     {
-      auto geometryBounds = object.Bounds();
-      auto energyBarRect = energy_bar_rect { geometryBounds };
-      auto health = object.Object().Health();
+      transformed_default_object_geometry geometry { object };
+      auto energyBarRect = energy_bar_rect { geometry.Bounds() };
+      auto health = object.Health();
       auto energyBar = energy_bar { energyBarRect.Get(), health };
       Render(energyBar);
     }

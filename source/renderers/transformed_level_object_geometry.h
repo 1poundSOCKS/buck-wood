@@ -22,6 +22,11 @@ public:
     return m_value.get();
   }
   
+  [[nodiscard]] auto Bounds() const -> RECT_F
+  {
+    return direct2d::GetGeometryBounds(m_value.get());
+  }
+
 private:
 
   static [[nodiscard]] auto GetGeometry(const auto& object) -> winrt::com_ptr<ID2D1Geometry>

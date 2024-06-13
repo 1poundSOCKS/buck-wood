@@ -23,6 +23,11 @@ public:
     return m_value.get();
   }
   
+  [[nodiscard]] auto Bounds() const -> RECT_F
+  {
+    return direct2d::GetGeometryBounds(m_value.get());
+  }
+
 private:
 
   [[nodiscard]] auto SetGeometry(const default_object& object) -> void
