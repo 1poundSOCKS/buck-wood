@@ -58,7 +58,7 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     });
   }
 
-  levelContainer.EnumerateEnemyCollisionObjects([this](const auto& object)
+  levelContainer.EnumerateEnemyGeometry([this](const auto& object)
   {
     if( object.Object().HoldsAlternative<enemy_type_1>() || object.Object().HoldsAlternative<enemy_type_2>() || object.Object().HoldsAlternative<enemy_type_3>() )
     {

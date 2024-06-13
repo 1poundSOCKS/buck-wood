@@ -20,11 +20,9 @@ level_container::level_container(collision_type collisionType) :
   m_particleAllocator { m_particleBuffer },
   m_particles { m_particleAllocator },
   m_playerGeometries { 50 },
-  m_enemyGeometries { 50 }
+  m_enemyGeometries { 50 },
+  m_wallGeometries { 100 }
 {
-  m_wallCollisionObjects.reserve(100);
-  m_playerCollisionObjects.reserve(50);
-  m_enemyCollisionObjects.reserve(100);
 }
 
 auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
@@ -106,29 +104,15 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   RemoveDestroyedObjects();
 
- m_wallCollisionObjects.clear();
-
-  for( auto& object : m_cellObjects )
+  auto wallCells = std::ranges::views::filter(m_cellObjects, [](auto& object)
   {
-    std::visit([this,&object](auto& cellObject) { AddCollisionObject(object, cellObject); }, object.Get());
-  }
-
-  m_playerCollisionObjects.clear();
-
-  EnumeratePlayerObjects(false, [this](auto& object)
-  {
-    m_playerCollisionObjects.emplace_back(object);
+    auto* cellObject = object.GetIf<level_cell>();
+    return cellObject && cellObject->Type() == level_cell_type::wall;
   });
 
-  m_enemyCollisionObjects.clear();
-
-  EnumerateEnemyObjects(false, [this](auto& object)
-  {
-    m_enemyCollisionObjects.emplace_back(object);
-  });
-
-  m_playerGeometries.Update(m_playerCollisionObjects);
-  m_enemyGeometries.Update(m_enemyCollisionObjects);
+  m_wallGeometries.Update(wallCells);
+  m_playerGeometries.Update(m_playerObjects);
+  m_enemyGeometries.Update(m_enemyObjects);
 
 #if 0
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
@@ -175,107 +159,44 @@ auto level_container::RemoveDestroyedObjects() -> void
 
 auto level_container::DoCollisions() -> void
 {
-  m_particleCollisionRunner(m_particles, m_wallCollisionObjects, true);
+  m_particleCollisionRunner(m_particles, m_wallGeometries, true);
 
-  // m_compare(m_playerCollisionObjects, m_wallCollisionObjects, [this](auto& object1, auto& object2)
-  // {
-  //   if( m_collisionTest(object1, object2) )
-  //   {
-  //     OnCollision<player_bullet, level_cell>(object1.Object(), object2.Object());
-  //   }
-  // });
-
-  // m_compare(m_enemyCollisionObjects, m_wallCollisionObjects, [this](auto& object1, auto& object2)
-  // {
-  //   if( m_collisionTest(object1, object2) )
-  //   {
-  //     OnCollision<enemy_bullet_1, level_cell>(object1.Object(), object2.Object());
-  //   }
-  // });
-
-  // m_compare(m_playerCollisionObjects, m_enemyCollisionObjects, [this](auto& object1, auto& object2)
-  // {
-  //   if( m_collisionTest(object1, object2) )
-  //   {
-  //     OnCollision<player_bullet, enemy_type_1>(object1.Object(), object2.Object());
-  //     OnCollision<player_bullet, enemy_type_2>(object1.Object(), object2.Object());
-  //     OnCollision<player_bullet, enemy_type_3>(object1.Object(), object2.Object());      
-  //     OnCollision<player_ship, enemy_type_1>(object1.Object(), object2.Object());
-  //     OnCollision<player_ship, enemy_type_2>(object1.Object(), object2.Object());
-  //     OnCollision<player_ship, enemy_type_3>(object1.Object(), object2.Object());
-  //     OnCollision<player_ship, enemy_bullet_1>(object1.Object(), object2.Object());
-  //     OnCollision<player_ship, power_up>(object1.Object(), object2.Object());
-  //   }
-    
-  //   if( m_containmentTest(object1, object2) )
-  //   {
-  //     OnContainment<player_ship, portal>(object1.Object(), object2.Object());
-  //   }
-  // });
-
-  m_playerGeometries.Visit([this](auto& playerGeometries)
+  m_compare(m_playerGeometries, m_wallGeometries, [this](auto& object1, auto& object2)
   {
-    m_enemyGeometries.Visit([this,&playerGeometries](auto& enemyGeometries)
+    if( m_collisionTest(object1, object2) )
     {
-      m_compare(playerGeometries, enemyGeometries, [this](default_object_geometry& object1, default_object_geometry& object2)
-      {
-        if( m_collisionTest(object1, object2) )
-        {
-          OnCollision<player_bullet, enemy_type_1>(object1.Object(), object2.Object());
-          OnCollision<player_bullet, enemy_type_2>(object1.Object(), object2.Object());
-          OnCollision<player_bullet, enemy_type_3>(object1.Object(), object2.Object());
-          OnCollision<player_ship, enemy_type_1>(object1.Object(), object2.Object());
-          OnCollision<player_ship, enemy_type_2>(object1.Object(), object2.Object());
-          OnCollision<player_ship, enemy_type_3>(object1.Object(), object2.Object());
-          OnCollision<player_ship, enemy_bullet_1>(object1.Object(), object2.Object());
-          OnCollision<player_ship, power_up>(object1.Object(), object2.Object());
-        }
-        
-        if( m_containmentTest(object1, object2) )
-        {
-          OnContainment<player_ship, portal>(object1.Object(), object2.Object());
-        }
-      });
-    });
+      OnCollision<player_bullet, level_cell>(object1.Object(), object2.Object());
+    }
+  });
+
+  m_compare(m_enemyGeometries, m_wallGeometries, [this](auto& object1, auto& object2)
+  {
+    if( m_collisionTest(object1, object2) )
+    {
+      OnCollision<enemy_bullet_1, level_cell>(object1.Object(), object2.Object());
+    }
+  });
+
+  m_compare(m_playerGeometries, m_enemyGeometries, [this](default_object_geometry& object1, default_object_geometry& object2)
+  {
+    if( m_collisionTest(object1, object2) )
+    {
+      OnCollision<player_bullet, enemy_type_1>(object1.Object(), object2.Object());
+      OnCollision<player_bullet, enemy_type_2>(object1.Object(), object2.Object());
+      OnCollision<player_bullet, enemy_type_3>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_type_1>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_type_2>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_type_3>(object1.Object(), object2.Object());
+      OnCollision<player_ship, enemy_bullet_1>(object1.Object(), object2.Object());
+      OnCollision<player_ship, power_up>(object1.Object(), object2.Object());
+    }
+    
+    if( m_containmentTest(object1, object2) )
+    {
+      OnContainment<player_ship, portal>(object1.Object(), object2.Object());
+    }
   });
 }
-
-#if 0
-auto level_container::GetTargettedObject() -> std::optional<targetted_object>
-{
-#if 0
-  constexpr auto angleSpan = 40.0f;
-#endif
-
-  // auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
-  // {
-  //   return object->HoldsAlternative<enemy_type_1>();
-  // });
-
-  auto targetableObjects = std::ranges::views::filter(m_enemyObjects, [](const auto& object)
-  {
-    return object.HoldsAlternative<enemy_type_1>();
-  });
-
-  // dynamic_object<default_object>* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
-  default_object* nearestObject = std::accumulate(std::begin(targetableObjects), std::end(targetableObjects), 
-  // static_cast<dynamic_object<default_object>*>(nullptr), 
-  static_cast<default_object*>(nullptr), 
-  // [this](auto* nearest, auto& next) -> dynamic_object<default_object>*
-  [this](auto* nearest, auto& next) -> default_object*
-  {
-#if 0
-    auto targetAngle = direct2d::GetAngleBetweenPoints(m_playerState.Position(), next->Position());
-    auto angleDifference = direct2d::GetAngleDifference(m_playerState.Angle(), targetAngle);
-    if( angleDifference < -angleSpan || angleDifference > angleSpan ) return nearest;
-    else return nearest ? &GetNearestToTarget(*nearest, next) : &next;
-#endif
-    return nearest ? &GetNearestToTarget(*nearest, next) : &next;
-  });
-
-  return nearestObject ? std::optional<targetted_object>(nearestObject) : std::nullopt;
-}
-#endif
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {

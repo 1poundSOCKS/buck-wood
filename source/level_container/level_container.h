@@ -43,7 +43,7 @@ public:
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
   auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
-  auto EnumerateEnemyCollisionObjects(auto&& visitor) const -> void;
+  auto EnumerateEnemyGeometry(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -99,15 +99,6 @@ private:
   auto OnContainment(player_ship& player, portal& portalObj) -> void;
   auto OnContainment(auto&& object1, auto&& object2) -> void;
 
-#if 0
-  auto GetTargettedObject() -> std::optional<targetted_object>;
-  auto GetNearestToTarget(auto& mine1, auto& mine2) const -> auto&;
-  auto DistanceFromTarget(auto&& object) const -> float;
-#endif
-
-  auto AddCollisionObject(default_object& defaultObject, level_cell& object) -> void;
-  auto AddCollisionObject(default_object& defaultObject, auto&& object) -> void;
-
 private:
 
   using DefaultObjectAllocator = custom_allocator<default_object>;
@@ -138,14 +129,9 @@ private:
   enemy_object_collection m_enemyObjects;
   particle_collection m_particles;
 
-  using collision_object_collection = std::vector<default_object_geometry>;
-
-  collision_object_collection m_wallCollisionObjects;
-  collision_object_collection m_playerCollisionObjects;
-  collision_object_collection m_enemyCollisionObjects;
-
   default_object_geometry_collection m_playerGeometries;
   default_object_geometry_collection m_enemyGeometries;
+  default_object_geometry_collection m_wallGeometries;
 
   particle_collision m_particleCollisionRunner;
   range_comparison_runner m_compare;
@@ -335,9 +321,9 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
   }
 }
 
-inline auto level_container::EnumerateEnemyCollisionObjects(auto &&visitor) const -> void
+inline auto level_container::EnumerateEnemyGeometry(auto &&visitor) const -> void
 {
-  for( const auto& object : m_enemyCollisionObjects )
+  for( const auto& object : m_enemyGeometries )
   {
     visitor(object);
   }
@@ -385,20 +371,6 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
   return direct2d::GetDistanceBetweenPoints(m_playerState.Position(), object->Position());
 }
 #endif
-
-inline auto level_container::AddCollisionObject(default_object &defaultObject, level_cell &object) -> void
-{
-  switch( object.Type() )
-  {
-    case level_cell_type::wall:
-      m_wallCollisionObjects.emplace_back(defaultObject);
-      break;
-  }
-}
-
-inline auto level_container::AddCollisionObject(default_object &defaultObject, auto &&object) -> void
-{
-}
 
 auto level_container::UpdateObject(auto& object, float interval) -> void
 {
