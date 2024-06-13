@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "default_object.h"
+#include "default_object_collection.h"
 #include "level_cell_collection.h"
 #include "level_explosion.h"
 #include "targetted_object.h"

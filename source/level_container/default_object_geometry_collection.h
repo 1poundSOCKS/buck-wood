@@ -12,7 +12,6 @@ public:
   using iterator = value_type::iterator;
   using const_iterator = value_type::const_iterator;
 
-
 public:
 
   default_object_geometry_collection(size_t initialCapacity);
