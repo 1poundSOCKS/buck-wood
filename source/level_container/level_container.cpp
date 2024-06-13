@@ -14,8 +14,6 @@ level_container::level_container(collision_type collisionType) :
   m_defaultObjectAllocator { m_defaultObjectBuffer },
   m_noninteractiveObjects { m_defaultObjectAllocator },
   m_cellObjects { m_defaultObjectAllocator },
-  m_playerObjects { m_defaultObjectAllocator },
-  m_enemyObjects { m_defaultObjectAllocator },
   m_particleBuffer { 64, 0 },
   m_particleAllocator { m_particleBuffer },
   m_particles { m_particleAllocator },
@@ -57,12 +55,12 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
 
 auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_playerObjects.emplace_back(variantType, position, scale, angle, velocity);
+  return m_playerObjects2.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_enemyObjects.emplace_back(variantType, position, scale, angle, velocity);
+  return m_enemyObjects2.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
@@ -88,7 +86,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  for( const auto& object : m_playerObjects )
+  for( const auto& object : m_playerObjects2 )
   {
     auto ship = object.GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
@@ -111,19 +109,19 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   });
 
   m_wallGeometries.Update(wallCells);
-  m_playerGeometries.Update(m_playerObjects);
-  m_enemyGeometries.Update(m_enemyObjects);
+  m_playerGeometries.Update(m_playerObjects2);
+  m_enemyGeometries.Update(m_enemyObjects2);
 
 #if 0
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 #endif
 
-  auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
+  auto enemies = std::ranges::views::transform(m_enemyObjects2, [](const auto& object)
   {
     return std::holds_alternative<enemy_type_1>(object.Get()) || std::holds_alternative<enemy_type_2>(object.Get()) ? 1 : 0;
   });
 
-  m_enemyCount = m_enemyObjects.size();
+  m_enemyCount = std::ranges::distance(enemies);
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
@@ -144,17 +142,21 @@ auto level_container::UpdateObjects(float interval) -> void
     particle.Update(interval);
   }
 
-  EnumerateAllObjects(false, [this, interval](auto& defaultObject)
+  for( auto& object : m_noninteractiveObjects )
   {
-    std::visit([this, interval](auto& object) { UpdateObject(object, interval); }, defaultObject.Get());
-  });
+    std::visit([this, interval](auto& levelObject) { UpdateObject(levelObject, interval); }, object.Get());
+  }
+
+  m_playerObjects2.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
+  m_enemyObjects2.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
   std::erase_if(m_particles, [](const auto& particle) -> bool { return particle.Destroyed(); });
-  std::erase_if(m_enemyObjects, [](const auto& object) -> bool { return object.Destroyed(); });
-  std::erase_if(m_playerObjects, [](const auto& object) -> bool { return object.Destroyed(); });
+  
+  m_playerObjects2.EraseDestroyed();
+  m_enemyObjects2.EraseDestroyed();
 }
 
 auto level_container::DoCollisions() -> void
@@ -200,8 +202,6 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship& object, float interval) -> void
 {
-  object.Update(interval);
-
   if( object.CanShoot() )
   {
     CreatePlayerBullet(object.Position(), { 1, 1 }, object.ShootAngle(), 1500);
@@ -219,8 +219,6 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 {
-  object.Update(interval, m_playerState.Position());
-
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
@@ -231,8 +229,6 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 {
-  object.Update(interval);
-
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
@@ -243,8 +239,6 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
 {
-  object.Update(interval, m_playerState.Position());
-
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());

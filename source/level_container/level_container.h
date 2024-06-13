@@ -104,8 +104,6 @@ private:
   using DefaultObjectAllocator = custom_allocator<default_object>;
   using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
   using cell_object_collection = std::list<default_object, DefaultObjectAllocator>;
-  using player_object_collection = std::list<default_object, DefaultObjectAllocator>;
-  using enemy_object_collection = std::list<default_object, DefaultObjectAllocator>;
 
   custom_allocator_state m_defaultObjectBuffer;
   DefaultObjectAllocator m_defaultObjectAllocator;
@@ -125,8 +123,8 @@ private:
 
   noninteractive_object_collection m_noninteractiveObjects;
   cell_object_collection m_cellObjects;
-  player_object_collection m_playerObjects;
-  enemy_object_collection m_enemyObjects;
+  default_object_collection m_playerObjects2;
+  default_object_collection m_enemyObjects2;
 
   particle_collection m_particles;
 
@@ -139,7 +137,7 @@ private:
   geometry_collision m_collisionTest;
   geometry_containment m_containmentTest;
 
-  enemy_object_collection::size_type m_enemyCount { 0 };
+  size_t m_enemyCount { 0 };
 
   std::optional<targetted_object> m_targettedObject;
 };
@@ -174,7 +172,7 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
   return { 4000, 4000 };
 }
 
-inline [[nodiscard]] auto level_container::EnemyCount() const -> enemy_object_collection::size_type
+inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
 {
   return m_enemyCount;
 }
@@ -213,7 +211,7 @@ inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> v
 
 inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
-  auto objects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
+ auto objects = std::ranges::views::filter(m_playerObjects2, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
@@ -226,7 +224,7 @@ inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects
 
 inline auto level_container::EnumerateEnemyObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
-  auto objects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  auto objects = std::ranges::views::filter(m_enemyObjects2, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
@@ -260,7 +258,7 @@ inline auto level_container::EnumerateCellObjects(level_cell_type cellType, auto
 
 inline auto level_container::EnumerateEnemies(bool includeDestroyedObjects, auto &&visitor) const -> void
 {
-  auto enemies = std::ranges::views::filter(m_enemyObjects, [this](const auto& object)
+  auto enemies = std::ranges::views::filter(m_enemyObjects2, [this](const auto& object)
   {
     return object.HoldsAlternative<enemy_type_1>() || object.HoldsAlternative<enemy_type_2>() || object.HoldsAlternative<enemy_type_3>();
   });
@@ -288,22 +286,22 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
     visitor(object);
   }
 
-  auto playerObjects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
+  auto playerObjects2 = std::ranges::views::filter(m_playerObjects2, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
 
-  for( auto& object : playerObjects )
+  for( auto& object : playerObjects2 )
   {
     visitor(object);
   }
 
-  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  auto enemyObjects2 = std::ranges::views::filter(m_enemyObjects2, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
 
-  for( auto& object : enemyObjects )
+  for( auto& object : enemyObjects2 )
   {
     visitor(object);
   }
@@ -311,12 +309,12 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
 
 inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_playerObjects )
+  for( const auto& object : m_playerObjects2 )
   {
     visitor(object);
   }
 
-  for( const auto& object : m_enemyObjects )
+  for( const auto& object : m_enemyObjects2 )
   {
     visitor(object);
   }
@@ -324,7 +322,7 @@ inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -
 
 inline auto level_container::EnumerateEnemyObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_enemyObjects )
+  for( const auto& object : m_enemyObjects2 )
   {
     visitor(object);
   }
@@ -375,7 +373,6 @@ auto level_container::DistanceFromTarget(auto&& object) const -> float
 
 auto level_container::UpdateObject(auto& object, float interval) -> void
 {
-  object.Update(interval);
 }
 
 template <typename object_type_1, typename object_type_2> auto level_container::OnCollision(default_object& object1, default_object& object2) -> void
