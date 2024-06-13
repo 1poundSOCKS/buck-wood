@@ -16,6 +16,7 @@ public:
 public:
 
   auto Create(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
+  auto Update(float interval) -> void;
   auto Update(float interval, auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 

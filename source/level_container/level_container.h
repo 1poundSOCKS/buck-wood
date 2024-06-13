@@ -121,8 +121,10 @@ private:
 
   player_ship m_playerState;
 
-  noninteractive_object_collection m_noninteractiveObjects;
-  cell_object_collection m_cellObjects;
+  // noninteractive_object_collection m_noninteractiveObjects;
+  // cell_object_collection m_cellObjects;
+  default_object_collection m_noninteractiveObjects;
+  default_object_collection m_cellObjects;
   default_object_collection m_playerObjects2;
   default_object_collection m_enemyObjects2;
 
@@ -351,12 +353,22 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
 
 auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
 {
-  return m_noninteractiveObjects.emplace_back(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
+  return m_noninteractiveObjects.Create(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
+}
+
+auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  return m_playerObjects2.Create(variantType, position, scale, angle, velocity);
+}
+
+auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  return m_enemyObjects2.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_cellObjects.emplace_back(variantType, position, scale, angle, velocity);
+  return m_cellObjects.Create(variantType, position, scale, angle, velocity);
 }
 
 #if 0

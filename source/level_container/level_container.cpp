@@ -12,8 +12,6 @@ level_container::level_container(collision_type collisionType) :
   m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }, 
   m_defaultObjectBuffer { 128, 0 },
   m_defaultObjectAllocator { m_defaultObjectBuffer },
-  m_noninteractiveObjects { m_defaultObjectAllocator },
-  m_cellObjects { m_defaultObjectAllocator },
   m_particleBuffer { 64, 0 },
   m_particleAllocator { m_particleBuffer },
   m_particles { m_particleAllocator },
@@ -28,39 +26,29 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
   switch( objectType )
   {
     case object_type::portal_entry:
-      return CreateNoninteractiveObject(std::in_place_type<portal>, position, { 1, 1 }, 0);
+      return CreateNoninteractiveObject(std::in_place_type<portal>, position, scale, angle);
     case object_type::portal_exit:
-      return CreateEnemyObject(std::in_place_type<portal>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
     case object_type::player:
     {
-      auto& defaultObject = CreatePlayerObject(std::in_place_type<player_ship>, position, { 1, 1 }, 0, { 0, 0 });
+      auto& defaultObject = CreatePlayerObject(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 });
       auto* player = defaultObject.GetIf<player_ship>();
       m_playerState = *player;
       return defaultObject;
     }
     case object_type::enemy_stalker:
-      return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, scale, angle, { 0, 0 });
     case object_type::enemy_random:
-      return CreateEnemyObject(std::in_place_type<enemy_type_2>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_2>, position, scale, angle, { 0, 0 });
     case object_type::enemy_turret:
-      return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, scale, angle, { 0, 0 });
     case object_type::power_up:
-      return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
     case object_type::cell:
       return CreateCellObject(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
     default:
-      return CreateEnemyObject(std::in_place_type<power_up>, position, { 1, 1 }, 0, { 0, 0 });
+      return CreateEnemyObject(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
   }
-}
-
-auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  return m_playerObjects2.Create(variantType, position, scale, angle, velocity);
-}
-
-auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  return m_enemyObjects2.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
@@ -142,11 +130,7 @@ auto level_container::UpdateObjects(float interval) -> void
     particle.Update(interval);
   }
 
-  for( auto& object : m_noninteractiveObjects )
-  {
-    std::visit([this, interval](auto& levelObject) { UpdateObject(levelObject, interval); }, object.Get());
-  }
-
+  m_noninteractiveObjects.Update(interval);
   m_playerObjects2.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
   m_enemyObjects2.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
 }

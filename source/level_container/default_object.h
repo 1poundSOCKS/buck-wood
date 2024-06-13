@@ -8,7 +8,17 @@ class default_object
 
 public:
 
-  using object_type = std::variant<level_cell, player_ship, player_bullet, enemy_bullet_1, power_up, portal, enemy_type_1, enemy_type_2, enemy_type_3>;
+  using object_type = std::variant<
+    level_cell, 
+    player_ship, 
+    player_bullet, 
+    enemy_bullet_1, 
+    power_up, 
+    portal, 
+    enemy_type_1, 
+    enemy_type_2, 
+    enemy_type_3
+  >;
 
   template <typename variant_type, typename...Args> default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) :
     m_object { variantType, position, scale, angle, velocity }
@@ -39,6 +49,7 @@ public:
   [[nodiscard]] auto Destroyed() const -> bool;
   [[nodiscard]] auto Health() const -> float;
 
+  auto Update(float interval) -> void;
   auto Destroy() -> void;
 
 private:
@@ -65,6 +76,11 @@ inline [[nodiscard]] auto default_object::Position() const -> D2D1_POINT_2F
 inline [[nodiscard]] auto default_object::Destroyed() const -> bool
 {
   return std::visit(destroyed_visitor{}, m_object);
+}
+
+inline auto default_object::Update(float interval) -> void
+{
+  return std::visit([this,interval](auto& object) { object.Update(interval); }, m_object);
 }
 
 inline auto default_object::Destroy() -> void
