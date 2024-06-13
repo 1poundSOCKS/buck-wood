@@ -127,6 +127,7 @@ private:
   cell_object_collection m_cellObjects;
   player_object_collection m_playerObjects;
   enemy_object_collection m_enemyObjects;
+
   particle_collection m_particles;
 
   default_object_geometry_collection m_playerGeometries;
