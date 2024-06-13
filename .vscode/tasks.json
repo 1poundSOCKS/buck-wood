@@ -43,6 +43,7 @@
 				"/I${workspaceFolder}/source/user_interface",
 				"/I${workspaceFolder}/source/framework/",
 				"/I${workspaceFolder}/source/renderers/",
+				"/I${workspaceFolder}/source/collisions/",
 				"/link",
 				"/SUBSYSTEM:WINDOWS"
 			],

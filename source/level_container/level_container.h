@@ -9,11 +9,11 @@
 #include "game_score.h"
 #include "game_settings.h"
 #include "collisions/particle_collision.h"
-#include "collisions/default_object_geometry.h"
-#include "collisions/default_object_geometry_collection.h"
-#include "collisions/range_comparision_runner.h"
-#include "collisions/geometry_collision.h"
-#include "collisions/geometry_containment.h"
+#include "default_object_geometry.h"
+#include "default_object_geometry_collection.h"
+#include "range_comparision_runner.h"
+#include "geometry_collision.h"
+#include "geometry_containment.h"
 
 class level_container
 {
