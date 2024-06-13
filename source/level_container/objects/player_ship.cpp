@@ -50,8 +50,9 @@ auto player_ship::UpdateWhenActive(float interval) -> void
   auto collisionY = m_position.y != position.y;
   auto velocityX = collisionX ? 0 : m_velocity.X();
   auto velocityY = collisionY ? 0 : m_velocity.Y();
-  velocityX *= m_friction;
-  velocityY *= m_friction;
+  auto intervalFriction = 1.0f  - (m_friction * 60 * interval);
+  velocityX *= intervalFriction;
+  velocityY *= intervalFriction;
   m_velocity.Set(velocityX, velocityY);
 }
 
