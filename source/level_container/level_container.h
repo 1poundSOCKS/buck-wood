@@ -4,7 +4,6 @@
 #include "default_object_collection.h"
 #include "particle_collection.h"
 #include "level_explosion.h"
-// #include "targetted_object.h"
 #include "play_events.h"
 #include "game_score.h"
 #include "game_settings.h"
@@ -48,14 +47,6 @@ public:
   auto SavePlayerState(player_ship playerShip) -> void;
 
 private:
-
-  auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) const -> void;
-
-  auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
-  auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
-
-  auto CreateExplosion(POINT_2F position) -> void;
-  auto CreateImpact(POINT_2F position) -> void;
 
   auto UpdateObjects(float interval) -> void;
 
@@ -140,38 +131,22 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
   return m_enemyCount;
 }
 
-inline auto level_container::CreateExplosion(POINT_2F position) -> void
-{
-  m_particles.Add(level_explosion { position });
-  play_events::set(play_events::event_type::explosion, true);
-}
-
-inline auto level_container::CreateImpact(POINT_2F position) -> void
-{
-  m_particles.Create(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
-}
-
 inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
 {
-  EnumerateAllObjects(false, visitor);
-}
-
-inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
-{
-  m_particles.Visit(visitor);
-}
-
-inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) const -> void
-{
-  auto objects = std::ranges::views::filter(m_objects, [includeDestroyedObjects](const auto& object)
+  auto objects = std::ranges::views::filter(m_objects, [](const auto& object)
   {
-    return includeDestroyedObjects || !object.Destroyed();
+    return !object.Destroyed();
   });
 
   for( auto& object : objects )
   {
     visitor(object);
   }
+}
+
+inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
+{
+  m_particles.Visit(visitor);
 }
 
 inline auto level_container::EnumerateEnemyObjects(auto &&visitor) const -> void
