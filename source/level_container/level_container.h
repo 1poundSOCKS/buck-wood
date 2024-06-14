@@ -53,7 +53,6 @@ private:
 
   auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
   auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
-  auto CreateParticle(auto&&...args) -> void;
 
   auto CreateExplosion(POINT_2F position) -> void;
   auto CreateImpact(POINT_2F position) -> void;
@@ -139,11 +138,6 @@ inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
 inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
 {
   return m_enemyCount;
-}
-
-auto level_container::CreateParticle(auto&&...args) -> void
-{
-  m_particles.Create(std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void

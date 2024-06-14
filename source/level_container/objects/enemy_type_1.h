@@ -12,13 +12,15 @@ public:
 
   auto Update(float interval) -> void
   {
-    base_object::Update(interval);
+    m_target ? Update(interval, *m_target) : base_object::Update(interval);
   }
 
   auto Update(float interval, POINT_2F target) -> void;
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
+
+  auto SetTarget(POINT_2F value) noexcept -> void;
   
 private:
 
@@ -29,5 +31,6 @@ private:
 
   inline static constexpr float m_speed { 600 };
   std::optional<level_cell_item> m_destination;
+  std::optional<POINT_2F> m_target;
 
 };

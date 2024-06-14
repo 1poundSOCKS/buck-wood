@@ -193,12 +193,14 @@ auto level_container::VisitObject(player_ship& object) -> void
     auto thrustAngle = object.ThrustParticleDirection();
     auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 40);
     auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(200.0f, thrustAngle));
-    CreateParticle(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+    m_particles.Create(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
   }
 }
 
 auto level_container::VisitObject(enemy_type_1& object) -> void
 {
+  object.SetTarget(m_playerState.Position());
+  
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());

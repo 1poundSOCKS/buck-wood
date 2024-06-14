@@ -53,3 +53,8 @@ auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& 
 {
   return false;
 }
+
+auto enemy_type_1::SetTarget(POINT_2F value) noexcept -> void
+{
+  m_target = value;
+}
