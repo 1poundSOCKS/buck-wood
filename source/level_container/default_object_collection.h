@@ -17,7 +17,7 @@ public:
 
   auto Create(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto Update(float interval) -> void;
-  auto Update(float interval, auto&& visitor) -> void;
+  auto Visit(auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 
   [[nodiscard]] auto begin() noexcept -> iterator;
@@ -25,10 +25,6 @@ public:
 
   [[nodiscard]] auto begin() const noexcept -> const_iterator;
   [[nodiscard]] auto end() const noexcept -> const_iterator;
-
-private:
-
-  auto UpdateObject(auto &object, float interval, auto&& visitor) -> void;
 
 private:
 
@@ -41,11 +37,11 @@ auto default_object_collection::Create(auto variantType, POINT_2F position, SCAL
   return m_objects.emplace_back(variantType, position, scale, angle, velocity);
 }
 
-auto default_object_collection::Update(float interval, auto&& visitor) -> void
+auto default_object_collection::Visit(auto&& visitor) -> void
 {
   for( auto& object : m_objects )
   {
-    std::visit([this, interval, &visitor](auto& levelObject) { UpdateObject(levelObject, interval, visitor); }, object.Get());
+    std::visit([this, &visitor](auto& levelObject) { visitor(levelObject); }, object.Get());
   }
 }
 
@@ -67,10 +63,4 @@ inline auto default_object_collection::begin() const noexcept -> const_iterator
 inline auto default_object_collection::end() const noexcept -> const_iterator
 {
   return std::end(m_objects);
-}
-
-auto default_object_collection::UpdateObject(auto& object, float interval, auto&& visitor) -> void
-{
-  object.Update(interval);
-  visitor(object);
 }

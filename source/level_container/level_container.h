@@ -61,11 +61,11 @@ private:
 
   auto UpdateObjects(float interval) -> void;
 
-  auto UpdateObject(player_ship& object, float interval) -> void;
-  auto UpdateObject(enemy_type_1& object, float interval) -> void;
-  auto UpdateObject(enemy_type_2& object, float interval) -> void;
-  auto UpdateObject(enemy_type_3& object, float interval) -> void;
-  auto UpdateObject(auto &object, float interval) -> void;
+  auto VisitObject(player_ship& object) -> void;
+  auto VisitObject(enemy_type_1& object) -> void;
+  auto VisitObject(enemy_type_2& object) -> void;
+  auto VisitObject(enemy_type_3& object) -> void;
+  auto VisitObject(auto &object) -> void;
 
   auto ValidateObjectPointers() -> void;
   auto RemoveDestroyedObjects() -> void;
@@ -226,7 +226,7 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
   m_playerState = playerState;
 }
 
-auto level_container::UpdateObject(auto& object, float interval) -> void
+auto level_container::VisitObject(auto& object) -> void
 {
 }
 

@@ -141,7 +141,8 @@ auto level_container::UpdateObjects(float interval) -> void
     particle.Update(interval);
   }
 
-  m_objects.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
+  m_objects.Update(interval);
+  m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
@@ -192,7 +193,7 @@ auto level_container::DoCollisions() -> void
   });
 }
 
-auto level_container::UpdateObject(player_ship& object, float interval) -> void
+auto level_container::VisitObject(player_ship& object) -> void
 {
   if( object.CanShoot() )
   {
@@ -209,7 +210,7 @@ auto level_container::UpdateObject(player_ship& object, float interval) -> void
   }
 }
 
-auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
+auto level_container::VisitObject(enemy_type_1& object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
@@ -219,7 +220,7 @@ auto level_container::UpdateObject(enemy_type_1& object, float interval) -> void
   }
 }
 
-auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
+auto level_container::VisitObject(enemy_type_2& object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
@@ -229,7 +230,7 @@ auto level_container::UpdateObject(enemy_type_2& object, float interval) -> void
   }
 }
 
-auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
+auto level_container::VisitObject(enemy_type_3 &object) -> void
 {
   if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
