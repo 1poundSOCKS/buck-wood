@@ -96,9 +96,23 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
     return cellObject && cellObject->Type() == level_cell_type::wall;
   });
 
+  auto playerObjects = std::ranges::views::filter(m_playerObjects, [](auto& object)
+  {
+    return object.HoldsAlternative<player_ship>() || object.HoldsAlternative<player_bullet>();
+  });
+
+  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [](auto& object)
+  {
+    return object.HoldsAlternative<enemy_type_1>() || 
+      object.HoldsAlternative<enemy_type_2>() || 
+      object.HoldsAlternative<enemy_type_3>() ||
+      object.HoldsAlternative<enemy_bullet_1>() ||
+      object.HoldsAlternative<portal>();
+  });
+
   m_wallGeometries.Update(wallCells);
-  m_playerGeometries.Update(m_playerObjects);
-  m_enemyGeometries.Update(m_enemyObjects);
+  m_playerGeometries.Update(playerObjects);
+  m_enemyGeometries.Update(enemyObjects);
 
 #if 0
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
@@ -106,7 +120,9 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
   {
-    return std::holds_alternative<enemy_type_1>(object.Get()) || std::holds_alternative<enemy_type_2>(object.Get()) ? 1 : 0;
+    return object.HoldsAlternative<enemy_type_1>() || 
+      object.HoldsAlternative<enemy_type_2>() || 
+      object.HoldsAlternative<enemy_type_3>();
   });
 
   m_enemyCount = std::ranges::distance(enemies);

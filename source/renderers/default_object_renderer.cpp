@@ -26,7 +26,10 @@ auto default_object_renderer::Write(const default_object& object, ID2D1Geometry*
 
 auto default_object_renderer::Write(const level_cell &object, ID2D1Geometry *geometry) const -> void
 {
-  m_floorCellRenderer.Write(geometry);
+  if( object.Type() == level_cell_type::floor )
+  {
+    m_floorCellRenderer.Write(geometry);
+  }
 }
 
 auto default_object_renderer::Write(const background_object& object, ID2D1Geometry* geometry) const -> void

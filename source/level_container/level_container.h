@@ -38,11 +38,9 @@ public:
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
-  auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
-  auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
-  auto EnumerateEnemyObjects(auto&& visitor) const -> void;
+  auto EnumerateObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
-  auto EnumerateCellObjects(level_cell_type cellType, auto&& visitor) const -> void;
+  auto EnumerateEnemyObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -52,7 +50,7 @@ public:
 
 private:
 
-  auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
+  auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) const -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -189,12 +187,9 @@ inline auto level_container::CreateImpact(POINT_2F position) -> void
   m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
 }
 
-auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
+inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_noninteractiveObjects )
-  {
-    visitor(object);
-  }
+  EnumerateAllObjects(false, visitor);
 }
 
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
@@ -205,21 +200,18 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
   }
 }
 
-inline auto level_container::EnumerateCellObjects(level_cell_type cellType, auto &&visitor) const -> void
+inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) const -> void
 {
-  for( const auto& object : m_cellObjects )
+  auto cellObjects = std::ranges::views::filter(m_cellObjects, [includeDestroyedObjects](const auto& object)
   {
-    const auto* cellObject = object.GetIf<level_cell>();
+    return includeDestroyedObjects || !object.Destroyed();
+  });
 
-    if( cellObject && cellObject->Type() == cellType )
-    {
-      visitor(object);
-    }
+  for( auto& object : cellObjects )
+  {
+    visitor(object);
   }
-}
 
-inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) -> void
-{
   auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
@@ -246,19 +238,6 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
   });
 
   for( auto& object : enemyObjects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumerateInteractiveObjects(auto &&visitor) const -> void
-{
-  for( const auto& object : m_playerObjects )
-  {
-    visitor(object);
-  }
-
-  for( const auto& object : m_enemyObjects )
   {
     visitor(object);
   }

@@ -32,30 +32,37 @@ auto renderer::Render(const hud_target& hudTarget) const -> void
 
 auto renderer::Render(const level_container &levelContainer) const -> void
 {
-  levelContainer.EnumerateCellObjects(level_cell_type::floor, [this](const auto& object)
-  {
-    Write(object);
-  });
+  int renderIndex = 0;
 
-  levelContainer.EnumerateNonInteractiveObjects([this](const auto& object)
+  while( renderIndex < render_order::particle_end() )
   {
-    Write(object);
-  });
+    levelContainer.EnumerateObjects([this,renderIndex](const auto& object)
+    {
+      if( render_order::get(object) == renderIndex )
+      {
+        Write(object);
+      }
+    });
+
+    ++renderIndex;
+  }
 
   levelContainer.EnumerateParticles([this](const auto& particle)
   {
     Render(particle);
   });
 
-  for( int orderIndex = 0; orderIndex < render_order::max_value(); ++ orderIndex )
+  while( renderIndex < render_order::end() )
   {
-    levelContainer.EnumerateInteractiveObjects([this,orderIndex](const auto& object)
+    levelContainer.EnumerateObjects([this,renderIndex](const auto& object)
     {
-      if( render_order::get(object) == orderIndex )
+      if( render_order::get(object) == renderIndex )
       {
         Write(object);
       }
     });
+
+    ++renderIndex;
   }
 
   levelContainer.EnumerateEnemyObjects([this](const auto& object)

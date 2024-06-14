@@ -5,7 +5,12 @@
 namespace render_order
 {
 
-  inline constexpr auto max_value() -> int
+  inline constexpr auto end() -> int
+  {
+    return 4;
+  }
+
+  inline constexpr auto particle_end() -> int
   {
     return 2;
   }
@@ -14,15 +19,30 @@ namespace render_order
   {
     constexpr auto operator()(const player_ship&) -> int
     {
-      return 1;
+      return 3;
     }
 
     constexpr auto operator()(const enemy_type_2&) -> int
     {
-      return 1;
+      return 3;
     }
 
     constexpr auto operator()(const enemy_type_3&) -> int
+    {
+      return 3;
+    }
+
+    constexpr auto operator()(const player_bullet&) -> int
+    {
+      return 2;
+    }
+
+    constexpr auto operator()(const enemy_bullet_1&) -> int
+    {
+      return 2;
+    }
+
+    constexpr auto operator()(const portal&) -> int
     {
       return 1;
     }
