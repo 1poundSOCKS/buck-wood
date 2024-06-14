@@ -74,7 +74,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateStart = performance_counter::QueryValue();
   UpdateObjects(interval);
 
-  for( const auto& object : m_playerObjects )
+  for( const auto& object : m_objects )
   {
     auto ship = object.GetIf<player_ship>();
     m_playerState = ship ? *ship : m_playerState;
@@ -90,18 +90,18 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   RemoveDestroyedObjects();
 
-  auto wallCells = std::ranges::views::filter(m_cellObjects, [](auto& object)
+  auto wallCells = std::ranges::views::filter(m_objects, [](auto& object)
   {
     auto* cellObject = object.GetIf<level_cell>();
     return cellObject && cellObject->Type() == level_cell_type::wall;
   });
 
-  auto playerObjects = std::ranges::views::filter(m_playerObjects, [](auto& object)
+  auto playerObjects = std::ranges::views::filter(m_objects, [](auto& object)
   {
     return object.HoldsAlternative<player_ship>() || object.HoldsAlternative<player_bullet>();
   });
 
-  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [](auto& object)
+  auto enemyObjects = std::ranges::views::filter(m_objects, [](auto& object)
   {
     return object.HoldsAlternative<enemy_type_1>() || 
       object.HoldsAlternative<enemy_type_2>() || 
@@ -118,7 +118,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
 #endif
 
-  auto enemies = std::ranges::views::transform(m_enemyObjects, [](const auto& object)
+  auto enemies = std::ranges::views::transform(m_objects, [](const auto& object)
   {
     return object.HoldsAlternative<enemy_type_1>() || 
       object.HoldsAlternative<enemy_type_2>() || 
@@ -146,17 +146,14 @@ auto level_container::UpdateObjects(float interval) -> void
     particle.Update(interval);
   }
 
-  m_noninteractiveObjects.Update(interval);
-  m_playerObjects.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
-  m_enemyObjects.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
+  m_objects.Update(interval, [this,interval](auto& object) { UpdateObject(object, interval); });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
   std::erase_if(m_particles, [](const auto& particle) -> bool { return particle.Destroyed(); });
   
-  m_playerObjects.EraseDestroyed();
-  m_enemyObjects.EraseDestroyed();
+  m_objects.EraseDestroyed();
 }
 
 auto level_container::DoCollisions() -> void

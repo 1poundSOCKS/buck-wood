@@ -115,11 +115,7 @@ private:
 
   player_ship m_playerState;
 
-  default_object_collection m_noninteractiveObjects;
-  default_object_collection m_cellObjects;
-  default_object_collection m_playerObjects;
-  default_object_collection m_enemyObjects;
-
+  default_object_collection m_objects;
   particle_collection m_particles;
 
   default_object_geometry_collection m_playerGeometries;
@@ -202,42 +198,12 @@ inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 
 inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) const -> void
 {
-  auto cellObjects = std::ranges::views::filter(m_cellObjects, [includeDestroyedObjects](const auto& object)
+  auto objects = std::ranges::views::filter(m_objects, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
 
-  for( auto& object : cellObjects )
-  {
-    visitor(object);
-  }
-
-  auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( auto& object : noninteractiveObjects )
-  {
-    visitor(object);
-  }
-
-  auto playerObjects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( auto& object : playerObjects )
-  {
-    visitor(object);
-  }
-
-  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( auto& object : enemyObjects )
+  for( auto& object : objects )
   {
     visitor(object);
   }
@@ -245,7 +211,7 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
 
 inline auto level_container::EnumerateEnemyObjects(auto &&visitor) const -> void
 {
-  for( const auto& object : m_enemyObjects )
+  for( const auto& object : m_objects )
   {
     visitor(object);
   }
@@ -274,22 +240,22 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
 
 auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
 {
-  return m_noninteractiveObjects.Create(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
+  return m_objects.Create(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
 }
 
 auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_playerObjects.Create(variantType, position, scale, angle, velocity);
+  return m_objects.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_enemyObjects.Create(variantType, position, scale, angle, velocity);
+  return m_objects.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
-  return m_cellObjects.Create(variantType, position, scale, angle, velocity);
+  return m_objects.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::UpdateObject(auto& object, float interval) -> void
