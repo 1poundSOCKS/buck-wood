@@ -15,7 +15,7 @@ public:
 public:
 
   auto Create(particle::type particleType, POINT_2F position, VELOCITY_2F velocity, float lifespan) noexcept -> particle&;
-  auto InsertBack(std::ranges::input_range auto&& particles) noexcept -> void;
+  auto Add(std::ranges::input_range auto&& particles) noexcept -> void;
   auto Update(float interval) noexcept -> void;
   auto EraseDestroyed() noexcept -> void;
   auto Visit(auto&& visitor) const noexcept -> void;
@@ -31,7 +31,7 @@ private:
 
 };
 
-auto particle_collection::InsertBack(std::ranges::input_range auto &&particles) noexcept -> void
+auto particle_collection::Add(std::ranges::input_range auto &&particles) noexcept -> void
 {
   std::ranges::copy(particles, std::back_inserter(m_particles));
 }

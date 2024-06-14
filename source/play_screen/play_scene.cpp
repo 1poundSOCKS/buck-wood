@@ -48,10 +48,7 @@ auto play_scene::Render() const -> void
 {
   render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
   render_target::get()->SetTransform(m_renderTransform);
-
   RenderLevelContainer();
-
-  // render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 
 [[nodiscard]] auto play_scene::RenderTransform() const noexcept -> D2D1::Matrix3x2F

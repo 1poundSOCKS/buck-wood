@@ -142,7 +142,7 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
 {
-  m_particles.InsertBack(level_explosion { position });
+  m_particles.Add(level_explosion { position });
   play_events::set(play_events::event_type::explosion, true);
 }
 

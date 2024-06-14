@@ -3,7 +3,7 @@
 
 auto particle_collection::Create(particle::type particleType, POINT_2F position, VELOCITY_2F velocity, float lifespan) noexcept -> particle&
 {
-  return m_particles.emplace_back(particle::type::impact, position, velocity, lifespan);
+  return m_particles.emplace_back(particleType, position, velocity, lifespan);
 }
 
 auto particle_collection::Update(float interval) noexcept -> void
