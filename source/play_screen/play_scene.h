@@ -31,7 +31,6 @@ protected:
 
   [[nodiscard]] auto RenderTransform() const noexcept -> D2D1::Matrix3x2F;
   auto RenderLevelContainer() const -> void;
-  auto RenderGeometryBoundaries() const -> void;
   auto PlaySoundEffects() const -> void;
   auto SetCameraZoom(float value) -> void;
   auto GetRenderTargetView() const -> D2D1_RECT_F;

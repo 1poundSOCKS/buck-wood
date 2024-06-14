@@ -51,19 +51,7 @@ auto play_scene::Render() const -> void
 
   RenderLevelContainer();
 
-  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-
-  if( game_settings::showDiagnostics() )
-  {
-    RenderGeometryBoundaries();
-  }
-
-#if 0
-  if( !m_paused && m_renderLevelTitle )
-  {
-    renderer::render(m_levelTitle);
-  }
-#endif
+  // render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 
 [[nodiscard]] auto play_scene::RenderTransform() const noexcept -> D2D1::Matrix3x2F
@@ -115,16 +103,6 @@ auto play_scene::PlaySoundEffects() const -> void
   {
     audio_events::PowerUpCollected();
   }
-}
-
-auto play_scene::RenderGeometryBoundaries() const -> void
-{
-#if 0
-  m_playState->LevelContainer().EnumerateInteractiveObjects([this](const auto& object)
-  {
-    renderer::render(ObjectRenderRect(object));
-  });
-#endif
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
