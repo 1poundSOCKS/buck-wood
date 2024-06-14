@@ -17,6 +17,8 @@ public:
   default_object_geometry_collection(size_t initialCapacity);
 
   auto Update(std::ranges::input_range auto& objects) -> void;
+  auto Add(default_object& object) noexcept -> void;
+  auto Clear() noexcept -> void;
 
   [[nodiscard]] auto begin() noexcept -> iterator;
   [[nodiscard]] auto end() noexcept -> iterator;
@@ -38,6 +40,16 @@ auto default_object_geometry_collection::Update(std::ranges::input_range auto &o
   {
     m_geometries.emplace_back(object);
   }
+}
+
+inline auto default_object_geometry_collection::Add(default_object &object) noexcept -> void
+{
+  m_geometries.emplace_back(object);
+}
+
+inline auto default_object_geometry_collection::Clear() noexcept -> void
+{
+  m_geometries.clear();
 }
 
 inline auto default_object_geometry_collection::begin() noexcept -> iterator

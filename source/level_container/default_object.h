@@ -43,6 +43,8 @@ public:
     return std::holds_alternative<type>(m_object);
   }
 
+  auto Visit(auto&& visitor) noexcept -> void;
+
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
@@ -57,6 +59,11 @@ private:
   object_type m_object;
 
 };
+
+inline auto default_object::Visit(auto &&visitor) noexcept -> void
+{
+  std::visit(visitor, m_object);
+}
 
 inline [[nodiscard]] auto default_object::Scale() const -> SCALE_2F
 {

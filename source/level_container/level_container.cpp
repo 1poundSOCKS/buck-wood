@@ -52,7 +52,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_particles.Update(interval);
   m_objects.Update(interval);
-
   m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 
   auto collisionsStart = performance_counter::QueryValue();
@@ -73,33 +72,14 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_particles.EraseDestroyed();
   m_objects.EraseDestroyed();
 
-  auto wallCells = std::ranges::views::filter(m_objects, [](auto& object)
+  m_wallGeometries.Clear();
+  m_playerGeometries.Clear();
+  m_enemyGeometries.Clear();
+
+  for( auto& object : m_objects )
   {
-    auto* cellObject = object.GetIf<level_cell>();
-    return cellObject && cellObject->Type() == level_cell_type::wall;
-  });
-
-  auto playerObjects = std::ranges::views::filter(m_objects, [](auto& object)
-  {
-    return object.HoldsAlternative<player_ship>() || object.HoldsAlternative<player_bullet>();
-  });
-
-  auto enemyObjects = std::ranges::views::filter(m_objects, [](auto& object)
-  {
-    return object.HoldsAlternative<enemy_type_1>() || 
-      object.HoldsAlternative<enemy_type_2>() || 
-      object.HoldsAlternative<enemy_type_3>() ||
-      object.HoldsAlternative<enemy_bullet_1>() ||
-      object.HoldsAlternative<portal>();
-  });
-
-  m_wallGeometries.Update(wallCells);
-  m_playerGeometries.Update(playerObjects);
-  m_enemyGeometries.Update(enemyObjects);
-
-#if 0
-  m_targettedObject = m_playerState.TargettingActive() ? GetTargettedObject() : std::nullopt;
-#endif
+    object.Visit([this,&object](auto& levelObject) { AddCollisionGeometry(object, levelObject); });
+  }
 
   auto enemies = std::ranges::views::transform(m_objects, [](const auto& object)
   {
@@ -111,6 +91,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_enemyCount = std::ranges::distance(enemies);
 
   auto updateEnd = performance_counter::QueryValue();
+  
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
 
@@ -204,6 +185,49 @@ auto level_container::VisitObject(enemy_type_3 &object) -> void
     m_objects.Create(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(500, angle));
     play_events::set(play_events::event_type::shot, true);
   }
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, level_cell& object) -> void
+{
+  if( object.Type() == level_cell_type::wall )
+  {
+    m_wallGeometries.Add(defaultObject);
+  }
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void
+{
+  m_playerGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, player_bullet& object) -> void
+{
+  m_playerGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, enemy_type_1& object) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, enemy_type_2& object) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, enemy_type_3& object) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, portal& object) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
 }
 
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void

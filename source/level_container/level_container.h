@@ -54,6 +54,16 @@ private:
   auto VisitObject(enemy_type_3& object) -> void;
   auto VisitObject(auto &object) -> void;
 
+  auto AddCollisionGeometry(default_object& defaultObject, level_cell& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, player_bullet& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_1& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_2& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_3& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, portal& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, auto& object) -> void;
+
   auto DoCollisions() -> void;
 
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
@@ -173,6 +183,10 @@ inline auto level_container::SavePlayerState(player_ship playerState) -> void
 }
 
 auto level_container::VisitObject(auto& object) -> void
+{
+}
+
+auto level_container::AddCollisionGeometry(default_object& defaultObject, auto &object) -> void
 {
 }
 
