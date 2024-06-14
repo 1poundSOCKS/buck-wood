@@ -10,9 +10,6 @@ level_container::level_container() : level_container(collision_type::boundary)
 
 level_container::level_container(collision_type collisionType) : 
   m_playerState{{0, 0}, {1, 1}, 0, {0, 0}}, m_collisionTest { collisionType }, m_containmentTest { collisionType }, 
-  m_particleBuffer { 64, 0 },
-  m_particleAllocator { m_particleBuffer },
-  m_particles { m_particleAllocator },
   m_playerGeometries { 50 },
   m_enemyGeometries { 50 },
   m_wallGeometries { 100 }
@@ -127,28 +124,18 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
-  
-  diagnostics::add(L"particle - allocated buffers", static_cast<int>(m_particleBuffer.AllocationCount()));
-  diagnostics::add(L"particle - heap allocations", static_cast<int>(m_particleBuffer.HeapAllocationCount()));
 }
 
 auto level_container::UpdateObjects(float interval) -> void
 {
-  auto particles = std::ranges::views::filter(m_particles, [](const auto& particle) { return !particle.Destroyed(); } );
-
-  for( auto& particle : particles )
-  {
-    particle.Update(interval);
-  }
-
+  m_particles.Update(interval);
   m_objects.Update(interval);
   m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 }
 
 auto level_container::RemoveDestroyedObjects() -> void
 {
-  std::erase_if(m_particles, [](const auto& particle) -> bool { return particle.Destroyed(); });
-  
+  m_particles.EraseDestroyed();
   m_objects.EraseDestroyed();
 }
 

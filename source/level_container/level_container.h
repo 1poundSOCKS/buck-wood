@@ -2,9 +2,9 @@
 
 #include "framework.h"
 #include "default_object_collection.h"
-#include "level_cell_collection.h"
+#include "particle_collection.h"
 #include "level_explosion.h"
-#include "targetted_object.h"
+// #include "targetted_object.h"
 #include "play_events.h"
 #include "game_score.h"
 #include "game_settings.h"
@@ -34,7 +34,6 @@ public:
   [[nodiscard]] auto PlayerAngle() const noexcept -> float;
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
 
-  [[nodiscard]] auto TargettedObject() const -> std::optional<targetted_object>;
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
@@ -90,12 +89,6 @@ private:
 
 private:
 
-  using ParticleAllocator = custom_allocator<particle>;
-  using particle_collection = std::list<particle, ParticleAllocator>;
-
-  custom_allocator_state m_particleBuffer;
-  ParticleAllocator m_particleAllocator;
-
   static constexpr float m_maxTargetRange { 1000.0f };
 
   bool m_exit { false };
@@ -116,8 +109,6 @@ private:
   geometry_containment m_containmentTest;
 
   size_t m_enemyCount { 0 };
-
-  std::optional<targetted_object> m_targettedObject;
 };
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
@@ -140,11 +131,6 @@ inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> 
   return m_playerState.ThrusterOn();
 }
 
-inline [[nodiscard]] auto level_container::TargettedObject() const -> std::optional<targetted_object>
-{
-  return m_targettedObject;
-}
-
 inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
 {
   return { 4000, 4000 };
@@ -157,18 +143,18 @@ inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
 
 auto level_container::CreateParticle(auto&&...args) -> void
 {
-  m_particles.emplace_back(std::forward<decltype(args)>(args)...);
+  m_particles.Create(std::forward<decltype(args)>(args)...);
 }
 
 inline auto level_container::CreateExplosion(POINT_2F position) -> void
 {
-  std::ranges::copy(level_explosion { position }, std::back_inserter(m_particles));
+  m_particles.InsertBack(level_explosion { position });
   play_events::set(play_events::event_type::explosion, true);
 }
 
 inline auto level_container::CreateImpact(POINT_2F position) -> void
 {
-  m_particles.emplace_back(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
+  m_particles.Create(particle::type::impact, position, VELOCITY_2F { 0, 0 }, 0.5f);
 }
 
 inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
@@ -178,10 +164,7 @@ inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
 
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 {
-  for( const auto& particle : m_particles )
-  {
-    visitor(particle);
-  }
+  m_particles.Visit(visitor);
 }
 
 inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) const -> void

@@ -51,21 +51,6 @@ auto play_scene::Render() const -> void
 
   RenderLevelContainer();
 
-  auto targettedObject = m_playState->LevelContainer().TargettedObject();
-
-  if( targettedObject )
-  {
-    auto playerPosition = m_playState->LevelContainer().PlayerPosition();
-
-#if 0
-    renderer::render(line_to_target { playerPosition, targettedObject->Position() });
-
-    auto bounds = targettedObject->Bounds(D2D1::Matrix3x2F::Identity());
-    hud_target hudTarget { bounds };
-    renderer::render(hudTarget);
-#endif
-  }
-
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
 
   if( game_settings::showDiagnostics() )
