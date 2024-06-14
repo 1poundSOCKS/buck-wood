@@ -53,9 +53,6 @@ public:
 
 private:
 
-  auto EnumeratePlayerObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateEnemyObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
-  auto EnumerateEnemies(bool includeDestroyedObjects, auto&& visitor) const -> void;
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) -> void;
 
   auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
@@ -209,32 +206,6 @@ inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> v
   }
 }
 
-inline auto level_container::EnumeratePlayerObjects(bool includeDestroyedObjects, auto &&visitor) -> void
-{
- auto objects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( auto& object : objects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumerateEnemyObjects(bool includeDestroyedObjects, auto &&visitor) -> void
-{
-  auto objects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( auto& object : objects )
-  {
-    visitor(object);
-  }
-}
-
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 {
   for( const auto& particle : m_particles )
@@ -256,24 +227,6 @@ inline auto level_container::EnumerateCellObjects(level_cell_type cellType, auto
   }
 }
 
-inline auto level_container::EnumerateEnemies(bool includeDestroyedObjects, auto &&visitor) const -> void
-{
-  auto enemies = std::ranges::views::filter(m_enemyObjects, [this](const auto& object)
-  {
-    return object.HoldsAlternative<enemy_type_1>() || object.HoldsAlternative<enemy_type_2>() || object.HoldsAlternative<enemy_type_3>();
-  });
-
-  auto objects = std::ranges::views::filter(enemies, [includeDestroyedObjects](const auto& object)
-  {
-    return includeDestroyedObjects || !object.Destroyed();
-  });
-
-  for( const auto& object : objects )
-  {
-    visitor(object);
-  }
-}
-
 inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, auto &&visitor) -> void
 {
   auto noninteractiveObjects = std::ranges::views::filter(m_noninteractiveObjects, [includeDestroyedObjects](const auto& object)
@@ -286,22 +239,22 @@ inline auto level_container::EnumerateAllObjects(bool includeDestroyedObjects, a
     visitor(object);
   }
 
-  auto playerObjects2 = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
+  auto playerObjects = std::ranges::views::filter(m_playerObjects, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
 
-  for( auto& object : playerObjects2 )
+  for( auto& object : playerObjects )
   {
     visitor(object);
   }
 
-  auto enemyObjects2 = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
+  auto enemyObjects = std::ranges::views::filter(m_enemyObjects, [includeDestroyedObjects](const auto& object)
   {
     return includeDestroyedObjects || !object.Destroyed();
   });
 
-  for( auto& object : enemyObjects2 )
+  for( auto& object : enemyObjects )
   {
     visitor(object);
   }
