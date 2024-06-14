@@ -48,16 +48,12 @@ public:
 
 private:
 
-  auto UpdateObjects(float interval) -> void;
-
   auto VisitObject(player_ship& object) -> void;
   auto VisitObject(enemy_type_1& object) -> void;
   auto VisitObject(enemy_type_2& object) -> void;
   auto VisitObject(enemy_type_3& object) -> void;
   auto VisitObject(auto &object) -> void;
 
-  auto ValidateObjectPointers() -> void;
-  auto RemoveDestroyedObjects() -> void;
   auto DoCollisions() -> void;
 
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
@@ -78,8 +74,6 @@ private:
   auto OnContainment(auto&& object1, auto&& object2) -> void;
 
 private:
-
-  static constexpr float m_maxTargetRange { 1000.0f };
 
   bool m_exit { false };
   cell_id m_exitCell;

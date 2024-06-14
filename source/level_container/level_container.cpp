@@ -55,13 +55,11 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
 
   auto updateStart = performance_counter::QueryValue();
-  UpdateObjects(interval);
 
-  for( const auto& object : m_objects )
-  {
-    auto ship = object.GetIf<player_ship>();
-    m_playerState = ship ? *ship : m_playerState;
-  }
+  m_particles.Update(interval);
+  m_objects.Update(interval);
+
+  m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 
   for( const auto& object : m_objects )
   {
@@ -72,7 +70,8 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
     }
   }
 
-  RemoveDestroyedObjects();
+  m_particles.EraseDestroyed();
+  m_objects.EraseDestroyed();
 
   auto wallCells = std::ranges::views::filter(m_objects, [](auto& object)
   {
@@ -113,19 +112,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto updateEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
-}
-
-auto level_container::UpdateObjects(float interval) -> void
-{
-  m_particles.Update(interval);
-  m_objects.Update(interval);
-  m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
-}
-
-auto level_container::RemoveDestroyedObjects() -> void
-{
-  m_particles.EraseDestroyed();
-  m_objects.EraseDestroyed();
 }
 
 auto level_container::DoCollisions() -> void
@@ -184,6 +170,8 @@ auto level_container::VisitObject(player_ship& object) -> void
     auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(200.0f, thrustAngle));
     m_particles.Create(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
   }
+
+  m_playerState = object;
 }
 
 auto level_container::VisitObject(enemy_type_1& object) -> void
