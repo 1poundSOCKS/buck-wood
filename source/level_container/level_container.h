@@ -39,7 +39,6 @@ public:
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
   auto EnumerateNonInteractiveObjects(auto&& visitor) const -> void;
-  auto EnumerateNonInteractiveObjects(auto&& visitor) -> void;
   auto EnumerateInteractiveObjects(auto&& visitor) const -> void;
   auto EnumerateEnemyObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
@@ -193,14 +192,6 @@ inline auto level_container::CreateImpact(POINT_2F position) -> void
 auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) const -> void
 {
   for( const auto& object : m_noninteractiveObjects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumerateNonInteractiveObjects(auto &&visitor) -> void
-{
-  for( auto& object : m_noninteractiveObjects )
   {
     visitor(object);
   }
