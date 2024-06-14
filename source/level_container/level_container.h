@@ -52,11 +52,6 @@ private:
 
   auto EnumerateAllObjects(bool includeDestroyedObjects, auto&& visitor) const -> void;
 
-  auto CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  auto CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
-  auto CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
-  auto CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
-
   auto CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
   auto CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&;
   auto CreateParticle(auto&&...args) -> void;
@@ -236,26 +231,6 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 inline auto level_container::SavePlayerState(player_ship playerState) -> void
 {
   m_playerState = playerState;
-}
-
-auto level_container::CreateNoninteractiveObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
-{
-  return m_objects.Create(variantType, position, scale, angle, VELOCITY_2F { 0, 0 });
-}
-
-auto level_container::CreatePlayerObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  return m_objects.Create(variantType, position, scale, angle, velocity);
-}
-
-auto level_container::CreateEnemyObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  return m_objects.Create(variantType, position, scale, angle, velocity);
-}
-
-auto level_container::CreateCellObject(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  return m_objects.Create(variantType, position, scale, angle, velocity);
 }
 
 auto level_container::UpdateObject(auto& object, float interval) -> void

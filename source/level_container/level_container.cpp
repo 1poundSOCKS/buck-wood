@@ -26,41 +26,41 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
   switch( objectType )
   {
     case object_type::portal_entry:
-      return CreateNoninteractiveObject(std::in_place_type<portal>, position, scale, angle);
+      return m_objects.Create(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
     case object_type::portal_exit:
-      return CreateEnemyObject(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
     case object_type::player:
     {
-      auto& defaultObject = CreatePlayerObject(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 });
+      auto& defaultObject = m_objects.Create(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 });
       auto* player = defaultObject.GetIf<player_ship>();
       m_playerState = *player;
       return defaultObject;
     }
     case object_type::enemy_stalker:
-      return CreateEnemyObject(std::in_place_type<enemy_type_1>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<enemy_type_1>, position, scale, angle, { 0, 0 });
     case object_type::enemy_random:
-      return CreateEnemyObject(std::in_place_type<enemy_type_2>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<enemy_type_2>, position, scale, angle, { 0, 0 });
     case object_type::enemy_turret:
-      return CreateEnemyObject(std::in_place_type<enemy_type_3>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<enemy_type_3>, position, scale, angle, { 0, 0 });
     case object_type::power_up:
-      return CreateEnemyObject(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
     case object_type::cell:
-      return CreateCellObject(std::in_place_type<level_cell>, position, scale, angle, VELOCITY_2F { 0, 0 });
+      return m_objects.Create(std::in_place_type<level_cell>, position, scale, angle, { 0, 0 });
     default:
-      return CreateEnemyObject(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
+      return m_objects.Create(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
   }
 }
 
 auto level_container::CreatePlayerBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
 {
   auto velocity = direct2d::CalculateVelocity(speed, angle);
-  return CreatePlayerObject(std::in_place_type<player_bullet>, position, scale, angle, velocity);
+  return m_objects.Create(std::in_place_type<player_bullet>, position, scale, angle, velocity);
 }
 
 auto level_container::CreateEnemyBullet(POINT_2F position, SCALE_2F scale, float angle, float speed) -> default_object&
 {
   auto velocity = direct2d::CalculateVelocity(speed, angle);
-  return CreateEnemyObject(std::in_place_type<enemy_bullet_1>, position, scale, angle, velocity);
+  return m_objects.Create(std::in_place_type<enemy_bullet_1>, position, scale, angle, velocity);
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
