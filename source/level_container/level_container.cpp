@@ -48,18 +48,18 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
-  auto collisionsStart = performance_counter::QueryValue();
-  DoCollisions();
-  auto collisionsEnd = performance_counter::QueryValue();
-
-  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
-
   auto updateStart = performance_counter::QueryValue();
 
   m_particles.Update(interval);
   m_objects.Update(interval);
 
   m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
+
+  auto collisionsStart = performance_counter::QueryValue();
+  DoCollisions();
+  auto collisionsEnd = performance_counter::QueryValue();
+
+  diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
 
   for( const auto& object : m_objects )
   {
