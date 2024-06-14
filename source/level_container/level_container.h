@@ -90,13 +90,6 @@ private:
 
 private:
 
-  using DefaultObjectAllocator = custom_allocator<default_object>;
-  using noninteractive_object_collection = std::list<default_object, DefaultObjectAllocator>;
-  using cell_object_collection = std::list<default_object, DefaultObjectAllocator>;
-
-  custom_allocator_state m_defaultObjectBuffer;
-  DefaultObjectAllocator m_defaultObjectAllocator;
-
   using ParticleAllocator = custom_allocator<particle>;
   using particle_collection = std::list<particle, ParticleAllocator>;
 
