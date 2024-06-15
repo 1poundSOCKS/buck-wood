@@ -7,7 +7,7 @@ class geometric_object_transform
 
 public:
 
-  geometric_object_transform(const geometric_object& object);
+  geometric_object_transform(const auto& object);
 
   [[nodiscard]] auto CreateGeometry(ID2D1Factory* factory, ID2D1Geometry* geometry) -> winrt::com_ptr<ID2D1TransformedGeometry>;
   [[nodiscard]] auto Get() const noexcept -> const D2D1::Matrix3x2F&;
@@ -17,7 +17,7 @@ private:
   D2D1::Matrix3x2F m_value;
 };
 
-inline geometric_object_transform::geometric_object_transform(const geometric_object& object)
+geometric_object_transform::geometric_object_transform(const auto& object)
 {
   auto objectScale = object.Scale();
   auto objectAngle = object.Angle();

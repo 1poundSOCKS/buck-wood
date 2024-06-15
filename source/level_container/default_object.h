@@ -38,6 +38,11 @@ public:
     return std::get_if<type>(&m_object);
   }
 
+  template <typename type> [[nodiscard]] auto GetObj() -> type&
+  {
+    return std::get<type>(m_object);
+  }
+
   template <typename type> [[nodiscard]] auto HoldsAlternative() const -> bool
   {
     return std::holds_alternative<type>(m_object);

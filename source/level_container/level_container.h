@@ -44,8 +44,6 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
 
-  auto SavePlayerState(player_ship playerShip) -> void;
-
 private:
 
   auto VisitObject(player_ship& object) -> void;
@@ -88,7 +86,7 @@ private:
   bool m_exit { false };
   cell_id m_exitCell;
 
-  player_ship m_playerState;
+  std::shared_ptr<base_object> m_playerState;
 
   default_object_collection m_objects;
   particle_collection m_particles;
@@ -107,22 +105,23 @@ private:
 
 inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
 {
-  return m_playerState.Destroyed();
+  return m_playerState->Destroyed();
 }
 
 inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> POINT_2F
 {
-  return m_playerState.Position();
+  return m_playerState->Position();
 }
 
 inline auto level_container::PlayerAngle() const noexcept -> float
 {
-  return m_playerState.Angle();
+  return m_playerState->Angle();
 }
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
-  return m_playerState.ThrusterOn();
+  // return m_playerState->ThrusterOn();
+  return false;
 }
 
 inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
@@ -175,11 +174,6 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 {
   m_exit = true;
   m_exitCell = cell;
-}
-
-inline auto level_container::SavePlayerState(player_ship playerState) -> void
-{
-  m_playerState = playerState;
 }
 
 auto level_container::VisitObject(auto& object) -> void

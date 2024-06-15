@@ -3,7 +3,8 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
-  base_object { position, scale, angle }, m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
+  m_state { std::make_shared<base_object>(position, scale, angle) },
+  m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
 {
 }
 
@@ -20,6 +21,36 @@ auto player_ship::Update(float interval) -> void
   }
 }
 
+auto player_ship::Position() const noexcept -> POINT_2F
+{
+  return m_state->Position();
+}
+
+auto player_ship::Scale() const noexcept -> SCALE_2F
+{
+  return m_state->Scale();
+}
+
+auto player_ship::Angle() const noexcept -> float
+{
+  return m_state->Angle();
+}
+
+auto player_ship::Age() const noexcept -> float
+{
+  return m_state->Age();
+}
+
+auto player_ship::Destroyed() const noexcept -> bool
+{
+  return m_state->Destroyed();
+}
+
+auto player_ship::Destroy() noexcept -> void
+{
+  m_state->Destroy();
+}
+
 auto player_ship::UpdateWhenActive(float interval) -> void
 {
   m_playerReloadCounter.Update(interval);
@@ -32,7 +63,7 @@ auto player_ship::UpdateWhenActive(float interval) -> void
   if( m_leftThumbstickPosition )
   {
     m_velocity.AdjustBy({ m_leftThumbstickPosition->x * m_thrustPower * interval, m_leftThumbstickPosition->y * m_thrustPower * interval });
-    m_angle = direct2d::CalculateDirection(m_velocity.Get());
+    m_state->SetAngle(direct2d::CalculateDirection(m_velocity.Get()));
   }
 
   m_triggerDown = rightThumbstickPosition != std::nullopt;
@@ -44,10 +75,12 @@ auto player_ship::UpdateWhenActive(float interval) -> void
   }
 
   auto moveDistance =  m_velocity.UpdatePosition({0, 0}, interval);
-  auto position = POINT_2F { m_position.x + moveDistance.x, m_position.y + moveDistance.y };
-  m_position = m_levelCellMovement->UpdatePosition(m_position, moveDistance, m_objectSize);
-  auto collisionX = m_position.x != position.x;
-  auto collisionY = m_position.y != position.y;
+  auto initialPosition = m_state->Position();
+  auto position = POINT_2F { initialPosition.x + moveDistance.x, initialPosition.y + moveDistance.y };
+  auto newPosition = m_levelCellMovement->UpdatePosition(initialPosition, moveDistance, m_objectSize);
+  m_state->SetPosition(newPosition);
+  auto collisionX = newPosition.x != position.x;
+  auto collisionY = newPosition.y != position.y;
   auto velocityX = collisionX ? 0 : m_velocity.X();
   auto velocityY = collisionY ? 0 : m_velocity.Y();
   auto intervalFriction = 1.0f  - (m_friction * 60 * interval);
@@ -60,5 +93,5 @@ auto player_ship::UpdateWhenCelebrating(float interval) -> void
 {
   constexpr float rotationSpeed = 480.0f;
   auto rotationAmount = rotationSpeed * interval;
-  m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
+  m_state->SetAngle(direct2d::RotateAngle(m_state->Angle(), rotationAmount));
 }

@@ -36,6 +36,11 @@ public:
     m_scale = value;
   }
 
+  auto SetAngle(float value) -> void
+  {
+    m_angle = value;
+  }
+
   auto Move(float distance, float direction) -> void
   {
     auto relativePosition = direct2d::CalculatePosition(distance, direction);
