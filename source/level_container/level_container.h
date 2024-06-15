@@ -28,10 +28,8 @@ public:
   auto Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
-  [[nodiscard]] auto PlayerDestroyed() const noexcept -> bool;
-  [[nodiscard]] auto PlayerPosition() const noexcept -> POINT_2F;
-  [[nodiscard]] auto PlayerAngle() const noexcept -> float;
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
+  [[nodiscard]] auto PlayerState() const noexcept -> const base_object&;
 
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
@@ -103,25 +101,14 @@ private:
   size_t m_enemyCount { 0 };
 };
 
-inline [[nodiscard]] auto level_container::PlayerDestroyed() const noexcept -> bool
-{
-  return m_playerState->Destroyed();
-}
-
-inline [[nodiscard]] auto level_container::PlayerPosition() const noexcept -> POINT_2F
-{
-  return m_playerState->Position();
-}
-
-inline auto level_container::PlayerAngle() const noexcept -> float
-{
-  return m_playerState->Angle();
-}
-
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
-  // return m_playerState->ThrusterOn();
   return false;
+}
+
+inline auto level_container::PlayerState() const noexcept -> const base_object &
+{
+  return *m_playerState;
 }
 
 inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F

@@ -60,7 +60,7 @@ auto play_scene::Render() const -> void
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerPosition = m_playState->LevelContainer().PlayerPosition();
+  auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
   return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
 
@@ -77,7 +77,7 @@ auto play_scene::RenderLevelContainer() const -> void
 
 auto play_scene::PlaySoundEffects() const -> void
 {
-  if( !m_playState->LevelContainer().PlayerDestroyed() && m_playState->LevelContainer().PlayerThrusterOn() )
+  if( !m_playState->LevelContainer().PlayerState().Destroyed() && m_playState->LevelContainer().PlayerThrusterOn() )
   {
     audio_events::StartPlayerThruster();
   }
