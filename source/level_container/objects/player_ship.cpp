@@ -3,7 +3,7 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
-  m_state { std::make_shared<base_object>(position, scale, angle) },
+  m_state { std::make_shared<player_ship_state>(position, scale, angle) },
   m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
 {
 }
@@ -53,6 +53,7 @@ auto player_ship::Destroy() noexcept -> void
 
 auto player_ship::UpdateWhenActive(float interval) -> void
 {
+  m_state->Update();
   m_playerReloadCounter.Update(interval);
   m_thrustEmmisionCounter.Update(interval);
 
@@ -66,9 +67,7 @@ auto player_ship::UpdateWhenActive(float interval) -> void
     m_state->SetAngle(direct2d::CalculateDirection(m_velocity.Get()));
   }
 
-  m_triggerDown = rightThumbstickPosition != std::nullopt;
-
-  if( m_triggerDown )
+  if( m_state->ThrusterOn() )
   {
     auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
     m_shootAngle = static_cast<float>(shootAngle);

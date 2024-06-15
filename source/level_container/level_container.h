@@ -29,7 +29,7 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
-  [[nodiscard]] auto PlayerState() const noexcept -> const base_object&;
+  [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
 
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
@@ -84,7 +84,7 @@ private:
   bool m_exit { false };
   cell_id m_exitCell;
 
-  std::shared_ptr<base_object> m_playerState;
+  std::shared_ptr<player_ship_state> m_playerState;
 
   default_object_collection m_objects;
   particle_collection m_particles;
@@ -103,10 +103,10 @@ private:
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
-  return false;
+  return m_playerState->ThrusterOn();
 }
 
-inline auto level_container::PlayerState() const noexcept -> const base_object &
+inline auto level_container::PlayerState() const noexcept -> const player_ship_state &
 {
   return *m_playerState;
 }

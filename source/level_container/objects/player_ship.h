@@ -8,6 +8,7 @@
 #include "reload_counter.h"
 #include "health_status.h"
 #include "level_cell_movement.h"
+#include "player_ship_state.h"
 
 class player_ship
 {
@@ -30,7 +31,7 @@ public:
   auto ApplyFatalDamage() -> void;
   auto Set(std::shared_ptr<level_cell_movement> value) -> void;
 
-  [[nodiscard]] auto State() const noexcept -> std::shared_ptr<base_object>;
+  [[nodiscard]] auto State() const noexcept -> std::shared_ptr<player_ship_state>;
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
@@ -53,10 +54,9 @@ private:
 
 private:
 
-  std::shared_ptr<base_object> m_state;
+  std::shared_ptr<player_ship_state> m_state;
   object_velocity m_velocity;
   health_status m_shieldStatus { 10 };
-  bool m_triggerDown { false };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
@@ -89,7 +89,7 @@ inline auto player_ship::Set(std::shared_ptr<level_cell_movement> value) -> void
   m_levelCellMovement = value;
 }
 
-inline auto player_ship::State() const noexcept -> std::shared_ptr<base_object>
+inline auto player_ship::State() const noexcept -> std::shared_ptr<player_ship_state>
 {
   return m_state;
 }
@@ -106,7 +106,7 @@ inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
 
 inline [[nodiscard]] auto player_ship::TriggerDown() const -> bool
 {
-  return !m_state->Destroyed() && m_triggerDown;
+  return m_state->ThrusterOn();
 }
 
 inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_status&
