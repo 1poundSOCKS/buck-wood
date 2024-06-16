@@ -178,6 +178,8 @@ auto level_container::VisitObject(enemy_type_2& object) -> void
 
 auto level_container::VisitObject(enemy_type_3 &object) -> void
 {
+  object.SetTarget(m_playerState->Position());
+
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());

@@ -15,9 +15,12 @@ public:
   
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
 
+  auto SetTarget(POINT_2F value) noexcept -> void;
+
 private:
 
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
+  std::optional<POINT_2F> m_target;
 
 };
