@@ -49,7 +49,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 {
   auto levelData = LevelData(levelIndex);
 
-  auto cellSize = cell_size { 400, 400 };
+  auto cellSize = cell_size { 200, 200 };
   auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
   
   auto levelContainer = std::make_unique<level_container>();
