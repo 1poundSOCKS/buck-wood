@@ -10,6 +10,7 @@ class geometry_collision_runner
 public:
 
   enum class check_type { collision_only, containment_only, collision_and_containment };
+  enum class result_type { collision, containment };
 
   geometry_collision_runner(collision_type collisionType) : m_collisionTest { collisionType }, m_containmentTest { collisionType }
   {
@@ -36,7 +37,7 @@ auto geometry_collision_runner::operator()(std::ranges::input_range auto &&objec
     {
       object1.Object().Visit([this,&object2,&visitor](auto& levelObject1)
       {
-        object2.Object().Visit([this,&levelObject1,&visitor](auto& levelObject2) { visitor(levelObject1, levelObject2); } );
+        object2.Object().Visit([this,&levelObject1,&visitor](auto& levelObject2) { visitor(levelObject1, levelObject2, result_type::collision); } );
       });
     }
 
@@ -44,7 +45,7 @@ auto geometry_collision_runner::operator()(std::ranges::input_range auto &&objec
     {
       object1.Object().Visit([this,&object2,&visitor](auto& levelObject1)
       {
-        object2.Object().Visit([this,&levelObject1,&visitor](auto& levelObject2) { visitor(levelObject1, levelObject2); } );
+        object2.Object().Visit([this,&levelObject1,&visitor](auto& levelObject2) { visitor(levelObject1, levelObject2, result_type::containment); } );
       });
     }
   });

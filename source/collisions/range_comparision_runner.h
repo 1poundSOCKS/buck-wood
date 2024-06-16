@@ -1,7 +1,5 @@
 #pragma once
 
-// #include "default_object.h"
-
 class range_comparison_runner
 {
 

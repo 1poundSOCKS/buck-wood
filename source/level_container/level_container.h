@@ -53,22 +53,19 @@ private:
   auto VisitObject(auto &object) -> void;
 
   auto DoCollisions() -> void;
-  auto DoCollisions(std::ranges::input_range auto &&objectGeometries1, std::ranges::input_range auto &&objectGeometries2, bool checkContainment) -> void;
 
-  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void;
-  auto OnCollision(player_bullet& bullet, level_cell& wall) -> void;
-  auto OnCollision(enemy_bullet_1& bullet, level_cell& wall) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_1& enemy) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_3& enemy) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet) -> void;
-  auto OnCollision(player_ship& playerShip, power_up& powerUp) -> void;
-  auto OnCollision(auto&& object1, auto&& object2) -> void;
-
-  auto OnContainment(player_ship& player, portal& portalObj) -> void;
-  auto OnContainment(auto&& object1, auto&& object2) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_bullet& bullet, level_cell& wall, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(enemy_bullet_1& bullet, level_cell& wall, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_ship& player, portal& portalObj, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(auto&& object1, auto&& object2, geometry_collision_runner::result_type resultType) -> void;
 
 private:
 
@@ -78,15 +75,13 @@ private:
   std::shared_ptr<player_ship_state> m_playerState;
 
   default_object_collection m_objects;
-  particle_collection m_particles;
-
-  particle_collision m_particleCollisionRunner;
-  range_comparison_runner m_compare;
-  geometry_collision m_collisionTest;
-  geometry_containment m_containmentTest;
 
   level_collision_geometry m_collisionGeometry;
   geometry_collision_runner m_collisionRunner;
+
+  particle_collection m_particles;
+
+  particle_collision m_particleCollisionRunner;
 
   size_t m_enemyCount { 0 };
 };
@@ -157,32 +152,6 @@ auto level_container::VisitObject(auto& object) -> void
 {
 }
 
-auto level_container::DoCollisions(std::ranges::input_range auto &&objectGeometries1, std::ranges::input_range auto &&objectGeometries2, bool checkContainment) -> void
-{
-  m_compare(objectGeometries1, objectGeometries2, [this,checkContainment](auto& object1, auto& object2)
-  {
-    if( m_collisionTest(object1, object2) )
-    {
-      object1.Object().Visit([this,&object2](auto& levelObject1)
-      {
-        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnCollision(levelObject1, levelObject2); } );
-      });
-    }
-
-    if( checkContainment && m_containmentTest(object1, object2) )
-    {
-      object1.Object().Visit([this,&object2](auto& levelObject1)
-      {
-        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnContainment(levelObject1, levelObject2); } );
-      });
-    }
-  });
-}
-
-auto level_container::OnCollision(auto&& object1, auto&& object2) -> void
-{
-}
-
-auto level_container::OnContainment(auto&& object1, auto&& object2) -> void
+auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision_runner::result_type resultType) -> void
 {
 }
