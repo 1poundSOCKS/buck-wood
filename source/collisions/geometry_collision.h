@@ -8,7 +8,7 @@ class geometry_collision
 
 public:
 
-  geometry_collision(collision_type collsionType);
+  geometry_collision(collision_type collisionType);
   auto operator()(const default_object_geometry& object1, const default_object_geometry& object2) const -> bool;
 
 private:

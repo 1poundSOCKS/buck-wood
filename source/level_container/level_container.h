@@ -14,6 +14,7 @@
 #include "geometry_collision.h"
 #include "geometry_containment.h"
 #include "level_collision_geometry.h"
+#include "geometry_collision_runner.h"
 
 class level_container
 {
@@ -85,6 +86,7 @@ private:
   geometry_containment m_containmentTest;
 
   level_collision_geometry m_collisionGeometry;
+  geometry_collision_runner m_collisionRunner;
 
   size_t m_enemyCount { 0 };
 };

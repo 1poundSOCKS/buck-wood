@@ -10,7 +10,7 @@ level_container::level_container() : level_container(collision_type::boundary)
 
 level_container::level_container(collision_type collisionType) : 
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f) }, 
-  m_collisionTest { collisionType }, m_containmentTest { collisionType }
+  m_collisionTest { collisionType }, m_containmentTest { collisionType }, m_collisionRunner { collisionType }
 {
 }
 
@@ -88,9 +88,12 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 auto level_container::DoCollisions() -> void
 {
   m_particleCollisionRunner(m_particles, m_collisionGeometry(level_collision_geometry::type::wall), true);
-  DoCollisions(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), false);
-  DoCollisions(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::wall), false);
-  DoCollisions(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::enemy), true);
+  // DoCollisions(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), false);
+  m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), geometry_collision_runner::check_type::collision_only, [this](auto& object1, auto&object2) { OnCollision(object1, object2); });
+  // DoCollisions(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::wall), false);
+  m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::wall), geometry_collision_runner::check_type::collision_only, [this](auto& object1, auto&object2) { OnCollision(object1, object2); });
+  // DoCollisions(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::enemy), true);
+  m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::enemy), geometry_collision_runner::check_type::collision_and_containment, [this](auto& object1, auto&object2) { OnCollision(object1, object2); });
 }
 
 auto level_container::VisitObject(player_ship& object) -> void
