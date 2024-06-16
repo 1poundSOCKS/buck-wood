@@ -14,6 +14,7 @@ public:
 
 public:
 
+  default_object_geometry_collection() = default;
   default_object_geometry_collection(size_t initialCapacity);
 
   auto Update(std::ranges::input_range auto& objects) -> void;

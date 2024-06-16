@@ -13,6 +13,7 @@
 #include "range_comparision_runner.h"
 #include "geometry_collision.h"
 #include "geometry_containment.h"
+#include "level_collision_geometry.h"
 
 class level_container
 {
@@ -50,16 +51,6 @@ private:
   auto VisitObject(enemy_type_3& object) -> void;
   auto VisitObject(auto &object) -> void;
 
-  auto AddCollisionGeometry(default_object& defaultObject, level_cell& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, player_bullet& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_1& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_2& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, enemy_type_3& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, portal& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, auto& object) -> void;
-
   auto DoCollisions() -> void;
 
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
@@ -89,14 +80,12 @@ private:
   default_object_collection m_objects;
   particle_collection m_particles;
 
-  default_object_geometry_collection m_playerGeometries;
-  default_object_geometry_collection m_enemyGeometries;
-  default_object_geometry_collection m_wallGeometries;
-
   particle_collision m_particleCollisionRunner;
   range_comparison_runner m_compare;
   geometry_collision m_collisionTest;
   geometry_containment m_containmentTest;
+
+  level_collision_geometry m_collisionGeometry;
 
   size_t m_enemyCount { 0 };
 };
@@ -164,10 +153,6 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 }
 
 auto level_container::VisitObject(auto& object) -> void
-{
-}
-
-auto level_container::AddCollisionGeometry(default_object& defaultObject, auto &object) -> void
 {
 }
 
