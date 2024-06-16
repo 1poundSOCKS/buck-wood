@@ -52,6 +52,7 @@ private:
   auto VisitObject(auto &object) -> void;
 
   auto DoCollisions() -> void;
+  auto DoCollisions(std::ranges::input_range auto &&objectGeometries1, std::ranges::input_range auto &&objectGeometries2, bool checkContainment) -> void;
 
   auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
@@ -152,6 +153,28 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 
 auto level_container::VisitObject(auto& object) -> void
 {
+}
+
+auto level_container::DoCollisions(std::ranges::input_range auto &&objectGeometries1, std::ranges::input_range auto &&objectGeometries2, bool checkContainment) -> void
+{
+  m_compare(objectGeometries1, objectGeometries2, [this,checkContainment](auto& object1, auto& object2)
+  {
+    if( m_collisionTest(object1, object2) )
+    {
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnCollision(levelObject1, levelObject2); } );
+      });
+    }
+
+    if( checkContainment && m_containmentTest(object1, object2) )
+    {
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnContainment(levelObject1, levelObject2); } );
+      });
+    }
+  });
 }
 
 auto level_container::OnCollision(auto&& object1, auto&& object2) -> void
