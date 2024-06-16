@@ -53,7 +53,6 @@ private:
 
   auto DoCollisions() -> void;
 
-  template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void;
@@ -66,7 +65,6 @@ private:
   auto OnCollision(player_ship& playerShip, power_up& powerUp) -> void;
   auto OnCollision(auto&& object1, auto&& object2) -> void;
 
-  template <typename object_type_1, typename object_type_2> auto OnContainment(default_object& object1, default_object& object2) -> void;
   auto OnContainment(player_ship& player, portal& portalObj) -> void;
   auto OnContainment(auto&& object1, auto&& object2) -> void;
 
@@ -154,32 +152,6 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 
 auto level_container::VisitObject(auto& object) -> void
 {
-}
-
-template <typename object_type_1, typename object_type_2> auto level_container::OnCollision(default_object& object1, default_object& object2) -> void
-{
-  if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
-  {
-    return OnCollision(std::get<object_type_1>(object1.Get()), std::get<object_type_2>(object2.Get()));
-  }
-
-  if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
-  {
-    return OnCollision(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
-  }
-}
-
-template <typename object_type_1, typename object_type_2> auto level_container::OnContainment(default_object& object1, default_object& object2) -> void
-{
-  if( std::holds_alternative<object_type_1>(object1.Get()) && std::holds_alternative<object_type_2>(object2.Get()) )
-  {
-    return OnContainment(std::get<object_type_1>(object1.Get()), std::get<object_type_2>(object2.Get()));
-  }
-
-  if( std::holds_alternative<object_type_1>(object2.Get()) && std::holds_alternative<object_type_2>(object1.Get()) )
-  {
-    return OnContainment(std::get<object_type_1>(object2.Get()), std::get<object_type_2>(object1.Get()));
-  }
 }
 
 auto level_container::OnCollision(auto&& object1, auto&& object2) -> void

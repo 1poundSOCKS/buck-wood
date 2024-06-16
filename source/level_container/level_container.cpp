@@ -93,7 +93,10 @@ auto level_container::DoCollisions() -> void
   {
     if( m_collisionTest(object1, object2) )
     {
-      OnCollision<player_bullet, level_cell>(object1.Object(), object2.Object());
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnCollision(levelObject1, levelObject2); } );
+      });
     }
   });
 
@@ -101,7 +104,10 @@ auto level_container::DoCollisions() -> void
   {
     if( m_collisionTest(object1, object2) )
     {
-      OnCollision<enemy_bullet_1, level_cell>(object1.Object(), object2.Object());
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnCollision(levelObject1, levelObject2); } );
+      });
     }
   });
 
@@ -109,19 +115,18 @@ auto level_container::DoCollisions() -> void
   {
     if( m_collisionTest(object1, object2) )
     {
-      OnCollision<player_bullet, enemy_type_1>(object1.Object(), object2.Object());
-      OnCollision<player_bullet, enemy_type_2>(object1.Object(), object2.Object());
-      OnCollision<player_bullet, enemy_type_3>(object1.Object(), object2.Object());
-      OnCollision<player_ship, enemy_type_1>(object1.Object(), object2.Object());
-      OnCollision<player_ship, enemy_type_2>(object1.Object(), object2.Object());
-      OnCollision<player_ship, enemy_type_3>(object1.Object(), object2.Object());
-      OnCollision<player_ship, enemy_bullet_1>(object1.Object(), object2.Object());
-      OnCollision<player_ship, power_up>(object1.Object(), object2.Object());
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnCollision(levelObject1, levelObject2); } );
+      });
     }
     
     if( m_containmentTest(object1, object2) )
     {
-      OnContainment<player_ship, portal>(object1.Object(), object2.Object());
+      object1.Object().Visit([this,&object2](auto& levelObject1)
+      {
+        object2.Object().Visit([this,&levelObject1](auto& levelObject2) { OnContainment(levelObject1, levelObject2); } );
+      });
     }
   });
 }
