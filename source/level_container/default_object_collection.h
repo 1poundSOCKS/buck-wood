@@ -15,7 +15,7 @@ public:
 
 public:
 
-  auto Add(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
+  template <typename variant_type, typename...Args> auto Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args) -> default_object&;
   auto Visit(auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 
@@ -30,9 +30,10 @@ private:
 
 };
 
-auto default_object_collection::Add(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+template <typename variant_type, typename...Args>
+auto default_object_collection::Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args) -> default_object&
 {
-  return m_objects.emplace_back(variantType, position, scale, angle, velocity);
+  return m_objects.emplace_back(variantType, position, scale, angle, velocity, std::forward<Args>(args)...);
 }
 
 auto default_object_collection::Visit(auto&& visitor) -> void
