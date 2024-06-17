@@ -15,8 +15,7 @@ public:
 
 public:
 
-  auto Create(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
-  auto Update(float interval) -> void;
+  auto Add(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto Visit(auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 
@@ -31,7 +30,7 @@ private:
 
 };
 
-auto default_object_collection::Create(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+auto default_object_collection::Add(auto variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
   return m_objects.emplace_back(variantType, position, scale, angle, velocity);
 }
