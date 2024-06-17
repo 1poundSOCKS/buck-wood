@@ -54,8 +54,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 
   auto collisionsStart = performance_counter::QueryValue();
+
   m_collisionGeometry.Update(m_objects);
   DoCollisions();
+  
   auto collisionsEnd = performance_counter::QueryValue();
 
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
