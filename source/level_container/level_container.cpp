@@ -23,12 +23,7 @@ auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F
     case object_type::portal_exit:
       return m_objects.Add(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
     case object_type::player:
-    {
-      auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 });
-      auto& player = defaultObject.GetObj<player_ship>();
-      m_playerState = player.State();
-      return defaultObject;
-    }
+      return m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 }, m_playerState);
     case object_type::enemy_stalker:
       return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, { 0, 0 });
     case object_type::enemy_random:

@@ -15,7 +15,7 @@ class player_ship
 
 public:
 
-  player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
+  player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, std::shared_ptr<player_ship_state> state);
 
   auto Update(float interval) -> void;
 
@@ -31,7 +31,6 @@ public:
   auto ApplyFatalDamage() -> void;
   auto Set(std::shared_ptr<level_cell_movement> value) -> void;
 
-  [[nodiscard]] auto State() const noexcept -> std::shared_ptr<player_ship_state>;
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
   [[nodiscard]] auto TriggerDown() const -> bool;
@@ -87,11 +86,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 inline auto player_ship::Set(std::shared_ptr<level_cell_movement> value) -> void
 {
   m_levelCellMovement = value;
-}
-
-inline auto player_ship::State() const noexcept -> std::shared_ptr<player_ship_state>
-{
-  return m_state;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const noexcept -> VELOCITY_2F

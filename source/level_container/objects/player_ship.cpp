@@ -2,10 +2,12 @@
 #include "player_ship.h"
 #include "player_state.h"
 
-player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
-  m_state { std::make_shared<player_ship_state>(position, scale, angle) },
-  m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
+player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, std::shared_ptr<player_ship_state> state) : 
+  m_state { state }, m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
 {
+  m_state->SetPosition(position);
+  m_state->SetScale(scale);
+  m_state->SetAngle(angle);
 }
 
 auto player_ship::Update(float interval) -> void
