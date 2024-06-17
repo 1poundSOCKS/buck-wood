@@ -90,16 +90,13 @@ auto level_container::DoCollisions() -> void
   m_particleCollisionRunner(m_particles, m_collisionGeometry(level_collision_geometry::type::wall), true);
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), 
-    geometry_collision_runner::check_type::collision_only, 
-    [this](auto& object1, auto&object2, geometry_collision_runner::result_type resultType) { OnCollision(object1, object2, resultType); });
+    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::wall), 
-    geometry_collision_runner::check_type::collision_only, 
-    [this](auto& object1, auto&object2, geometry_collision_runner::result_type resultType) { OnCollision(object1, object2, resultType); });
+    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::enemy), 
-    geometry_collision_runner::check_type::collision_and_containment, 
-    [this](auto& object1, auto&object2, geometry_collision_runner::result_type resultType) { OnCollision(object1, object2, resultType); });
+    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 }
 
 auto level_container::VisitObject(player_ship& object) -> void
@@ -153,35 +150,35 @@ auto level_container::VisitObject(enemy_type_3 &object) -> void
   }
 }
 
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision::result result) -> void
 {
   enemy.ApplyDamage(bullet.Damage());
   bullet.Destroy();
 }
 
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision::result result) -> void
 {
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
 }
 
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision::result result) -> void
 {
   bullet.Destroy();
   enemy.ApplyDamage(bullet.Damage());
 }
 
-auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
 {
   bullet.Destroy();
 }
 
-auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geometry_collision::result result) -> void
 {
   bullet.Destroy();
 }
 
-auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geometry_collision::result result) -> void
 {
   switch( player_state::get_status() )
   {
@@ -195,7 +192,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geomet
   enemy.Destroy();
 }
 
-auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geometry_collision::result result) -> void
 {
   switch( player_state::get_status() )
   {
@@ -209,7 +206,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geomet
   enemy.Destroy();
 }
 
-auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geometry_collision::result result) -> void
 {
   switch( player_state::get_status() )
   {
@@ -223,7 +220,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geomet
   enemy.Destroy();
 }
 
-auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void
 {
   switch( player_state::get_status() )
   {
@@ -237,14 +234,14 @@ auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemy
   enemyBullet.Destroy();
 }
 
-auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void
 {
   powerUp.Destroy();
 }
 
-auto level_container::OnCollision(player_ship &player, portal &portalObj, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(player_ship &player, portal &portalObj, geometry_collision::result result) -> void
 {
-  if( resultType == geometry_collision_runner::result_type::containment )
+  if( result == geometry_collision::result::containment )
   {
     auto exitCell = portalObj.CellId();
     m_exit = exitCell ? true : false;

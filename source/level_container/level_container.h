@@ -54,18 +54,18 @@ private:
 
   auto DoCollisions() -> void;
 
-  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_bullet& bullet, level_cell& wall, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(enemy_bullet_1& bullet, level_cell& wall, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_1& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_2& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_type_3& enemy, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(player_ship& player, portal& portalObj, geometry_collision_runner::result_type resultType) -> void;
-  auto OnCollision(auto&& object1, auto&& object2, geometry_collision_runner::result_type resultType) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_bullet& bullet, level_cell& wall, geometry_collision::result result) -> void;
+  auto OnCollision(enemy_bullet_1& bullet, level_cell& wall, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_1& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_2& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_type_3& enemy, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& player, portal& portalObj, geometry_collision::result result) -> void;
+  auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
 private:
 
@@ -152,6 +152,6 @@ auto level_container::VisitObject(auto& object) -> void
 {
 }
 
-auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision_runner::result_type resultType) -> void
+auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void
 {
 }
