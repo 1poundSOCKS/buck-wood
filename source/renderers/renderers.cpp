@@ -71,7 +71,8 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     {
       transformed_default_object_geometry geometry { object };
       auto energyBarRect = energy_bar_rect { geometry.Bounds() };
-      auto health = object.Health();
+      // auto health = object.Health();
+      auto health = 1.0f;
       auto energyBar = energy_bar { energyBarRect.Get(), health };
       Render(energyBar);
     }

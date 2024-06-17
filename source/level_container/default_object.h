@@ -1,7 +1,6 @@
 #pragma once
 
 #include "level_objects.h"
-#include "default_object_visitors.h"
 
 class default_object
 {
@@ -48,13 +47,13 @@ public:
     return std::holds_alternative<type>(m_object);
   }
 
-  auto Visit(auto&& visitor) noexcept -> void;
+  auto Visit(auto&& visitor) noexcept;
+  auto Visit(const auto& visitor) const noexcept;
 
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
-  [[nodiscard]] auto Health() const -> float;
 
   auto Update(float interval) -> void;
   auto Destroy() -> void;
@@ -65,42 +64,42 @@ private:
 
 };
 
-inline auto default_object::Visit(auto &&visitor) noexcept -> void
+auto default_object::Visit(auto &&visitor) noexcept
 {
-  std::visit(visitor, m_object);
+  return std::visit(visitor, m_object);
+}
+
+auto default_object::Visit(const auto &visitor) const noexcept
+{
+  return std::visit(visitor, m_object);
 }
 
 inline [[nodiscard]] auto default_object::Scale() const -> SCALE_2F
 {
-  return std::visit(scale_visitor {}, m_object);
+  return Visit([](const auto& object) { return object.Scale(); });
 }
 
 inline [[nodiscard]] auto default_object::Angle() const -> float
 {
-  return std::visit(angle_visitor{}, m_object);
+  return Visit([](const auto& object) { return object.Angle(); });
 }
 
 inline [[nodiscard]] auto default_object::Position() const -> D2D1_POINT_2F
 {
-  return std::visit(position_visitor {}, m_object);
+  return Visit([](const auto& object) { return object.Position(); });
 }
 
 inline [[nodiscard]] auto default_object::Destroyed() const -> bool
 {
-  return std::visit(destroyed_visitor{}, m_object);
+  return Visit([](const auto& object) { return object.Destroyed(); });
 }
 
 inline auto default_object::Update(float interval) -> void
 {
-  return std::visit([this,interval](auto& object) { object.Update(interval); }, m_object);
+  Visit([interval](auto& object) { object.Update(interval); });
 }
 
 inline auto default_object::Destroy() -> void
 {
-  return std::visit(destroy_visitor {}, m_object);
-}
-
-inline [[nodiscard]] auto default_object::Health() const -> float
-{
-  return std::visit(health_visitor {}, m_object);
+  Visit([](auto& object) { object.Destroy(); });
 }
