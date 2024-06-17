@@ -7,23 +7,22 @@ geometry_collision::geometry_collision(collision_type collisionType) : m_type { 
 
 auto geometry_collision::operator()(const default_object_geometry &object1, const default_object_geometry &object2) const -> bool
 {
-  auto position1 = object1.Object().Position();
-  auto position2 = object2.Object().Position();
-
   auto bounds1 = object1.Bounds();
   auto bounds2 = object2.Bounds();
+  
   auto overlapX = !(bounds1.left > bounds2.right || bounds1.right < bounds2.left);
   auto overlapY = !(bounds1.top > bounds2.bottom || bounds1.bottom < bounds2.top);
-  auto possibleCollision = overlapX && overlapY;
+  
+  auto boundaryCollision = overlapX && overlapY;
 
   switch( m_type )
   {
     case collision_type::direct2d:
-      return possibleCollision && CheckDirect2D(object1, object2);
+      return boundaryCollision && CheckDirect2D(object1, object2);
 
     case collision_type::boundary:
     default:
-      return possibleCollision;
+      return boundaryCollision;
   }
 }
 
