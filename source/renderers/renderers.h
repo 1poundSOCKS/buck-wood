@@ -26,6 +26,7 @@
 #include "render_order.h"
 
 #include "energy_bar.h"
+#include "energy_bar_rect.h"
 
 class renderer
 {
@@ -55,6 +56,12 @@ private:
   auto Write(const default_object& object) const -> void;
   auto Write(const portal &object) const -> void;
   auto Write(const auto& object) const -> void;
+
+  auto Health(const default_object& object) const -> std::optional<float>;
+  auto Health(const enemy_type_1& object) const -> std::optional<float>;
+  auto Health(const enemy_type_2& object) const -> std::optional<float>;
+  auto Health(const enemy_type_3& object) const -> std::optional<float>;
+  auto Health(const auto& object) const -> std::optional<float>;
 
 private:
 
@@ -155,10 +162,17 @@ inline auto renderer::Render(const energy_bar& energyBar) const -> void
 
 inline auto renderer::Write(const default_object &object) const -> void
 {
-  std::visit([this](const auto& object)
+  object.Visit([this](const auto& object) { Write(object); });
+
+  auto health = Health(object);
+
+  if( health )
   {
-    Write(object);
-  }, object.Get());
+    transformed_default_object_geometry geometry { object };
+    auto energyBarRect = energy_bar_rect { geometry.Bounds() };
+    auto energyBar = energy_bar { energyBarRect.Get(), *health };
+    Render(energyBar);
+  }
 }
 
 inline auto renderer::Write(const portal &object) const -> void
@@ -170,4 +184,29 @@ inline auto renderer::Write(const auto &object) const -> void
 {
   auto transformedGeometry = transformed_level_object_geometry { object };
   m_defaultObjectRenderer.Write(object, transformedGeometry.GetRaw());
+}
+
+inline auto renderer::Health(const default_object &object) const -> std::optional<float>
+{
+  return object.Visit([this](const auto& object) { return Health(object); } );
+}
+
+inline auto renderer::Health(const enemy_type_1 &object) const -> std::optional<float>
+{
+  return object.Health();
+}
+
+inline auto renderer::Health(const enemy_type_2 &object) const -> std::optional<float>
+{
+  return object.Health();
+}
+
+inline auto renderer::Health(const enemy_type_3 &object) const -> std::optional<float>
+{
+  return object.Health();
+}
+
+inline auto renderer::Health(const auto &object) const -> std::optional<float>
+{
+  return std::nullopt;
 }

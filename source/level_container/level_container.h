@@ -38,7 +38,6 @@ public:
 
   auto EnumerateObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
-  auto EnumerateEnemyObjects(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
@@ -122,14 +121,6 @@ inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 {
   m_particles.Visit(visitor);
-}
-
-inline auto level_container::EnumerateEnemyObjects(auto &&visitor) const -> void
-{
-  for( const auto& object : m_objects )
-  {
-    visitor(object);
-  }
 }
 
 inline auto level_container::Exit() const noexcept -> bool
