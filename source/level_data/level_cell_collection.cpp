@@ -16,13 +16,6 @@ auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 auto level_cell_collection::Set(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
   m_cells.Set(cellId, cellType);
-  if( cellType == level_cell_type::floor )
-  {
-    SetWall(cellId, cell_id::relative_position::above);
-    SetWall(cellId, cell_id::relative_position::right);
-    SetWall(cellId, cell_id::relative_position::below);
-    SetWall(cellId, cell_id::relative_position::left);
-  }
 }
 
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type

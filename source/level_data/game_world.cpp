@@ -146,6 +146,9 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData, ce
       case level_cell_type::floor:
         levelCells->Set({columnIndex, rowIndex}, cellType);
         break;
+      case level_cell_type::wall:
+        levelCells->Set({columnIndex, rowIndex}, cellType);
+        break;
     }
   });
 
@@ -154,7 +157,6 @@ auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData, ce
 
 auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
 {
-  m_cellDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
   m_objectDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
 
   auto levelData = LevelData(exitLevelIndex);

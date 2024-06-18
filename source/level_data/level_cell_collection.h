@@ -38,5 +38,16 @@ private:
 
 auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 {
-  m_cells.Enumerate(visitor);
+  auto cellCollection = std::vector<std::tuple<cell_id, level_cell_type>>();
+
+  m_cells.Enumerate([this,&cellCollection](cell_id cellId, level_cell_type cellType)
+  {
+    cellCollection.emplace_back(cellId, cellType);
+  });
+
+  for( const auto& cellEntry : cellCollection )
+  {
+    const auto& [cellId, cellType] = cellEntry;
+    visitor(cellId, cellType);
+  }
 }
