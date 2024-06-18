@@ -14,13 +14,16 @@ public:
 private:
 
   inline static std::array m_levelData { 
-    std::string { "0000000000000" },
+    std::string { "             " },
     std::string { " 2  1  2  1  " },
     std::string { "  E          " },
     std::string { "            2" },
     std::string { "0000000000   " },
-    std::string { "0000000000   " },
-    std::string { "0000000000 P " }
+    std::string { "         0   " },
+    std::string { "  P      0   " },
+    std::string { "         0   " },
+    std::string { "             " },
+    std::string { "             " }
   };
 
 };

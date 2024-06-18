@@ -12,7 +12,7 @@ public:
     switch( cellData )
     {
       case '0':
-        return level_cell_type::none;
+        return level_cell_type::wall;
 
       default:
         return level_cell_type::floor;
