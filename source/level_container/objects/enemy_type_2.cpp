@@ -30,7 +30,7 @@ auto enemy_type_2::Update(float interval) -> void
   m_destination = m_destination ? m_destination : NewDestination(cells);
   bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
   m_destination = atDestination ? std::nullopt : m_destination;
-  return atDestination ? status::waiting : status::moving;
+  return status::moving;
 }
 
 [[nodiscard]] auto enemy_type_2::UpdateWhenWaiting(float interval) noexcept -> status
