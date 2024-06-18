@@ -50,4 +50,24 @@ auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
     const auto& [cellId, cellType] = cellEntry;
     visitor(cellId, cellType);
   }
+
+  for( int column = -5; column < 20; ++column )
+  {
+    visitor(cell_id { column, -5 }, level_cell_type::wall);
+  }
+
+  for( int column = -5; column < 20; ++column )
+  {
+    visitor(cell_id { column, -20 }, level_cell_type::wall);
+  }
+
+  for( int row = -4; row < 19; ++row )
+  {
+    visitor(cell_id { -4, row }, level_cell_type::wall);
+  }
+
+  for( int row = -4; row < 19; ++row )
+  {
+    visitor(cell_id { 19, row }, level_cell_type::wall);
+  }
 }
