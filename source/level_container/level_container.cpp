@@ -150,16 +150,18 @@ auto level_container::VisitObject(player_ship &object) -> void
 {
   if( object.CanShoot() )
   {
-    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, object.ShootAngle(), direct2d::CalculateVelocity(2000, object.ShootAngle()));
-    play_events::set(play_events::event_type::shot, true);
-  }
+    std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
 
-  if( object.EmitThrustParticle() )
-  {
-    auto thrustAngle = object.ThrustParticleDirection();
-    auto thrustPosition = direct2d::CalculatePosition(object.Position(), thrustAngle, 40);
-    auto thrustVelocity = direct2d::CombineVelocities(object.Velocity(), direct2d::CalculateVelocity(200.0f, thrustAngle));
-    m_particles.Create(particle::type::thrust, thrustPosition, thrustVelocity, 0.5f);
+    if( rightThumbstickPosition )
+    {
+      auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
+      shootAngle += 45;
+      shootAngle /= 90;
+      shootAngle *= 90;
+      auto modifiedShootAngle = static_cast<float>(shootAngle);
+      m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, modifiedShootAngle, direct2d::CalculateVelocity(2000, modifiedShootAngle));
+      play_events::set(play_events::event_type::shot, true);
+    }
   }
 }
 
