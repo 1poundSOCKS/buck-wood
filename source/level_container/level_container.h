@@ -15,6 +15,7 @@
 #include "geometry_containment.h"
 #include "level_collision_geometry.h"
 #include "geometry_collision_runner.h"
+#include "level_object_movement.h"
 
 class level_container
 {
@@ -24,10 +25,11 @@ public:
   enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell };
 
   level_container();
-  level_container(collision_type collisionType);
+  level_container(std::shared_ptr<level_object_movement> objectMovement);
+  level_container(std::shared_ptr<level_object_movement> objectMovement, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, auto...args) -> default_object&;
+  auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
 
@@ -48,6 +50,9 @@ private:
 
   auto OnAddObject(player_ship& object) -> void;
   auto OnAddObject(auto& object) -> void;
+
+  auto UpdateObject(player_ship& object, float interval) -> void;
+  auto UpdateObject(auto& object, float interval) -> void;
 
   auto VisitObject(player_ship& object) -> void;
   auto VisitObject(enemy_type_1& object) -> void;
@@ -72,6 +77,8 @@ private:
 
 private:
 
+  std::shared_ptr<level_object_movement> m_objectMovement;
+
   bool m_exit { false };
   cell_id m_exitCell;
 
@@ -88,36 +95,6 @@ private:
 
   size_t m_enemyCount { 0 };
 };
-
-auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, auto...args) -> default_object&
-{
-  switch( objectType )
-  {
-    case object_type::portal_entry:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
-    case object_type::portal_exit:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
-    case object_type::player:
-    {
-      // return m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity, m_playerState, std::forward<decltype(args)>(args)...);
-      auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity, std::forward<decltype(args)>(args)...);
-      defaultObject.Visit([this](auto& object) { OnAddObject(object); });
-      return defaultObject;
-    }
-    case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, velocity);
-    case object_type::enemy_random:
-      return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle, velocity);
-    case object_type::enemy_turret:
-      return m_objects.Add(std::in_place_type<enemy_type_3>, position, scale, angle, velocity);
-    case object_type::power_up:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
-    case object_type::cell:
-      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle, velocity);
-    default:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
-  }
-}
 
 inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
 {
@@ -175,6 +152,11 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 
 auto level_container::OnAddObject(auto &object) -> void
 {
+}
+
+auto level_container::UpdateObject(auto &object, float interval) -> void
+{
+  object.Update(interval);
 }
 
 auto level_container::VisitObject(auto& object) -> void

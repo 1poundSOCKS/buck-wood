@@ -52,7 +52,8 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
   auto cellSize = cell_size { 250, 250 };
   auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
   
-  auto levelContainer = std::make_unique<level_container>();
+  auto objectMovement = std::make_shared<level_object_movement>(levelCells);
+  auto levelContainer = std::make_unique<level_container>(objectMovement);
 
   auto cellRect = levelCells->CellRect({0,0});
   auto scale = SCALE_2F { cellRect.right - cellRect.left, cellRect.bottom - cellRect.top };

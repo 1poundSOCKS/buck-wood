@@ -4,14 +4,48 @@
 #include "particle_functions.h"
 #include "player_state.h"
 
-level_container::level_container() : level_container(collision_type::boundary)
+level_container::level_container() : level_container { std::make_shared<level_object_movement>() }
 {
 }
 
-level_container::level_container(collision_type collisionType) : 
+level_container::level_container(std::shared_ptr<level_object_movement> objectMovement) : level_container(objectMovement, collision_type::boundary)
+{
+}
+
+level_container::level_container(std::shared_ptr<level_object_movement> objectMovement, collision_type collisionType) : 
+  m_objectMovement { objectMovement },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f) }, 
   m_collisionRunner { collisionType }
 {
+}
+
+auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
+{
+  switch( objectType )
+  {
+    case object_type::portal_entry:
+      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
+    case object_type::portal_exit:
+      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
+    case object_type::player:
+    {
+      auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
+      defaultObject.Visit([this](auto& object) { OnAddObject(object); });
+      return defaultObject;
+    }
+    case object_type::enemy_stalker:
+      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, velocity);
+    case object_type::enemy_random:
+      return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle, velocity);
+    case object_type::enemy_turret:
+      return m_objects.Add(std::in_place_type<enemy_type_3>, position, scale, angle, velocity);
+    case object_type::power_up:
+      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
+    case object_type::cell:
+      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle, velocity);
+    default:
+      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
+  }
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
@@ -20,7 +54,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   m_particles.Update(interval);
 
-  m_objects.Visit([this,interval](auto& object) { object.Update(interval); });
+  m_objects.Visit([this,interval](auto& object) { UpdateObject(object, interval); });
   m_objects.Visit([this,interval](auto& object) { VisitObject(object); });
 
   auto collisionsStart = performance_counter::QueryValue();
@@ -74,6 +108,42 @@ auto level_container::DoCollisions() -> void
 auto level_container::OnAddObject(player_ship &object) -> void
 {
   m_playerState = object.State();
+}
+
+auto level_container::UpdateObject(player_ship &object, float interval) -> void
+{
+  object.Update(interval);
+
+  auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
+
+  object_velocity velocity { m_playerState->Velocity() };
+
+  if( leftThumbstickPosition )
+  {
+    constexpr float thrustPower { 3000.0f };
+    velocity.AdjustBy({ leftThumbstickPosition->x * thrustPower * interval, leftThumbstickPosition->y * thrustPower * interval });
+    m_playerState->SetVelocity(velocity.Get());
+    m_playerState->SetAngle(direct2d::CalculateDirection(velocity.Get()));
+  }
+
+  constexpr float friction { 0.05f };
+  constexpr SIZE_F objectSize { 60, 60 };
+
+  auto moveDistance =  velocity.UpdatePosition({0, 0}, interval);
+  auto initialPosition = m_playerState->Position();
+  auto position = POINT_2F { initialPosition.x + moveDistance.x, initialPosition.y + moveDistance.y };
+  auto newPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
+  m_playerState->SetPosition(newPosition);
+  auto collisionX = newPosition.x != position.x;
+  auto collisionY = newPosition.y != position.y;
+  auto velocityX = collisionX ? 0 : velocity.X();
+  auto velocityY = collisionY ? 0 : velocity.Y();
+  auto intervalFriction = 1.0f  - (friction * 60 * interval);
+  velocityX *= intervalFriction;
+  velocityY *= intervalFriction;
+  velocity.Set(velocityX, velocityY);
+
+  m_playerState->SetVelocity(velocity.Get());
 }
 
 auto level_container::VisitObject(player_ship &object) -> void

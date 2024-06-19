@@ -55,7 +55,6 @@ private:
 private:
 
   std::shared_ptr<player_ship_state> m_state;
-  object_velocity m_velocity;
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
@@ -85,7 +84,7 @@ inline auto player_ship::ApplyFatalDamage() -> void
 
 inline [[nodiscard]] auto player_ship::Velocity() const noexcept -> VELOCITY_2F
 {
-  return m_velocity.Get();
+  return m_state->Velocity();
 }
 
 inline [[nodiscard]] auto player_ship::ThrusterOn() const -> bool
