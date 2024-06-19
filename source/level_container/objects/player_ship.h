@@ -15,7 +15,7 @@ class player_ship
 
 public:
 
-  player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, std::shared_ptr<player_ship_state> state);
+  player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
   auto Update(float interval) -> void;
 
@@ -26,10 +26,11 @@ public:
   [[nodiscard]] auto Destroyed() const noexcept -> bool;
   auto Destroy() noexcept -> void;
 
+  [[nodiscard]] auto State() const -> std::shared_ptr<player_ship_state>;
+
   auto Rotate(float angle) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  auto Set(std::shared_ptr<level_object_movement> value) -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
@@ -60,7 +61,6 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
   std::optional<POINT_2F> m_leftThumbstickPosition;
-  std::shared_ptr<level_object_movement> m_levelCellMovement;
 
 };
 
@@ -81,11 +81,6 @@ inline auto player_ship::ApplyFatalDamage() -> void
 {
   m_shieldStatus.ApplyFatalDamage();
   m_state->Destroy();
-}
-
-inline auto player_ship::Set(std::shared_ptr<level_object_movement> value) -> void
-{
-  m_levelCellMovement = value;
 }
 
 inline [[nodiscard]] auto player_ship::Velocity() const noexcept -> VELOCITY_2F

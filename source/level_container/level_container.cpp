@@ -14,31 +14,6 @@ level_container::level_container(collision_type collisionType) :
 {
 }
 
-auto level_container::Create(object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
-{
-  switch( objectType )
-  {
-    case object_type::portal_entry:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
-    case object_type::portal_exit:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, { 0, 0 });
-    case object_type::player:
-      return m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, { 0, 0 }, m_playerState);
-    case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, { 0, 0 });
-    case object_type::enemy_random:
-      return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle, { 0, 0 });
-    case object_type::enemy_turret:
-      return m_objects.Add(std::in_place_type<enemy_type_3>, position, scale, angle, { 0, 0 });
-    case object_type::power_up:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
-    case object_type::cell:
-      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle, { 0, 0 });
-    default:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, { 0, 0 });
-  }
-}
-
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 {
   auto updateStart = performance_counter::QueryValue();
@@ -96,7 +71,12 @@ auto level_container::DoCollisions() -> void
     [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 }
 
-auto level_container::VisitObject(player_ship& object) -> void
+auto level_container::OnAddObject(player_ship &object) -> void
+{
+  m_playerState = object.State();
+}
+
+auto level_container::VisitObject(player_ship &object) -> void
 {
   if( object.CanShoot() )
   {

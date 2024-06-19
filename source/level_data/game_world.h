@@ -72,11 +72,6 @@ auto game_world::SetCells(auto&& object, std::shared_ptr<level_cell_collection> 
 {
 }
 
-inline auto game_world::SetObjectProperty(player_ship &object, std::shared_ptr<level_object_movement> value) -> void
-{
-  object.Set(value);
-}
-
 auto game_world::SetObjectProperty(auto&& object, std::shared_ptr<level_object_movement> cells) -> void
 {
 }
