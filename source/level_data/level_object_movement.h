@@ -1,15 +1,14 @@
 #pragma once
 
 #include "level_cell_collection.h"
-#include "cell_size.h"
 
-class level_cell_movement
+class level_object_movement
 {
 
 public:
 
-  level_cell_movement();
-  level_cell_movement(std::shared_ptr<level_cell_collection> cells, cell_size cellSize);
+  level_object_movement();
+  level_object_movement(std::shared_ptr<level_cell_collection> cells);
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;
 
@@ -26,6 +25,5 @@ private:
 private:
 
   std::shared_ptr<level_cell_collection> m_cells;
-  cell_size m_cellSize;
 
 };

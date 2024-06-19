@@ -16,6 +16,7 @@ public:
 
   auto Set(cell_id cellId, level_cell_type cellType) noexcept -> void;
 
+  [[nodiscard]] auto CellSize() const -> cell_size;
   [[nodiscard]] auto CellType(POINT_2F position) const -> level_cell_type;
   [[nodiscard]] auto CellId(POINT_2F position) const -> cell_id;
   [[nodiscard]] auto CellRect(cell_id cellId) const -> RECT_F;

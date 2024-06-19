@@ -65,7 +65,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     std::visit([cellId, cellType](auto&& object) { SetObjectProperty(object, cellType); }, cell.Get());
   });
 
-  auto levelCellMovement = std::make_shared<level_cell_movement>(levelCells, cellSize);
+  auto levelCellMovement = std::make_shared<level_object_movement>(levelCells);
 
   levelData->Enumerate([this,&levelContainer,cellSize,levelCells,levelCellMovement,levelIndex](size_t column, size_t row, char cellData)
   {

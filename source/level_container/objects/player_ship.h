@@ -7,7 +7,7 @@
 #include "reload_timer.h"
 #include "reload_counter.h"
 #include "health_status.h"
-#include "level_cell_movement.h"
+#include "level_object_movement.h"
 #include "player_ship_state.h"
 
 class player_ship
@@ -29,7 +29,7 @@ public:
   auto Rotate(float angle) -> void;
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
-  auto Set(std::shared_ptr<level_cell_movement> value) -> void;
+  auto Set(std::shared_ptr<level_object_movement> value) -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const -> bool;
@@ -60,7 +60,7 @@ private:
   reload_counter m_thrustEmmisionCounter { 1.0f / 10.0f, 2 };
   float m_shootAngle;
   std::optional<POINT_2F> m_leftThumbstickPosition;
-  std::shared_ptr<level_cell_movement> m_levelCellMovement;
+  std::shared_ptr<level_object_movement> m_levelCellMovement;
 
 };
 
@@ -83,7 +83,7 @@ inline auto player_ship::ApplyFatalDamage() -> void
   m_state->Destroy();
 }
 
-inline auto player_ship::Set(std::shared_ptr<level_cell_movement> value) -> void
+inline auto player_ship::Set(std::shared_ptr<level_object_movement> value) -> void
 {
   m_levelCellMovement = value;
 }

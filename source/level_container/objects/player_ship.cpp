@@ -3,7 +3,7 @@
 #include "player_state.h"
 
 player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, std::shared_ptr<player_ship_state> state) : 
-  m_state { state }, m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_cell_movement>() }
+  m_state { state }, m_shootAngle { 0 }, m_levelCellMovement { std::make_shared<level_object_movement>() }
 {
   m_state->SetPosition(position);
   m_state->SetScale(scale);

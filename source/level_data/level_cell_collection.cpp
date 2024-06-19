@@ -4,25 +4,6 @@
 level_cell_collection::level_cell_collection(cell_size cellSize) : 
   m_cellSize { cellSize }
 {
-  for( int column = -5; column < 20; ++column )
-  {
-    Set(cell_id { column, -5 }, level_cell_type::wall);
-  }
-
-  for( int column = -5; column < 20; ++column )
-  {
-    Set(cell_id { column, -20 }, level_cell_type::wall);
-  }
-
-  for( int row = -4; row < 19; ++row )
-  {
-    Set(cell_id { -5, row }, level_cell_type::wall);
-  }
-
-  for( int row = -4; row < 19; ++row )
-  {
-    Set(cell_id { 19, row }, level_cell_type::wall);
-  }
 }
 
 auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
@@ -35,6 +16,11 @@ auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 auto level_cell_collection::Set(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
   m_cells.Set(cellId, ConvertType(cellType));
+}
+
+auto level_cell_collection::CellSize() const -> cell_size
+{
+  return m_cellSize;
 }
 
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
