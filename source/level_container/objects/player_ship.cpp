@@ -69,9 +69,12 @@ auto player_ship::UpdateWhenActive(float interval) -> void
     m_state->SetAngle(direct2d::CalculateDirection(m_velocity.Get()));
   }
 
-  if( m_state->ThrusterOn() )
+  if( rightThumbstickPosition )
   {
     auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
+    shootAngle += 45;
+    shootAngle /= 90;
+    shootAngle *= 90;
     m_shootAngle = static_cast<float>(shootAngle);
   }
 

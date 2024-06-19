@@ -100,7 +100,7 @@ auto level_container::VisitObject(player_ship& object) -> void
 {
   if( object.CanShoot() )
   {
-    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, object.ShootAngle(), direct2d::CalculateVelocity(1500, object.ShootAngle()));
+    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, object.ShootAngle(), direct2d::CalculateVelocity(2000, object.ShootAngle()));
     play_events::set(play_events::event_type::shot, true);
   }
 
