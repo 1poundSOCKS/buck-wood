@@ -18,6 +18,8 @@ public:
   player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
   auto Update(float interval) -> void;
+  auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
+  auto UpdateAngle() -> void;
 
   [[nodiscard]] auto Position() const noexcept -> POINT_2F;
   [[nodiscard]] auto Scale() const noexcept -> SCALE_2F;
@@ -35,6 +37,8 @@ public:
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
   [[nodiscard]] auto CanShoot() -> bool;
+
+  static [[nodiscard]] auto CalculateVelocity(float controlX, float controlY) -> VELOCITY_2F;
 
 private:
 
@@ -87,4 +91,10 @@ inline [[nodiscard]] auto player_ship::ShieldStatus() const -> const health_stat
 inline [[nodiscard]] auto player_ship::CanShoot() -> bool
 {
   return !m_state->Destroyed() && m_playerReloadCounter.Get(1, true) == 1;
+}
+
+inline auto player_ship::CalculateVelocity(float controlX, float controlY) -> VELOCITY_2F
+{
+  constexpr float thrustPower { 3000.0f };
+  return { controlX * thrustPower, controlY * thrustPower };
 }

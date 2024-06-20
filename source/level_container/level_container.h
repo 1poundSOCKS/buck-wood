@@ -32,6 +32,7 @@ public:
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
+  auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;

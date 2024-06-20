@@ -20,6 +20,18 @@ auto player_ship::Update(float interval) -> void
   }
 }
 
+auto player_ship::UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void
+{
+  auto currentVelocity = m_state->Velocity();
+  auto newVelocity = VELOCITY_2F { currentVelocity.x + changeInVelocity.x * interval, currentVelocity.y + changeInVelocity.y * interval };
+  m_state->SetVelocity(newVelocity);
+}
+
+auto player_ship::UpdateAngle() -> void
+{
+  m_state->SetAngle(direct2d::CalculateDirection(m_state->Velocity()));
+}
+
 auto player_ship::Position() const noexcept -> POINT_2F
 {
   return m_state->Position();

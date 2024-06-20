@@ -116,19 +116,17 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
 
   auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
-  object_velocity velocity { m_playerState->Velocity() };
-
   if( leftThumbstickPosition )
   {
-    constexpr float thrustPower { 3000.0f };
-    velocity.AdjustBy({ leftThumbstickPosition->x * thrustPower * interval, leftThumbstickPosition->y * thrustPower * interval });
-    m_playerState->SetVelocity(velocity.Get());
-    m_playerState->SetAngle(direct2d::CalculateDirection(velocity.Get()));
+    auto changeInVelocity = player_ship::CalculateVelocity(leftThumbstickPosition->x, leftThumbstickPosition->y);
+    object.UpdateVelocity(changeInVelocity, interval);
+    object.UpdateAngle();
   }
 
   constexpr float friction { 0.05f };
   constexpr SIZE_F objectSize { 60, 60 };
 
+  object_velocity velocity { m_playerState->Velocity() };
   auto moveDistance =  velocity.UpdatePosition({0, 0}, interval);
   auto initialPosition = m_playerState->Position();
   auto position = POINT_2F { initialPosition.x + moveDistance.x, initialPosition.y + moveDistance.y };
