@@ -139,8 +139,8 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
   auto velocityX = collisionX ? 0 : velocity.x;
   auto velocityY = collisionY ? 0 : velocity.y;
 
-  constexpr float friction { 0.05f };
-  auto intervalFriction = 1.0f  - (friction * 60 * interval);
+  constexpr float friction { 3.0f };
+  auto intervalFriction = std::max(0.0f, 1.0f  - (friction * interval));
   velocityX *= intervalFriction;
   velocityY *= intervalFriction;
   m_playerState->SetVelocity({velocityX, velocityY});
