@@ -123,25 +123,27 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     object.UpdateAngle();
   }
 
-  constexpr float friction { 0.05f };
   constexpr SIZE_F objectSize { 60, 60 };
 
-  object_velocity velocity { m_playerState->Velocity() };
-  auto moveDistance =  velocity.UpdatePosition({0, 0}, interval);
-  auto initialPosition = m_playerState->Position();
-  auto position = POINT_2F { initialPosition.x + moveDistance.x, initialPosition.y + moveDistance.y };
-  auto newPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
-  m_playerState->SetPosition(newPosition);
-  auto collisionX = newPosition.x != position.x;
-  auto collisionY = newPosition.y != position.y;
-  auto velocityX = collisionX ? 0 : velocity.X();
-  auto velocityY = collisionY ? 0 : velocity.Y();
+  auto initialPosition = object.Position();
+  auto updatedPosition = object.UpdatePosition(interval);
+  auto moveDistance = POINT_2F { updatedPosition.x - initialPosition.x, updatedPosition.y - initialPosition.y };
+
+  auto adjustedPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
+  m_playerState->SetPosition(adjustedPosition);
+
+  auto collisionX = updatedPosition.x != adjustedPosition.x;
+  auto collisionY = updatedPosition.y != adjustedPosition.y;
+
+  auto velocity = object.Velocity();
+  auto velocityX = collisionX ? 0 : velocity.x;
+  auto velocityY = collisionY ? 0 : velocity.y;
+
+  constexpr float friction { 0.05f };
   auto intervalFriction = 1.0f  - (friction * 60 * interval);
   velocityX *= intervalFriction;
   velocityY *= intervalFriction;
-  velocity.Set(velocityX, velocityY);
-
-  m_playerState->SetVelocity(velocity.Get());
+  m_playerState->SetVelocity({velocityX, velocityY});
 }
 
 auto level_container::VisitObject(player_ship &object) -> void

@@ -32,6 +32,11 @@ auto player_ship::UpdateAngle() -> void
   m_state->SetAngle(direct2d::CalculateDirection(m_state->Velocity()));
 }
 
+auto player_ship::UpdatePosition(float interval) -> POINT_2F
+{
+  return m_state->UpdatePosition(interval);
+}
+
 auto player_ship::Position() const noexcept -> POINT_2F
 {
   return m_state->Position();

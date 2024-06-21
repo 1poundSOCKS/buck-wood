@@ -20,6 +20,7 @@ public:
   auto Update(float interval) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
   auto UpdateAngle() -> void;
+  auto UpdatePosition(float interval) -> POINT_2F;
 
   [[nodiscard]] auto Position() const noexcept -> POINT_2F;
   [[nodiscard]] auto Scale() const noexcept -> SCALE_2F;

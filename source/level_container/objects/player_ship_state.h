@@ -13,6 +13,8 @@ public:
   auto Update() noexcept -> void;
   auto SetVelocity(VELOCITY_2F value) -> void;
 
+  auto UpdatePosition(float interval) -> POINT_2F;
+
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const noexcept -> bool;
 
@@ -37,6 +39,13 @@ inline auto player_ship_state::Update() noexcept -> void
 inline auto player_ship_state::SetVelocity(VELOCITY_2F value) -> void
 {
   m_velocity.Set(value.x, value.y);
+}
+
+inline auto player_ship_state::UpdatePosition(float interval) -> POINT_2F
+{
+  m_position.x += m_velocity.X() * interval;
+  m_position.y += m_velocity.Y() * interval;
+  return m_position;
 }
 
 inline [[nodiscard]] auto player_ship_state::Velocity() const noexcept -> VELOCITY_2F
