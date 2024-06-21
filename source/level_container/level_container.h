@@ -30,6 +30,7 @@ public:
   level_container(const level_container& levelContainer) = delete;
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
+  auto AddWall(cell_id cellId, level_cell_type cellType) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
