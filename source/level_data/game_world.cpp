@@ -62,7 +62,12 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
   {
     // auto position = cellSize.CellPosition(cellId);
     // auto& cell = levelContainer->AddObject(level_container::object_type::cell, ToFloat(position), scale, 0.0f, {0,0});
-    levelContainer->AddWall(cellId, cellType);
+    switch( cellType )
+    {
+      case level_cell_type::wall:
+        levelContainer->AddWall(cellId, cellType);
+        break;
+    }
     // std::visit([cellId, cellType](auto&& object) { SetObjectProperty(object, cellId); }, cell.Get());
     // std::visit([cellId, cellType](auto&& object) { SetObjectProperty(object, cellType); }, cell.Get());
   });
