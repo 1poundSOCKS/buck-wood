@@ -52,7 +52,6 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
   auto cellSize = cell_size { 250, 250 };
   auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
   
-  // auto objectMovement = std::make_shared<level_object_movement>(levelCells);
   auto levelContainer = std::make_unique<level_container>();
 
   auto cellRect = levelCells->CellRect({0,0});
@@ -60,16 +59,12 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
   
   levelCells->Enumerate([this,&levelContainer,cellSize,scale](cell_id cellId, level_cell_type cellType)
   {
-    // auto position = cellSize.CellPosition(cellId);
-    // auto& cell = levelContainer->AddObject(level_container::object_type::cell, ToFloat(position), scale, 0.0f, {0,0});
     switch( cellType )
     {
       case level_cell_type::wall:
         levelContainer->AddWall(cellId, cellType);
         break;
     }
-    // std::visit([cellId, cellType](auto&& object) { SetObjectProperty(object, cellId); }, cell.Get());
-    // std::visit([cellId, cellType](auto&& object) { SetObjectProperty(object, cellType); }, cell.Get());
   });
 
   auto levelCellMovement = std::make_shared<level_object_movement>(levelCells);
@@ -88,36 +83,27 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
       {
         levelContainer->AddObject(level_container::object_type::portal_entry, cellPosition, {1,1}, 0, {0,0});
         levelContainer->AddObject(level_container::object_type::player, cellPosition, {1,1}, 0, {0,0});
-        break;
       }
+      break;
 
       case level_item_type::exit_portal:
       {
         auto& exitPortal = levelContainer->AddObject(level_container::object_type::portal_exit, cellPosition, {1,1}, 0, {0,0});
         std::visit([cellId](auto&& object) { SetCellId(object, cellId); }, exitPortal.Get());
-        break;
       }
+      break;
 
       case level_item_type::enemy_type_one:
-      {
-        auto& enemy = levelContainer->AddObject(level_container::object_type::enemy_stalker, cellPosition, {1,1}, 0, {0,0});
-        std::visit([levelCells](auto&& object) { SetCells(object, levelCells); }, enemy.Get());
+        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellPosition, {1,1}, 0, {0,0});
         break;
-      }
       
       case level_item_type::enemy_type_two:
-      {
-        auto& enemy = levelContainer->AddObject(level_container::object_type::enemy_random, cellPosition, {1,1}, 0, {0,0});
-        std::visit([levelCells](auto&& object) { SetCells(object, levelCells); }, enemy.Get());
+        levelContainer->AddObject(level_container::object_type::enemy_random, cellPosition, {1,1}, 0, {0,0});
         break;
-      }
 
       case level_item_type::enemy_type_three:
-      {
-        auto& enemy = levelContainer->AddObject(level_container::object_type::enemy_turret, cellPosition, {1,1}, 0, {0,0});
-        std::visit([levelCells](auto&& object) { SetCells(object, levelCells); }, enemy.Get());
+        levelContainer->AddObject(level_container::object_type::enemy_turret, cellPosition, {1,1}, 0, {0,0});
         break;
-      }
     }
   });
 

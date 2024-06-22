@@ -53,6 +53,9 @@ private:
   auto OnAddObject(auto& object) -> void;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
+  auto UpdateObject(enemy_type_1& object, float interval) -> void;
+  auto UpdateObject(enemy_type_2& object, float interval) -> void;
+  auto UpdateObject(enemy_type_3& object, float interval) -> void;
   auto UpdateObject(auto& object, float interval) -> void;
 
   auto VisitObject(player_ship& object) -> void;

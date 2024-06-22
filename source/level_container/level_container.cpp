@@ -154,6 +154,24 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
   m_playerState->SetVelocity({velocityX, velocityY});
 }
 
+auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
+{
+  object.SetCells(m_cells);
+  object.Update(interval);
+}
+
+auto level_container::UpdateObject(enemy_type_2 &object, float interval) -> void
+{
+  object.SetCells(m_cells);
+  object.Update(interval);
+}
+
+auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
+{
+  object.SetCells(m_cells);
+  object.Update(interval);
+}
+
 auto level_container::VisitObject(player_ship &object) -> void
 {
   if( object.CanShoot() )
