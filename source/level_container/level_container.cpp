@@ -16,6 +16,31 @@ level_container::level_container(collision_type collisionType) :
 {
 }
 
+auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
+{
+  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
+
+  switch( objectType )
+  {
+    case object_type::portal_exit:
+      object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+      break;
+  }
+
+  return object;
+}
+
+auto level_container::AddWall(cell_id cellId, level_cell_type cellType) -> void
+{
+  auto cellSize = cell_size { 250, 250 };
+  auto& object = m_objects.Add(std::in_place_type<level_cell>, ToFloat(cellSize.CellPosition(cellId)), { 250, 250 }, 0, { 0, 0 });
+  auto wall = object.GetIf<level_cell>();
+  wall->SetId(cellId);
+  wall->SetType(cellType);
+
+  m_cells->Set(cellId, cellType);
+}
+
 auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
   switch( objectType )
@@ -43,31 +68,6 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
     default:
       return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
   }
-}
-
-auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
-{
-  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
-
-  switch( objectType )
-  {
-    case object_type::portal_exit:
-      object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
-      break;
-  }
-
-  return object;
-}
-
-auto level_container::AddWall(cell_id cellId, level_cell_type cellType) -> void
-{
-  auto cellSize = cell_size { 250, 250 };
-  auto& object = m_objects.Add(std::in_place_type<level_cell>, ToFloat(cellSize.CellPosition(cellId)), { 250, 250 }, 0, { 0, 0 });
-  auto wall = object.GetIf<level_cell>();
-  wall->SetId(cellId);
-  wall->SetType(cellType);
-
-  m_cells->Set(cellId, cellType);
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
