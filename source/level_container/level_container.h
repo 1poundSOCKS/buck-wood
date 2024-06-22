@@ -25,8 +25,7 @@ public:
   enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell };
 
   level_container();
-  level_container(std::shared_ptr<level_object_movement> objectMovement);
-  level_container(std::shared_ptr<level_object_movement> objectMovement, collision_type collisionType);
+  level_container(collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -79,6 +78,7 @@ private:
 
 private:
 
+  std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<level_object_movement> m_objectMovement;
 
   bool m_exit { false };
