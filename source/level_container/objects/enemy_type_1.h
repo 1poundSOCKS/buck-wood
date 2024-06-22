@@ -10,24 +10,13 @@ public:
 
   enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Update(float interval) -> void
-  {
-    base_object::Update(interval);
-  }
-
-  auto Update(float interval, const level_cell_collection& cells) -> void
-  {
-    m_target ? Update(interval, *m_target, cells) : base_object::Update(interval);
-  }
+  auto Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void;
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
-  auto SetTarget(POINT_2F value) noexcept -> void;
-  
 private:
 
-  auto Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void;
   auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;
   auto NewDestination(POINT_2F target, const level_cell_collection &cells) -> std::optional<level_cell_item>;
 
@@ -35,6 +24,5 @@ private:
 
   inline static constexpr float m_speed { 600 };
   std::optional<level_cell_item> m_destination;
-  std::optional<POINT_2F> m_target;
 
 };

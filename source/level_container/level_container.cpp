@@ -156,17 +156,17 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
 {
-  object.Update(interval, *m_cells);
+  object.Update(interval, m_playerState->Position(), *m_cells);
 }
 
 auto level_container::UpdateObject(enemy_type_2 &object, float interval) -> void
 {
-  object.Update(interval, *m_cells);
+  object.Update(interval, m_playerState->Position(), *m_cells);
 }
 
 auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
 {
-  object.Update(interval);
+  object.Update(interval, m_playerState->Position());
 }
 
 auto level_container::VisitObject(player_ship &object) -> void
@@ -190,8 +190,6 @@ auto level_container::VisitObject(player_ship &object) -> void
 
 auto level_container::VisitObject(enemy_type_1& object) -> void
 {
-  object.SetTarget(m_playerState->Position());
-
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
@@ -212,8 +210,6 @@ auto level_container::VisitObject(enemy_type_2& object) -> void
 
 auto level_container::VisitObject(enemy_type_3 &object) -> void
 {
-  object.SetTarget(m_playerState->Position());
-
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());

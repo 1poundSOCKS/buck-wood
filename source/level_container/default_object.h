@@ -56,7 +56,6 @@ public:
   [[nodiscard]] auto Position() const -> D2D1_POINT_2F;
   [[nodiscard]] auto Destroyed() const -> bool;
 
-  auto Update(float interval) -> void;
   auto Destroy() -> void;
 
 private:
@@ -93,11 +92,6 @@ inline [[nodiscard]] auto default_object::Position() const -> D2D1_POINT_2F
 inline [[nodiscard]] auto default_object::Destroyed() const -> bool
 {
   return Visit([](const auto& object) { return object.Destroyed(); });
-}
-
-inline auto default_object::Update(float interval) -> void
-{
-  Visit([interval](auto& object) { object.Update(interval); });
 }
 
 inline auto default_object::Destroy() -> void

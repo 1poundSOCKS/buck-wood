@@ -8,13 +8,7 @@ enemy_type_2::enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOC
 {
 }
 
-auto enemy_type_2::Update(float interval) -> void
-{
-  base_object::Update(interval);
-  m_reloaded = m_reloadTimer.Update(interval);
-}
-
-auto enemy_type_2::Update(float interval, const level_cell_collection& cells) -> void
+auto enemy_type_2::Update(float interval, POINT_2F targetPosition, const level_cell_collection& cells) -> void
 {
   base_object::Update(interval);
   m_reloaded = m_reloadTimer.Update(interval);

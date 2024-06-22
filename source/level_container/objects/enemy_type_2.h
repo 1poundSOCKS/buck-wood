@@ -11,10 +11,8 @@ public:
 
   enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Update(float interval) -> void;
-  auto Update(float interval, const level_cell_collection& cells) -> void;
+  auto Update(float interval, POINT_2F targetPosition, const level_cell_collection& cells) -> void;
 
-  [[nodiscard]] auto Destination() const -> std::optional<level_cell_item>;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
@@ -22,6 +20,7 @@ private:
 
   enum class status { moving, waiting };
 
+  [[nodiscard]] auto Destination() const -> std::optional<level_cell_item>;
   [[nodiscard]] auto UpdateWhenMoving(float interval, const level_cell_collection& cells) noexcept -> status;
   [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
   auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;

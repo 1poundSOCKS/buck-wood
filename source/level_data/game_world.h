@@ -49,25 +49,6 @@ auto game_world::SetCellId(auto &&object, cell_id cellId) -> void
 {
 }
 
-// inline auto game_world::SetCells(enemy_type_1 &object, std::shared_ptr<level_cell_collection> cells) -> void
-// {
-//   object.SetCells(cells);
-// }
-
-// inline auto game_world::SetCells(enemy_type_2 &object, std::shared_ptr<level_cell_collection> cells) -> void
-// {
-//   object.SetCells(cells);
-// }
-
-// inline auto game_world::SetCells(enemy_type_3 &object, std::shared_ptr<level_cell_collection> cells) -> void
-// {
-//   object.SetCells(cells);
-// }
-
-// auto game_world::SetCells(auto&& object, std::shared_ptr<level_cell_collection> cells) -> void
-// {
-// }
-
 auto game_world::SetObjectProperty(auto&& object, std::shared_ptr<level_object_movement> cells) -> void
 {
 }
