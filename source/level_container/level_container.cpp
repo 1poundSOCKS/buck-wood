@@ -48,7 +48,14 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
 auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
 {
   auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
-  object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+
+  switch( objectType )
+  {
+    case object_type::portal_exit:
+      object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+      break;
+  }
+
   return object;
 }
 
