@@ -75,13 +75,12 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(levelIndex, cellData);
     auto cellId = cell_id { columnIndex, rowIndex };
-    auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
 
     switch( itemType )
     {
       case level_item_type::entry_portal:
-        levelContainer->AddObject(level_container::object_type::portal_entry, cellPosition, {1,1}, 0, {0,0});
-        levelContainer->AddObject(level_container::object_type::player, cellPosition, {1,1}, 0, {0,0});
+        levelContainer->AddObject(level_container::object_type::portal_entry, cellId);
+        levelContainer->AddObject(level_container::object_type::player, cellId);
         break;
 
       case level_item_type::exit_portal:
@@ -89,15 +88,15 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
         break;
 
       case level_item_type::enemy_type_one:
-        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellPosition, {1,1}, 0, {0,0});
+        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
         break;
       
       case level_item_type::enemy_type_two:
-        levelContainer->AddObject(level_container::object_type::enemy_random, cellPosition, {1,1}, 0, {0,0});
+        levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
         break;
 
       case level_item_type::enemy_type_three:
-        levelContainer->AddObject(level_container::object_type::enemy_turret, cellPosition, {1,1}, 0, {0,0});
+        levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
         break;
     }
   });

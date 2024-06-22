@@ -28,7 +28,6 @@ public:
   level_container(collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
   auto AddWall(cell_id cellId, level_cell_type cellType) -> void;
 
@@ -49,6 +48,8 @@ public:
   auto SetExit(bool value, cell_id cell) -> void;
 
 private:
+
+  auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
   auto OnAddObject(player_ship& object) -> void;
   auto OnAddObject(auto& object) -> void;
