@@ -45,6 +45,13 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
   }
 }
 
+auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
+{
+  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
+  object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+  return object;
+}
+
 auto level_container::AddWall(cell_id cellId, level_cell_type cellType) -> void
 {
   auto cellSize = cell_size { 250, 250 };

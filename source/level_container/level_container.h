@@ -29,6 +29,7 @@ public:
   level_container(const level_container& levelContainer) = delete;
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
+  auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
   auto AddWall(cell_id cellId, level_cell_type cellType) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
@@ -51,6 +52,9 @@ private:
 
   auto OnAddObject(player_ship& object) -> void;
   auto OnAddObject(auto& object) -> void;
+
+  auto SetCellId(portal& object, cell_id cellId) -> void;
+  auto SetCellId(auto& object, cell_id cellId) -> void;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
@@ -156,6 +160,15 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 }
 
 auto level_container::OnAddObject(auto &object) -> void
+{
+}
+
+inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void
+{
+  object.SetCellId(cellId);
+}
+
+auto level_container::SetCellId(auto &object, cell_id cellId) -> void
 {
 }
 

@@ -80,18 +80,13 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     switch( itemType )
     {
       case level_item_type::entry_portal:
-      {
         levelContainer->AddObject(level_container::object_type::portal_entry, cellPosition, {1,1}, 0, {0,0});
         levelContainer->AddObject(level_container::object_type::player, cellPosition, {1,1}, 0, {0,0});
-      }
-      break;
+        break;
 
       case level_item_type::exit_portal:
-      {
-        auto& exitPortal = levelContainer->AddObject(level_container::object_type::portal_exit, cellPosition, {1,1}, 0, {0,0});
-        std::visit([cellId](auto&& object) { SetCellId(object, cellId); }, exitPortal.Get());
-      }
-      break;
+        levelContainer->AddObject(level_container::object_type::portal_exit, cellId);
+        break;
 
       case level_item_type::enemy_type_one:
         levelContainer->AddObject(level_container::object_type::enemy_stalker, cellPosition, {1,1}, 0, {0,0});
