@@ -12,11 +12,17 @@ auto enemy_type_2::Update(float interval) -> void
 {
   base_object::Update(interval);
   m_reloaded = m_reloadTimer.Update(interval);
+}
+
+auto enemy_type_2::Update(float interval, const level_cell_collection& cells) -> void
+{
+  base_object::Update(interval);
+  m_reloaded = m_reloadTimer.Update(interval);
 
   switch( m_status )
   {
     case status::moving:
-      m_status = UpdateWhenMoving(interval, *m_cells);
+      m_status = UpdateWhenMoving(interval, cells);
       break;
     case status::waiting:
       m_status = UpdateWhenWaiting(interval);

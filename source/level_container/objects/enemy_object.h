@@ -12,7 +12,6 @@ public:
   enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept;
 
   auto ApplyDamage(int value) -> void;
-  auto SetCells(std::shared_ptr<level_cell_collection> cells) -> void;
 
   [[nodiscard]] auto Health() const -> float;
 
@@ -20,6 +19,5 @@ protected:
 
   int m_maxHitpoints;
   int m_hitpoints;
-  std::shared_ptr<level_cell_collection> m_cells;
 
 };
