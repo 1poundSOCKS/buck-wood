@@ -6,11 +6,11 @@ enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOC
 {
 }
 
-auto enemy_type_1::Update(float interval, POINT_2F target) -> void
+auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void
 {
   base_object::Update(interval);
 
-  m_destination = m_destination ? m_destination : NewDestination(target, *m_cells);
+  m_destination = m_destination ? m_destination : NewDestination(target, cells);
   bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
   m_destination = atDestination ? std::nullopt : m_destination;
 }

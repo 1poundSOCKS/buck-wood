@@ -12,10 +12,13 @@ public:
 
   auto Update(float interval) -> void
   {
-    m_target ? Update(interval, *m_target) : base_object::Update(interval);
+    base_object::Update(interval);
   }
 
-  auto Update(float interval, POINT_2F target) -> void;
+  auto Update(float interval, const level_cell_collection& cells) -> void
+  {
+    m_target ? Update(interval, *m_target, cells) : base_object::Update(interval);
+  }
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
@@ -24,6 +27,7 @@ public:
   
 private:
 
+  auto Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void;
   auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;
   auto NewDestination(POINT_2F target, const level_cell_collection &cells) -> std::optional<level_cell_item>;
 
