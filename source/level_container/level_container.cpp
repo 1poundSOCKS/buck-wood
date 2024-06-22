@@ -156,19 +156,16 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
 
 auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
 {
-  // object.SetCells(m_cells);
   object.Update(interval, *m_cells);
 }
 
 auto level_container::UpdateObject(enemy_type_2 &object, float interval) -> void
 {
-  // object.SetCells(m_cells);
   object.Update(interval, *m_cells);
 }
 
 auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
 {
-  // object.SetCells(m_cells);
   object.Update(interval);
 }
 
