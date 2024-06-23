@@ -9,7 +9,7 @@ level_container::level_container() : level_container(collision_type::boundary)
 }
 
 level_container::level_container(collision_type collisionType) : 
-  m_cells { std::make_shared<level_cell_collection>(cell_size { 250, 250 }) },
+  m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }) },
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f) }, 
   m_collisionRunner { collisionType }
@@ -30,15 +30,18 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
   return object;
 }
 
-auto level_container::AddWall(cell_id cellId, level_cell_type cellType) -> void
+auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
 {
-  auto cellSize = cell_size { 250, 250 };
-  auto& object = m_objects.Add(std::in_place_type<level_cell>, ToFloat(cellSize.CellPosition(cellId)), { 250, 250 }, 0, { 0, 0 });
+  m_cells->Set(cellId, cellType);
+
+  auto cellSize = cell_size { m_cellSize, m_cellSize };
+  auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
+  auto cellScale = SCALE_2F { cellWidth, cellHeight };
+
+  auto& object = m_objects.Add(std::in_place_type<level_cell>, cellPosition, cellScale, 0, { 0, 0 });
   auto wall = object.GetIf<level_cell>();
   wall->SetId(cellId);
   wall->SetType(cellType);
-
-  m_cells->Set(cellId, cellType);
 }
 
 auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&

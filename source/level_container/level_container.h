@@ -29,7 +29,7 @@ public:
   level_container(const level_container& levelContainer) = delete;
 
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
-  auto AddWall(cell_id cellId, level_cell_type cellType) -> void;
+  auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
 
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
@@ -85,6 +85,10 @@ private:
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
 private:
+
+  static constexpr int m_cellSize { 250 };
+  static constexpr auto cellWidth { static_cast<float>(m_cellSize) };
+  static constexpr auto cellHeight { static_cast<float>(m_cellSize) };
 
   std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<level_object_movement> m_objectMovement;

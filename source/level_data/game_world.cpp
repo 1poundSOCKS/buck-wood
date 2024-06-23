@@ -62,7 +62,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     switch( cellType )
     {
       case level_cell_type::wall:
-        levelContainer->AddWall(cellId, cellType);
+        levelContainer->AddCell(cellId, cellType);
         break;
     }
   });
