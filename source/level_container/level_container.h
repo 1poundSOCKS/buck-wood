@@ -34,7 +34,6 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
-  [[nodiscard]] auto PlayerThrusterOn() const noexcept -> bool;
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
 
   [[nodiscard]] auto LevelSize() const -> SIZE_F;
@@ -109,11 +108,6 @@ private:
 
   size_t m_enemyCount { 0 };
 };
-
-inline [[nodiscard]] auto level_container::PlayerThrusterOn() const noexcept -> bool
-{
-  return m_playerState->ThrusterOn();
-}
 
 inline auto level_container::PlayerState() const noexcept -> const player_ship_state &
 {
