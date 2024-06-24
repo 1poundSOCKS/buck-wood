@@ -47,29 +47,24 @@ auto game_world::EntryData(int index, cell_id exitCell) -> std::optional<std::tu
 
 auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) const -> std::unique_ptr<level_container>
 {
-  auto levelData = LevelData(levelIndex);
-
-  auto cellSize = cell_size { 250, 250 };
-  auto levelCells = CreateCellsCollection(levelIndex, levelData.get(), cellSize);
-  
   auto levelContainer = std::make_unique<level_container>();
 
-  auto cellRect = levelCells->CellRect({0,0});
-  auto scale = SCALE_2F { cellRect.right - cellRect.left, cellRect.bottom - cellRect.top };
-  
-  levelCells->Enumerate([this,&levelContainer,cellSize,scale](cell_id cellId, level_cell_type cellType)
+  auto levelData = LevelData(levelIndex);
+  levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
   {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    auto cellType = m_cellDataTranslator(levelIndex, cellData);
+
     switch( cellType )
     {
       case level_cell_type::wall:
-        levelContainer->AddCell(cellId, cellType);
+        levelContainer->AddCell({columnIndex, rowIndex}, cellType);
         break;
     }
   });
 
-  auto levelCellMovement = std::make_shared<level_object_movement>(levelCells);
-
-  levelData->Enumerate([this,&levelContainer,cellSize,levelCells,levelCellMovement,levelIndex](size_t column, size_t row, char cellData)
+  levelData->Enumerate([this,&levelContainer,levelIndex](size_t column, size_t row, char cellData)
   {
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
@@ -115,30 +110,6 @@ auto game_world::CollisionType() -> collision_type
     default:
       return collision_type::boundary;
   }
-}
-
-auto game_world::CreateCellsCollection(int levelIndex, level_base *levelData, cell_size cellSize) const -> std::shared_ptr<level_cell_collection>
-{
-  std::shared_ptr<level_cell_collection> levelCells { std::make_shared<level_cell_collection>(cellSize) };
-
-  levelData->Enumerate([this,levelIndex,levelCells](size_t column, size_t row, char cellData)
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    auto cellType = m_cellDataTranslator(levelIndex, cellData);
-
-    switch( cellType )
-    {
-      case level_cell_type::floor:
-        levelCells->Set({columnIndex, rowIndex}, cellType);
-        break;
-      case level_cell_type::wall:
-        levelCells->Set({columnIndex, rowIndex}, cellType);
-        break;
-    }
-  });
-
-  return levelCells;
 }
 
 auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
