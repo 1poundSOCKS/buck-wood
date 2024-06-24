@@ -9,6 +9,7 @@ enemy_bullet_1::enemy_bullet_1(POINT_2F position, SCALE_2F scale, float angle, V
 auto enemy_bullet_1::Update(float interval) -> void
 {
   base_object::Update(interval);
-  m_position = m_velocity.UpdatePosition(m_position, interval);
+  m_position.x += m_velocity.x * interval;
+  m_position.y += m_velocity.y * interval;
   m_angle = direct2d::RotateAngle(m_angle, rotationSpeed * interval);
 }

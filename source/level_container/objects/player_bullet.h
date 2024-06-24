@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "base_object.h"
-#include "object_velocity.h"
 
 class player_bullet : public base_object
 {
@@ -19,12 +18,13 @@ public:
   auto Update(float interval) noexcept -> void
   {
     base_object::Update(interval);
-    m_position = m_velocity.UpdatePosition(m_position, interval);
+    m_position.x += m_velocity.x * interval;
+    m_position.y += m_velocity.y * interval;
   }
 
 private:
  
   int m_damage;
-  object_velocity m_velocity;
+  VELOCITY_2F m_velocity;
 
 };

@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "base_object.h"
-#include "object_velocity.h"
 #include "play_event.h"
 #include "reload_timer.h"
 #include "reload_counter.h"

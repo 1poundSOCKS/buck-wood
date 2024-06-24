@@ -1,7 +1,6 @@
 #pragma once
 
 #include "base_object.h"
-#include "object_velocity.h"
 
 class player_ship_state : public base_object
 {
@@ -20,7 +19,7 @@ public:
 
 private:
 
-  object_velocity m_velocity;
+  VELOCITY_2F m_velocity;
   bool m_thrustControlActivated { false };
 
 };
@@ -38,19 +37,19 @@ inline auto player_ship_state::Update() noexcept -> void
 
 inline auto player_ship_state::SetVelocity(VELOCITY_2F value) -> void
 {
-  m_velocity.Set(value.x, value.y);
+  m_velocity = value;
 }
 
 inline auto player_ship_state::UpdatePosition(float interval) -> POINT_2F
 {
-  m_position.x += m_velocity.X() * interval;
-  m_position.y += m_velocity.Y() * interval;
+  m_position.x += m_velocity.x * interval;
+  m_position.y += m_velocity.y * interval;
   return m_position;
 }
 
 inline [[nodiscard]] auto player_ship_state::Velocity() const noexcept -> VELOCITY_2F
 {
-  return m_velocity.Get();
+  return m_velocity;
 }
 
 inline auto player_ship_state::ThrusterOn() const noexcept -> bool

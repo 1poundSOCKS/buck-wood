@@ -2,7 +2,6 @@
 
 #include "framework.h"
 #include "base_object.h"
-#include "object_velocity.h"
 
 class enemy_bullet_1 : public base_object
 {
@@ -18,6 +17,6 @@ private:
   static constexpr float m_spinRate { 400 };
   static constexpr float rotationSpeed { 300.0f };
 
-  object_velocity m_velocity;
+  VELOCITY_2F m_velocity;
 
 };
