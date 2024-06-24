@@ -7,7 +7,6 @@ class level_object_movement
 
 public:
 
-  level_object_movement();
   level_object_movement(std::shared_ptr<level_cell_collection> cells);
 
   [[nodiscard]] auto UpdatePosition(POINT_2F position, POINT_2F distance, SIZE_F objectSize) const noexcept -> POINT_2F;

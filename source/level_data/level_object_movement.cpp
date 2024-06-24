@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "level_object_movement.h"
 
-level_object_movement::level_object_movement() : m_cells { std::make_shared<level_cell_collection>(cell_size { 0, 0 }) }
-{
-}
-
 level_object_movement::level_object_movement(std::shared_ptr<level_cell_collection> cells) : m_cells{ cells }
 { 
 }
