@@ -55,11 +55,12 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto cellType = m_cellDataTranslator(levelIndex, cellData);
+    auto cellId = cell_id { columnIndex, rowIndex };
 
     switch( cellType )
     {
       case level_cell_type::wall:
-        levelContainer->AddCell({columnIndex, rowIndex}, cellType);
+        levelContainer->AddCell(cellId, cellType);
         break;
     }
   });
@@ -69,7 +70,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(levelIndex, cellData);
-    auto cellId = cell_id { columnIndex, rowIndex };
+    auto cellId = cell_id { columnIndex + columnOffset, rowIndex + rowOffset};
 
     switch( itemType )
     {

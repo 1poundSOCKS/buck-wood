@@ -26,13 +26,16 @@ inline level_base::level_base(std::ranges::input_range auto&& data)
 
 auto level_base::Enumerate(auto&& visitor) const -> void
 {
+  static constexpr int columnOffset = -4;
+  static constexpr int rowOffset = -4;
+
   for( auto rowIndex  = 0; rowIndex < m_data.size(); ++rowIndex )
   {
     const auto& rowData = m_data[rowIndex];
 
     for( auto columnIndex = 0; columnIndex < rowData.size(); ++columnIndex )
     {
-      visitor(columnIndex, rowIndex, rowData[columnIndex]);
+      visitor(columnIndex + columnOffset, rowIndex + rowOffset, rowData[columnIndex]);
     }
   }
 }
