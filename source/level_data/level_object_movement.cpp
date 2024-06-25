@@ -60,7 +60,6 @@ auto level_object_movement::UpdatePosition(POINT_2F position, POINT_2F distance,
   auto adjustedDistance = POINT_2F { std::min(maxAdjustedDistance.x, maxXShift), std::min(maxAdjustedDistance.y, maxYShift) };
 
   return { position.x + adjustedDistance.x, position.y + adjustedDistance.y };
-  // return { position.x + distance.x, position.y + distance.y };
 }
 
 [[nodiscard]] auto level_object_movement::CellTopLeft() const noexcept -> POINT_2F

@@ -56,7 +56,7 @@ namespace render_order
   inline auto get(const default_object& object) -> int
   {
     static default_object_visitor visitor {};
-    return std::visit(visitor, object.Get());
+    return object.Visit(visitor);
   }
 
 }

@@ -21,7 +21,7 @@ default_object_renderer::default_object_renderer()
 
 auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
 {
-  std::visit(default_object_renderer_visitor { *this, geometry }, object.Get());
+  object.Visit(default_object_renderer_visitor { *this, geometry });
 }
 
 auto default_object_renderer::Write(const level_cell &object, ID2D1Geometry *geometry) const -> void

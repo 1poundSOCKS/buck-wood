@@ -50,7 +50,7 @@ private:
 
 inline [[nodiscard]] auto level_geometries::get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1Geometry>
 {
-  return std::visit([](const auto& object) { return get(object); }, defaultObject.Get());
+  return defaultObject.Visit([](const auto& object) { return get(object); });
 }
 
 inline [[nodiscard]] auto level_geometries::get(object_type objectType) -> winrt::com_ptr<ID2D1Geometry>

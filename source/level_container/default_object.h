@@ -20,36 +20,15 @@ public:
   >;
 
   template <typename variant_type, typename...Args>
-  default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args) :
-    m_object { variantType, position, scale, angle, velocity, std::forward<Args>(args)... }
-  {
-  }
+  default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args);
 
-  [[nodiscard]] auto Get() const -> const object_type& { return m_object; }
-  [[nodiscard]] auto Get() -> object_type& { return m_object; }
-
-  template <typename type> [[nodiscard]] auto GetIf() const -> const type*
-  {
-    return std::get_if<type>(&m_object);
-  }
-
-  template <typename type> [[nodiscard]] auto GetIf() -> type*
-  {
-    return std::get_if<type>(&m_object);
-  }
-
-  template <typename type> [[nodiscard]] auto GetObj() -> type&
-  {
-    return std::get<type>(m_object);
-  }
-
-  template <typename type> [[nodiscard]] auto HoldsAlternative() const -> bool
-  {
-    return std::holds_alternative<type>(m_object);
-  }
+  template <typename type> [[nodiscard]] auto GetIf() const -> const type*;
+  template <typename type> [[nodiscard]] auto GetIf() -> type*;
+  template <typename type> [[nodiscard]] auto GetObj() -> type&;
+  template <typename type> [[nodiscard]] auto HoldsAlternative() const -> bool;
 
   auto Visit(auto&& visitor) noexcept;
-  auto Visit(const auto& visitor) const noexcept;
+  auto Visit(auto&& visitor) const noexcept;
 
   [[nodiscard]] auto Scale() const -> SCALE_2F;
   [[nodiscard]] auto Angle() const -> float;
@@ -64,12 +43,42 @@ private:
 
 };
 
-auto default_object::Visit(auto &&visitor) noexcept
+template <typename variant_type, typename...Args>
+default_object::default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args) :
+  m_object { variantType, position, scale, angle, velocity, std::forward<Args>(args)... }
+{
+}
+
+template <typename type>
+[[nodiscard]] auto default_object::GetIf() const -> const type*
+{
+  return std::get_if<type>(&m_object);
+}
+
+template <typename type>
+[[nodiscard]] auto default_object::GetIf() -> type*
+{
+  return std::get_if<type>(&m_object);
+}
+
+template <typename type>
+[[nodiscard]] auto default_object::GetObj() -> type&
+{
+  return std::get<type>(m_object);
+}
+
+template <typename type>
+[[nodiscard]] auto default_object::HoldsAlternative() const -> bool
+{
+  return std::holds_alternative<type>(m_object);
+}
+
+auto default_object::Visit(auto&& visitor) noexcept
 {
   return std::visit(visitor, m_object);
 }
 
-auto default_object::Visit(const auto &visitor) const noexcept
+auto default_object::Visit(auto&& visitor) const noexcept
 {
   return std::visit(visitor, m_object);
 }

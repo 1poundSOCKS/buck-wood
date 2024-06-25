@@ -40,7 +40,7 @@ auto default_object_collection::Visit(auto&& visitor) -> void
 {
   for( auto& object : m_objects )
   {
-    std::visit([this, &visitor](auto& levelObject) { visitor(levelObject); }, object.Get());
+    object.Visit([this, &visitor](auto& levelObject) { visitor(levelObject); });
   }
 }
 

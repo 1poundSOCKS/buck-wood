@@ -32,10 +32,7 @@ private:
 
   [[nodiscard]] auto SetGeometry(const default_object& object) -> void
   {
-    std::visit([this](const auto& object)
-    {
-      SetGeometry(object);
-    }, object.Get());
+    object.Visit([this](const auto& object) { SetGeometry(object); });
   }
 
   [[nodiscard]] auto SetGeometry(const auto& object) -> void
