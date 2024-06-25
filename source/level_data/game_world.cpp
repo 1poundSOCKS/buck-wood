@@ -70,7 +70,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     auto columnIndex = static_cast<int>(column);
     auto rowIndex = static_cast<int>(row);
     auto itemType = m_objectDataTranslator(levelIndex, cellData);
-    auto cellId = cell_id { columnIndex + columnOffset, rowIndex + rowOffset};
+    auto cellId = cell_id { columnIndex, rowIndex };
 
     switch( itemType )
     {
