@@ -12,7 +12,7 @@ public:
 
   auto Enumerate(auto&& visitor) const -> void;
 
-private:
+protected:
 
   using data_type = std::vector<std::string>;
   data_type m_data;

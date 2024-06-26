@@ -13,18 +13,39 @@ public:
 
 private:
 
-  inline static std::array m_levelData { 
-    std::string { "000000000000000000000000000000000" },
-    std::string { "0                               0" },
-    std::string { "0  P                         E  0" },
-    std::string { "0                               0" },
-    std::string { "000000000000000000000000000000000" }
+inline static std::array m_levelDataLeft { 
+    std::string { "         0000000000000         " },
+    std::string { "       000           000       " },
+    std::string { "     000               000     " },
+    std::string { "     000               000     " },
+    std::string { "   000                   000   " },
+    std::string { "   000                   000   " },
+    std::string { " 000                       000 " },
+    std::string { "00             P             00" },
+    std::string { "00                           00" },
+    std::string { "00             E             00" },
+    std::string { " 000                       000  "},
+    std::string { "   000                   000   " },
+    std::string { "   000                   000   " },
+    std::string { "     000               000     " },
+    std::string { "     000               000     " },
+    std::string { "       000           000       " },
+    std::string { "         0000000000000         " }
   };
 
 };
 
-inline level_0::level_0() : level_base { m_levelData }
+inline level_0::level_0() : level_base { m_levelDataLeft }
 {
+  // auto dataEntry = std::begin(m_data);
+  // auto dataRightEntry = std::begin(m_levelDataRight);
+
+  // while( dataEntry != std::end(m_data) && dataRightEntry != std::end(m_levelDataRight) )
+  // {
+  //   *dataEntry += *dataRightEntry;
+  //   ++dataEntry;
+  //   ++dataRightEntry;
+  // }
 }
 
 inline level_0::~level_0()
