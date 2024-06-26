@@ -13,12 +13,12 @@ public:
 
   game_world();
 
-  [[nodiscard]] auto LevelData(int index) const -> std::unique_ptr<level_base>;
   [[nodiscard]] auto EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>;
   auto LoadLevel(int levelIndex, std::optional<cell_id> entryCell) const -> std::unique_ptr<level_container>;
 
 private:
 
+  [[nodiscard]] auto LevelData(int index) const -> std::unique_ptr<level_base>;
   static [[nodiscard]] auto CollisionType() -> collision_type;
   auto CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void;
 
