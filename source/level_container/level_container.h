@@ -50,9 +50,6 @@ private:
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
-  auto OnAddObject(player_ship& object) -> void;
-  auto OnAddObject(auto& object) -> void;
-
   auto SetCellId(portal& object, cell_id cellId) -> void;
   auto SetCellId(auto& object, cell_id cellId) -> void;
 
@@ -156,10 +153,6 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 {
   m_exit = true;
   m_exitCell = cell;
-}
-
-auto level_container::OnAddObject(auto &object) -> void
-{
 }
 
 inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void

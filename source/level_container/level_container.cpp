@@ -4,6 +4,9 @@
 #include "particle_functions.h"
 #include "player_state.h"
 
+template<typename... Ts> struct make_overload: Ts... { using Ts::operator()...; };
+template<typename... Ts> make_overload(Ts...) -> make_overload<Ts...>;
+
 level_container::level_container() : level_container(collision_type::boundary)
 {
 }
@@ -55,7 +58,10 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
     case object_type::player:
     {
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
-      defaultObject.Visit([this](auto& object) { OnAddObject(object); });
+      defaultObject.Visit(make_overload {
+        [this](player_ship& object) { m_playerState = object.State(); },
+        [this](auto& object) {}
+      });
       return defaultObject;
     }
     case object_type::enemy_stalker:
@@ -130,10 +136,10 @@ auto level_container::DoCollisions() -> void
     [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 }
 
-auto level_container::OnAddObject(player_ship &object) -> void
-{
-  m_playerState = object.State();
-}
+// auto level_container::OnAddObject(player_ship &object) -> void
+// {
+//   m_playerState = object.State();
+// }
 
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
