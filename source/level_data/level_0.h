@@ -13,13 +13,13 @@ public:
 
 private:
 
-inline static std::array m_levelData { 
-    std::string { "         0000000000000         " },
-    std::string { "       000           000       " },
-    std::string { "     000               000     " },
-    std::string { "     000               000     " },
+  inline static std::array m_levelData { 
+    std::string { "       000000000000000000      " },
+    std::string { "      00                00     " },
+    std::string { "     00                  00    " },
+    std::string { "     00                  00    " },
     std::string { "   000                   000   " },
-    std::string { "   000                   000   " },
+    std::string { "  00                       00  " },
     std::string { " 000                       000 " },
     std::string { "00             P             00" },
     std::string { "00                           00" },
