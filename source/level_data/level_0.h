@@ -13,7 +13,7 @@ public:
 
 private:
 
-inline static std::array m_levelDataLeft { 
+inline static std::array m_levelData { 
     std::string { "         0000000000000         " },
     std::string { "       000           000       " },
     std::string { "     000               000     " },
@@ -35,17 +35,8 @@ inline static std::array m_levelDataLeft {
 
 };
 
-inline level_0::level_0() : level_base { m_levelDataLeft }
+inline level_0::level_0() : level_base { m_levelData }
 {
-  // auto dataEntry = std::begin(m_data);
-  // auto dataRightEntry = std::begin(m_levelDataRight);
-
-  // while( dataEntry != std::end(m_data) && dataRightEntry != std::end(m_levelDataRight) )
-  // {
-  //   *dataEntry += *dataRightEntry;
-  //   ++dataEntry;
-  //   ++dataRightEntry;
-  // }
 }
 
 inline level_0::~level_0()
