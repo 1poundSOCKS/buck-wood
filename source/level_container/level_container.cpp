@@ -14,7 +14,7 @@ level_container::level_container() : level_container(collision_type::boundary)
 level_container::level_container(collision_type collisionType) : 
   m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }) },
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
-  m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f) }, 
+  m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f, VELOCITY_2F { 0, 0 }) }, 
   m_collisionRunner { collisionType }
 {
 }
@@ -136,28 +136,23 @@ auto level_container::DoCollisions() -> void
     [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 }
 
-// auto level_container::OnAddObject(player_ship &object) -> void
-// {
-//   m_playerState = object.State();
-// }
-
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
-  object.Update(interval);
+  m_playerState->Update(interval);
 
   auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
   if( leftThumbstickPosition )
   {
-    auto changeInVelocity = player_ship::CalculateVelocity(leftThumbstickPosition->x, leftThumbstickPosition->y);
-    object.UpdateVelocity(changeInVelocity, interval);
-    object.UpdateAngle();
+    auto changeInVelocity = player_ship_state::CalculateVelocity(leftThumbstickPosition->x, leftThumbstickPosition->y);
+    m_playerState->UpdateVelocity(changeInVelocity, interval);
+    m_playerState->UpdateAngle();
   }
 
   constexpr SIZE_F objectSize { 60, 60 };
 
   auto initialPosition = object.Position();
-  auto updatedPosition = object.UpdatePosition(interval);
+  auto updatedPosition = m_playerState->UpdatePosition(interval);
   auto moveDistance = POINT_2F { updatedPosition.x - initialPosition.x, updatedPosition.y - initialPosition.y };
 
   auto adjustedPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
@@ -166,7 +161,7 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
   auto collisionX = updatedPosition.x != adjustedPosition.x;
   auto collisionY = updatedPosition.y != adjustedPosition.y;
 
-  auto velocity = object.Velocity();
+  auto velocity = m_playerState->Velocity();
   auto velocityX = collisionX ? 0 : velocity.x;
   auto velocityY = collisionY ? 0 : velocity.y;
 
@@ -194,7 +189,7 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
 
 auto level_container::VisitObject(player_ship &object) -> void
 {
-  if( object.CanShoot() )
+  if( m_playerState->CanShoot() )
   {
     std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
 

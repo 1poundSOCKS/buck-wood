@@ -1,21 +1,52 @@
 #pragma once
 
 #include "base_object.h"
+#include "reload_counter.h"
+#include "health_status.h"
 
 class player_ship_state : public base_object
 {
 
 public:
 
-  player_ship_state(POINT_2F position, SCALE_2F scale, float angle) noexcept;
+  player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
+
+  auto Update(float interval) -> void;
+  auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
+  auto UpdateAngle() -> void;
+  auto UpdatePosition(float interval) -> POINT_2F;
 
   auto Update() noexcept -> void;
   auto SetVelocity(VELOCITY_2F value) -> void;
 
-  auto UpdatePosition(float interval) -> POINT_2F;
-
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const noexcept -> bool;
+
+  auto Rotate(float angle) -> void;
+  auto ApplyDamage(int value) -> void;
+  auto ApplyFatalDamage() -> void;
+
+  [[nodiscard]] auto ShieldStatus() const -> const health_status&;
+  [[nodiscard]] auto CanShoot() -> bool;
+
+  static [[nodiscard]] auto CalculateVelocity(float controlX, float controlY) -> VELOCITY_2F;
+
+private:
+
+  auto UpdateWhenActive(float interval) -> void;
+  auto UpdateWhenCelebrating(float interval) -> void;
+
+private:
+
+  static constexpr float m_thrustPower { 3000.0f };
+  static constexpr float m_friction { 0.05f };
+  static constexpr SIZE_F m_objectSize { 60, 60 };
+
+private:
+
+  health_status m_shieldStatus { 10 };
+  reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
+
 
 private:
 
@@ -24,8 +55,8 @@ private:
 
 };
 
-inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle) noexcept :
-  base_object { position, scale, angle }
+inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
+  base_object { position, scale, angle }, m_velocity { velocity }
 {
 }
 
@@ -55,4 +86,39 @@ inline [[nodiscard]] auto player_ship_state::Velocity() const noexcept -> VELOCI
 inline auto player_ship_state::ThrusterOn() const noexcept -> bool
 {
   return !m_destroyed && m_thrustControlActivated;
+}
+
+inline auto player_ship_state::Rotate(float angle) -> void
+{
+  m_angle = direct2d::RotateAngle(m_angle, angle);
+}
+
+inline auto player_ship_state::ApplyDamage(int value) -> void
+{
+  if( m_shieldStatus.ApplyDamage(value) == 0 )
+  {
+    Destroy();
+  }
+}
+
+inline auto player_ship_state::ApplyFatalDamage() -> void
+{
+  m_shieldStatus.ApplyFatalDamage();
+  Destroy();
+}
+
+inline [[nodiscard]] auto player_ship_state::ShieldStatus() const -> const health_status&
+{
+  return m_shieldStatus;
+}
+
+inline [[nodiscard]] auto player_ship_state::CanShoot() -> bool
+{
+  return !m_destroyed && m_playerReloadCounter.Get(1, true) == 1;
+}
+
+inline auto player_ship_state::CalculateVelocity(float controlX, float controlY) -> VELOCITY_2F
+{
+  constexpr float thrustPower { 3000.0f };
+  return { controlX * thrustPower, controlY * thrustPower };
 }
