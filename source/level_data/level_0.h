@@ -13,24 +13,22 @@ public:
 
 private:
 
-  inline static std::array m_levelData { 
-    std::string { "       000000000000000000      " },
-    std::string { "      00                00     " },
-    std::string { "     00        3         00    " },
-    std::string { "     00    1       1     00    " },
-    std::string { "   000                   000   " },
-    std::string { "  00                       00  " },
-    std::string { " 000                       000 " },
-    std::string { "00             P             00" },
-    std::string { "00      3              2     00" },
-    std::string { "00             E             00" },
-    std::string { " 000                       000  "},
-    std::string { "   000                   000   " },
-    std::string { "   000    2          1  000   " },
-    std::string { "     000               000     " },
-    std::string { "     000               000     " },
-    std::string { "       000           000       " },
-    std::string { "         0000000000000         " }
+ inline static std::array m_levelData { 
+    std::string { "0000000000000000000000000000000" },
+    std::string { "00    0000000000000000000000000" },
+    std::string { "000                       00000" },
+    std::string { "000   00000000000000000   00000" },
+    std::string { "0000 00000000000000000000 00000" },
+    std::string { "0000 00000000000000000000 00000" },
+    std::string { "0000 000000000   00000000 00000" },
+    std::string { "0000 000000000 P 00000000 00000" },
+    std::string { "0000 000000000   00000000 00000" },
+    std::string { "0000 0000000000 000000000 00000" },
+    std::string { "0000 0000000000 00000000   0000" },
+    std::string { "0000            00000000 E 0000" },
+    std::string { "0000000000 0000000000000   0000" },
+    std::string { "0000000000               000000" },
+    std::string { "0000000000000000000000000000000" }
   };
 
 };
