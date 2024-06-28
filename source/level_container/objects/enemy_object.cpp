@@ -8,7 +8,7 @@ enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexc
 
 auto enemy_object::SetHitpoints(int value) noexcept -> void
 {
-  m_hitpoints = value;
+  m_maxHitpoints = m_hitpoints = value;
 }
 
 auto enemy_object::ApplyDamage(int value) -> void

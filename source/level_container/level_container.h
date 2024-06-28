@@ -46,6 +46,9 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
 
+  auto EnumerateColumns(auto&& visitor) -> void;
+  auto EnumerateRows(auto&& visitor) -> void;
+
 private:
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -153,6 +156,14 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
 {
   m_exit = true;
   m_exitCell = cell;
+}
+
+auto level_container::EnumerateColumns(auto &&visitor) -> void
+{
+}
+
+auto level_container::EnumerateRows(auto &&visitor) -> void
+{
 }
 
 inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void
