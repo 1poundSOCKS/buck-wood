@@ -10,6 +10,20 @@ class level_cell_collection
 
 public:
 
+  struct column_def
+  {
+    int position;
+    int start;
+    int end;
+  };
+
+  struct row_def
+  {
+    int position;
+    int start;
+    int end;
+  };
+
   level_cell_collection(cell_size cellSize);
 
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
@@ -25,6 +39,8 @@ public:
   [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2F;
 
   auto Enumerate(auto&& visitor) const noexcept -> void;
+  auto EnumerateColumns(auto&& visitor) const noexcept -> void;
+  auto EnumerateRows(auto&& visitor) const noexcept -> void;
 
 private:
 
@@ -51,5 +67,33 @@ auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
   {
     const auto& [cellId, cellType] = cellEntry;
     visitor(cellId, cellType);
+  }
+}
+
+auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> void
+{
+  auto bounds = m_cells.Bounds();
+
+  for( auto column = bounds.left; column != bounds.right; ++column )
+  {
+    auto topCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.top });
+    auto bottomCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.bottom });
+
+    column_def columnDef { topCellPosition.x, topCellPosition.y, bottomCellPosition.y };
+    visitor(columnDef);
+  }
+}
+
+auto level_cell_collection::EnumerateRows(auto &&visitor) const noexcept -> void
+{
+  auto bounds = m_cells.Bounds();
+
+  for( auto row = bounds.top; row != bounds.bottom; ++row )
+  {
+    auto leftCellPosition = m_cellSize.CellPosition(cell_id { bounds.left, row });
+    auto rightCellPosition = m_cellSize.CellPosition(cell_id { bounds.right, row });
+
+    row_def rowDef { leftCellPosition.y, leftCellPosition.x, rightCellPosition.x };
+    visitor(rowDef);
   }
 }

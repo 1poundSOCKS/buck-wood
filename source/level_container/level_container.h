@@ -46,8 +46,10 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
 
-  auto EnumerateColumns(auto&& visitor) -> void;
-  auto EnumerateRows(auto&& visitor) -> void;
+public:
+
+  auto EnumerateColumns(auto&& visitor) const noexcept -> void;
+  auto EnumerateRows(auto&& visitor) const noexcept -> void;
 
 private:
 
@@ -158,12 +160,20 @@ inline auto level_container::SetExit(bool value, cell_id cell) -> void
   m_exitCell = cell;
 }
 
-auto level_container::EnumerateColumns(auto &&visitor) -> void
+auto level_container::EnumerateColumns(auto &&visitor) const noexcept -> void
 {
+  m_cells->EnumerateColumns([&visitor](level_cell_collection::column_def columnDef)
+  {
+    visitor(columnDef);
+  });
 }
 
-auto level_container::EnumerateRows(auto &&visitor) -> void
+auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
 {
+  m_cells->EnumerateRows([&visitor](level_cell_collection::row_def rowDef)
+  {
+    visitor(rowDef);
+  });
 }
 
 inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void

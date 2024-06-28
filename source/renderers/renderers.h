@@ -55,6 +55,8 @@ private:
   auto Render(const level_container& levelContainer) const -> void;
   auto Write(const default_object& object) const -> void;
   auto Write(const portal &object) const -> void;
+  auto Write(level_cell_collection::column_def columnDef) const noexcept -> void;
+  auto Write(level_cell_collection::row_def rowDef) const noexcept -> void;
   auto Write(const auto& object) const -> void;
 
   auto Health(const default_object& object) const -> std::optional<float>;
@@ -80,6 +82,7 @@ private:
   default_object_renderer m_defaultObjectRenderer;
   geometry_renderer m_boundaryRenderer { screen_render_brush_grey.CreateBrush(), 20 };
   particle_renderer m_particleRenderer;
+  winrt::com_ptr<ID2D1SolidColorBrush> m_gridBrush { screen_render_brush_dark_grey.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_lineToTargetBrush { screen_render_brush_grey.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarBorderBrush { screen_render_brush_white.CreateBrush() };
   winrt::com_ptr<ID2D1SolidColorBrush> m_energyBarFillBrush { screen_render_brush_green.CreateBrush() };
@@ -178,6 +181,22 @@ inline auto renderer::Write(const default_object &object) const -> void
 inline auto renderer::Write(const portal &object) const -> void
 {
   m_portalRenderer.Write(object);
+}
+
+inline auto renderer::Write(level_cell_collection::column_def columnDef) const noexcept -> void
+{
+  POINT_2I lineStart = { columnDef.position, columnDef.start };
+  POINT_2I lineEnd = { columnDef.position, columnDef.end };
+
+  render_target::get()->DrawLine(ToFloat(lineStart), ToFloat(lineEnd), m_gridBrush.get(), 20);
+}
+
+inline auto renderer::Write(level_cell_collection::row_def rowDef) const noexcept -> void
+{
+  POINT_2I lineStart = { rowDef.start, rowDef.position };
+  POINT_2I lineEnd = { rowDef.end, rowDef.position };
+  
+  render_target::get()->DrawLine(ToFloat(lineStart), ToFloat(lineEnd), m_gridBrush.get(), 20);
 }
 
 inline auto renderer::Write(const auto &object) const -> void

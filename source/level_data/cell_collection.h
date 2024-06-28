@@ -17,6 +17,8 @@ public:
   [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   auto Enumerate(auto&& visitor) const noexcept -> void;
 
+  [[nodiscard]] auto Bounds() const noexcept -> RECT_I;
+
 private:
 
   using key_type = cell_id;
@@ -44,4 +46,9 @@ auto cell_collection::Enumerate(auto &&visitor) const noexcept -> void
     const auto& [cellId, cellType] = cellEntry;
     visitor(cellId, cellType);
   }
+}
+
+inline auto cell_collection::Bounds() const noexcept -> RECT_I
+{
+  return RECT_I { 0, 0, 30, 30 };
 }

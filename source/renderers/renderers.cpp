@@ -31,6 +31,16 @@ auto renderer::Render(const hud_target& hudTarget) const -> void
 
 auto renderer::Render(const level_container &levelContainer) const -> void
 {
+  levelContainer.EnumerateColumns([this](level_cell_collection::column_def columnDef)
+  {
+    Write(columnDef);
+  });
+
+  levelContainer.EnumerateRows([this](level_cell_collection::row_def rowDef)
+  {
+    Write(rowDef);
+  });
+
   int renderIndex = 0;
 
   while( renderIndex < render_order::particle_end() )
