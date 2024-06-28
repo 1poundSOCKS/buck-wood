@@ -3,6 +3,7 @@
 #include "level_0.h"
 #include "level_1.h"
 #include "level_2.h"
+#include "make_overload.h"
 
 game_world::game_world() : m_collisionType { CollisionType() }
 {
@@ -84,8 +85,14 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
         break;
 
       case level_item_type::enemy_type_one:
-        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
+      {
+        auto& object = levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
+        object.Visit(make_overload {
+          [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+          [](auto& innerObject) {}
+        });
         break;
+      }
       
       case level_item_type::enemy_type_two:
         levelContainer->AddObject(level_container::object_type::enemy_random, cellId);

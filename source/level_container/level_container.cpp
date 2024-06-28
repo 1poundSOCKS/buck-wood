@@ -3,9 +3,7 @@
 #include "renderers.h"
 #include "particle_functions.h"
 #include "player_state.h"
-
-template<typename... Ts> struct make_overload: Ts... { using Ts::operator()...; };
-template<typename... Ts> make_overload(Ts...) -> make_overload<Ts...>;
+#include "make_overload.h"
 
 level_container::level_container() : level_container(collision_type::boundary)
 {

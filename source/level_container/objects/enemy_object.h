@@ -11,6 +11,7 @@ public:
 
   enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept;
 
+  auto SetHitpoints(int value) noexcept -> void;
   auto ApplyDamage(int value) -> void;
 
   [[nodiscard]] auto Health() const -> float;
