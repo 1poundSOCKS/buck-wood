@@ -95,12 +95,24 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
       }
       
       case level_item_type::enemy_type_two:
-        levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
+      {
+        auto& object = levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
+        object.Visit(make_overload {
+          [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+          [](auto& innerObject) {}
+        });
         break;
+      }
 
       case level_item_type::enemy_type_three:
-        levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
+      {
+        auto& object = levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
+        object.Visit(make_overload {
+          [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+          [](auto& innerObject) {}
+        });
         break;
+      }
     }
   });
 
