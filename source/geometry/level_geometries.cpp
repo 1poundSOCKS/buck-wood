@@ -26,7 +26,7 @@ level_geometries::level_geometries()
   m_enemy1 = ScaledGeometry(object_type::enemy_1, { 160, 160 });
   m_enemy2 = ScaledGeometry(object_type::enemy_2, { 140, 140 });
   m_enemy3 = ScaledGeometry(object_type::enemy_3, { 160, 160 });
-  m_enemyBullet1 = ScaledGeometry(object_type::enemy_bullet_1, { 60, 60 });
+  m_enemyBullet1 = ScaledGeometry(object_type::enemy_bullet_1, { 80, 80 });
   m_portal = ScaledGeometry(object_type::portal, { 200, 200 });
   m_powerUp = ScaledGeometry(object_type::power_up, { 60, 60 });
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
