@@ -19,6 +19,11 @@ public:
   auto Update() noexcept -> void;
   auto SetVelocity(VELOCITY_2F value) -> void;
 
+  auto MoveLeft() noexcept -> void;
+  auto MoveRight() noexcept -> void;
+  auto MoveUp() noexcept -> void;
+  auto MoveDown() noexcept -> void;
+
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const noexcept -> bool;
 
@@ -30,6 +35,10 @@ public:
   [[nodiscard]] auto CanShoot() -> bool;
 
   static [[nodiscard]] auto CalculateVelocity(float controlX, float controlY) -> VELOCITY_2F;
+
+private:
+
+  enum class move_direction { none, up, down, left, right };
 
 private:
 
@@ -45,18 +54,19 @@ private:
 private:
 
   health_status m_shieldStatus { 10 };
+  reload_counter m_moveCounter { 1.0f / 3.0f, 1 };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
-
 
 private:
 
   VELOCITY_2F m_velocity;
   bool m_thrustControlActivated { false };
+  move_direction m_moveDirection;
 
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_velocity { velocity }
+  base_object { position, scale, angle }, m_velocity { velocity }, m_moveDirection { move_direction::none }
 {
 }
 
@@ -69,6 +79,26 @@ inline auto player_ship_state::Update() noexcept -> void
 inline auto player_ship_state::SetVelocity(VELOCITY_2F value) -> void
 {
   m_velocity = value;
+}
+
+inline auto player_ship_state::MoveLeft() noexcept -> void
+{
+  m_moveDirection = move_direction::left;
+}
+
+inline auto player_ship_state::MoveRight() noexcept -> void
+{
+  m_moveDirection = move_direction::right;
+}
+
+inline auto player_ship_state::MoveUp() noexcept -> void
+{
+  m_moveDirection = move_direction::up;
+}
+
+inline auto player_ship_state::MoveDown() noexcept -> void
+{
+  m_moveDirection = move_direction::down;
 }
 
 inline auto player_ship_state::UpdatePosition(float interval) -> POINT_2F

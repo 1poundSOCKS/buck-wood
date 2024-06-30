@@ -24,9 +24,16 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
   switch( objectType )
   {
     case object_type::portal_exit:
-      object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+      // object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
+      object.Visit(make_overload {
+        [cellId](portal& object) { object.SetCellId(cellId); },
+        [](auto& object) {}
+      });
       break;
   }
+
+  // auto SetCellId(portal& object, cell_id cellId) -> void;
+  // auto SetCellId(auto& object, cell_id cellId) -> void;
 
   return object;
 }
@@ -58,7 +65,7 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
       defaultObject.Visit(make_overload {
         [this](player_ship& object) { m_playerState = object.State(); },
-        [this](auto& object) {}
+        [](auto& object) {}
       });
       return defaultObject;
     }
@@ -136,38 +143,69 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
-  m_playerState->Update(interval);
-
   auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
   if( leftThumbstickPosition )
   {
-    auto changeInVelocity = player_ship_state::CalculateVelocity(leftThumbstickPosition->x, leftThumbstickPosition->y);
-    m_playerState->UpdateVelocity(changeInVelocity, interval);
-    m_playerState->UpdateAngle();
+    // auto changeInVelocity = player_ship_state::CalculateVelocity(leftThumbstickPosition->x, leftThumbstickPosition->y);
+    // m_playerState->UpdateVelocity(changeInVelocity, interval);
+    // m_playerState->UpdateAngle();
+
+    enum class horizontal_move { none, left, right };
+    enum class vertical_move { none, up, down };
+
+    auto horizontalMove = horizontal_move::none;
+    horizontalMove = leftThumbstickPosition->x > 0.1 ? horizontal_move::right : horizontalMove;
+    horizontalMove = leftThumbstickPosition->x < -0.1 ? horizontal_move::left : horizontalMove;
+
+    auto verticalMove = vertical_move::none;
+    verticalMove = leftThumbstickPosition->y > 0.1 ? vertical_move::up : verticalMove;
+    verticalMove = leftThumbstickPosition->y < -0.1 ? vertical_move::down : verticalMove;
+
+    switch( horizontalMove )
+    {
+      case horizontal_move::left:
+        m_playerState->MoveLeft();
+        break;
+      case horizontal_move::right:
+        m_playerState->MoveRight();
+        break;
+    }
+
+    switch( verticalMove )
+    {
+      case vertical_move::up:
+        m_playerState->MoveUp();
+        break;
+      case vertical_move::down:
+        m_playerState->MoveDown();
+        break;
+    }
   }
 
-  constexpr SIZE_F objectSize { 60, 60 };
+  m_playerState->Update(interval);
 
-  auto initialPosition = object.Position();
-  auto updatedPosition = m_playerState->UpdatePosition(interval);
-  auto moveDistance = POINT_2F { updatedPosition.x - initialPosition.x, updatedPosition.y - initialPosition.y };
+  // constexpr SIZE_F objectSize { 60, 60 };
 
-  auto adjustedPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
-  m_playerState->SetPosition(adjustedPosition);
+  // auto initialPosition = object.Position();
+  // auto updatedPosition = m_playerState->UpdatePosition(interval);
+  // auto moveDistance = POINT_2F { updatedPosition.x - initialPosition.x, updatedPosition.y - initialPosition.y };
 
-  auto collisionX = updatedPosition.x != adjustedPosition.x;
-  auto collisionY = updatedPosition.y != adjustedPosition.y;
+  // auto adjustedPosition = m_objectMovement->UpdatePosition(initialPosition, moveDistance, objectSize);
+  // m_playerState->SetPosition(adjustedPosition);
 
-  auto velocity = m_playerState->Velocity();
-  auto velocityX = collisionX ? 0 : velocity.x;
-  auto velocityY = collisionY ? 0 : velocity.y;
+  // auto collisionX = updatedPosition.x != adjustedPosition.x;
+  // auto collisionY = updatedPosition.y != adjustedPosition.y;
 
-  constexpr float friction { 3.0f };
-  auto intervalFriction = std::max(0.0f, 1.0f  - (friction * interval));
-  velocityX *= intervalFriction;
-  velocityY *= intervalFriction;
-  m_playerState->SetVelocity({velocityX, velocityY});
+  // auto velocity = m_playerState->Velocity();
+  // auto velocityX = collisionX ? 0 : velocity.x;
+  // auto velocityY = collisionY ? 0 : velocity.y;
+
+  // constexpr float friction { 3.0f };
+  // auto intervalFriction = std::max(0.0f, 1.0f  - (friction * interval));
+  // velocityX *= intervalFriction;
+  // velocityY *= intervalFriction;
+  // m_playerState->SetVelocity({velocityX, velocityY});
 }
 
 auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void

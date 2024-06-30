@@ -55,8 +55,8 @@ private:
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
-  auto SetCellId(portal& object, cell_id cellId) -> void;
-  auto SetCellId(auto& object, cell_id cellId) -> void;
+  // auto SetCellId(portal& object, cell_id cellId) -> void;
+  // auto SetCellId(auto& object, cell_id cellId) -> void;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
@@ -176,14 +176,14 @@ auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
   });
 }
 
-inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void
-{
-  object.SetCellId(cellId);
-}
+// inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void
+// {
+//   object.SetCellId(cellId);
+// }
 
-auto level_container::SetCellId(auto &object, cell_id cellId) -> void
-{
-}
+// auto level_container::SetCellId(auto &object, cell_id cellId) -> void
+// {
+// }
 
 auto level_container::UpdateObject(auto &object, float interval) -> void
 {
