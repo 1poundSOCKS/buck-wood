@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "level_cell_collection.h"
 
-level_cell_collection::level_cell_collection(cell_size cellSize) : 
-  m_cellSize { cellSize }
+level_cell_collection::level_cell_collection(cell_size cellSize, RECT_I bounds) : 
+  m_cellSize { cellSize }, m_cells { bounds }
 {
 }
 

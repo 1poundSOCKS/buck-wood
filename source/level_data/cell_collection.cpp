@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "cell_collection.h"
 
-cell_collection::cell_collection() noexcept : m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }
+cell_collection::cell_collection(RECT_I bounds) noexcept : m_bounds { bounds }, m_cellBuffer { 0, 0 }, m_cellAllocator { m_cellBuffer }, m_cells { m_cellAllocator }
 {
 }
 

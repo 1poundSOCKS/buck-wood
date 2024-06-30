@@ -24,7 +24,7 @@ public:
     int end;
   };
 
-  level_cell_collection(cell_size cellSize);
+  level_cell_collection(cell_size cellSize, RECT_I bounds);
 
   [[nodiscard]] auto Get(cell_id cellId) const -> level_cell_item;
 

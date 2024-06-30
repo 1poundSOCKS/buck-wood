@@ -8,7 +8,7 @@ class cell_collection
 
 public:
 
-  cell_collection() noexcept;
+  cell_collection(RECT_I bounds) noexcept;
 
   auto Set(cell_id cellId, level_cell_type cellType) noexcept -> void;
   auto Reset() noexcept -> void;
@@ -33,6 +33,7 @@ private:
 
 private:
 
+  RECT_I m_bounds;
   custom_allocator_state m_cellBuffer;
   cell_allocator_type m_cellAllocator;
   collection_type m_cells;
@@ -50,5 +51,5 @@ auto cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 
 inline auto cell_collection::Bounds() const noexcept -> RECT_I
 {
-  return RECT_I { 0, 0, 30, 30 };
+  return m_bounds;
 }
