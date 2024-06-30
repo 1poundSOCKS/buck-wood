@@ -74,7 +74,9 @@ auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> v
 {
   auto bounds = m_cells.Bounds();
 
-  for( auto column = bounds.left; column != bounds.right; ++column )
+  auto endOfColumns = bounds.right + 1;
+
+  for( auto column = bounds.left; column != endOfColumns; ++column )
   {
     auto topCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.top });
     auto bottomCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.bottom });
@@ -88,7 +90,9 @@ auto level_cell_collection::EnumerateRows(auto &&visitor) const noexcept -> void
 {
   auto bounds = m_cells.Bounds();
 
-  for( auto row = bounds.top; row != bounds.bottom; ++row )
+  auto endOfRows = bounds.bottom + 1;
+
+  for( auto row = bounds.top; row != endOfRows; ++row )
   {
     auto leftCellPosition = m_cellSize.CellPosition(cell_id { bounds.left, row });
     auto rightCellPosition = m_cellSize.CellPosition(cell_id { bounds.right, row });
