@@ -17,7 +17,8 @@ auto player_ship_state::Update(float interval, cell_size cellSize) -> void
 
 auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> void
 {
-  Update();
+  base_object::Update(interval);
+  
   m_playerReloadCounter.Update(interval);
 
   if( m_currentCellId == m_nextCellId )
@@ -66,15 +67,4 @@ auto player_ship_state::UpdateWhenCelebrating(float interval) -> void
   constexpr float rotationSpeed = 480.0f;
   auto rotationAmount = rotationSpeed * interval;
   m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
-}
-
-auto player_ship_state::UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void
-{
-  auto currentVelocity = m_velocity;
-  m_velocity = VELOCITY_2F { currentVelocity.x + changeInVelocity.x * interval, currentVelocity.y + changeInVelocity.y * interval };
-}
-
-auto player_ship_state::UpdateAngle() -> void
-{
-  m_angle = direct2d::CalculateDirection(m_velocity);
 }

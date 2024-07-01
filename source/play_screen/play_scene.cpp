@@ -77,17 +77,6 @@ auto play_scene::RenderLevelContainer() const -> void
 
 auto play_scene::PlaySoundEffects() const -> void
 {
-  auto& playerState = m_playState->LevelContainer().PlayerState();
-
-  if( playerState.Destroyed() && playerState.ThrusterOn() )
-  {
-    audio_events::StartPlayerThruster();
-  }
-  else
-  {
-    audio_events::StopPlayerThruster();
-  }
-
   if( play_events::get(play_events::event_type::shot) )
   {
     audio_events::PlayerShot();
