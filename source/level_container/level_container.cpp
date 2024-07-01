@@ -21,15 +21,11 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
 {
   auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
 
-  switch( objectType )
-  {
-    case object_type::portal_exit:
-      object.Visit(make_overload {
-        [cellId](portal& object) { object.SetCellId(cellId); },
-        [](auto& object) {}
-      });
-      break;
-  }
+  object.Visit(make_overload {
+    [cellId](portal& object) { object.SetCellId(cellId); },
+    [cellId](player_ship& object) { object.State()->SetCellId(cellId, cell_size { m_cellSize, m_cellSize }); },
+    [](auto& object) {}
+  });
 
   return object;
 }

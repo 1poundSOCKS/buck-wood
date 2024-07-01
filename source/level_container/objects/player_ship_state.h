@@ -27,7 +27,7 @@ public:
   auto MoveDown() noexcept -> void;
   auto StayPut() noexcept -> void;
 
-  auto SetCellId(cell_id cellId) noexcept -> void;
+  auto SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const noexcept -> bool;
@@ -115,9 +115,10 @@ inline auto player_ship_state::StayPut() noexcept -> void
   m_moveDirection = move_direction::none;
 }
 
-inline auto player_ship_state::SetCellId(cell_id cellId) noexcept -> void
+inline auto player_ship_state::SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void
 {
   m_currentCellId = m_nextCellId = cellId;
+  m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
 }
 
 inline auto player_ship_state::UpdatePosition(float interval) -> POINT_2F
