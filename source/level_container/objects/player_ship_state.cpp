@@ -2,12 +2,12 @@
 #include "player_ship_state.h"
 #include "player_state.h"
 
-auto player_ship_state::Update(float interval) -> void
+auto player_ship_state::Update(float interval, cell_size cellSize) -> void
 {
   switch(  player_state::get_status() )
   {
     case player_state::status::active:
-      UpdateWhenActive(interval);
+      UpdateWhenActive(interval, cellSize);
       break;
     case  player_state::status::celebrating:
       UpdateWhenCelebrating(interval);
@@ -15,10 +15,50 @@ auto player_ship_state::Update(float interval) -> void
   }
 }
 
-auto player_ship_state::UpdateWhenActive(float interval) -> void
+auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> void
 {
   Update();
   m_playerReloadCounter.Update(interval);
+
+  if( m_currentCellId == m_nextCellId )
+  {
+    switch( m_moveDirection )
+    {
+      case move_direction::up:
+        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::above);
+        break;
+      case move_direction::down:
+        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::below);
+        break;
+      case move_direction::left:
+        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::left);
+        break;
+      case move_direction::right:
+        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::right);
+        break;
+    }
+
+    m_moveTimer.Reset();
+  }
+  else
+  {
+    auto moveTimer = m_moveTimer.Update(interval);
+
+    if( moveTimer < 1.0f )
+    {
+      auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
+      auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
+
+      auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
+      auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
+      m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
+    }
+    else
+    {
+      m_currentCellId = m_nextCellId;
+      m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
+    }
+  }
 }
 
 auto player_ship_state::UpdateWhenCelebrating(float interval) -> void

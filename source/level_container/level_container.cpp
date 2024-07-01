@@ -24,16 +24,12 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
   switch( objectType )
   {
     case object_type::portal_exit:
-      // object.Visit([this,cellId](auto&& object) { SetCellId(object, cellId); });
       object.Visit(make_overload {
         [cellId](portal& object) { object.SetCellId(cellId); },
         [](auto& object) {}
       });
       break;
   }
-
-  // auto SetCellId(portal& object, cell_id cellId) -> void;
-  // auto SetCellId(auto& object, cell_id cellId) -> void;
 
   return object;
 }
@@ -44,7 +40,7 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
 
   auto cellSize = cell_size { m_cellSize, m_cellSize };
   auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
-  auto cellScale = SCALE_2F { cellWidth, cellHeight };
+  auto cellScale = SCALE_2F { m_cellWidth, m_cellHeight };
 
   auto& object = m_objects.Add(std::in_place_type<level_cell>, cellPosition, cellScale, 0, { 0, 0 });
   auto wall = object.GetIf<level_cell>();
@@ -143,6 +139,8 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
+  m_playerState->StayPut();
+
   auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
 
   if( leftThumbstickPosition )
@@ -155,12 +153,12 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     enum class vertical_move { none, up, down };
 
     auto horizontalMove = horizontal_move::none;
-    horizontalMove = leftThumbstickPosition->x > 0.1 ? horizontal_move::right : horizontalMove;
-    horizontalMove = leftThumbstickPosition->x < -0.1 ? horizontal_move::left : horizontalMove;
+    horizontalMove = leftThumbstickPosition->x > 0.3 ? horizontal_move::right : horizontalMove;
+    horizontalMove = leftThumbstickPosition->x < -0.3 ? horizontal_move::left : horizontalMove;
 
     auto verticalMove = vertical_move::none;
-    verticalMove = leftThumbstickPosition->y > 0.1 ? vertical_move::up : verticalMove;
-    verticalMove = leftThumbstickPosition->y < -0.1 ? vertical_move::down : verticalMove;
+    verticalMove = leftThumbstickPosition->y < -0.3 ? vertical_move::up : verticalMove;
+    verticalMove = leftThumbstickPosition->y > 0.3 ? vertical_move::down : verticalMove;
 
     switch( horizontalMove )
     {
@@ -183,7 +181,7 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     }
   }
 
-  m_playerState->Update(interval);
+  m_playerState->Update(interval, cell_size { m_cellSize, m_cellSize });
 
   // constexpr SIZE_F objectSize { 60, 60 };
 

@@ -3,6 +3,8 @@
 #include "base_object.h"
 #include "reload_counter.h"
 #include "health_status.h"
+#include "cell_size.h"
+#include "fractional_counter.h"
 
 class player_ship_state : public base_object
 {
@@ -11,7 +13,7 @@ public:
 
   player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
 
-  auto Update(float interval) -> void;
+  auto Update(float interval, cell_size cellSize) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
   auto UpdateAngle() -> void;
   auto UpdatePosition(float interval) -> POINT_2F;
@@ -23,6 +25,9 @@ public:
   auto MoveRight() noexcept -> void;
   auto MoveUp() noexcept -> void;
   auto MoveDown() noexcept -> void;
+  auto StayPut() noexcept -> void;
+
+  auto SetCellId(cell_id cellId) noexcept -> void;
 
   [[nodiscard]] auto Velocity() const noexcept -> VELOCITY_2F;
   [[nodiscard]] auto ThrusterOn() const noexcept -> bool;
@@ -42,7 +47,7 @@ private:
 
 private:
 
-  auto UpdateWhenActive(float interval) -> void;
+  auto UpdateWhenActive(float interval, cell_size cellSize) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
 private:
@@ -56,6 +61,7 @@ private:
   health_status m_shieldStatus { 10 };
   reload_counter m_moveCounter { 1.0f / 3.0f, 1 };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
+  fractional_counter m_moveTimer;
 
 private:
 
@@ -63,10 +69,13 @@ private:
   bool m_thrustControlActivated { false };
   move_direction m_moveDirection;
 
+  cell_id m_currentCellId;
+  cell_id m_nextCellId;
+
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_velocity { velocity }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_velocity { velocity }, m_moveTimer { 0.5f }, m_moveDirection { move_direction::none }
 {
 }
 
@@ -99,6 +108,16 @@ inline auto player_ship_state::MoveUp() noexcept -> void
 inline auto player_ship_state::MoveDown() noexcept -> void
 {
   m_moveDirection = move_direction::down;
+}
+
+inline auto player_ship_state::StayPut() noexcept -> void
+{
+  m_moveDirection = move_direction::none;
+}
+
+inline auto player_ship_state::SetCellId(cell_id cellId) noexcept -> void
+{
+  m_currentCellId = m_nextCellId = cellId;
 }
 
 inline auto player_ship_state::UpdatePosition(float interval) -> POINT_2F

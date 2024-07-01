@@ -55,9 +55,6 @@ private:
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
-  // auto SetCellId(portal& object, cell_id cellId) -> void;
-  // auto SetCellId(auto& object, cell_id cellId) -> void;
-
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(enemy_type_1& object, float interval) -> void;
   auto UpdateObject(enemy_type_2& object, float interval) -> void;
@@ -88,8 +85,8 @@ private:
 private:
 
   static constexpr int m_cellSize { 250 };
-  static constexpr auto cellWidth { static_cast<float>(m_cellSize) };
-  static constexpr auto cellHeight { static_cast<float>(m_cellSize) };
+  static constexpr auto m_cellWidth { static_cast<float>(m_cellSize) };
+  static constexpr auto m_cellHeight { static_cast<float>(m_cellSize) };
 
   std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<level_object_movement> m_objectMovement;
