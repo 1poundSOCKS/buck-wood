@@ -173,15 +173,6 @@ auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
   });
 }
 
-// inline auto level_container::SetCellId(portal &object, cell_id cellId) -> void
-// {
-//   object.SetCellId(cellId);
-// }
-
-// auto level_container::SetCellId(auto &object, cell_id cellId) -> void
-// {
-// }
-
 auto level_container::UpdateObject(auto &object, float interval) -> void
 {
   object.Update(interval);
