@@ -9,6 +9,7 @@ public:
 
   auto Update(float increment) -> float;
   auto Reset() -> void;
+  auto Normalize() -> float;
 
 private:
 

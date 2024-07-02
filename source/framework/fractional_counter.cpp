@@ -15,3 +15,8 @@ auto fractional_counter::Reset() -> void
 {
   m_current = 0;
 }
+
+auto fractional_counter::Normalize() -> float
+{
+  return m_current = std::max(0.0f, m_current - m_value);
+}

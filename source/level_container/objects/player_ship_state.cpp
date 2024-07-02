@@ -21,6 +21,14 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
   
   m_playerReloadCounter.Update(interval);
 
+  auto moveTimer = m_moveTimer.Update(interval);
+
+  if( moveTimer >= 1.0f )
+  {
+    m_currentCellId = m_nextCellId;
+    moveTimer = m_moveTimer.Normalize();
+  }
+
   if( m_currentCellId == m_nextCellId )
   {
     switch( m_moveDirection )
@@ -37,28 +45,24 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
       case move_direction::right:
         m_nextCellId = m_currentCellId.Get(cell_id::relative_position::right);
         break;
+      case move_direction::none:
+        m_moveTimer.Reset();
+        break;
     }
+  }
 
-    m_moveTimer.Reset();
+  if( m_currentCellId == m_nextCellId )
+  {
+    m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
   }
   else
   {
-    auto moveTimer = m_moveTimer.Update(interval);
+    auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
+    auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
 
-    if( moveTimer < 1.0f )
-    {
-      auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
-      auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
-
-      auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
-      auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
-      m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
-    }
-    else
-    {
-      m_currentCellId = m_nextCellId;
-      m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
-    }
+    auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
+    auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
+    m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
   }
 }
 
