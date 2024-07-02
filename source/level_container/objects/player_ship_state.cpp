@@ -51,19 +51,12 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
     }
   }
 
-  if( m_currentCellId == m_nextCellId )
-  {
-    m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
-  }
-  else
-  {
-    auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
-    auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
+  auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
+  auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
 
-    auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
-    auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
-    m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
-  }
+  auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
+  auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
+  m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
 }
 
 auto player_ship_state::UpdateWhenCelebrating(float interval) -> void
