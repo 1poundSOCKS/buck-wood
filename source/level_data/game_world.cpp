@@ -126,7 +126,7 @@ auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> 
   auto& object = levelContainer.AddObject(level_container::object_type::enemy_stalker, cell_id { 0, 0 });
 
   object.Visit(make_overload {
-    [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+    [](enemy_type_1& innerObject) { innerObject.SetHitpoints(3); },
     [](auto& innerObject) {}
   });
 }
