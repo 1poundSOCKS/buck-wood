@@ -5,6 +5,7 @@
 #include "health_status.h"
 #include "cell_size.h"
 #include "fractional_counter.h"
+#include "object_cell_position.h"
 
 class player_ship_state : public base_object
 {
@@ -42,15 +43,13 @@ private:
 
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
-  fractional_counter m_moveTimer;
   move_direction m_moveDirection;
-  cell_id m_currentCellId;
-  cell_id m_nextCellId;
+  object_cell_position m_cellPosition;
 
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_moveTimer { 1.0f }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_cellPosition { cell_id {0,0}, 1.0f }, m_moveDirection { move_direction::none }
 {
 }
 
@@ -81,8 +80,8 @@ inline auto player_ship_state::StayPut() noexcept -> void
 
 inline auto player_ship_state::SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void
 {
-  m_currentCellId = m_nextCellId = cellId;
-  m_position = ToFloat(cellSize.CellPosition(m_currentCellId));
+  m_cellPosition.Set(cellId);
+  m_position = m_cellPosition(0, object_cell_position::move_direction::none, cellSize);
 }
 
 inline auto player_ship_state::ApplyDamage(int value) -> void

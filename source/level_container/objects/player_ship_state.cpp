@@ -21,42 +21,25 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
   
   m_playerReloadCounter.Update(interval);
 
-  auto moveTimer = m_moveTimer.Update(interval);
+  auto moveDirection = object_cell_position::move_direction::none;
 
-  if( moveTimer >= 1.0f )
+  switch( m_moveDirection )
   {
-    m_currentCellId = m_nextCellId;
-    moveTimer = m_moveTimer.Normalize();
+    case move_direction::up:
+      moveDirection = object_cell_position::move_direction::up;
+      break;
+    case move_direction::down:
+      moveDirection = object_cell_position::move_direction::down;
+      break;
+    case move_direction::left:
+      moveDirection = object_cell_position::move_direction::left;
+      break;
+    case move_direction::right:
+      moveDirection = object_cell_position::move_direction::right;
+      break;
   }
 
-  if( m_currentCellId == m_nextCellId )
-  {
-    switch( m_moveDirection )
-    {
-      case move_direction::up:
-        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::above);
-        break;
-      case move_direction::down:
-        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::below);
-        break;
-      case move_direction::left:
-        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::left);
-        break;
-      case move_direction::right:
-        m_nextCellId = m_currentCellId.Get(cell_id::relative_position::right);
-        break;
-      case move_direction::none:
-        m_moveTimer.Reset();
-        break;
-    }
-  }
-
-  auto startPosition = ToFloat(cellSize.CellPosition(m_currentCellId));
-  auto endPosition = ToFloat(cellSize.CellPosition(m_nextCellId));
-
-  auto distanceToTravel = POINT_2F { endPosition.x - startPosition.x, endPosition.y - startPosition.y };
-  auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
-  m_position = { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
+  m_position = m_cellPosition(interval, moveDirection, cellSize);
 }
 
 auto player_ship_state::UpdateWhenCelebrating(float interval) -> void
