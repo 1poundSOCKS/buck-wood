@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-game_level_data_loader::game_level_data_loader()
+game_level_data_loader::game_level_data_loader() : m_levelUpdateEvent { 5.0f }
 {
 }
 
@@ -22,6 +22,12 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
     m_currentEvent = std::begin(m_events);
     m_status = status::running;
+  }
+
+  if( m_levelUpdateEvent.Update(interval) >= 1.0f )
+  {
+    m_gameWorld.UpdateLevel(*levelContainer);
+    m_levelUpdateEvent.Normalize();
   }
 }
 

@@ -4,6 +4,7 @@
 #include "level_1.h"
 #include "level_2.h"
 #include "game_world.h"
+#include "fractional_counter.h"
 
 class game_level_data_loader
 {
@@ -50,6 +51,8 @@ private:
   std::vector<level_update_event> m_events;
   std::vector<level_update_event>::iterator m_currentEvent;
   bool m_levelCanBeCompleted { false };
+
+  fractional_counter m_levelUpdateEvent;
 
 };
 

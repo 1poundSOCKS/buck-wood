@@ -15,6 +15,7 @@ public:
 
   [[nodiscard]] auto EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>;
   auto LoadLevel(int levelIndex, std::optional<cell_id> entryCell) const -> std::unique_ptr<level_container>;
+  auto UpdateLevel(level_container& levelContainer) const noexcept -> void;
 
 private:
 
