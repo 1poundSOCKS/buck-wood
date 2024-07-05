@@ -50,73 +50,73 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 {
   auto levelContainer = std::make_unique<level_container>();
 
-  // auto levelData = LevelData(levelIndex);
-  // levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
-  // {
-  //   auto columnIndex = static_cast<int>(column);
-  //   auto rowIndex = static_cast<int>(row);
-  //   auto cellType = m_cellDataTranslator(levelIndex, cellData);
-  //   auto cellId = cell_id { columnIndex, rowIndex };
+  auto levelData = LevelData(levelIndex);
+  levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    auto cellType = m_cellDataTranslator(levelIndex, cellData);
+    auto cellId = cell_id { columnIndex, rowIndex };
 
-  //   switch( cellType )
-  //   {
-  //     case level_cell_type::wall:
-  //       levelContainer->AddCell(cellId, cellType);
-  //       break;
-  //   }
-  // });
+    switch( cellType )
+    {
+      case level_cell_type::wall:
+        levelContainer->AddCell(cellId, cellType);
+        break;
+    }
+  });
 
-  // levelData->Enumerate([this,&levelContainer,levelIndex](size_t column, size_t row, char cellData)
-  // {
-  //   auto columnIndex = static_cast<int>(column);
-  //   auto rowIndex = static_cast<int>(row);
-  //   auto itemType = m_objectDataTranslator(levelIndex, cellData);
-  //   auto cellId = cell_id { columnIndex, rowIndex };
+  levelData->Enumerate([this,&levelContainer,levelIndex](size_t column, size_t row, char cellData)
+  {
+    auto columnIndex = static_cast<int>(column);
+    auto rowIndex = static_cast<int>(row);
+    auto itemType = m_objectDataTranslator(levelIndex, cellData);
+    auto cellId = cell_id { columnIndex, rowIndex };
 
-  //   switch( itemType )
-  //   {
-  //     case level_item_type::entry_portal:
-  //       levelContainer->AddObject(level_container::object_type::portal_entry, cellId);
-  //       levelContainer->AddObject(level_container::object_type::player, cellId);
-  //       break;
+    switch( itemType )
+    {
+      case level_item_type::entry_portal:
+        levelContainer->AddObject(level_container::object_type::portal_entry, cellId);
+        levelContainer->AddObject(level_container::object_type::player, cellId);
+        break;
 
-  //     case level_item_type::exit_portal:
-  //       levelContainer->AddObject(level_container::object_type::portal_exit, cellId);
-  //       break;
+      case level_item_type::exit_portal:
+        levelContainer->AddObject(level_container::object_type::portal_exit, cellId);
+        break;
 
-  //     case level_item_type::enemy_type_one:
-  //     {
-  //       auto& object = levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
-  //       object.Visit(make_overload {
-  //         [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
-  //         [](auto& innerObject) {}
-  //       });
-  //       break;
-  //     }
+      // case level_item_type::enemy_type_one:
+      // {
+      //   auto& object = levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
+      //   object.Visit(make_overload {
+      //     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+      //     [](auto& innerObject) {}
+      //   });
+      //   break;
+      // }
       
-  //     case level_item_type::enemy_type_two:
-  //     {
-  //       auto& object = levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
-  //       object.Visit(make_overload {
-  //         [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
-  //         [](auto& innerObject) {}
-  //       });
-  //       break;
-  //     }
+      // case level_item_type::enemy_type_two:
+      // {
+      //   auto& object = levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
+      //   object.Visit(make_overload {
+      //     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+      //     [](auto& innerObject) {}
+      //   });
+      //   break;
+      // }
 
-  //     case level_item_type::enemy_type_three:
-  //     {
-  //       auto& object = levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
-  //       object.Visit(make_overload {
-  //         [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
-  //         [](auto& innerObject) {}
-  //       });
-  //       break;
-  //     }
-  //   }
-  // });
+      // case level_item_type::enemy_type_three:
+      // {
+      //   auto& object = levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
+      //   object.Visit(make_overload {
+      //     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(10); },
+      //     [](auto& innerObject) {}
+      //   });
+      //   break;
+      // }
+    }
+  });
 
-  levelContainer->AddObject(level_container::object_type::player, cell_id { 1, 1 });
+  // levelContainer->AddObject(level_container::object_type::player, cell_id { 1, 1 });
 
   return levelContainer;
 }

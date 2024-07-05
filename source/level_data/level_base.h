@@ -26,8 +26,8 @@ inline level_base::level_base(std::ranges::input_range auto&& data)
 
 auto level_base::Enumerate(auto&& visitor) const -> void
 {
-  static constexpr int columnOffset = 1;
-  static constexpr int rowOffset = 1;
+  static constexpr int columnOffset = -1;
+  static constexpr int rowOffset = -1;
 
   for( auto rowIndex  = 0; rowIndex < m_data.size(); ++rowIndex )
   {
