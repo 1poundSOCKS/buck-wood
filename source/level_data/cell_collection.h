@@ -38,6 +38,11 @@ private:
   cell_allocator_type m_cellAllocator;
   collection_type m_cells;
 
+  cell_id m_leftmostCell;
+  cell_id m_rightmostCell;
+  cell_id m_topCell;
+  cell_id m_bottomCell;
+
 };
 
 auto cell_collection::Enumerate(auto &&visitor) const noexcept -> void

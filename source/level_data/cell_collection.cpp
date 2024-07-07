@@ -8,6 +8,11 @@ cell_collection::cell_collection(RECT_I bounds) noexcept : m_bounds { bounds }, 
 auto cell_collection::Set(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
   m_cells[cellId] = cellType;
+
+  m_leftmostCell = cellId.IsLeftOf(m_leftmostCell) ? cellId : m_leftmostCell;
+  m_rightmostCell = cellId.IsRightOf(m_rightmostCell) ? cellId : m_rightmostCell;
+  m_topCell = cellId.IsAbove(m_topCell) ? cellId : m_topCell;
+  m_bottomCell = cellId.IsBelow(m_bottomCell) ? cellId : m_bottomCell;
 }
 
 auto cell_collection::Reset() noexcept -> void

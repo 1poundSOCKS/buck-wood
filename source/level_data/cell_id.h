@@ -16,6 +16,11 @@ public:
   auto operator <(const cell_id& cellId) const -> bool;
   auto operator ==(const cell_id& cellId) const -> bool;
 
+  [[nodiscard]] auto IsLeftOf(cell_id cellId) const noexcept -> bool;
+  [[nodiscard]] auto IsRightOf(cell_id cellId) const noexcept -> bool;
+  [[nodiscard]] auto IsAbove(cell_id cellId) const noexcept -> bool;
+  [[nodiscard]] auto IsBelow(cell_id cellId) const noexcept -> bool;
+
 private:
 
   int m_column;
@@ -69,4 +74,24 @@ inline auto cell_id::operator <(const cell_id& cellId) const -> bool
 inline auto cell_id::operator==(const cell_id &cellId) const -> bool
 {
   return m_row == cellId.m_row && m_column == cellId.m_column;
+}
+
+inline auto cell_id::IsLeftOf(cell_id cellId) const noexcept -> bool
+{
+  return m_column < cellId.m_column;
+}
+
+inline auto cell_id::IsRightOf(cell_id cellId) const noexcept -> bool
+{
+  return m_column > cellId.m_column;
+}
+
+inline auto cell_id::IsAbove(cell_id cellId) const noexcept -> bool
+{
+  return m_row < cellId.m_row;
+}
+
+inline auto cell_id::IsBelow(cell_id cellId) const noexcept -> bool
+{
+  return m_row > cellId.m_row;
 }
