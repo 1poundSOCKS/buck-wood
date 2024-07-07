@@ -72,14 +72,26 @@ auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 
 auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> void
 {
-  auto bounds = m_cells.Bounds();
+  // auto bounds = m_cells.Bounds();
 
-  auto endOfColumns = bounds.right + 1;
+  // auto endOfColumns = bounds.right + 1;
 
-  for( auto column = bounds.left; column != endOfColumns; ++column )
+  // for( auto column = bounds.left; column != endOfColumns; ++column )
+  // {
+  //   auto topCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.top });
+  //   auto bottomCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.bottom });
+
+  //   column_def columnDef { topCellPosition.x, topCellPosition.y, bottomCellPosition.y };
+  //   visitor(columnDef);
+  // }
+
+  for( auto column = m_cells.BeginColumn(); column != m_cells.EndColumn(); ++column )
   {
-    auto topCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.top });
-    auto bottomCellPosition = m_cellSize.CellPosition(cell_id { column, bounds.bottom });
+    auto topCellId = m_cells.ColumnTop(column);
+    auto bottomCellId = m_cells.ColumnBottom(column);
+
+    auto topCellPosition = m_cellSize.CellPosition(topCellId);
+    auto bottomCellPosition = m_cellSize.CellPosition(bottomCellId);
 
     column_def columnDef { topCellPosition.x, topCellPosition.y, bottomCellPosition.y };
     visitor(columnDef);

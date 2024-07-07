@@ -21,6 +21,12 @@ public:
   [[nodiscard]] auto IsAbove(cell_id cellId) const noexcept -> bool;
   [[nodiscard]] auto IsBelow(cell_id cellId) const noexcept -> bool;
 
+  [[nodiscard]] auto ShiftColumn(int amount) const noexcept -> cell_id;
+
+  auto SetRow(cell_id cellId) noexcept -> void;
+
+  static [[nodiscard]] auto ColumnCount(cell_id leftCell, cell_id rightCell) noexcept -> int;
+
 private:
 
   int m_column;
@@ -94,4 +100,19 @@ inline auto cell_id::IsAbove(cell_id cellId) const noexcept -> bool
 inline auto cell_id::IsBelow(cell_id cellId) const noexcept -> bool
 {
   return m_row > cellId.m_row;
+}
+
+inline auto cell_id::ShiftColumn(int amount) const noexcept -> cell_id
+{
+  return cell_id { m_column + amount, m_row };
+}
+
+inline auto cell_id::SetRow(cell_id cellId) noexcept -> void
+{
+  m_row = cellId.m_row;
+}
+
+inline auto cell_id::ColumnCount(cell_id leftCell, cell_id rightCell) noexcept -> int
+{
+  return rightCell.m_column < leftCell.m_column ? 0 : rightCell.m_column - leftCell.m_column;
 }

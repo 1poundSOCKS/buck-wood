@@ -19,6 +19,12 @@ public:
 
   [[nodiscard]] auto Bounds() const noexcept -> RECT_I;
 
+  [[nodiscard]] auto BeginColumn() const noexcept -> int;
+  [[nodiscard]] auto EndColumn() const noexcept -> int;
+  
+  [[nodiscard]] auto ColumnTop(int column) const noexcept -> cell_id;
+  [[nodiscard]] auto ColumnBottom(int column) const noexcept -> cell_id;
+
 private:
 
   using key_type = cell_id;
@@ -57,4 +63,28 @@ auto cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 inline auto cell_collection::Bounds() const noexcept -> RECT_I
 {
   return m_bounds;
+}
+
+inline auto cell_collection::BeginColumn() const noexcept -> int
+{
+  return 0;
+}
+
+inline auto cell_collection::EndColumn() const noexcept -> int
+{
+  return cell_id::ColumnCount(m_leftmostCell, m_rightmostCell);
+}
+
+inline auto cell_collection::ColumnTop(int column) const noexcept -> cell_id
+{
+  auto columnCell = m_leftmostCell.ShiftColumn(column);
+  columnCell.SetRow(m_topCell);
+  return columnCell;
+}
+
+inline auto cell_collection::ColumnBottom(int column) const noexcept -> cell_id
+{
+  auto columnCell = m_leftmostCell.ShiftColumn(column);
+  columnCell.SetRow(m_bottomCell);
+  return columnCell;
 }
