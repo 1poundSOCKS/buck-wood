@@ -22,10 +22,13 @@ public:
   [[nodiscard]] auto IsBelow(cell_id cellId) const noexcept -> bool;
 
   [[nodiscard]] auto ShiftColumn(int amount) const noexcept -> cell_id;
+  [[nodiscard]] auto ShiftRow(int amount) const noexcept -> cell_id;
 
   auto SetRow(cell_id cellId) noexcept -> void;
+  auto SetColumn(cell_id cellId) noexcept -> void;
 
   static [[nodiscard]] auto ColumnCount(cell_id leftCell, cell_id rightCell) noexcept -> int;
+  static [[nodiscard]] auto RowCount(cell_id topCell, cell_id bottomCell) noexcept -> int;
 
 private:
 
@@ -107,12 +110,27 @@ inline auto cell_id::ShiftColumn(int amount) const noexcept -> cell_id
   return cell_id { m_column + amount, m_row };
 }
 
+inline auto cell_id::ShiftRow(int amount) const noexcept -> cell_id
+{
+  return cell_id { m_column, m_row + amount };
+}
+
 inline auto cell_id::SetRow(cell_id cellId) noexcept -> void
 {
   m_row = cellId.m_row;
 }
 
+inline auto cell_id::SetColumn(cell_id cellId) noexcept -> void
+{
+  m_column = cellId.m_column;
+}
+
 inline auto cell_id::ColumnCount(cell_id leftCell, cell_id rightCell) noexcept -> int
 {
   return rightCell.m_column < leftCell.m_column ? 0 : rightCell.m_column - leftCell.m_column;
+}
+
+inline auto cell_id::RowCount(cell_id topCell, cell_id bottomCell) noexcept -> int
+{
+  return topCell.m_row > bottomCell.m_row ? 0 : bottomCell.m_row - topCell.m_row;
 }

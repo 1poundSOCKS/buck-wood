@@ -21,9 +21,15 @@ public:
 
   [[nodiscard]] auto BeginColumn() const noexcept -> int;
   [[nodiscard]] auto EndColumn() const noexcept -> int;
+
+  [[nodiscard]] auto BeginRow() const noexcept -> int;
+  [[nodiscard]] auto EndRow() const noexcept -> int;
   
   [[nodiscard]] auto ColumnTop(int column) const noexcept -> cell_id;
   [[nodiscard]] auto ColumnBottom(int column) const noexcept -> cell_id;
+
+  [[nodiscard]] auto RowLeft(int row) const noexcept -> cell_id;
+  [[nodiscard]] auto RowRight(int row) const noexcept -> cell_id;
 
 private:
 
@@ -75,6 +81,16 @@ inline auto cell_collection::EndColumn() const noexcept -> int
   return cell_id::ColumnCount(m_leftmostCell, m_rightmostCell);
 }
 
+inline auto cell_collection::BeginRow() const noexcept -> int
+{
+  return 0;
+}
+
+inline auto cell_collection::EndRow() const noexcept -> int
+{
+  return cell_id::RowCount(m_topCell, m_bottomCell);
+}
+
 inline auto cell_collection::ColumnTop(int column) const noexcept -> cell_id
 {
   auto columnCell = m_leftmostCell.ShiftColumn(column);
@@ -87,4 +103,18 @@ inline auto cell_collection::ColumnBottom(int column) const noexcept -> cell_id
   auto columnCell = m_leftmostCell.ShiftColumn(column);
   columnCell.SetRow(m_bottomCell);
   return columnCell;
+}
+
+inline auto cell_collection::RowLeft(int row) const noexcept -> cell_id
+{
+  auto rowCell = m_topCell.ShiftRow(row);
+  rowCell.SetColumn(m_leftmostCell);
+  return rowCell;
+}
+
+inline auto cell_collection::RowRight(int row) const noexcept -> cell_id
+{
+  auto rowCell = m_topCell.ShiftRow(row);
+  rowCell.SetColumn(m_rightmostCell);
+  return rowCell;
 }

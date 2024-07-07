@@ -87,16 +87,15 @@ auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> v
 
 auto level_cell_collection::EnumerateRows(auto &&visitor) const noexcept -> void
 {
-  auto bounds = m_cells.Bounds();
-
-  auto endOfRows = bounds.bottom + 1;
-
-  for( auto row = bounds.top; row != endOfRows; ++row )
+  for( auto row = m_cells.BeginRow(); row != m_cells.EndRow(); ++row )
   {
-    auto leftCellPosition = m_cellSize.CellPosition(cell_id { bounds.left, row });
-    auto rightCellPosition = m_cellSize.CellPosition(cell_id { bounds.right, row });
+    auto leftCellId = m_cells.RowLeft(row);
+    auto rightCellId = m_cells.RowRight(row);
 
-    row_def rowDef { leftCellPosition.y, leftCellPosition.x, rightCellPosition.x };
-    visitor(rowDef);
+    auto leftCellPosition = m_cellSize.CellPosition(leftCellId);
+    auto rightCellPosition = m_cellSize.CellPosition(rightCellId);
+
+    row_def columnDef { leftCellPosition.y, leftCellPosition.x, rightCellPosition.x };
+    visitor(columnDef);
   }
 }
