@@ -8,14 +8,14 @@ level_cell_collection::level_cell_collection(cell_size cellSize, RECT_I bounds) 
 
 auto level_cell_collection::Get(cell_id cellId) const -> level_cell_item
 {
-  auto type = ConvertType(m_cells.GetType(cellId));
+  auto type = m_cells.GetType(cellId);
   auto position = m_cellSize.CellPosition(cellId);
   return { cellId, type, position };
 }
 
 auto level_cell_collection::Set(cell_id cellId, level_cell_type cellType) noexcept -> void
 {
-  m_cells.Set(cellId, ConvertType(cellType));
+  m_cells.Set(cellId, cellType);
 }
 
 auto level_cell_collection::CellSize() const -> cell_size
@@ -26,17 +26,12 @@ auto level_cell_collection::CellSize() const -> cell_size
 auto level_cell_collection::CellType(POINT_2F position) const -> level_cell_type
 {
   auto cellId = CellId(position);
-  return ConvertType(m_cells.GetType(cellId));
+  return m_cells.GetType(cellId);
 }
 
 auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT_2F
 {
   return ToFloat(m_cellSize.CellPosition(cellId));
-}
-
-auto level_cell_collection::ConvertType(level_cell_type cellType) -> level_cell_type
-{
-  return ( cellType == level_cell_type::none ) ? level_cell_type::floor : cellType;
 }
 
 auto level_cell_collection::SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void
@@ -61,6 +56,6 @@ auto level_cell_collection::CellRect(cell_id cellId) const -> RECT_F
 
 auto level_cell_collection::IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool
 {
-  auto levelCellType = ConvertType(m_cells.GetType(cellId));
+  auto levelCellType = m_cells.GetType(cellId);
   return cellType == levelCellType;
 }

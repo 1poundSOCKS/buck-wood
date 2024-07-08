@@ -44,7 +44,6 @@ public:
 
 private:
 
-  static [[nodiscard]] auto ConvertType(level_cell_type cellType) -> level_cell_type;
   auto SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
 
 private:
