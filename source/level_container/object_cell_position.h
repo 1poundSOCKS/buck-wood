@@ -14,6 +14,7 @@ public:
   object_cell_position(cell_id position, float moveInterval);
   auto Set(cell_id position) -> void;
   auto operator()(float interval, move_direction moveDirection, cell_size cellSize) -> POINT_2F;
+  [[nodiscard]] auto Current() const noexcept -> cell_id;
 
 private:
 

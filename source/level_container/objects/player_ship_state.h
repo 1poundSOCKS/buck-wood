@@ -23,6 +23,7 @@ public:
   auto StayPut() noexcept -> void;
 
   auto SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void;
+  [[nodiscard]] auto CellId() const noexcept -> cell_id;
 
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
@@ -82,6 +83,11 @@ inline auto player_ship_state::SetCellId(cell_id cellId, cell_size cellSize) noe
 {
   m_cellPosition.Set(cellId);
   m_position = m_cellPosition(0, object_cell_position::move_direction::none, cellSize);
+}
+
+inline auto player_ship_state::CellId() const noexcept -> cell_id
+{
+  return m_cellPosition.Current();
 }
 
 inline auto player_ship_state::ApplyDamage(int value) -> void

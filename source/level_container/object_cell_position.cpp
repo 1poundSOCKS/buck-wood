@@ -50,3 +50,8 @@ auto object_cell_position::operator()(float interval, move_direction moveDirecti
   auto distanceTravelled = POINT_2F { distanceToTravel.x * moveTimer, distanceToTravel.y * moveTimer };
   return { startPosition.x + distanceTravelled.x, startPosition.y + distanceTravelled.y };
 }
+
+auto object_cell_position::Current() const noexcept -> cell_id
+{
+  return m_currentPosition;
+}

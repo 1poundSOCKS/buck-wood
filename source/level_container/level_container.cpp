@@ -152,11 +152,16 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     verticalMove = leftThumbstickPosition->y < -0.3 ? vertical_move::up : verticalMove;
     verticalMove = leftThumbstickPosition->y > 0.3 ? vertical_move::down : verticalMove;
 
+    auto playerCellId = m_playerState->CellId();
+
     switch( horizontalMove )
     {
       case horizontal_move::left:
-        m_playerState->MoveLeft();
+      {
+        auto leftCellId = playerCellId.Get(cell_id::relative_position::left);
+        m_cells->IsTypeOf(leftCellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveLeft();
         break;
+      }
       case horizontal_move::right:
         m_playerState->MoveRight();
         break;
