@@ -78,7 +78,7 @@ inline auto cell_collection::BeginColumn() const noexcept -> int
 
 inline auto cell_collection::EndColumn() const noexcept -> int
 {
-  return cell_id::ColumnCount(m_leftmostCell, m_rightmostCell);
+  return cell_id::ColumnCount(m_leftmostCell, m_rightmostCell) + 1;
 }
 
 inline auto cell_collection::BeginRow() const noexcept -> int
@@ -88,7 +88,7 @@ inline auto cell_collection::BeginRow() const noexcept -> int
 
 inline auto cell_collection::EndRow() const noexcept -> int
 {
-  return cell_id::RowCount(m_topCell, m_bottomCell);
+  return cell_id::RowCount(m_topCell, m_bottomCell) + 1;
 }
 
 inline auto cell_collection::ColumnTop(int column) const noexcept -> cell_id
