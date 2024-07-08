@@ -19,11 +19,11 @@ public:
 
   [[nodiscard]] auto Bounds() const noexcept -> RECT_I;
 
-  [[nodiscard]] auto BeginColumn() const noexcept -> int;
-  [[nodiscard]] auto EndColumn() const noexcept -> int;
+  [[nodiscard]] auto FirstColumn() const noexcept -> int;
+  [[nodiscard]] auto EndOfColumns() const noexcept -> int;
 
-  [[nodiscard]] auto BeginRow() const noexcept -> int;
-  [[nodiscard]] auto EndRow() const noexcept -> int;
+  [[nodiscard]] auto FirstRow() const noexcept -> int;
+  [[nodiscard]] auto EndOfRows() const noexcept -> int;
   
   [[nodiscard]] auto ColumnTop(int column) const noexcept -> cell_id;
   [[nodiscard]] auto ColumnBottom(int column) const noexcept -> cell_id;
@@ -71,22 +71,22 @@ inline auto cell_collection::Bounds() const noexcept -> RECT_I
   return m_bounds;
 }
 
-inline auto cell_collection::BeginColumn() const noexcept -> int
+inline auto cell_collection::FirstColumn() const noexcept -> int
 {
   return 0;
 }
 
-inline auto cell_collection::EndColumn() const noexcept -> int
+inline auto cell_collection::EndOfColumns() const noexcept -> int
 {
   return cell_id::ColumnCount(m_leftmostCell, m_rightmostCell) + 1;
 }
 
-inline auto cell_collection::BeginRow() const noexcept -> int
+inline auto cell_collection::FirstRow() const noexcept -> int
 {
   return 0;
 }
 
-inline auto cell_collection::EndRow() const noexcept -> int
+inline auto cell_collection::EndOfRows() const noexcept -> int
 {
   return cell_id::RowCount(m_topCell, m_bottomCell) + 1;
 }

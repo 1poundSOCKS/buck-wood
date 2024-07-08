@@ -72,7 +72,7 @@ auto level_cell_collection::Enumerate(auto &&visitor) const noexcept -> void
 
 auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> void
 {
-  for( auto column = m_cells.BeginColumn(); column != m_cells.EndColumn(); ++column )
+  for( auto column = m_cells.FirstColumn(); column != m_cells.EndOfColumns(); ++column )
   {
     auto topCellId = m_cells.ColumnTop(column);
     auto bottomCellId = m_cells.ColumnBottom(column);
@@ -87,7 +87,7 @@ auto level_cell_collection::EnumerateColumns(auto &&visitor) const noexcept -> v
 
 auto level_cell_collection::EnumerateRows(auto &&visitor) const noexcept -> void
 {
-  for( auto row = m_cells.BeginRow(); row != m_cells.EndRow(); ++row )
+  for( auto row = m_cells.FirstRow(); row != m_cells.EndOfRows(); ++row )
   {
     auto leftCellId = m_cells.RowLeft(row);
     auto rightCellId = m_cells.RowRight(row);
