@@ -55,3 +55,8 @@ auto object_cell_position::Current() const noexcept -> cell_id
 {
   return m_currentPosition;
 }
+
+auto object_cell_position::Next() const noexcept -> cell_id
+{
+  return m_nextPosition;
+}

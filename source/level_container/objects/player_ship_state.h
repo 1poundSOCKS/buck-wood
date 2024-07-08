@@ -87,7 +87,7 @@ inline auto player_ship_state::SetCellId(cell_id cellId, cell_size cellSize) noe
 
 inline auto player_ship_state::CellId() const noexcept -> cell_id
 {
-  return m_cellPosition.Current();
+  return m_cellPosition.Next();
 }
 
 inline auto player_ship_state::ApplyDamage(int value) -> void
