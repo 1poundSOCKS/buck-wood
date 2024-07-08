@@ -158,23 +158,34 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     {
       case horizontal_move::left:
       {
-        auto leftCellId = playerCellId.Get(cell_id::relative_position::left);
-        m_cells->IsTypeOf(leftCellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveLeft();
+        auto cellId = playerCellId.Get(cell_id::relative_position::left);
+        m_cells->IsTypeOf(cellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveLeft();
         break;
       }
+
       case horizontal_move::right:
-        m_playerState->MoveRight();
+      {
+        auto cellId = playerCellId.Get(cell_id::relative_position::right);
+        m_cells->IsTypeOf(cellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveRight();
         break;
+      }
     }
 
     switch( verticalMove )
     {
       case vertical_move::up:
-        m_playerState->MoveUp();
+      {
+        auto cellId = playerCellId.Get(cell_id::relative_position::above);
+        m_cells->IsTypeOf(cellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveUp();
         break;
+      }
+
       case vertical_move::down:
-        m_playerState->MoveDown();
+      {
+        auto cellId = playerCellId.Get(cell_id::relative_position::below);
+        m_cells->IsTypeOf(cellId, level_cell_type::wall) ? m_playerState->StayPut() : m_playerState->MoveDown();
         break;
+      }
     }
   }
 
