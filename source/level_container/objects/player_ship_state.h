@@ -29,7 +29,11 @@ public:
   auto ApplyFatalDamage() -> void;
 
   [[nodiscard]] auto ShieldStatus() const -> const health_status&;
+
   [[nodiscard]] auto CanShoot() -> bool;
+  [[nodiscard]] auto ShootAngle() const noexcept -> std::optional<float>;
+  [[nodiscard]] auto SetShootAngle(float value) noexcept -> void;
+  [[nodiscard]] auto ResetShootAngle() noexcept -> void;
 
 private:
 
@@ -44,13 +48,14 @@ private:
 
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
+  std::optional<float> m_shootAngle;
   move_direction m_moveDirection;
   object_cell_position m_cellPosition;
 
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_cellPosition { cell_id {0,0}, 0.5f }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.5f }, m_moveDirection { move_direction::none }
 {
 }
 
@@ -112,4 +117,19 @@ inline [[nodiscard]] auto player_ship_state::ShieldStatus() const -> const healt
 inline [[nodiscard]] auto player_ship_state::CanShoot() -> bool
 {
   return !m_destroyed && m_playerReloadCounter.Get(1, true) == 1;
+}
+
+inline auto player_ship_state::ShootAngle() const noexcept -> std::optional<float>
+{
+  return m_shootAngle;
+}
+
+inline auto player_ship_state::SetShootAngle(float value) noexcept -> void
+{
+  m_shootAngle = value;
+}
+
+inline auto player_ship_state::ResetShootAngle() noexcept -> void
+{
+  m_shootAngle = std::nullopt;
 }

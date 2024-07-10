@@ -189,6 +189,9 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
     }
   }
 
+  std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
+  rightThumbstickPosition ? m_playerState->SetShootAngle(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition)) : m_playerState->ResetShootAngle();
+
   m_playerState->Update(interval, cell_size { m_cellSize, m_cellSize });
 }
 
@@ -209,20 +212,11 @@ auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
 
 auto level_container::VisitObject(player_ship &object) -> void
 {
-  if( m_playerState->CanShoot() )
+  if( m_playerState->CanShoot() && m_playerState->ShootAngle() )
   {
-    std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
-
-    if( rightThumbstickPosition )
-    {
-      auto shootAngle = static_cast<int>(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition));
-      shootAngle += 45;
-      shootAngle /= 90;
-      shootAngle *= 90;
-      auto modifiedShootAngle = static_cast<float>(shootAngle);
-      m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, modifiedShootAngle, direct2d::CalculateVelocity(2000, modifiedShootAngle));
-      play_events::set(play_events::event_type::shot, true);
-    }
+    auto shootAngle = *m_playerState->ShootAngle();
+    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, shootAngle, direct2d::CalculateVelocity(2000, shootAngle));
+    play_events::set(play_events::event_type::shot, true);
   }
 }
 
