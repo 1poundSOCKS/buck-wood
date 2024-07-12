@@ -11,18 +11,18 @@ auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_coll
   base_object::Update(interval);
 
   m_destination = m_destination ? m_destination : NewDestination(target, cells);
-  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
+  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval, cells) : true;
   m_destination = atDestination ? std::nullopt : m_destination;
 }
 
-auto enemy_type_1::MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool
+auto enemy_type_1::MoveTowardsDestination(cell_id destination, float interval, const level_cell_collection& cells) noexcept -> bool
 {
-  auto position = destination.Position();
+  auto position = cells.CellPosition(destination);
   bool atDestination = MoveTowards(m_speed * interval, position);
   return atDestination;
 }
 
-auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& cells) -> std::optional<level_cell_item>
+auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& cells) -> std::optional<cell_id>
 {
   auto distanceToTarget = direct2d::GetDistanceBetweenPoints(m_position, target);
 
@@ -43,7 +43,7 @@ auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& 
     }
   });
 
-  return cells.Get(destinationCellId);
+  return destinationCellId;
 }
 
 [[nodiscard]] auto enemy_type_1::CanShootAt(POINT_2F position) const -> bool

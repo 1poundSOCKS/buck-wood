@@ -17,12 +17,12 @@ public:
 
 private:
 
-  auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;
-  auto NewDestination(POINT_2F target, const level_cell_collection &cells) -> std::optional<level_cell_item>;
+  auto MoveTowardsDestination(cell_id destination, float interval, const level_cell_collection& cells) noexcept -> bool;
+  auto NewDestination(POINT_2F target, const level_cell_collection &cells) -> std::optional<cell_id>;
 
 private:
 
   inline static constexpr float m_speed { 200 };
-  std::optional<level_cell_item> m_destination;
+  std::optional<cell_id> m_destination;
 
 };
