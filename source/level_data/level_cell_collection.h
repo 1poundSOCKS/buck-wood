@@ -38,6 +38,10 @@ public:
   [[nodiscard]] auto IsTypeOf(cell_id cellId, level_cell_type cellType) const noexcept -> bool;
   [[nodiscard]] auto CellPosition(cell_id cellId) const noexcept -> POINT_2F;
 
+  [[nodiscard]] auto IsUnoccupied(cell_id cellId) const noexcept -> bool;
+  auto SetAsOccupied(cell_id cellId) -> void;
+  auto SetAsUnoccupied(cell_id cellId) -> void;
+
   auto Enumerate(auto&& visitor) const noexcept -> void;
   auto EnumerateColumns(auto&& visitor) const noexcept -> void;
   auto EnumerateRows(auto&& visitor) const noexcept -> void;

@@ -34,6 +34,11 @@ auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT
   return ToFloat(m_cellSize.CellPosition(cellId));
 }
 
+auto level_cell_collection::IsUnoccupied(cell_id cellId) const noexcept -> bool
+{
+  return true;
+}
+
 auto level_cell_collection::SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void
 {
   auto wallCellId = cellId.Get(position);
