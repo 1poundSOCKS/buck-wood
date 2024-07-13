@@ -36,7 +36,17 @@ auto level_cell_collection::CellPosition(cell_id cellId) const noexcept -> POINT
 
 auto level_cell_collection::IsUnoccupied(cell_id cellId) const noexcept -> bool
 {
-  return true;
+  return !m_occupiedCells.contains(cellId);
+}
+
+auto level_cell_collection::SetAsOccupied(cell_id cellId) -> void
+{
+  m_occupiedCells.insert(cellId);
+}
+
+auto level_cell_collection::SetAsUnoccupied(cell_id cellId) -> void
+{
+  m_occupiedCells.erase(cellId);
 }
 
 auto level_cell_collection::SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void

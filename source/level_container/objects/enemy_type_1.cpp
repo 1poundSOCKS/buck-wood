@@ -6,7 +6,7 @@ enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOC
 {
 }
 
-auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_collection& cells) -> void
+auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
 {
   base_object::Update(interval);
 
@@ -15,10 +15,15 @@ auto enemy_type_1::Update(float interval, POINT_2F target, const level_cell_coll
   m_destination = atDestination ? std::nullopt : m_destination;
 }
 
-auto enemy_type_1::MoveTowardsDestination(cell_id destination, float interval, const level_cell_collection& cells) noexcept -> bool
+auto enemy_type_1::MoveTowardsDestination(cell_id destination, float interval, level_cell_collection& cells) noexcept -> bool
 {
+  if( m_destination ) cells.SetAsUnoccupied(*m_destination);
+
   auto position = cells.CellPosition(destination);
   bool atDestination = MoveTowards(m_speed * interval, position);
+
+  if( m_destination ) cells.SetAsOccupied(*m_destination);
+
   return atDestination;
 }
 

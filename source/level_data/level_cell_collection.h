@@ -52,8 +52,11 @@ private:
 
 private:
 
+  using occupied_cell_collection = std::set<cell_id>;
+
   cell_size m_cellSize;
   cell_collection m_cells;
+  occupied_cell_collection m_occupiedCells;
 
 };
 
