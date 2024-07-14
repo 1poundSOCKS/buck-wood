@@ -10,12 +10,14 @@ auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection
 {
   base_object::Update(interval);
 
+  cells.SetAsUnoccupied(cells.CellId(m_position));
   if( m_destination ) cells.SetAsUnoccupied(*m_destination);
 
   m_destination = m_destination ? m_destination : NewDestination(target, cells);
   bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval, cells) : true;
   m_destination = atDestination ? std::nullopt : m_destination;
 
+  cells.SetAsOccupied(cells.CellId(m_position));
   if( m_destination ) cells.SetAsOccupied(*m_destination);
 }
 
