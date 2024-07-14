@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "enemy_object.h"
 
-enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
-  base_object { position, scale, angle }, m_maxHitpoints { 1 }, m_hitpoints { 1 }
+enemy_object::enemy_object(cell_id position, level_cell_collection &cells) noexcept : enemy_object(cells.CellPosition(position), { 1.0f, 1.0f }, 0.0f)
+{
+}
+
+enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : base_object{position, scale, angle}, m_maxHitpoints{1}, m_hitpoints{1}
 {
 }
 

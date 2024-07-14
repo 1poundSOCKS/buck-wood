@@ -2,7 +2,11 @@
 #include "enemy_type_1.h"
 #include "adjacent_floor_cells.h"
 
-enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : enemy_object { position, scale, angle }
+enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : enemy_object{position, scale, angle}
+{
+}
+
+auto enemy_type_1::SetCellId(cell_id cellId) noexcept -> void
 {
 }
 

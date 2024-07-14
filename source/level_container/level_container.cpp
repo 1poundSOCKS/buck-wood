@@ -21,9 +21,10 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
 {
   auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
 
-  object.Visit(make_overload {
+  object.Visit( make_overload {
     [cellId](portal& object) { object.SetCellId(cellId); },
     [cellId](player_ship& object) { object.State()->SetCellId(cellId, cell_size { m_cellSize, m_cellSize }); },
+    [cellId](enemy_type_1& object) { object.SetCellId(cellId); },
     [](auto& object) {}
   });
 
@@ -55,7 +56,7 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
     case object_type::player:
     {
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
-      defaultObject.Visit(make_overload {
+      defaultObject.Visit( make_overload {
         [this](player_ship& object) { m_playerState = object.State(); },
         [](auto& object) {}
       });
