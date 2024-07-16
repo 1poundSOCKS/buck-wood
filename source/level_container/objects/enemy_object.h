@@ -3,6 +3,7 @@
 #include "base_object.h"
 #include "play_events.h"
 #include "level_cell_collection.h"
+#include "object_cell_position.h"
 
 class enemy_object : public base_object
 {
@@ -21,5 +22,6 @@ protected:
 
   int m_maxHitpoints;
   int m_hitpoints;
+  object_cell_position m_cellPosition;
 
 };

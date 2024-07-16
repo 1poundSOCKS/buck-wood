@@ -5,7 +5,8 @@ enemy_object::enemy_object(cell_id position, level_cell_collection &cells) noexc
 {
 }
 
-enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : base_object{position, scale, angle}, m_maxHitpoints{1}, m_hitpoints{1}
+enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
+  base_object{position, scale, angle}, m_maxHitpoints{1}, m_hitpoints{1}, m_cellPosition { cell_id { 0, 0 }, 1.0f }
 {
 }
 
