@@ -17,7 +17,7 @@ auto enemy_object::SetHitpoints(int value) noexcept -> void
 auto enemy_object::ApplyDamage(int value) -> void
 {
   m_hitpoints = std::max(0, m_hitpoints - value);
-  m_destroyed = m_hitpoints == 0;
+  m_destroyed = ( m_hitpoints == 0 );
 
   if( m_destroyed )
   {

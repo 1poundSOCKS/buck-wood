@@ -17,6 +17,8 @@ public:
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
+  auto PreErase(level_cell_collection& cells) const noexcept -> void;
+
 private:
 
   auto MoveTowardsDestination(cell_id destination, float interval, level_cell_collection& cells) noexcept -> bool;

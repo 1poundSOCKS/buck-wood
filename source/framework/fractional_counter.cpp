@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "fractional_counter.h"
 
-fractional_counter::fractional_counter(float value) : m_value { value }
+fractional_counter::fractional_counter(float value) : m_value { value }, m_current { 0.0f }
 {
 }
 
