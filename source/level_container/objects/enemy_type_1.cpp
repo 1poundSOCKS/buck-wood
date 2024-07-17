@@ -14,15 +14,54 @@ auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection
 {
   base_object::Update(interval);
 
-  cells.SetAsUnoccupied(cells.CellId(m_position));
-  if( m_destination ) cells.SetAsUnoccupied(*m_destination);
+  cells.SetAsUnoccupied(m_cellPosition.Current());
+  cells.SetAsUnoccupied(m_cellPosition.Next());
 
-  m_destination = m_destination ? m_destination : NewDestination(target, cells);
-  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval, cells) : true;
-  m_destination = atDestination ? std::nullopt : m_destination;
+  auto angleToTarget = static_cast<int>(direct2d::GetAngleBetweenPoints(m_position, target));
+  auto adjustedAngleToTarget = angleToTarget + 45;
+  auto normalizedAngleToTarget = adjustedAngleToTarget > 359 ? adjustedAngleToTarget - 360 : adjustedAngleToTarget;
+  auto segmentedAngleToTarget = normalizedAngleToTarget / 90;
 
-  cells.SetAsOccupied(cells.CellId(m_position));
-  if( m_destination ) cells.SetAsOccupied(*m_destination);
+  auto moveDirection = object_cell_position::move_direction::none;
+
+  switch( segmentedAngleToTarget )
+  {
+    case 0:
+      moveDirection = object_cell_position::move_direction::up;
+      break;
+    case 1:
+      moveDirection = object_cell_position::move_direction::right;
+      break;
+    case 2:
+      moveDirection = object_cell_position::move_direction::down;
+      break;
+    case 3:
+      moveDirection = object_cell_position::move_direction::left;
+      break;
+  }
+
+  auto cellId = m_cellPosition.Next();
+
+  switch( moveDirection )
+  {
+    case object_cell_position::move_direction::up:
+      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::above), level_cell_type::floor) ? object_cell_position::move_direction::up : object_cell_position::move_direction::none;
+      break;
+    case object_cell_position::move_direction::right:
+      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::right), level_cell_type::floor) ? object_cell_position::move_direction::right : object_cell_position::move_direction::none;
+      break;
+    case object_cell_position::move_direction::down:
+      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::below), level_cell_type::floor) ? object_cell_position::move_direction::down : object_cell_position::move_direction::none;
+      break;
+    case object_cell_position::move_direction::left:
+      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::left), level_cell_type::floor) ? object_cell_position::move_direction::left : object_cell_position::move_direction::none;
+      break;
+  }
+
+  m_position = m_cellPosition(interval, moveDirection, cells.CellSize());
+
+  cells.SetAsOccupied(m_cellPosition.Current());
+  cells.SetAsOccupied(m_cellPosition.Next());
 }
 
 auto enemy_type_1::MoveTowardsDestination(cell_id destination, float interval, level_cell_collection& cells) noexcept -> bool
