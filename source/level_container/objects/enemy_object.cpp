@@ -30,3 +30,52 @@ auto enemy_object::ApplyDamage(int value) -> void
 {
   return static_cast<float>(m_hitpoints) / static_cast<float>(m_maxHitpoints);
 }
+
+auto enemy_object::Update(float interval, object_cell_position::move_direction moveDirection, level_cell_collection& cells) noexcept -> void
+{
+  base_object::Update(interval);
+
+  cells.SetAsUnoccupied(m_cellPosition.Current());
+  cells.SetAsUnoccupied(m_cellPosition.Next());
+
+  auto cellId = m_cellPosition.Next();
+
+  switch( moveDirection )
+  {
+    case object_cell_position::move_direction::up:
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::above);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::up : object_cell_position::move_direction::none;
+      break;      
+    }
+    case object_cell_position::move_direction::right:
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::right);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::right : object_cell_position::move_direction::none;
+      break;
+    }
+    case object_cell_position::move_direction::down:
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::below);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::down : object_cell_position::move_direction::none;
+      break;
+    }
+    case object_cell_position::move_direction::left:
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::left);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::left : object_cell_position::move_direction::none;
+      break;
+    }
+  }
+
+  m_position = m_cellPosition(interval, moveDirection, cells.CellSize());  
+
+  cells.SetAsOccupied(m_cellPosition.Current());
+  cells.SetAsOccupied(m_cellPosition.Next());
+}
+
+auto enemy_object::PreErase(level_cell_collection& cells) const noexcept -> void
+{
+  cells.SetAsUnoccupied(m_cellPosition.Current());
+  cells.SetAsUnoccupied(m_cellPosition.Next());
+}

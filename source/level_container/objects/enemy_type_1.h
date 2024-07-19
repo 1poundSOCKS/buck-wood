@@ -17,16 +17,4 @@ public:
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
 
-  auto PreErase(level_cell_collection& cells) const noexcept -> void;
-
-private:
-
-  auto MoveTowardsDestination(cell_id destination, float interval, level_cell_collection& cells) noexcept -> bool;
-  auto NewDestination(POINT_2F target, const level_cell_collection &cells) -> std::optional<cell_id>;
-
-private:
-
-  inline static constexpr float m_speed { 200 };
-  std::optional<cell_id> m_destination;
-
 };
