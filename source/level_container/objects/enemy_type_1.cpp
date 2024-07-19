@@ -45,17 +45,29 @@ auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection
   switch( moveDirection )
   {
     case object_cell_position::move_direction::up:
-      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::above), level_cell_type::floor) ? object_cell_position::move_direction::up : object_cell_position::move_direction::none;
-      break;
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::above);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::up : object_cell_position::move_direction::none;
+      break;      
+    }
     case object_cell_position::move_direction::right:
-      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::right), level_cell_type::floor) ? object_cell_position::move_direction::right : object_cell_position::move_direction::none;
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::right);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::right : object_cell_position::move_direction::none;
       break;
+    }
     case object_cell_position::move_direction::down:
-      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::below), level_cell_type::floor) ? object_cell_position::move_direction::down : object_cell_position::move_direction::none;
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::below);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::down : object_cell_position::move_direction::none;
       break;
+    }
     case object_cell_position::move_direction::left:
-      moveDirection = cells.IsTypeOf(cellId.Get(cell_id::relative_position::left), level_cell_type::floor) ? object_cell_position::move_direction::left : object_cell_position::move_direction::none;
+    {
+      auto nextCellId = cellId.Get(cell_id::relative_position::left);
+      moveDirection = cells.IsTypeOf(nextCellId, level_cell_type::floor) && cells.IsUnoccupied(nextCellId) ? object_cell_position::move_direction::left : object_cell_position::move_direction::none;
       break;
+    }
   }
 
   m_position = m_cellPosition(interval, moveDirection, cells.CellSize());
