@@ -118,6 +118,6 @@ auto enemy_type_1::NewDestination(POINT_2F target, const level_cell_collection& 
 
 auto enemy_type_1::PreErase(level_cell_collection& cells) const noexcept -> void
 {
-  cells.SetAsUnoccupied(cells.CellId(m_position));
-  if( m_destination ) cells.SetAsUnoccupied(*m_destination);
+  cells.SetAsUnoccupied(m_cellPosition.Current());
+  cells.SetAsUnoccupied(m_cellPosition.Next());
 }
