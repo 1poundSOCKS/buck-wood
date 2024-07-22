@@ -4,7 +4,8 @@
 
 enemy_type_2::enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
   enemy_object { position, scale, angle }, m_status { status::moving }, 
-  m_waitTimer { 0.5f }, m_speed { 400 }, m_reloadTimer { 5.0f }, m_destination { std::nullopt }
+  // m_waitTimer { 0.5f }, m_speed { 400 }, m_reloadTimer { 5.0f }, m_destination { std::nullopt }
+  m_waitTimer { 0.5f }, m_reloadTimer { 5.0f }
 {
 }
 
@@ -27,9 +28,9 @@ auto enemy_type_2::Update(float interval, POINT_2F targetPosition, const level_c
 [[nodiscard]] auto enemy_type_2::UpdateWhenMoving(float interval, const level_cell_collection& cells) noexcept -> status
 {
   m_waitTimer.Reset();
-  m_destination = m_destination ? m_destination : NewDestination(cells);
-  bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
-  m_destination = atDestination ? std::nullopt : m_destination;
+  // m_destination = m_destination ? m_destination : NewDestination(cells);
+  // bool atDestination = m_destination ? MoveTowardsDestination(*m_destination, interval) : true;
+  // m_destination = atDestination ? std::nullopt : m_destination;
   return status::moving;
 }
 
@@ -39,28 +40,28 @@ auto enemy_type_2::Update(float interval, POINT_2F targetPosition, const level_c
   return finishedWaiting ? status::moving : status::waiting;
 }
 
-auto enemy_type_2::MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool
-{
-  auto position = destination.Position();
-  bool atDestination = MoveTowards(m_speed * interval, position);
-  return atDestination;
-}
+// auto enemy_type_2::MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool
+// {
+//   auto position = destination.Position();
+//   bool atDestination = MoveTowards(m_speed * interval, position);
+//   return atDestination;
+// }
 
-auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::optional<level_cell_item>
-{
-  auto cellId = cells.CellId(m_position);
-  auto adjacentFloorCells = adjacent_floor_cells(cells, cellId);
-  auto adjacentFloorCellsCount = adjacentFloorCells.Count();
+// auto enemy_type_2::NewDestination(const level_cell_collection& cells) -> std::optional<level_cell_item>
+// {
+//   auto cellId = cells.CellId(m_position);
+//   auto adjacentFloorCells = adjacent_floor_cells(cells, cellId);
+//   auto adjacentFloorCellsCount = adjacentFloorCells.Count();
 
-  if( adjacentFloorCellsCount )
-  {
-    std::uniform_int_distribution<size_t> floorCellDistribution { 0, adjacentFloorCellsCount - 1 };
-    auto randomCellIndex = floorCellDistribution(pseudo_random_generator::get());
-    auto randomCellId = adjacentFloorCells[randomCellIndex];
-    return cells.Get(randomCellId);
-  }
-  else
-  {
-    return std::nullopt;
-  }
-}
+//   if( adjacentFloorCellsCount )
+//   {
+//     std::uniform_int_distribution<size_t> floorCellDistribution { 0, adjacentFloorCellsCount - 1 };
+//     auto randomCellIndex = floorCellDistribution(pseudo_random_generator::get());
+//     auto randomCellId = adjacentFloorCells[randomCellIndex];
+//     return cells.Get(randomCellId);
+//   }
+//   else
+//   {
+//     return std::nullopt;
+//   }
+// }

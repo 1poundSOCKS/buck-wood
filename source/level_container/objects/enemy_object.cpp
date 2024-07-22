@@ -10,6 +10,11 @@ enemy_object::enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexc
 {
 }
 
+auto enemy_object::SetCellId(cell_id cellId) noexcept -> void
+{
+  m_cellPosition.Set(cellId);
+}
+
 auto enemy_object::SetHitpoints(int value) noexcept -> void
 {
   m_maxHitpoints = m_hitpoints = value;

@@ -46,6 +46,9 @@ public:
   auto EnumerateColumns(auto&& visitor) const noexcept -> void;
   auto EnumerateRows(auto&& visitor) const noexcept -> void;
 
+  [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
+  [[nodiscard]] auto UnnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
+
 private:
 
   auto SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
@@ -104,4 +107,21 @@ auto level_cell_collection::EnumerateRows(auto &&visitor) const noexcept -> void
     row_def columnDef { leftCellPosition.y, leftCellPosition.x, rightCellPosition.x };
     visitor(columnDef);
   }
+}
+
+inline auto level_cell_collection::UnoccupiedFloorCellCount() const noexcept -> size_t
+{
+  return m_cells.FloorCellCount() - m_occupiedCells.size();
+}
+
+inline auto level_cell_collection::UnnoccupiedFloorCell(size_t index) const noexcept -> cell_id
+{
+  cell_id unoccupiedFloorCellId;
+
+  m_cells.Enumerate([&index,&unoccupiedFloorCellId](cell_id cellId, level_cell_type cellType)
+  {
+    unoccupiedFloorCellId = (cellType == level_cell_type::floor && index-- == 0) ? cellId : unoccupiedFloorCellId;
+  });
+
+  return unoccupiedFloorCellId;
 }

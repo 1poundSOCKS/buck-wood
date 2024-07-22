@@ -31,6 +31,8 @@ public:
   [[nodiscard]] auto RowLeft(int row) const noexcept -> cell_id;
   [[nodiscard]] auto RowRight(int row) const noexcept -> cell_id;
 
+  [[nodiscard]] auto FloorCellCount() const noexcept -> size_t;
+
 private:
 
   using key_type = cell_id;
@@ -117,4 +119,15 @@ inline auto cell_collection::RowRight(int row) const noexcept -> cell_id
   auto rowCell = m_topCell.ShiftRow(row);
   rowCell.SetColumn(m_rightmostCell);
   return rowCell;
+}
+
+inline auto cell_collection::FloorCellCount() const noexcept -> size_t
+{
+  auto floorCells = std::ranges::views::filter(m_cells, [](const auto& cellEntry)
+  {
+    const auto& [cellId, cellType] = cellEntry;
+    return cellType == level_cell_type::floor;
+  });
+
+  return std::ranges::distance(floorCells);
 }

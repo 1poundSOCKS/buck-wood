@@ -45,6 +45,16 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
   wall->SetType(cellType);
 }
 
+auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
+{
+  return m_cells->UnoccupiedFloorCellCount();
+}
+
+auto level_container::UnoccupiedFloorCell(size_t index) const noexcept -> cell_id
+{
+  return m_cells->UnnoccupiedFloorCell(index);
+}
+
 auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
 {
   switch( objectType )

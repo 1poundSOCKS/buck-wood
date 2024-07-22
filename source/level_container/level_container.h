@@ -31,6 +31,9 @@ public:
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
   auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
 
+  [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
+  [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
+
   auto Update(float interval, D2D1_RECT_F viewRect) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 

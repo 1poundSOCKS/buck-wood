@@ -92,7 +92,14 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 
 auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> void
 {
-  auto& object = levelContainer.AddObject(level_container::object_type::enemy_stalker, cell_id { 0, 0 });
+  auto unoccupiedFloorCellCount = levelContainer.UnoccupiedFloorCellCount();
+
+  std::uniform_int_distribution<size_t> cellDist { 0, unoccupiedFloorCellCount };
+  auto cellIndex = cellDist(pseudo_random_generator::get());
+
+  auto cellId = levelContainer.UnoccupiedFloorCell(cellIndex);
+
+  auto& object = levelContainer.AddObject(level_container::object_type::enemy_stalker, cellId);
 
   object.Visit(make_overload {
     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(3); },
