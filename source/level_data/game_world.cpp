@@ -99,26 +99,30 @@ auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> 
 
   auto cellId = levelContainer.UnoccupiedFloorCell(cellIndex);
 
-  constexpr size_t enemyTypeMax = 2;
-  std::uniform_int_distribution<size_t> enemyTypeDist { 0, enemyTypeMax };
-  auto enemyTypeIndex = enemyTypeDist(pseudo_random_generator::get());
+  constexpr size_t objectTypeMax = 4;
+  std::uniform_int_distribution<size_t> enemyTypeDist { 0, objectTypeMax };
+  auto objectTypeIndex = enemyTypeDist(pseudo_random_generator::get());
 
-  auto enemyType = level_container::object_type::enemy_stalker;
+  auto objectType = level_container::object_type::enemy_stalker;
 
-  switch( enemyTypeIndex )
+  switch( objectTypeIndex )
   {
     case 0:
-      enemyType = level_container::object_type::enemy_stalker;
+      objectType = level_container::object_type::enemy_stalker;
       break;
     case 1:
-      enemyType = level_container::object_type::enemy_random;
+      objectType = level_container::object_type::enemy_random;
       break;
     case 2:
-      enemyType = level_container::object_type::enemy_turret;
+      objectType = level_container::object_type::enemy_turret;
+      break;
+    case 3:
+    case 4:
+      objectType = level_container::object_type::power_up;
       break;
   }
 
-  auto& object = levelContainer.AddObject(enemyType, cellId);
+  auto& object = levelContainer.AddObject(objectType, cellId);
 
   object.Visit(make_overload {
     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(3); },
