@@ -6,10 +6,6 @@ enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, VELOC
 {
 }
 
-// auto enemy_type_1::SetCellId(cell_id cellId) noexcept -> void
-// {
-// }
-
 auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
 {
   auto angleToTarget = static_cast<int>(direct2d::GetAngleBetweenPoints(m_position, target));

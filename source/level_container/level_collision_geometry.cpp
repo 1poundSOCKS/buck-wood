@@ -43,3 +43,8 @@ auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObjec
 {
   m_enemyGeometries.Add(defaultObject);
 }
+
+auto level_collision_geometry::AddCollisionGeometry(default_object &defaultObject, power_up &powerUp) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
