@@ -95,6 +95,13 @@ namespace direct2d
     return degrees + 90.0f;
   }
 
+  inline [[nodiscard]] auto GetAngle(D2D1_POINT_2F endPoint) -> float
+  {
+    float radians = atan2(endPoint.y, endPoint.x);
+    float degrees = RADTODEG(radians);
+    return degrees + 90.0f;
+  }
+
   inline [[nodiscard]] auto GetRectAtPosition(D2D1_POINT_2F position, float cx, float cy) -> D2D1_RECT_F
   {
     auto halfWidth = cx / 2;

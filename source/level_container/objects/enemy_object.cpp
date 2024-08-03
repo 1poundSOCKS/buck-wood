@@ -79,6 +79,12 @@ auto enemy_object::Update(float interval, object_cell_position::move_direction m
   cells.SetAsOccupied(m_cellPosition.Next());
 }
 
+auto enemy_object::Update(float interval, float moveDirection, level_cell_collection &cells) noexcept -> void
+{
+  auto cellMoveDirection = object_cell_position::MoveDirection(moveDirection);
+  Update(interval, cellMoveDirection, cells);
+}
+
 auto enemy_object::PreErase(level_cell_collection& cells) const noexcept -> void
 {
   cells.SetAsUnoccupied(m_cellPosition.Current());

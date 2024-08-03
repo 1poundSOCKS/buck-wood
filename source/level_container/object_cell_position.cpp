@@ -60,3 +60,48 @@ auto object_cell_position::Next() const noexcept -> cell_id
 {
   return m_nextPosition;
 }
+
+auto object_cell_position::MoveDirection(float direction) noexcept -> move_direction
+{
+  auto adjustedAngleToTarget = static_cast<int>(direction) + 45;
+  auto normalizedAngleToTarget = adjustedAngleToTarget > 359 ? adjustedAngleToTarget - 360 : adjustedAngleToTarget;
+  auto segmentedAngleToTarget = normalizedAngleToTarget / 90;
+
+  switch( segmentedAngleToTarget )
+  {
+    case 0:
+      return object_cell_position::move_direction::up;
+    case 1:
+      return object_cell_position::move_direction::right;
+    case 2:
+      return object_cell_position::move_direction::down;
+    case 3:
+      return object_cell_position::move_direction::left;
+    default:
+      return object_cell_position::move_direction::none;
+  }
+}
+
+auto object_cell_position::MoveDirection(float x, float y) noexcept -> move_direction
+{
+  // auto angleToTarget = static_cast<int>(direct2d::GetAngle(POINT_2F { x, y }));
+
+  // auto adjustedAngleToTarget = angleToTarget + 45;
+  // auto normalizedAngleToTarget = adjustedAngleToTarget > 359 ? adjustedAngleToTarget - 360 : adjustedAngleToTarget;
+  // auto segmentedAngleToTarget = normalizedAngleToTarget / 90;
+
+  // switch( segmentedAngleToTarget )
+  // {
+  //   case 0:
+  //     return object_cell_position::move_direction::up;
+  //   case 1:
+  //     return object_cell_position::move_direction::right;
+  //   case 2:
+  //     return object_cell_position::move_direction::down;
+  //   case 3:
+  //     return object_cell_position::move_direction::left;
+  //   default:
+  //     return object_cell_position::move_direction::none;
+  // }
+  return MoveDirection(direct2d::GetAngle(POINT_2F { x, y }));
+}
