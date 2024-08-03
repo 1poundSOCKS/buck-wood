@@ -11,7 +11,7 @@ public:
 
   enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Update(float interval, POINT_2F targetPosition, const level_cell_collection& cells) -> void;
+  auto Update(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void;
 
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
@@ -21,26 +21,17 @@ private:
   enum class status { moving, waiting };
 
   [[nodiscard]] auto Destination() const -> std::optional<level_cell_item>;
-  [[nodiscard]] auto UpdateWhenMoving(float interval, const level_cell_collection& cells) noexcept -> status;
+  [[nodiscard]] auto UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status;
   [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
-  // auto MoveTowardsDestination(level_cell_item destination, float interval) noexcept -> bool;
-  // [[nodiscard]] auto NewDestination(const level_cell_collection& cells) -> std::optional<level_cell_item>;
 
 private:
 
   status m_status;
   reload_timer m_waitTimer;
-  // float m_speed;
-  // std::optional<level_cell_item> m_destination;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
 
 };
-
-// inline [[nodiscard]] auto enemy_type_2::Destination() const -> std::optional<level_cell_item>
-// {
-//   return m_destination;
-// }
 
 inline [[nodiscard]] auto enemy_type_2::CanShootAt(POINT_2F position) const -> bool
 {
