@@ -47,7 +47,7 @@ private:
 private:
 
   health_status m_shieldStatus { 10 };
-  reload_counter m_playerReloadCounter { 1.0f / 3.0f, 1 };
+  reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   std::optional<float> m_shootAngle;
   move_direction m_moveDirection;
   object_cell_position m_cellPosition;
