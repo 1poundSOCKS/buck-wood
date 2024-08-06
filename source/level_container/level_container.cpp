@@ -108,6 +108,14 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
 
   auto preErase =  make_overload {
+    [this](const player_bullet& object)
+    {
+      if( object.Age() <= 1.0f )
+      {
+        m_particles.Add(level_explosion { object.Position() });
+        play_events::set(play_events::event_type::explosion, true);
+      }
+    },
     [this](const enemy_type_1& object)
     {
       object.PreErase(*m_cells);

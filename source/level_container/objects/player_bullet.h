@@ -18,8 +18,11 @@ public:
   auto Update(float interval) noexcept -> void
   {
     base_object::Update(interval);
+
     m_position.x += m_velocity.x * interval;
     m_position.y += m_velocity.y * interval;
+
+    m_destroyed = m_age > 1.0f ? true : false;
   }
 
 private:
