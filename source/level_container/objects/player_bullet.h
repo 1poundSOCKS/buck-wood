@@ -15,6 +15,11 @@ public:
     return m_damage;
   }
 
+  [[nodiscard]] auto Expired() const -> bool
+  {
+    return m_age > m_lifespan;
+  }
+
   auto Update(float interval) noexcept -> void
   {
     base_object::Update(interval);
@@ -22,11 +27,12 @@ public:
     m_position.x += m_velocity.x * interval;
     m_position.y += m_velocity.y * interval;
 
-    m_destroyed = m_age > 1.0f ? true : false;
+    m_destroyed = Expired();
   }
 
 private:
- 
+
+  constexpr static float m_lifespan { 0.7f };
   int m_damage;
   VELOCITY_2F m_velocity;
 

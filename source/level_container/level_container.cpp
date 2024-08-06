@@ -110,7 +110,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto preErase =  make_overload {
     [this](const player_bullet& object)
     {
-      if( object.Age() <= 1.0f )
+      if( !object.Expired() )
       {
         m_particles.Add(level_explosion { object.Position() });
         play_events::set(play_events::event_type::explosion, true);
