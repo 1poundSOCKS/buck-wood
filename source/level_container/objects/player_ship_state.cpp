@@ -21,6 +21,19 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
   
   m_playerReloadCounter.Update(interval);
 
+  switch( m_state )
+  {
+    case state::moving:
+      UpdateWhenMoving(interval, cellSize);
+      break;
+    case state::waiting:
+      UpdateWhenWaiting(interval);
+      break;
+  }
+}
+
+auto player_ship_state::UpdateWhenMoving(float interval, cell_size cellSize) -> void
+{
   auto moveDirection = object_cell_position::move_direction::none;
 
   switch( m_moveDirection )
@@ -40,6 +53,10 @@ auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> 
   }
 
   m_position = m_cellPosition(interval, moveDirection, cellSize);
+}
+
+auto player_ship_state::UpdateWhenWaiting(float interval) -> void
+{
 }
 
 auto player_ship_state::UpdateWhenCelebrating(float interval) -> void

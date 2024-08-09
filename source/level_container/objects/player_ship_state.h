@@ -37,15 +37,19 @@ public:
 
 private:
 
+  enum class state { moving, waiting };
   enum class move_direction { none, up, down, left, right };
 
 private:
 
   auto UpdateWhenActive(float interval, cell_size cellSize) -> void;
+  auto UpdateWhenMoving(float interval, cell_size cellSize) -> void;
+  auto UpdateWhenWaiting(float interval) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
 private:
 
+  state m_state;
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   std::optional<float> m_shootAngle;
@@ -55,7 +59,7 @@ private:
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.3f }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_state { state::moving }, m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.3f }, m_moveDirection { move_direction::none }
 {
 }
 
