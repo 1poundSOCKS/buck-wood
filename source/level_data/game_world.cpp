@@ -3,7 +3,7 @@
 #include "level_0.h"
 #include "level_1.h"
 #include "level_2.h"
-#include "make_overload.h"
+#include "visitor.h"
 
 game_world::game_world() : m_collisionType { CollisionType() }
 {
@@ -124,7 +124,7 @@ auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> 
 
   auto& object = levelContainer.AddObject(objectType, cellId);
 
-  object.Visit(make_overload {
+  object.Visit(visitor {
     [](enemy_type_1& innerObject) { innerObject.SetHitpoints(3); },
     [](enemy_type_2& innerObject) { innerObject.SetHitpoints(3); },
     [](enemy_type_3& innerObject) { innerObject.SetHitpoints(3); },

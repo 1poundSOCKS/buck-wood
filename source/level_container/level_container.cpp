@@ -3,7 +3,7 @@
 #include "renderers.h"
 #include "particle_functions.h"
 #include "player_state.h"
-#include "make_overload.h"
+#include "visitor.h"
 
 level_container::level_container() : level_container(collision_type::boundary)
 {
@@ -21,7 +21,7 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
 {
   auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
 
-  object.Visit( make_overload {
+  object.Visit( visitor {
     [cellId](portal& object) { object.SetCellId(cellId); },
     [cellId](player_ship& object) { object.State()->SetCellId(cellId, cell_size { m_cellSize, m_cellSize }); },
     [cellId](enemy_type_1& object) { object.SetCellId(cellId); },
@@ -66,7 +66,7 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
     case object_type::player:
     {
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
-      defaultObject.Visit( make_overload {
+      defaultObject.Visit( visitor {
         [this](player_ship& object) { m_playerState = object.State(); },
         [](auto& object) {}
       });
@@ -107,35 +107,33 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
 
-  auto preErase =  make_overload {
-    [this](const player_bullet& object)
-    {
-      if( !object.Expired() )
+  for( const auto& object : destroyedObjects )
+  {
+    object.Visit(visitor {
+      [this](const player_bullet& object)
+      {
+        if( !object.Expired() )
+        {
+          m_particles.Add(level_explosion { object.Position() });
+          play_events::set(play_events::event_type::explosion, true);
+        }
+      },
+      [this](const enemy_type_1& object)
+      {
+        object.PreErase(*m_cells);
+        m_particles.Add(level_explosion { object.Position() });
+        play_events::set(play_events::event_type::explosion, true);
+      },
+      [this](const power_up& object)
+      {
+        play_events::increment(play_events::counter_type::power_ups_collected);
+      },
+      [this](const auto& object)
       {
         m_particles.Add(level_explosion { object.Position() });
         play_events::set(play_events::event_type::explosion, true);
       }
-    },
-    [this](const enemy_type_1& object)
-    {
-      object.PreErase(*m_cells);
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
-    },
-    [this](const power_up& object)
-    {
-      play_events::increment(play_events::counter_type::power_ups_collected);
-    },
-     [this](const auto& object)
-    {
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
-    }
-  };
-
-  for( const auto& object : destroyedObjects )
-  {
-    object.Visit(preErase);
+    });
   }
 
   m_particles.EraseDestroyed();
