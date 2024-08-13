@@ -18,6 +18,8 @@ public:
   [[nodiscard]] auto Current() const noexcept -> cell_id;
   [[nodiscard]] auto Next() const noexcept -> cell_id;
 
+  [[nodiscard]] auto MoveComplete() const noexcept -> bool;
+
   static [[nodiscard]] auto MoveDirection(float direction) noexcept -> move_direction;
   static [[nodiscard]] auto MoveDirection(float x, float y) noexcept -> move_direction;
 

@@ -18,10 +18,9 @@ auto object_cell_position::operator()(float interval, move_direction moveDirecti
   if( moveTimer >= 1.0f )
   {
     m_currentPosition = m_nextPosition;
-    moveTimer = m_moveInterval.Normalize();
+    m_moveInterval.Reset();
   }
-
-  if( m_currentPosition == m_nextPosition )
+  else if( m_currentPosition == m_nextPosition )
   {
     switch( moveDirection )
     {
@@ -59,6 +58,11 @@ auto object_cell_position::Current() const noexcept -> cell_id
 auto object_cell_position::Next() const noexcept -> cell_id
 {
   return m_nextPosition;
+}
+
+auto object_cell_position::MoveComplete() const noexcept -> bool
+{
+  return m_currentPosition == m_nextPosition;
 }
 
 auto object_cell_position::MoveDirection(float direction) noexcept -> move_direction
