@@ -32,7 +32,7 @@ public:
 
 private:
 
-  constexpr static float m_lifespan { 0.7f };
+  constexpr static float m_lifespan { 2.0f };
   int m_damage;
   VELOCITY_2F m_velocity;
 

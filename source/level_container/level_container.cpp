@@ -249,7 +249,7 @@ auto level_container::VisitObject(player_ship &object) -> void
   if( m_playerState->CanShoot() && m_playerState->ShootAngle() )
   {
     auto shootAngle = *m_playerState->ShootAngle();
-    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, shootAngle, direct2d::CalculateVelocity(2000, shootAngle));
+    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, shootAngle, direct2d::CalculateVelocity(1500, shootAngle));
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -259,7 +259,7 @@ auto level_container::VisitObject(enemy_type_1& object) -> void
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
-    m_objects.Add(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(500, angle));
+    m_objects.Add(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(300, angle));
     play_events::set(play_events::event_type::shot, true);
   }
 }
