@@ -11,5 +11,6 @@ auto enemy_bullet_1::Update(float interval) -> void
   base_object::Update(interval);
   m_position.x += m_velocity.x * interval;
   m_position.y += m_velocity.y * interval;
-  m_angle = direct2d::RotateAngle(m_angle, rotationSpeed * interval);
+  m_angle = direct2d::RotateAngle(m_angle, m_rotationSpeed * interval);
+  m_destroyed = Expired();
 }
