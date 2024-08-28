@@ -60,8 +60,9 @@ auto play_scene::Render() const -> void
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
-  return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
+  // auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
+  // return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
+  return camera_sequence::camera_position { 1000.0f, 1000.0f, m_cameraZoom };
 }
 
 auto play_scene::RenderLevelContainer() const -> void
@@ -102,7 +103,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 {
   auto levelSize = m_playState->LevelContainer().LevelSize();
   auto renderTargetSize = render_target::get()->GetSize();
-  return renderTargetSize.height / 3000;
+  return renderTargetSize.height / 5000;
 }
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
