@@ -49,6 +49,8 @@ public:
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
 
+  [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
+
 private:
 
   auto SetWall(cell_id cellId, cell_id::relative_position position) noexcept -> void;
@@ -124,4 +126,9 @@ inline auto level_cell_collection::UnnoccupiedFloorCell(size_t index) const noex
   });
 
   return unoccupiedFloorCellId;
+}
+
+inline auto level_cell_collection::CentrePoint() const noexcept -> POINT_2F
+{
+  return { 2400.0f, 1400.0f };
 }

@@ -49,10 +49,10 @@ public:
   [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
   auto SetExit(bool value, cell_id cell) -> void;
 
-public:
-
   auto EnumerateColumns(auto&& visitor) const noexcept -> void;
   auto EnumerateRows(auto&& visitor) const noexcept -> void;
+
+  [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
 
 private:
 
@@ -174,6 +174,11 @@ auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
   {
     visitor(rowDef);
   });
+}
+
+inline auto level_container::CentrePoint() const noexcept -> POINT_2F
+{
+  return m_cells->CentrePoint();
 }
 
 auto level_container::UpdateObject(auto &object, float interval) -> void

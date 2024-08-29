@@ -27,6 +27,8 @@ public:
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
 
+  [[nodiscard]] auto LevelCentrePoint() const noexcept -> POINT_2F;
+
 private:
 
   [[nodiscard]] auto CalculateStatus() const -> status;

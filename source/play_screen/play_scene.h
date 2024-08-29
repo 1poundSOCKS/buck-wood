@@ -49,7 +49,7 @@ protected:
   std::shared_ptr<play_state> m_playState;
   level_title m_levelTitle;
   bool m_renderLevelTitle { false };
-  float m_cameraZoom { 0.5f };
+  float m_cameraZoom { 0.6f };
   D2D1::Matrix3x2F m_renderTransform { RenderTransform() };
 
 };

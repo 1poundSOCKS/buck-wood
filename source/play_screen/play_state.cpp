@@ -110,3 +110,8 @@ auto play_state::Status() const -> status
 {
   return *m_score;
 }
+
+auto play_state::LevelCentrePoint() const noexcept -> POINT_2F
+{
+  return m_levelContainer->CentrePoint();
+}

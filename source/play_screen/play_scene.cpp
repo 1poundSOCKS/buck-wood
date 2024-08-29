@@ -60,9 +60,8 @@ auto play_scene::Render() const -> void
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  // auto playerPosition = m_playState->LevelContainer().PlayerState().Position();
-  // return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
-  return camera_sequence::camera_position { 1000.0f, 1000.0f, m_cameraZoom };
+  auto levelCentrePoint = m_playState->LevelCentrePoint();
+  return camera_sequence::camera_position { levelCentrePoint.x, levelCentrePoint.y, m_cameraZoom };
 }
 
 auto play_scene::RenderLevelContainer() const -> void
