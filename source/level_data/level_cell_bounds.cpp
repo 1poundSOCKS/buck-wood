@@ -8,7 +8,11 @@ level_cell_bounds::level_cell_bounds()
 level_cell_bounds::level_cell_bounds(std::ranges::input_range auto &&cellIds)
 {
   for( const auto& cellId : cellIds )
-  {    
+  {
+    m_leftmostCell = cellId.IsLeftOf(m_leftmostCell) ? cellId : m_leftmostCell;
+    m_topCell = cellId.IsAbove(m_topCell) ? cellId : m_topCell;
+    m_rightmostCell = cellId.IsRightOf(m_rightmostCell) ? cellId : m_rightmostCell;
+    m_bottomCell = cellId.IsBelow(m_bottomCell) ? cellId : m_bottomCell;
   }
 }
 
