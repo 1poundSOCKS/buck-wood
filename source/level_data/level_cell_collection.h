@@ -4,6 +4,7 @@
 #include "cell_collection.h"
 #include "cell_size.h"
 #include "level_cell_item.h"
+#include "level_cell_bounds.h"
 
 class level_cell_collection
 {
@@ -50,6 +51,7 @@ public:
   [[nodiscard]] auto UnnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
 
   [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
+  [[nodiscard]] auto Bounds() const noexcept -> level_cell_bounds;
 
 private:
 
@@ -130,5 +132,22 @@ inline auto level_cell_collection::UnnoccupiedFloorCell(size_t index) const noex
 
 inline auto level_cell_collection::CentrePoint() const noexcept -> POINT_2F
 {
-  return { 2400.0f, 1400.0f };
+  auto bounds = Bounds();
+  
+  auto width = static_cast<float>(bounds.Right(m_cellSize) - bounds.Left(m_cellSize));
+  auto height = static_cast<float>(bounds.Bottom(m_cellSize) - bounds.Top(m_cellSize));
+  
+  return { bounds.Left(m_cellSize) + width / 2, bounds.Top(m_cellSize) + height / 2 };
+}
+
+inline auto level_cell_collection::Bounds() const noexcept -> level_cell_bounds
+{
+  auto cellIds = std::ranges::views::transform(m_cells, [](const auto& cellEntry)
+  {
+    const auto& [cellId, cellType] = cellEntry;
+    return cellId;
+  });
+
+  // return level_cell_bounds { cellIds };
+  return level_cell_bounds {};
 }

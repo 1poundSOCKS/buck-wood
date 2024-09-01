@@ -39,7 +39,13 @@ private:
   using map_entry_type = std::pair<const key_type, level_cell_type>;
   using cell_allocator_type = custom_allocator<map_entry_type>;
   using collection_allocator_type = custom_allocator<map_entry_type>;
+
+public:
+
   using collection_type = std::map<key_type, level_cell_type, std::less<key_type>, collection_allocator_type>;
+
+  [[nodiscard]] auto begin() const noexcept -> collection_type::const_iterator;
+  [[nodiscard]] auto end() const noexcept -> collection_type::const_iterator;
 
 private:
 
@@ -130,4 +136,14 @@ inline auto cell_collection::FloorCellCount() const noexcept -> size_t
   });
 
   return std::ranges::distance(floorCells);
+}
+
+inline auto cell_collection::begin() const noexcept -> collection_type::const_iterator
+{
+  return std::begin(m_cells);
+}
+
+inline auto cell_collection::end() const noexcept -> collection_type::const_iterator
+{
+  return std::end(m_cells);
 }
