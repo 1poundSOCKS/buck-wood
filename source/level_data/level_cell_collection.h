@@ -142,12 +142,17 @@ inline auto level_cell_collection::CentrePoint() const noexcept -> POINT_2F
 
 inline auto level_cell_collection::Bounds() const noexcept -> level_cell_bounds
 {
-  auto cellIds = std::ranges::views::transform(m_cells, [](const auto& cellEntry)
-  {
-    const auto& [cellId, cellType] = cellEntry;
-    return cellId;
-  });
+  // auto cellIds = std::ranges::views::transform(m_cells, [](const auto& cellEntry)
+  // {
+  //   const auto& [cellId, cellType] = cellEntry;
+  //   return cellId;
+  // });
+
+  auto cellIds = std::array {
+    cell_id { 0, 0 },
+    cell_id { 10, 10 }
+  };
 
   // return level_cell_bounds { cellIds };
-  return level_cell_bounds {};
+  return level_cell_bounds { cellIds };
 }
