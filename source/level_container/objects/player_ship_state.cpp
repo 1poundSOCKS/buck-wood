@@ -52,11 +52,11 @@ auto player_ship_state::UpdateWhenMoving(float interval, cell_size cellSize) -> 
       break;
   }
 
-  auto moving = !m_cellPosition.MoveComplete();
+  // auto moving = !m_cellPosition.MoveComplete();
 
   m_position = m_cellPosition(interval, moveDirection, cellSize);
 
-  m_state = moving && m_cellPosition.MoveComplete() ? state::waiting : state::moving;
+  // m_state = moving && m_cellPosition.MoveComplete() ? state::waiting : state::moving;
 }
 
 auto player_ship_state::UpdateWhenWaiting(float interval) -> void
