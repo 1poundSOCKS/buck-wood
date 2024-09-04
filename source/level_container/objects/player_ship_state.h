@@ -62,7 +62,7 @@ private:
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_state { state::moving }, m_stateChange { 0.3f },  m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.4f }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_state { state::moving }, m_stateChange { 0.2f },  m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.4f }, m_moveDirection { move_direction::none }
 {
 }
 
