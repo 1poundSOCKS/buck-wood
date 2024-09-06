@@ -2,6 +2,7 @@
 
 #include "default_object.h"
 #include "level_geometry_functions.h"
+#include "pixel_geometry.h"
 
 class level_geometries
 {
@@ -36,6 +37,8 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
+
+  pixel_geometry m_playerGeometry;
 
   winrt::com_ptr<ID2D1Geometry> m_player;
   winrt::com_ptr<ID2D1Geometry> m_playerBullet;

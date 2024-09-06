@@ -64,7 +64,7 @@ auto level_geometries::GetBase(object_type objectType) -> winrt::com_ptr<ID2D1Ge
   switch( objectType )
   {
     case object_type::player:
-      return m_targetGeometry;
+      return m_playerGeometry;
     case object_type::player_bullet:
       return m_targetGeometry;
     case object_type::enemy_1:
