@@ -33,12 +33,16 @@ private:
 
   inline static level_geometries* m_instance { nullptr };
 
+  inline static auto m_playerPixelData = std::array {
+    cell_id { 0, 0 }
+  };
+
+  pixel_geometry m_playerPixelGeometry;
+
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
-
-  pixel_geometry m_playerGeometry;
 
   winrt::com_ptr<ID2D1Geometry> m_player;
   winrt::com_ptr<ID2D1Geometry> m_playerBullet;
