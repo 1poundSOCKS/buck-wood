@@ -34,7 +34,11 @@ private:
   inline static level_geometries* m_instance { nullptr };
 
   inline static auto m_playerPixelData = std::array {
-    cell_id { 0, 0 }
+    cell_id { 0, -1 },
+    cell_id { 0, 0 },
+    cell_id { 1, 0 },
+    cell_id { 0, 1 },
+    cell_id { -1, 0 }
   };
 
   pixel_geometry m_playerPixelGeometry;
