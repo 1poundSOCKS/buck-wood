@@ -33,6 +33,12 @@ private:
 
   inline static level_geometries* m_instance { nullptr };
 
+  inline static auto m_playerPixelImage = std::array {
+    std::string { " 0 " },
+    std::string { "000" },
+    std::string { " 0 " }
+  };
+
   inline static auto m_playerPixelData = std::array {
     cell_id { 0, -1 },
     cell_id { 0, 0 },
@@ -40,8 +46,6 @@ private:
     cell_id { 0, 1 },
     cell_id { -1, 0 }
   };
-
-  pixel_geometry m_playerPixelGeometry;
 
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;

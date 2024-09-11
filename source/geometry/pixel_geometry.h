@@ -8,8 +8,12 @@ class pixel_geometry
 
 public:
 
-  pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_size pixelSize);
-  [[nodiscard]] operator winrt::com_ptr<ID2D1Geometry>() const;
+  pixel_geometry() noexcept = default;
+  pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_size pixelSize) noexcept;
+
+  auto Load(std::ranges::input_range auto&& pixelIds, cell_size pixelSize) noexcept -> void;
+
+  [[nodiscard]] operator winrt::com_ptr<ID2D1Geometry>() const noexcept;
 
 private:
 
@@ -17,7 +21,12 @@ private:
 
 };
 
-pixel_geometry::pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_size pixelSize)
+pixel_geometry::pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_size pixelSize) noexcept
+{
+  Load(pixelIds, pixelSize);
+}
+
+inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_size pixelSize) noexcept -> void
 {
   std::set<cell_id> pixelIdLookup;
   std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
