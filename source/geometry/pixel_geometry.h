@@ -17,7 +17,7 @@ public:
 
 private:
 
-  auto LoadNext(cell_id firstPixelId, cell_size pixelSize, const std::set<cell_id> &pixelIdLookup, auto backInserter) -> void;
+  auto LoadNext(cell_id firstPixelId, cell_size pixelSize, std::ranges::input_range auto &&pixelPositions, const std::set<cell_id> &pixelIdLookup, auto backInserter) -> void;
 
 private:
 
@@ -50,72 +50,93 @@ inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_
   std::list<POINT_2F> points;
   points.emplace_back(static_cast<float>(firstPixelRect.left), static_cast<float>(firstPixelRect.top));
 
-  LoadNext(*firstPixelId, pixelSize, pixelIdLookup, std::back_inserter(points));
+  constexpr auto pixelPositions = std::array {
+    cell_id::relative_position::above,
+    cell_id::relative_position::right,
+    cell_id::relative_position::below,
+    cell_id::relative_position::left
+  };
+
+  LoadNext(*firstPixelId, pixelSize, pixelPositions, pixelIdLookup, std::back_inserter(points));
 
   m_geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), points, D2D1_FIGURE_END_CLOSED);
 }
 
-auto pixel_geometry::LoadNext(cell_id firstPixelId, cell_size pixelSize, const std::set<cell_id>& pixelIdLookup, auto backInserter) -> void
+auto pixel_geometry::LoadNext(cell_id firstPixelId, cell_size pixelSize, std::ranges::input_range auto &&pixelPositions, const std::set<cell_id>& pixelIdLookup, auto backInserter) -> void
 {
   auto firstPixelRect = pixelSize.CellRect(firstPixelId);
 
+  for( auto pixelPosition : pixelPositions )
   {
-    auto nextPixelId = firstPixelId.Get(cell_id::relative_position::above);
+    switch( pixelPosition )
+    {
+      case cell_id::relative_position::above:
+        {
+          auto nextPixelId = firstPixelId.Get(cell_id::relative_position::above);
 
-    if( pixelIdLookup.contains(nextPixelId) )
-    {
-      auto nextPixelRect = pixelSize.CellRect(nextPixelId);
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
-    }
-    else
-    {
-      backInserter = POINT_2F { static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.top) };
-    } 
-  }
+          if( pixelIdLookup.contains(nextPixelId) )
+          {
+            auto nextPixelRect = pixelSize.CellRect(nextPixelId);
+            backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
+            backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
+            backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
+          }
+          else
+          {
+            backInserter = POINT_2F { static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.top) };
+          }
+          break;
+        }
+        
+      case cell_id::relative_position::right:
+      {
+        auto nextPixelId = firstPixelId.Get(cell_id::relative_position::right);
+        
+        if( pixelIdLookup.contains(nextPixelId) )
+        {
+          auto nextPixelRect = pixelSize.CellRect(nextPixelId);
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
+        }
+        else
+        {
+          backInserter = POINT_2F { static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.bottom) };
+        }
+        break;
+      }
+        
+      case cell_id::relative_position::below:
+      {
+        auto nextPixelId = firstPixelId.Get(cell_id::relative_position::below);
 
-  {
-    auto nextPixelId = firstPixelId.Get(cell_id::relative_position::right);
-    
-    if( pixelIdLookup.contains(nextPixelId) )
-    {
-      auto nextPixelRect = pixelSize.CellRect(nextPixelId);
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
-    }
-    else
-    {
-      backInserter = POINT_2F { static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.bottom) };
-    }
-  }
+        if( pixelIdLookup.contains(nextPixelId) )
+        {
+          auto nextPixelRect = pixelSize.CellRect(nextPixelId);
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
+        }
+        else
+        {
+          backInserter = POINT_2F { static_cast<float>(firstPixelRect.left), static_cast<float>(firstPixelRect.bottom) };
+        }
+        break;
+      }
+        
+      case cell_id::relative_position::left:
+      {
+        auto nextPixelId = firstPixelId.Get(cell_id::relative_position::left);
 
-  {
-    auto nextPixelId = firstPixelId.Get(cell_id::relative_position::below);
-
-    if( pixelIdLookup.contains(nextPixelId) )
-    {
-      auto nextPixelRect = pixelSize.CellRect(nextPixelId);
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.bottom) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
-    }
-    else
-    {
-      backInserter = POINT_2F { static_cast<float>(firstPixelRect.left), static_cast<float>(firstPixelRect.bottom) };
-    }
-  }
-
-  {
-    auto nextPixelId = firstPixelId.Get(cell_id::relative_position::left);
-
-    if( pixelIdLookup.contains(nextPixelId) )
-    {
-      auto nextPixelRect = pixelSize.CellRect(nextPixelId);
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
-      backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
+        if( pixelIdLookup.contains(nextPixelId) )
+        {
+          auto nextPixelRect = pixelSize.CellRect(nextPixelId);
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.bottom) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.left), static_cast<float>(nextPixelRect.top) };
+          backInserter = POINT_2F { static_cast<float>(nextPixelRect.right), static_cast<float>(nextPixelRect.top) };
+        }
+      }
+      break;
     }
   }
 }
