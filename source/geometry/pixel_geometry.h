@@ -19,6 +19,7 @@ private:
 
   auto LoadNext(cell_id firstPixelId, cell_size pixelSize, std::ranges::input_range auto &&pixelPositions, const std::set<cell_id> &pixelIdLookup, auto backInserter) -> void;
   static [[nodiscard]] auto NextPositionClockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
+  static [[nodiscard]] auto NextPositionAnticlockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
 
 private:
 
@@ -36,6 +37,21 @@ inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_
   std::set<cell_id> pixelIdLookup;
   std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
 
+  std::ranges::transform(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)), [](cell_id pixelId)
+  {
+    return pixelId.Get(cell_id::relative_position::right);
+  });
+
+  std::ranges::transform(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)), [](cell_id pixelId)
+  {
+    return pixelId.Get(cell_id::relative_position::below_right);
+  });
+
+  std::ranges::transform(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)), [](cell_id pixelId)
+  {
+    return pixelId.Get(cell_id::relative_position::below);
+  });
+
   // auto boundaryLeft = std::ranges::views::filter(pixelIds, [&pixelIdLookup](const auto& pixelId)
   // {
   //   auto leftPixelId = pixelId.Get(cell_id::relative_position::left);
@@ -45,29 +61,40 @@ inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_
   // std::set<cell_id> boundaryLeftLookup;
   // std::ranges::copy(boundaryLeft, std::inserter(boundaryLeftLookup, std::begin(boundaryLeftLookup)));
 
-  auto firstPixelId = pixelIdLookup.find(cell_id { 0, 0 });
-  auto firstPixelRect = pixelSize.CellRect(*firstPixelId);
+  auto firstPixelId = pixelIdLookup.find(cell_id { -1, 0 });
+  auto currentPixelId = *firstPixelId;
+  auto currentPixelRect = pixelSize.CellRect(currentPixelId);
 
   std::list<POINT_2F> points;
-  points.emplace_back(static_cast<float>(firstPixelRect.left), static_cast<float>(firstPixelRect.top));
-  points.emplace_back(static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.top));
-  points.emplace_back(static_cast<float>(firstPixelRect.right), static_cast<float>(firstPixelRect.bottom));
-  points.emplace_back(static_cast<float>(firstPixelRect.left), static_cast<float>(firstPixelRect.bottom));
+  points.emplace_back(static_cast<float>(currentPixelRect.left), static_cast<float>(currentPixelRect.top));
 
-  // constexpr auto pixelPositions = std::array {
-  //   cell_id::relative_position::above_left,
-  //   cell_id::relative_position::above,
-  //   cell_id::relative_position::above_right,
-  //   cell_id::relative_position::right,
-  //   cell_id::relative_position::below_right,
-  //   cell_id::relative_position::below,
-  //   cell_id::relative_position::below_left
-  // };
+  using relative_cell = std::pair<cell_id::relative_position, cell_id>;
 
-  // LoadNext(*firstPixelId, pixelSize, pixelPositions, pixelIdLookup, std::back_inserter(points));
+  auto startPosition = cell_id::relative_position::left;
 
-  // std::list<cell_id::relative_position> geometryPositions;
-  // geometryPositions.emplace_back(cell_id::relative_position::below_right);
+  auto nextPosition = NextPositionClockwise(startPosition);
+  auto nextPixelId = currentPixelId.Get(nextPosition);
+  auto nextPixelIdLookup = pixelIdLookup.find(nextPixelId);
+
+  while( nextPixelId != *firstPixelId )
+  {
+    while( nextPosition != startPosition && nextPixelIdLookup == std::end(pixelIdLookup) )
+    {
+      nextPosition = NextPositionClockwise(nextPosition);
+      nextPixelId = currentPixelId.Get(nextPosition);
+      nextPixelIdLookup = pixelIdLookup.find(nextPixelId);
+    }
+
+    pixelIdLookup.erase(currentPixelId);
+
+    nextPosition = NextPositionAnticlockwise(nextPosition);
+    nextPixelId = nextPixelId.Get(nextPosition);
+    nextPixelIdLookup = pixelIdLookup.find(nextPixelId);
+  }
+
+  points.emplace_back(static_cast<float>(currentPixelRect.right), static_cast<float>(currentPixelRect.top));
+  points.emplace_back(static_cast<float>(currentPixelRect.right), static_cast<float>(currentPixelRect.bottom));
+  points.emplace_back(static_cast<float>(currentPixelRect.left), static_cast<float>(currentPixelRect.bottom));
 
   m_geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), points, D2D1_FIGURE_END_CLOSED);
 }
@@ -183,20 +210,31 @@ inline auto pixel_geometry::NextPositionClockwise(cell_id::relative_position cur
   switch( currentPosition )
   {
     case cell_id::relative_position::left:
-      return cell_id::relative_position::above_left;
-    case cell_id::relative_position::above_left:
       return cell_id::relative_position::above;
     case cell_id::relative_position::above:
-      return cell_id::relative_position::above_right;
-    case cell_id::relative_position::above_right:
       return cell_id::relative_position::right;
     case cell_id::relative_position::right:
-      return cell_id::relative_position::below_right;
-    case cell_id::relative_position::below_right:
       return cell_id::relative_position::below;
     case cell_id::relative_position::below:
-      return cell_id::relative_position::below_left;
-    case cell_id::relative_position::below_left:
       return cell_id::relative_position::left;
+    default:
+      return cell_id::relative_position::above;
+  }
+}
+
+inline auto pixel_geometry::NextPositionAnticlockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position
+{
+  switch( currentPosition )
+  {
+    case cell_id::relative_position::left:
+      return cell_id::relative_position::below;
+    case cell_id::relative_position::above:
+      return cell_id::relative_position::left;
+    case cell_id::relative_position::right:
+      return cell_id::relative_position::above;
+    case cell_id::relative_position::below:
+      return cell_id::relative_position::right;
+    default:
+      return cell_id::relative_position::above;
   }
 }
