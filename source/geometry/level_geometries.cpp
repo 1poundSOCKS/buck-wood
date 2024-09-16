@@ -25,10 +25,7 @@ level_geometries::level_geometries()
 
   playerPixelImageReader.Enumerate([&playerPixelData](int column, int row, char pixelData)
   {
-    if( pixelData != ' ' )
-    {
-      playerPixelData.emplace_back(column, row);
-    }
+    if( pixelData != ' ' ) playerPixelData.emplace_back(column, row);
   });
 
   pixel_geometry playerPixelGeometry;
