@@ -29,7 +29,7 @@ level_geometries::level_geometries()
   });
 
   pixel_geometry playerPixelGeometry;
-  playerPixelGeometry.Load(playerPixelData, cell_size { 40, 40 });
+  playerPixelGeometry.Load(playerPixelData, cell_size { 20, 20 });
 
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_mineGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED);
