@@ -34,9 +34,9 @@ private:
   inline static level_geometries* m_instance { nullptr };
 
   inline static auto m_playerPixelImage = std::array {
-    std::string { "   " },
     std::string { " 0 " },
-    std::string { "   " }
+    std::string { "000" },
+    std::string { " 0 " }
   };
 
   inline static auto m_playerPixelData = std::array {

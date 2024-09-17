@@ -19,6 +19,7 @@ private:
 
   static [[nodiscard]] auto NextPositionClockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
   static [[nodiscard]] auto NextPositionAnticlockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
+  static [[nodiscard]] auto OppositePosition(cell_id::relative_position currentPosition) -> cell_id::relative_position;
 
 private:
 
@@ -37,58 +38,67 @@ inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_
 
   std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
 
-  std::ranges::copy_if(pixelIds, std::inserter(borderPixelIdLookup, std::begin(borderPixelIdLookup)), [&pixelIdLookup](cell_id pixelId)
+  // std::ranges::copy_if(pixelIds, std::inserter(borderPixelIdLookup, std::begin(borderPixelIdLookup)), [&pixelIdLookup](cell_id pixelId)
+  // {
+  //   auto leftId = pixelId.Get(cell_id::relative_position::left);
+  //   auto aboveId = pixelId.Get(cell_id::relative_position::above);
+  //   auto rightId = pixelId.Get(cell_id::relative_position::right);
+  //   auto belowId = pixelId.Get(cell_id::relative_position::below);
+
+  //   return pixelIdLookup.contains(leftId) && pixelIdLookup.contains(aboveId) && pixelIdLookup.contains(rightId) && pixelIdLookup.contains(belowId) ? false : true;
+  // });
+
+  std::map<POINT_2I, POINT_2I> pixelLines;
+
+  for( auto pixelId : pixelIdLookup )
   {
     auto leftId = pixelId.Get(cell_id::relative_position::left);
     auto aboveId = pixelId.Get(cell_id::relative_position::above);
     auto rightId = pixelId.Get(cell_id::relative_position::right);
     auto belowId = pixelId.Get(cell_id::relative_position::below);
 
-    return pixelIdLookup.contains(leftId) && pixelIdLookup.contains(aboveId) && pixelIdLookup.contains(rightId) && pixelIdLookup.contains(belowId) ? false : true;
-  });
+    auto pixelPosition = pixelId.Position(1, 1);
 
-  // auto boundaryLeft = std::ranges::views::filter(pixelIds, [&pixelIdLookup](const auto& pixelId)
-  // {
-  //   auto leftPixelId = pixelId.Get(cell_id::relative_position::left);
-  //   return pixelIdLookup.contains(leftPixelId) ? false : true;
-  // });
+    if( !pixelIdLookup.contains(leftId) )
+    {
+      auto pixelLineStart = POINT_2I { pixelPosition.x, pixelPosition.y + 1 };
+      auto pixelLineEnd = POINT_2I { pixelPosition.x, pixelPosition.y };
+      pixelLines[pixelLineStart] = pixelLineEnd;
+    }
 
-  // std::set<cell_id> boundaryLeftLookup;
-  // std::ranges::copy(boundaryLeft, std::inserter(boundaryLeftLookup, std::begin(boundaryLeftLookup)));
+    if( !pixelIdLookup.contains(aboveId) )
+    {
+      auto pixelLineStart = POINT_2I { pixelPosition.x, pixelPosition.y };
+      auto pixelLineEnd = POINT_2I { pixelPosition.x + 1, pixelPosition.y };
+      pixelLines[pixelLineStart] = pixelLineEnd;
+    }
 
-  auto firstPixelId = pixelIdLookup.find(cell_id { 0, 0 });
-  auto currentPixelId = *firstPixelId;
-  auto currentPixelRect = pixelSize.CellRect(currentPixelId);
+    if( !pixelIdLookup.contains(rightId) )
+    {
+      auto pixelLineStart = POINT_2I { pixelPosition.x + 1, pixelPosition.y };
+      auto pixelLineEnd = POINT_2I { pixelPosition.x + 1, pixelPosition.y + 1 };
+      pixelLines[pixelLineStart] = pixelLineEnd;
+    }
+
+    if( !pixelIdLookup.contains(belowId) )
+    {
+      auto pixelLineStart = POINT_2I { pixelPosition.x + 1, pixelPosition.y + 1 };
+      auto pixelLineEnd = POINT_2I { pixelPosition.x, pixelPosition.y + 1 };
+      pixelLines[pixelLineStart] = pixelLineEnd;
+    }
+  }
 
   std::list<POINT_2F> points;
 
-  auto startPixelId = currentPixelId;
-  auto startPixelDirection = cell_id::relative_position::left;
-
-  auto stopPixelDirection = NextPositionAnticlockwise(startPixelDirection);
-  auto nextPixelDirection = startPixelDirection;
-  auto nextPixelId = startPixelId.Get(nextPixelDirection);
-
-  while( nextPixelDirection != stopPixelDirection && !borderPixelIdLookup.contains(nextPixelId) )
+  auto currentLine = std::begin(pixelLines);
+  
+  while( points.size() < pixelLines.size() )
   {
-    switch( nextPixelDirection )
-    {
-      case cell_id::relative_position::left:
-        points.emplace_back(static_cast<float>(currentPixelRect.left), static_cast<float>(currentPixelRect.top));
-        break;
-      case cell_id::relative_position::above:
-        points.emplace_back(static_cast<float>(currentPixelRect.right), static_cast<float>(currentPixelRect.top));
-        break;
-      case cell_id::relative_position::right:
-        points.emplace_back(static_cast<float>(currentPixelRect.right), static_cast<float>(currentPixelRect.bottom));
-        break;
-      case cell_id::relative_position::below:
-        points.emplace_back(static_cast<float>(currentPixelRect.left), static_cast<float>(currentPixelRect.bottom));
-        break;
-    }
-
-    nextPixelDirection = NextPositionClockwise(nextPixelDirection);
-    nextPixelId = currentPixelId.Get(nextPixelDirection);
+    const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
+    auto pixelRect = pixelSize.CellRect({pixelLineStart.x, pixelLineStart.y});
+    auto pixelRectFloat = ToFloat(pixelRect);
+    points.emplace_back(pixelRectFloat.left, pixelRectFloat.top);
+    currentLine = pixelLines.find(pixelLineEnd);
   }
 
   m_geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), points, D2D1_FIGURE_END_CLOSED);
@@ -139,6 +149,31 @@ inline auto pixel_geometry::NextPositionAnticlockwise(cell_id::relative_position
       return cell_id::relative_position::below_right;
     case cell_id::relative_position::below_left:
       return cell_id::relative_position::below;
+    default:
+      return cell_id::relative_position::above;
+  }
+}
+
+inline auto pixel_geometry::OppositePosition(cell_id::relative_position currentPosition) -> cell_id::relative_position
+{
+  switch( currentPosition )
+  {
+    case cell_id::relative_position::left:
+      return cell_id::relative_position::right;
+    case cell_id::relative_position::above_left:
+      return cell_id::relative_position::below_right;
+    case cell_id::relative_position::above:
+      return cell_id::relative_position::below;
+    case cell_id::relative_position::above_right:
+      return cell_id::relative_position::below_left;
+    case cell_id::relative_position::right:
+      return cell_id::relative_position::left;
+    case cell_id::relative_position::below_right:
+      return cell_id::relative_position::above_left;
+    case cell_id::relative_position::below:
+      return cell_id::relative_position::above;
+    case cell_id::relative_position::below_left:
+      return cell_id::relative_position::above_right;
     default:
       return cell_id::relative_position::above;
   }

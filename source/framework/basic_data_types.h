@@ -20,6 +20,16 @@ struct POINT_2I
 {
   int32_t x;
   int32_t y;
+
+  auto operator <(const POINT_2I& point) const -> bool
+  {
+    return x < point.x || ( x == point.x && y < point.y );
+  }
+
+  auto operator ==(const POINT_2I& point) const -> bool
+  {
+    return y == point.y && x == point.x;
+  }
 };
 
 struct RECT_I
