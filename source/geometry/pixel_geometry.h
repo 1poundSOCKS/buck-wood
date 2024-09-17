@@ -38,16 +38,6 @@ inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_
 
   std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
 
-  // std::ranges::copy_if(pixelIds, std::inserter(borderPixelIdLookup, std::begin(borderPixelIdLookup)), [&pixelIdLookup](cell_id pixelId)
-  // {
-  //   auto leftId = pixelId.Get(cell_id::relative_position::left);
-  //   auto aboveId = pixelId.Get(cell_id::relative_position::above);
-  //   auto rightId = pixelId.Get(cell_id::relative_position::right);
-  //   auto belowId = pixelId.Get(cell_id::relative_position::below);
-
-  //   return pixelIdLookup.contains(leftId) && pixelIdLookup.contains(aboveId) && pixelIdLookup.contains(rightId) && pixelIdLookup.contains(belowId) ? false : true;
-  // });
-
   std::map<POINT_2I, POINT_2I> pixelLines;
 
   for( auto pixelId : pixelIdLookup )
