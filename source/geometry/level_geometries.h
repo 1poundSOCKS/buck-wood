@@ -104,6 +104,6 @@ auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelDa
   });
 
   pixel_geometry playerPixelGeometry;
-  playerPixelGeometry.Load(playerPixelData, cell_size { 20, 20 });
+  playerPixelGeometry.Load(playerPixelData, pixelSize);
   return playerPixelGeometry;
 }
