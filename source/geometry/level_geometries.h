@@ -3,6 +3,7 @@
 #include "default_object.h"
 #include "level_geometry_functions.h"
 #include "pixel_geometry.h"
+#include "level_base.h"
 
 class level_geometries
 {
@@ -29,6 +30,8 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
+  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> pixel_geometry;
+
 private:
 
   inline static level_geometries* m_instance { nullptr };
@@ -41,12 +44,10 @@ private:
     std::string { "000  000" }
   };
 
-  inline static auto m_playerPixelData = std::array {
-    cell_id { 0, -1 },
-    cell_id { 0, 0 },
-    cell_id { 1, 0 },
-    cell_id { 0, 1 },
-    cell_id { -1, 0 }
+  inline static auto m_enemyBulletPixelImage = std::array {
+    std::string { " 0 " },
+    std::string { "000" },
+    std::string { " 0 " }
   };
 
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
@@ -89,4 +90,20 @@ inline [[nodiscard]] auto level_geometries::RectangleGeometry() -> winrt::com_pt
 inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&
 {
   return m_instance->m_hudTargetGeometries;
+}
+
+auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> pixel_geometry
+{
+  level_base playerPixelImageReader { pixelData };
+
+  std::list<cell_id> playerPixelData;
+
+  playerPixelImageReader.Enumerate([&playerPixelData](int column, int row, char pixelData)
+  {
+    if( pixelData != ' ' ) playerPixelData.emplace_back(column, row);
+  });
+
+  pixel_geometry playerPixelGeometry;
+  playerPixelGeometry.Load(playerPixelData, cell_size { 20, 20 });
+  return playerPixelGeometry;
 }

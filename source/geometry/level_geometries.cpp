@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "level_geometries.h"
-#include "level_base.h"
 
 auto level_geometries::create() -> void
 {
@@ -19,17 +18,20 @@ auto level_geometries::destroy() -> void
 
 level_geometries::level_geometries()
 {
-  level_base playerPixelImageReader { m_playerPixelImage };
+  // level_base playerPixelImageReader { m_playerPixelImage };
 
-  std::list<cell_id> playerPixelData;
+  // std::list<cell_id> playerPixelData;
 
-  playerPixelImageReader.Enumerate([&playerPixelData](int column, int row, char pixelData)
-  {
-    if( pixelData != ' ' ) playerPixelData.emplace_back(column, row);
-  });
+  // playerPixelImageReader.Enumerate([&playerPixelData](int column, int row, char pixelData)
+  // {
+  //   if( pixelData != ' ' ) playerPixelData.emplace_back(column, row);
+  // });
 
-  pixel_geometry playerPixelGeometry;
-  playerPixelGeometry.Load(playerPixelData, cell_size { 20, 20 });
+  // pixel_geometry playerPixelGeometry;
+  // playerPixelGeometry.Load(playerPixelData, cell_size { 20, 20 });
+
+  auto playerPixelGeometry = LoadPixelGeometry(m_playerPixelImage, { 20, 20 });
+  auto enemyBulletPixelGeometry = LoadPixelGeometry(m_enemyBulletPixelImage, { 20, 20 });
 
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_mineGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED);
@@ -39,7 +41,8 @@ level_geometries::level_geometries()
   m_enemy1 = ScaledGeometry(object_type::enemy_1, { 160, 160 });
   m_enemy2 = ScaledGeometry(object_type::enemy_2, { 140, 140 });
   m_enemy3 = ScaledGeometry(object_type::enemy_3, { 160, 160 });
-  m_enemyBullet1 = ScaledGeometry(object_type::enemy_bullet_1, { 80, 80 });
+  // m_enemyBullet1 = ScaledGeometry(object_type::enemy_bullet_1, { 80, 80 });
+  m_enemyBullet1 = enemyBulletPixelGeometry;
   m_portal = ScaledGeometry(object_type::portal, { 200, 200 });
   m_powerUp = ScaledGeometry(object_type::power_up, { 60, 60 });
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
