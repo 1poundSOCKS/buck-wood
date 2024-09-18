@@ -63,5 +63,14 @@ auto pixel_geometry::LoadGeometry(const pixel_id_lookup &pixelIdLookup, cell_siz
     currentLine = pixelLines.find(pixelLineEnd);
   }
 
-  m_geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), points, D2D1_FIGURE_END_CLOSED);
+  auto geometryBounds = Bounds(points);
+  auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
+  auto shiftUp = ( geometryBounds.bottom + geometryBounds.top ) / 2.0f;
+
+  auto shiftedPoints = std::ranges::views::transform(points, [shiftLeft, shiftUp](POINT_2F point) -> POINT_2F
+  {
+    return { point.x - shiftLeft, point.y - shiftUp };
+  });
+
+  m_geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedPoints, D2D1_FIGURE_END_CLOSED);
 }

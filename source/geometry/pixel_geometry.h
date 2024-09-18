@@ -20,10 +20,11 @@ private:
   using pixel_id_lookup = std::set<cell_id>;
 
   auto LoadGeometry(const pixel_id_lookup& pixelIdLookup, cell_size pixelSize) noexcept -> void;
-  
+
   static [[nodiscard]] auto NextPositionClockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
   static [[nodiscard]] auto NextPositionAnticlockwise(cell_id::relative_position currentPosition) -> cell_id::relative_position;
   static [[nodiscard]] auto OppositePosition(cell_id::relative_position currentPosition) -> cell_id::relative_position;
+  static auto Bounds(std::ranges::input_range auto&& points) -> RECT_F;
 
 private:
 
@@ -36,9 +37,21 @@ pixel_geometry::pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_si
   Load(pixelIds, pixelSize);
 }
 
-inline auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_size pixelSize) noexcept -> void
+auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_size pixelSize) noexcept -> void
 {
   pixel_id_lookup pixelIdLookup;
   std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
   LoadGeometry(pixelIdLookup, pixelSize);
+}
+
+auto pixel_geometry::Bounds(std::ranges::input_range auto &&points) -> RECT_F
+{
+  return std::accumulate(std::begin(points), std::end(points), RECT_F { 0.0f, 0.0f, 0.0f, 0.0f }, [](RECT_F bounds, POINT_2F point)
+  {
+    bounds.left = std::min(bounds.left, point.x);
+    bounds.top = std::min(bounds.top, point.y);
+    bounds.right = std::max(bounds.right, point.x);
+    bounds.bottom = std::max(bounds.bottom, point.y);
+    return bounds;
+  });
 }
