@@ -22,7 +22,7 @@ level_geometries::level_geometries()
   m_mineGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED);
   m_targetGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 8 }, D2D1_FIGURE_END_CLOSED);
   m_player = LoadPixelGeometry(m_playerPixelImage, { 16, 16 });
-  m_playerBullet = ScaledGeometry(object_type::player_bullet, { 60, 60 });
+  m_playerBullet = LoadPixelGeometry(m_playerBulletPixelImage, { 40, 40 });
   m_enemy1 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy2 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy3 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });

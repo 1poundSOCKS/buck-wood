@@ -57,10 +57,13 @@ private:
     std::string { "00  00  00" }
   };
 
+  inline static auto m_playerBulletPixelImage = std::array {
+    std::string { "0" },
+    std::string { "0" }
+  };
+
   inline static auto m_enemyBulletPixelImage = std::array {
-    std::string { " 0 " },
-    std::string { "000" },
-    std::string { " 0 " }
+    std::string { "0" }
   };
 
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
