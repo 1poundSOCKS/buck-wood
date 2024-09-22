@@ -66,6 +66,14 @@ private:
     std::string { "0" }
   };
 
+  inline static auto m_powerupPixelImage = std::array {
+    std::string { "  0  " },
+    std::string { " 000 " },
+    std::string { "00000" },
+    std::string { " 000 " },
+    std::string { "  0  " }
+  };
+
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
