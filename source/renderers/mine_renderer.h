@@ -15,6 +15,6 @@ public:
 
 private:
 
-  geometry_renderer m_renderer { screen_render_brush_type_one.CreateBrush() };
+  geometry_renderer m_renderer { screen_render_brush_red.CreateBrush() };
 
 };

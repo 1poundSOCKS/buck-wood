@@ -19,7 +19,7 @@ public:
 
 private:
 
-  constexpr static float m_lifespan { 2.0f };
+  constexpr static float m_lifespan { 3.0f };
 
   static constexpr float m_spinRate { 400 };
   static constexpr float m_rotationSpeed { 300.0f };

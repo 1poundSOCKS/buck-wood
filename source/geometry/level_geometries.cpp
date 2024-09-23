@@ -26,7 +26,7 @@ level_geometries::level_geometries()
   m_enemy1 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy2 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy3 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
-  m_enemyBullet1 = LoadPixelGeometry(m_enemyBulletPixelImage, { 40, 40 });
+  m_enemyBullet1 = LoadPixelGeometry(m_enemyBulletPixelImage, { 50, 50 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
