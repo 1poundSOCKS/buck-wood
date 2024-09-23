@@ -74,6 +74,14 @@ private:
     std::string { "  0  " }
   };
 
+  inline static auto m_portalPixelImage = std::array {
+    std::string { "  00  " },
+    std::string { " 0000 " },
+    std::string { "000000" },
+    std::string { " 0000 " },
+    std::string { "  00  " }
+  };
+
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
