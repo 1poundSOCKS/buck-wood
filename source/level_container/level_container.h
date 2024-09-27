@@ -16,6 +16,7 @@
 #include "level_collision_geometry.h"
 #include "geometry_collision_runner.h"
 #include "level_object_movement.h"
+#include "player_controls.h"
 
 class level_container
 {
@@ -98,6 +99,7 @@ private:
   cell_id m_exitCell;
 
   std::shared_ptr<player_ship_state> m_playerState;
+  player_controls m_controller;
 
   default_object_collection m_objects;
 

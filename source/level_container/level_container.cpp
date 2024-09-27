@@ -13,6 +13,7 @@ level_container::level_container(collision_type collisionType) :
   m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }, RECT_I { 0, 0, 10, 10 }) },
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f, VELOCITY_2F { 0, 0 }) }, 
+  m_controller { m_playerState, m_cells },
   m_collisionRunner { collisionType }
 {
 }
@@ -67,7 +68,7 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
     {
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
       defaultObject.Visit( visitor {
-        [this](player_ship& object) { m_playerState = object.State(); },
+        [this](player_ship& object) { m_playerState = object.State(); m_controller.SetState(object.State()); },
         [](auto& object) {}
       });
       return defaultObject;
@@ -169,63 +170,7 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
-  m_playerState->StayPut();
-
-  auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
-
-  if( leftThumbstickPosition )
-  {
-    enum class horizontal_move { none, left, right };
-    enum class vertical_move { none, up, down };
-
-    auto horizontalMove = horizontal_move::none;
-    horizontalMove = leftThumbstickPosition->x > 0.3 ? horizontal_move::right : horizontalMove;
-    horizontalMove = leftThumbstickPosition->x < -0.3 ? horizontal_move::left : horizontalMove;
-
-    auto verticalMove = vertical_move::none;
-    verticalMove = leftThumbstickPosition->y < -0.3 ? vertical_move::up : verticalMove;
-    verticalMove = leftThumbstickPosition->y > 0.3 ? vertical_move::down : verticalMove;
-
-    auto playerCellId = m_playerState->CellId();
-
-    switch( horizontalMove )
-    {
-      case horizontal_move::left:
-      {
-        auto cellId = playerCellId.Get(cell_id::relative_position::left);
-        m_cells->IsTypeOf(cellId, level_cell_type::floor) ? m_playerState->MoveLeft() : m_playerState->StayPut();
-        break;
-      }
-
-      case horizontal_move::right:
-      {
-        auto cellId = playerCellId.Get(cell_id::relative_position::right);
-        m_cells->IsTypeOf(cellId, level_cell_type::floor) ? m_playerState->MoveRight() : m_playerState->StayPut();
-        break;
-      }
-    }
-
-    switch( verticalMove )
-    {
-      case vertical_move::up:
-      {
-        auto cellId = playerCellId.Get(cell_id::relative_position::above);
-        m_cells->IsTypeOf(cellId, level_cell_type::floor) ? m_playerState->MoveUp() : m_playerState->StayPut();
-        break;
-      }
-
-      case vertical_move::down:
-      {
-        auto cellId = playerCellId.Get(cell_id::relative_position::below);
-        m_cells->IsTypeOf(cellId, level_cell_type::floor) ? m_playerState->MoveDown() : m_playerState->StayPut();
-        break;
-      }
-    }
-  }
-
-  std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
-  rightThumbstickPosition ? m_playerState->SetShootAngle(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition)) : m_playerState->ResetShootAngle();
-
+  m_controller.Update();
   m_playerState->Update(interval, cell_size { m_cellSize, m_cellSize });
 }
 
