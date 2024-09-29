@@ -16,8 +16,9 @@ auto player_controls::Update(float interval) const noexcept -> void
 
   if( leftThumbstickPosition )
   {
+    constexpr float movementSpeedMultipier = 1000.0f;
     auto position = m_state->Position();
-    auto positionOffset = POINT_2F { leftThumbstickPosition->x * 500.0f * interval, leftThumbstickPosition->y * 500.0f * interval };
+    auto positionOffset = POINT_2F { leftThumbstickPosition->x * movementSpeedMultipier * interval, leftThumbstickPosition->y * movementSpeedMultipier * interval };
     auto newPosition = POINT_2F { position.x + positionOffset.x, position.y + positionOffset.y };
     m_state->SetPosition(newPosition);
   }
