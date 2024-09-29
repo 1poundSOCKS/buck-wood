@@ -16,15 +16,6 @@ public:
 
   auto Update(float interval, cell_size cellSize) -> void;
 
-  auto MoveLeft() noexcept -> void;
-  auto MoveRight() noexcept -> void;
-  auto MoveUp() noexcept -> void;
-  auto MoveDown() noexcept -> void;
-  auto StayPut() noexcept -> void;
-
-  auto SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void;
-  [[nodiscard]] auto CellId() const noexcept -> cell_id;
-
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
 
@@ -37,69 +28,21 @@ public:
 
 private:
 
-  enum class state { moving, waiting };
-  enum class move_direction { none, up, down, left, right };
-
-private:
-
   auto UpdateWhenActive(float interval, cell_size cellSize) -> void;
-  auto UpdateWhenMoving(float interval, cell_size cellSize) -> void;
-  auto UpdateWhenWaiting(float interval) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
-  auto OppositeState() const noexcept -> state;
-
 private:
 
-  state m_state;
   fractional_counter m_stateChange;
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   std::optional<float> m_shootAngle;
-  move_direction m_moveDirection;
-  object_cell_position m_cellPosition;
 
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_state { state::moving }, m_stateChange { 0.2f },  m_shootAngle { 0.0f }, m_cellPosition { cell_id {0,0}, 0.4f }, m_moveDirection { move_direction::none }
+  base_object { position, scale, angle }, m_stateChange { 0.2f }
 {
-}
-
-inline auto player_ship_state::MoveLeft() noexcept -> void
-{
-  m_moveDirection = move_direction::left;
-}
-
-inline auto player_ship_state::MoveRight() noexcept -> void
-{
-  m_moveDirection = move_direction::right;
-}
-
-inline auto player_ship_state::MoveUp() noexcept -> void
-{
-  m_moveDirection = move_direction::up;
-}
-
-inline auto player_ship_state::MoveDown() noexcept -> void
-{
-  m_moveDirection = move_direction::down;
-}
-
-inline auto player_ship_state::StayPut() noexcept -> void
-{
-  m_moveDirection = move_direction::none;
-}
-
-inline auto player_ship_state::SetCellId(cell_id cellId, cell_size cellSize) noexcept -> void
-{
-  m_cellPosition.Set(cellId);
-  m_position = m_cellPosition(0, object_cell_position::move_direction::none, cellSize);
-}
-
-inline auto player_ship_state::CellId() const noexcept -> cell_id
-{
-  return m_cellPosition.Next();
 }
 
 inline auto player_ship_state::ApplyDamage(int value) -> void

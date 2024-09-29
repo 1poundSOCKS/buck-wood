@@ -10,7 +10,7 @@ public:
 
   player_controls(std::shared_ptr<player_ship_state> state, std::shared_ptr<level_cell_collection> cells) noexcept;
   auto SetState(std::shared_ptr<player_ship_state> state) noexcept -> void;
-  auto Update() const noexcept -> void;
+  auto Update(float interval) const noexcept -> void;
 
 private:
 

@@ -24,7 +24,7 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
 
   object.Visit( visitor {
     [cellId](portal& object) { object.SetCellId(cellId); },
-    [cellId](player_ship& object) { object.State()->SetCellId(cellId, cell_size { m_cellSize, m_cellSize }); },
+    [cellId](player_ship& object) { object.State()->SetPosition(ToFloat(cellId.Position(m_cellSize, m_cellSize))); },
     [cellId](enemy_type_1& object) { object.SetCellId(cellId); },
     [](auto& object) {}
   });
@@ -170,7 +170,7 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
-  m_controller.Update();
+  m_controller.Update(interval);
   m_playerState->Update(interval, cell_size { m_cellSize, m_cellSize });
 }
 
