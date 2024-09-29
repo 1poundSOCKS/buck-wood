@@ -31,6 +31,7 @@ auto renderer::Render(const hud_target& hudTarget) const -> void
 
 auto renderer::Render(const level_container &levelContainer) const -> void
 {
+#ifdef _RENDER_LEVEL_GRID
   levelContainer.EnumerateColumns([this](level_cell_collection::column_def columnDef)
   {
     Write(columnDef);
@@ -40,6 +41,7 @@ auto renderer::Render(const level_container &levelContainer) const -> void
   {
     Write(rowDef);
   });
+#endif
 
   int renderIndex = 0;
 
