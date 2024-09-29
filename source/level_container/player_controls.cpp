@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "player_controls.h"
 
-player_controls::player_controls(std::shared_ptr<player_ship_state> state, std::shared_ptr<level_cell_collection> cells) noexcept : m_state { state }, m_cells { cells }
+player_controls::player_controls(std::shared_ptr<player_ship_state> state) noexcept : m_state { state }
 {
 }
 
