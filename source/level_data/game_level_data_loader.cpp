@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
 
-game_level_data_loader::game_level_data_loader() : m_levelUpdateEvent { 5.0f }
+game_level_data_loader::game_level_data_loader() : m_levelUpdateEvent { 2.0f }
 {
 }
 
