@@ -171,7 +171,8 @@ auto level_container::DoCollisions() -> void
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
   m_controller.Update(interval);
-  m_playerState->Update(interval);
+  constexpr VELOCITY_2F forceOfGravity = { 0.0f, 100.0f };
+  m_playerState->Update(forceOfGravity, interval);
 }
 
 auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
