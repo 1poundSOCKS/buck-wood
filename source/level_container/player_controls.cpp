@@ -20,7 +20,7 @@ auto player_controls::Update(float interval) const noexcept -> void
     m_state->RotateBy(leftThumbstickPosition->x * rotationSpeedMultiplier);
   }
 
-  constexpr float thrustPowerMultiplier = 800.0f;
+  constexpr float thrustPowerMultiplier = 1200.0f;
   auto rightTrigger = gamepad_reader::right_trigger();
   m_state->SetThrusterPower(-rightTrigger * thrustPowerMultiplier);
 

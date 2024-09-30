@@ -79,7 +79,6 @@ inline auto player_ship_state::ShootAngle() const noexcept -> std::optional<floa
 inline auto player_ship_state::SetShootAngle(float value) noexcept -> void
 {
   m_shootAngle = value;
-  m_angle = value;
 }
 
 inline auto player_ship_state::ResetShootAngle() noexcept -> void
