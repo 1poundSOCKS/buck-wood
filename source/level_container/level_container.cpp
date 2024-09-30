@@ -171,7 +171,7 @@ auto level_container::DoCollisions() -> void
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
   m_controller.Update(interval);
-  m_playerState->Update(interval, cell_size { m_cellSize, m_cellSize });
+  m_playerState->Update(interval);
 }
 
 auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void

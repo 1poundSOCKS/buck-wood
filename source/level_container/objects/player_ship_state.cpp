@@ -2,12 +2,12 @@
 #include "player_ship_state.h"
 #include "player_state.h"
 
-auto player_ship_state::Update(float interval, cell_size cellSize) -> void
+auto player_ship_state::Update(float interval) -> void
 {
   switch(  player_state::get_status() )
   {
     case player_state::status::active:
-      UpdateWhenActive(interval, cellSize);
+      UpdateWhenActive(interval);
       break;
     case  player_state::status::celebrating:
       UpdateWhenCelebrating(interval);
@@ -15,7 +15,7 @@ auto player_ship_state::Update(float interval, cell_size cellSize) -> void
   }
 }
 
-auto player_ship_state::UpdateWhenActive(float interval, cell_size cellSize) -> void
+auto player_ship_state::UpdateWhenActive(float interval) -> void
 {
   base_object::Update(interval);
   

@@ -3,9 +3,7 @@
 #include "base_object.h"
 #include "reload_counter.h"
 #include "health_status.h"
-#include "cell_size.h"
 #include "fractional_counter.h"
-#include "object_cell_position.h"
 
 class player_ship_state : public base_object
 {
@@ -14,7 +12,7 @@ public:
 
   player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
 
-  auto Update(float interval, cell_size cellSize) -> void;
+  auto Update(float interval) -> void;
 
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
@@ -28,7 +26,7 @@ public:
 
 private:
 
-  auto UpdateWhenActive(float interval, cell_size cellSize) -> void;
+  auto UpdateWhenActive(float interval) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
 private:
