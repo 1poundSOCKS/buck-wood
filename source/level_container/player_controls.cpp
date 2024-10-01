@@ -16,7 +16,7 @@ auto player_controls::Update(float interval) const noexcept -> void
 
   if( leftThumbstickPosition )
   {
-    constexpr float rotationSpeedMultiplier = 600.0f;
+    constexpr float rotationSpeedMultiplier = 200.0f;
     m_state->RotateBy(leftThumbstickPosition->x * rotationSpeedMultiplier, interval);
   }
 
