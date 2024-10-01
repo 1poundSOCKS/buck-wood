@@ -24,6 +24,5 @@ auto player_controls::Update(float interval) const noexcept -> void
   auto rightTrigger = gamepad_reader::right_trigger();
   m_state->SetThrusterPower(-rightTrigger * thrustPowerMultiplier);
 
-  std::optional<D2D1_POINT_2F> rightThumbstickPosition = gamepad_reader::right_thumbstick();
-  rightThumbstickPosition ? m_state->SetShootAngle(direct2d::GetAngleBetweenPoints({0,0}, *rightThumbstickPosition)) : m_state->ResetShootAngle();
+  gamepad_reader::button_down(XINPUT_GAMEPAD_A) ? m_state->SetShootAngle(m_state->Angle()) : m_state->ResetShootAngle();  
 }
