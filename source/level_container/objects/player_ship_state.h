@@ -25,6 +25,7 @@ public:
   [[nodiscard]] auto SetShootAngle(float value) noexcept -> void;
   [[nodiscard]] auto ResetShootAngle() noexcept -> void;
   auto SetThrusterPower(float value) -> void;
+  auto RotateBy(float angle, float interval) -> void;
 
 private:
 
@@ -89,4 +90,9 @@ inline auto player_ship_state::ResetShootAngle() noexcept -> void
 inline auto player_ship_state::SetThrusterPower(float value) -> void
 {
   m_thrusterPower = value;
+}
+
+inline auto player_ship_state::RotateBy(float angle, float interval) -> void
+{
+  m_angle += angle * interval;
 }
