@@ -13,7 +13,7 @@ public:
 
   player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
 
-  auto Update(VELOCITY_2F environmentalForces, float interval) -> void;
+  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
 
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
@@ -28,7 +28,7 @@ public:
 
 private:
 
-  auto UpdateWhenActive(VELOCITY_2F environmentalForces, float interval) -> void;
+  auto UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
   auto UpdateWhenCelebrating(float interval) -> void;
 
 private:

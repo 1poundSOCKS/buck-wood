@@ -2,12 +2,12 @@
 #include "player_ship_state.h"
 #include "player_state.h"
 
-auto player_ship_state::Update(VELOCITY_2F environmentalForces, float interval) -> void
+auto player_ship_state::Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
 {
   switch(  player_state::get_status() )
   {
     case player_state::status::active:
-      UpdateWhenActive(environmentalForces, interval);
+      UpdateWhenActive(environmentalForces, airResistance, interval);
       break;
     case  player_state::status::celebrating:
       UpdateWhenCelebrating(interval);
@@ -15,13 +15,14 @@ auto player_ship_state::Update(VELOCITY_2F environmentalForces, float interval) 
   }
 }
 
-auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float interval) -> void
+auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
 {
   base_object::Update(interval);
-  m_velocity.UpdateBy(environmentalForces, interval);
   VELOCITY_2F thrustVelocityChange = m_thrusterPower ? direct2d::CalculateVelocity(*m_thrusterPower, m_angle) : VELOCITY_2F { 0.0f, 0.0f };
   VELOCITY_2F invertedThrustVelocityChange = { -thrustVelocityChange.x, -thrustVelocityChange.y };
-  m_velocity.UpdateBy(invertedThrustVelocityChange, interval);
+  VELOCITY_2F velocityChange = { invertedThrustVelocityChange.x + environmentalForces.x, invertedThrustVelocityChange.y + environmentalForces.y };
+  m_velocity.Update(velocityChange, interval);
+  m_velocity.RelativeUpdate(-airResistance, interval);
   m_position = m_velocity.UpdatePosition(m_position, interval);
   m_playerReloadCounter.Update(interval);
 }
