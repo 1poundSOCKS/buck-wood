@@ -67,7 +67,9 @@ auto default_object_renderer::Write(const enemy_bullet_1& object, ID2D1Geometry*
 
 auto default_object_renderer::Write(const portal& object, ID2D1Geometry* geometry) const -> void
 {
+#ifdef _ENABLE_PORTAL_RENDERING
   m_portalRenderer.Write(object, geometry);
+#endif
 }
 
 auto default_object_renderer::Write(const power_up& object, ID2D1Geometry* geometry) const -> void

@@ -18,8 +18,6 @@ public:
 
 private:
 
-  cell_id m_topLeft;
-  cell_id m_bottomRight;
   cell_id m_leftmostCell;
   cell_id m_topCell;
   cell_id m_rightmostCell;
