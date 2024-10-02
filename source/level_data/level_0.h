@@ -14,21 +14,25 @@ public:
 private:
 
  inline static std::array m_levelData { 
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "            P            " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " },
-    std::string { "                         " }
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "              P              " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " },
+    std::string { "                             " }
  };
 
 };
