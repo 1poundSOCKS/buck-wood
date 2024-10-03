@@ -84,6 +84,19 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
       case level_item_type::exit_portal:
         levelContainer->AddObject(level_container::object_type::portal_exit, cellId);
         break;
+
+      case level_item_type::enemy_type_one:
+        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
+        break;
+
+      case level_item_type::enemy_type_two:
+        levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
+        break;
+
+      case level_item_type::enemy_type_three:
+        levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
+        break;
+
     }
   });
 
@@ -92,6 +105,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 
 auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> void
 {
+#ifdef _ENABLE_ENEMY_SPAWN
   auto unoccupiedFloorCellCount = levelContainer.UnoccupiedFloorCellCount();
 
   std::uniform_int_distribution<size_t> cellDist { 0, unoccupiedFloorCellCount };
@@ -130,6 +144,7 @@ auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> 
     [](enemy_type_3& innerObject) { innerObject.SetHitpoints(3); },
     [](auto& innerObject) {}
   });
+#endif
 }
 
 auto game_world::CollisionType() -> collision_type

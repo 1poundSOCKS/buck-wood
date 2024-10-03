@@ -16,11 +16,11 @@ private:
  inline static std::array m_levelData { 
     std::string { "                             " },
     std::string { "                             " },
+    std::string { "      1                      " },
     std::string { "                             " },
     std::string { "                             " },
     std::string { "                             " },
-    std::string { "                             " },
-    std::string { "                             " },
+    std::string { "                         3   " },
     std::string { "                             " },
     std::string { "                             " },
     std::string { "              P              " },
@@ -29,7 +29,7 @@ private:
     std::string { "                             " },
     std::string { "                             " },
     std::string { "                             " },
-    std::string { "                             " },
+    std::string { "         2                   " },
     std::string { "                             " },
     std::string { "                             " },
     std::string { "                             " }
