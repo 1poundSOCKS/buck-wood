@@ -98,6 +98,8 @@ private:
   bool m_exit { false };
   cell_id m_exitCell;
 
+  RECT_F m_boundary;
+
   std::shared_ptr<player_ship_state> m_playerState;
   player_controls m_controller;
 

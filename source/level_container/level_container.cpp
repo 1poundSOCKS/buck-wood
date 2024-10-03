@@ -14,7 +14,8 @@ level_container::level_container(collision_type collisionType) :
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f, VELOCITY_2F { 0, 0 }) }, 
   m_controller { m_playerState },
-  m_collisionRunner { collisionType }
+  m_collisionRunner { collisionType },
+  m_boundary { 0.0f, 0.0f, 0.0f, 0.0f }
 {
 }
 
@@ -44,6 +45,13 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
   auto wall = object.GetIf<level_cell>();
   wall->SetId(cellId);
   wall->SetType(cellType);
+
+  auto cellBounds = m_cells->Bounds();
+
+  m_boundary.left = static_cast<float>(cellBounds.Left(cellSize));
+  m_boundary.top = static_cast<float>(cellBounds.Top(cellSize));
+  m_boundary.right = static_cast<float>(cellBounds.Right(cellSize));
+  m_boundary.bottom = static_cast<float>(cellBounds.Bottom(cellSize));
 }
 
 auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
@@ -104,6 +112,13 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   
   auto collisionsEnd = performance_counter::QueryValue();
 
+  auto playerPosition = m_playerState->Position();
+
+  if( playerPosition.x < m_boundary.left || playerPosition.y < m_boundary.top || playerPosition.x > m_boundary.right || playerPosition.y > m_boundary.bottom )
+  {
+    m_playerState->Destroy();
+  }
+
   diagnostics::addTime(L"collisions", collisionsEnd - collisionsStart, game_settings::swapChainRefreshRate());
 
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
@@ -153,7 +168,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
-
+ 
 auto level_container::DoCollisions() -> void
 {
   m_particleCollisionRunner(m_particles, m_collisionGeometry(level_collision_geometry::type::wall), true);
