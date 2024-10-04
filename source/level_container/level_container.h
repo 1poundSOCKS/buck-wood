@@ -85,7 +85,7 @@ private:
   auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& player, portal& portalObj, geometry_collision::result result) -> void;
-  auto OnCollision(player_ship& player, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
+  auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
 private:
@@ -198,4 +198,12 @@ auto level_container::VisitObject(auto& object) -> void
 
 auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void
 {
+}
+
+auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
+{
+  if( result != geometry_collision::result::containment )
+  {
+    object.Destroy();
+  }
 }

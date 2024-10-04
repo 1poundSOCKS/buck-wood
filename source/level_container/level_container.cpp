@@ -380,11 +380,3 @@ auto level_container::OnCollision(player_ship &player, portal &portalObj, geomet
     m_exitCell = exitCell ? *exitCell : cell_id {};
   }
 }
-
-auto level_container::OnCollision(player_ship &player, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::containment )
-  {
-    player.Destroy();
-  }
-}
