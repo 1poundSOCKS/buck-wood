@@ -254,7 +254,7 @@ auto level_container::VisitObject(enemy_type_3 &object) -> void
 
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     enemy.ApplyDamage(bullet.Damage());
     bullet.Destroy();
@@ -263,7 +263,7 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, ge
 
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     bullet.Destroy();
     enemy.ApplyDamage(bullet.Damage());
@@ -272,7 +272,7 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy, ge
 
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     bullet.Destroy();
     enemy.ApplyDamage(bullet.Damage());
@@ -281,7 +281,7 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy, ge
 
 auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     bullet.Destroy();
   }
@@ -289,7 +289,7 @@ auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geome
 
 auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     bullet.Destroy();
   }
@@ -297,7 +297,7 @@ auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geom
 
 auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     switch( player_state::get_status() )
     {
@@ -314,7 +314,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geomet
 
 auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     switch( player_state::get_status() )
     {
@@ -331,7 +331,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geomet
 
 auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     switch( player_state::get_status() )
     {
@@ -348,7 +348,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geomet
 
 auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     switch( player_state::get_status() )
     {
@@ -365,7 +365,7 @@ auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemy
 
 auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::collision )
+  if( result != geometry_collision::result::none )
   {
     powerUp.Destroy();
   }
@@ -373,7 +373,7 @@ auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, ge
 
 auto level_container::OnCollision(player_ship &player, portal &portalObj, geometry_collision::result result) -> void
 {
-  if( result == geometry_collision::result::containment )
+  if( result != geometry_collision::result::none )
   {
     auto exitCell = portalObj.CellId();
     m_exit = exitCell ? true : false;
