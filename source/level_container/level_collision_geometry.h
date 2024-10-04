@@ -7,7 +7,7 @@ class level_collision_geometry
 
 public:
 
-  enum class type { player, enemy, wall };
+  enum class type { player, enemy, wall, boundary };
 
   level_collision_geometry() = default;
   auto Update(std::ranges::input_range auto&& objects) -> void;
@@ -26,6 +26,7 @@ private:
   auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, portal& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, power_up& powerUp) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, boundary_walls& boundaryWalls) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, auto& object) -> void;
 
 private:
@@ -33,10 +34,12 @@ private:
   default_object_geometry_collection m_playerGeometries;
   default_object_geometry_collection m_enemyGeometries;
   default_object_geometry_collection m_wallGeometries;
+  default_object_geometry_collection m_boundaryGeometries;
 
   default_object_geometry_collection_range m_playerGeometryRange { m_playerGeometries };
   default_object_geometry_collection_range m_enemyGeometryRange { m_enemyGeometries };
   default_object_geometry_collection_range m_wallGeometryRange { m_wallGeometries };
+  default_object_geometry_collection_range m_boundaryGeometryRange { m_wallGeometries };
 
 };
 
@@ -60,6 +63,8 @@ inline auto level_collision_geometry::operator()(type geometryType) -> default_o
       return m_playerGeometryRange;
     case type::enemy:
       return m_enemyGeometryRange;
+    case type::boundary:
+      return m_boundaryGeometryRange;
     default:
       return m_wallGeometryRange;
   }
@@ -73,6 +78,8 @@ inline auto level_collision_geometry::operator()(type geometryType) const -> con
       return m_playerGeometryRange;
     case type::enemy:
       return m_enemyGeometryRange;
+    case type::boundary:
+      return m_boundaryGeometryRange;
     default:
       return m_wallGeometryRange;
   }

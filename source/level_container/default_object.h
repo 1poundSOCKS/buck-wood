@@ -16,7 +16,8 @@ public:
     portal, 
     enemy_type_1, 
     enemy_type_2, 
-    enemy_type_3
+    enemy_type_3,
+    boundary_walls
   >;
 
   template <typename variant_type, typename...Args>

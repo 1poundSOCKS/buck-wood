@@ -12,8 +12,9 @@
 #include "objects/background_object.h"
 #include "objects/level_cell.h"
 #include "objects/particle.h"
+#include "objects/boundary_walls.h"
 
-enum class object_type { player, player_bullet, enemy_1, enemy_2, enemy_3, enemy_bullet_1, portal, power_up, cell };
+enum class object_type { player, player_bullet, enemy_1, enemy_2, enemy_3, enemy_bullet_1, portal, power_up, cell, boundary_walls };
 
 namespace level_objects
 {
@@ -61,6 +62,11 @@ namespace level_objects
   inline auto Type(const level_cell&) -> object_type
   {
     return object_type::cell;
+  }
+
+  inline auto Type(const boundary_walls&) -> object_type
+  {
+    return object_type::boundary_walls;
   }
 
 }
