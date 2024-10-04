@@ -27,12 +27,9 @@ auto geometry_collision_runner::operator()(std::ranges::input_range auto &&objec
   {
     auto collisionResult = m_collisionTest(object1, object2);
 
-    if( collisionResult != geometry_collision::result::none )
+    object1.Object().Visit([this,&object2,&visitor,collisionResult](auto& levelObject1)
     {
-      object1.Object().Visit([this,&object2,&visitor,collisionResult](auto& levelObject1)
-      {
-        object2.Object().Visit([this,&levelObject1,&visitor,collisionResult](auto& levelObject2) { visitor(levelObject1, levelObject2, collisionResult); } );
-      });
-    }
+      object2.Object().Visit([this,&levelObject1,&visitor,collisionResult](auto& levelObject2) { visitor(levelObject1, levelObject2, collisionResult); } );
+    });
   });
 }

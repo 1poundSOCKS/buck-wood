@@ -23,7 +23,7 @@ class level_container
 
 public:
 
-  enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell };
+  enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell, boundary_walls };
 
   level_container();
   level_container(collision_type collisionType);
@@ -31,6 +31,7 @@ public:
 
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
   auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
+  auto AddBoundaryWalls() -> void;
 
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
@@ -84,6 +85,7 @@ private:
   auto OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& player, portal& portalObj, geometry_collision::result result) -> void;
+  auto OnCollision(player_ship& player, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
 private:

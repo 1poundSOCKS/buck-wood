@@ -100,6 +100,8 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
     }
   });
 
+  levelContainer->AddBoundaryWalls();
+
   return levelContainer;
 }
 

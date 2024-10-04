@@ -54,6 +54,8 @@ auto level_geometries::Get(object_type objectType) -> winrt::com_ptr<ID2D1Geomet
       return m_powerUp;
     case object_type::cell:
       return m_rectangleGeometry;
+    case object_type::boundary_walls:
+      return m_rectangleGeometry;
     default:
       return m_rectangleGeometry;
   }

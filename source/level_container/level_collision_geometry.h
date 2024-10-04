@@ -39,7 +39,7 @@ private:
   default_object_geometry_collection_range m_playerGeometryRange { m_playerGeometries };
   default_object_geometry_collection_range m_enemyGeometryRange { m_enemyGeometries };
   default_object_geometry_collection_range m_wallGeometryRange { m_wallGeometries };
-  default_object_geometry_collection_range m_boundaryGeometryRange { m_wallGeometries };
+  default_object_geometry_collection_range m_boundaryGeometryRange { m_boundaryGeometries };
 
 };
 
@@ -48,6 +48,7 @@ auto level_collision_geometry::Update(std::ranges::input_range auto &&objects) -
   m_playerGeometries.Clear();
   m_enemyGeometries.Clear();
   m_wallGeometries.Clear();
+  m_boundaryGeometries.Clear();
   
   for( auto& object : objects )
   {
