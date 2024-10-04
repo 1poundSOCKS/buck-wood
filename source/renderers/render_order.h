@@ -22,6 +22,11 @@ namespace render_order
       return 3;
     }
 
+    constexpr auto operator()(const enemy_type_1&) -> int
+    {
+      return 3;
+    }
+
     constexpr auto operator()(const enemy_type_2&) -> int
     {
       return 3;
@@ -45,6 +50,11 @@ namespace render_order
     constexpr auto operator()(const portal&) -> int
     {
       return 1;
+    }
+
+    constexpr auto operator()(const boundary_walls&) -> int
+    {
+      return 0;
     }
 
     constexpr auto operator()(auto&& object) -> int
