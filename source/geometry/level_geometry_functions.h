@@ -60,17 +60,32 @@ namespace level_geometry_functions
 
     return std::array {
       D2D1_POINT_2F { -geometryWidth / 2.0f, -geometryWidth / 2.0f },
+
       D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f },
       D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
       D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
       D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f },
+
       D2D1_POINT_2F { geometryWidth / 2.0f, -geometryWidth / 2.0f },
+
+      D2D1_POINT_2F { geometryWidth / 2.0f, -exitWidth / 2.0f },
+      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, -exitWidth / 2.0f },
+      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, exitWidth / 2.0f },
+      D2D1_POINT_2F { geometryWidth / 2.0f, exitWidth / 2.0f },
+
       D2D1_POINT_2F { geometryWidth / 2.0f, geometryWidth / 2.0f },
+
       D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f },
       D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
       D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
       D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f, geometryWidth / 2.0f }
+
+      D2D1_POINT_2F { -geometryWidth / 2.0f, geometryWidth / 2.0f },
+
+      D2D1_POINT_2F { -geometryWidth / 2.0f, exitWidth / 2.0f },
+      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, exitWidth / 2.0f },
+      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, -exitWidth / 2.0f },
+      D2D1_POINT_2F { -geometryWidth / 2.0f, -exitWidth / 2.0f }
     };
   }
 
