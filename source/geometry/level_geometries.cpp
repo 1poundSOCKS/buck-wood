@@ -29,7 +29,7 @@ level_geometries::level_geometries()
   m_enemyBullet1 = LoadPixelGeometry(m_enemyBulletPixelImage, { 50, 50 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
-  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryWallsGeometryData(), D2D1_FIGURE_END_CLOSED);
+  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryWallsGeometryData(level_geometry_functions::boundary_walls_geometry::main), D2D1_FIGURE_END_CLOSED);
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
 

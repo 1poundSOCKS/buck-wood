@@ -2,6 +2,7 @@
 
 namespace level_geometry_functions
 {
+
   inline constexpr [[nodiscard]] auto GetPlayerGeometryData()
   {
     constexpr float width { 7 };
@@ -52,11 +53,13 @@ namespace level_geometry_functions
     };
   }
 
-  inline constexpr auto [[nodiscard]] GetBoundaryWallsGeometryData()
+  enum class boundary_walls_geometry { main, left_exit, top_exit, right_exit, bottom_exit };
+
+  inline constexpr auto [[nodiscard]] GetBoundaryWallsGeometryData(boundary_walls_geometry geometry)
   {
     constexpr float geometryWidth = 1.0f;
-    constexpr float exitWidth = 0.1f;
-    constexpr float exitHeight = 0.05f;
+    constexpr float exitWidth = 0.2f;
+    constexpr float exitHeight = 0.1f;
 
     return std::array {
       D2D1_POINT_2F { -geometryWidth / 2.0f, -geometryWidth / 2.0f },
