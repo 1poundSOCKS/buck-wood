@@ -54,11 +54,23 @@ namespace level_geometry_functions
 
   inline constexpr auto [[nodiscard]] GetBoundaryWallsGeometryData()
   {
+    constexpr float geometryWidth = 1.0f;
+    constexpr float exitWidth = 0.1f;
+    constexpr float exitHeight = 0.05f;
+
     return std::array {
-      D2D1_POINT_2F { -0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, 0.5 },
-      D2D1_POINT_2F { -0.5, 0.5 }
+      D2D1_POINT_2F { -geometryWidth / 2.0f, -geometryWidth / 2.0f },
+      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f },
+      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
+      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
+      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f },
+      D2D1_POINT_2F { geometryWidth / 2.0f, -geometryWidth / 2.0f },
+      D2D1_POINT_2F { geometryWidth / 2.0f, geometryWidth / 2.0f },
+      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f },
+      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
+      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
+      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f },
+      D2D1_POINT_2F { -geometryWidth / 2.0f, geometryWidth / 2.0f }
     };
   }
 
