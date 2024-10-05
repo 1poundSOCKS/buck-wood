@@ -48,10 +48,10 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
 
   auto cellBounds = m_cells->Bounds();
 
-  m_boundary.left = static_cast<float>(cellBounds.Left(cellSize));
-  m_boundary.top = static_cast<float>(cellBounds.Top(cellSize));
-  m_boundary.right = static_cast<float>(cellBounds.Right(cellSize));
-  m_boundary.bottom = static_cast<float>(cellBounds.Bottom(cellSize));
+  m_boundary.left = static_cast<float>(cellBounds.Left(cellSize)) - m_cellSize / 2;
+  m_boundary.top = static_cast<float>(cellBounds.Top(cellSize)) - m_cellSize / 2;
+  m_boundary.right = static_cast<float>(cellBounds.Right(cellSize)) + m_cellSize / 2;
+  m_boundary.bottom = static_cast<float>(cellBounds.Bottom(cellSize)) + m_cellSize / 2;
 }
 
 auto level_container::AddBoundaryWalls() -> void
