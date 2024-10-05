@@ -52,6 +52,16 @@ namespace level_geometry_functions
     };
   }
 
+  inline constexpr auto [[nodiscard]] GetBoundaryWallsGeometryData()
+  {
+    return std::array {
+      D2D1_POINT_2F { -0.5, -0.5 },
+      D2D1_POINT_2F { 0.5, -0.5 },
+      D2D1_POINT_2F { 0.5, 0.5 },
+      D2D1_POINT_2F { -0.5, 0.5 }
+    };
+  }
+
   inline [[nodiscard]] auto CreateAsteroidGeometry(float x, float y, float maxWidth, float maxHeight) -> winrt::com_ptr<ID2D1PathGeometry>
   {
     auto xRatioNoise = psn::GetNoise(x / 7, y / 7);

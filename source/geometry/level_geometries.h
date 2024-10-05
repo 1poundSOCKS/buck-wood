@@ -95,6 +95,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_enemyBullet1;
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;
 
 };
 

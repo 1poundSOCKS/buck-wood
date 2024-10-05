@@ -29,6 +29,7 @@ level_geometries::level_geometries()
   m_enemyBullet1 = LoadPixelGeometry(m_enemyBulletPixelImage, { 50, 50 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
+  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryWallsGeometryData(), D2D1_FIGURE_END_CLOSED);
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
 
@@ -55,7 +56,7 @@ auto level_geometries::Get(object_type objectType) -> winrt::com_ptr<ID2D1Geomet
     case object_type::cell:
       return m_rectangleGeometry;
     case object_type::boundary_walls:
-      return m_rectangleGeometry;
+      return m_boundaryWalls;
     default:
       return m_rectangleGeometry;
   }
