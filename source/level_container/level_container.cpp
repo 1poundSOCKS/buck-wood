@@ -5,7 +5,7 @@
 #include "player_state.h"
 #include "visitor.h"
 
-level_container::level_container() : level_container(collision_type::boundary)
+level_container::level_container() : level_container(collision_type::direct2d)
 {
 }
 
@@ -194,7 +194,7 @@ auto level_container::DoCollisions() -> void
 auto level_container::UpdateObject(player_ship &object, float interval) -> void
 {
   constexpr VELOCITY_2F forceOfGravity = { 0.0f, 400.0f };
-  constexpr float airResistance = { 1.0f };
+  constexpr float airResistance = { 0.5f };
   
   m_controller.Update(interval);
   m_playerState->Update(forceOfGravity, airResistance, interval);
