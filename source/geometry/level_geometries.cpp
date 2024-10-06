@@ -38,6 +38,23 @@ level_geometries::level_geometries()
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
 
+auto level_geometries::Get(const boundary_exit &object) -> winrt::com_ptr<ID2D1Geometry>
+{
+  switch( object.Type() )
+  {
+    case boundary_exit::type::left:
+      return m_boundaryLeftExit;
+    case boundary_exit::type::top:
+      return m_boundaryTopExit;
+    case boundary_exit::type::right:
+      return m_boundaryRightExit;
+    case boundary_exit::type::bottom:
+      return m_boundaryBottomExit;
+    default:
+      return m_boundaryLeftExit;
+  }
+}
+
 auto level_geometries::Get(object_type objectType) -> winrt::com_ptr<ID2D1Geometry>
 {
   switch( objectType )
