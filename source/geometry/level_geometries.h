@@ -96,6 +96,10 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
   winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryLeftExit;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryTopExit;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryRightExit;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryBottomExit;
 
 };
 
