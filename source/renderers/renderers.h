@@ -60,8 +60,6 @@ private:
 
   auto Health(const default_object& object) const -> std::optional<float>;
   auto Health(const enemy_type_1& object) const -> std::optional<float>;
-  auto Health(const enemy_type_2& object) const -> std::optional<float>;
-  auto Health(const enemy_type_3& object) const -> std::optional<float>;
   auto Health(const auto& object) const -> std::optional<float>;
 
 private:
@@ -205,16 +203,6 @@ inline auto renderer::Health(const default_object &object) const -> std::optiona
 }
 
 inline auto renderer::Health(const enemy_type_1 &object) const -> std::optional<float>
-{
-  return object.Health();
-}
-
-inline auto renderer::Health(const enemy_type_2 &object) const -> std::optional<float>
-{
-  return object.Health();
-}
-
-inline auto renderer::Health(const enemy_type_3 &object) const -> std::optional<float>
 {
   return object.Health();
 }

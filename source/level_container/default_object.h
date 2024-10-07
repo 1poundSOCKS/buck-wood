@@ -15,8 +15,6 @@ public:
     power_up, 
     portal, 
     enemy_type_1, 
-    enemy_type_2, 
-    enemy_type_3,
     boundary_walls,
     boundary_exit
   >;

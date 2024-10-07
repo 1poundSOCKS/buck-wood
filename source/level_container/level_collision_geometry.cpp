@@ -24,16 +24,6 @@ auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObjec
   m_enemyGeometries.Add(defaultObject);
 }
 
-auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, enemy_type_2& object) -> void
-{
-  m_enemyGeometries.Add(defaultObject);
-}
-
-auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, enemy_type_3& object) -> void
-{
-  m_enemyGeometries.Add(defaultObject);
-}
-
 auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void
 {
   m_enemyGeometries.Add(defaultObject);

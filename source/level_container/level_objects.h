@@ -3,8 +3,6 @@
 #include "objects/player_ship.h"
 #include "objects/player_bullet.h"
 #include "objects/enemy_type_1.h"
-#include "objects/enemy_type_2.h"
-#include "objects/enemy_type_3.h"
 #include "objects/enemy_bullet_1.h"
 #include "objects/portal.h"
 #include "objects/power_up.h"
@@ -19,8 +17,6 @@ enum class object_type {
   player, 
   player_bullet, 
   enemy_1, 
-  enemy_2, 
-  enemy_3, 
   enemy_bullet_1, 
   portal, 
   power_up, 
@@ -48,16 +44,6 @@ namespace level_objects
   inline auto Type(const enemy_type_1&) -> object_type
   {
     return object_type::enemy_1;
-  }
-
-  inline auto Type(const enemy_type_2&) -> object_type
-  {
-    return object_type::enemy_2;
-  }
-
-  inline auto Type(const enemy_type_3&) -> object_type
-  {
-    return object_type::enemy_3;
   }
 
   inline auto Type(const enemy_bullet_1&) -> object_type

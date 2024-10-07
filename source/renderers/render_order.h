@@ -27,16 +27,6 @@ namespace render_order
       return 3;
     }
 
-    constexpr auto operator()(const enemy_type_2&) -> int
-    {
-      return 3;
-    }
-
-    constexpr auto operator()(const enemy_type_3&) -> int
-    {
-      return 3;
-    }
-
     constexpr auto operator()(const player_bullet&) -> int
     {
       return 2;

@@ -184,9 +184,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto enemies = std::ranges::views::transform(m_objects, [](const auto& object)
   {
-    return object.HoldsAlternative<enemy_type_1>() || 
-      object.HoldsAlternative<enemy_type_2>() || 
-      object.HoldsAlternative<enemy_type_3>();
+    return object.HoldsAlternative<enemy_type_1>();
   });
 
   m_enemyCount = std::ranges::distance(enemies);
@@ -230,16 +228,6 @@ auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
   object.Update(interval, m_playerState->Position(), *m_cells);
 }
 
-auto level_container::UpdateObject(enemy_type_2 &object, float interval) -> void
-{
-  object.Update(interval, m_playerState->Position(), *m_cells);
-}
-
-auto level_container::UpdateObject(enemy_type_3 &object, float interval) -> void
-{
-  object.Update(interval, m_playerState->Position());
-}
-
 auto level_container::VisitObject(player_ship &object) -> void
 {
   if( m_playerState->CanShoot() && m_playerState->ShootAngle() )
@@ -260,50 +248,12 @@ auto level_container::VisitObject(enemy_type_1& object) -> void
   }
 }
 
-auto level_container::VisitObject(enemy_type_2& object) -> void
-{
-  if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
-  {
-    auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
-    m_objects.Add(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(750, angle));
-    play_events::set(play_events::event_type::shot, true);
-  }
-}
-
-auto level_container::VisitObject(enemy_type_3 &object) -> void
-{
-  if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
-  {
-    auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
-    m_objects.Add(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(500, angle));
-    play_events::set(play_events::event_type::shot, true);
-  }
-}
-
 auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {
     enemy.ApplyDamage(bullet.Damage());
     bullet.Destroy();
-  }
-}
-
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_2& enemy, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    bullet.Destroy();
-    enemy.ApplyDamage(bullet.Damage());
-  }
-}
-
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_3& enemy, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    bullet.Destroy();
-    enemy.ApplyDamage(bullet.Damage());
   }
 }
 
@@ -324,40 +274,6 @@ auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geom
 }
 
 auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    switch( player_state::get_status() )
-    {
-      case player_state::status::active:
-        ship.Destroy();
-        break;
-      case player_state::status::celebrating:
-        break;
-    }
-
-    enemy.Destroy();
-  }
-}
-
-auto level_container::OnCollision(player_ship& ship, enemy_type_2& enemy, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    switch( player_state::get_status() )
-    {
-      case player_state::status::active:
-        ship.Destroy();
-        break;
-      case player_state::status::celebrating:
-        break;
-    }
-
-    enemy.Destroy();
-  }
-}
-
-auto level_container::OnCollision(player_ship& ship, enemy_type_3& enemy, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {

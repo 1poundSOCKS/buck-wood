@@ -53,19 +53,6 @@ auto default_object_renderer::Write(const enemy_type_1& object, ID2D1Geometry* g
   }
 }
 
-auto default_object_renderer::Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void
-{
-  m_enemyType2_renderer.Write(object, geometry);
-}
-
-auto default_object_renderer::Write(const enemy_type_3& object, ID2D1Geometry* geometry) const -> void
-{
-  m_enemyType3_renderer.Write(object, geometry);
-  auto objectTransform = geometric_object_transform { object };
-  auto transformedGeometry = objectTransform.CreateGeometry(d2d_factory::get_raw(), m_enemy3_turretGeometry.get());
-  m_defaultGeometryRenderer.Write(transformedGeometry.get());
-}
-
 auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
 {
   m_playerShipRenderer.Write(object, geometry);
