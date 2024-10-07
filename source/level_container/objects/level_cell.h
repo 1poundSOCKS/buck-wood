@@ -9,7 +9,7 @@ class level_cell : public base_object
 
 public:
 
-  level_cell(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept : 
+  level_cell(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
     base_object { position, scale, angle }, m_type { level_cell_type::floor }
   {
   }

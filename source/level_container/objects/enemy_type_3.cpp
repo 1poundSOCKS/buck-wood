@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "enemy_type_3.h"
 
-enemy_type_3::enemy_type_3(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) :
+enemy_type_3::enemy_type_3(POINT_2F position, SCALE_2F scale, float angle) :
   enemy_object { position, scale, angle }, m_reloadTimer { 3.0f }
 {
 }

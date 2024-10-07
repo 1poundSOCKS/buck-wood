@@ -9,7 +9,7 @@ class portal : public base_object
 
 public:
 
-  portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
+  portal(POINT_2F position, SCALE_2F scale, float angle);
 
   auto SetCellId(cell_id cellId) -> void;
 
@@ -21,7 +21,7 @@ private:
 
 };
 
-inline portal::portal(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : base_object { position, scale, angle }
+inline portal::portal(POINT_2F position, SCALE_2F scale, float angle) : base_object { position, scale, angle }
 {
 }
 

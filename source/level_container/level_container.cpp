@@ -41,7 +41,7 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
   auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
   auto cellScale = SCALE_2F { m_cellWidth, m_cellHeight };
 
-  auto& object = m_objects.Add(std::in_place_type<level_cell>, cellPosition, cellScale, 0, VELOCITY_2F { 0, 0 });
+  auto& object = m_objects.Add(std::in_place_type<level_cell>, cellPosition, cellScale, 0);
   auto wall = object.GetIf<level_cell>();
   wall->SetId(cellId);
   wall->SetType(cellType);
@@ -101,9 +101,9 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
   switch( objectType )
   {
     case object_type::portal_entry:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<portal>, position, scale, angle);
     case object_type::portal_exit:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<portal>, position, scale, angle);
     case object_type::player:
     {
       auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
@@ -114,15 +114,15 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
       return defaultObject;
     }
     case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle);
     case object_type::enemy_random:
-      return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle);
     case object_type::enemy_turret:
-      return m_objects.Add(std::in_place_type<enemy_type_3>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<enemy_type_3>, position, scale, angle);
     case object_type::power_up:
       return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
     case object_type::cell:
-      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle, velocity);
+      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle);
     default:
       return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
   }

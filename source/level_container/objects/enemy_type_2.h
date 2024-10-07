@@ -9,7 +9,7 @@ class enemy_type_2 : public enemy_object
 
 public:
 
-  enemy_type_2(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
+  enemy_type_2(POINT_2F position, SCALE_2F scale, float angle);
 
   auto Update(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void;
 
