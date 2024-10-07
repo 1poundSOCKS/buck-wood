@@ -59,6 +59,18 @@ private:
     std::string { "00  00  00" }
   };
 
+  inline static auto m_enemyTurretPixelImage = std::array {
+    std::string { "   0000   " },
+    std::string { "   0000   " },
+    std::string { "   0000   " },
+    std::string { "0000000000" },
+    std::string { "0000000000" },
+    std::string { "0000000000" },
+    std::string { "0000000000" },
+    std::string { "0000000000" },
+    std::string { "0000000000" }
+  };
+
   inline static auto m_playerBulletPixelImage = std::array {
     std::string { "0" },
     std::string { "0" }
