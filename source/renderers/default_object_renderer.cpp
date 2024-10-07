@@ -39,7 +39,18 @@ auto default_object_renderer::Write(const background_object& object, ID2D1Geomet
 
 auto default_object_renderer::Write(const enemy_type_1& object, ID2D1Geometry* geometry) const -> void
 {
-  m_enemyType1_renderer.Write(object, geometry);
+  switch( object.Type() )
+  {
+    case enemy_type_1::type::stalker:
+      m_enemyType1_renderer.Write(object, geometry);
+      break;
+    case enemy_type_1::type::random:
+      m_enemyType2_renderer.Write(object, geometry);
+      break;
+    case enemy_type_1::type::turret:
+      m_enemyType3_renderer.Write(object, geometry);
+      break;
+  }
 }
 
 auto default_object_renderer::Write(const enemy_type_2& object, ID2D1Geometry* geometry) const -> void
