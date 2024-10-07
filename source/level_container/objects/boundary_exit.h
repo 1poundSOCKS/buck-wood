@@ -10,7 +10,7 @@ public:
 
   enum class type { left, top, right, bottom };
 
-  boundary_exit(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
+  boundary_exit(POINT_2F position, SCALE_2F scale, float angle) noexcept;
   auto SetType(type value) -> void;
   [[nodiscard]] auto Type() const noexcept -> type;
 
@@ -20,7 +20,7 @@ private:
 
 };
 
-inline boundary_exit::boundary_exit(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept : 
+inline boundary_exit::boundary_exit(POINT_2F position, SCALE_2F scale, float angle) noexcept : 
   base_object(position, scale, angle), m_type { type::left }
 {
 }

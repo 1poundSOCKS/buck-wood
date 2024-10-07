@@ -22,7 +22,7 @@ public:
   >;
 
   template <typename variant_type, typename...Args>
-  default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args);
+  default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args);
 
   template <typename type> [[nodiscard]] auto GetIf() const -> const type*;
   template <typename type> [[nodiscard]] auto GetIf() -> type*;
@@ -46,8 +46,8 @@ private:
 };
 
 template <typename variant_type, typename...Args>
-default_object::default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity, Args...args) :
-  m_object { variantType, position, scale, angle, velocity, std::forward<Args>(args)... }
+default_object::default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) :
+  m_object { variantType, position, scale, angle, std::forward<Args>(args)... }
 {
 }
 
