@@ -114,7 +114,7 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
       return defaultObject;
     }
     case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle);
+      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, enemy_type_1::type::stalker);
     case object_type::enemy_random:
       return m_objects.Add(std::in_place_type<enemy_type_2>, position, scale, angle);
     case object_type::enemy_turret:
