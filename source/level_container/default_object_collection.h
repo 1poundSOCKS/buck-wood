@@ -11,8 +11,6 @@ public:
   using iterator = value_type::iterator;
   using const_iterator = value_type::const_iterator;
 
-  enum object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell };
-
 public:
 
   template <typename variant_type, typename...Args> auto Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) -> default_object&;
