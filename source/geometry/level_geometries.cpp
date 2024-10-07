@@ -48,15 +48,15 @@ auto level_geometries::Get(const player_bullet &object) -> winrt::com_ptr<ID2D1G
   return m_playerBullet;
 }
 
-auto level_geometries::Get(const enemy_type_1 &object) -> winrt::com_ptr<ID2D1Geometry>
+auto level_geometries::Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geometry>
 {
   switch( object.Type() )
   {
-    case enemy_type_1::type::stalker:
+    case enemy_ship::type::stalker:
       return m_enemy1;
-    case enemy_type_1::type::random:
+    case enemy_ship::type::random:
       return m_enemy2;
-    case enemy_type_1::type::turret:
+    case enemy_ship::type::turret:
       return m_enemy3;
     default:
       return m_rectangleGeometry;

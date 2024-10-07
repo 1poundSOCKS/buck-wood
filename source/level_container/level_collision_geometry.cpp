@@ -19,7 +19,7 @@ auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObjec
   m_playerGeometries.Add(defaultObject);
 }
 
-auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, enemy_type_1& object) -> void
+auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, enemy_ship& object) -> void
 {
   m_enemyGeometries.Add(defaultObject);
 }

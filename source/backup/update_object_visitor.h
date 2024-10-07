@@ -17,7 +17,7 @@ struct update_object_visitor
     m_levelContainer->UpdateObject(object, m_interval);
   }
 
-  auto operator()(enemy_type_1& object)
+  auto operator()(enemy_ship& object)
   {
     m_levelContainer->UpdateObject(object, m_interval);
   }

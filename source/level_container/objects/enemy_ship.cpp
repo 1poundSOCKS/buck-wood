@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "enemy_type_1.h"
+#include "enemy_ship.h"
 #include "adjacent_floor_cells.h"
 
-enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, type enemyType) : 
+enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType) : 
   enemy_object{position, scale, angle}, 
   m_type { enemyType },
   m_status { status::moving }, 
@@ -12,7 +12,7 @@ enemy_type_1::enemy_type_1(POINT_2F position, SCALE_2F scale, float angle, type 
 {
 }
 
-auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
+auto enemy_ship::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
 {
   switch( m_type )
   {
@@ -30,28 +30,28 @@ auto enemy_type_1::Update(float interval, POINT_2F target, level_cell_collection
   }
 }
 
-auto enemy_type_1::Type() const noexcept -> type
+auto enemy_ship::Type() const noexcept -> type
 {
   return m_type;
 }
 
-[[nodiscard]] auto enemy_type_1::CanShootAt(POINT_2F position) const -> bool
+[[nodiscard]] auto enemy_ship::CanShootAt(POINT_2F position) const -> bool
 {
   return m_reloaded;
 }
 
-[[nodiscard]] auto enemy_type_1::Reloaded() const -> bool
+[[nodiscard]] auto enemy_ship::Reloaded() const -> bool
 {
   return m_reloaded;
 }
 
-auto enemy_type_1::UpdateStalker(float interval, POINT_2F target, level_cell_collection &cells) -> void
+auto enemy_ship::UpdateStalker(float interval, POINT_2F target, level_cell_collection &cells) -> void
 {
   auto angleToTarget = direct2d::GetAngleBetweenPoints(m_position, target);
   enemy_object::Update(interval, angleToTarget, cells);
 }
 
-auto enemy_type_1::UpdateRandom(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void
+auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void
 {
   switch( m_status )
   {
@@ -66,14 +66,14 @@ auto enemy_type_1::UpdateRandom(float interval, POINT_2F targetPosition, level_c
   m_reloaded = m_reloadTimer.Update(interval);
 }
 
-auto enemy_type_1::UpdateTurret(float interval, POINT_2F targetPosition) noexcept -> void
+auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept -> void
 {
   base_object::Update(interval);
   m_angle = DirectionTo(targetPosition);
   m_reloaded = m_reloadTimer.Update(interval);
 }
 
-[[nodiscard]] auto enemy_type_1::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
+[[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
 {
   std::uniform_int_distribution angle { 0, 359 };
   auto moveAngle = static_cast<float>(angle(pseudo_random_generator::get()));
@@ -83,7 +83,7 @@ auto enemy_type_1::UpdateTurret(float interval, POINT_2F targetPosition) noexcep
   return status::moving;
 }
 
-[[nodiscard]] auto enemy_type_1::UpdateWhenWaiting(float interval) noexcept -> status
+[[nodiscard]] auto enemy_ship::UpdateWhenWaiting(float interval) noexcept -> status
 {
   base_object::Update(interval);
   auto finishedWaiting = m_waitTimer.Update(interval);

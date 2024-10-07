@@ -2,7 +2,7 @@
 
 #include "objects/player_ship.h"
 #include "objects/player_bullet.h"
-#include "objects/enemy_type_1.h"
+#include "objects/enemy_ship.h"
 #include "objects/enemy_bullet_1.h"
 #include "objects/portal.h"
 #include "objects/power_up.h"
@@ -41,7 +41,7 @@ namespace level_objects
     return object_type::player_bullet;
   }
 
-  inline auto Type(const enemy_type_1&) -> object_type
+  inline auto Type(const enemy_ship&) -> object_type
   {
     return object_type::enemy_1;
   }

@@ -44,7 +44,7 @@ struct destroy_visitor
 
 struct health_visitor
 {
-  auto operator()(const enemy_type_1& object) -> float
+  auto operator()(const enemy_ship& object) -> float
   {
     return object.Health();
   }

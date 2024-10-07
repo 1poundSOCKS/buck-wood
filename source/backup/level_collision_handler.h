@@ -22,11 +22,11 @@ private:
   template <typename object_type_1, typename object_type_2> auto OnCollision(default_object& object1, default_object& object2) -> void;
   template <typename object_type> auto OnCollision(default_object& object, const level_cell_item& cell) -> void;
 
-  auto OnCollision(player_bullet& bullet, enemy_type_1& enemy) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_ship& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_2& enemy) -> void;
   auto OnCollision(player_bullet& bullet, enemy_type_3& enemy) -> void;
 
-  auto OnCollision(player_ship& playerShip, enemy_type_1& enemy) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_ship& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_2& enemy) -> void;
   auto OnCollision(player_ship& playerShip, enemy_type_3& enemy) -> void;
 

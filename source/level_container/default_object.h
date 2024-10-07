@@ -14,7 +14,7 @@ public:
     enemy_bullet_1, 
     power_up, 
     portal, 
-    enemy_type_1, 
+    enemy_ship, 
     boundary_walls,
     boundary_exit
   >;

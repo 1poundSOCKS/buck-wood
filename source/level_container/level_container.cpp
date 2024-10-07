@@ -26,7 +26,7 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
   object.Visit( visitor {
     [cellId](portal& object) { object.SetCellId(cellId); },
     [cellId](player_ship& object) { object.State()->SetPosition(ToFloat(cellId.Position(m_cellSize, m_cellSize))); },
-    [cellId](enemy_type_1& object) { object.SetCellId(cellId); },
+    [cellId](enemy_ship& object) { object.SetCellId(cellId); },
     [](auto& object) {}
   });
 
@@ -114,11 +114,11 @@ auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE
       return defaultObject;
     }
     case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, enemy_type_1::type::stalker);
+      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker);
     case object_type::enemy_random:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, enemy_type_1::type::random);
+      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random);
     case object_type::enemy_turret:
-      return m_objects.Add(std::in_place_type<enemy_type_1>, position, scale, angle, enemy_type_1::type::turret);
+      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret);
     case object_type::power_up:
       return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
     case object_type::cell:
@@ -157,7 +157,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
         play_events::set(play_events::event_type::explosion, true);
       }
     },    
-    [this](const enemy_type_1& object)
+    [this](const enemy_ship& object)
     {
       object.PreErase(*m_cells);
       m_particles.Add(level_explosion { object.Position() });
@@ -184,7 +184,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
 
   auto enemies = std::ranges::views::transform(m_objects, [](const auto& object)
   {
-    return object.HoldsAlternative<enemy_type_1>();
+    return object.HoldsAlternative<enemy_ship>();
   });
 
   m_enemyCount = std::ranges::distance(enemies);
@@ -223,7 +223,7 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
   m_playerState->Update(forceOfGravity, airResistance, interval);
 }
 
-auto level_container::UpdateObject(enemy_type_1 &object, float interval) -> void
+auto level_container::UpdateObject(enemy_ship &object, float interval) -> void
 {
   object.Update(interval, m_playerState->Position(), *m_cells);
 }
@@ -238,7 +238,7 @@ auto level_container::VisitObject(player_ship &object) -> void
   }
 }
 
-auto level_container::VisitObject(enemy_type_1& object) -> void
+auto level_container::VisitObject(enemy_ship& object) -> void
 {
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
@@ -248,7 +248,7 @@ auto level_container::VisitObject(enemy_type_1& object) -> void
   }
 }
 
-auto level_container::OnCollision(player_bullet& bullet, enemy_type_1& enemy, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {
@@ -273,7 +273,7 @@ auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geom
   }
 }
 
-auto level_container::OnCollision(player_ship& ship, enemy_type_1& enemy, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {

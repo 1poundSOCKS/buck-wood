@@ -59,7 +59,7 @@ private:
   auto Write(const auto& object) const -> void;
 
   auto Health(const default_object& object) const -> std::optional<float>;
-  auto Health(const enemy_type_1& object) const -> std::optional<float>;
+  auto Health(const enemy_ship& object) const -> std::optional<float>;
   auto Health(const auto& object) const -> std::optional<float>;
 
 private:
@@ -202,7 +202,7 @@ inline auto renderer::Health(const default_object &object) const -> std::optiona
   return object.Visit([this](const auto& object) { return Health(object); } );
 }
 
-inline auto renderer::Health(const enemy_type_1 &object) const -> std::optional<float>
+inline auto renderer::Health(const enemy_ship &object) const -> std::optional<float>
 {
   return object.Health();
 }

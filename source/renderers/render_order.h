@@ -22,7 +22,7 @@ namespace render_order
       return 3;
     }
 
-    constexpr auto operator()(const enemy_type_1&) -> int
+    constexpr auto operator()(const enemy_ship&) -> int
     {
       return 3;
     }
