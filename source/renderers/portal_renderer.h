@@ -12,7 +12,7 @@ class portal_renderer
 
 public:
 
-  portal_renderer() : m_baseGeometry { level_geometries::get(object_type::portal) }
+  portal_renderer() : m_baseGeometry { level_geometries::get(portal { { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f }) }
   {
   }
 
