@@ -7,7 +7,7 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
   m_type { enemyType },
   m_status { status::moving }, 
   m_waitTimer { 0.5f }, 
-  m_reloadTimer { 5.0f },
+  m_reloadTimer { 2.0f },
   m_reloaded { false }
 {
 }

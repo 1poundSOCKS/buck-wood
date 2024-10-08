@@ -20,7 +20,7 @@ public:
   auto Write(const background_object& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const enemy_ship& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const player_ship& object, ID2D1Geometry* geometry) const -> void;
-  auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void;
+  auto Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const portal& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const power_up& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const boundary_walls& object, ID2D1Geometry* geometry) const -> void;

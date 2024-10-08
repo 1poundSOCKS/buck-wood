@@ -11,7 +11,7 @@ public:
     level_cell, 
     player_ship, 
     player_bullet, 
-    enemy_bullet_1, 
+    enemy_bullet, 
     power_up, 
     portal, 
     enemy_ship, 

@@ -26,7 +26,7 @@ level_geometries::level_geometries()
   m_enemy1 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy2 = LoadPixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy3 = LoadPixelGeometry(m_enemyTurretPixelImage, { 16, 16 });
-  m_enemyBullet1 = LoadPixelGeometry(m_enemyBulletPixelImage, { 50, 50 });
+  m_enemyBullet = LoadPixelGeometry(m_enemyBulletPixelImage, { 100, 100 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
   m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryWallsGeometryData(), D2D1_FIGURE_END_CLOSED);
@@ -63,9 +63,9 @@ auto level_geometries::Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geom
   }
 }
 
-auto level_geometries::Get(const enemy_bullet_1 &object) -> winrt::com_ptr<ID2D1Geometry>
+auto level_geometries::Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Geometry>
 {
-  return m_enemyBullet1;
+  return m_enemyBullet;
 }
 
 auto level_geometries::Get(const boundary_exit &object) -> winrt::com_ptr<ID2D1Geometry>

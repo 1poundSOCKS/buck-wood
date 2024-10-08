@@ -13,7 +13,7 @@ struct create_new_objects_visitor
     {
       auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_levelContainer->PlayerState().Position());
       auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-      m_levelContainer->CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
+      m_levelContainer->CreateEnemyBullet(enemy_bullet::type::two, object.Position(), velocity);
       m_events->SetEvent(play_events::event_type::shot, true);
     }
   }
@@ -24,7 +24,7 @@ struct create_new_objects_visitor
     {
       auto direction = direct2d::GetAngleBetweenPoints(object.Position(), m_levelContainer->PlayerState().Position());
       auto velocity = direct2d::CalculateVelocity(500.0f, direction);
-      m_levelContainer->CreateEnemyBullet(enemy_bullet_1::type::two, object.Position(), velocity);
+      m_levelContainer->CreateEnemyBullet(enemy_bullet::type::two, object.Position(), velocity);
       m_events->SetEvent(play_events::event_type::shot, true);
     }
   }

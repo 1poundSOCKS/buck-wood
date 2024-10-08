@@ -58,7 +58,7 @@ auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* ge
   m_playerShipRenderer.Write(object, geometry);
 }
 
-auto default_object_renderer::Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void
+auto default_object_renderer::Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void
 {
   m_mineRenderer.Write(object, geometry);
 }

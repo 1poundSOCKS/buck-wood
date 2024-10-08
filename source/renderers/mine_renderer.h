@@ -8,7 +8,7 @@ class mine_renderer
 
 public:
 
-  auto Write(const enemy_bullet_1& object, ID2D1Geometry* geometry) const -> void
+  auto Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void
   {
     m_renderer.Write(geometry);
   }

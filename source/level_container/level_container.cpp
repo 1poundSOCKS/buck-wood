@@ -21,7 +21,7 @@ level_container::level_container(collision_type collisionType) :
 
 auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
 {
-  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), {1,1}, 0, {0,0});
+  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), { 1.0f, 1.0f }, 0.0f, { 0.0f, 0.0f });
 
   object.Visit( visitor {
     [cellId](portal& object) { object.SetCellId(cellId); },
@@ -149,17 +149,19 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
 
   auto onDestroyed = visitor {
-    [this](const player_bullet& object)
+    [this](const player_ship& object)
     {
-      if( !object.Expired() )
-      {
-        m_particles.Add(level_explosion { object.Position() });
-        play_events::set(play_events::event_type::explosion, true);
-      }
-    },    
+      m_particles.Add(level_explosion { object.Position() });
+      play_events::set(play_events::event_type::explosion, true);
+    },
     [this](const enemy_ship& object)
     {
       object.PreErase(*m_cells);
+      m_particles.Add(level_explosion { object.Position() });
+      play_events::set(play_events::event_type::explosion, true);
+    },
+    [this](const enemy_bullet& object)
+    {
       m_particles.Add(level_explosion { object.Position() });
       play_events::set(play_events::event_type::explosion, true);
     },
@@ -169,8 +171,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
     },
     [this](const auto& object)
     {
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
     }
   };
 
@@ -243,7 +243,7 @@ auto level_container::VisitObject(enemy_ship& object) -> void
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
-    m_objects.Add(std::in_place_type<enemy_bullet_1>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(300, angle));
+    m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(1000, angle));
     play_events::set(play_events::event_type::shot, true);
   }
 }
@@ -265,7 +265,7 @@ auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geome
   }
 }
 
-auto level_container::OnCollision(enemy_bullet_1 &bullet, level_cell &wall, geometry_collision::result result) -> void
+auto level_container::OnCollision(enemy_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {
@@ -290,7 +290,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry
   }
 }
 
-auto level_container::OnCollision(player_ship& playerShip, enemy_bullet_1& enemyBullet, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::none )
   {

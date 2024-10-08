@@ -32,7 +32,7 @@ namespace render_order
       return 2;
     }
 
-    constexpr auto operator()(const enemy_bullet_1&) -> int
+    constexpr auto operator()(const enemy_bullet&) -> int
     {
       return 2;
     }

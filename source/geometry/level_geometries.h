@@ -25,7 +25,7 @@ private:
   [[nodiscard]] auto Get(const player_ship &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const player_bullet &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geometry>;
-  [[nodiscard]] auto Get(const enemy_bullet_1 &object) -> winrt::com_ptr<ID2D1Geometry>;
+  [[nodiscard]] auto Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const boundary_exit &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
 
@@ -106,7 +106,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_enemy1;
   winrt::com_ptr<ID2D1Geometry> m_enemy2;
   winrt::com_ptr<ID2D1Geometry> m_enemy3;
-  winrt::com_ptr<ID2D1Geometry> m_enemyBullet1;
+  winrt::com_ptr<ID2D1Geometry> m_enemyBullet;
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
   winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;

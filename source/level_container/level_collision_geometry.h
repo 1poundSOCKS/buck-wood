@@ -21,7 +21,7 @@ private:
   auto AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, player_bullet& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, enemy_ship& object) -> void;
-  auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet_1& object) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, portal& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, power_up& powerUp) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, boundary_walls& boundaryWalls) -> void;
