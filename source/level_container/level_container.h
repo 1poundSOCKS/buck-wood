@@ -56,6 +56,8 @@ public:
 
   [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
 
+  [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
+
 private:
 
   auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
@@ -177,6 +179,11 @@ auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
 inline auto level_container::CentrePoint() const noexcept -> POINT_2F
 {
   return m_cells->CentrePoint();
+}
+
+inline auto level_container::Objects() const noexcept -> const default_object_collection &
+{
+  return m_objects;
 }
 
 auto level_container::UpdateObject(auto &object, float interval) -> void

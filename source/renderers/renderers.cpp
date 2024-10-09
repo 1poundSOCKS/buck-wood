@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "renderers.h"
+#include "render_object_collection.h"
 
 auto renderer::create() -> void
 {
@@ -40,19 +41,14 @@ auto renderer::Render(const level_container &levelContainer) const -> void
   });
 #endif
 
-  int renderIndex = 0;
+  render_object_collection renderObjects { levelContainer.Objects() }; 
 
-  while( renderIndex < render_order::particle_end() )
+  for( const auto& renderLayer : renderObjects )
   {
-    levelContainer.EnumerateObjects([this,renderIndex](const auto& object)
+    for( const auto& renderObject : renderLayer )
     {
-      if( render_order::get(object) == renderIndex )
-      {
-        Write(object);
-      }
-    });
-
-    ++renderIndex;
+      Write(*renderObject);
+    };
   }
 
   levelContainer.EnumerateParticles([this](const auto& particle)
@@ -60,16 +56,4 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     Render(particle);
   });
 
-  while( renderIndex < render_order::end() )
-  {
-    levelContainer.EnumerateObjects([this,renderIndex](const auto& object)
-    {
-      if( render_order::get(object) == renderIndex )
-      {
-        Write(object);
-      }
-    });
-
-    ++renderIndex;
-  }
 }
