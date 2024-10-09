@@ -9,11 +9,8 @@ auto renderer::create() -> void
 
 auto renderer::destroy() -> void
 {
-  if( m_instance )
-  {
-    delete m_instance;
-    m_instance = nullptr;
-  }
+  delete m_instance;
+  m_instance = nullptr;
 }
 
 auto renderer::Render(const hud_target& hudTarget) const -> void

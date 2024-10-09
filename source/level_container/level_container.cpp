@@ -154,6 +154,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
       m_particles.Add(level_explosion { object.Position() });
       play_events::set(play_events::event_type::explosion, true);
     },
+    [this](const player_bullet& object)
+    {
+      m_particles.Create(particle::type::impact, object.Position(), { 0.0f, 0.0f }, 1.0f);
+    },
     [this](const enemy_ship& object)
     {
       object.PreErase(*m_cells);
