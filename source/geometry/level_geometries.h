@@ -33,7 +33,7 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
-  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> pixel_geometry;
+  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -143,7 +143,7 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
   return m_instance->m_hudTargetGeometries;
 }
 
-auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> pixel_geometry
+auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
   return pixel_geometry_loader::read(pixelData, pixelSize, [](auto pixelValue) -> bool { return pixelValue == '0'; });
 }

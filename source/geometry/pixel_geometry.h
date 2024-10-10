@@ -2,6 +2,7 @@
 
 #include "cell_id.h"
 #include "cell_size.h"
+#include "pixel_geometry_loader.h"
 
 class pixel_geometry
 {
@@ -39,9 +40,10 @@ pixel_geometry::pixel_geometry(std::ranges::input_range auto&& pixelIds, cell_si
 
 auto pixel_geometry::Load(std::ranges::input_range auto &&pixelIds, cell_size pixelSize) noexcept -> void
 {
-  pixel_id_lookup pixelIdLookup;
-  std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
-  LoadGeometry(pixelIdLookup, pixelSize);
+  // pixel_id_lookup pixelIdLookup;
+  // std::ranges::copy(pixelIds, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
+  // LoadGeometry(pixelIdLookup, pixelSize);
+  m_geometry = pixel_geometry_loader::read(pixelIds, pixelSize, '0');
 }
 
 auto pixel_geometry::Bounds(std::ranges::input_range auto &&points) -> RECT_F
