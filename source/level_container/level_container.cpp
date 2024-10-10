@@ -38,14 +38,6 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
   m_cells->Set(cellId, cellType);
 
   auto cellSize = cell_size { m_cellSize, m_cellSize };
-  auto cellPosition = ToFloat(cellSize.CellPosition(cellId));
-  auto cellScale = SCALE_2F { m_cellWidth, m_cellHeight };
-
-  auto& object = m_objects.Add(std::in_place_type<level_cell>, cellPosition, cellScale, 0);
-  auto wall = object.GetIf<level_cell>();
-  wall->SetId(cellId);
-  wall->SetType(cellType);
-
   auto cellBounds = m_cells->Bounds();
 
   m_boundary.left = static_cast<float>(cellBounds.Left(cellSize)) - m_cellSize / 2;

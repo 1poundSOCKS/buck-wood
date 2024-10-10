@@ -41,7 +41,7 @@ public:
 
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
 
-  [[nodiscard]] auto LevelSize() const -> SIZE_F;
+  [[nodiscard]] auto Boundary() const -> RECT_F;
   [[nodiscard]] auto EnemyCount() const -> size_t;
 
   auto EnumerateObjects(auto&& visitor) const -> void;
@@ -116,9 +116,9 @@ inline auto level_container::PlayerState() const noexcept -> const player_ship_s
   return *m_playerState;
 }
 
-inline [[nodiscard]] auto level_container::LevelSize() const -> SIZE_F
+inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
 {
-  return { 4000, 4000 };
+  return m_boundary;
 }
 
 inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
