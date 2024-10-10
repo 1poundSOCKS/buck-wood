@@ -4,6 +4,7 @@
 #include "level_geometry_functions.h"
 #include "pixel_geometry.h"
 #include "level_base.h"
+#include "pixel_geometry_loader.h"
 
 class level_geometries
 {
@@ -144,16 +145,5 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
 
 auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> pixel_geometry
 {
-  level_base playerPixelImageReader { pixelData };
-
-  std::list<cell_id> playerPixelData;
-
-  playerPixelImageReader.Enumerate([&playerPixelData](int column, int row, char pixelData)
-  {
-    if( pixelData != ' ' ) playerPixelData.emplace_back(column, row);
-  });
-
-  pixel_geometry playerPixelGeometry;
-  playerPixelGeometry.Load(playerPixelData, pixelSize);
-  return playerPixelGeometry;
+  return pixel_geometry_loader::read(pixelData, pixelSize, [](auto pixelValue) -> bool { return pixelValue == '0'; });
 }
