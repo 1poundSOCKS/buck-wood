@@ -2,7 +2,6 @@
 
 #include "default_object.h"
 #include "level_geometry_functions.h"
-#include "pixel_geometry.h"
 #include "level_base.h"
 #include "pixel_geometry_loader.h"
 
