@@ -13,11 +13,7 @@ auto player_controls::SetState(std::shared_ptr<player_ship_state> state) noexcep
 auto player_controls::Update(float interval) const noexcept -> void
 {
   auto leftThumbstickPosition = gamepad_reader::left_thumbstick();
-
-  if( leftThumbstickPosition )
-  {
-    m_state->SetRotationSpeed(leftThumbstickPosition->x);
-  }
+  m_state->SetRotationSpeed(leftThumbstickPosition ? leftThumbstickPosition->x : 0.0f);
 
   auto rightTrigger = gamepad_reader::right_trigger();
   m_state->SetThrusterPower(-rightTrigger);

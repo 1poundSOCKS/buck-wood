@@ -39,14 +39,14 @@ private:
   fractional_counter m_stateChange;
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
-  std::optional<float> m_thrusterPower;
-  std::optional<float> m_rotationSpeed;
+  float m_thrusterPower;
+  float m_rotationSpeed;
   std::optional<float> m_shootAngle;
 
 };
 
 inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept :
-  base_object { position, scale, angle }, m_stateChange { 0.2f }
+  base_object { position, scale, angle }, m_stateChange { 0.2f }, m_thrusterPower { 0.0f }, m_rotationSpeed { 0.0f }
 {
 }
 

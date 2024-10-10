@@ -19,15 +19,17 @@ auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float 
 {
   base_object::Update(interval);
 
-  auto rotationSpeed = m_rotationSpeed ? *m_rotationSpeed : 0.0f;
-  RotateBy(rotationSpeed, interval);
+  RotateBy(m_rotationSpeed, interval);
 
-  VELOCITY_2F thrustVelocityChange = m_thrusterPower ? direct2d::CalculateVelocity(*m_thrusterPower, m_angle) : VELOCITY_2F { 0.0f, 0.0f };
+  VELOCITY_2F thrustVelocityChange = direct2d::CalculateVelocity(m_thrusterPower, m_angle);
   VELOCITY_2F invertedThrustVelocityChange = { -thrustVelocityChange.x, -thrustVelocityChange.y };
   VELOCITY_2F velocityChange = { invertedThrustVelocityChange.x + environmentalForces.x, invertedThrustVelocityChange.y + environmentalForces.y };
+
   m_velocity.Update(velocityChange, interval);
   m_velocity.RelativeUpdate(-airResistance, interval);
+
   m_position = m_velocity.UpdatePosition(m_position, interval);
+
   m_playerReloadCounter.Update(interval);
 }
 
