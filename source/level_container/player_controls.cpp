@@ -16,13 +16,11 @@ auto player_controls::Update(float interval) const noexcept -> void
 
   if( leftThumbstickPosition )
   {
-    constexpr float rotationSpeedMultiplier = 200.0f;
-    m_state->RotateBy(leftThumbstickPosition->x * rotationSpeedMultiplier, interval);
+    m_state->SetRotationSpeed(leftThumbstickPosition->x);
   }
 
-  constexpr float thrustPowerMultiplier = 1200.0f;
   auto rightTrigger = gamepad_reader::right_trigger();
-  m_state->SetThrusterPower(-rightTrigger * thrustPowerMultiplier);
+  m_state->SetThrusterPower(-rightTrigger);
 
   gamepad_reader::button_down(XINPUT_GAMEPAD_A) ? m_state->SetShootAngle(m_state->Angle()) : m_state->ResetShootAngle();  
 }

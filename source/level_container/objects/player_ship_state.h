@@ -25,6 +25,7 @@ public:
   [[nodiscard]] auto SetShootAngle(float value) noexcept -> void;
   [[nodiscard]] auto ResetShootAngle() noexcept -> void;
   auto SetThrusterPower(float value) -> void;
+  auto SetRotationSpeed(float value) -> void;
   auto RotateBy(float angle, float interval) -> void;
 
 private:
@@ -39,6 +40,7 @@ private:
   health_status m_shieldStatus { 10 };
   reload_counter m_playerReloadCounter { 1.0f / 10.0f, 1 };
   std::optional<float> m_thrusterPower;
+  std::optional<float> m_rotationSpeed;
   std::optional<float> m_shootAngle;
 
 };
@@ -89,7 +91,14 @@ inline auto player_ship_state::ResetShootAngle() noexcept -> void
 
 inline auto player_ship_state::SetThrusterPower(float value) -> void
 {
-  m_thrusterPower = value;
+  constexpr float thrustPowerMultiplier = 1600.0f;
+  m_thrusterPower = value * thrustPowerMultiplier;
+}
+
+inline auto player_ship_state::SetRotationSpeed(float value) -> void
+{
+  constexpr float rotationSpeedMultiplier = 200.0f;
+  m_rotationSpeed = value * rotationSpeedMultiplier;
 }
 
 inline auto player_ship_state::RotateBy(float angle, float interval) -> void
