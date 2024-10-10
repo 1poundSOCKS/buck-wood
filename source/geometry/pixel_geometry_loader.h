@@ -5,24 +5,12 @@
 namespace pixel_geometry_loader
 {
 
-  auto filter(std::ranges::input_range auto&& pixelIds, auto&& inserter, auto&& pixelCheckFunction);
   auto read(std::ranges::input_range auto&& pixelIds, cell_size pixelSize, auto&& inserter, auto&& pixelCheckFunction) -> void;
   [[nodiscard]] auto read(std::ranges::input_range auto&& pixelIds, cell_size pixelSize, auto&& pixelCheckFunction) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto read(std::ranges::input_range auto&& pixelIds, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
+  auto filter(std::ranges::input_range auto&& pixelIds, auto&& inserter, auto&& pixelCheckFunction);
 
 };
-
-auto pixel_geometry_loader::filter(std::ranges::input_range auto &&pixelIds, auto &&inserter, auto &&pixelCheckFunction)
-{
-  level_base playerPixelImageReader { pixelIds };
-
-  std::list<cell_id> playerPixelData;
-
-  playerPixelImageReader.Enumerate([&playerPixelData,&inserter,&pixelCheckFunction](int column, int row, char pixelData)
-  {
-    if( pixelCheckFunction(pixelData) ) inserter = cell_id { column, row };
-  });
-}
 
 auto pixel_geometry_loader::read(std::ranges::input_range auto &&pixelIds, cell_size pixelSize, auto &&inserter, auto &&pixelCheckFunction) -> void
 {
@@ -98,6 +86,8 @@ auto pixel_geometry_loader::read(std::ranges::input_range auto &&pixelIds, cell_
   {
     return { point.x - shiftLeft, point.y - shiftUp };
   });
+
+  std::ranges::copy(shiftedPoints, inserter);
 }
 
 auto pixel_geometry_loader::read(std::ranges::input_range auto &&pixelIds, cell_size pixelSize, auto &&pixelCheckFunction) -> winrt::com_ptr<ID2D1Geometry>
@@ -183,4 +173,16 @@ auto pixel_geometry_loader::read(std::ranges::input_range auto &&pixelIds, cell_
   });
 
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedPoints, D2D1_FIGURE_END_CLOSED);
+}
+
+auto pixel_geometry_loader::filter(std::ranges::input_range auto &&pixelIds, auto &&inserter, auto &&pixelCheckFunction)
+{
+  level_base playerPixelImageReader { pixelIds };
+
+  std::list<cell_id> playerPixelData;
+
+  playerPixelImageReader.Enumerate([&playerPixelData,&inserter,&pixelCheckFunction](int column, int row, char pixelData)
+  {
+    if( pixelCheckFunction(pixelData) ) inserter = cell_id { column, row };
+  });
 }
