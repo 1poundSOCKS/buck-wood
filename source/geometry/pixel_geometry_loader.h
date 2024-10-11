@@ -102,8 +102,7 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
   {
     const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
     auto pixelRect = pixelSize.CellRect({pixelLineStart.x, pixelLineStart.y});
-    auto pixelRectFloat = ToFloat(pixelRect);
-    pointDataInserter = POINT_2F { pixelRectFloat.left, pixelRectFloat.top };
+    pointDataInserter = POINT_2I { pixelRect.left, pixelRect.top };
     ++pointDataInserts;
     currentLine = pixelLines.find(pixelLineEnd);
   }

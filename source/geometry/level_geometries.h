@@ -99,33 +99,40 @@ private:
   };
 
  inline static std::array m_level0_data { 
-    std::string { "         XXXXXX      XX           XXX" },
-    std::string { "        XX   XX                     X" },
-    std::string { "   1   XXX    X                      " },
-    std::string { "      XXXX                           " },
-    std::string { "                                    X" },
-    std::string { "                                   XX" },
-    std::string { "                         3    XXXXXXX" },
-    std::string { "                                 XXXX" },
-    std::string { "                                    X" },
-    std::string { "XX            P                     X" },
-    std::string { "XXXXXXXXXX                           " },
-    std::string { "XXXXXXXXXXXXX                        " },
-    std::string { "XXXXXXX                              " },
-    std::string { "XXX                                XX" },
-    std::string { "                                XXXXX" },
-    std::string { "         2                       XXXX" },
-    std::string { "                                   XX" },
-    std::string { "                                     " },
-    std::string { "                                     " },
-    std::string { "                                     " },
-    std::string { "                                     " },
-    std::string { "                3             2      " },
-    std::string { "                                     " },
-    std::string { "                                     " },
-    std::string { "                         1           " },
-    std::string { "          2                          " },
-    std::string { "                                     " }
+    std::string { "XX       XXXXXX      XX             XXX" },
+    std::string { "X       XX   XX                       X" },
+    std::string { "X  1   XXX    X                        " },
+    std::string { "      XXXX                             " },
+    std::string { "                                      X" },
+    std::string { "                                     XX" },
+    std::string { "                         3      XXXXXXX" },
+    std::string { "                                   XXXX" },
+    std::string { "                                      X" },
+    std::string { "XX            P                       X" },
+    std::string { "XXXXXXXXXX                             " },
+    std::string { "XXXXXXXXXXXXX                          " },
+    std::string { "XXXXXXX                                " },
+    std::string { "XXX                                  XX" },
+    std::string { "                              XXXXXXXXX" },
+    std::string { "         2                         XXXX" },
+    std::string { "                                     XX" },
+    std::string { "                                       " },
+    std::string { "                                       " },
+    std::string { "                                       " },
+    std::string { "                                       " },
+    std::string { "                3             2        " },
+    std::string { "        X                              " },
+    std::string { "XX      X                              " },
+    std::string { "XXXX    X                1            X" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "       XX    2    X                  XX" },
+    std::string { "X     XXX         XX         XXXXXXXXXX" }
  };
 
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
@@ -176,17 +183,22 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
 
 auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
-  std::vector<POINT_2F> pointData;
+  std::vector<POINT_2I> pointData;
+  std::vector<POINT_2F> pointDataAsFloat;
   std::vector<POINT_2F> centredPointData;
 
   pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
-  pixel_geometry_loader::centrePointData(pointData, std::back_inserter(centredPointData));
+  std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
+  pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
 }
 
 inline auto level_geometries::CreateBoundaryWallsGeometry(std::ranges::input_range auto &&levelData, cell_size cellSize) -> winrt::com_ptr<ID2D1Geometry>
 {
-  std::vector<POINT_2F> pointData;
+  std::vector<POINT_2I> pointData;
+  std::vector<POINT_2F> pointDataAsFloat;
+
   pixel_geometry_loader::imageDataToOrderedPointData(levelData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
-  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), pointData, D2D1_FIGURE_END_CLOSED);
+  std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
+  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), pointDataAsFloat, D2D1_FIGURE_END_CLOSED);
 }
