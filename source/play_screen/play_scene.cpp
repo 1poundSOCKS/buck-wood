@@ -102,7 +102,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 {
   auto levelBoundary = m_playState->LevelContainer().Boundary();
   auto renderTargetSize = render_target::get()->GetSize();
-  return renderTargetSize.height / ( levelBoundary.bottom - levelBoundary.top * 1.1f );
+  return renderTargetSize.height / ( ( levelBoundary.bottom - levelBoundary.top ) * 0.6f );
 }
 
 auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
