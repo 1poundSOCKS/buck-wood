@@ -22,7 +22,7 @@ namespace pixel_geometry_loader
   auto cellDataToLineData(std::ranges::input_range auto&& cellData, auto lineDataInserter) -> void;
   auto lineDataToOrderedPointData(std::ranges::input_range auto&& lineData, cell_size pixelSize, auto pointDataInserter) -> void;
   auto centrePointData(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
-  auto imageDataToOrderedPointData(std::ranges::input_range auto&& pixelRows, cell_size pixelSize, auto pointDataInserter);
+  auto imageDataToOrderedPointData(std::ranges::input_range auto&& pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
 
 };
 
@@ -131,12 +131,12 @@ auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&poin
   std::ranges::copy(shiftedPoints, pointDataInserter);
 }
 
-auto pixel_geometry_loader::imageDataToOrderedPointData(std::ranges::input_range auto &&pixelRows, cell_size pixelSize, auto pointDataInserter)
+auto pixel_geometry_loader::imageDataToOrderedPointData(std::ranges::input_range auto &&pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction)
 {
   std::vector<pixel_geometry_loader::pixel_data> newPixelData;
   pixel_geometry_loader::imageDataToPixelData(pixelRows, std::back_inserter(newPixelData));
 
-  auto filteredPixelData = std::ranges::views::filter(newPixelData, [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
+  auto filteredPixelData = std::ranges::views::filter(newPixelData, pixelCheckFunction);
   auto cellData = std::ranges::views::transform(filteredPixelData, [](auto&& pixelData) -> cell_id { return { pixelData.column, pixelData.row }; });
 
   std::vector<pixel_geometry_loader::line_data> lineData;

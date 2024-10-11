@@ -34,6 +34,7 @@ private:
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
   static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto CreateBoundaryWallsGeometry(std::ranges::input_range auto &&pixelData, cell_size cellSize) -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -97,6 +98,36 @@ private:
     std::string { "  00  " }
   };
 
+ inline static std::array m_level0_data { 
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "      1                              " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                         3           " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "              P                      " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "         2                           " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                3             2      " },
+    std::string { "                                     " },
+    std::string { "                                     " },
+    std::string { "                         1           " },
+    std::string { "          2                          " },
+    std::string { "                                     " }
+ };
+
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
@@ -146,10 +177,16 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
 auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
   std::vector<POINT_2F> pointData;
-  pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData));
-
   std::vector<POINT_2F> centredPointData;
-  pixel_geometry_loader::centrePointData(pointData, std::back_inserter(centredPointData));
 
+  pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
+  pixel_geometry_loader::centrePointData(pointData, std::back_inserter(centredPointData));
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
+}
+
+inline auto level_geometries::CreateBoundaryWallsGeometry(std::ranges::input_range auto &&levelData, cell_size cellSize) -> winrt::com_ptr<ID2D1Geometry>
+{
+  std::vector<POINT_2F> pointData;
+  pixel_geometry_loader::imageDataToOrderedPointData(levelData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
+  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), pointData, D2D1_FIGURE_END_CLOSED);
 }

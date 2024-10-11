@@ -50,32 +50,7 @@ auto level_container::AddBoundaryWalls() -> void
 {
   auto position = POINT_2F { ( m_boundary.left + m_boundary.right ) / 2.0f , ( m_boundary.bottom + m_boundary.top ) / 2.0f };
   auto scale = SCALE_2F { m_boundary.right - m_boundary.left, m_boundary.bottom - m_boundary.top };
-  m_objects.Add(std::in_place_type<boundary_walls>, position, scale, 0, 0);
-
-  // auto leftVisitor = visitor {
-  //   [](boundary_exit& object) { object.SetType(boundary_exit::type::left); },
-  //   [](auto&& object) { }
-  // };
-
-  // auto topVisitor = visitor {
-  //   [](boundary_exit& object) { object.SetType(boundary_exit::type::top); },
-  //   [](auto&& object) { }
-  // };
-
-  // auto rightVisitor = visitor {
-  //   [](boundary_exit& object) { object.SetType(boundary_exit::type::right); },
-  //   [](auto&& object) { }
-  // };
-
-  // auto bottomVisitor = visitor {
-  //   [](boundary_exit& object) { object.SetType(boundary_exit::type::bottom); },
-  //   [](auto&& object) { }
-  // };
-
-  // m_objects.Add(std::in_place_type<boundary_exit>, position, scale, 0).Visit(leftVisitor);
-  // m_objects.Add(std::in_place_type<boundary_exit>, position, scale, 0).Visit(topVisitor);
-  // m_objects.Add(std::in_place_type<boundary_exit>, position, scale, 0).Visit(rightVisitor);
-  // m_objects.Add(std::in_place_type<boundary_exit>, position, scale, 0).Visit(bottomVisitor);
+  m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, 0);
 }
 
 auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t

@@ -29,7 +29,7 @@ level_geometries::level_geometries()
   m_enemyBullet = LoadPixelGeometry(m_enemyBulletPixelImage, { 70, 70 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
-  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryWallsGeometryData(), D2D1_FIGURE_END_CLOSED));
+  m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(m_level0_data, cell_size { 250, 250 }));
   m_boundaryLeftExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryLeftExitGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_boundaryTopExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryTopExitGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_boundaryRightExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryRightExitGeometryData(), D2D1_FIGURE_END_CLOSED);
