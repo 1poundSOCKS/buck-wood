@@ -39,7 +39,7 @@ private:
   inline static level_geometries* m_instance { nullptr };
 
   inline static auto m_playerPixelImage = std::array {
-    std::string { "     00    " },
+    std::string { "     00     " },
     std::string { "   000000   " },
     std::string { "  00000000  " },
     std::string { " 0000000000 " },
@@ -144,5 +144,11 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
 
 auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
-  return pixel_geometry_loader::read(pixelData, pixelSize, [](auto pixelValue) -> bool { return pixelValue == '0'; });
+  std::vector<POINT_2F> pointData;
+  pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData));
+
+  std::vector<POINT_2F> centredPointData;
+  pixel_geometry_loader::centrePointData(pointData, std::back_inserter(centredPointData));
+
+  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
 }
