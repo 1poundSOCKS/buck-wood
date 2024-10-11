@@ -4,6 +4,7 @@
 #include "level_1.h"
 #include "level_2.h"
 #include "visitor.h"
+#include "geometry/pixel_geometry_loader.h"
 
 game_world::game_world() : m_collisionType { CollisionType() }
 {
@@ -50,12 +51,45 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
 {
   auto levelContainer = std::make_unique<level_container>();
 
-  auto levelData = LevelData(levelIndex);
-  levelData->Enumerate([this,levelIndex,&levelContainer](size_t column, size_t row, char cellData)
+  auto levelData = std::array { 
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "      1                              " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                         3           " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "              P                      " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "         2                           " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                3             2      " },
+      std::string { "                                     " },
+      std::string { "                                     " },
+      std::string { "                         1           " },
+      std::string { "          2                          " },
+      std::string { "                                     " }
+  };
+  
+  std::vector<pixel_geometry_loader::pixel_data> pixelData;
+
+  pixel_geometry_loader::imageDataToPixelData(levelData, std::back_inserter(pixelData));
+
+  for( auto&& pixel : pixelData )
   {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    auto cellType = m_cellDataTranslator(levelIndex, cellData);
+    auto columnIndex = pixel.column;
+    auto rowIndex = pixel.row;
+    auto cellType = m_cellDataTranslator(levelIndex, pixel.value);
     auto cellId = cell_id { columnIndex, rowIndex };
 
     switch( cellType )
@@ -65,13 +99,13 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
         levelContainer->AddCell(cellId, cellType);
         break;
     }
-  });
+  }
 
-  levelData->Enumerate([this,&levelContainer,levelIndex](size_t column, size_t row, char cellData)
+  for( auto&& pixel : pixelData )
   {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-    auto itemType = m_objectDataTranslator(levelIndex, cellData);
+    auto columnIndex = pixel.column;
+    auto rowIndex = pixel.row;
+    auto itemType = m_objectDataTranslator(levelIndex, pixel.value);
     auto cellId = cell_id { columnIndex, rowIndex };
 
     switch( itemType )
@@ -98,7 +132,7 @@ auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) con
         break;
 
     }
-  });
+  }
 
   levelContainer->AddBoundaryWalls();
 
