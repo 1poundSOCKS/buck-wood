@@ -1,9 +1,11 @@
 #pragma once
 
-#include "level_base.h"
+#include "cell_id.h"
 
 namespace pixel_geometry_loader
 {
+
+  using pixel_id = cell_id;
 
   struct pixel_data
   {
@@ -19,7 +21,7 @@ namespace pixel_geometry_loader
   };
 
   auto imageDataToPixelData(std::ranges::input_range auto&& pixelRows, auto pixelDataInserter) -> void;
-  auto cellDataToLineData(std::ranges::input_range auto&& cellData, auto lineDataInserter) -> void;
+  auto pixelDataToLineData(std::ranges::input_range auto&& pixelData, auto lineDataInserter) -> void;
   auto lineDataToOrderedPointData(std::ranges::input_range auto&& lineData, cell_size pixelSize, auto pointDataInserter) -> void;
   auto centrePointData(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
   auto imageDataToOrderedPointData(std::ranges::input_range auto&& pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
@@ -44,17 +46,17 @@ auto pixel_geometry_loader::imageDataToPixelData(std::ranges::input_range auto &
   }
 }
 
-auto pixel_geometry_loader::cellDataToLineData(std::ranges::input_range auto &&cellData, auto lineDataInserter) -> void
+auto pixel_geometry_loader::pixelDataToLineData(std::ranges::input_range auto &&pixelData, auto lineDataInserter) -> void
 {
-  std::set<cell_id> pixelIdLookup;
-  std::ranges::copy(cellData, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
+  std::set<pixel_id> pixelIdLookup;
+  std::ranges::copy(pixelData, std::inserter(pixelIdLookup, std::begin(pixelIdLookup)));
   
   for( auto pixelId : pixelIdLookup )
   {
-    auto leftId = pixelId.Get(cell_id::relative_position::left);
-    auto aboveId = pixelId.Get(cell_id::relative_position::above);
-    auto rightId = pixelId.Get(cell_id::relative_position::right);
-    auto belowId = pixelId.Get(cell_id::relative_position::below);
+    auto leftId = pixelId.Get(pixel_id::relative_position::left);
+    auto aboveId = pixelId.Get(pixel_id::relative_position::above);
+    auto rightId = pixelId.Get(pixel_id::relative_position::right);
+    auto belowId = pixelId.Get(pixel_id::relative_position::below);
 
     auto pixelPosition = pixelId.Position(1, 1);
 
@@ -136,10 +138,10 @@ auto pixel_geometry_loader::imageDataToOrderedPointData(std::ranges::input_range
   pixel_geometry_loader::imageDataToPixelData(pixelRows, std::back_inserter(newPixelData));
 
   auto filteredPixelData = std::ranges::views::filter(newPixelData, pixelCheckFunction);
-  auto cellData = std::ranges::views::transform(filteredPixelData, [](auto&& pixelData) -> cell_id { return { pixelData.column, pixelData.row }; });
+  auto pixelData = std::ranges::views::transform(filteredPixelData, [](auto&& pixelData) -> pixel_id { return { pixelData.column, pixelData.row }; });
 
   std::vector<pixel_geometry_loader::line_data> lineData;
-  pixel_geometry_loader::cellDataToLineData(cellData, std::back_inserter(lineData));
+  pixel_geometry_loader::pixelDataToLineData(pixelData, std::back_inserter(lineData));
 
   std::vector<POINT_2F> pointData;
   pixel_geometry_loader::lineDataToOrderedPointData(lineData, pixelSize, pointDataInserter);
