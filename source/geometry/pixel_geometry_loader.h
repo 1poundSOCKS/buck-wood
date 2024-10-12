@@ -120,24 +120,16 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
     auto previousPoint = ( pointIter == std::begin(pointData) ? std::nullopt : std::optional<POINT_2I>(*std::prev(pointIter)) );
     auto pointIterNext = std::next(pointIter);
     auto nextPoint = ( pointIterNext == std::end(pointData) ? std::nullopt : std::optional<POINT_2I>(*pointIterNext) );
-
     pointDataGroups.emplace_back(previousPoint, *pointIter, nextPoint);
   }
 
   std::ranges::copy_if(pointDataGroups, std::back_inserter(normalizedPointDataGroups), [](auto&& pointDataGroup)
   {
     auto&& [prev, current, next] = pointDataGroup;
-
-    if( prev == std::nullopt || next == std::nullopt )
-    {
-      return true;
-    }
-    else
-    {
-      auto allXAreEqual = ( prev->x == current.x && next->x == current.x );
-      auto allYAreEqual = ( prev->y == current.y && next->y == current.y );
-      return allXAreEqual || allYAreEqual ? false : true;
-    }
+    auto groupIsFull = prev != std::nullopt && next != std::nullopt;
+    auto allXAreEqual = groupIsFull && prev->x == current.x && next->x == current.x;
+    auto allYAreEqual = groupIsFull && prev->y == current.y && next->y == current.y;
+    return allXAreEqual || allYAreEqual ? false : true;
   });
 
   std::ranges::transform(normalizedPointDataGroups, pointDataInserter, [](auto&& pointDataGroup) { auto&& [prev, current, next] = pointDataGroup; return current; });
