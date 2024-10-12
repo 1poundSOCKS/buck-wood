@@ -92,22 +92,55 @@ auto pixel_geometry_loader::pixelDataToLineData(std::ranges::input_range auto &&
 
 auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range auto &&lineData, cell_size pixelSize, auto pointDataInserter) -> void
 {
+  using point_data_container = std::list<POINT_2I>;
+  using point_data_container_size = std::ranges::range_difference_t<point_data_container>;
+  using point_data_group = std::tuple<std::optional<POINT_2I>, POINT_2I, std::optional<POINT_2I>>;
+  using point_data_group_container = std::list<point_data_group>;
+
   std::map<POINT_2I, POINT_2I> pixelLines;
+  point_data_container pointData;
+  point_data_group_container pointDataGroups;
+  point_data_group_container normalizedPointDataGroups;
+  
   std::ranges::transform(lineData, std::inserter(pixelLines, std::begin(pixelLines)), [](auto&& line) -> std::pair<POINT_2I, POINT_2I> { return { line.start, line.end }; });
 
   auto lineDataSize = std::ranges::distance(lineData);
-  int pointDataInserts = 0;
-
   auto currentLine = std::begin(pixelLines);
   
-  while( pointDataInserts < lineDataSize )
+  while( static_cast<point_data_container_size>(pointData.size()) < lineDataSize )
   {
     const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
     auto pixelRect = pixelSize.CellRect({pixelLineStart.x, pixelLineStart.y});
-    pointDataInserter = POINT_2I { pixelRect.left, pixelRect.top };
-    ++pointDataInserts;
+    pointData.emplace_back(pixelRect.left, pixelRect.top);
     currentLine = pixelLines.find(pixelLineEnd);
   }
+
+  for( auto pointIter = std::begin(pointData); pointIter != std::end(pointData); ++pointIter )
+  {
+    auto previousPoint = ( pointIter == std::begin(pointData) ? std::nullopt : std::optional<POINT_2I>(*std::prev(pointIter)) );
+    auto pointIterNext = std::next(pointIter);
+    auto nextPoint = ( pointIterNext == std::end(pointData) ? std::nullopt : std::optional<POINT_2I>(*pointIterNext) );
+
+    pointDataGroups.emplace_back(previousPoint, *pointIter, nextPoint);
+  }
+
+  std::ranges::copy_if(pointDataGroups, std::back_inserter(normalizedPointDataGroups), [](auto&& pointDataGroup)
+  {
+    auto&& [prev, current, next] = pointDataGroup;
+
+    if( prev == std::nullopt || next == std::nullopt )
+    {
+      return true;
+    }
+    else
+    {
+      auto allXAreEqual = ( prev->x == current.x && next->x == current.x );
+      auto allYAreEqual = ( prev->y == current.y && next->y == current.y );
+      return allXAreEqual || allYAreEqual ? false : true;
+    }
+  });
+
+  std::ranges::transform(normalizedPointDataGroups, pointDataInserter, [](auto&& pointDataGroup) { auto&& [prev, current, next] = pointDataGroup; return current; });
 }
 
 auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
