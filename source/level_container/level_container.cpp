@@ -5,16 +5,16 @@
 #include "player_state.h"
 #include "visitor.h"
 
-level_container::level_container() : level_container(collision_type::direct2d)
+level_container::level_container() : level_container(range_comparison_runner::execution::sequential, collision_type::direct2d)
 {
 }
 
-level_container::level_container(collision_type collisionType) : 
+level_container::level_container(range_comparison_runner::execution ex, collision_type collisionType) : 
   m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }, RECT_I { 0, 0, 10, 10 }) },
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f, VELOCITY_2F { 0, 0 }) }, 
   m_controller { m_playerState },
-  m_collisionRunner { collisionType },
+  m_collisionRunner { ex, collisionType },
   m_boundary { 0.0f, 0.0f, 0.0f, 0.0f }
 {
 }

@@ -8,7 +8,7 @@ class geometry_collision_runner
 
 public:
 
-  geometry_collision_runner(collision_type collisionType) : m_collisionTest { collisionType }
+  geometry_collision_runner(range_comparison_runner::execution ex, collision_type collisionType) : m_compare(ex), m_collisionTest(collisionType)
   {
   }
 

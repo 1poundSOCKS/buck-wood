@@ -26,7 +26,7 @@ public:
   enum class object_type { portal_entry, portal_exit, player, enemy_stalker, enemy_random, enemy_turret, power_up, cell, boundary_walls };
 
   level_container();
-  level_container(collision_type collisionType);
+  level_container(range_comparison_runner::execution ex, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;

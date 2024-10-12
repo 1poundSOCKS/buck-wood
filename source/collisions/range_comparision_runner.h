@@ -5,17 +5,22 @@ class range_comparison_runner
 
 public:
 
-  range_comparison_runner() = default;
+  enum class execution { sequential, parallel };
+
+  range_comparison_runner(execution ex);
   
   auto operator()(std::ranges::input_range auto& objectCollection1, std::ranges::input_range auto& objectCollection2, auto&& callable) -> void;
 
 private:
 
-  enum class execution { sequential, parallel };
   execution m_execution { execution::sequential };
   std::mutex m_mutex;
 
 };
+
+inline range_comparison_runner::range_comparison_runner(execution ex) : m_execution { ex }
+{
+}
 
 auto range_comparison_runner::operator()(std::ranges::input_range auto& objectCollection1, std::ranges::input_range auto& objectCollection2, auto &&callable) -> void
 {
