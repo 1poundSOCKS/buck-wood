@@ -56,16 +56,23 @@ auto game_world::LoadLevelData(int index, auto inserter) const -> bool
     std::string { "                3             2        " },
     std::string { "        X                              " },
     std::string { "XX      X                              " },
-    std::string { "XXXX    X                1            X" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "X     XXX         XX         XXXXXXXXXX" }
+    std::string { "XXX     X                1            X" },
+    std::string { "       XX      XXXX                  XX" },
+    std::string { "       XX       XXX                  XX" },
+    std::string { "X      XX       XXX                  XX" },
+    std::string { "       XXX       XX                  XX" },
+    std::string { "X      XX         X                  XX" },
+    std::string { "       XXX        X                  XX" },
+    std::string { "       XX        XX    X    XX       XX" },
+    std::string { "       XX    2    X    XXX  X        XX" },
+    std::string { "X     XXX        XXXXXXXXXXXXXXXXXXXXXX" },
+    std::string { "XXXX XXXX      XXXXXXXXXXXXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX                XXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX           3    XXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX                XXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX        3       XXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX                XXXXXXXXXXXXXX" },
+    std::string { "XXXXXXXXX                XXXXXXXXXXXXXX" }
   };
     
   switch( index )
