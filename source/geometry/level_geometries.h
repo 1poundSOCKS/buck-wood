@@ -40,11 +40,13 @@ private:
 
   inline static auto m_playerPixelImage = std::array {
     std::string { "     00     " },
-    std::string { "   000000   " },
+    std::string { "    0000    " },
+    std::string { "    0000    " },
     std::string { "  00000000  " },
-    std::string { " 0000000000 " },
-    std::string { " 0000000000 " },
-    std::string { " 0000000000 " },
+    std::string { "  00000000  " },
+    std::string { "  00000000  " },
+    std::string { "000000000000" },
+    std::string { "000000000000" },
     std::string { "000      000" },
     std::string { "000      000" }
   };
