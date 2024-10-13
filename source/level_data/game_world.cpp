@@ -6,7 +6,7 @@
 #include "visitor.h"
 #include "geometry/pixel_geometry_loader.h"
 
-game_world::game_world() : m_collisionType { CollisionType() }
+game_world::game_world()
 {
 }
 
@@ -116,17 +116,4 @@ auto game_world::UpdateLevel(level_container &levelContainer) const noexcept -> 
     [](auto& innerObject) {}
   });
 #endif
-}
-
-auto game_world::CollisionType() -> collision_type
-{
-  switch( game_settings::collisionDetectionType() )
-  {
-    case game_settings::collision_detection_type::direct2d:
-      return collision_type::direct2d;
-
-    case game_settings::collision_detection_type::basic:
-    default:
-      return collision_type::boundary;
-  }
 }

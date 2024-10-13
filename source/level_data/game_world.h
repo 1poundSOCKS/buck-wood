@@ -18,14 +18,8 @@ public:
 
 private:
 
-  static [[nodiscard]] auto CollisionType() -> collision_type;
-
-private:
-
   game_world_cell_data_translator m_cellDataTranslator;
   game_world_object_data_translator m_objectDataTranslator;
-  std::map<std::tuple<int, cell_id>,std::tuple<int, int, int>> m_links;
-  collision_type m_collisionType;
 
 };
 
