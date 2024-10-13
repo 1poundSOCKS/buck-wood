@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "level_geometries.h"
+#include "game_world.h"
 
 auto level_geometries::create() -> void
 {
@@ -29,11 +30,17 @@ level_geometries::level_geometries()
   m_enemyBullet = LoadPixelGeometry(m_enemyBulletPixelImage, { 70, 70 });
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
-  m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(m_level0_data, cell_size { 250, 250 }));
-  m_boundaryLeftExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryLeftExitGeometryData(), D2D1_FIGURE_END_CLOSED);
-  m_boundaryTopExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryTopExitGeometryData(), D2D1_FIGURE_END_CLOSED);
-  m_boundaryRightExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryRightExitGeometryData(), D2D1_FIGURE_END_CLOSED);
-  m_boundaryBottomExit = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetBoundaryBottomExitGeometryData(), D2D1_FIGURE_END_CLOSED);
+
+  game_world gameWorld;
+  std::vector<std::string> levelData;
+
+  int levelIndex = 0;
+  while( gameWorld.LoadLevelData(levelIndex, std::back_inserter(levelData)) )
+  {
+    m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(levelData, cell_size { 250, 250 }));
+    levelIndex++;
+    levelData.clear();
+  }
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
@@ -71,23 +78,6 @@ auto level_geometries::Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Ge
 auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>
 {
   return m_boundaryWalls[object.Level()];
-}
-
-auto level_geometries::Get(const boundary_exit &object) -> winrt::com_ptr<ID2D1Geometry>
-{
-  switch( object.Type() )
-  {
-    case boundary_exit::type::left:
-      return m_boundaryLeftExit;
-    case boundary_exit::type::top:
-      return m_boundaryTopExit;
-    case boundary_exit::type::right:
-      return m_boundaryRightExit;
-    case boundary_exit::type::bottom:
-      return m_boundaryBottomExit;
-    default:
-      return m_boundaryLeftExit;
-  }
 }
 
 auto level_geometries::LoadHudTargetGeometries(auto&& geometryInserter) -> void

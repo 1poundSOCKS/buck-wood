@@ -2,7 +2,6 @@
 
 #include "default_object.h"
 #include "level_geometry_functions.h"
-#include "level_base.h"
 #include "pixel_geometry_loader.h"
 
 class level_geometries
@@ -27,7 +26,6 @@ private:
   [[nodiscard]] auto Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>;
-  [[nodiscard]] auto Get(const boundary_exit &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
 
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
@@ -98,43 +96,6 @@ private:
     std::string { "  00  " }
   };
 
- inline static std::array m_level0_data { 
-    std::string { "XX       XXXXXX      XX             XXX" },
-    std::string { "X       XX   XX                       X" },
-    std::string { "X  1   XXX    X                        " },
-    std::string { "      XXXX                             " },
-    std::string { "                                      X" },
-    std::string { "                                     XX" },
-    std::string { "                         3      XXXXXXX" },
-    std::string { "                                   XXXX" },
-    std::string { "                                      X" },
-    std::string { "XX            P                       X" },
-    std::string { "XXXXXXXXXX                             " },
-    std::string { "XXXXXXXXXXXXX                          " },
-    std::string { "XXXXXXX                                " },
-    std::string { "XXX                                  XX" },
-    std::string { "                              XXXXXXXXX" },
-    std::string { "         2                         XXXX" },
-    std::string { "                                     XX" },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                3             2        " },
-    std::string { "        X                              " },
-    std::string { "XX      X                              " },
-    std::string { "XXXX    X                1            X" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "X     XXX         XX         XXXXXXXXXX" }
- };
-
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
   winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
   winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
@@ -149,10 +110,6 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_boundaryWalls;
-  winrt::com_ptr<ID2D1Geometry> m_boundaryLeftExit;
-  winrt::com_ptr<ID2D1Geometry> m_boundaryTopExit;
-  winrt::com_ptr<ID2D1Geometry> m_boundaryRightExit;
-  winrt::com_ptr<ID2D1Geometry> m_boundaryBottomExit;
 
 };
 

@@ -14,10 +14,10 @@ public:
 
   auto LoadLevel(int levelIndex) const -> std::unique_ptr<level_container>;
   auto UpdateLevel(level_container& levelContainer) const noexcept -> void;
+  auto LoadLevelData(int index, auto inserter) const -> bool;
 
 private:
 
-  auto LoadLevelData(int index, auto inserter) const -> void;
   static [[nodiscard]] auto CollisionType() -> collision_type;
 
 private:
@@ -29,7 +29,7 @@ private:
 
 };
 
-auto game_world::LoadLevelData(int index, auto inserter) const -> void
+auto game_world::LoadLevelData(int index, auto inserter) const -> bool
 {
   static std::array levelData { 
     std::string { "XX       XXXXXX      XX             XXX" },
@@ -72,10 +72,9 @@ auto game_world::LoadLevelData(int index, auto inserter) const -> void
   {
     case 0:
       std::ranges::copy(levelData, inserter);
-      break;
+      return true;
       
     default:
-      std::ranges::copy(levelData, inserter);
-      break;
+      return false;
   }
 }
