@@ -8,86 +8,15 @@
 
 game_world::game_world() : m_collisionType { CollisionType() }
 {
-  CreateLevelLink(0, 'E', 1, 'P');
-  CreateLevelLink(1, 'E', 0, 'P');
-  CreateLevelLink(1, 'G', 2, 'P');
-  CreateLevelLink(2, 'E', 1, 'P');
 }
 
-auto game_world::LevelData(int index) const -> std::unique_ptr<level_base>
-{
-  switch( index )
-  {
-    case 0:
-      return std::make_unique<level_0>();
-      
-    case 1:
-      return std::make_unique<level_1>();
-
-    case 2:
-      return std::make_unique<level_2>();
-
-    default:
-      return std::make_unique<level_0>();
-  }
-}
-
-auto game_world::EntryData(int index, cell_id exitCell) -> std::optional<std::tuple<int, cell_id>>
-{
-  auto entryIterator = m_links.find({index,exitCell});
-  if( entryIterator == std::end(m_links) )
-  {
-    return std::nullopt;
-  }
-  else
-  {
-    const auto& [key, value] = *entryIterator;
-    const auto& [levelIndex, column, row] = value;
-    return std::make_optional<std::tuple<int, cell_id>>(levelIndex, cell_id { column, row });
-  }
-}
-
-auto game_world::LoadLevel(int levelIndex, std::optional<cell_id> entryCell) const -> std::unique_ptr<level_container>
+auto game_world::LoadLevel(int levelIndex) const -> std::unique_ptr<level_container>
 {
   auto levelContainer = std::make_unique<level_container>();
 
-  static std::array levelData { 
-    std::string { "XX       XXXXXX      XX             XXX" },
-    std::string { "X       XX   XX                       X" },
-    std::string { "X  1   XXX    X                        " },
-    std::string { "      XXXX                             " },
-    std::string { "                                      X" },
-    std::string { "                                     XX" },
-    std::string { "                         3      XXXXXXX" },
-    std::string { "                                   XXXX" },
-    std::string { "                                      X" },
-    std::string { "XX            P                       X" },
-    std::string { "XXXXXXXXXX                             " },
-    std::string { "XXXXXXXXXXXXX                          " },
-    std::string { "XXXXXXX                                " },
-    std::string { "XXX                                  XX" },
-    std::string { "                              XXXXXXXXX" },
-    std::string { "         2                         XXXX" },
-    std::string { "                                     XX" },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                                       " },
-    std::string { "                3             2        " },
-    std::string { "        X                              " },
-    std::string { "XX      X                              " },
-    std::string { "XXXX    X                1            X" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "       XX    2    X                  XX" },
-    std::string { "X     XXX         XX         XXXXXXXXXX" }
-  };
-  
+  std::vector<std::string> levelData;
+  LoadLevelData(levelIndex, std::back_inserter(levelData));
+
   std::vector<pixel_geometry_loader::pixel_data> pixelData;
   pixel_geometry_loader::imageDataToPixelData(levelData, std::back_inserter(pixelData));
 
@@ -199,37 +128,5 @@ auto game_world::CollisionType() -> collision_type
     case game_settings::collision_detection_type::basic:
     default:
       return collision_type::boundary;
-  }
-}
-
-auto game_world::CreateLevelLink(int exitLevelIndex, char exitCellDataValue, int entryLevelIndex, char entryCellDataValue) -> void
-{
-  m_objectDataTranslator.AddExit(exitLevelIndex, exitCellDataValue);
-
-  auto levelData = LevelData(exitLevelIndex);
-  std::optional<cell_id> exitCell;
-
-  levelData->Enumerate([this,exitLevelIndex,exitCellDataValue,&exitCell](size_t column, size_t row, char cellData)
-  {
-    if( cellData == exitCellDataValue )
-    {
-      exitCell = cell_id { static_cast<int>(column), static_cast<int>(row) };
-    }
-  });
-
-  auto levelData1 = LevelData(entryLevelIndex);
-  std::optional<POINT_2I> entryCell;
-
-  levelData1->Enumerate([this,entryLevelIndex,entryCellDataValue,&entryCell](size_t column, size_t row, char cellData)
-  {
-    if( cellData == entryCellDataValue )
-    {
-      entryCell = POINT_2I { static_cast<int>(column), static_cast<int>(row) };
-    }
-  });
-
-  if( exitCell && entryCell )
-  {
-    m_links[std::make_tuple(exitLevelIndex, *exitCell)] = std::make_tuple(entryLevelIndex, entryCell->x, entryCell->y);
   }
 }

@@ -11,26 +11,17 @@ play_state::play_state() :
 
 auto play_state::LoadCurrentLevel() -> void
 {
-  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index(), std::nullopt);
+  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
   player_state::set_status(player_state::status::active);
 }
 
-auto play_state::LoadNextLevel(std::optional<cell_id> exitCell) -> bool
+auto play_state::LoadNextLevel() -> bool
 {
-  const auto entryData = exitCell ? game_level_data_loader::entryData(game_state::level_index(), *exitCell) : std::nullopt;
-
-  if( entryData )
-  {
-    const auto& [levelIndex, entryCell] = *entryData;
-    game_state::set_level_index(levelIndex);
-    m_levelContainer = game_level_data_loader::loadLevel(levelIndex, entryCell);
-    player_state::set_status(player_state::status::active);
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  auto levelIndex = 0;
+  game_state::set_level_index(levelIndex);
+  m_levelContainer = game_level_data_loader::loadLevel(levelIndex);
+  player_state::set_status(player_state::status::active);
+  return true;
 }
 
 auto play_state::Update(float interval, RECT_F view) -> void
@@ -54,7 +45,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
       player_state::set_status(player_state::status::celebrating);
       break;
     case status::exit_level:
-      LoadNextLevel(m_levelContainer->ExitCell());
+      LoadNextLevel();
       m_status = status::running;
       break;
   }
