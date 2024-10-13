@@ -157,7 +157,7 @@ inline auto level_geometries::CreateBoundaryWallsGeometry(std::ranges::input_ran
   std::vector<POINT_2I> pointData;
   std::vector<POINT_2F> pointDataAsFloat;
 
-  pixel_geometry_loader::imageDataToOrderedPointData(levelData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
+  pixel_geometry_loader::pixelDataToOrderedPointData(levelData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
   std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), pointDataAsFloat, D2D1_FIGURE_END_CLOSED);
 }

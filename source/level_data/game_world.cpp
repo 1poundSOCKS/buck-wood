@@ -4,7 +4,6 @@
 #include "level_1.h"
 #include "level_2.h"
 #include "visitor.h"
-#include "geometry/pixel_geometry_loader.h"
 
 game_world::game_world()
 {
@@ -14,11 +13,8 @@ auto game_world::LoadLevel(int levelIndex) const -> std::unique_ptr<level_contai
 {
   auto levelContainer = std::make_unique<level_container>();
 
-  std::vector<std::string> levelData;
-  LoadLevelData(levelIndex, std::back_inserter(levelData));
-
   std::vector<pixel_geometry_loader::pixel_data> pixelData;
-  pixel_geometry_loader::imageDataToPixelData(levelData, std::back_inserter(pixelData));
+  level_data::Load(levelIndex, std::back_inserter(pixelData));
 
   for( auto&& pixel : pixelData )
   {

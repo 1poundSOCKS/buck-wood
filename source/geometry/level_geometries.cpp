@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "level_geometries.h"
-#include "game_world.h"
+#include "level_data.h"
 
 auto level_geometries::create() -> void
 {
@@ -31,11 +31,10 @@ level_geometries::level_geometries()
   m_portal = LoadPixelGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
 
-  game_world gameWorld;
-  std::vector<std::string> levelData;
-
   int levelIndex = 0;
-  while( gameWorld.LoadLevelData(levelIndex, std::back_inserter(levelData)) )
+  std::vector<pixel_geometry_loader::pixel_data> levelData;
+
+  while( level_data::Load(levelIndex, std::back_inserter(levelData)) )
   {
     m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(levelData, cell_size { 250, 250 }));
     levelIndex++;
