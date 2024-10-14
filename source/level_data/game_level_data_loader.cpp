@@ -102,7 +102,11 @@ auto game_level_data_loader::LoadLevel(int levelIndex) -> std::unique_ptr<level_
     }
   }
 
-  levelContainer->AddBoundaryWalls();
+  std::vector<POINT_2F> boundaryData;
+  if( level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
+  {
+    levelContainer->AddBoundaryWalls(boundaryData);
+  }
 
   m_status = status::starting;
   m_levelCanBeCompleted = true;

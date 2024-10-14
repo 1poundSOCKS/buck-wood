@@ -31,7 +31,7 @@ public:
 
   auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
   auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
-  auto AddBoundaryWalls() -> void;
+  auto AddBoundaryWalls(std::ranges::input_range auto&& pointData) -> void;
 
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
@@ -114,6 +114,16 @@ private:
 inline auto level_container::PlayerState() const noexcept -> const player_ship_state &
 {
   return *m_playerState;
+}
+
+auto level_container::AddBoundaryWalls(std::ranges::input_range auto&& pointData) -> void
+{
+  m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, 0);
+
+  m_boundary = std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0, 0, 0, 0 }, [](RECT_F bounds, POINT_2F pointData) -> RECT_F
+  {
+    return { std::min(bounds.left, pointData.x), std::min(bounds.top, pointData.y), std::max(bounds.right, pointData.x), std::max(bounds.bottom, pointData.y) };
+  });
 }
 
 inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F

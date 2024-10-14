@@ -38,20 +38,6 @@ auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
   m_cells->Set(cellId, cellType);
 }
 
-auto level_container::AddBoundaryWalls() -> void
-{
-  auto&& object = m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, 0);
-
-  auto&& innerObject = object.GetIf<boundary_walls>();
-  std::vector<POINT_2F> pointData;
-  innerObject->GetPointData(std::back_inserter(pointData));
-
-  m_boundary = std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0, 0, 0, 0 }, [](RECT_F bounds, POINT_2F pointData) -> RECT_F
-  {
-    return { std::min(bounds.left, pointData.x), std::min(bounds.top, pointData.y), std::max(bounds.right, pointData.x), std::max(bounds.bottom, pointData.y) };
-  });
-}
-
 auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
 {
   return m_cells->UnoccupiedFloorCellCount();
