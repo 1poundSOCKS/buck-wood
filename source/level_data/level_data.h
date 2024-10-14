@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cell_size.h"
 #include "geometry/pixel_geometry_loader.h"
 
 namespace level_data

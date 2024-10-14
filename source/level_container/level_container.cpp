@@ -36,21 +36,20 @@ auto level_container::AddObject(object_type objectType, cell_id cellId) -> defau
 auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
 {
   m_cells->Set(cellId, cellType);
-
-  auto cellSize = cell_size { m_cellSize, m_cellSize };
-  auto cellBounds = m_cells->Bounds();
-
-  m_boundary.left = static_cast<float>(cellBounds.Left(cellSize)) - m_cellSize / 2;
-  m_boundary.top = static_cast<float>(cellBounds.Top(cellSize)) - m_cellSize / 2;
-  m_boundary.right = static_cast<float>(cellBounds.Right(cellSize)) + m_cellSize / 2;
-  m_boundary.bottom = static_cast<float>(cellBounds.Bottom(cellSize)) + m_cellSize / 2;
 }
 
 auto level_container::AddBoundaryWalls() -> void
 {
-  auto position = POINT_2F { ( m_boundary.left + m_boundary.right ) / 2.0f , ( m_boundary.bottom + m_boundary.top ) / 2.0f };
-  auto scale = SCALE_2F { m_boundary.right - m_boundary.left, m_boundary.bottom - m_boundary.top };
-  m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, 0);
+  auto&& object = m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, 0);
+
+  auto&& innerObject = object.GetIf<boundary_walls>();
+  std::vector<POINT_2F> pointData;
+  innerObject->GetPointData(std::back_inserter(pointData));
+
+  m_boundary = std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0, 0, 0, 0 }, [](RECT_F bounds, POINT_2F pointData) -> RECT_F
+  {
+    return { std::min(bounds.left, pointData.x), std::min(bounds.top, pointData.y), std::max(bounds.right, pointData.x), std::max(bounds.bottom, pointData.y) };
+  });
 }
 
 auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
