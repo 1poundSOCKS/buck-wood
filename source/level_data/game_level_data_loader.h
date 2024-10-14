@@ -1,7 +1,6 @@
 #pragma once
 
 #include "level_update_event.h"
-#include "game_world.h"
 #include "fractional_counter.h"
 
 class game_level_data_loader
@@ -39,7 +38,6 @@ private:
 
   inline static game_level_data_loader* m_instance { nullptr };
 
-  game_world m_gameWorld;
   status m_status { status::starting };
   inline static int m_levelCount { 9 };
 
@@ -91,18 +89,4 @@ inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
 inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
 {
   return m_instance->LevelCanBeCompleted();
-}
-
-inline auto game_level_data_loader::LoadLevel(int levelIndex) -> std::unique_ptr<level_container>
-{
-  auto levelContainer = m_gameWorld.LoadLevel(levelIndex);
-
-  m_status = status::starting;
-  m_levelCanBeCompleted = true;
-
-  m_events.clear();
-  
-  m_currentEvent = std::begin(m_events);
-
-  return levelContainer;
 }

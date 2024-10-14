@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "game_level_data_loader.h"
+#include "level_data.h"
 
 game_level_data_loader::game_level_data_loader() : m_levelUpdateEvent { 2.0f }
 {
@@ -26,7 +27,7 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 
   if( m_levelUpdateEvent.Update(interval) >= 1.0f )
   {
-    m_gameWorld.UpdateLevel(*levelContainer);
+    /* UPDATE THE LEVEL CONTAINER */
     m_levelUpdateEvent.Normalize();
   }
 }
@@ -49,4 +50,66 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
 [[nodiscard]] auto game_level_data_loader::LevelCanBeCompleted() const -> bool
 {
   return m_levelCanBeCompleted;
+}
+
+auto game_level_data_loader::LoadLevel(int levelIndex) -> std::unique_ptr<level_container>
+{
+  auto levelContainer = std::make_unique<level_container>();
+
+  std::vector<level_data::cell_data> cellData;
+  level_data::LoadCellData(levelIndex, std::back_inserter(cellData));
+
+  for( auto&& cell : cellData )
+  {
+    auto cellId = cell_id { cell.column, cell.row };
+
+    switch( cell.type )
+    {
+      case level_data::cell_type::empty:
+        levelContainer->AddCell(cellId, level_cell_type::floor);
+        break;
+      case level_data::cell_type::boundary:
+        levelContainer->AddCell(cellId, level_cell_type::wall);
+        break;
+    }
+  }
+
+  std::vector<level_data::object_data> objectData;
+  level_data::LoadObjectData(levelIndex, std::back_inserter(objectData));
+
+  for( auto&& object : objectData )
+  {
+    auto cellId = cell_id { object.column, object.row };
+
+    switch( object.type )
+    {
+      case level_data::object_type::player:
+        levelContainer->AddObject(level_container::object_type::player, cellId);
+        break;
+
+      case level_data::object_type::enemy_stalker:
+        levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
+        break;
+
+      case level_data::object_type::enemy_random:
+        levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
+        break;
+
+      case level_data::object_type::enemy_turret:
+        levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
+        break;
+
+    }
+  }
+
+  levelContainer->AddBoundaryWalls();
+
+  m_status = status::starting;
+  m_levelCanBeCompleted = true;
+
+  m_events.clear();
+  
+  m_currentEvent = std::begin(m_events);
+
+  return levelContainer;
 }

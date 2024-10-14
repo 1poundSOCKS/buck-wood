@@ -5,7 +5,6 @@
 #include "level_container.h"
 #include "play_events.h"
 #include "game_score.h"
-#include "game_world.h"
 
 class play_state
 {
