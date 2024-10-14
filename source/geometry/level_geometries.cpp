@@ -32,13 +32,13 @@ level_geometries::level_geometries()
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
 
   int levelIndex = 0;
-  std::vector<level_data::raw_data> levelData;
+  std::vector<POINT_2F> boundaryData;
 
-  while( level_data::LoadRawData(levelIndex, std::back_inserter(levelData)) )
+  while( level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
   {
-    m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(levelData, cell_size { 250, 250 }));
-    levelIndex++;
-    levelData.clear();
+    m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundaryData, D2D1_FIGURE_END_CLOSED));
+    ++levelIndex;
+    boundaryData.clear();
   }
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));

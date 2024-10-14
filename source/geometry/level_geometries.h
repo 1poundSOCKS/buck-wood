@@ -32,7 +32,6 @@ private:
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
   static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
-  static [[nodiscard]] auto CreateBoundaryWallsGeometry(std::ranges::input_range auto &&pixelData, cell_size cellSize) -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -150,14 +149,4 @@ auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelDa
   std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
   pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
-}
-
-inline auto level_geometries::CreateBoundaryWallsGeometry(std::ranges::input_range auto &&levelData, cell_size cellSize) -> winrt::com_ptr<ID2D1Geometry>
-{
-  std::vector<POINT_2I> pointData;
-  std::vector<POINT_2F> pointDataAsFloat;
-
-  pixel_geometry_loader::pixelDataToOrderedPointData(levelData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
-  std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
-  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), pointDataAsFloat, D2D1_FIGURE_END_CLOSED);
 }

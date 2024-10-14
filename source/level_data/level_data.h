@@ -24,9 +24,12 @@ namespace level_data
     object_type type;
   };
 
+  inline cell_size cellSize { 250, 250 };
+
   auto LoadRawData(int index, auto rawDatainserter) -> bool;
   auto LoadCellData(int index, auto cellDatainserter) -> bool;
   auto LoadObjectData(int index, auto objectDatainserter) -> bool;
+  auto LoadBoundaryData(int index, auto pointDatainserter) -> bool;
   auto ConvertRawDataToCellData(raw_data rawDataItem) -> cell_data;
   auto ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data;
 
@@ -111,6 +114,23 @@ auto level_data::LoadObjectData(int index, auto objectDataInserter) -> bool
   if( LoadRawData(index, std::back_inserter(rawData)) )
   {
     std::ranges::transform(rawData, objectDataInserter, [](auto&& rawDataItem) -> object_data { return ConvertRawDataToObjectData(rawDataItem); });
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+auto level_data::LoadBoundaryData(int index, auto pointDatainserter) -> bool
+{
+  std::vector<raw_data> rawData;
+
+  if( LoadRawData(index, std::back_inserter(rawData)) )
+  {
+    std::vector<POINT_2I> pointData;
+    pixel_geometry_loader::pixelDataToOrderedPointData(rawData, cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
+    std::ranges::transform(pointData, pointDatainserter, [](POINT_2I pointData) -> POINT_2F { return ToFloat(pointData); });
     return true;
   }
   else
