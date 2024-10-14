@@ -1,8 +1,6 @@
 #pragma once
 
 #include "level_update_event.h"
-#include "level_1.h"
-#include "level_2.h"
 #include "game_world.h"
 #include "fractional_counter.h"
 
@@ -31,7 +29,6 @@ private:
   auto LoadLevel(int levelIndex) -> std::unique_ptr<level_container>;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
-  [[nodiscard]] auto PortalCell(const level_base* levelData) const -> POINT_2I;
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
   [[nodiscard]] auto NextLevel(int levelIndex) -> bool;
   [[nodiscard]] auto CurrentLevel() const -> int;

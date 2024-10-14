@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "game_world.h"
-#include "level_0.h"
-#include "level_1.h"
-#include "level_2.h"
 #include "visitor.h"
 
 game_world::game_world()
@@ -13,52 +10,46 @@ auto game_world::LoadLevel(int levelIndex) const -> std::unique_ptr<level_contai
 {
   auto levelContainer = std::make_unique<level_container>();
 
-  std::vector<pixel_geometry_loader::pixel_data> pixelData;
-  level_data::Load(levelIndex, std::back_inserter(pixelData));
+  std::vector<level_data::cell_data> cellData;
+  level_data::LoadCellData(levelIndex, std::back_inserter(cellData));
 
-  for( auto&& pixel : pixelData )
+  for( auto&& cell : cellData )
   {
-    auto columnIndex = pixel.column;
-    auto rowIndex = pixel.row;
-    auto cellType = m_cellDataTranslator(levelIndex, pixel.value);
-    auto cellId = cell_id { columnIndex, rowIndex };
+    auto cellId = cell_id { cell.column, cell.row };
 
-    switch( cellType )
+    switch( cell.type )
     {
-      case level_cell_type::wall:
-      case level_cell_type::floor:
-        levelContainer->AddCell(cellId, cellType);
+      case level_data::cell_type::empty:
+        levelContainer->AddCell(cellId, level_cell_type::floor);
+        break;
+      case level_data::cell_type::boundary:
+        levelContainer->AddCell(cellId, level_cell_type::wall);
         break;
     }
   }
 
-  for( auto&& pixel : pixelData )
-  {
-    auto columnIndex = pixel.column;
-    auto rowIndex = pixel.row;
-    auto itemType = m_objectDataTranslator(levelIndex, pixel.value);
-    auto cellId = cell_id { columnIndex, rowIndex };
+  std::vector<level_data::object_data> objectData;
+  level_data::LoadObjectData(levelIndex, std::back_inserter(objectData));
 
-    switch( itemType )
+  for( auto&& object : objectData )
+  {
+    auto cellId = cell_id { object.column, object.row };
+
+    switch( object.type )
     {
-      case level_item_type::entry_portal:
-        levelContainer->AddObject(level_container::object_type::portal_entry, cellId);
+      case level_data::object_type::player:
         levelContainer->AddObject(level_container::object_type::player, cellId);
         break;
 
-      case level_item_type::exit_portal:
-        levelContainer->AddObject(level_container::object_type::portal_exit, cellId);
-        break;
-
-      case level_item_type::enemy_type_one:
+      case level_data::object_type::enemy_stalker:
         levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
         break;
 
-      case level_item_type::enemy_type_two:
+      case level_data::object_type::enemy_random:
         levelContainer->AddObject(level_container::object_type::enemy_random, cellId);
         break;
 
-      case level_item_type::enemy_type_three:
+      case level_data::object_type::enemy_turret:
         levelContainer->AddObject(level_container::object_type::enemy_turret, cellId);
         break;
 

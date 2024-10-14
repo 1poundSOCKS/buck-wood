@@ -31,29 +31,6 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
   }
 }
 
-auto game_level_data_loader::PortalCell(const level_base *levelData) const -> POINT_2I
-{
-  POINT_2I portalCell { 0, 0 };
-
-  level_object_data_translator levelObjectDataTranslator;
-  levelData->Enumerate([&portalCell,&levelObjectDataTranslator](size_t column, size_t row, char cellData) -> void
-  {
-    auto columnIndex = static_cast<int>(column);
-    auto rowIndex = static_cast<int>(row);
-
-    auto objectType = levelObjectDataTranslator(cellData);
-    
-    switch( objectType )
-    {
-      case level_item_type::entry_portal:
-        portalCell = { columnIndex, rowIndex };
-        break;
-    }
-  });
-
-  return portalCell;
-}
-
 [[nodiscard]] auto game_level_data_loader::MoreLevels(int levelIndex) const -> bool
 {
   return levelIndex + 1 < m_levelCount;

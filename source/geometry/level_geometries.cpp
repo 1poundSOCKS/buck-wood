@@ -32,9 +32,9 @@ level_geometries::level_geometries()
   m_powerUp = LoadPixelGeometry(m_powerupPixelImage, { 20, 20 });
 
   int levelIndex = 0;
-  std::vector<pixel_geometry_loader::pixel_data> levelData;
+  std::vector<level_data::raw_data> levelData;
 
-  while( level_data::Load(levelIndex, std::back_inserter(levelData)) )
+  while( level_data::LoadRawData(levelIndex, std::back_inserter(levelData)) )
   {
     m_boundaryWalls.push_back(CreateBoundaryWallsGeometry(levelData, cell_size { 250, 250 }));
     levelIndex++;
