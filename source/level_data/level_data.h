@@ -122,8 +122,8 @@ namespace level_data
   auto LoadCellData(int index, auto cellDatainserter) -> bool;
   auto LoadObjectData(int index, auto objectDatainserter) -> bool;
   auto LoadBoundaryData(int index, auto pointDatainserter) -> bool;
-  auto ConvertRawDataToCellData(raw_data rawDataItem) -> cell_data;
-  auto ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data;
+  constexpr auto ConvertRawDataToCellData(raw_data rawDataItem) -> cell_data;
+  constexpr auto ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data;
 
 };
 
@@ -187,7 +187,7 @@ auto level_data::LoadBoundaryData(int index, auto pointDatainserter) -> bool
   }
 }
 
-inline auto level_data::ConvertRawDataToCellData(pixel_geometry_loader::pixel_data rawDataItem) -> cell_data
+inline constexpr auto level_data::ConvertRawDataToCellData(pixel_geometry_loader::pixel_data rawDataItem) -> cell_data
 {
   switch( rawDataItem.value )
   {
@@ -198,7 +198,7 @@ inline auto level_data::ConvertRawDataToCellData(pixel_geometry_loader::pixel_da
   }
 }
 
-inline auto level_data::ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data
+inline constexpr auto level_data::ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data
 {
   switch( rawDataItem.value )
   {
