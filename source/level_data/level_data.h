@@ -6,6 +6,97 @@
 namespace level_data
 {
 
+  constexpr static std::array levelData_0 { 
+    std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
+    std::string_view { "XXXX    XX   XX            X         XX" },
+    std::string_view { "X       XX    X                       X" },
+    std::string_view { "   1                                   " },
+    std::string_view { "                                      X" },
+    std::string_view { "X                                    XX" },
+    std::string_view { "                         3      XXXXXXX" },
+    std::string_view { "                                   XXXX" },
+    std::string_view { "                                      X" },
+    std::string_view { "XX            P                       X" },
+    std::string_view { "XXXXXXXXXX                             " },
+    std::string_view { "XXXXXXXXXXXXX                        XX" },
+    std::string_view { "XXXXXXX                                " },
+    std::string_view { "XXX                                  XX" },
+    std::string_view { "                              XXXXXXXXX" },
+    std::string_view { "         2                         XXXX" },
+    std::string_view { "X                                    XX" },
+    std::string_view { "                                       " },
+    std::string_view { "XX                                     " },
+    std::string_view { "X                                     X" },
+    std::string_view { "                                       " },
+    std::string_view { "                3             2        " },
+    std::string_view { "                                       " },
+    std::string_view { "XX                X                    " },
+    std::string_view { "XXX              XXX     1            X" },
+    std::string_view { "               XXXXXXX               XX" },
+    std::string_view { "                XXXXX                 X" },
+    std::string_view { "X              XXXXX                  X" },
+    std::string_view { "      XX         XXX                 XX" },
+    std::string_view { "X    XXXX         X                  XX" },
+    std::string_view { "XXXXXXXXXX        X                  XX" },
+    std::string_view { "XXXXXXXXX        XX    X    XX      XXX" },
+    std::string_view { "XXXXXXXXX    2    XX  XXXX XXXX  XXXXXX" },
+    std::string_view { "XXXXXXXXX       XXXXXXXXXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX      XXXXXXXXXXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX         X    XXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX                XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX          3    XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX        3      XXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX               XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX     X    XXXXXXXXXXXXXXXXX" }
+  };
+
+  constexpr static std::array levelData_1 { 
+    std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
+    std::string_view { "XXXX    XX   XX            X         XX" },
+    std::string_view { "X       XX    X                       X" },
+    std::string_view { "   1                                   " },
+    std::string_view { "                                      X" },
+    std::string_view { "X                                    XX" },
+    std::string_view { "                         3      XXXXXXX" },
+    std::string_view { "                                   XXXX" },
+    std::string_view { "                                      X" },
+    std::string_view { "XX            P                       X" },
+    std::string_view { "XXXXXXXXXX                             " },
+    std::string_view { "XXXXXXXXXXXXX                        XX" },
+    std::string_view { "XXXXXXX                                " },
+    std::string_view { "XXX                                  XX" },
+    std::string_view { "                              XXXXXXXXX" },
+    std::string_view { "         2                         XXXX" },
+    std::string_view { "X                                    XX" },
+    std::string_view { "                                       " },
+    std::string_view { "XX                                     " },
+    std::string_view { "X                                     X" },
+    std::string_view { "                                       " },
+    std::string_view { "                3             2        " },
+    std::string_view { "                                       " },
+    std::string_view { "XX                X                    " },
+    std::string_view { "XXX              XXX     1            X" },
+    std::string_view { "               XXXXXXX               XX" },
+    std::string_view { "                XXXXX                 X" },
+    std::string_view { "X              XXXXX                  X" },
+    std::string_view { "      XX         XXX                 XX" },
+    std::string_view { "X    XXXX         X                  XX" },
+    std::string_view { "XXXXXXXXXX        X                  XX" },
+    std::string_view { "XXXXXXXXX        XX    X    XX      XXX" },
+    std::string_view { "XXXXXXXXX    2    XX  XXXX XXXX  XXXXXX" },
+    std::string_view { "XXXXXXXXX       XXXXXXXXXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX      XXXXXXXXXXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX         X    XXXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX                XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX          3    XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX        3      XXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX               XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX     X    XXXXXXXXXXXXXXXXX" }
+  };
+
+  constexpr static std::array levelData { levelData_0, levelData_1 };
+  constexpr static std::size_t levelCount = decltype(levelData)().size();
+
   enum class cell_type { empty, boundary };
   enum class object_type { none, player, enemy_stalker, enemy_random, enemy_turret };
 
@@ -38,59 +129,15 @@ namespace level_data
 
 auto level_data::LoadRawData(int index, auto rawDataInserter) -> bool
 {
-  static std::array levelData { 
-    std::string { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
-    std::string { "XXXX    XX   XX            X         XX" },
-    std::string { "X       XX    X                       X" },
-    std::string { "   1                                   " },
-    std::string { "                                      X" },
-    std::string { "X                                    XX" },
-    std::string { "                         3      XXXXXXX" },
-    std::string { "                                   XXXX" },
-    std::string { "                                      X" },
-    std::string { "XX            P                       X" },
-    std::string { "XXXXXXXXXX                             " },
-    std::string { "XXXXXXXXXXXXX                        XX" },
-    std::string { "XXXXXXX                                " },
-    std::string { "XXX                                  XX" },
-    std::string { "                              XXXXXXXXX" },
-    std::string { "         2                         XXXX" },
-    std::string { "X                                    XX" },
-    std::string { "                                       " },
-    std::string { "XX                                     " },
-    std::string { "X                                     X" },
-    std::string { "                                       " },
-    std::string { "                3             2        " },
-    std::string { "                                       " },
-    std::string { "XX                X                    " },
-    std::string { "XXX              XXX     1            X" },
-    std::string { "               XXXXXXX               XX" },
-    std::string { "                XXXXX                 X" },
-    std::string { "X              XXXXX                  X" },
-    std::string { "      XX         XXX                 XX" },
-    std::string { "X    XXXX         X                  XX" },
-    std::string { "XXXXXXXXXX        X                  XX" },
-    std::string { "XXXXXXXXX        XX    X    XX      XXX" },
-    std::string { "XXXXXXXXX    2    XX  XXXX XXXX  XXXXXX" },
-    std::string { "XXXXXXXXX       XXXXXXXXXXXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXX      XXXXXXXXXXXXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXX         X    XXXXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXX                XXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXXX          3    XXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXX        3      XXXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXXX               XXXXXXXXXXXXXX" },
-    std::string { "XXXXXXXXXXXX     X    XXXXXXXXXXXXXXXXX" }
-  };
-
-  switch( index )
+  if( index < levelCount )
   {
-    case 0:
-      pixel_geometry_loader::imageDataToPixelData(levelData, rawDataInserter);
-      return true;
-      
-    default:
-      return false;
+    pixel_geometry_loader::imageDataToPixelData(levelData[index], rawDataInserter);
+    return true;
   }
+  else
+  {
+    return false;
+  }      
 }
 
 auto level_data::LoadCellData(int index, auto cellDataInserter) -> bool
