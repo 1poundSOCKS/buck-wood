@@ -87,6 +87,10 @@ auto game_level_data_loader::LoadLevel(int levelIndex) -> std::unique_ptr<level_
         levelContainer->AddObject(level_container::object_type::player, cellId);
         break;
 
+      case level_data::object_type::power_up:
+        levelContainer->AddObject(level_container::object_type::power_up, cellId);
+        break;
+
       case level_data::object_type::enemy_stalker:
         levelContainer->AddObject(level_container::object_type::enemy_stalker, cellId);
         break;

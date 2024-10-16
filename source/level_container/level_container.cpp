@@ -149,7 +149,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
- 
+
 auto level_container::DoCollisions() -> void
 {
   m_particleCollisionRunner(m_particles, m_collisionGeometry(level_collision_geometry::type::wall), true);

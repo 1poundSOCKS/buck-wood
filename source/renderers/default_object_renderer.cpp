@@ -1,17 +1,6 @@
 #include "pch.h"
 #include "default_object_renderer.h"
 
-struct default_object_renderer_visitor
-{
-  const default_object_renderer& m_renderer;
-  ID2D1Geometry* m_geometry;
-
-  auto operator()(const auto& object)
-  {
-    m_renderer.Write(object, m_geometry);
-  }
-};
-
 default_object_renderer::default_object_renderer()
 {
   auto baseGeometry = level_geometries::RectangleGeometry();
@@ -21,7 +10,7 @@ default_object_renderer::default_object_renderer()
 
 auto default_object_renderer::Write(const default_object& object, ID2D1Geometry* geometry) const -> void
 {
-  object.Visit(default_object_renderer_visitor { *this, geometry });
+  object.Visit([this, geometry](auto&& object) { Write(object, geometry); });
 }
 
 auto default_object_renderer::Write(const level_cell &object, ID2D1Geometry *geometry) const -> void
