@@ -43,8 +43,6 @@ private:
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
   winrt::com_ptr<ID2D1Geometry> m_enemy3_turretGeometry;
-
-  friend struct default_object_renderer_visitor;
 };
 
 auto default_object_renderer::Write(const auto& object, ID2D1Geometry* geometry) const -> void
