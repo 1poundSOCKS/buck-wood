@@ -17,11 +17,6 @@ namespace render_order
     return 4;
   }
 
-  inline constexpr auto particle_end() -> value_type
-  {
-    return 2;
-  }
-
   struct default_object_visitor
   {
     constexpr auto operator()(const player_ship&) -> value_type
@@ -61,14 +56,13 @@ namespace render_order
 
     constexpr auto operator()(auto&& object) -> value_type
     {
-      return 0;
+      return 3;
     }
   };
 
   inline auto get(const default_object& object) -> value_type
   {
-    static default_object_visitor visitor {};
-    return object.Visit(visitor);
+    return object.Visit(default_object_visitor {});
   }
 
 }
