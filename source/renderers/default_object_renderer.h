@@ -28,7 +28,7 @@ public:
 
 private:
 
-  geometry_renderer m_insideLevelWallsRenderer { screen_render_brush_black.CreateBrush() };
+  geometry_renderer m_insideLevelWallsRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 20.0f };
   geometry_renderer m_backgroundObjectRenderer { screen_render_brush_very_dark_grey.CreateBrush() };
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   geometry_renderer m_floorCellRenderer { screen_render_brush_grey.CreateBrush() };
