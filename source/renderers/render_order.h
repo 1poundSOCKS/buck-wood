@@ -44,6 +44,11 @@ namespace render_order
       return 2;
     }
 
+    constexpr auto operator()(const power_up&) -> value_type
+    {
+      return 2;
+    }
+
     constexpr auto operator()(const portal&) -> value_type
     {
       return 1;

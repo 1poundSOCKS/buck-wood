@@ -74,6 +74,11 @@ auto level_geometries::Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Ge
   return m_enemyBullet;
 }
 
+auto level_geometries::Get(const power_up &object) -> winrt::com_ptr<ID2D1Geometry>
+{
+  return m_powerUp;
+}
+
 auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>
 {
   return m_boundaryWalls[object.Level()];

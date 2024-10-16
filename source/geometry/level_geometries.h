@@ -25,6 +25,7 @@ private:
   [[nodiscard]] auto Get(const player_bullet &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const enemy_bullet &object) -> winrt::com_ptr<ID2D1Geometry>;
+  [[nodiscard]] auto Get(const power_up &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>;
   [[nodiscard]] auto Get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
 
