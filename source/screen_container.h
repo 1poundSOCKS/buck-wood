@@ -30,7 +30,7 @@ public:
       swap_chain::get()->SetFullscreenState(fullScreen ? FALSE : TRUE, nullptr);
     }
 
-    auto keepOpen = screenState.Refresh(frameTime);
+    auto keepOpen = m_screenState.Refresh(frameTime);
 
     m_previousTime = m_currentTime;
     m_currentTime = performance_counter::QueryValue();
@@ -48,6 +48,6 @@ private:
   __int64 m_timerFrequency;
   __int64 m_currentTime;
   __int64 m_previousTime;
-  screen_state_type screenState;
+  screen_state_type m_screenState;
 
 };

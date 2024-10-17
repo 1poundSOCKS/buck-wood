@@ -63,8 +63,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
       player_state::set_status(player_state::status::celebrating);
       break;
     case status::exit_level:
-      LoadNextLevel();
-      m_status = status::running;
+      m_status = LoadNextLevel() ? status::running : status::end_of_game;
       break;
   }
 
