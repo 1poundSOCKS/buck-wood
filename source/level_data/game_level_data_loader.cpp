@@ -52,24 +52,22 @@ auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelC
   return m_levelCanBeCompleted;
 }
 
-auto game_level_data_loader::LoadLevel(int levelIndex) -> std::unique_ptr<level_container>
+auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelContainer) -> bool
 {
-  auto levelContainer = std::make_unique<level_container>();
-
   std::vector<POINT_2F> boundaryData;
 
-  if( LoadCellData(*levelContainer, levelIndex) && LoadObjectData(*levelContainer, levelIndex) && level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
+  if( LoadCellData(levelContainer, levelIndex) && LoadObjectData(levelContainer, levelIndex) && level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
   {
-    levelContainer->AddBoundaryWalls(levelIndex, boundaryData);
+    levelContainer.AddBoundaryWalls(levelIndex, boundaryData);
     m_status = status::starting;
     m_levelCanBeCompleted = true;
     m_events.clear();
     m_currentEvent = std::begin(m_events);
-    return levelContainer;
+    return true;
   }
   else
   {
-    return nullptr;
+    return false;
   }
 }
 

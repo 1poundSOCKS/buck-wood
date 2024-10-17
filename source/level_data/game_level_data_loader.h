@@ -13,7 +13,7 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  [[nodiscard]] static auto loadLevel(int levelIndex) -> std::unique_ptr<level_container>;
+  [[nodiscard]] static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -25,7 +25,7 @@ private:
 
   game_level_data_loader();
 
-  auto LoadLevel(int levelIndex) -> std::unique_ptr<level_container>;
+  [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
@@ -64,9 +64,9 @@ inline auto game_level_data_loader::destroy() -> void
   m_instance = nullptr;
 }
 
-inline auto game_level_data_loader::loadLevel(int levelIndex) -> std::unique_ptr<level_container>
+inline auto game_level_data_loader::loadLevel(int levelIndex, level_container& levelContainer) -> bool
 {
-  return m_instance->LoadLevel(levelIndex);
+  return m_instance->LoadLevel(levelIndex, levelContainer);
 }
 
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void

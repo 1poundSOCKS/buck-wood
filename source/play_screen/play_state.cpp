@@ -9,20 +9,29 @@ play_state::play_state() :
   m_score->Set(game_state::score());
 }
 
-auto play_state::LoadCurrentLevel() -> void
+auto play_state::LoadCurrentLevel() -> bool
 {
-  m_levelContainer = game_level_data_loader::loadLevel(game_state::level_index());
-  player_state::set_status(player_state::status::active);
+  m_levelContainer = std::make_shared<level_container>();
+
+  if( game_level_data_loader::loadLevel(game_state::level_index(), *m_levelContainer) )
+  {
+    player_state::set_status(player_state::status::active);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 auto play_state::LoadNextLevel() -> bool
 {
+  m_levelContainer = std::make_shared<level_container>();
+
   ++m_levelIndex;
   game_state::set_level_index(m_levelIndex);
 
-  m_levelContainer = game_level_data_loader::loadLevel(m_levelIndex);
-
-  if( m_levelContainer )
+  if( game_level_data_loader::loadLevel(m_levelIndex, *m_levelContainer) )
   {
     player_state::set_status(player_state::status::active);
     return true;

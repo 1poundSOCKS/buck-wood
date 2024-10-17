@@ -15,7 +15,7 @@ public:
 
   play_state();
 
-  auto LoadCurrentLevel() -> void;
+  auto LoadCurrentLevel() -> bool;
   auto LoadNextLevel() -> bool;
   auto Update(float interval, RECT_F view) -> void;
   auto SaveGameState() noexcept -> void;
