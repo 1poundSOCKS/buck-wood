@@ -34,6 +34,7 @@ private:
 
 private:
 
+  int m_levelIndex { 0 };
   status m_status { status::running };
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;

@@ -42,14 +42,13 @@ public:
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
 
   [[nodiscard]] auto Boundary() const -> RECT_F;
-  [[nodiscard]] auto EnemyCount() const -> size_t;
+  [[nodiscard]] auto PowerUpCount() const -> size_t;
 
   auto EnumerateObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
 
   [[nodiscard]] auto Exit() const noexcept -> bool;
-  [[nodiscard]] auto ExitCell() const noexcept -> cell_id;
-  auto SetExit(bool value, cell_id cell) -> void;
+  auto SetExit(bool value) -> void;
 
   auto EnumerateColumns(auto&& visitor) const noexcept -> void;
   auto EnumerateRows(auto&& visitor) const noexcept -> void;
@@ -78,7 +77,6 @@ private:
   auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
-  auto OnCollision(player_ship& player, portal& portalObj, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
@@ -92,7 +90,6 @@ private:
   std::shared_ptr<level_object_movement> m_objectMovement;
 
   bool m_exit { false };
-  cell_id m_exitCell;
 
   RECT_F m_boundary;
 
@@ -105,10 +102,9 @@ private:
   geometry_collision_runner m_collisionRunner;
 
   particle_collection m_particles;
-
   particle_collision m_particleCollisionRunner;
 
-  size_t m_enemyCount { 0 };
+  size_t m_powerUpCount { 0 };
 };
 
 inline auto level_container::PlayerState() const noexcept -> const player_ship_state &
@@ -131,9 +127,9 @@ inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
   return m_boundary;
 }
 
-inline [[nodiscard]] auto level_container::EnemyCount() const -> size_t
+inline [[nodiscard]] auto level_container::PowerUpCount() const -> size_t
 {
-  return m_enemyCount;
+  return m_powerUpCount;
 }
 
 inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
@@ -159,15 +155,9 @@ inline auto level_container::Exit() const noexcept -> bool
   return m_exit;
 }
 
-inline auto level_container::ExitCell() const noexcept -> cell_id
-{
-  return m_exitCell;
-}
-
-inline auto level_container::SetExit(bool value, cell_id cell) -> void
+inline auto level_container::SetExit(bool value) -> void
 {
   m_exit = true;
-  m_exitCell = cell;
 }
 
 auto level_container::EnumerateColumns(auto &&visitor) const noexcept -> void

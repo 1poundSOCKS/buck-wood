@@ -17,9 +17,9 @@ auto play_state::LoadCurrentLevel() -> void
 
 auto play_state::LoadNextLevel() -> bool
 {
-  auto levelIndex = 0;
-  game_state::set_level_index(levelIndex);
-  m_levelContainer = game_level_data_loader::loadLevel(levelIndex);
+  ++m_levelIndex;
+  game_state::set_level_index(m_levelIndex);
+  m_levelContainer = game_level_data_loader::loadLevel(m_levelIndex);
   player_state::set_status(player_state::status::active);
   return true;
 }
