@@ -9,7 +9,7 @@
 #include "energy_bar_rect.h"
 
 play_scene::play_scene(std::shared_ptr<play_state> playState) : 
-  m_playState { playState }, m_levelTitle { game_state::level_index() }
+  m_playState { playState }, m_levelTitle { game_state::level_index() }, m_cameraZoom { GetPlayCameraZoom() }
 {
 }
 
