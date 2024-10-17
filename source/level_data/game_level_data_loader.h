@@ -34,6 +34,9 @@ private:
   [[nodiscard]] auto MoreUpdates() const -> bool;
   [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
 
+  static [[nodiscard]] auto LoadCellData(level_container& levelContainer, int levelIndex) -> bool;
+  static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
+
 private:
 
   inline static game_level_data_loader* m_instance { nullptr };

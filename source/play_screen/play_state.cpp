@@ -19,9 +19,18 @@ auto play_state::LoadNextLevel() -> bool
 {
   ++m_levelIndex;
   game_state::set_level_index(m_levelIndex);
+
   m_levelContainer = game_level_data_loader::loadLevel(m_levelIndex);
-  player_state::set_status(player_state::status::active);
-  return true;
+
+  if( m_levelContainer )
+  {
+    player_state::set_status(player_state::status::active);
+    return true;
+  }
+  else 
+  {
+    return false;
+  }
 }
 
 auto play_state::Update(float interval, RECT_F view) -> void
