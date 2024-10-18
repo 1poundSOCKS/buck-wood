@@ -40,7 +40,7 @@ auto play_screen::Update(int64_t ticks) -> bool
     }
   }
 
-  return !m_mainPlayScene.Update(ticks) && m_playState->Status() == play_state::status::end_of_game ? false : true;
+  return m_mainPlayScene.Update(ticks) || m_playState->Status() != play_state::status::end_of_game;
 }
 
 auto play_screen::Render() -> void
