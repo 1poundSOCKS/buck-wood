@@ -17,6 +17,7 @@ public:
 
   auto Begin() -> void override
   {
+    // m_stopwatch.Reset(m_sceneSeconds);
     SetCameraZoom(GetPlayCameraZoom());
     m_renderTransform = RenderTransform();
   }
@@ -54,7 +55,8 @@ public:
 
 private:
 
-  stopwatch m_stopwatch { 3.0f };
+  constexpr static float m_sceneSeconds { 3.0f };
+  stopwatch m_stopwatch { m_sceneSeconds };
   end_of_level_menu_controller m_menuController;
 
 };

@@ -6,11 +6,11 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_mainPlayScene { m_playState }, m_closingPlayScene { m_playState }
+play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_currentScene { std::make_unique<main_play_scene>(m_playState) }
 {
   m_menuController.OpenRoot();
   m_playState->LoadCurrentLevel();
-  m_mainPlayScene.Begin();
+  m_currentScene->Begin();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -23,6 +23,11 @@ auto play_screen::Update(int64_t ticks) -> bool
 {
   if( PausePressed() )
   {
+    if( !Paused() )
+    {
+      m_currentScene->Pause();
+    }
+    
     TogglePause();
   }
 
@@ -34,52 +39,65 @@ auto play_screen::Update(int64_t ticks) -> bool
     {
       case play_menu_controller::selection::resume:
         TogglePause();
+        m_currentScene->Resume();
         break;
       case play_menu_controller::selection::quit:
+        m_currentScene->End();
         return false;
       default:
         return true;
     }
   }
 
-  bool sceneActive = true;
+  scene_type nextSceneType = m_currentSceneType;
 
-  switch( m_currentScene )
+  switch( m_currentSceneType )
   {
-    case scene::main:
-      m_currentScene = m_mainPlayScene.Update(ticks) ? scene::main : scene::closing;
-      if( m_currentScene == scene::closing )
-      {
-        m_mainPlayScene.End();
-        m_closingPlayScene.Begin();
-      }
+    case scene_type::main:
+      nextSceneType = m_currentScene->Update(ticks) ? scene_type::main : scene_type::closing;
       break;
-    case scene::closing:
-      sceneActive = m_closingPlayScene.Update(ticks);
-      if( !sceneActive )
-      {
-        m_closingPlayScene.End();
-        m_currentScene = m_playState->Status() == play_state::status::end_of_game ? scene::closing : scene::main;
-      }
+    case scene_type::closing:
+      nextSceneType = m_currentScene->Update(ticks) ? scene_type::closing : scene_type::main;
       break;
   }
 
-  return m_currentScene == scene::main || sceneActive;
+  nextSceneType = ( nextSceneType == scene_type::main && m_playState->Status() == play_state::status::end_of_game ) ? scene_type::none : nextSceneType;
+
+  if( nextSceneType == scene_type::none )
+  {
+    m_currentSceneType = nextSceneType;
+    return false;
+  }
+  else
+  {
+    if( nextSceneType != m_currentSceneType )
+    {
+      m_currentScene->End();
+
+      switch( nextSceneType )
+      {
+        case scene_type::closing:
+          m_currentScene = std::make_unique<closing_play_scene>(m_playState);
+          m_currentScene->Begin();
+          break;
+        case scene_type::main:
+          m_currentScene = std::make_unique<main_play_scene>(m_playState);
+          m_currentScene->Begin();
+          break;
+      }
+
+      m_currentSceneType = nextSceneType;
+    }
+
+    return true;
+  }
 }
 
 auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
 
-  switch( m_currentScene )
-  {
-    case scene::main:
-      m_mainPlayScene.Render();
-      break;
-    case scene::closing:
-      m_closingPlayScene.Render();
-      break;
-  }
+  m_currentScene->Render();
 
   if( Paused() )
   {

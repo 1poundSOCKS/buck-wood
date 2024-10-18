@@ -25,6 +25,11 @@ public:
     return m_ticks > 0 ? false : true;
   }
 
+  auto Reset(float seconds) noexcept -> void
+  {
+    m_ticks = performance_counter::CalculateTicks(seconds);
+  }
+
 private:
 
   int64_t m_ticks { 0 };
