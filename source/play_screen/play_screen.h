@@ -4,6 +4,7 @@
 #include "play_scene.h"
 #include "play_state.h"
 #include "main_play_scene.h"
+#include "closing_play_scene.h"
 
 class play_screen
 {
@@ -27,7 +28,11 @@ private:
   std::shared_ptr<play_state> m_playState;
   bool m_playerDestroyed { false };
 
+  enum class scene { main, closing };
+  scene m_currentScene { scene::main };
+
   main_play_scene m_mainPlayScene;
+  closing_play_scene m_closingPlayScene;
   bool m_paused { false };
 
 };

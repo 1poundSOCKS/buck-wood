@@ -6,10 +6,11 @@
 #include "closing_play_scene.h"
 #include "hud_target.h"
 
-play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_mainPlayScene { m_playState }
+play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_mainPlayScene { m_playState }, m_closingPlayScene { m_playState }
 {
   m_menuController.OpenRoot();
   m_playState->LoadCurrentLevel();
+  m_mainPlayScene.Begin();
 }
 
 auto play_screen::Refresh(int64_t ticks) -> bool
@@ -32,6 +33,7 @@ auto play_screen::Update(int64_t ticks) -> bool
     switch( m_menuController.Selection() )
     {
       case play_menu_controller::selection::resume:
+        TogglePause();
         break;
       case play_menu_controller::selection::quit:
         return false;
@@ -40,14 +42,44 @@ auto play_screen::Update(int64_t ticks) -> bool
     }
   }
 
-  return m_mainPlayScene.Update(ticks) || m_playState->Status() != play_state::status::end_of_game;
+  bool sceneActive = true;
+
+  switch( m_currentScene )
+  {
+    case scene::main:
+      m_currentScene = m_mainPlayScene.Update(ticks) ? scene::main : scene::closing;
+      if( m_currentScene == scene::closing )
+      {
+        m_mainPlayScene.End();
+        m_closingPlayScene.Begin();
+      }
+      break;
+    case scene::closing:
+      sceneActive = m_closingPlayScene.Update(ticks);
+      if( !sceneActive )
+      {
+        m_closingPlayScene.End();
+        m_currentScene = m_playState->Status() == play_state::status::end_of_game ? scene::closing : scene::main;
+      }
+      break;
+  }
+
+  return m_currentScene == scene::main || sceneActive;
 }
 
 auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
 
-  m_mainPlayScene.Render();
+  switch( m_currentScene )
+  {
+    case scene::main:
+      m_mainPlayScene.Render();
+      break;
+    case scene::closing:
+      m_closingPlayScene.Render();
+      break;
+  }
 
   if( Paused() )
   {
