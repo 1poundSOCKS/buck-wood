@@ -41,7 +41,7 @@ auto play_scene::Update(__int64 ticks) -> bool
   play_events::reset();
   m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
   m_renderTransform = RenderTransform();
-  return m_playState->Status() == play_state::status::running;
+  return true;
 }
 
 auto play_scene::Render() const -> void

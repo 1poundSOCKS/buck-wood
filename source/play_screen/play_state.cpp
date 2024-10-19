@@ -15,7 +15,6 @@ auto play_state::LoadCurrentLevel() -> bool
 
   if( game_level_data_loader::loadLevel(game_state::level_index(), *m_levelContainer) )
   {
-    player_state::set_status(player_state::status::active);
     return true;
   }
   else
@@ -33,7 +32,6 @@ auto play_state::LoadNextLevel() -> bool
   
   if( game_level_data_loader::loadLevel(m_levelIndex, *levelContainer) )
   {
-    player_state::set_status(player_state::status::active);
     m_levelContainer = levelContainer;
     return true;
   }
@@ -43,36 +41,13 @@ auto play_state::LoadNextLevel() -> bool
   }
 }
 
-auto play_state::Update(float interval, RECT_F view) -> status
+auto play_state::Update(float interval, RECT_F view) -> void
 {
-  if( m_status == status::running )
-  {
-    game_level_data_loader::updateLevel(game_state::level_index(), m_levelContainer.get(), interval);
-  }
-
+  game_level_data_loader::updateLevel(game_state::level_index(), m_levelContainer.get(), interval);
   m_levelContainer->Update(interval, view);
-
-  m_status = CalculateStatus();
-
-  switch( m_status )
-  {
-    case status::running:
-      player_state::set_status(player_state::status::active);
-      break;
-    case status::end_of_level:
-    case status::end_of_game:
-      player_state::set_status(player_state::status::celebrating);
-      break;
-    case status::exit_level:
-      m_status = LoadNextLevel() ? status::running : status::end_of_game;
-      break;
-  }
-
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
-
-  return m_status;
 }
 
 auto play_state::SaveGameState() noexcept -> void
@@ -90,24 +65,6 @@ auto play_state::GameOver() const noexcept -> bool
 auto play_state::LevelOver() const noexcept -> bool
 {
   return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
-}
-
-auto play_state::Status() const -> status
-{
-  return m_status;
-}
-
-[[nodiscard]] auto play_state::CalculateStatus() const -> status
-{
-  if( m_levelContainer->PlayerState().Destroyed() )
-  {
-    return status::end_of_game;
-  }
-  else
-  {
-    return status::running;
-  }
-  
 }
 
 [[nodiscard]] auto play_state::LevelContainer() const -> const level_container&
