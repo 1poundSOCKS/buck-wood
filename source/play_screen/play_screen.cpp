@@ -23,12 +23,12 @@ auto play_screen::Update(int64_t ticks) -> bool
 {
   if( PausePressed() )
   {
-    if( !Paused() )
+    TogglePause();
+    
+    if( Paused() )
     {
       m_currentScene->Pause();
     }
-    
-    TogglePause();
   }
 
   if( Paused() )
@@ -49,47 +49,41 @@ auto play_screen::Update(int64_t ticks) -> bool
     }
   }
 
-  scene_type nextSceneType = m_currentSceneType;
+  return m_currentScene->Update(ticks) ? true : NextScene();
+}
+
+auto play_screen::NextScene() -> bool
+{
+  m_currentScene->End();
 
   switch( m_currentSceneType )
   {
     case scene_type::main:
-      nextSceneType = m_currentScene->Update(ticks) ? scene_type::main : scene_type::closing;
-      break;
+      m_currentScene = std::make_unique<closing_play_scene>(m_playState);
+      m_currentScene->Begin();
+      m_currentSceneType = scene_type::closing;
+      return true;
+      
     case scene_type::closing:
-      nextSceneType = m_currentScene->Update(ticks) ? scene_type::closing : scene_type::main;
-      break;
+      return m_playState->GameOver() ? false : StartNextLevel();
+
+    default:
+      return false;
   }
+}
 
-  nextSceneType = ( nextSceneType == scene_type::main && m_playState->Status() == play_state::status::end_of_game ) ? scene_type::none : nextSceneType;
-
-  if( nextSceneType == scene_type::none )
+auto play_screen::StartNextLevel() -> bool
+{
+  if( m_playState->LoadNextLevel() )
   {
-    m_currentSceneType = nextSceneType;
-    return false;
+    m_currentScene = std::make_unique<main_play_scene>(m_playState);
+    m_currentScene->Begin();
+    m_currentSceneType = scene_type::main;
+    return true;
   }
   else
   {
-    if( nextSceneType != m_currentSceneType )
-    {
-      m_currentScene->End();
-
-      switch( nextSceneType )
-      {
-        case scene_type::closing:
-          m_currentScene = std::make_unique<closing_play_scene>(m_playState);
-          m_currentScene->Begin();
-          break;
-        case scene_type::main:
-          m_currentScene = std::make_unique<main_play_scene>(m_playState);
-          m_currentScene->Begin();
-          break;
-      }
-
-      m_currentSceneType = nextSceneType;
-    }
-
-    return true;
+    return false;
   }
 }
 

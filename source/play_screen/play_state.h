@@ -17,8 +17,10 @@ public:
 
   auto LoadCurrentLevel() -> bool;
   auto LoadNextLevel() -> bool;
-  auto Update(float interval, RECT_F view) -> void;
+  auto Update(float interval, RECT_F view) -> status;
   auto SaveGameState() noexcept -> void;
+
+  [[nodiscard]] auto GameOver() const noexcept -> bool;
 
   [[nodiscard]] auto Status() const -> status;
   [[nodiscard]] auto LevelContainer() const -> const level_container&;

@@ -16,6 +16,8 @@ public:
 private:
 
   auto Update(int64_t ticks) -> bool;
+  auto NextScene() -> bool;
+  auto StartNextLevel() -> bool;
   auto Render() -> void;
   auto RenderDiagnostics() -> void;
   [[nodiscard]] auto PausePressed() -> bool;

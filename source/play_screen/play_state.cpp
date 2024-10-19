@@ -26,14 +26,15 @@ auto play_state::LoadCurrentLevel() -> bool
 
 auto play_state::LoadNextLevel() -> bool
 {
-  m_levelContainer = std::make_shared<level_container>();
-
   ++m_levelIndex;
   game_state::set_level_index(m_levelIndex);
 
-  if( game_level_data_loader::loadLevel(m_levelIndex, *m_levelContainer) )
+  auto levelContainer = std::make_shared<level_container>();
+  
+  if( game_level_data_loader::loadLevel(m_levelIndex, *levelContainer) )
   {
     player_state::set_status(player_state::status::active);
+    m_levelContainer = levelContainer;
     return true;
   }
   else 
@@ -42,7 +43,7 @@ auto play_state::LoadNextLevel() -> bool
   }
 }
 
-auto play_state::Update(float interval, RECT_F view) -> void
+auto play_state::Update(float interval, RECT_F view) -> status
 {
   if( m_status == status::running )
   {
@@ -70,6 +71,8 @@ auto play_state::Update(float interval, RECT_F view) -> void
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
+
+  return m_status;
 }
 
 auto play_state::SaveGameState() noexcept -> void
@@ -77,6 +80,11 @@ auto play_state::SaveGameState() noexcept -> void
   game_state::set_score(m_score->Value());
   game_state::set_power_up_count(player_state::missile_count());
   save_data::write(game_state::get());
+}
+
+auto play_state::GameOver() const noexcept -> bool
+{
+  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->Exit();
 }
 
 auto play_state::Status() const -> status
