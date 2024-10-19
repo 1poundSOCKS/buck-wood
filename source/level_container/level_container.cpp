@@ -138,14 +138,10 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   m_particles.EraseDestroyed();
   m_objects.EraseDestroyed();
 
-  auto powerUps = std::ranges::views::filter(m_objects, [](const auto& object)
+  if( ObjectCount(object_type::power_up) == 0 )
   {
-    return object.HoldsAlternative<power_up>();
-  });
-
-  m_powerUpCount = std::ranges::distance(powerUps);
-
-  m_exit = m_powerUpCount ? false : true;
+    m_playerState->Celebrate();
+  }
 
   auto updateEnd = performance_counter::QueryValue();
   
@@ -252,13 +248,9 @@ auto level_container::OnCollision(player_ship& playerShip, enemy_bullet& enemyBu
 {
   if( result != geometry_collision::result::none )
   {
-    switch( player_state::get_status() )
+    if( !m_playerState->Celebrating() )
     {
-      case player_state::status::active:
-        playerShip.Destroy();
-        break;
-      case player_state::status::celebrating:
-        break;
+      playerShip.Destroy();
     }
 
     enemyBullet.Destroy();

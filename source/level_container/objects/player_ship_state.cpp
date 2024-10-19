@@ -1,18 +1,9 @@
 #include "pch.h"
 #include "player_ship_state.h"
-#include "player_state.h"
 
 auto player_ship_state::Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
 {
-  switch(  player_state::get_status() )
-  {
-    case player_state::status::active:
-      UpdateWhenActive(environmentalForces, airResistance, interval);
-      break;
-    case  player_state::status::celebrating:
-      UpdateWhenCelebrating(interval);
-      break;
-  }
+  m_celebrating ? UpdateWhenCelebrating(interval) : UpdateWhenActive(environmentalForces, airResistance, interval);
 }
 
 auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void

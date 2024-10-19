@@ -28,6 +28,9 @@ public:
   auto SetRotationSpeed(float value) -> void;
   auto RotateBy(float angle, float interval) -> void;
 
+  auto Celebrate() noexcept -> void;
+  [[nodiscard]] auto Celebrating() const noexcept -> bool;
+
 private:
 
   auto UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
@@ -35,6 +38,7 @@ private:
 
 private:
 
+  bool m_celebrating { false };
   object_velocity m_velocity;
   fractional_counter m_stateChange;
   health_status m_shieldStatus { 10 };
@@ -104,4 +108,14 @@ inline auto player_ship_state::SetRotationSpeed(float value) -> void
 inline auto player_ship_state::RotateBy(float angle, float interval) -> void
 {
   m_angle += angle * interval;
+}
+
+inline auto player_ship_state::Celebrate() noexcept -> void
+{
+  m_celebrating = true;
+}
+
+inline auto player_ship_state::Celebrating() const noexcept -> bool
+{
+  return m_celebrating;
 }

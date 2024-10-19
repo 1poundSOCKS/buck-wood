@@ -44,7 +44,6 @@ public:
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
 
   [[nodiscard]] auto Boundary() const -> RECT_F;
-  [[nodiscard]] auto PowerUpCount() const -> size_t;
 
   auto EnumerateObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
@@ -87,8 +86,6 @@ private:
 
   std::shared_ptr<level_cell_collection> m_cells;
   std::shared_ptr<level_object_movement> m_objectMovement;
-
-  bool m_exit { false };
 
   RECT_F m_boundary;
 
@@ -135,11 +132,6 @@ inline auto level_container::ObjectCount(object_type objectType) const noexcept 
 inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
 {
   return m_boundary;
-}
-
-inline [[nodiscard]] auto level_container::PowerUpCount() const -> size_t
-{
-  return m_powerUpCount;
 }
 
 inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
