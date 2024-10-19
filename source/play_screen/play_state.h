@@ -21,6 +21,7 @@ public:
   auto SaveGameState() noexcept -> void;
 
   [[nodiscard]] auto GameOver() const noexcept -> bool;
+  [[nodiscard]] auto LevelOver() const noexcept -> bool;
 
   [[nodiscard]] auto Status() const -> status;
   [[nodiscard]] auto LevelContainer() const -> const level_container&;

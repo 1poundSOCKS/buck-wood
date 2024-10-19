@@ -36,7 +36,7 @@ auto main_play_scene::Resume() -> void
 
 auto main_play_scene::Update(int64_t ticks) -> bool
 {
-  return play_scene::Update(ticks);
+  return play_scene::Update(ticks) && !m_playState->LevelOver();
 }
 
 auto main_play_scene::Render() const -> void

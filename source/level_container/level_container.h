@@ -33,6 +33,8 @@ public:
   auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
   auto AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
 
+  auto ObjectCount(object_type objectType) const noexcept -> std::size_t;
+
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
 
@@ -46,9 +48,6 @@ public:
 
   auto EnumerateObjects(auto&& visitor) const -> void;
   auto EnumerateParticles(auto&& visitor) const -> void;
-
-  [[nodiscard]] auto Exit() const noexcept -> bool;
-  auto SetExit(bool value) -> void;
 
   auto EnumerateColumns(auto&& visitor) const noexcept -> void;
   auto EnumerateRows(auto&& visitor) const noexcept -> void;
@@ -122,6 +121,17 @@ auto level_container::AddBoundaryWalls(int levelIndex, std::ranges::input_range 
   });
 }
 
+inline auto level_container::ObjectCount(object_type objectType) const noexcept -> std::size_t
+{
+  switch( objectType )
+  {
+    case object_type::power_up:
+      return m_objects.PowerUpCount();
+    default:
+      return 0;
+  }
+}
+
 inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
 {
   return m_boundary;
@@ -148,16 +158,6 @@ inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
 inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
 {
   m_particles.Visit(visitor);
-}
-
-inline auto level_container::Exit() const noexcept -> bool
-{
-  return m_exit;
-}
-
-inline auto level_container::SetExit(bool value) -> void
-{
-  m_exit = true;
 }
 
 auto level_container::EnumerateColumns(auto &&visitor) const noexcept -> void

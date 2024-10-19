@@ -17,7 +17,7 @@ public:
 
   auto Begin() -> void override
   {
-    // m_stopwatch.Reset(m_sceneSeconds);
+    m_stopwatch.Reset(m_sceneSeconds);
     SetCameraZoom(GetPlayCameraZoom());
     m_renderTransform = RenderTransform();
   }

@@ -84,7 +84,12 @@ auto play_state::SaveGameState() noexcept -> void
 
 auto play_state::GameOver() const noexcept -> bool
 {
-  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->Exit();
+  return m_levelContainer->PlayerState().Destroyed();
+}
+
+auto play_state::LevelOver() const noexcept -> bool
+{
+  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
 }
 
 auto play_state::Status() const -> status
@@ -98,13 +103,11 @@ auto play_state::Status() const -> status
   {
     return status::end_of_game;
   }
-  
-  if( m_levelContainer->Exit() )
+  else
   {
-    return status::exit_level;
+    return status::running;
   }
-
-  return status::running;
+  
 }
 
 [[nodiscard]] auto play_state::LevelContainer() const -> const level_container&
