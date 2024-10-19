@@ -91,6 +91,17 @@ auto play_scene::PlaySoundEffects() const -> void
   {
     audio_events::PowerUpCollected();
   }
+
+  auto&& playerState = m_playState->LevelContainer().PlayerState();
+
+  if( !playerState.Destroyed() &&  playerState.ThrusterPower() < 0.0f )
+  {
+    audio_events::StartPlayerThruster();
+  }
+  else
+  {
+    audio_events::StopPlayerThruster();
+  }
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
