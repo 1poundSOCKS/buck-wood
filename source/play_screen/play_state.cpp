@@ -35,6 +35,7 @@ auto play_state::LoadNextLevel() -> bool
   }
   else 
   {
+    game_state::set_level_index(0);
     return false;
   }
 }
