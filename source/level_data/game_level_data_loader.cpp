@@ -71,6 +71,11 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
   }
 }
 
+auto game_level_data_loader::TestLoadLevel(int levelIndex) -> bool
+{
+  return levelIndex < level_data::levelCount;
+}
+
 auto game_level_data_loader::LoadCellData(level_container &levelContainer, int levelIndex) -> bool
 {
   std::vector<level_data::cell_data> cellData;

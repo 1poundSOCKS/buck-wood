@@ -67,6 +67,8 @@ namespace level_data
     std::string_view { "XXX                                  XX" }
   };
 
+  constexpr int levelCount = 2;
+
   enum class cell_type { empty, boundary };
   enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret };
 

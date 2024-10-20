@@ -14,6 +14,7 @@ public:
   static auto destroy() -> void;
 
   [[nodiscard]] static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
+  [[nodiscard]] static auto test_load_next_level(int levelIndex) -> bool;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
@@ -26,6 +27,7 @@ private:
   game_level_data_loader();
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
+  [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 
   [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
@@ -67,6 +69,11 @@ inline auto game_level_data_loader::destroy() -> void
 inline auto game_level_data_loader::loadLevel(int levelIndex, level_container& levelContainer) -> bool
 {
   return m_instance->LoadLevel(levelIndex, levelContainer);
+}
+
+inline auto game_level_data_loader::test_load_next_level(int levelIndex) -> bool
+{
+  return m_instance->TestLoadLevel(levelIndex);
 }
 
 inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void

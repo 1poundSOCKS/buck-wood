@@ -18,8 +18,9 @@ public:
   auto Update(float interval, RECT_F view) -> void;
   auto SaveGameState() noexcept -> void;
 
-  [[nodiscard]] auto GameOver() const noexcept -> bool;
   [[nodiscard]] auto LevelOver() const noexcept -> bool;
+  [[nodiscard]] auto GameOver() const noexcept -> bool;
+  [[nodiscard]] auto GameComplete() const noexcept -> bool;
 
   [[nodiscard]] auto LevelContainer() const -> const level_container&;
   [[nodiscard]] auto LevelContainer() -> level_container&;

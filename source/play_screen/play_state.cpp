@@ -58,14 +58,19 @@ auto play_state::SaveGameState() noexcept -> void
   save_data::write(game_state::get());
 }
 
+auto play_state::LevelOver() const noexcept -> bool
+{
+  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
+}
+
 auto play_state::GameOver() const noexcept -> bool
 {
   return m_levelContainer->PlayerState().Destroyed();
 }
 
-auto play_state::LevelOver() const noexcept -> bool
+auto play_state::GameComplete() const noexcept -> bool
 {
-  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
+  return LevelOver() && game_level_data_loader::test_load_next_level(m_levelIndex + 1);
 }
 
 [[nodiscard]] auto play_state::LevelContainer() const -> const level_container&

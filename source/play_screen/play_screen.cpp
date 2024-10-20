@@ -4,7 +4,7 @@
 #include "game_settings.h"
 #include "opening_play_scene.h"
 #include "closing_play_scene.h"
-#include "hud_target.h"
+#include "game_state.h"
 
 play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_currentScene { std::make_unique<main_play_scene>(m_playState) }
 {
@@ -83,6 +83,7 @@ auto play_screen::StartNextLevel() -> bool
   }
   else
   {
+    game_state::set_level_index(0);
     return false;
   }
 }
