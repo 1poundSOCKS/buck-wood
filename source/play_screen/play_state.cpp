@@ -70,7 +70,7 @@ auto play_state::GameOver() const noexcept -> bool
 
 auto play_state::GameComplete() const noexcept -> bool
 {
-  return LevelOver() && game_level_data_loader::test_load_next_level(m_levelIndex + 1);
+  return LevelOver() && game_level_data_loader::testLoadLevel(m_levelIndex + 1);
 }
 
 [[nodiscard]] auto play_state::LevelContainer() const -> const level_container&
