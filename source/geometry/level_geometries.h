@@ -39,16 +39,15 @@ private:
   inline static level_geometries* m_instance { nullptr };
 
   inline static auto m_playerPixelImage = std::array {
-    std::string { "     00     " },
-    std::string { "    0000    " },
-    std::string { "    0000    " },
-    std::string { "  00000000  " },
-    std::string { "  00000000  " },
-    std::string { "  00000000  " },
-    std::string { "000000000000" },
-    std::string { "000000000000" },
-    std::string { "000      000" },
-    std::string { "000      000" }
+    std::string { "    000    " },
+    std::string { "    000    " },
+    std::string { "    000    " },
+    std::string { "  0000000  " },
+    std::string { "  0000000  " },
+    std::string { "  0000000  " },
+    std::string { "00000000000" },
+    std::string { "00000000000" },
+    std::string { "00000000000" }
   };
 
   inline static auto m_enemyStalkerPixelImage = std::array {
@@ -67,13 +66,14 @@ private:
     std::string { "   0000   " },
     std::string { "0000000000" },
     std::string { "0000000000" },
-    std::string { "0000000000" },
-    std::string { "0000000000" },
+    std::string { " 00000000 " },
+    std::string { " 00000000 " },
     std::string { "0000000000" },
     std::string { "0000000000" }
   };
 
   inline static auto m_playerBulletPixelImage = std::array {
+    std::string { "0" },
     std::string { "0" },
     std::string { "0" }
   };

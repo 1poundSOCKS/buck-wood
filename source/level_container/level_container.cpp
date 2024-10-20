@@ -197,7 +197,7 @@ auto level_container::VisitObject(enemy_ship& object) -> void
   if( !m_playerState->Destroyed() && object.CanShootAt(m_playerState->Position()) )
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState->Position());
-    m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(1000, angle));
+    m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(1200, angle));
     play_events::set(play_events::event_type::shot, true);
   }
 }
