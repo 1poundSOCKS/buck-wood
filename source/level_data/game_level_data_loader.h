@@ -13,7 +13,7 @@ public:
   static auto create() -> void;
   static auto destroy() -> void;
 
-  [[nodiscard]] static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
+  static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] static auto testLoadLevel(int levelIndex) -> bool;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
 

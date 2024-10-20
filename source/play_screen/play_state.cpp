@@ -26,13 +26,12 @@ auto play_state::LoadCurrentLevel() -> bool
 
 auto play_state::LoadNextLevel() -> bool
 {
-  auto levelContainer = std::make_shared<level_container>();
-  
-  if( game_level_data_loader::loadLevel(++m_levelIndex, *levelContainer) )
+  if( game_level_data_loader::testLoadLevel(m_levelIndex + 1) )
   {
+    m_levelContainer = std::make_shared<level_container>();
+    game_level_data_loader::loadLevel(++m_levelIndex, *m_levelContainer);
     game_state::set_level_index(m_levelIndex);
     log::write(log::type::info, "Load next level successful: index={}", m_levelIndex);
-    m_levelContainer = levelContainer;
     return true;
   }
   else
