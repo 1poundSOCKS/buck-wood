@@ -4,7 +4,7 @@
 #include "player_state.h"
 
 play_state::play_state() : 
-  m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelContainer { std::make_shared<level_container>() }
+  m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelIndex { game_state::level_index() },  m_levelContainer { std::make_shared<level_container>() }
 {
   m_score->Set(game_state::score());
 }
@@ -13,8 +13,9 @@ auto play_state::LoadCurrentLevel() -> bool
 {
   m_levelContainer = std::make_shared<level_container>();
 
-  if( game_level_data_loader::loadLevel(game_state::level_index(), *m_levelContainer) )
+  if( game_level_data_loader::loadLevel(m_levelIndex, *m_levelContainer) )
   {
+    log::write(log::type::info, "Load current level successful: index={}", m_levelIndex);
     return true;
   }
   else
@@ -27,15 +28,16 @@ auto play_state::LoadNextLevel() -> bool
 {
   auto levelContainer = std::make_shared<level_container>();
   
-  if( game_level_data_loader::loadLevel(m_levelIndex + 1, *levelContainer) )
+  if( game_level_data_loader::loadLevel(++m_levelIndex, *levelContainer) )
   {
-    game_state::set_level_index(++m_levelIndex);
+    game_state::set_level_index(m_levelIndex);
+    log::write(log::type::info, "Load next level successful: index={}", m_levelIndex);
     m_levelContainer = levelContainer;
     return true;
   }
-  else 
+  else
   {
-    game_state::set_level_index(0);
+    log::write(log::type::info, "Load next level failed: index={}", m_levelIndex);
     return false;
   }
 }
