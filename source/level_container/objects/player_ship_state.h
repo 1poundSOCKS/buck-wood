@@ -59,7 +59,7 @@ inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, f
 
 inline auto player_ship_state::ApplyDamage(int value) -> void
 {
-  if( m_shieldStatus.ApplyDamage(value) == 0 )
+  if( !m_celebrating && m_shieldStatus.ApplyDamage(value) == 0 )
   {
     Destroy();
   }
@@ -67,8 +67,11 @@ inline auto player_ship_state::ApplyDamage(int value) -> void
 
 inline auto player_ship_state::ApplyFatalDamage() -> void
 {
-  m_shieldStatus.ApplyFatalDamage();
-  Destroy();
+  if( !m_celebrating )
+  {
+    m_shieldStatus.ApplyFatalDamage();
+    Destroy();
+  }
 }
 
 inline [[nodiscard]] auto player_ship_state::ShieldStatus() const -> const health_status&

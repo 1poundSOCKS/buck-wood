@@ -231,13 +231,9 @@ auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry
 {
   if( result != geometry_collision::result::none )
   {
-    switch( player_state::get_status() )
+    if( !m_playerState->Celebrating() )
     {
-      case player_state::status::active:
-        ship.Destroy();
-        break;
-      case player_state::status::celebrating:
-        break;
+      ship.Destroy();
     }
 
     enemy.Destroy();
