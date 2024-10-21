@@ -107,11 +107,13 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> std::optio
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 
   std::optional<player_ship_state> playerState;
-  return std::accumulate(std::begin(m_objects), std::end(m_objects), playerState, [](std::optional<player_ship_state> playerState, const default_object& object)
+  m_player = std::accumulate(std::begin(m_objects), std::end(m_objects), playerState, [](std::optional<player_ship_state> playerState, const default_object& object)
   {
     auto&& playerShip = object.GetIf<player_ship>();
     return object.HoldsAlternative<player_ship>() ? std::optional<player_ship_state>(playerShip->StateValue()) : playerState;
   });
+
+  return m_player;
 }
 
 auto level_container::DoCollisions() -> void

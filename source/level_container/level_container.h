@@ -89,6 +89,7 @@ private:
   RECT_F m_boundary;
 
   std::shared_ptr<player_ship_state> m_playerState;
+  std::optional<player_ship_state> m_player;
 
   default_object_collection m_objects;
 
