@@ -51,9 +51,8 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     };
   }
 
-  levelContainer.EnumerateParticles([this](const auto& particle)
+  for( auto&& particle : levelContainer.Particles() )
   {
     Render(particle);
-  });
-
+  }
 }

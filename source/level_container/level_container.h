@@ -45,16 +45,13 @@ public:
 
   [[nodiscard]] auto Boundary() const -> RECT_F;
 
-  auto EnumerateObjects(auto&& visitor) const -> void;
-  auto EnumerateParticles(auto&& visitor) const -> void;
-
-  auto EnumerateColumns(auto&& visitor) const noexcept -> void;
-  auto EnumerateRows(auto&& visitor) const noexcept -> void;
-
   [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
 
   [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
   [[nodiscard]] auto Objects() noexcept -> default_object_collection&;
+
+  [[nodiscard]] auto Particles() const noexcept -> const particle_collection&;
+  [[nodiscard]] auto Particles() noexcept -> particle_collection&;
 
 private:
 
@@ -133,40 +130,6 @@ inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
   return m_boundary;
 }
 
-inline auto level_container::EnumerateObjects(auto &&visitor) const -> void
-{
-  auto objects = std::ranges::views::filter(m_objects, [](const auto& object)
-  {
-    return !object.Destroyed();
-  });
-
-  for( auto& object : objects )
-  {
-    visitor(object);
-  }
-}
-
-inline auto level_container::EnumerateParticles(auto &&visitor) const -> void
-{
-  m_particles.Visit(visitor);
-}
-
-auto level_container::EnumerateColumns(auto &&visitor) const noexcept -> void
-{
-  m_cells->EnumerateColumns([&visitor](level_cell_collection::column_def columnDef)
-  {
-    visitor(columnDef);
-  });
-}
-
-auto level_container::EnumerateRows(auto &&visitor) const noexcept -> void
-{
-  m_cells->EnumerateRows([&visitor](level_cell_collection::row_def rowDef)
-  {
-    visitor(rowDef);
-  });
-}
-
 inline auto level_container::CentrePoint() const noexcept -> POINT_2F
 {
   return m_cells->CentrePoint();
@@ -180,6 +143,16 @@ inline auto level_container::Objects() const noexcept -> const default_object_co
 inline auto level_container::Objects() noexcept -> default_object_collection &
 {
   return m_objects;
+}
+
+inline auto level_container::Particles() const noexcept -> const particle_collection &
+{
+  return m_particles;
+}
+
+inline auto level_container::Particles() noexcept -> particle_collection &
+{
+  return m_particles;
 }
 
 auto level_container::UpdateObject(auto &object, float interval) -> void
