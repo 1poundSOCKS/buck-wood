@@ -30,8 +30,8 @@ private:
   std::shared_ptr<play_state> m_playState;
   bool m_playerDestroyed { false };
 
-  enum class scene_type { none, main, closing };
-  scene_type m_currentSceneType { scene_type::main };
+  enum class scene_type { none, opening, main, closing };
+  scene_type m_currentSceneType;
 
   std::unique_ptr<play_scene> m_currentScene;
   bool m_paused { false };

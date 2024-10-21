@@ -6,7 +6,10 @@
 #include "closing_play_scene.h"
 #include "game_state.h"
 
-play_screen::play_screen() : m_playState { std::make_shared<play_state>() }, m_currentScene { std::make_unique<main_play_scene>(m_playState) }
+play_screen::play_screen() : 
+  m_playState { std::make_shared<play_state>() }, 
+  m_currentScene { std::make_unique<opening_play_scene>(m_playState) },
+  m_currentSceneType { scene_type::opening }
 {
   m_menuController.OpenRoot();
   m_playState->LoadCurrentLevel();
@@ -58,6 +61,12 @@ auto play_screen::NextScene() -> bool
 
   switch( m_currentSceneType )
   {
+    case scene_type::opening:
+      m_currentScene = std::make_unique<main_play_scene>(m_playState);
+      m_currentScene->Begin();
+      m_currentSceneType = scene_type::main;
+      return true;
+
     case scene_type::main:
       m_currentScene = std::make_unique<closing_play_scene>(m_playState);
       m_currentScene->Begin();
@@ -76,9 +85,9 @@ auto play_screen::StartNextLevel() -> bool
 {
   if( m_playState->LoadNextLevel() )
   {
-    m_currentScene = std::make_unique<main_play_scene>(m_playState);
+    m_currentScene = std::make_unique<opening_play_scene>(m_playState);
+    m_currentSceneType = scene_type::opening;
     m_currentScene->Begin();
-    m_currentSceneType = scene_type::main;
     return true;
   }
   else
