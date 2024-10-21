@@ -47,3 +47,8 @@ auto player_ship::State() const -> std::shared_ptr<player_ship_state>
 {
   return m_state;
 }
+
+auto player_ship::StateValue() const -> player_ship_state
+{
+  return *m_state;
+}

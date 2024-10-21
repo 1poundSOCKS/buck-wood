@@ -39,7 +39,7 @@ auto level_container::UnoccupiedFloorCell(size_t index) const noexcept -> cell_i
   return m_cells->UnnoccupiedFloorCell(index);
 }
 
-auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
+auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> std::optional<player_ship_state>
 {
   auto updateStart = performance_counter::QueryValue();
 
@@ -105,6 +105,13 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
   auto updateEnd = performance_counter::QueryValue();
   
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
+
+  std::optional<player_ship_state> playerState;
+  return std::accumulate(std::begin(m_objects), std::end(m_objects), playerState, [](std::optional<player_ship_state> playerState, const default_object& object)
+  {
+    auto&& playerShip = object.GetIf<player_ship>();
+    return object.HoldsAlternative<player_ship>() ? std::optional<player_ship_state>(playerShip->StateValue()) : playerState;
+  });
 }
 
 auto level_container::DoCollisions() -> void

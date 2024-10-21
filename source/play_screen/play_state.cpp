@@ -44,7 +44,7 @@ auto play_state::LoadNextLevel() -> bool
 auto play_state::Update(float interval, RECT_F view) -> void
 {
   game_level_data_loader::updateLevel(game_state::level_index(), m_levelContainer.get(), interval);
-  m_levelContainer->Update(interval, view);
+  m_playerState = m_levelContainer->Update(interval, view);
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
@@ -59,12 +59,12 @@ auto play_state::SaveGameState() noexcept -> void
 
 auto play_state::LevelOver() const noexcept -> bool
 {
-  return m_levelContainer->PlayerState().Destroyed() || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
+  return !m_playerState || m_levelContainer->ObjectCount(level_container::object_type::power_up) == 0;
 }
 
 auto play_state::GameOver() const noexcept -> bool
 {
-  return m_levelContainer->PlayerState().Destroyed();
+  return !m_playerState;
 }
 
 auto play_state::GameComplete() const noexcept -> bool

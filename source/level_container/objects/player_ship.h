@@ -24,6 +24,7 @@ public:
   auto Destroy() noexcept -> void;
 
   [[nodiscard]] auto State() const -> std::shared_ptr<player_ship_state>;
+  [[nodiscard]] auto StateValue() const -> player_ship_state;
 
 private:
 

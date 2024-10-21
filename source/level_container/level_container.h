@@ -38,7 +38,7 @@ public:
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
 
-  auto Update(float interval, D2D1_RECT_F viewRect) -> void;
+  auto Update(float interval, D2D1_RECT_F viewRect) -> std::optional<player_ship_state>;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;

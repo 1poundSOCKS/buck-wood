@@ -34,5 +34,6 @@ private:
   int m_levelIndex { 0 };
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
+  std::optional<player_ship_state> m_playerState;
 
 };
