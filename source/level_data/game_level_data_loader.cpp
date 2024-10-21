@@ -57,8 +57,8 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       auto position = ToFloat(m_cellSize.CellPosition(cellId));
       auto scale = SCALE_2F { 1.0f, 1.0f };
       auto angle = 0.0f;
-      auto&& newObject = CreateObject(levelContainer.Objects(), object.type, position, scale, angle);
-      newObject.Visit( visitor {
+
+      CreateObject(levelContainer.Objects(), object.type, position, scale, angle).Visit( visitor {
         [cellId](portal& object) { object.SetCellId(cellId); },
         [position](player_ship& object) { object.State()->SetPosition(position); },
         [cellId](enemy_ship& object) { object.SetCellId(cellId); },
