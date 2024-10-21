@@ -40,14 +40,13 @@ auto play_scene::Update(__int64 ticks) -> bool
   PlaySoundEffects();
   play_events::reset();
   m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  m_renderTransform = RenderTransform();
   return true;
 }
 
 auto play_scene::Render() const -> void
 {
   render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
-  render_target::get()->SetTransform(m_renderTransform);
+  render_target::get()->SetTransform(RenderTransform());
   RenderLevelContainer();
 }
 
@@ -60,19 +59,16 @@ auto play_scene::Render() const -> void
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerState = m_playState->LevelContainer().PlayerState();
-  auto playerPosition = playerState ? playerState->Position() : POINT_2F { 0.0f, 0.0f };
+  auto playerState = m_playState->LastPlayerState();
+  auto playerPosition = playerState.Position();
   return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
 
 auto play_scene::RenderLevelContainer() const -> void
 {
   auto renderStart = performance_counter::QueryValue();
-
   renderer::render(m_playState->LevelContainer());
-
   auto renderEnd = performance_counter::QueryValue();
-
   diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
 }
 

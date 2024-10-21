@@ -4,7 +4,10 @@
 #include "player_state.h"
 
 play_state::play_state() : 
-  m_score { std::make_shared<game_score>(game_score::value_type::total) }, m_levelIndex { game_state::level_index() },  m_levelContainer { std::make_shared<level_container>() }
+  m_score { std::make_shared<game_score>(game_score::value_type::total) }, 
+  m_levelIndex { game_state::level_index() }, 
+  m_levelContainer { std::make_shared<level_container>() },
+  m_lastPlayerState { { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, { 0.0f, 0.0f } }
 {
   m_score->Set(game_state::score());
 }
@@ -45,6 +48,7 @@ auto play_state::Update(float interval, RECT_F view) -> void
 {
   game_level_data_loader::updateLevel(game_state::level_index(), m_levelContainer.get(), interval);
   m_playerState = m_levelContainer->Update(interval, view);
+  m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
@@ -90,6 +94,11 @@ auto play_state::GameComplete() const noexcept -> bool
 [[nodiscard]] auto play_state::Score() -> game_score&
 {
   return *m_score;
+}
+
+auto play_state::LastPlayerState() const noexcept -> player_ship_state
+{
+  return m_lastPlayerState;
 }
 
 auto play_state::LevelCentrePoint() const noexcept -> POINT_2F

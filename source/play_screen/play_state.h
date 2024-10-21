@@ -27,6 +27,8 @@ public:
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
 
+  [[nodiscard]] auto LastPlayerState() const noexcept -> player_ship_state;
+
   [[nodiscard]] auto LevelCentrePoint() const noexcept -> POINT_2F;
 
 private:
@@ -35,5 +37,5 @@ private:
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
   std::optional<player_ship_state> m_playerState;
-
+  player_ship_state m_lastPlayerState;
 };

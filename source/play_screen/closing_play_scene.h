@@ -39,9 +39,7 @@ public:
     play_scene::Render();
     
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-
     renderer::render(m_playState->Score());
-
     game_score powerUps(game_score::value_type::power_ups);
     powerUps.Add(player_state::missile_count());
     renderer::render(powerUps);
