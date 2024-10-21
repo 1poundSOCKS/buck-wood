@@ -13,29 +13,20 @@ level_container::level_container(range_comparison_runner::execution ex, collisio
   m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }, RECT_I { 0, 0, 10, 10 }) },
   m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_playerState { std::make_shared<player_ship_state>(POINT_2F {0, 0}, SCALE_2F {1, 1}, 0.0f, VELOCITY_2F { 0, 0 }) }, 
-  m_controller { m_playerState },
   m_collisionRunner { ex, collisionType },
   m_boundary { 0.0f, 0.0f, 0.0f, 0.0f }
 {
 }
 
-auto level_container::AddObject(object_type objectType, cell_id cellId) -> default_object &
+auto level_container::InitializePlayer() -> void
 {
-  auto& object = AddObject(objectType, ToFloat(m_cells->CellSize().CellPosition(cellId)), { 1.0f, 1.0f }, 0.0f, { 0.0f, 0.0f });
-
-  object.Visit( visitor {
-    [cellId](portal& object) { object.SetCellId(cellId); },
-    [cellId](player_ship& object) { object.State()->SetPosition(ToFloat(cellId.Position(m_cellSize, m_cellSize))); },
-    [cellId](enemy_ship& object) { object.SetCellId(cellId); },
-    [](auto& object) {}
+  for( auto&& object : m_objects )
+  {
+    object.Visit( visitor {
+      [this](player_ship& object) { m_playerState = object.State(); },
+      [](auto& object) {}
   });
-
-  return object;
-}
-
-auto level_container::AddCell(cell_id cellId, level_cell_type cellType) -> void
-{
-  m_cells->Set(cellId, cellType);
+  }
 }
 
 auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
@@ -46,38 +37,6 @@ auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
 auto level_container::UnoccupiedFloorCell(size_t index) const noexcept -> cell_id
 {
   return m_cells->UnnoccupiedFloorCell(index);
-}
-
-auto level_container::AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&
-{
-  switch( objectType )
-  {
-    case object_type::portal_entry:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle);
-    case object_type::portal_exit:
-      return m_objects.Add(std::in_place_type<portal>, position, scale, angle);
-    case object_type::player:
-    {
-      auto& defaultObject = m_objects.Add(std::in_place_type<player_ship>, position, scale, angle, velocity);
-      defaultObject.Visit( visitor {
-        [this](player_ship& object) { m_playerState = object.State(); m_controller.SetState(object.State()); },
-        [](auto& object) {}
-      });
-      return defaultObject;
-    }
-    case object_type::enemy_stalker:
-      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker);
-    case object_type::enemy_random:
-      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random);
-    case object_type::enemy_turret:
-      return m_objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret);
-    case object_type::power_up:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
-    case object_type::cell:
-      return m_objects.Add(std::in_place_type<level_cell>, position, scale, angle);
-    default:
-      return m_objects.Add(std::in_place_type<power_up>, position, scale, angle, velocity);
-  }
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect) -> void
@@ -173,7 +132,7 @@ auto level_container::UpdateObject(player_ship &object, float interval) -> void
   constexpr VELOCITY_2F forceOfGravity = { 0.0f, 400.0f };
   constexpr float airResistance = { 0.5f };
   
-  m_controller.Update(interval);
+  player_controls::Update(m_playerState, interval);
   m_playerState->Update(forceOfGravity, airResistance, interval);
 }
 

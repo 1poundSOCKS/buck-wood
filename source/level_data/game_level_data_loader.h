@@ -2,6 +2,7 @@
 
 #include "level_update_event.h"
 #include "fractional_counter.h"
+#include "cell_size.h"
 
 class game_level_data_loader
 {
@@ -16,11 +17,7 @@ public:
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] static auto testLoadLevel(int levelIndex) -> bool;
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
-
-  static [[nodiscard]] auto moreLevels(int levelIndex) -> bool;
-  static [[nodiscard]] auto nextLevel(int levelIndex) -> bool;
   static [[nodiscard]] auto moreUpdates() -> bool;
-  static [[nodiscard]] auto levelCanBeCompleted() -> bool;
 
 private:
 
@@ -29,28 +26,21 @@ private:
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
-
-  [[nodiscard]] auto MoreLevels(int levelIndex) const -> bool;
-  [[nodiscard]] auto NextLevel(int levelIndex) -> bool;
-  [[nodiscard]] auto CurrentLevel() const -> int;
   [[nodiscard]] auto MoreUpdates() const -> bool;
-  [[nodiscard]] auto LevelCanBeCompleted() const -> bool;
-
-  static [[nodiscard]] auto LoadCellData(level_container& levelContainer, int levelIndex) -> bool;
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
+
+  static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
 
 private:
 
   inline static game_level_data_loader* m_instance { nullptr };
 
-  status m_status { status::starting };
-  inline static int m_levelCount { 9 };
-
   std::vector<level_update_event> m_events;
   std::vector<level_update_event>::iterator m_currentEvent;
-  bool m_levelCanBeCompleted { false };
 
   fractional_counter m_levelUpdateEvent;
+
+  inline static cell_size m_cellSize { 250, 250 };
 
 };
 
@@ -81,22 +71,7 @@ inline auto game_level_data_loader::updateLevel(int levelIndex, level_container*
   m_instance->UpdateLevel(levelIndex, levelContainer, interval);
 }
 
-inline [[nodiscard]] auto game_level_data_loader::moreLevels(int levelIndex) -> bool
-{
-  return m_instance->MoreLevels(levelIndex);
-}
-
-inline [[nodiscard]] auto game_level_data_loader::nextLevel(int levelIndex) -> bool
-{
-  return m_instance->NextLevel(levelIndex);
-}
-
 inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
 {
   return m_instance->MoreUpdates();
-}
-
-inline [[nodiscard]] auto game_level_data_loader::levelCanBeCompleted() -> bool
-{
-  return m_instance->LevelCanBeCompleted();
 }

@@ -29,9 +29,9 @@ public:
   level_container(range_comparison_runner::execution ex, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddObject(object_type objectType, cell_id cellId) -> default_object&;
-  auto AddCell(cell_id cellId, level_cell_type cellType) -> void;
   auto AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
+
+  auto InitializePlayer() -> void;
 
   auto ObjectCount(object_type objectType) const noexcept -> std::size_t;
 
@@ -54,10 +54,9 @@ public:
   [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
 
   [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
+  [[nodiscard]] auto Objects() noexcept -> default_object_collection&;
 
 private:
-
-  auto AddObject(object_type objectType, POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> default_object&;
 
   auto UpdateObject(player_ship& object, float interval) -> void;
   auto UpdateObject(enemy_ship& object, float interval) -> void;
@@ -90,7 +89,6 @@ private:
   RECT_F m_boundary;
 
   std::shared_ptr<player_ship_state> m_playerState;
-  player_controls m_controller;
 
   default_object_collection m_objects;
 
@@ -174,6 +172,11 @@ inline auto level_container::CentrePoint() const noexcept -> POINT_2F
 }
 
 inline auto level_container::Objects() const noexcept -> const default_object_collection &
+{
+  return m_objects;
+}
+
+inline auto level_container::Objects() noexcept -> default_object_collection &
 {
   return m_objects;
 }

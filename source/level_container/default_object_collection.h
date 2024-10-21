@@ -14,6 +14,7 @@ public:
 public:
 
   template <typename variant_type, typename...Args> auto Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) -> default_object&;
+  auto Add(default_object object) -> default_object&;
   auto Visit(auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 
@@ -36,7 +37,12 @@ auto default_object_collection::Add(std::in_place_type_t<variant_type> variantTy
   return m_objects.emplace_back(variantType, position, scale, angle, std::forward<Args>(args)...);
 }
 
-auto default_object_collection::Visit(auto&& visitor) -> void
+inline auto default_object_collection::Add(default_object object) -> default_object &
+{
+  m_objects.push_back(object);
+}
+
+auto default_object_collection::Visit(auto &&visitor) -> void
 {
   for( auto& object : m_objects )
   {
