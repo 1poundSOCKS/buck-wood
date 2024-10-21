@@ -58,21 +58,23 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       auto scale = SCALE_2F { 1.0f, 1.0f };
       auto angle = 0.0f;
 
-      CreateObject(levelContainer.Objects(), object.type, position, scale, angle).Visit( visitor {
+      auto createObjectVisitor = visitor
+      {
         [cellId](portal& object) { object.SetCellId(cellId); },
         [position](player_ship& object) { object.State()->SetPosition(position); },
         [cellId](enemy_ship& object) { object.SetCellId(cellId); },
         [](auto& object) {}
-      });
+      };
+      
+      CreateObject(levelContainer.Objects(), object.type, position, scale, angle).Visit(createObjectVisitor);
     }
 
-    levelContainer.InitializePlayer();
     return true;
   }
   else
   {
     return false;
-  } 
+  }
 }
 
 auto game_level_data_loader::CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&

@@ -31,8 +31,6 @@ public:
 
   auto AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
 
-  auto InitializePlayer() -> void;
-
   auto ObjectCount(object_type objectType) const noexcept -> std::size_t;
 
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
@@ -41,7 +39,7 @@ public:
   auto Update(float interval, D2D1_RECT_F viewRect) -> std::optional<player_ship_state>;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
-  [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
+  [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
 
   [[nodiscard]] auto Boundary() const -> RECT_F;
 
@@ -85,7 +83,6 @@ private:
 
   RECT_F m_boundary;
 
-  std::shared_ptr<player_ship_state> m_playerState;
   std::optional<player_ship_state> m_player;
 
   default_object_collection m_objects;
@@ -99,9 +96,9 @@ private:
   size_t m_powerUpCount { 0 };
 };
 
-inline auto level_container::PlayerState() const noexcept -> const player_ship_state &
+inline auto level_container::PlayerState() const noexcept -> const std::optional<player_ship_state>
 {
-  return *m_playerState;
+  return m_player;
 }
 
 auto level_container::AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void

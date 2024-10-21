@@ -14,7 +14,7 @@ public:
 
   player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
 
-  auto Initialize(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> std::shared_ptr<player_ship_state>;
+  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
 
   [[nodiscard]] auto Position() const noexcept -> POINT_2F;
   [[nodiscard]] auto Scale() const noexcept -> SCALE_2F;

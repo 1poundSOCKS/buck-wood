@@ -7,10 +7,9 @@ player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCIT
 {
 }
 
-auto player_ship::Initialize(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) -> std::shared_ptr<player_ship_state>
+auto player_ship::Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
 {
-  m_state  = std::make_shared<player_ship_state>(position, scale, angle, velocity);
-  return m_state;
+  m_state->Update(environmentalForces, airResistance, interval);
 }
 
 auto player_ship::Position() const noexcept -> POINT_2F
