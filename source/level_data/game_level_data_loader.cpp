@@ -61,15 +61,42 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       auto scale = SCALE_2F { 1.0f, 1.0f };
       auto angle = 0.0f;
 
-      auto createObjectVisitor = visitor
+      auto&& objects = levelContainer.Objects();
+
+      switch( object.type )
       {
-        [cellId](portal& object) { object.SetCellId(cellId); },
-        [position](player_ship& object) { object.State()->SetPosition(position); },
-        [cellId](enemy_ship& object) { object.SetCellId(cellId); },
-        [](auto& object) {}
-      };
-      
-      CreateObject(levelContainer.Objects(), object.type, position, scale, angle).Visit(createObjectVisitor);
+        case level_data::object_type::player:
+          objects.Add(std::in_place_type<player_ship>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
+          break;
+
+        case level_data::object_type::power_up:
+          objects.Add(std::in_place_type<power_up>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
+          break;
+
+        case level_data::object_type::enemy_stalker:
+        {
+          std::vector<POINT_2F> points;
+          GetEnemyMovementPath(std::back_inserter(points));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, points);
+          break;
+        }
+
+        case level_data::object_type::enemy_random:
+        {
+          std::vector<POINT_2F> points;
+          GetEnemyMovementPath(std::back_inserter(points));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, points);
+          break;
+        }
+
+        case level_data::object_type::enemy_turret:
+        {
+          std::vector<POINT_2F> points;
+          GetEnemyMovementPath(std::back_inserter(points));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, points);
+          break;
+        }
+      }
     }
 
     return true;
@@ -77,35 +104,5 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
   else
   {
     return false;
-  }
-}
-
-auto game_level_data_loader::CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&
-{
-  static auto dummyObject = default_object { std::in_place_type<power_up>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f } };
-
-  auto points = std::array {
-    position
-  };
-
-  switch( objectType )
-  {
-    case level_data::object_type::player:
-      return objectCollection.Add(std::in_place_type<player_ship>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
-
-    case level_data::object_type::power_up:
-      return objectCollection.Add(std::in_place_type<power_up>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
-
-    case level_data::object_type::enemy_stalker:
-      return objectCollection.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, points);
-
-    case level_data::object_type::enemy_random:
-      return objectCollection.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, points);
-
-    case level_data::object_type::enemy_turret:
-      return objectCollection.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, points);
-
-    default:
-      return dummyObject;
   }
 }

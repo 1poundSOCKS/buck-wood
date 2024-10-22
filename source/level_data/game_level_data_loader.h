@@ -19,6 +19,8 @@ public:
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
   static [[nodiscard]] auto moreUpdates() -> bool;
 
+  static auto GetEnemyMovementPath(auto &&pointInserter) noexcept -> void;
+
 private:
 
   game_level_data_loader();
@@ -74,4 +76,8 @@ inline auto game_level_data_loader::updateLevel(int levelIndex, level_container*
 inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
 {
   return m_instance->MoreUpdates();
+}
+
+auto game_level_data_loader::GetEnemyMovementPath(auto&& pointInserter) noexcept -> void
+{
 }

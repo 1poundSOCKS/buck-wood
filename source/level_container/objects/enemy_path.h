@@ -30,7 +30,7 @@ enemy_path::enemy_path(std::ranges::input_range auto&& points)
 
 inline auto enemy_path::operator()(POINT_2F position, float interval) -> POINT_2F
 {
-  return interval > 0.0f ? Move(position, m_speed * interval, interval) : position;
+  return m_points.size() > 0 && interval > 0.0f ? Move(position, m_speed * interval, interval) : position;
 }
 
 inline auto enemy_path::Move(POINT_2F position, float distance, float interval) -> POINT_2F
