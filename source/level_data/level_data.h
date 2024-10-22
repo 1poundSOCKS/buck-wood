@@ -166,9 +166,9 @@ inline constexpr auto level_data::ConvertRawDataToCellData(pixel_geometry_loader
   switch( rawDataItem.value )
   {
     case 'X':
-      return { rawDataItem.column, rawDataItem.row, cell_type::empty };
-    default:
       return { rawDataItem.column, rawDataItem.row, cell_type::boundary };
+    default:
+      return { rawDataItem.column, rawDataItem.row, cell_type::empty };
   }
 }
 

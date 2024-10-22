@@ -19,8 +19,6 @@ public:
   static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
   static [[nodiscard]] auto moreUpdates() -> bool;
 
-  static auto GetEnemyMovementPath(auto &&pointInserter) noexcept -> void;
-
 private:
 
   game_level_data_loader();
@@ -30,8 +28,8 @@ private:
   auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
   [[nodiscard]] auto MoreUpdates() const -> bool;
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
-
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
+  static auto GetEnemyMovementPath(cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
 
 private:
 
@@ -78,6 +76,25 @@ inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
   return m_instance->MoreUpdates();
 }
 
-auto game_level_data_loader::GetEnemyMovementPath(auto&& pointInserter) noexcept -> void
+auto game_level_data_loader::GetEnemyMovementPath(cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void
 {
+  auto leftCellId = cellId.ShiftColumn(-1);
+
+  while( emptyCellLookup.contains(leftCellId) )
+  {
+    cellId = leftCellId;
+    leftCellId = leftCellId.ShiftColumn(-1);
+  }
+
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+
+  auto rightCellId = cellId.ShiftColumn(1);
+
+  while( emptyCellLookup.contains(rightCellId) )
+  {
+    cellId = rightCellId;
+    rightCellId = rightCellId.ShiftColumn(1);
+  }
+
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
 }

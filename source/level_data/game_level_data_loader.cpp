@@ -52,7 +52,19 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
   if( level_data::LoadObjectData(levelIndex, std::back_inserter(objectData)) )
   {
     std::vector<level_data::cell_data> cellData;
+    std::set<cell_id> emptyCellLookup;
+
     level_data::LoadCellData(levelIndex, std::back_inserter(cellData));
+
+    auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellData) -> bool
+    {
+      return cellData.type == level_data::cell_type::empty;
+    });
+
+    std::ranges::transform(emptyCells, std::inserter(emptyCellLookup, std::begin(emptyCellLookup)), [](auto&& cellData) -> cell_id
+    {
+      return { cellData.column, cellData.row };
+    });
 
     for( auto&& object : objectData )
     {
@@ -76,7 +88,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
         case level_data::object_type::enemy_stalker:
         {
           std::vector<POINT_2F> points;
-          GetEnemyMovementPath(std::back_inserter(points));
+          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
           objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, points);
           break;
         }
@@ -84,7 +96,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
         case level_data::object_type::enemy_random:
         {
           std::vector<POINT_2F> points;
-          GetEnemyMovementPath(std::back_inserter(points));
+          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
           objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, points);
           break;
         }
@@ -92,7 +104,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
         case level_data::object_type::enemy_turret:
         {
           std::vector<POINT_2F> points;
-          GetEnemyMovementPath(std::back_inserter(points));
+          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
           objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, points);
           break;
         }
