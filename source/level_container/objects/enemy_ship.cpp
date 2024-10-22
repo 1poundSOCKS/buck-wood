@@ -66,6 +66,7 @@ auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept 
 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
 {
+  base_object::Update(interval);
   m_position = m_path(m_position, interval);
   return status::moving;
 }

@@ -38,7 +38,7 @@ inline auto enemy_path::Move(POINT_2F position, float distance, float interval) 
   auto destination = *m_destination;
   auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, destination);
 
-  if( distance > distanceToDest )
+  if( distance > distanceToDest && distanceToDest > 0.0f )
   {
     auto distanceLeft = distance - distanceToDest;
     auto intervalLeft = interval * distanceLeft / distance;

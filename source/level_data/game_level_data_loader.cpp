@@ -85,10 +85,7 @@ auto game_level_data_loader::CreateObject(default_object_collection& objectColle
   static auto dummyObject = default_object { std::in_place_type<power_up>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f } };
 
   auto points = std::array {
-    position,
-    POINT_2F { position.x + 1000.f, position.y },
-    POINT_2F { position.x + 1000.f, position.y + 1000.0f },
-    POINT_2F { position.x, position.y + 1000.0f }
+    position
   };
 
   switch( objectType )
