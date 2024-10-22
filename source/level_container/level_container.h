@@ -157,6 +157,7 @@ auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, 
 {
   if( result != geometry_collision::result::containment )
   {
+    m_particles.Create(particle::type::impact, object.Position(), { 0.0f, 0.0f }, 1.0f);
     object.Destroy();
   }
 }
