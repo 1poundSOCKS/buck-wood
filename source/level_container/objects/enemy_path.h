@@ -15,7 +15,7 @@ private:
 
   [[nodiscard]] auto Move(POINT_2F position, float distance, float interval) -> POINT_2F;
 
-  constexpr static float m_speed { 400.0f };
+  constexpr static float m_speed { 800.0f };
   using container_type = std::vector<POINT_2F>;
   container_type m_points;
   container_type::const_iterator m_destination;
