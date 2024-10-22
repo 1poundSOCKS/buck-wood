@@ -88,8 +88,6 @@ private:
 
   particle_collection m_particles;
   particle_collision m_particleCollisionRunner;
-
-  size_t m_powerUpCount { 0 };
 };
 
 inline auto level_container::PlayerState() const noexcept -> const std::optional<player_ship_state>
