@@ -29,7 +29,7 @@ public:
   level_container(range_comparison_runner::execution ex, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
+  auto CreateBoundary(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
 
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
@@ -101,7 +101,7 @@ inline auto level_container::PlayerState() const noexcept -> const std::optional
   });
 }
 
-auto level_container::AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void
+auto level_container::CreateBoundary(int levelIndex, std::ranges::input_range auto&& pointData) -> void
 {
   m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, levelIndex);
 

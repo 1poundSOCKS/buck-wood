@@ -29,7 +29,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
 
   if( LoadObjectData(levelContainer, levelIndex) && level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
   {
-    levelContainer.AddBoundaryWalls(levelIndex, boundaryData);
+    levelContainer.CreateBoundary(levelIndex, boundaryData);
     m_events.clear();
     m_currentEvent = std::begin(m_events);
     return true;
