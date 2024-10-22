@@ -86,7 +86,9 @@ auto game_level_data_loader::CreateObject(default_object_collection& objectColle
 
   auto points = std::array {
     position,
-    POINT_2F { position.x + 1000.f, position.y }
+    POINT_2F { position.x + 1000.f, position.y },
+    POINT_2F { position.x + 1000.f, position.y + 1000.0f },
+    POINT_2F { position.x, position.y + 1000.0f }
   };
 
   switch( objectType )

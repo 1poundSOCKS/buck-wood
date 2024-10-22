@@ -66,11 +66,7 @@ auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept 
 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
 {
-  std::uniform_int_distribution angle { 0, 359 };
-  auto moveAngle = static_cast<float>(angle(pseudo_random_generator::get()));
-  auto direction = object_cell_position::MoveDirection(moveAngle);
-  enemy_object::Update(interval, direction, cells);
-  m_waitTimer.Reset();
+  m_position = m_path(m_position, interval);
   return status::moving;
 }
 
