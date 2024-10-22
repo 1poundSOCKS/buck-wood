@@ -2,16 +2,6 @@
 #include "enemy_ship.h"
 #include "adjacent_floor_cells.h"
 
-enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType) : 
-  enemy_object{position, scale, angle}, 
-  m_type { enemyType },
-  m_status { status::moving }, 
-  m_waitTimer { 0.5f }, 
-  m_reloadTimer { 2.0f },
-  m_reloaded { false }
-{
-}
-
 auto enemy_ship::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
 {
   switch( m_type )
@@ -49,6 +39,7 @@ auto enemy_ship::UpdateStalker(float interval, POINT_2F target, level_cell_colle
 {
   auto angleToTarget = direct2d::GetAngleBetweenPoints(m_position, target);
   enemy_object::Update(interval, angleToTarget, cells);
+  m_position = m_path(m_position, interval);
 }
 
 auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void

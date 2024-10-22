@@ -47,7 +47,8 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_s
 
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
 
-  auto onDestroyed = visitor {
+  auto onDestroyed = visitor
+  {
     [this](const player_ship& object)
     {
       m_particles.Add(level_explosion { object.Position() });
@@ -55,7 +56,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_s
     },
     [this](const enemy_ship& object)
     {
-      object.PreErase(*m_cells);
       m_particles.Add(level_explosion { object.Position() });
       play_events::set(play_events::event_type::explosion, true);
     },

@@ -3,6 +3,7 @@
 #include "reload_timer.h"
 #include "enemy_object.h"
 #include "level_cell_collection.h"
+#include "enemy_path.h"
 
 class enemy_ship : public enemy_object
 {
@@ -11,7 +12,7 @@ public:
 
   enum class type { stalker, random, turret };
 
-  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType);
+  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, std::ranges::input_range auto&& points);
 
   auto Update(float interval, POINT_2F target, level_cell_collection& cells) -> void;
 
@@ -36,5 +37,17 @@ private:
   reload_timer m_waitTimer;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
+  enemy_path m_path;
 
 };
+
+enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, std::ranges::input_range auto&& points) : 
+  enemy_object{position, scale, angle}, 
+  m_type { enemyType },
+  m_status { status::moving }, 
+  m_waitTimer { 0.5f }, 
+  m_reloadTimer { 2.0f },
+  m_reloaded { false },
+  m_path { points }
+{
+}

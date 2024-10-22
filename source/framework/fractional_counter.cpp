@@ -18,7 +18,6 @@ auto fractional_counter::Reset() -> void
 
 auto fractional_counter::Normalize() -> float
 {
-  // return m_current = std::max(0.0f, m_current - m_value);
   while( m_current >= m_value )
   {
     m_current -= m_value;
