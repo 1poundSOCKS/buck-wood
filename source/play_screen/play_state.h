@@ -19,6 +19,7 @@ public:
   auto SaveGameState() noexcept -> void;
 
   [[nodiscard]] auto LevelOver() const noexcept -> bool;
+  [[nodiscard]] auto LevelComplete() const noexcept -> bool;
   [[nodiscard]] auto GameOver() const noexcept -> bool;
   [[nodiscard]] auto GameComplete() const noexcept -> bool;
 
@@ -26,10 +27,9 @@ public:
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
-
   [[nodiscard]] auto LastPlayerState() const noexcept -> player_ship_state;
-
   [[nodiscard]] auto LevelCentrePoint() const noexcept -> POINT_2F;
+  [[nodiscard]] auto PowerUpCount() const noexcept -> std::size_t;
 
 private:
 

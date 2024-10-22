@@ -31,12 +31,10 @@ public:
 
   auto AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
 
-  auto ObjectCount(object_type objectType) const noexcept -> std::size_t;
-
   [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
   [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
 
-  auto Update(float interval, D2D1_RECT_F viewRect) -> std::optional<player_ship_state>;
+  auto Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
@@ -53,13 +51,13 @@ public:
 
 private:
 
-  auto UpdateObject(player_ship& object, float interval) -> void;
-  auto UpdateObject(enemy_ship& object, float interval) -> void;
-  auto UpdateObject(auto& object, float interval) -> void;
+  auto UpdateObject(player_ship& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
+  auto UpdateObject(enemy_ship& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
+  auto UpdateObject(auto& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
 
-  auto VisitObject(player_ship& object) -> void;
-  auto VisitObject(enemy_ship& object) -> void;
-  auto VisitObject(auto &object) -> void;
+  auto VisitObject(player_ship& object, player_ship_state playerState, bool levelComplete) -> void;
+  auto VisitObject(enemy_ship& object, player_ship_state playerState, bool levelComplete) -> void;
+  auto VisitObject(auto &object, player_ship_state playerState, bool levelComplete) -> void;
 
   auto DoCollisions() -> void;
 
@@ -83,8 +81,6 @@ private:
 
   RECT_F m_boundary;
 
-  std::optional<player_ship_state> m_player;
-
   default_object_collection m_objects;
 
   level_collision_geometry m_collisionGeometry;
@@ -98,7 +94,12 @@ private:
 
 inline auto level_container::PlayerState() const noexcept -> const std::optional<player_ship_state>
 {
-  return m_player;
+  std::optional<player_ship_state> playerState;
+  return std::accumulate(std::begin(m_objects), std::end(m_objects), playerState, [](std::optional<player_ship_state> playerState, const default_object& object)
+  {
+    auto&& playerShip = object.GetIf<player_ship>();
+    return object.HoldsAlternative<player_ship>() ? std::optional<player_ship_state>(playerShip->StateValue()) : playerState;
+  });
 }
 
 auto level_container::AddBoundaryWalls(int levelIndex, std::ranges::input_range auto&& pointData) -> void
@@ -109,17 +110,6 @@ auto level_container::AddBoundaryWalls(int levelIndex, std::ranges::input_range 
   {
     return { std::min(bounds.left, pointData.x), std::min(bounds.top, pointData.y), std::max(bounds.right, pointData.x), std::max(bounds.bottom, pointData.y) };
   });
-}
-
-inline auto level_container::ObjectCount(object_type objectType) const noexcept -> std::size_t
-{
-  switch( objectType )
-  {
-    case object_type::power_up:
-      return m_objects.PowerUpCount();
-    default:
-      return 0;
-  }
 }
 
 inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
@@ -152,12 +142,12 @@ inline auto level_container::Particles() noexcept -> particle_collection &
   return m_particles;
 }
 
-auto level_container::UpdateObject(auto &object, float interval) -> void
+auto level_container::UpdateObject(auto &object, float interval, player_ship_state playerState, bool levelComplete) -> void
 {
   object.Update(interval);
 }
 
-auto level_container::VisitObject(auto& object) -> void
+auto level_container::VisitObject(auto& object, player_ship_state playerState, bool levelComplete) -> void
 {
 }
 
