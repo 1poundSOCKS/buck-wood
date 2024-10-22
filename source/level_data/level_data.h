@@ -6,6 +6,23 @@
 namespace level_data
 {
 
+  constexpr static std::array levelData_0 { 
+    std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
+    std::string_view { "XXXX    XX   XX            X         XX" },
+    std::string_view { "X       XX    X                       X" },
+    std::string_view { "   1                             2     " },
+    std::string_view { "                                      X" },
+    std::string_view { "X                                    XX" },
+    std::string_view { "                         3      XXXXXXX" },
+    std::string_view { "                                   XXXX" },
+    std::string_view { "                                      X" },
+    std::string_view { "XX            P                       X" },
+    std::string_view { "XXXXXXXXXX                             " },
+    std::string_view { "XXXXXXXXXXXXX                O       XX" },
+    std::string_view { "XXXXXXX                                " },
+    std::string_view { "XXX                                  XX" }
+  };
+
   constexpr static std::array levelData_1 { 
     std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
     std::string_view { "XXXX    XX   XX            X         XX" },
@@ -48,23 +65,6 @@ namespace level_data
     std::string_view { "XXXXXXXXX        3      XXXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX               XXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXXXX     X    XXXXXXXXXXXXXXXXX" }
-  };
-
-  constexpr static std::array levelData_0 { 
-    std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
-    std::string_view { "XXXX    XX   XX            X         XX" },
-    std::string_view { "X       XX    X                       X" },
-    std::string_view { "   1                             2     " },
-    std::string_view { "                                      X" },
-    std::string_view { "X                                    XX" },
-    std::string_view { "                         3      XXXXXXX" },
-    std::string_view { "                                   XXXX" },
-    std::string_view { "                                      X" },
-    std::string_view { "XX            P                       X" },
-    std::string_view { "XXXXXXXXXX                             " },
-    std::string_view { "XXXXXXXXXXXXX                O       XX" },
-    std::string_view { "XXXXXXX                                " },
-    std::string_view { "XXX                                  XX" }
   };
 
   constexpr int levelCount = 2;
