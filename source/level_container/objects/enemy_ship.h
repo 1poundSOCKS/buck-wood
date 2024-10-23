@@ -43,7 +43,7 @@ private:
 };
 
 enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, std::ranges::input_range auto&& points) : 
-  enemy_object{position, scale, angle}, 
+  enemy_object{position, scale, angle, 1}, 
   m_type { enemyType },
   m_speed { speed },
   m_status { status::moving }, 
@@ -52,4 +52,18 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
   m_reloaded { false },
   m_path { points }
 {
+  switch( enemyType )
+  {
+    case type::stalker:
+      m_maxHitpoints = m_hitpoints = 5;
+      break;
+
+    case type::random:
+      m_maxHitpoints = m_hitpoints = 3;
+      break;
+
+    case type::turret:
+      m_maxHitpoints = m_hitpoints = 10;
+      break;
+  }
 }

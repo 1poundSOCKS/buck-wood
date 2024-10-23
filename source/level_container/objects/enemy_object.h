@@ -10,10 +10,9 @@ class enemy_object : public base_object
 
 public:
 
-  enemy_object(POINT_2F position, SCALE_2F scale, float angle) noexcept;
+  enemy_object(POINT_2F position, SCALE_2F scale, float angle, int hitpoints) noexcept;
 
   auto SetCellId(cell_id cellId) noexcept -> void;
-  auto SetHitpoints(int value) noexcept -> void;
   auto ApplyDamage(int value) -> void;
 
   [[nodiscard]] auto Health() const -> float;

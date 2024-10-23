@@ -151,6 +151,7 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geom
 {
   if( result != geometry_collision::result::none )
   {
+    m_particles.Create(particle::type::impact, bullet.Position(), { 0.0f, 0.0f }, 1.0f);
     enemy.ApplyDamage(bullet.Damage());
     bullet.Destroy();
   }
