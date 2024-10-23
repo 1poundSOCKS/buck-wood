@@ -74,6 +74,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       auto angle = 0.0f;
 
       auto&& objects = levelContainer.Objects();
+      std::vector<POINT_2F> movementPathPoints;
 
       switch( object.type )
       {
@@ -86,28 +87,19 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
           break;
 
         case level_data::object_type::enemy_stalker:
-        {
-          std::vector<POINT_2F> points;
-          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, points);
+          GetEnemyMovementPath(movement_path_type::horizontal, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, movementPathPoints);
           break;
-        }
 
         case level_data::object_type::enemy_random:
-        {
-          std::vector<POINT_2F> points;
-          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, points);
+          GetEnemyMovementPath(movement_path_type::vertical, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, movementPathPoints);
           break;
-        }
 
         case level_data::object_type::enemy_turret:
-        {
-          std::vector<POINT_2F> points;
-          GetEnemyMovementPath(cellId, emptyCellLookup, std::back_inserter(points));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, points);
+          GetEnemyMovementPath(movement_path_type::none, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, movementPathPoints);
           break;
-        }
       }
     }
 

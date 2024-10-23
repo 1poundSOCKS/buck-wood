@@ -21,6 +21,8 @@ public:
 
 private:
 
+  enum class movement_path_type { none, horizontal, vertical };
+
   game_level_data_loader();
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
@@ -29,7 +31,7 @@ private:
   [[nodiscard]] auto MoreUpdates() const -> bool;
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  static auto GetEnemyMovementPath(cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
+  static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
 
 private:
 
@@ -76,25 +78,57 @@ inline [[nodiscard]] auto game_level_data_loader::moreUpdates() -> bool
   return m_instance->MoreUpdates();
 }
 
-auto game_level_data_loader::GetEnemyMovementPath(cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void
+auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void
 {
-  auto leftCellId = cellId.ShiftColumn(-1);
-
-  while( emptyCellLookup.contains(leftCellId) )
+  switch( pathType )
   {
-    cellId = leftCellId;
-    leftCellId = leftCellId.ShiftColumn(-1);
+    case movement_path_type::horizontal:
+    {
+      auto leftCellId = cellId.ShiftColumn(-1);
+
+      while( emptyCellLookup.contains(leftCellId) )
+      {
+        cellId = leftCellId;
+        leftCellId = leftCellId.ShiftColumn(-1);
+      }
+
+      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+
+      auto rightCellId = cellId.ShiftColumn(1);
+
+      while( emptyCellLookup.contains(rightCellId) )
+      {
+        cellId = rightCellId;
+        rightCellId = rightCellId.ShiftColumn(1);
+      }
+
+      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+    }
+
+    case movement_path_type::vertical:
+    {
+      auto leftCellId = cellId.ShiftRow(-1);
+
+      while( emptyCellLookup.contains(leftCellId) )
+      {
+        cellId = leftCellId;
+        leftCellId = leftCellId.ShiftRow(-1);
+      }
+
+      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+
+      auto rightCellId = cellId.ShiftRow(1);
+
+      while( emptyCellLookup.contains(rightCellId) )
+      {
+        cellId = rightCellId;
+        rightCellId = rightCellId.ShiftRow(1);
+      }
+
+      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+    }
+
+    default:
+      break;
   }
-
-  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
-
-  auto rightCellId = cellId.ShiftColumn(1);
-
-  while( emptyCellLookup.contains(rightCellId) )
-  {
-    cellId = rightCellId;
-    rightCellId = rightCellId.ShiftColumn(1);
-  }
-
-  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
 }
