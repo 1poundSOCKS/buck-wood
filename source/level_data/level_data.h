@@ -6,23 +6,35 @@
 namespace level_data
 {
 
-  constexpr static std::array levelData_0 { 
-    std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
-    std::string_view { "XXXX    XX   XX            X         XX" },
-    std::string_view { "X       XX    X                       X" },
-    std::string_view { "                                       " },
-    std::string_view { "   1                                  X" },
-    std::string_view { "X                      O             XX" },
-    std::string_view { "                                XXXXXXX" },
-    std::string_view { "                                   XXXX" },
-    std::string_view { "                                      X" },
-    std::string_view { "XX            P                       X" },
-    std::string_view { "XXXXXXXXXX                             " },
-    std::string_view { "XXXXXXXXXXXXX                O       XX" },
-    std::string_view { "XXXXXXX                                " },
-    std::string_view { "XXX                                  XX" }
+constexpr static std::array levelData_0 { 
+    std::string_view { "XXXXX    XXXXXXXX   XXX  X   XXXX" },
+    std::string_view { "XXXX    XX   XX      X         XX" },
+    std::string_view { "X       XX    X                 X" },
+    std::string_view { "    O                            " },
+    std::string_view { "                                X" },
+    std::string_view { "X                      O       XX" },
+    std::string_view { "XXXXX                     XXXXXXX" },
+    std::string_view { "XXXXXXXX                XXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX      1    XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX  1        XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXX          XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX          XXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX  1    XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXX         XXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXX                        X" },
+    std::string_view { "XXXXXXXXX                        " },
+    std::string_view { "XXXXXX             O           XX" },
+    std::string_view { "XXXXXXX  O                P      " },
+    std::string_view { "XXXXXXXX                       XX" },
+    std::string_view { "XXXXXXXXXXXXX   X  X X    XXXXXXX" }
   };
-
+  
   constexpr static std::array levelData_1 { 
     std::string_view { "XXXXX    XXXXXX      XX   XXX  X   XXXX" },
     std::string_view { "XXXX    XX   XX            X         XX" },
