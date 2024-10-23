@@ -105,14 +105,14 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
   
   std::ranges::transform(lineData, std::inserter(pixelLines, std::begin(pixelLines)), [](auto&& line) -> std::pair<POINT_2I, POINT_2I> { return { line.start, line.end }; });
 
-  auto lineDataSize = std::ranges::distance(lineData);
   auto currentLine = std::begin(pixelLines);
   
-  while( static_cast<point_data_container_size>(pointData.size()) < lineDataSize )
+  while( currentLine != std::end(pixelLines) )
   {
     const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
     auto pixelRect = pixelSize.CellRect({pixelLineStart.x, pixelLineStart.y});
     pointData.emplace_back(pixelRect.left, pixelRect.top);
+    pixelLines.erase(currentLine);
     currentLine = pixelLines.find(pixelLineEnd);
   }
 
@@ -134,6 +134,7 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
   });
 
   std::ranges::transform(normalizedPointDataGroups, pointDataInserter, [](auto&& pointDataGroup) { auto&& [prev, current, next] = pointDataGroup; return current; });
+  // std::ranges::copy(pointData, pointDataInserter);
 }
 
 auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
