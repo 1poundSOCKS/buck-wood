@@ -103,6 +103,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, c
       }
 
       pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      break;
     }
 
     case movement_path_type::vertical:
@@ -126,6 +127,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, c
       }
 
       pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      break;
     }
 
     default:
