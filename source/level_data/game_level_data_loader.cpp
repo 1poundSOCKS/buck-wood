@@ -88,17 +88,17 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
 
         case level_data::object_type::enemy_stalker:
           GetEnemyMovementPath(movement_path_type::horizontal, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, movementPathPoints);
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, 400.0f, movementPathPoints);
           break;
 
         case level_data::object_type::enemy_random:
           GetEnemyMovementPath(movement_path_type::vertical, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, movementPathPoints);
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, 200.0f, movementPathPoints);
           break;
 
         case level_data::object_type::enemy_turret:
           GetEnemyMovementPath(movement_path_type::none, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, movementPathPoints);
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, 0.0f, movementPathPoints);
           break;
       }
     }

@@ -39,7 +39,7 @@ auto enemy_ship::UpdateStalker(float interval, POINT_2F target, level_cell_colle
 {
   auto angleToTarget = direct2d::GetAngleBetweenPoints(m_position, target);
   enemy_object::Update(interval, angleToTarget, cells);
-  m_position = m_path(m_position, interval);
+  m_position = m_path(m_position, m_speed, interval);
 }
 
 auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void
@@ -67,7 +67,7 @@ auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
 {
   base_object::Update(interval);
-  m_position = m_path(m_position, interval);
+  m_position = m_path(m_position, m_speed, interval);
   return status::moving;
 }
 

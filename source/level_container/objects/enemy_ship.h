@@ -12,7 +12,7 @@ public:
 
   enum class type { stalker, random, turret };
 
-  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, std::ranges::input_range auto&& points);
+  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, std::ranges::input_range auto&& points);
 
   auto Update(float interval, POINT_2F target, level_cell_collection& cells) -> void;
 
@@ -33,6 +33,7 @@ private:
 private:
 
   type m_type;
+  float m_speed;
   status m_status;
   reload_timer m_waitTimer;
   reload_timer m_reloadTimer;
@@ -41,9 +42,10 @@ private:
 
 };
 
-enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, std::ranges::input_range auto&& points) : 
+enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, std::ranges::input_range auto&& points) : 
   enemy_object{position, scale, angle}, 
   m_type { enemyType },
+  m_speed { speed },
   m_status { status::moving }, 
   m_waitTimer { 0.5f }, 
   m_reloadTimer { 4.0f },

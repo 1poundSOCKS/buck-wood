@@ -9,13 +9,12 @@ public:
 
   enemy_path(std::ranges::input_range auto&& points);
 
-  [[nodiscard]] auto operator()(POINT_2F position, float interval) -> POINT_2F;
+  [[nodiscard]] auto operator()(POINT_2F position, float speed, float interval) -> POINT_2F;
 
 private:
 
   [[nodiscard]] auto Move(POINT_2F position, float distance, float interval) -> POINT_2F;
 
-  constexpr static float m_speed { 800.0f };
   using container_type = std::vector<POINT_2F>;
   container_type m_points;
   container_type::const_iterator m_destination;
@@ -28,9 +27,9 @@ enemy_path::enemy_path(std::ranges::input_range auto&& points)
   m_destination = std::begin(m_points);
 }
 
-inline auto enemy_path::operator()(POINT_2F position, float interval) -> POINT_2F
+inline auto enemy_path::operator()(POINT_2F position, float speed, float interval) -> POINT_2F
 {
-  return m_points.size() > 0 && interval > 0.0f ? Move(position, m_speed * interval, interval) : position;
+  return m_points.size() > 0 && interval > 0.0f ? Move(position, speed * interval, interval) : position;
 }
 
 inline auto enemy_path::Move(POINT_2F position, float distance, float interval) -> POINT_2F
