@@ -4,7 +4,6 @@
 #include "base_object.h"
 #include "play_event.h"
 #include "reload_timer.h"
-#include "level_object_movement.h"
 #include "player_ship_state.h"
 
 class player_ship

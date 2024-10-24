@@ -54,8 +54,6 @@ private:
   auto Render(const energy_bar& energyBar) const -> void;
   auto Render(const level_container& levelContainer) const -> void;
   auto Write(const default_object& object) const -> void;
-  auto Write(level_cell_collection::column_def columnDef) const noexcept -> void;
-  auto Write(level_cell_collection::row_def rowDef) const noexcept -> void;
   auto Write(const auto& object) const -> void;
 
   auto Health(const default_object& object) const -> std::optional<float>;
@@ -173,22 +171,6 @@ inline auto renderer::Write(const default_object &object) const -> void
     auto energyBar = energy_bar { energyBarRect.Get(), *health };
     Render(energyBar);
   }
-}
-
-inline auto renderer::Write(level_cell_collection::column_def columnDef) const noexcept -> void
-{
-  POINT_2I lineStart = { columnDef.position, columnDef.start };
-  POINT_2I lineEnd = { columnDef.position, columnDef.end };
-
-  render_target::get()->DrawLine(ToFloat(lineStart), ToFloat(lineEnd), m_gridBrush.get(), 20);
-}
-
-inline auto renderer::Write(level_cell_collection::row_def rowDef) const noexcept -> void
-{
-  POINT_2I lineStart = { rowDef.start, rowDef.position };
-  POINT_2I lineEnd = { rowDef.end, rowDef.position };
-  
-  render_target::get()->DrawLine(ToFloat(lineStart), ToFloat(lineEnd), m_gridBrush.get(), 20);
 }
 
 inline auto renderer::Write(const auto &object) const -> void

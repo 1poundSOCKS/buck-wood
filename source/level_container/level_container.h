@@ -15,7 +15,6 @@
 #include "geometry_containment.h"
 #include "level_collision_geometry.h"
 #include "geometry_collision_runner.h"
-#include "level_object_movement.h"
 #include "player_controls.h"
 
 class level_container
