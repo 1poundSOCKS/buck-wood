@@ -59,14 +59,14 @@ auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition, level_cel
 
 auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept -> void
 {
-  base_object::Update(interval);
+  enemy_object::Update(interval);
   m_angle = DirectionTo(targetPosition);
   m_reloaded = m_reloadTimer.Update(interval);
 }
 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
 {
-  base_object::Update(interval);
+  enemy_object::Update(interval);
   m_position = m_path(m_position, m_speed, interval);
   return status::moving;
 }

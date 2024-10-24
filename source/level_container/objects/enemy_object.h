@@ -19,6 +19,7 @@ public:
 
   auto Update(float interval, object_cell_position::move_direction moveDirection, level_cell_collection& cells) noexcept -> void;
   auto Update(float interval, float moveDirection, level_cell_collection& cells) noexcept -> void;
+  auto Update(float interval) noexcept -> void;
 
   [[nodiscard]] auto RemainingDamageInterval() const noexcept -> float;
 

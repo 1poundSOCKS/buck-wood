@@ -25,14 +25,19 @@ auto enemy_object::ApplyDamage(int value) -> void
 
 auto enemy_object::Update(float interval, object_cell_position::move_direction moveDirection, level_cell_collection& cells) noexcept -> void
 {
-  base_object::Update(interval);
-  m_remainingDamageInterval = std::max(0.0f, m_remainingDamageInterval - interval);
+  Update(interval);
 }
 
 auto enemy_object::Update(float interval, float moveDirection, level_cell_collection &cells) noexcept -> void
 {
   auto cellMoveDirection = object_cell_position::MoveDirection(moveDirection);
   Update(interval, cellMoveDirection, cells);
+}
+
+auto enemy_object::Update(float interval) noexcept -> void
+{
+  base_object::Update(interval);
+  m_remainingDamageInterval = std::max(0.0f, m_remainingDamageInterval - interval);
 }
 
 auto enemy_object::RemainingDamageInterval() const noexcept -> float
