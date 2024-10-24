@@ -41,6 +41,7 @@ private:
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
+  geometry_renderer m_damagedEnemyGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
   winrt::com_ptr<ID2D1Geometry> m_enemy3_turretGeometry;
 };

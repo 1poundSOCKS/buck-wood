@@ -28,7 +28,11 @@ auto default_object_renderer::Write(const background_object& object, ID2D1Geomet
 
 auto default_object_renderer::Write(const enemy_ship& object, ID2D1Geometry* geometry) const -> void
 {
-  switch( object.Type() )
+  if( object.RemainingDamageInterval() > 0.0f )
+  {
+    m_damagedEnemyGeometryRenderer.Write(geometry);
+  }
+  else switch( object.Type() )
   {
     case enemy_ship::type::stalker:
       m_enemyType1_renderer.Write(object, geometry);

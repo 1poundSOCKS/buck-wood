@@ -58,6 +58,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_s
     {
       m_particles.Add(level_explosion { object.Position() });
       play_events::set(play_events::event_type::explosion, true);
+      play_events::increment(play_events::counter_type::enemies_destroyed);
     },
     [this](const enemy_bullet& object)
     {
@@ -151,7 +152,6 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geom
 {
   if( result != geometry_collision::result::none )
   {
-    m_particles.Create(particle::type::impact, bullet.Position(), { 0.0f, 0.0f }, 1.0f);
     enemy.ApplyDamage(bullet.Damage());
     bullet.Destroy();
   }

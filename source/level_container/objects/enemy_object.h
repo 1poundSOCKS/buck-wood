@@ -20,10 +20,14 @@ public:
   auto Update(float interval, object_cell_position::move_direction moveDirection, level_cell_collection& cells) noexcept -> void;
   auto Update(float interval, float moveDirection, level_cell_collection& cells) noexcept -> void;
 
+  [[nodiscard]] auto RemainingDamageInterval() const noexcept -> float;
+
 protected:
 
+  constexpr static float m_startingDamageInterval { 0.2 };
   int m_maxHitpoints;
   int m_hitpoints;
   object_cell_position m_cellPosition;
+  float m_remainingDamageInterval;
 
 };
