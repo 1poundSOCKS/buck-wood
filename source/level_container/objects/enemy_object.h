@@ -20,7 +20,7 @@ public:
 
 protected:
 
-  constexpr static float m_startingDamageInterval { 0.2 };
+  constexpr static float m_startingDamageInterval { 0.1f };
   int m_maxHitpoints;
   int m_hitpoints;
   float m_remainingDamageInterval;
