@@ -112,11 +112,6 @@ auto play_state::LastPlayerState() const noexcept -> player_ship_state
   return m_lastPlayerState;
 }
 
-auto play_state::LevelCentrePoint() const noexcept -> POINT_2F
-{
-  return m_levelContainer->CentrePoint();
-}
-
 [[nodiscard]] auto play_state::PowerUpCount() const noexcept -> std::size_t
 {
   return std::accumulate(std::begin(m_levelContainer->Objects()), std::end(m_levelContainer->Objects()), static_cast<std::size_t>(0), [](std::size_t count, auto&& defaultObject)

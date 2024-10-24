@@ -10,21 +10,9 @@ level_container::level_container() : level_container(range_comparison_runner::ex
 }
 
 level_container::level_container(range_comparison_runner::execution ex, collision_type collisionType) : 
-  m_cells { std::make_shared<level_cell_collection>(cell_size { m_cellSize, m_cellSize }, RECT_I { 0, 0, 10, 10 }) },
-  m_objectMovement { std::make_shared<level_object_movement>(m_cells) },
   m_collisionRunner { ex, collisionType },
   m_boundary { 0.0f, 0.0f, 0.0f, 0.0f }
 {
-}
-
-auto level_container::UnoccupiedFloorCellCount() const noexcept -> size_t
-{
-  return m_cells->UnoccupiedFloorCellCount();
-}
-
-auto level_container::UnoccupiedFloorCell(size_t index) const noexcept -> cell_id
-{
-  return m_cells->UnnoccupiedFloorCell(index);
 }
 
 auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void

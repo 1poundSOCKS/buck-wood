@@ -31,17 +31,12 @@ public:
 
   auto CreateBoundary(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
 
-  [[nodiscard]] auto UnoccupiedFloorCellCount() const noexcept -> size_t;
-  [[nodiscard]] auto UnoccupiedFloorCell(size_t index) const noexcept -> cell_id;
-
   auto Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
 
   [[nodiscard]] auto Boundary() const -> RECT_F;
-
-  [[nodiscard]] auto CentrePoint() const noexcept -> POINT_2F;
 
   [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
   [[nodiscard]] auto Objects() noexcept -> default_object_collection&;
@@ -77,9 +72,6 @@ private:
   static constexpr auto m_cellWidth { static_cast<float>(m_cellSize) };
   static constexpr auto m_cellHeight { static_cast<float>(m_cellSize) };
 
-  std::shared_ptr<level_cell_collection> m_cells;
-  std::shared_ptr<level_object_movement> m_objectMovement;
-
   RECT_F m_boundary;
 
   default_object_collection m_objects;
@@ -114,11 +106,6 @@ auto level_container::CreateBoundary(int levelIndex, std::ranges::input_range au
 inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
 {
   return m_boundary;
-}
-
-inline auto level_container::CentrePoint() const noexcept -> POINT_2F
-{
-  return m_cells->CentrePoint();
 }
 
 inline auto level_container::Objects() const noexcept -> const default_object_collection &
