@@ -1,17 +1,16 @@
 #include "pch.h"
 #include "enemy_ship.h"
-#include "adjacent_floor_cells.h"
 
-auto enemy_ship::Update(float interval, POINT_2F target, level_cell_collection& cells) -> void
+auto enemy_ship::Update(float interval, POINT_2F target) -> void
 {
   switch( m_type )
   {
     case type::stalker:
-      UpdateStalker(interval, target, cells);
+      UpdateStalker(interval, target);
       break;
     
     case type::random:
-      UpdateRandom(interval, target, cells);
+      UpdateRandom(interval, target);
       break;
 
     case type::turret:
@@ -35,19 +34,18 @@ auto enemy_ship::Type() const noexcept -> type
   return m_reloaded;
 }
 
-auto enemy_ship::UpdateStalker(float interval, POINT_2F target, level_cell_collection &cells) -> void
+auto enemy_ship::UpdateStalker(float interval, POINT_2F target) -> void
 {
-  auto angleToTarget = direct2d::GetAngleBetweenPoints(m_position, target);
-  enemy_object::Update(interval, angleToTarget, cells);
+  enemy_object::Update(interval);
   m_position = m_path(m_position, m_speed, interval);
 }
 
-auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition, level_cell_collection& cells) -> void
+auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition) -> void
 {
   switch( m_status )
   {
     case status::moving:
-      m_status = UpdateWhenMoving(interval, cells);
+      m_status = UpdateWhenMoving(interval);
       break;
     case status::waiting:
       m_status = UpdateWhenWaiting(interval);
@@ -64,7 +62,7 @@ auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept 
   m_reloaded = m_reloadTimer.Update(interval);
 }
 
-[[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval, level_cell_collection& cells) noexcept -> status
+[[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval) noexcept -> status
 {
   enemy_object::Update(interval);
   m_position = m_path(m_position, m_speed, interval);

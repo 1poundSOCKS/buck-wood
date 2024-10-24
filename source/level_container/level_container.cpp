@@ -125,7 +125,7 @@ auto level_container::UpdateObject(player_ship &object, float interval, player_s
 
 auto level_container::UpdateObject(enemy_ship &object, float interval, player_ship_state playerState, bool levelComplete) -> void
 {
-  object.Update(interval, playerState.Position(), *m_cells);
+  object.Update(interval, playerState.Position());
 }
 
 auto level_container::VisitObject(player_ship &object, player_ship_state playerState, bool levelComplete) -> void
