@@ -5,6 +5,6 @@
 namespace player_controls
 {
 
-  auto Update(std::shared_ptr<player_ship_state> state, float interval) noexcept -> void;
+  auto Update(player_ship_state& state, float interval) noexcept -> void;
 
 };

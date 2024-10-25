@@ -22,11 +22,12 @@ public:
   [[nodiscard]] auto Destroyed() const noexcept -> bool;
   auto Destroy() noexcept -> void;
 
-  [[nodiscard]] auto State() const -> std::shared_ptr<player_ship_state>;
+  [[nodiscard]] auto State() const -> const player_ship_state&;
+  [[nodiscard]] auto State() -> player_ship_state&;
   [[nodiscard]] auto StateValue() const -> player_ship_state;
 
 private:
 
-  std::shared_ptr<player_ship_state> m_state;
+  player_ship_state m_state;
 
 };

@@ -24,6 +24,7 @@ namespace pixel_geometry_loader
   auto pixelDataToLineData(std::ranges::input_range auto&& pixelData, auto lineDataInserter) -> void;
   auto lineDataToOrderedPointData(std::ranges::input_range auto&& lineData, cell_size pixelSize, auto pointDataInserter) -> void;
   auto centrePointData(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
+  auto alignPointDataBelow(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
   auto imageDataToOrderedPointData(std::ranges::input_range auto&& pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
   auto pixelDataToOrderedPointData(std::ranges::input_range auto&& pixelData, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
 
@@ -134,7 +135,6 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
   });
 
   std::ranges::transform(normalizedPointDataGroups, pointDataInserter, [](auto&& pointDataGroup) { auto&& [prev, current, next] = pointDataGroup; return current; });
-  // std::ranges::copy(pointData, pointDataInserter);
 }
 
 auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
@@ -157,6 +157,11 @@ auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&poin
   });
 
   std::ranges::copy(shiftedPoints, pointDataInserter);
+}
+
+auto pixel_geometry_loader::alignPointDataBelow(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
+{
+  std::ranges::copy(pointData, pointDataInserter);
 }
 
 auto pixel_geometry_loader::imageDataToOrderedPointData(std::ranges::input_range auto &&pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction)

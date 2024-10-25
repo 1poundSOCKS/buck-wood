@@ -14,10 +14,13 @@ public:
 
   static [[nodiscard]] auto get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&;
 
 private:
+
+  enum class alignment { centred, below };
 
   level_geometries();
 
@@ -32,7 +35,7 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
-  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, alignment alignmentValue=alignment::centred) -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -48,6 +51,13 @@ private:
     std::string { "00000000000" },
     std::string { "00000000000" },
     std::string { "00000000000" }
+  };
+
+  inline static auto m_playerThrustPixelImage = std::array {
+    std::string { "00000" },
+    std::string { "00000" },
+    std::string { " 000 " },
+    std::string { " 000 " }
   };
 
   inline static auto m_enemyStalkerPixelImage = std::array {
@@ -104,6 +114,7 @@ private:
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
 
   winrt::com_ptr<ID2D1Geometry> m_player;
+  winrt::com_ptr<ID2D1Geometry> m_playerThrust;
   winrt::com_ptr<ID2D1Geometry> m_playerBullet;
   winrt::com_ptr<ID2D1Geometry> m_enemy1;
   winrt::com_ptr<ID2D1Geometry> m_enemy2;
@@ -125,6 +136,11 @@ inline [[nodiscard]] auto level_geometries::get(const default_object& defaultObj
   return m_instance->Get(object);
 }
 
+inline auto level_geometries::getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>
+{
+  return m_instance->m_playerThrust;
+}
+
 auto level_geometries::Get(auto &&object) -> winrt::com_ptr<ID2D1Geometry>
 {
   return m_rectangleGeometry;
@@ -140,7 +156,7 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
   return m_instance->m_hudTargetGeometries;
 }
 
-auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
+auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize, alignment alignmentValue) -> winrt::com_ptr<ID2D1Geometry>
 {
   std::vector<POINT_2I> pointData;
   std::vector<POINT_2F> pointDataAsFloat;
@@ -148,6 +164,16 @@ auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelDa
 
   pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
   std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
-  pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
+
+  switch( alignmentValue )
+  {
+    case alignment::centred:
+      pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
+      break;
+    case alignment::below:
+      pixel_geometry_loader::alignPointDataBelow(pointDataAsFloat, std::back_inserter(centredPointData));
+      break;
+  }
+
   return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
 }

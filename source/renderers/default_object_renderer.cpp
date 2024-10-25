@@ -49,6 +49,14 @@ auto default_object_renderer::Write(const enemy_ship& object, ID2D1Geometry* geo
 auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* geometry) const -> void
 {
   m_playerShipRenderer.Write(object, geometry);
+
+  if( object.State().ThrusterPower() > 0.0f )
+  {
+    auto playerThrust = level_geometries::getPlayerThrust();
+    auto transform = geometric_object_transform { object };
+    auto transformedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), playerThrust.get(), transform.Get());
+    m_defaultGeometryRenderer.Write(transformedThrustGeometry.get());
+  }
 }
 
 auto default_object_renderer::Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void

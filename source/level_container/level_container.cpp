@@ -97,9 +97,9 @@ auto level_container::DoCollisions() -> void
 
 auto level_container::UpdateObject(player_ship &object, float interval, player_ship_state playerState, bool levelComplete) -> void
 {
-  if( !object.State()->Celebrating() && levelComplete )
+  if( !object.State().Celebrating() && levelComplete )
   {
-    object.State()->Celebrate();
+    object.State().Celebrate();
   }
   else
   {
@@ -118,9 +118,9 @@ auto level_container::UpdateObject(enemy_ship &object, float interval, player_sh
 
 auto level_container::VisitObject(player_ship &object, player_ship_state playerState, bool levelComplete) -> void
 {
-  if( object.State()->CanShoot() && object.State()->ShootAngle() )
+  if( object.State().CanShoot() && object.State().ShootAngle() )
   {
-    auto shootAngle = *(object.State()->ShootAngle());
+    auto shootAngle = *(object.State().ShootAngle());
     m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, shootAngle, direct2d::CalculateVelocity(2500, shootAngle));
     play_events::set(play_events::event_type::shot, true);
   }
@@ -174,7 +174,7 @@ auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry
 {
   if( result != geometry_collision::result::none )
   {
-    if( !ship.State()->Celebrating() )
+    if( !ship.State().Celebrating() )
     {
       ship.Destroy();
     }
@@ -187,7 +187,7 @@ auto level_container::OnCollision(player_ship& player, enemy_bullet& enemyBullet
 {
   if( result != geometry_collision::result::none )
   {
-    if( !player.State()->Celebrating() )
+    if( !player.State().Celebrating() )
     {
       player.Destroy();
     }
