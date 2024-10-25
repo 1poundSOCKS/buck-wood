@@ -19,18 +19,21 @@ auto level_geometries::destroy() -> void
 
 level_geometries::level_geometries()
 {
+  LoadAndCentreGeometryData(m_playerThrustPixelImage, { 16, 16 }, std::back_inserter(m_playerThrustData));
+  auto shiftedThrustData = std::ranges::views::transform(m_playerThrustData, [](auto&& pointData) -> POINT_2F { return { pointData.x, pointData.y + 100.f }; });
+
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_mineGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED);
   m_targetGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 8 }, D2D1_FIGURE_END_CLOSED);
-  m_player = LoadAndCentrePixelGeometry(m_playerPixelImage, { 16, 16 });
-  m_playerThrust = LoadAndCentrePixelGeometry(m_playerThrustPixelImage, { 16, 16 });
-  m_playerBullet = LoadAndCentrePixelGeometry(m_playerBulletPixelImage, { 40, 40 });
-  m_enemy1 = LoadAndCentrePixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
-  m_enemy2 = LoadAndCentrePixelGeometry(m_enemyStalkerPixelImage, { 16, 16 });
-  m_enemy3 = LoadAndCentrePixelGeometry(m_enemyTurretPixelImage, { 16, 16 });
-  m_enemyBullet = LoadAndCentrePixelGeometry(m_enemyBulletPixelImage, { 70, 70 });
-  m_portal = LoadAndCentrePixelGeometry(m_portalPixelImage, { 40, 40 });
-  m_powerUp = LoadAndCentrePixelGeometry(m_powerupPixelImage, { 20, 20 });
+  m_player = LoadAndCentreGeometry(m_playerPixelImage, { 16, 16 });
+  m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedThrustData, D2D1_FIGURE_END_CLOSED);
+  m_playerBullet = LoadAndCentreGeometry(m_playerBulletPixelImage, { 40, 40 });
+  m_enemy1 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
+  m_enemy2 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
+  m_enemy3 = LoadAndCentreGeometry(m_enemyTurretPixelImage, { 16, 16 });
+  m_enemyBullet = LoadAndCentreGeometry(m_enemyBulletPixelImage, { 70, 70 });
+  m_portal = LoadAndCentreGeometry(m_portalPixelImage, { 40, 40 });
+  m_powerUp = LoadAndCentreGeometry(m_powerupPixelImage, { 20, 20 });
 
   int levelIndex = 0;
   std::vector<POINT_2F> boundaryData;
