@@ -35,7 +35,8 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
-  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, alignment alignmentValue=alignment::centred) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto LoadAndCentrePixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, float shiftX, float shiftY) -> winrt::com_ptr<ID2D1Geometry>;
 
 private:
 
@@ -156,24 +157,25 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
   return m_instance->m_hudTargetGeometries;
 }
 
-auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelData, cell_size pixelSize, alignment alignmentValue) -> winrt::com_ptr<ID2D1Geometry>
+inline auto level_geometries::LoadAndCentrePixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
   std::vector<POINT_2I> pointData;
-  std::vector<POINT_2F> pointDataAsFloat;
-  std::vector<POINT_2F> centredPointData;
 
   pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
-  std::ranges::transform(pointData, std::back_inserter(pointDataAsFloat), [](auto&& pointData) { return ToFloat(pointData); });
+  auto pointDataAsFloat = std::ranges::views::transform(pointData, [](auto&& pointData) { return ToFloat(pointData); });
+  auto geometryBounds = pixel_geometry_loader::getGeometryBounds(pointDataAsFloat);
+  auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
+  auto shiftUp = ( geometryBounds.bottom + geometryBounds.top ) / 2.0f;
+  auto shiftedPointData = std::ranges::views::transform(pointData, [shiftLeft,shiftUp](auto&& pointData) -> POINT_2F { return { pointData.x - shiftLeft, pointData.y - shiftUp }; });
+  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedPointData, D2D1_FIGURE_END_CLOSED);
+}
 
-  switch( alignmentValue )
-  {
-    case alignment::centred:
-      pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
-      break;
-    case alignment::below:
-      pixel_geometry_loader::alignPointDataBelow(pointDataAsFloat, 100.0f, std::back_inserter(centredPointData));
-      break;
-  }
+auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, float shiftX, float shiftY) -> winrt::com_ptr<ID2D1Geometry>
+{
+  std::vector<POINT_2I> pointData;
 
-  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), centredPointData, D2D1_FIGURE_END_CLOSED);
+  pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
+  auto pointDataAsFloat = std::ranges::views::transform(pointData, [](auto&& pointData) { return ToFloat(pointData); });
+  auto shiftedPointData = std::ranges::views::transform(pointDataAsFloat, [shiftX, shiftY](auto&& pointData) -> POINT_2F { return { pointData.x + shiftX, pointData.y + shiftY }; });
+  return direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedPointData, D2D1_FIGURE_END_CLOSED);
 }
