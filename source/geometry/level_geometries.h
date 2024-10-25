@@ -171,7 +171,7 @@ auto level_geometries::LoadPixelGeometry(std::ranges::input_range auto&& pixelDa
       pixel_geometry_loader::centrePointData(pointDataAsFloat, std::back_inserter(centredPointData));
       break;
     case alignment::below:
-      pixel_geometry_loader::alignPointDataBelow(pointDataAsFloat, std::back_inserter(centredPointData));
+      pixel_geometry_loader::alignPointDataBelow(pointDataAsFloat, 100.0f, std::back_inserter(centredPointData));
       break;
   }
 

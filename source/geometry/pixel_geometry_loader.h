@@ -24,9 +24,10 @@ namespace pixel_geometry_loader
   auto pixelDataToLineData(std::ranges::input_range auto&& pixelData, auto lineDataInserter) -> void;
   auto lineDataToOrderedPointData(std::ranges::input_range auto&& lineData, cell_size pixelSize, auto pointDataInserter) -> void;
   auto centrePointData(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
-  auto alignPointDataBelow(std::ranges::input_range auto&& pointData, auto pointDataInserter) -> void;
+  auto alignPointDataBelow(std::ranges::input_range auto&& pointData, float shiftDown, auto pointDataInserter) -> void;
   auto imageDataToOrderedPointData(std::ranges::input_range auto&& pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
   auto pixelDataToOrderedPointData(std::ranges::input_range auto&& pixelData, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction);
+  auto getGeometryBounds(std::ranges::input_range auto &&pointData) -> RECT_F;
 
 };
 
@@ -139,14 +140,7 @@ auto pixel_geometry_loader::lineDataToOrderedPointData(std::ranges::input_range 
 
 auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
 {
-  auto geometryBounds = std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0.0f, 0.0f, 0.0f, 0.0f }, [](RECT_F bounds, POINT_2F point)
-  {
-    bounds.left = std::min(bounds.left, point.x);
-    bounds.top = std::min(bounds.top, point.y);
-    bounds.right = std::max(bounds.right, point.x);
-    bounds.bottom = std::max(bounds.bottom, point.y);
-    return bounds;
-  });
+  auto geometryBounds = getGeometryBounds(pointData);
 
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
   auto shiftUp = ( geometryBounds.bottom + geometryBounds.top ) / 2.0f;
@@ -159,9 +153,16 @@ auto pixel_geometry_loader::centrePointData(std::ranges::input_range auto &&poin
   std::ranges::copy(shiftedPoints, pointDataInserter);
 }
 
-auto pixel_geometry_loader::alignPointDataBelow(std::ranges::input_range auto &&pointData, auto pointDataInserter) -> void
+auto pixel_geometry_loader::alignPointDataBelow(std::ranges::input_range auto &&pointData, float shiftDown, auto pointDataInserter) -> void
 {
-  std::ranges::copy(pointData, pointDataInserter);
+  auto geometryBounds = getGeometryBounds(pointData);
+
+  auto shiftedPoints = std::ranges::views::transform(pointData, [shiftDown](POINT_2F point) -> POINT_2F
+  {
+    return { point.x, point.y + shiftDown };
+  });
+
+  std::ranges::copy(shiftedPoints, pointDataInserter);
 }
 
 auto pixel_geometry_loader::imageDataToOrderedPointData(std::ranges::input_range auto &&pixelRows, cell_size pixelSize, auto pointDataInserter, auto&& pixelCheckFunction)
@@ -189,4 +190,16 @@ auto pixel_geometry_loader::pixelDataToOrderedPointData(std::ranges::input_range
 
   std::vector<POINT_2F> pointData;
   pixel_geometry_loader::lineDataToOrderedPointData(lineData, pixelSize, pointDataInserter);
+}
+
+auto pixel_geometry_loader::getGeometryBounds(std::ranges::input_range auto &&pointData) -> RECT_F
+{
+  return std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0.0f, 0.0f, 0.0f, 0.0f }, [](RECT_F bounds, POINT_2F point)
+  {
+    bounds.left = std::min(bounds.left, point.x);
+    bounds.top = std::min(bounds.top, point.y);
+    bounds.right = std::max(bounds.right, point.x);
+    bounds.bottom = std::max(bounds.bottom, point.y);
+    return bounds;
+  });
 }
