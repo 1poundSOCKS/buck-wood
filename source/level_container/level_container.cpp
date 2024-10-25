@@ -103,8 +103,8 @@ auto level_container::UpdateObject(player_ship &object, float interval, player_s
   }
   else
   {
-    constexpr VELOCITY_2F forceOfGravity = { 0.0f, 400.0f };
-    constexpr float airResistance = { 0.5f };
+    constexpr VELOCITY_2F forceOfGravity = { 0.0f, 0.0f };
+    constexpr float airResistance = { 1.0f };
     
     player_controls::Update(object.State(), interval);
     object.Update(forceOfGravity, airResistance, interval);
