@@ -12,7 +12,7 @@ auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float 
 
   RotateBy(m_rotationSpeed, interval);
 
-  VELOCITY_2F thrustVelocityChange = direct2d::CalculateVelocity(m_thrusterPower, m_angle);
+  VELOCITY_2F thrustVelocityChange = direct2d::CalculateVelocity(ThrusterPower(), m_angle);
   VELOCITY_2F velocityChange = { thrustVelocityChange.x + environmentalForces.x, thrustVelocityChange.y + environmentalForces.y };
 
   m_velocity.Update(velocityChange, interval);
@@ -25,7 +25,7 @@ auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float 
 
 auto player_ship_state::UpdateWhenCelebrating(float interval) -> void
 {
-  constexpr float rotationSpeed = 480.0f;
+  constexpr float rotationSpeed = 450.0f;
   auto rotationAmount = rotationSpeed * interval;
   m_angle = direct2d::RotateAngle(m_angle, rotationAmount);
 }

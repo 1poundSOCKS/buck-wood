@@ -26,6 +26,7 @@ public:
   [[nodiscard]] auto ResetShootAngle() noexcept -> void;
 
   auto SetThrusterPower(float value) -> void;
+  [[nodiscard]] auto BaseThrusterPower() const noexcept -> float;
   [[nodiscard]] auto ThrusterPower() const noexcept -> float;
   
   auto SetRotationSpeed(float value) -> void;
@@ -101,13 +102,18 @@ inline auto player_ship_state::ResetShootAngle() noexcept -> void
 
 inline auto player_ship_state::SetThrusterPower(float value) -> void
 {
-  constexpr float thrustPowerMultiplier = 1600.0f;
-  m_thrusterPower = value * thrustPowerMultiplier;
+  m_thrusterPower = value;
+}
+
+inline auto player_ship_state::BaseThrusterPower() const noexcept -> float
+{
+  return m_thrusterPower;
 }
 
 inline auto player_ship_state::ThrusterPower() const noexcept -> float
 {
-  return m_thrusterPower;
+  constexpr float thrustPowerMultiplier = 1600.0f;
+  return m_thrusterPower * thrustPowerMultiplier;
 }
 
 inline auto player_ship_state::SetRotationSpeed(float value) -> void

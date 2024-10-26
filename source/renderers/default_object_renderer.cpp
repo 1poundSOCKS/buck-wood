@@ -50,15 +50,13 @@ auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* ge
 {
   m_playerShipRenderer.Write(object, geometry);
 
-  if( object.State().ThrusterPower() > 0.0f )
-  {
-    auto playerThrust = level_geometries::getPlayerThrust();
-    auto movePlayerThrustDown = D2D1::Matrix3x2F::Translation(0.0f, 80.0f);
-    auto shiftedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), playerThrust.get(), movePlayerThrustDown);
-    auto transform = geometric_object_transform { object };
-    auto transformedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), shiftedThrustGeometry.get(), transform.Get());
-    m_playerThrustRenderer.Write(transformedThrustGeometry.get());
-  }
+  auto playerThrust = level_geometries::getPlayerThrust();
+  auto scalePlayerThrust = D2D1::Matrix3x2F::Scale(1.0f, 0.2f + object.State().BaseThrusterPower() * 1.5f);
+  auto movePlayerThrustDown = D2D1::Matrix3x2F::Translation(0.0f, 80.0f);
+  auto shiftedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), playerThrust.get(), scalePlayerThrust * movePlayerThrustDown);
+  auto transform = geometric_object_transform { object };
+  auto transformedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), shiftedThrustGeometry.get(), transform.Get());
+  m_playerThrustRenderer.Write(transformedThrustGeometry.get());
 }
 
 auto default_object_renderer::Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void
