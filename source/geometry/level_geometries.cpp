@@ -20,11 +20,12 @@ auto level_geometries::destroy() -> void
 level_geometries::level_geometries()
 {
   LoadAndCentreGeometryData(m_playerThrustPixelImage, { 16, 16 }, std::back_inserter(m_playerThrustData));
-  auto shiftedThrustData = std::ranges::views::transform(m_playerThrustData, [](auto&& pointData) -> POINT_2F { return { pointData.x, pointData.y + 120.f }; });
+  auto playerThrustBoundary = pixel_geometry_loader::getGeometryBounds(m_playerThrustData);
+  for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
 
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_player = LoadAndCentreGeometry(m_playerPixelImage, { 16, 16 });
-  m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedThrustData, D2D1_FIGURE_END_CLOSED);
+  m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
   m_playerBullet = LoadAndCentreGeometry(m_playerBulletPixelImage, { 40, 40 });
   m_enemy1 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy2 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
