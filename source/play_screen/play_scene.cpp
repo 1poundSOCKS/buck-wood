@@ -91,7 +91,7 @@ auto play_scene::PlaySoundEffects() const -> void
 
   auto playerState = m_playState->LevelContainer().PlayerState();
 
-  if( playerState && !playerState->Destroyed() &&  playerState->ThrusterPower() < 0.0f )
+  if( playerState && !playerState->Destroyed() &&  playerState->ThrusterPower() > 0.0f )
   {
     audio_events::StartPlayerThruster();
   }

@@ -7,7 +7,7 @@ auto player_controls::Update(player_ship_state& state, float interval) noexcept 
   state.SetRotationSpeed(leftThumbstickPosition ? leftThumbstickPosition->x : 0.0f);
 
   auto rightTrigger = gamepad_reader::right_trigger();
-  state.SetThrusterPower(-rightTrigger);
+  state.SetThrusterPower(rightTrigger);
 
   gamepad_reader::button_down(XINPUT_GAMEPAD_A) ? state.SetShootAngle(state.Angle()) : state.ResetShootAngle();  
 }
