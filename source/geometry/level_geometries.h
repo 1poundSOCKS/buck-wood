@@ -113,8 +113,6 @@ private:
   using point_data_collection = std::vector<POINT_2F>;
 
   winrt::com_ptr<ID2D1Geometry> m_rectangleGeometry;
-  winrt::com_ptr<ID2D1Geometry> m_mineGeometry;
-  winrt::com_ptr<ID2D1Geometry> m_targetGeometry;
   std::vector<winrt::com_ptr<ID2D1Geometry>> m_hudTargetGeometries;
 
   winrt::com_ptr<ID2D1Geometry> m_player;

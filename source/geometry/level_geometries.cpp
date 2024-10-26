@@ -20,11 +20,9 @@ auto level_geometries::destroy() -> void
 level_geometries::level_geometries()
 {
   LoadAndCentreGeometryData(m_playerThrustPixelImage, { 16, 16 }, std::back_inserter(m_playerThrustData));
-  auto shiftedThrustData = std::ranges::views::transform(m_playerThrustData, [](auto&& pointData) -> POINT_2F { return { pointData.x, pointData.y + 100.f }; });
+  auto shiftedThrustData = std::ranges::views::transform(m_playerThrustData, [](auto&& pointData) -> POINT_2F { return { pointData.x, pointData.y + 120.f }; });
 
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
-  m_mineGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 50, 50, 3 }, D2D1_FIGURE_END_CLOSED);
-  m_targetGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shape_generator { 0, 0, 100, 100, 8 }, D2D1_FIGURE_END_CLOSED);
   m_player = LoadAndCentreGeometry(m_playerPixelImage, { 16, 16 });
   m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), shiftedThrustData, D2D1_FIGURE_END_CLOSED);
   m_playerBullet = LoadAndCentreGeometry(m_playerBulletPixelImage, { 40, 40 });
