@@ -38,6 +38,7 @@ private:
   flashing_geometry_renderer m_enemyType1_renderer { color_scale { screen_render_brush_blue.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   flashing_geometry_renderer m_enemyType2_renderer { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   flashing_geometry_renderer m_enemyType3_renderer { color_scale { screen_render_brush_cyan.Get(), screen_render_brush_black.Get(), 20 }, 10 };
+  flashing_geometry_renderer m_enemyGuard_renderer { color_scale { screen_render_brush_white.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   mine_renderer m_mineRenderer;
   portal_renderer m_portalRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };

@@ -67,8 +67,10 @@ auto level_geometries::Get(const enemy_ship &object) -> winrt::com_ptr<ID2D1Geom
       return m_enemy2;
     case enemy_ship::type::turret:
       return m_enemy3;
+    case enemy_ship::type::guard:
+      return m_enemy1;
     default:
-      return m_rectangleGeometry;
+      return m_enemy1;
   }
 }
 

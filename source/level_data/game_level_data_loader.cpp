@@ -106,6 +106,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
 
         case level_data::object_type::enemy_guard:
           enemyController = enemy_ship::controller { std::in_place_type<enemy_area> };
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::guard, 0.0f, enemyController);
           break;
       }
     }

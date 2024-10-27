@@ -37,11 +37,17 @@ auto default_object_renderer::Write(const enemy_ship& object, ID2D1Geometry* geo
     case enemy_ship::type::stalker:
       m_enemyType1_renderer.Write(object, geometry);
       break;
+
     case enemy_ship::type::random:
       m_enemyType2_renderer.Write(object, geometry);
       break;
+
     case enemy_ship::type::turret:
       m_enemyType3_renderer.Write(object, geometry);
+      break;
+
+    case enemy_ship::type::guard:
+      m_enemyGuard_renderer.Write(object, geometry);
       break;
   }
 }

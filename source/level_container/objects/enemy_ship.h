@@ -11,7 +11,7 @@ class enemy_ship : public enemy_object
 
 public:
 
-  enum class type { stalker, random, turret };
+  enum class type { stalker, random, turret, guard };
   using controller = std::variant<enemy_fixed, enemy_path, enemy_area>;
 
   enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, controller enemyController);
