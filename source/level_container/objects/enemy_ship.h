@@ -31,6 +31,9 @@ private:
 
 private:
 
+  inline static constexpr float m_reloadTime { 4.0f };
+  inline static std::uniform_real_distribution<float> m_reloadTimerInitializer { 0.0f, 1.0f };
+
   type m_type;
   float m_speed;
   status m_status;
@@ -47,7 +50,7 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
   m_speed { speed },
   m_status { status::moving }, 
   m_waitTimer { 0.5f }, 
-  m_reloadTimer { 4.0f },
+  m_reloadTimer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) },
   m_reloaded { false },
   m_path { points }
 {
@@ -65,4 +68,6 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
       m_maxHitpoints = m_hitpoints = 10;
       break;
   }
+
+    // auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
 }

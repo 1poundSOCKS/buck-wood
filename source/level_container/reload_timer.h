@@ -6,6 +6,7 @@ class reload_timer
 public:
 
   reload_timer(float reloadTime);
+  reload_timer(float reloadTime, float currentTime);
   auto Update(float interval) -> bool;
   auto Reset() -> void;
 

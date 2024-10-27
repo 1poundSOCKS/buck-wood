@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "reload_timer.h"
 
-reload_timer::reload_timer(float reloadTime) : m_reloadTime { reloadTime }, m_currentTime { 0.0f }
+reload_timer::reload_timer(float reloadTime) : m_reloadTime { reloadTime }, m_currentTime { 0 }
+{
+}
+
+reload_timer::reload_timer(float reloadTime, float currentTime) : m_reloadTime { reloadTime }, m_currentTime { currentTime }
 {
 }
 

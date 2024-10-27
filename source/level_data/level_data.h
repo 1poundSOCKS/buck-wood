@@ -13,17 +13,17 @@ constexpr static std::array levelData_0 {
     std::string_view { "            X             O      " },
     std::string_view { "    O                           X" },
     std::string_view { "X                              XX" },
-    std::string_view { "XXXXX                     XXXXXXX" },
+    std::string_view { "XXXXX         4           XXXXXXX" },
     std::string_view { "XXXXXXXX                XXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX      1    XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX    1      XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXX        1  XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXXX          XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX     O     XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX          XXXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXXXX  1    XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX       XXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXXX         XXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
@@ -111,7 +111,7 @@ constexpr static std::array levelData_0 {
   constexpr int levelCount = 3;
 
   enum class cell_type { empty, boundary };
-  enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret };
+  enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret, enemy_guard };
 
   using raw_data = pixel_geometry_loader::pixel_data;
 
