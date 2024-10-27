@@ -26,9 +26,6 @@ private:
 
   enum class status { moving, waiting };
 
-  auto UpdateStalker(float interval, POINT_2F target) -> void;
-  auto UpdateRandom(float interval, POINT_2F target) -> void;
-  auto UpdateTurret(float interval, POINT_2F targetPosition) noexcept -> void;
   [[nodiscard]] auto UpdateWhenMoving(float interval) noexcept -> status;
   [[nodiscard]] auto UpdateWhenWaiting(float interval) noexcept -> status;
 
@@ -41,7 +38,7 @@ private:
   float m_speed;
   status m_status;
   reload_timer m_waitTimer;
-  reload_timer m_reloadTimer;
+  std::optional<reload_timer> m_reloadTimer;
   bool m_reloaded { false };
   controller m_controller;
 
@@ -52,8 +49,7 @@ inline enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, ty
   m_type { enemyType },
   m_speed { speed },
   m_status { status::moving }, 
-  m_waitTimer { 0.5f }, 
-  m_reloadTimer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) },
+  m_waitTimer { 0.5f },
   m_reloaded { false },
   m_controller { enemyController }
 {
@@ -61,6 +57,7 @@ inline enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, ty
   {
     case type::stalker:
       m_maxHitpoints = m_hitpoints = 5;
+      m_reloadTimer = reload_timer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) };
       break;
 
     case type::random:
@@ -69,6 +66,7 @@ inline enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, ty
 
     case type::turret:
       m_maxHitpoints = m_hitpoints = 10;
+      m_reloadTimer = reload_timer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) };
       break;
   }
 }
