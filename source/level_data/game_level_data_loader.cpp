@@ -101,7 +101,6 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
 
         case level_data::object_type::enemy_turret:
           enemyController = enemy_ship::controller { std::in_place_type<enemy_fixed> };
-          GetEnemyMovementPath(movement_path_type::none, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
           objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, 0.0f, enemyController);
           break;
 
