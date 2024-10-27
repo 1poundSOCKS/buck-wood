@@ -68,6 +68,4 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
       m_maxHitpoints = m_hitpoints = 10;
       break;
   }
-
-    // auto angle = static_cast<float>(m_angleDist(pseudo_random_generator::get()));
 }
