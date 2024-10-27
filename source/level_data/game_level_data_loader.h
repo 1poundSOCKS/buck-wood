@@ -32,6 +32,7 @@ private:
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
+  static auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
 
 private:
 
@@ -133,4 +134,13 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, c
     default:
       break;
   }
+}
+
+inline auto game_level_data_loader::GetEnemyMovementArea(cell_id cellId, const std::set<cell_id> &emptyCellLookup, auto &&pointInserter) noexcept -> void
+{
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId.Get(cell_id::relative_position::above)));
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId.Get(cell_id::relative_position::right)));
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId.Get(cell_id::relative_position::below)));
+  pointInserter = ToFloat(m_cellSize.CellPosition(cellId.Get(cell_id::relative_position::left)));
 }

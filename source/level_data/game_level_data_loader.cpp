@@ -105,8 +105,9 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
           break;
 
         case level_data::object_type::enemy_guard:
-          enemyController = enemy_ship::controller { std::in_place_type<enemy_area> };
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::guard, 0.0f, enemyController);
+          GetEnemyMovementArea(cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
+          enemyController = enemy_ship::controller { std::in_place_type<enemy_area>, movementPathPoints };
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::guard, 100.0f, enemyController);
           break;
       }
     }

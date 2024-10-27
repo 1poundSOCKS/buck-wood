@@ -7,9 +7,12 @@ class enemy_path
 
 public:
 
-  enemy_path(std::ranges::input_range auto&& points);
+  enemy_path(POINT_2F position, bool loop);
+  enemy_path(std::ranges::input_range auto&& points, bool loop=true);
 
   [[nodiscard]] auto operator()(POINT_2F position, float speed, float interval) -> POINT_2F;
+
+  auto AddPoint(POINT_2F point) -> void;
 
 private:
 
@@ -18,10 +21,15 @@ private:
   using container_type = std::vector<POINT_2F>;
   container_type m_points;
   container_type::size_type m_destination;
+  bool m_loop;
 
 };
 
-enemy_path::enemy_path(std::ranges::input_range auto&& points) : m_destination { 0 }
+inline enemy_path::enemy_path(POINT_2F position, bool loop) : m_points { position }, m_loop { loop }
+{
+}
+
+enemy_path::enemy_path(std::ranges::input_range auto &&points, bool loop) : m_destination{ 0 }, m_loop{ loop }
 {
   std::ranges::copy(points, std::back_inserter(m_points));
 }
@@ -29,6 +37,11 @@ enemy_path::enemy_path(std::ranges::input_range auto&& points) : m_destination {
 inline auto enemy_path::operator()(POINT_2F position, float speed, float interval) -> POINT_2F
 {
   return m_points.size() > 0 && interval > 0.0f ? Move(position, speed * interval, interval) : position;
+}
+
+inline auto enemy_path::AddPoint(POINT_2F point) -> void
+{
+  m_points.push_back(point);
 }
 
 inline auto enemy_path::Move(POINT_2F position, float distance, float interval) -> POINT_2F
