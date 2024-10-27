@@ -37,7 +37,7 @@ auto enemy_ship::Type() const noexcept -> type
 auto enemy_ship::UpdateStalker(float interval, POINT_2F target) -> void
 {
   enemy_object::Update(interval);
-  m_position = m_path(m_position, m_speed, interval);
+  m_position = std::visit([this, interval](auto&& controller) { return controller(m_position, m_speed, interval); }, m_controller);
 }
 
 auto enemy_ship::UpdateRandom(float interval, POINT_2F targetPosition) -> void
@@ -60,12 +60,13 @@ auto enemy_ship::UpdateTurret(float interval, POINT_2F targetPosition) noexcept 
   enemy_object::Update(interval);
   m_angle = DirectionTo(targetPosition);
   m_reloaded = m_reloadTimer.Update(interval);
+  m_position = std::visit([this, interval](auto&& controller) { return controller(m_position, m_speed, interval); }, m_controller);
 }
 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval) noexcept -> status
 {
   enemy_object::Update(interval);
-  m_position = m_path(m_position, m_speed, interval);
+  m_position = std::visit([this, interval](auto&& controller) { return controller(m_position, m_speed, interval); }, m_controller);
   return status::moving;
 }
 

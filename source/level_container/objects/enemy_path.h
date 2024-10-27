@@ -8,6 +8,7 @@ class enemy_path
 public:
 
   enemy_path(std::ranges::input_range auto&& points);
+  enemy_path(const enemy_path& enemyPath);
 
   [[nodiscard]] auto operator()(POINT_2F position, float speed, float interval) -> POINT_2F;
 
@@ -25,6 +26,10 @@ enemy_path::enemy_path(std::ranges::input_range auto&& points)
 {
   std::ranges::copy(points, std::back_inserter(m_points));
   m_destination = std::begin(m_points);
+}
+
+inline enemy_path::enemy_path(const enemy_path & enemyPath) : m_points { enemyPath.m_points }, m_destination { std::begin(m_points) }
+{
 }
 
 inline auto enemy_path::operator()(POINT_2F position, float speed, float interval) -> POINT_2F

@@ -230,6 +230,8 @@ inline constexpr auto level_data::ConvertRawDataToObjectData(raw_data rawDataIte
       return { rawDataItem.column, rawDataItem.row, object_type::enemy_random };
     case '3':
       return { rawDataItem.column, rawDataItem.row, object_type::enemy_turret };
+    case '4':
+      return { rawDataItem.column, rawDataItem.row, object_type::enemy_guard };
     default:
       return { rawDataItem.column, rawDataItem.row, object_type::none };
   }

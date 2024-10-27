@@ -74,6 +74,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       auto angle = 0.0f;
 
       auto&& objects = levelContainer.Objects();
+      enemy_ship::controller enemyController;
       std::vector<POINT_2F> movementPathPoints;
 
       switch( object.type )
@@ -88,17 +89,24 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
 
         case level_data::object_type::enemy_stalker:
           GetEnemyMovementPath(movement_path_type::horizontal, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, 400.0f, movementPathPoints);
+          enemyController = enemy_ship::controller { std::in_place_type<enemy_path>, movementPathPoints };
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::stalker, 400.0f, enemyController);
           break;
 
         case level_data::object_type::enemy_random:
           GetEnemyMovementPath(movement_path_type::vertical, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, 200.0f, movementPathPoints);
+          enemyController = enemy_ship::controller { std::in_place_type<enemy_path>, movementPathPoints };
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::random, 200.0f, enemyController);
           break;
 
         case level_data::object_type::enemy_turret:
+          enemyController = enemy_ship::controller { std::in_place_type<enemy_fixed> };
           GetEnemyMovementPath(movement_path_type::none, cellId, emptyCellLookup, std::back_inserter(movementPathPoints));
-          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, 0.0f, movementPathPoints);
+          objects.Add(std::in_place_type<enemy_ship>, position, scale, angle, enemy_ship::type::turret, 0.0f, enemyController);
+          break;
+
+        case level_data::object_type::enemy_guard:
+          enemyController = enemy_ship::controller { std::in_place_type<enemy_area> };
           break;
       }
     }

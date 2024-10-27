@@ -2,7 +2,9 @@
 
 #include "reload_timer.h"
 #include "enemy_object.h"
+#include "enemy_fixed.h"
 #include "enemy_path.h"
+#include "enemy_area.h"
 
 class enemy_ship : public enemy_object
 {
@@ -10,8 +12,9 @@ class enemy_ship : public enemy_object
 public:
 
   enum class type { stalker, random, turret };
+  using controller = std::variant<enemy_fixed, enemy_path, enemy_area>;
 
-  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, std::ranges::input_range auto&& points);
+  enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, controller enemyController);
 
   auto Update(float interval, POINT_2F target) -> void;
 
@@ -40,11 +43,11 @@ private:
   reload_timer m_waitTimer;
   reload_timer m_reloadTimer;
   bool m_reloaded { false };
-  enemy_path m_path;
+  controller m_controller;
 
 };
 
-enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, std::ranges::input_range auto&& points) : 
+inline enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, controller enemyController) : 
   enemy_object{position, scale, angle, 1}, 
   m_type { enemyType },
   m_speed { speed },
@@ -52,7 +55,7 @@ enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enem
   m_waitTimer { 0.5f }, 
   m_reloadTimer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) },
   m_reloaded { false },
-  m_path { points }
+  m_controller { enemyController }
 {
   switch( enemyType )
   {
