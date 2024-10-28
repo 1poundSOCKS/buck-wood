@@ -14,7 +14,7 @@ public:
 
 private:
 
-  [[nodiscard]] auto Move(POINT_2F position, float distance, float interval) -> std::pair<POINT_2F,float>;
+  [[nodiscard]] auto Move(POINT_2F position, float distance, float interval, auto&& getDestination) -> std::pair<POINT_2F,float>;
 
   using points_collection = std::vector<POINT_2F>;
   points_collection m_points;
@@ -37,7 +37,11 @@ inline auto enemy_area::operator()(POINT_2F position, float speed, float interva
 
   while( remainingInterval > 0.0f )
   {
-    auto&& [endOfMovePosition, endOfMoveInterval] = Move(position, speed * remainingInterval, interval);
+    auto&& [endOfMovePosition, endOfMoveInterval] = Move(position, speed * remainingInterval, interval, [this]()
+    {
+      return m_points[m_pointIndex(pseudo_random_generator::get())];
+    });
+
     newPosition = endOfMovePosition;
     remainingInterval = endOfMoveInterval;
   }
@@ -45,7 +49,7 @@ inline auto enemy_area::operator()(POINT_2F position, float speed, float interva
   return newPosition;
 }
 
-inline auto enemy_area::Move(POINT_2F position, float distance, float interval) -> std::pair<POINT_2F, float>
+inline auto enemy_area::Move(POINT_2F position, float distance, float interval, auto&& getDestination) -> std::pair<POINT_2F, float>
 {
   auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, m_destination);
 
@@ -53,7 +57,7 @@ inline auto enemy_area::Move(POINT_2F position, float distance, float interval) 
   {
     auto distanceLeft = distance - distanceToDest;
     auto intervalLeft = interval * distanceLeft / distance;
-    return Move(std::exchange(m_destination, m_points[m_pointIndex(pseudo_random_generator::get())]), distanceLeft, intervalLeft);
+    return Move(std::exchange(m_destination, getDestination()), distanceLeft, intervalLeft, getDestination);
   }
   else
   {
