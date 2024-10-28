@@ -15,7 +15,7 @@ public:
 private:
 
   [[nodiscard]] auto Move(POINT_2F position, float distance, float interval, auto&& getNextDestination) -> POINT_2F;
-  static [[nodiscard]] auto Move(POINT_2F position, POINT_2F destination, float distance, float interval) -> std::pair<POINT_2F,float>;
+  static [[nodiscard]] auto Move(POINT_2F position, POINT_2F destination, float distance) -> std::pair<POINT_2F,float>;
 
   using points_collection = std::vector<POINT_2F>;
   points_collection m_points;
@@ -47,7 +47,7 @@ inline auto enemy_area::Move(POINT_2F position, float speed, float interval, aut
 
   while( distance > 0.0f )
   {
-    auto&& [movePosition, remainingDistance] = Move(position, *m_destination, distance, interval);
+    auto&& [movePosition, remainingDistance] = Move(position, *m_destination, distance);
     m_destination = IsEqual(movePosition, position) ? getNextDestination(position) : m_destination;
     position = movePosition;
     distance = remainingDistance;
@@ -56,7 +56,7 @@ inline auto enemy_area::Move(POINT_2F position, float speed, float interval, aut
   return position;
 }
 
-inline auto enemy_area::Move(POINT_2F position, POINT_2F destination, float distance, float interval) -> std::pair<POINT_2F, float>
+inline auto enemy_area::Move(POINT_2F position, POINT_2F destination, float distance) -> std::pair<POINT_2F, float>
 {
   auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, destination);
 
