@@ -34,9 +34,7 @@ inline auto enemy_area::operator()(POINT_2F position, float speed, float interva
 {
   return Move(position, speed, interval, [this](POINT_2F position) -> POINT_2F
   {
-    auto destination = m_points[m_pointIndex(pseudo_random_generator::get())];
-    while( IsEqual(position, destination) ) { destination = m_points[m_pointIndex(pseudo_random_generator::get())]; }
-    return destination;
+    return m_points[m_pointIndex(pseudo_random_generator::get())];
   });
 }
 
