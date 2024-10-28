@@ -14,7 +14,7 @@ public:
 
 private:
 
-  [[nodiscard]] auto Move(POINT_2F position, float distance, float interval, auto&& getDestination) -> std::pair<POINT_2F,float>;
+  static [[nodiscard]] auto Move(POINT_2F position, POINT_2F destination, float distance, float interval, auto&& getDestination) -> std::tuple<POINT_2F,POINT_2F,float>;
 
   using points_collection = std::vector<POINT_2F>;
   points_collection m_points;
@@ -37,31 +37,32 @@ inline auto enemy_area::operator()(POINT_2F position, float speed, float interva
 
   while( remainingInterval > 0.0f )
   {
-    auto&& [endOfMovePosition, endOfMoveInterval] = Move(position, speed * remainingInterval, interval, [this]()
+    auto&& [endOfMovePosition, endOfMoveDestination, endOfMoveInterval] = Move(position, m_destination, speed * remainingInterval, interval, [this]()
     {
       return m_points[m_pointIndex(pseudo_random_generator::get())];
     });
 
     newPosition = endOfMovePosition;
+    m_destination = endOfMoveDestination;
     remainingInterval = endOfMoveInterval;
   }
 
   return newPosition;
 }
 
-inline auto enemy_area::Move(POINT_2F position, float distance, float interval, auto&& getDestination) -> std::pair<POINT_2F, float>
+inline static auto enemy_area::Move(POINT_2F position, POINT_2F destination, float distance, float interval, auto&& getDestination) -> std::tuple<POINT_2F,POINT_2F,float>
 {
-  auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, m_destination);
+  auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, destination);
 
   if( distance > distanceToDest && distanceToDest > 0.0f )
   {
     auto distanceLeft = distance - distanceToDest;
     auto intervalLeft = interval * distanceLeft / distance;
-    return Move(std::exchange(m_destination, getDestination()), distanceLeft, intervalLeft, getDestination);
+    return Move(destination, getDestination(), distanceLeft, intervalLeft, getDestination);
   }
   else
   {
-    auto direction = direct2d::GetAngleBetweenPoints(position, m_destination);
-    return { direct2d::CalculatePosition(position, direction, distance), 0.0f };
+    auto direction = direct2d::GetAngleBetweenPoints(position, destination);
+    return { direct2d::CalculatePosition(position, direction, distance), destination, 0.0f };
   }
 }
