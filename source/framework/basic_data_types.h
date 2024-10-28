@@ -59,3 +59,13 @@ inline [[nodiscard]] auto ToInt(RECT_F value) -> RECT_I
 {
   return { static_cast<int>(value.left), static_cast<int>(value.top), static_cast<int>(value.right), static_cast<int>(value.bottom) };
 }
+
+inline [[nodiscard]] auto IsEqual(POINT_2F point1, POINT_2F point2) -> bool
+{
+  return point1.x == point2.x && point1.y == point2.y;
+}
+
+inline [[nodiscard]] auto IsNotEqual(POINT_2F point1, POINT_2F point2) -> bool
+{
+  return point1.x != point2.x || point1.y != point2.y;
+}
