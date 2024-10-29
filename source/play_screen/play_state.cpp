@@ -51,7 +51,6 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
-  game_level_data_loader::updateLevel(game_state::level_index(), *m_levelContainer, interval);
   m_levelContainer->Update(interval, view, m_lastPlayerState, LevelComplete());
   m_playerState = m_levelContainer->PlayerState();
   m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;

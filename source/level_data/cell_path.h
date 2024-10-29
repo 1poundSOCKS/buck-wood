@@ -2,49 +2,54 @@
 
 #include "cell_id.h"
 
-class cell_path;
-
-class cell_path_iterator
+namespace cell_path
 {
 
-public:
+  class container;
 
-  enum class type { none, begin, end };
+  class const_iterator
+  {
 
-  using difference_type = std::ptrdiff_t;
-  using value_type = cell_id;
+  public:
 
-  cell_path_iterator(const cell_path& cellPath, cell_id cellId);
+    enum class type { none, begin, end };
 
-  auto operator++() -> cell_path_iterator&;
-  auto operator++(int) -> cell_path_iterator;
-  auto operator*() const -> const cell_id&;
-  auto operator==(const cell_path_iterator& i) const -> bool;
+    using difference_type = std::ptrdiff_t;
+    using value_type = cell_id;
 
-private:
+    const_iterator(const container& c, cell_id cellId);
 
-  const cell_path& m_cellPath;
-  cell_id m_cellId;
+    auto operator++() -> const_iterator&;
+    auto operator++(int) -> const_iterator;
+    auto operator*() const -> const cell_id&;
+    auto operator==(const const_iterator& i) const -> bool;
 
-};
+  private:
 
-class cell_path
-{
+    const container& m_container;
+    cell_id m_cellId;
 
-public:
+  };
 
-  friend class cell_path_iterator;
+  class container
+  {
 
-  cell_path(cell_id begin, cell_id end);
+  public:
 
-  [[nodiscard]] auto begin() const -> cell_path_iterator;
-  [[nodiscard]] auto end() const -> cell_path_iterator;
+    friend class const_iterator;
 
-private:
+    container(cell_id begin, cell_id end);
 
-  [[nodiscard]] auto Next(cell_id cellId) const noexcept -> cell_id;
+    [[nodiscard]] auto begin() const -> const_iterator;
+    [[nodiscard]] auto end() const -> const_iterator;
 
-  cell_id m_begin;
-  cell_id m_end;
+  private:
 
-};
+    [[nodiscard]] auto Next(cell_id cellId) const noexcept -> cell_id;
+
+    cell_id m_begin;
+    cell_id m_end;
+
+  };
+
+}
