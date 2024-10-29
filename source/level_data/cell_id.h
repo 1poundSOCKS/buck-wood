@@ -12,6 +12,7 @@ public:
   cell_id();
   cell_id(int column, int row);
   [[nodiscard]] auto Get(relative_position relativePosition) const noexcept -> cell_id;
+  [[nodiscard]] auto Position() const noexcept -> POINT_2I;
   [[nodiscard]] auto Position(int cellWidth, int cellHeight) const noexcept -> POINT_2I;
   auto operator <(const cell_id& cellId) const -> bool;
   auto operator ==(const cell_id& cellId) const -> bool;
@@ -73,6 +74,11 @@ inline auto cell_id::Get(relative_position relativePosition) const noexcept -> c
 inline auto cell_id::Position(int cellWidth, int cellHeight) const noexcept -> POINT_2I
 {
   return { m_column * cellWidth, m_row * cellHeight };
+}
+
+inline auto cell_id::Position() const noexcept -> POINT_2I
+{
+  return Position(1, 1);
 }
 
 inline auto cell_id::operator <(const cell_id& cellId) const -> bool

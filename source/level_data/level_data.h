@@ -53,7 +53,7 @@ constexpr static std::array levelData_0 {
     std::string_view { "                              XXXXXXXXX" },
     std::string_view { "X                                  XXXX" },
     std::string_view { "X                                    XX" },
-    std::string_view { "                                       " },
+    std::string_view { "                   4                   " },
     std::string_view { "XXX                                    " },
     std::string_view { "X                                     X" },
     std::string_view { "XX                                     " },
@@ -73,9 +73,9 @@ constexpr static std::array levelData_0 {
     std::string_view { "XXXXXXXXX      XXXXXXXXXXXXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXX         X    XXXXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXX                XXXXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXX     3         XXXXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXX               XXXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX          O    XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXX               XXXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX               XXXXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXXXX     X    XXXXXXXXXXXXXXXXX" }
   };
 
