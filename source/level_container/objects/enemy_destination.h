@@ -21,13 +21,13 @@ private:
 
 inline auto enemy_destination::operator()(POINT_2F position, float speed, float interval, auto &&getNextDestination) -> POINT_2F
 {
-  m_destination = m_destination ? m_destination : getNextDestination(position);
+  m_destination = m_destination ? m_destination : getNextDestination();
   auto distance = speed * interval;
 
   while( distance > 0.0f )
   {
     auto&& [movePosition, remainingDistance] = Move(position, *m_destination, distance);
-    m_destination = IsEqual(movePosition, position) ? getNextDestination(position) : m_destination;
+    m_destination = IsEqual(movePosition, position) ? getNextDestination() : m_destination;
     position = movePosition;
     distance = remainingDistance;
   }
@@ -37,15 +37,26 @@ inline auto enemy_destination::operator()(POINT_2F position, float speed, float 
 
 inline auto enemy_destination::Move(POINT_2F position, POINT_2F destination, float distance) -> std::pair<POINT_2F, float>
 {
-  auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, destination);
-
-  if( distance > distanceToDest )
+  if( IsEqual(position, destination) )
   {
-    return { destination, distance - distanceToDest };
+    return { position, 0.0f };
   }
   else
   {
-    auto direction = direct2d::GetAngleBetweenPoints(position, destination);
-    return { direct2d::CalculatePosition(position, direction, distance), 0.0f };
+    auto distanceToDest = direct2d::GetDistanceBetweenPoints(position, destination);
+
+    if( distanceToDest == 0.0f )
+    {
+      return { destination, 0.0f };
+    }
+    else if( distance > distanceToDest )
+    {
+      return { destination, distance - distanceToDest };
+    }
+    else
+    {
+      auto direction = direct2d::GetAngleBetweenPoints(position, destination);
+      return { direct2d::CalculatePosition(position, direction, distance), 0.0f };
+    }    
   }
 }

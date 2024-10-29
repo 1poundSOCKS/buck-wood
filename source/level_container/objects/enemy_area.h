@@ -30,7 +30,7 @@ inline enemy_area::enemy_area(std::ranges::input_range auto &&points) :
 
 inline auto enemy_area::operator()(POINT_2F position, float speed, float interval) -> POINT_2F
 {
-  return m_destination(position, speed, interval, [this](POINT_2F position) -> POINT_2F
+  return m_destination(position, speed, interval, [this]() -> POINT_2F
   {
     return m_points[m_pointIndex(pseudo_random_generator::get())];
   });
