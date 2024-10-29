@@ -15,7 +15,8 @@ public:
   static auto destroy() -> void;
 
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
-  [[nodiscard]] static auto testLoadLevel(int levelIndex) -> bool;
+  static [[nodiscard]] auto testLoadLevel(int levelIndex) -> bool;
+  static auto loadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void;
 
 private:
 
@@ -25,6 +26,7 @@ private:
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
+  static auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
@@ -59,6 +61,11 @@ inline auto game_level_data_loader::loadLevel(int levelIndex, level_container& l
 inline auto game_level_data_loader::testLoadLevel(int levelIndex) -> bool
 {
   return m_instance->TestLoadLevel(levelIndex);
+}
+
+inline auto game_level_data_loader::loadEmptyCellData(int levelIndex, auto && cellDataInserter) noexcept -> void
+{
+  LoadEmptyCellData(levelIndex, cellDataInserter);
 }
 
 auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void
@@ -133,4 +140,20 @@ inline auto game_level_data_loader::GetEnemyMovementArea(cell_id cellId, const s
       pointInserter = ToFloat(m_cellSize.CellPosition(emptyCellId));
     }
   }
+}
+
+auto game_level_data_loader::LoadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void
+{
+  std::vector<level_data::cell_data> cellData;
+  level_data::LoadCellData(levelIndex, std::back_inserter(cellData));
+
+  auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellData) -> bool
+  {
+    return cellData.type == level_data::cell_type::empty;
+  });
+
+  std::ranges::transform(emptyCells, cellDataInserter, [](auto&& cellData) -> cell_id
+  {
+    return { cellData.column, cellData.row };
+  });
 }

@@ -19,9 +19,11 @@ auto play_state::LoadCurrentLevel() -> bool
 
   if( game_level_data_loader::loadLevel(m_levelIndex, *m_levelContainer) )
   {
-    log::write(log::type::info, "Load current level successful: index={}", m_levelIndex);
+    m_emptyCellLookup.clear();
+    game_level_data_loader::loadEmptyCellData(m_levelIndex, std::inserter(m_emptyCellLookup, std::begin(m_emptyCellLookup)));
     m_playerState = m_levelContainer->PlayerState();
     m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
+    log::write(log::type::info, "Load current level successful: index={}", m_levelIndex);
     return true;
   }
   else
@@ -37,9 +39,11 @@ auto play_state::LoadNextLevel() -> bool
     m_levelContainer = std::make_shared<level_container>();
     game_level_data_loader::loadLevel(++m_levelIndex, *m_levelContainer);
     game_state::set_level_index(m_levelIndex);
-    log::write(log::type::info, "Load next level successful: index={}", m_levelIndex);
+    m_emptyCellLookup.clear();
+    game_level_data_loader::loadEmptyCellData(m_levelIndex, std::inserter(m_emptyCellLookup, std::begin(m_emptyCellLookup)));
     m_playerState = m_levelContainer->PlayerState();
     m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
+    log::write(log::type::info, "Load next level successful: index={}", m_levelIndex);
     return true;
   }
   else
