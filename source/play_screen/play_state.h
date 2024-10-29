@@ -31,6 +31,10 @@ public:
 
 private:
 
+  auto VisitObject(auto&& object) const noexcept -> void;
+
+private:
+
   int m_levelIndex { 0 };
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
@@ -38,3 +42,7 @@ private:
   std::optional<player_ship_state> m_playerState;
   player_ship_state m_lastPlayerState;
 };
+
+auto play_state::VisitObject(auto && object) const noexcept -> void
+{
+}

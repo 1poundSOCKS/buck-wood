@@ -55,6 +55,7 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
+  m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
   m_levelContainer->Update(interval, view, m_lastPlayerState, LevelComplete());
   m_playerState = m_levelContainer->PlayerState();
   m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
