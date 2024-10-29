@@ -16,7 +16,7 @@ public:
 
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] static auto testLoadLevel(int levelIndex) -> bool;
-  static auto updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
+  static auto updateLevel(int levelIndex, level_container& levelContainer, float interval) -> void;
   static [[nodiscard]] auto moreUpdates() -> bool;
 
 private:
@@ -27,12 +27,13 @@ private:
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
-  auto UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void;
+  auto UpdateLevel(int levelIndex, level_container& levelContainer, float interval) -> void;
   [[nodiscard]] auto MoreUpdates() const -> bool;
   static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
   static auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
+  static [[nodiscard]] auto CellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<cell_id> &emptyCellLookup) -> bool;
 
 private:
 
@@ -40,7 +41,6 @@ private:
 
   std::vector<level_update_event> m_events;
   std::vector<level_update_event>::iterator m_currentEvent;
-
   fractional_counter m_levelUpdateEvent;
 
   inline static cell_size m_cellSize { 250, 250 };
@@ -69,7 +69,7 @@ inline auto game_level_data_loader::testLoadLevel(int levelIndex) -> bool
   return m_instance->TestLoadLevel(levelIndex);
 }
 
-inline auto game_level_data_loader::updateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
+inline auto game_level_data_loader::updateLevel(int levelIndex, level_container& levelContainer, float interval) -> void
 {
   m_instance->UpdateLevel(levelIndex, levelContainer, interval);
 }

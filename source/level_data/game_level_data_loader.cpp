@@ -2,14 +2,15 @@
 #include "game_level_data_loader.h"
 #include "level_data.h"
 #include "visitor.h"
+#include "cell_path.h"
 
 game_level_data_loader::game_level_data_loader() : m_levelUpdateEvent { 2.0f }
 {
 }
 
-auto game_level_data_loader::UpdateLevel(int levelIndex, level_container* levelContainer, float interval) -> void
+auto game_level_data_loader::UpdateLevel(int levelIndex, level_container& levelContainer, float interval) -> void
 {
-  m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
+  m_currentEvent = m_currentEvent != std::end(m_events) && m_currentEvent->Update(interval, &levelContainer) ? std::next(m_currentEvent) : m_currentEvent;
 
   if( m_levelUpdateEvent.Update(interval) >= 1.0f )
   {
@@ -112,10 +113,19 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       }
     }
 
+    auto visible = CellsAreVisibleToEachOther({0,0}, {1,1}, emptyCellLookup);
+    visible;
+
     return true;
   }
   else
   {
     return false;
   }
+}
+
+auto game_level_data_loader::CellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<cell_id> &emptyCellLookup) -> bool
+{
+  cell_path cellPath { cellId1, cellId2 };
+  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId) { return visible && !emptyCellLookup.contains(cellId); } );
 }
