@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "cell_path.h"
 
-cell_path::const_iterator::const_iterator(const container& c, cell_id cellId) : m_container { c }, m_cellId { cellId }
+cell_path::const_iterator::const_iterator(const cell_path& c, cell_id cellId) : m_container { c }, m_cellId { cellId }
 {
 }
 
@@ -28,21 +28,21 @@ auto cell_path::const_iterator::operator==(const cell_path::const_iterator &i) c
   return m_cellId == i.m_cellId;
 }
 
-cell_path::container::container(cell_id begin, cell_id end) : m_begin { begin }, m_end { end }
+cell_path::cell_path(cell_id begin, cell_id end) : m_begin { begin }, m_end { end }
 {
 }
 
-auto cell_path::container::begin() const -> const_iterator
+auto cell_path::begin() const -> const_iterator
 {
   return const_iterator(*this, m_begin);
 }
 
-auto cell_path::container::end() const -> const_iterator
+auto cell_path::end() const -> const_iterator
 {
   return const_iterator(*this, m_end);
 }
 
-auto cell_path::container::Next(cell_id cellId) const noexcept -> cell_id
+auto cell_path::Next(cell_id cellId) const noexcept -> cell_id
 {
   auto position = cellId.Position();
   auto endPosition = m_end.Position();

@@ -2,10 +2,10 @@
 
 #include "cell_id.h"
 
-namespace cell_path
+class cell_path
 {
 
-  class container;
+public:
 
   class const_iterator
   {
@@ -17,7 +17,7 @@ namespace cell_path
     using difference_type = std::ptrdiff_t;
     using value_type = cell_id;
 
-    const_iterator(const container& c, cell_id cellId);
+    const_iterator(const cell_path& c, cell_id cellId);
 
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
@@ -26,30 +26,23 @@ namespace cell_path
 
   private:
 
-    const container& m_container;
+    const cell_path& m_container;
     cell_id m_cellId;
 
   };
 
-  class container
-  {
+  friend class const_iterator;
 
-  public:
+  cell_path(cell_id begin, cell_id end);
 
-    friend class const_iterator;
+  [[nodiscard]] auto begin() const -> const_iterator;
+  [[nodiscard]] auto end() const -> const_iterator;
 
-    container(cell_id begin, cell_id end);
+private:
 
-    [[nodiscard]] auto begin() const -> const_iterator;
-    [[nodiscard]] auto end() const -> const_iterator;
+  [[nodiscard]] auto Next(cell_id cellId) const noexcept -> cell_id;
 
-  private:
+  cell_id m_begin;
+  cell_id m_end;
 
-    [[nodiscard]] auto Next(cell_id cellId) const noexcept -> cell_id;
-
-    cell_id m_begin;
-    cell_id m_end;
-
-  };
-
-}
+};
