@@ -12,6 +12,7 @@ class enemy_ship : public enemy_object
 public:
 
   enum class type { stalker, random, turret, guard };
+  enum class fire_status { enabled, disabled };
   using controller = std::variant<enemy_fixed, enemy_path, enemy_area>;
 
   enemy_ship(POINT_2F position, SCALE_2F scale, float angle, type enemyType, float speed, controller enemyController);
@@ -21,6 +22,7 @@ public:
   [[nodiscard]] auto Type() const noexcept -> type;
   [[nodiscard]] auto CanShootAt(POINT_2F position) const -> bool;
   [[nodiscard]] auto Reloaded() const -> bool;
+  auto SetFireStatus(fire_status value) noexcept -> void;
 
 private:
 
@@ -39,6 +41,7 @@ private:
   status m_status;
   reload_timer m_waitTimer;
   std::optional<reload_timer> m_reloadTimer;
+  fire_status m_fireStatus;
   bool m_reloaded { false };
   controller m_controller;
 

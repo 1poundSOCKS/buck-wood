@@ -17,6 +17,8 @@ public:
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   static [[nodiscard]] auto testLoadLevel(int levelIndex) -> bool;
   static auto loadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void;
+  static [[nodiscard]] auto getCellFromPosition(POINT_2F position) noexcept -> cell_id;
+  static [[nodiscard]] auto cellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<cell_id> &emptyCellLookup) -> bool;
 
 private:
 
@@ -31,7 +33,6 @@ private:
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
   static auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
-  static [[nodiscard]] auto CellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<cell_id> &emptyCellLookup) -> bool;
 
 private:
 
@@ -66,6 +67,11 @@ inline auto game_level_data_loader::testLoadLevel(int levelIndex) -> bool
 inline auto game_level_data_loader::loadEmptyCellData(int levelIndex, auto && cellDataInserter) noexcept -> void
 {
   LoadEmptyCellData(levelIndex, cellDataInserter);
+}
+
+inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexcept -> cell_id
+{
+  return m_instance->m_cellSize.CellId(ToInt(position));
 }
 
 auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void

@@ -55,6 +55,7 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
+  m_playerCell = m_playerState ? std::optional<cell_id>(game_level_data_loader::getCellFromPosition(m_playerState->Position())) : std::nullopt;
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
   m_levelContainer->Update(interval, view, m_lastPlayerState, LevelComplete());
   m_playerState = m_levelContainer->PlayerState();
@@ -122,4 +123,18 @@ auto play_state::LastPlayerState() const noexcept -> player_ship_state
   {
     return defaultObject.HoldsAlternative<power_up>() ? count + 1 : count;
   });
+}
+
+auto play_state::VisitObject(enemy_ship &object) const noexcept -> void
+{
+  if( m_playerCell )
+  {
+    auto enemyCell = game_level_data_loader::getCellFromPosition(object.Position());
+    auto lineOfFireIsClear = game_level_data_loader::cellsAreVisibleToEachOther(*m_playerCell, enemyCell, m_emptyCellLookup);
+    object.SetFireStatus(lineOfFireIsClear ? enemy_ship::fire_status::enabled : enemy_ship::fire_status::disabled);
+  }
+  else
+  {
+    object.SetFireStatus(enemy_ship::fire_status::disabled);
+  }
 }

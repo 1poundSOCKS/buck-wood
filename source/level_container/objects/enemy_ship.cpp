@@ -32,12 +32,17 @@ auto enemy_ship::Type() const noexcept -> type
 
 [[nodiscard]] auto enemy_ship::CanShootAt(POINT_2F position) const -> bool
 {
-  return m_reloaded;
+  return m_fireStatus == fire_status::enabled && m_reloaded;
 }
 
 [[nodiscard]] auto enemy_ship::Reloaded() const -> bool
 {
   return m_reloaded;
+}
+
+auto enemy_ship::SetFireStatus(fire_status value) noexcept -> void
+{
+  m_fireStatus = value;
 }
 
 [[nodiscard]] auto enemy_ship::UpdateWhenMoving(float interval) noexcept -> status

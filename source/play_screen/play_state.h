@@ -31,6 +31,7 @@ public:
 
 private:
 
+  auto VisitObject(enemy_ship& object) const noexcept -> void;
   auto VisitObject(auto&& object) const noexcept -> void;
 
 private:
@@ -41,8 +42,9 @@ private:
   std::set<cell_id> m_emptyCellLookup;
   std::optional<player_ship_state> m_playerState;
   player_ship_state m_lastPlayerState;
+  std::optional<cell_id> m_playerCell;
 };
 
-auto play_state::VisitObject(auto && object) const noexcept -> void
+auto play_state::VisitObject(auto &&object) const noexcept -> void
 {
 }

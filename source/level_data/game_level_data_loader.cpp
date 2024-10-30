@@ -83,7 +83,7 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
       }
     }
 
-    auto visible = CellsAreVisibleToEachOther({0,0}, {1,1}, emptyCellLookup);
+    auto visible = cellsAreVisibleToEachOther({0,0}, {1,1}, emptyCellLookup);
     visible;
 
     return true;
@@ -94,8 +94,8 @@ auto game_level_data_loader::LoadObjectData(level_container &levelContainer, int
   }
 }
 
-auto game_level_data_loader::CellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<cell_id> &emptyCellLookup) -> bool
+auto game_level_data_loader::cellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<cell_id> &emptyCellLookup) -> bool
 {
   cell_path::container cellPath { cellId1, cellId2 };
-  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId) { return visible && !emptyCellLookup.contains(cellId); } );
+  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId) { return visible && emptyCellLookup.contains(cellId); } );
 }
