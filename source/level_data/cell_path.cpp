@@ -13,9 +13,9 @@ auto cell_path::const_iterator::operator++() -> cell_path::const_iterator &
 
 auto cell_path::const_iterator::operator++(int) -> cell_path::const_iterator
 {
-  const_iterator thisCopy { m_container, m_cellId };
+  const_iterator copyOfThis { m_container, m_cellId };
   m_cellId = m_container.Next(m_cellId);
-  return thisCopy;
+  return copyOfThis;
 }
 
 auto cell_path::const_iterator::operator*() const -> const cell_id &
@@ -25,7 +25,7 @@ auto cell_path::const_iterator::operator*() const -> const cell_id &
 
 auto cell_path::const_iterator::operator==(const cell_path::const_iterator &i) const -> bool
 {
-  return m_cellId == i.m_cellId;
+  return &m_container == &i.m_container && m_cellId == i.m_cellId;
 }
 
 cell_path::cell_path(cell_id begin, cell_id end) : m_begin { begin }, m_end { end }
