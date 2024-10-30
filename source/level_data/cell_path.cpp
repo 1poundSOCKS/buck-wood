@@ -44,5 +44,21 @@ auto cell_path::container::end() const -> const_iterator
 
 auto cell_path::container::Next(cell_id cellId) const noexcept -> cell_id
 {
-  return m_end;
+  auto position = cellId.Position();
+  auto endPosition = m_end.Position();
+  auto distanceToEnd = POINT_2I { endPosition.x - position.x, endPosition.y - position.y };
+  auto absoluteDistanceToEnd = POINT_2I { std::abs(distanceToEnd.x), std::abs(distanceToEnd.y) };
+
+  if( absoluteDistanceToEnd.x > absoluteDistanceToEnd.y )
+  {
+    auto positionOffset = distanceToEnd.x > 0 ? 1 : -1;
+    auto nextPosition = POINT_2I { position.x + positionOffset, position.y };
+    return { nextPosition.x, nextPosition.y };
+  }
+  else
+  {
+    auto positionOffset = distanceToEnd.y > 0 ? 1 : -1;
+    auto nextPosition = POINT_2I { position.x, position.y + positionOffset};
+    return { nextPosition.x, nextPosition.y };
+  }
 }
