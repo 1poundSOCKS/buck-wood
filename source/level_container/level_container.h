@@ -58,6 +58,7 @@ private:
   auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_bullet& bullet, level_cell& wall, geometry_collision::result result) -> void;
   auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
+  auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(enemy_bullet& bullet, level_cell& wall, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void;
@@ -79,7 +80,6 @@ private:
   geometry_collision_runner m_collisionRunner;
 
   particle_collection m_particles;
-  particle_collision m_particleCollisionRunner;
 };
 
 inline auto level_container::PlayerState() const noexcept -> const std::optional<player_ship_state>

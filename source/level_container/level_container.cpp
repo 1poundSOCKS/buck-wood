@@ -77,8 +77,6 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_s
 
 auto level_container::DoCollisions() -> void
 {
-  m_particleCollisionRunner(m_particles, m_collisionGeometry(level_collision_geometry::type::wall), true);
-
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), 
     [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 
@@ -160,6 +158,10 @@ auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundar
     m_particles.Create(particle::type::impact, bullet.Position(), { 0.0f, 0.0f }, 1.0f);
     bullet.Destroy();
   }
+}
+
+auto level_container::OnCollision(enemy_ship &enemyShip, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
+{
 }
 
 auto level_container::OnCollision(enemy_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
