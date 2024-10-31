@@ -68,7 +68,12 @@ inline enemy_ship::enemy_ship(POINT_2F position, SCALE_2F scale, float angle, ty
       break;
 
     case type::turret:
-      m_maxHitpoints = m_hitpoints = 10;
+      m_maxHitpoints = m_hitpoints = 8;
+      m_reloadTimer = reload_timer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) };
+      break;
+
+    case type::guard:
+      m_maxHitpoints = m_hitpoints = 12;
       m_reloadTimer = reload_timer { m_reloadTime, m_reloadTime * m_reloadTimerInitializer(pseudo_random_generator::get()) };
       break;
   }
