@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "level_geometries.h"
 #include "level_data.h"
+#include "boundary_data.h"
 
 auto level_geometries::create() -> void
 {
@@ -34,15 +35,9 @@ level_geometries::level_geometries()
   m_portal = LoadAndCentreGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadAndCentreGeometry(m_powerupPixelImage, { 20, 20 });
 
-  int levelIndex = 0;
-  std::vector<POINT_2F> boundaryData;
-
-  while( level_data::LoadBoundaryData(levelIndex, std::back_inserter(boundaryData)) )
-  {
-    m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundaryData, D2D1_FIGURE_END_CLOSED));
-    ++levelIndex;
-    boundaryData.clear();
-  }
+  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(0), D2D1_FIGURE_END_CLOSED));
+  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(1), D2D1_FIGURE_END_CLOSED));
+  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(2), D2D1_FIGURE_END_CLOSED));
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
