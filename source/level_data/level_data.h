@@ -137,6 +137,8 @@ constexpr static std::array levelData_0 {
   auto LoadBoundaryData(int index, auto pointDatainserter) -> bool;
   constexpr auto ConvertRawDataToCellData(raw_data rawDataItem) -> cell_data;
   constexpr auto ConvertRawDataToObjectData(raw_data rawDataItem) -> object_data;
+  constexpr auto ConvertToCellData(char value) -> cell_type;
+  constexpr auto ConvertToObjectData(char value) -> object_type;
 
 };
 
@@ -234,5 +236,37 @@ inline constexpr auto level_data::ConvertRawDataToObjectData(raw_data rawDataIte
       return { rawDataItem.column, rawDataItem.row, object_type::enemy_guard };
     default:
       return { rawDataItem.column, rawDataItem.row, object_type::none };
+  }
+}
+
+inline constexpr auto level_data::ConvertToCellData(char value) -> cell_type
+{
+  switch( value )
+  {
+    case 'X':
+      return cell_type::boundary;
+    default:
+      return cell_type::empty;
+  }
+}
+
+inline constexpr auto level_data::ConvertToObjectData(char value) -> object_type
+{
+  switch( value )
+  {
+    case 'P':
+      return object_type::player;
+    case 'O':
+      return object_type::power_up;
+    case '1':
+      return object_type::enemy_stalker;
+    case '2':
+      return object_type::enemy_random;
+    case '3':
+      return object_type::enemy_turret;
+    case '4':
+      return object_type::enemy_guard;
+    default:
+      return object_type::none;
   }
 }

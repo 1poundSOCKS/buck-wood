@@ -3,6 +3,8 @@
 #include "level_update_event.h"
 #include "fractional_counter.h"
 #include "cell_size.h"
+#include "level_data.h"
+#include "geometry/image_data.h"
 
 class game_level_data_loader
 {
@@ -28,8 +30,8 @@ private:
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
-  static auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
-  static [[nodiscard]] auto LoadObjectData(level_container& levelContainer, int levelIndex) -> bool;
+  auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
+  [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<cell_id>& emptyCellLookup, level_container& levelContainer) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
   static auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
@@ -40,6 +42,8 @@ private:
 
   inline static cell_size m_cellSize { 250, 250 };
 
+  // std::vector<image_data::const_iterator::value_type> m_levelData_0;
+  std::map<int, std::vector<image_data::const_iterator::value_type>> m_levelData;
 };
 
 inline auto game_level_data_loader::create() -> void
@@ -66,7 +70,7 @@ inline auto game_level_data_loader::testLoadLevel(int levelIndex) -> bool
 
 inline auto game_level_data_loader::loadEmptyCellData(int levelIndex, auto && cellDataInserter) noexcept -> void
 {
-  LoadEmptyCellData(levelIndex, cellDataInserter);
+  m_instance->LoadEmptyCellData(levelIndex, cellDataInserter);
 }
 
 inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexcept -> cell_id
