@@ -42,8 +42,6 @@ private:
 
   inline static cell_size m_cellSize { 250, 250 };
 
-  // std::vector<image_data::const_iterator::value_type> m_levelData_0;
-  std::map<int, std::vector<image_data::const_iterator::value_type>> m_levelData;
 };
 
 inline auto game_level_data_loader::create() -> void

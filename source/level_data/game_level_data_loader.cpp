@@ -3,31 +3,20 @@
 #include "level_data.h"
 #include "visitor.h"
 #include "cell_path.h"
+#include "boundary_data.h"
 
 game_level_data_loader::game_level_data_loader()
 {
-  image_data level0 { level_data::levelData_0 };
-  std::pair<int, std::vector<image_data::const_iterator::value_type>> levelData0;
-  levelData0.first = 0;
-  std::copy(std::begin(level0), std::end(level0), std::back_inserter(levelData0.second));
-  m_levelData.insert(levelData0);
-
-  image_data level1 { level_data::levelData_1 };
-  std::pair<int, std::vector<image_data::const_iterator::value_type>> levelData1;
-  levelData1.first = 1;
-  std::copy(std::begin(level1), std::end(level1), std::back_inserter(levelData1.second));
-  m_levelData.insert(levelData1);
-
-  image_data level2 { level_data::levelData_2 };
-  std::pair<int, std::vector<image_data::const_iterator::value_type>> levelData2;
-  levelData2.first = 2;
-  std::copy(std::begin(level2), std::end(level2), std::back_inserter(levelData2.second));
-  m_levelData.insert(levelData2);
 }
 
 auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelContainer) -> bool
 {
-  auto&& levelData = m_levelData[levelIndex];
+  if( !boundary_data::indexIsValid(levelIndex) )
+  {
+    return false;
+  }
+
+  auto&& levelData = boundary_data::get(levelIndex);
 
   auto cellData = std::ranges::views::transform(levelData, [](auto&& levelDataItem) -> level_data::cell_data
   {
@@ -75,7 +64,12 @@ auto game_level_data_loader::TestLoadLevel(int levelIndex) -> bool
 
 auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<cell_id>& emptyCellLookup, level_container& levelContainer) -> bool
 {
-  auto&& levelData = m_levelData[levelIndex];
+  if( !boundary_data::indexIsValid(levelIndex) )
+  {
+    return false;
+  }
+  
+  auto&& levelData = boundary_data::get(levelIndex);
 
   auto objectData = std::ranges::views::transform(levelData, [](auto&& levelDataItem) -> level_data::object_data
   {

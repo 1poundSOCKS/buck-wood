@@ -13,6 +13,7 @@
 #include "game_state.h"
 #include "game_level_data_loader.h"
 #include "player_state.h"
+#include "boundary_data.h"
 
 #pragma comment(lib,"user32.lib")
 #pragma comment(lib,"D3D11.lib")
@@ -95,6 +96,7 @@ auto initialize_all(HINSTANCE instance) -> void
   xaudio2_engine::create();
   xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
 
+  boundary_data::create();
   level_geometries::create();
   renderer::create();
   diagnostics::create();
@@ -140,6 +142,8 @@ auto destroy_all() -> void
   diagnostics::destroy();
   renderer::destroy();
   level_geometries::destroy();
+  boundary_data::destroy();
+
   xaudio2_masteringvoice::destroy();
   xaudio2_engine::destroy();
 
