@@ -5,7 +5,7 @@
 #include "cell_path.h"
 #include "boundary_data.h"
 
-game_level_data_loader::game_level_data_loader()
+game_level_data_loader::game_level_data_loader(int cellWidth, int cellHeight) : m_cellSize { cellWidth, cellHeight }
 {
 }
 

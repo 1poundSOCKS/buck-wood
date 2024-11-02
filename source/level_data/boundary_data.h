@@ -7,7 +7,7 @@ class boundary_data
 
 public:
 
-  static auto create() noexcept -> void;
+  static auto create(int cellWidth, int cellHeight) noexcept -> void;
   static auto destroy() noexcept -> void;
   static auto get(int index) -> const std::vector<image_data::const_iterator::value_type>&;
   static auto getBoundary(int index) -> const std::vector<POINT_2F>&;
@@ -15,10 +15,8 @@ public:
 
 private:
 
-  inline static cell_size m_cellSize { 250, 250 };
-
-  boundary_data();
-  auto Add(int index, auto&& data) noexcept -> void;
+  boundary_data(int cellWidth, int cellHeight);
+  auto Add(int index, auto&& data, int cellWidth, int cellHeight) noexcept -> void;
 
   inline static boundary_data* m_instance { nullptr };
   std::map<int, std::vector<image_data::const_iterator::value_type>> m_levelData;
@@ -26,10 +24,10 @@ private:
 
 };
 
-inline auto boundary_data::create() noexcept -> void
+inline auto boundary_data::create(int cellWidth, int cellHeight) noexcept -> void
 {
   destroy();
-  m_instance = new boundary_data();
+  m_instance = new boundary_data(cellWidth, cellHeight);
 }
 
 inline auto boundary_data::destroy() noexcept -> void
@@ -53,14 +51,14 @@ inline auto boundary_data::indexIsValid(int index) noexcept -> bool
   return m_instance->m_levelData.contains(index);
 }
 
-inline boundary_data::boundary_data()
+inline boundary_data::boundary_data(int cellWidth, int cellHeight)
 {
-  Add(0, level_data::levelData_0);
-  Add(1, level_data::levelData_1);
-  Add(2, level_data::levelData_2);
+  Add(0, level_data::levelData_0, cellWidth, cellHeight);
+  Add(1, level_data::levelData_1, cellWidth, cellHeight);
+  Add(2, level_data::levelData_2, cellWidth, cellHeight);
 }
 
-auto boundary_data::Add(int index, auto &&data) noexcept -> void
+auto boundary_data::Add(int index, auto &&data, int cellWidth, int cellHeight) noexcept -> void
 {
   image_data imageData { data };
   std::pair<int, std::vector<image_data::const_iterator::value_type>> levelData;
@@ -137,11 +135,12 @@ auto boundary_data::Add(int index, auto &&data) noexcept -> void
   std::ranges::copy(lineData, std::inserter(pixelLines, std::begin(pixelLines)));
 
   auto currentLine = std::begin(pixelLines);
-  
+  auto cellSize = cell_size { cellWidth, cellHeight };
+
   while( currentLine != std::end(pixelLines) )
   {
     const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
-    auto pixelRect = m_cellSize.CellRect({pixelLineStart.x, pixelLineStart.y});
+    auto pixelRect = cellSize.CellRect({pixelLineStart.x, pixelLineStart.y});
     pointData.emplace_back(pixelRect.left, pixelRect.top);
     pixelLines.erase(currentLine);
     currentLine = pixelLines.find(pixelLineEnd);

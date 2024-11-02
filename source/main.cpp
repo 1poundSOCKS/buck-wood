@@ -85,6 +85,9 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
 auto initialize_all(HINSTANCE instance) -> void
 {
+  constexpr int cellWidth { 250 };
+  constexpr int cellHeight { 250 };
+
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   format(swapChainDesc);
   D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0, };
@@ -96,7 +99,7 @@ auto initialize_all(HINSTANCE instance) -> void
   xaudio2_engine::create();
   xaudio2_masteringvoice::create(xaudio2_engine::get_raw());
 
-  boundary_data::create();
+  boundary_data::create(cellWidth, cellHeight);
   level_geometries::create();
   renderer::create();
   diagnostics::create();
@@ -116,7 +119,7 @@ auto initialize_all(HINSTANCE instance) -> void
 
   save_data::create(L"save_data");
   game_state::create();
-  game_level_data_loader::create();
+  game_level_data_loader::create(cellWidth, cellHeight);
   play_events::create();
   player_state::create();
 

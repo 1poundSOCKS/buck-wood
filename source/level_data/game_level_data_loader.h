@@ -13,7 +13,7 @@ public:
 
   enum class status { starting, started, running, finished };
 
-  static auto create() -> void;
+  static auto create(int cellWidth, int cellHeight) -> void;
   static auto destroy() -> void;
 
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
@@ -26,28 +26,28 @@ private:
 
   enum class movement_path_type { none, horizontal, vertical };
 
-  game_level_data_loader();
+  game_level_data_loader(int cellWidth, int cellHeight);
 
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
   [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<cell_id>& emptyCellLookup, level_container& levelContainer) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  static auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
-  static auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
+  auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
+  auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
 
 private:
 
   inline static game_level_data_loader* m_instance { nullptr };
 
-  inline static cell_size m_cellSize { 250, 250 };
+  cell_size m_cellSize;
 
 };
 
-inline auto game_level_data_loader::create() -> void
+inline auto game_level_data_loader::create(int cellWidth, int cellHeight) -> void
 {
   destroy();
-  m_instance = new game_level_data_loader();
+  m_instance = new game_level_data_loader(cellWidth, cellHeight);
 }
 
 inline auto game_level_data_loader::destroy() -> void
