@@ -28,7 +28,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
 
   if( LoadObjectData(levelIndex, emptyCellLookup, levelContainer) )
   {
-    levelContainer.CreateBoundary(levelIndex, boundary_data::getBoundary(levelIndex));
+    levelContainer.CreateBoundary(levelIndex, boundary_data::get(levelIndex));
     return true;
   }
   else

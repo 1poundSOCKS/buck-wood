@@ -11,8 +11,7 @@ public:
 
   static auto create(int cellWidth, int cellHeight) noexcept -> void;
   static auto destroy() noexcept -> void;
-  // static auto get(int index) -> const std::vector<image_data::const_iterator::value_type>&;
-  static auto getBoundary(int index) -> const std::vector<POINT_2F>&;
+  static auto get(int index) -> const std::vector<POINT_2F>&;
   static [[nodiscard]] auto indexIsValid(int index) noexcept -> bool;
 
   static [[nodiscard]] auto begin() noexcept -> std::map<int, std::vector<POINT_2F>>::const_iterator;
@@ -41,12 +40,7 @@ inline auto boundary_data::destroy() noexcept -> void
   m_instance = nullptr;
 }
 
-// inline auto boundary_data::get(int index) -> const std::vector<image_data::const_iterator::value_type> &
-// {
-//   return m_instance->m_levelData[index];
-// }
-
-inline auto boundary_data::getBoundary(int index) -> const std::vector<POINT_2F> &
+inline auto boundary_data::get(int index) -> const std::vector<POINT_2F> &
 {
   return m_instance->m_boundaryData[index];
 }
