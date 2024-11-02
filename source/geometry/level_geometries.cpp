@@ -35,9 +35,12 @@ level_geometries::level_geometries()
   m_portal = LoadAndCentreGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadAndCentreGeometry(m_powerupPixelImage, { 20, 20 });
 
-  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(0), D2D1_FIGURE_END_CLOSED));
-  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(1), D2D1_FIGURE_END_CLOSED));
-  m_boundaryWalls.push_back(direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getBoundary(2), D2D1_FIGURE_END_CLOSED));
+  std::transform(boundary_data::begin(), boundary_data::end(), std::inserter(m_boundaryWallsLookup, std::begin(m_boundaryWallsLookup)), [](auto&& dataEntry) -> std::pair<int, winrt::com_ptr<ID2D1Geometry>>
+  {
+    auto&& [index, data] = dataEntry;
+    auto geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), data, D2D1_FIGURE_END_CLOSED);
+    return { index, geometry };
+  });
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
@@ -81,7 +84,8 @@ auto level_geometries::Get(const power_up &object) -> winrt::com_ptr<ID2D1Geomet
 
 auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>
 {
-  return m_boundaryWalls[object.Level()];
+  auto geometryEntry = m_boundaryWallsLookup.find(object.Level());
+  return geometryEntry != m_boundaryWallsLookup.end() ? geometryEntry->second : m_rectangleGeometry;
 }
 
 auto level_geometries::LoadHudTargetGeometries(auto&& geometryInserter) -> void

@@ -125,7 +125,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_enemyBullet;
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
-  std::vector<winrt::com_ptr<ID2D1Geometry>> m_boundaryWalls;
+  std::map<int, winrt::com_ptr<ID2D1Geometry>> m_boundaryWallsLookup;
 
 };
 

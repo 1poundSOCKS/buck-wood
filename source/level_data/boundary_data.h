@@ -13,6 +13,9 @@ public:
   static auto getBoundary(int index) -> const std::vector<POINT_2F>&;
   static [[nodiscard]] auto indexIsValid(int index) noexcept -> bool;
 
+  static [[nodiscard]] auto begin() noexcept -> std::map<int, std::vector<POINT_2F>>::const_iterator;
+  static [[nodiscard]] auto end() noexcept -> std::map<int, std::vector<POINT_2F>>::const_iterator;
+
 private:
 
   boundary_data(int cellWidth, int cellHeight);
@@ -49,6 +52,16 @@ inline auto boundary_data::getBoundary(int index) -> const std::vector<POINT_2F>
 inline auto boundary_data::indexIsValid(int index) noexcept -> bool
 {
   return m_instance->m_levelData.contains(index);
+}
+
+inline auto boundary_data::begin() noexcept -> std::map<int, std::vector<POINT_2F>>::const_iterator
+{
+  return std::begin(m_instance->m_boundaryData);
+}
+
+inline auto boundary_data::end() noexcept -> std::map<int, std::vector<POINT_2F>>::const_iterator
+{
+  return std::end(m_instance->m_boundaryData);
 }
 
 inline boundary_data::boundary_data(int cellWidth, int cellHeight)
