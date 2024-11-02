@@ -1,5 +1,6 @@
 #pragma once
 
+template <typename container_type>
 class image_data
 {
 public:
@@ -12,7 +13,7 @@ public:
     using difference_type = std::ptrdiff_t;
     using value_type = std::tuple<int, int, char>;
 
-    const_iterator(const image_data* container, int column, int row);
+    const_iterator(const image_data<container_type>* container, int column, int row);
 
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
@@ -21,7 +22,7 @@ public:
 
   private:
 
-    const image_data* m_container;
+    const image_data<container_type>* m_container;
     int m_column;
     int m_row;
     value_type m_value;
@@ -30,7 +31,8 @@ public:
 
   friend class const_iterator;
 
-  image_data(std::ranges::input_range auto&& data);
+  image_data(const container_type& data);
+  
   [[nodiscard]] auto begin() const -> const_iterator;
   [[nodiscard]] auto end() const -> const_iterator;
 
@@ -39,16 +41,18 @@ private:
   [[nodiscard]] auto Get(int m_column, int m_row) const -> char;
   [[nodiscard]] auto Next(int m_column, int m_row) const -> const_iterator;
 
-  std::vector<std::string_view> m_data;
+  const container_type& m_data;
 
 };
 
-inline image_data::const_iterator::const_iterator(const image_data* container, int column, int row)
+template <typename container_type>
+inline image_data<container_type>::const_iterator::const_iterator(const image_data<container_type>* container, int column, int row)
   : m_container { container }, m_column { column}, m_row { row }, m_value { column, row, m_container->Get(column, row) }
 {
 }
 
-inline auto image_data::const_iterator::operator++() -> const_iterator&
+template <typename container_type>
+inline auto image_data<container_type>::const_iterator::operator++() -> const_iterator&
 {
   auto next = m_container->Next(m_column, m_row);
   m_column = next.m_column;
@@ -57,7 +61,8 @@ inline auto image_data::const_iterator::operator++() -> const_iterator&
   return *this;
 }
 
-inline auto image_data::const_iterator::operator++(int) -> const_iterator
+template <typename container_type>
+inline auto image_data<container_type>::const_iterator::operator++(int) -> const_iterator
 {
   auto thisCopy = *this;
   auto next = m_container->Next(m_column, m_row);
@@ -67,37 +72,43 @@ inline auto image_data::const_iterator::operator++(int) -> const_iterator
   return thisCopy;
 }
 
-inline auto image_data::const_iterator::operator*() const -> const value_type&
+template <typename container_type>
+inline auto image_data<container_type>::const_iterator::operator*() const -> const value_type&
 {
   return m_value;
 }
 
-inline auto image_data::const_iterator::operator==(const const_iterator& i) const -> bool
+template <typename container_type>
+inline auto image_data<container_type>::const_iterator::operator==(const const_iterator& i) const -> bool
 {
   return m_container == i.m_container && m_column == i.m_column && m_row == i.m_row;
 }
 
-image_data::image_data(std::ranges::input_range auto&& data)
+template <typename container_type>
+image_data<container_type>::image_data(const container_type& data) : m_data { data }
 {
-  std::ranges::copy(data, std::back_inserter(m_data));
 }
 
-inline [[nodiscard]] auto image_data::begin() const -> const_iterator
+template <typename container_type>
+inline [[nodiscard]] auto image_data<container_type>::begin() const -> const_iterator
 {
   return const_iterator { this, 0, 0 };
 }
 
-inline [[nodiscard]] auto image_data::end() const -> const_iterator
+template <typename container_type>
+inline [[nodiscard]] auto image_data<container_type>::end() const -> const_iterator
 {
   return const_iterator { this, 0, static_cast<int>(m_data.size()) };
 }
 
-inline [[nodiscard]] auto image_data::Get(int m_column, int m_row) const -> char
+template <typename container_type>
+inline [[nodiscard]] auto image_data<container_type>::Get(int m_column, int m_row) const -> char
 {
   return m_row < m_data.size() ? m_data[m_row][m_column] : ' ';
 }
 
-inline [[nodiscard]] auto image_data::Next(int column, int row) const -> const_iterator
+template <typename container_type>
+inline [[nodiscard]] auto image_data<container_type>::Next(int column, int row) const -> const_iterator
 {
   auto nextColumn = column + 1 < m_data[row].size() ? column + 1 : 0;
   auto nextRow = nextColumn == 0 ? row + 1 : row;
