@@ -13,7 +13,7 @@ public:
     using difference_type = std::ptrdiff_t;
     using value_type = std::tuple<int, int, char>;
 
-    const_iterator(const image_data<container_type>* container, int column, int row);
+    const_iterator(const image_data* container, int column, int row);
 
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
@@ -22,7 +22,7 @@ public:
 
   private:
 
-    const image_data<container_type>* m_container;
+    const image_data* m_container;
     int m_column;
     int m_row;
     value_type m_value;
@@ -46,7 +46,7 @@ private:
 };
 
 template <typename container_type>
-inline image_data<container_type>::const_iterator::const_iterator(const image_data<container_type>* container, int column, int row)
+inline image_data<container_type>::const_iterator::const_iterator(const image_data* container, int column, int row)
   : m_container { container }, m_column { column}, m_row { row }, m_value { column, row, m_container->Get(column, row) }
 {
 }
