@@ -5,7 +5,7 @@
 auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> void
 {
   std::vector<std::tuple<int, int, level_data::cell_type>> cellData;
-  level_data::CopyToCellData(index, std::back_inserter(cellData));
+  level_data::CopyCellData(index, std::back_inserter(cellData));
 
   m_levelData.insert({index, cellData});
 

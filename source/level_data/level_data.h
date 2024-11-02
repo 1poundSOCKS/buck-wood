@@ -13,8 +13,8 @@ namespace level_data
   constexpr auto ConvertToCellData(char value) -> cell_type;
   constexpr auto ConvertToObjectData(char value) -> object_type;
 
-  auto CopyToCellData(int index, auto&& inserter) -> void;
-  auto CopyToObjectData(int index, auto&& inserter) -> void;
+  auto CopyCellData(int index, auto&& inserter) -> void;
+  auto CopyObjectData(int index, auto&& inserter) -> void;
 
   constexpr static std::array levelData_0 { 
     std::string_view { "XXXXXXXXXXXXXXXXX   XXX  X   XXXX" },
@@ -152,7 +152,7 @@ constexpr auto level_data::ConvertToObjectData(char value) -> object_type
   }
 }
 
-auto level_data::CopyToCellData(int index, auto &&inserter) -> void
+auto level_data::CopyCellData(int index, auto &&inserter) -> void
 {
   switch( index )
   {
@@ -189,7 +189,7 @@ auto level_data::CopyToCellData(int index, auto &&inserter) -> void
   }
 }
 
-auto level_data::CopyToObjectData(int index, auto &&inserter) -> void
+auto level_data::CopyObjectData(int index, auto &&inserter) -> void
 {
   switch( index )
   {

@@ -159,7 +159,7 @@ inline auto game_level_data_loader::GetEnemyMovementArea(std::pair<int, int> cel
 auto game_level_data_loader::LoadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void
 {
   std::vector<std::tuple<int, int, level_data::cell_type>> cellData;
-  level_data::CopyToCellData(levelIndex, std::back_inserter(cellData));
+  level_data::CopyCellData(levelIndex, std::back_inserter(cellData));
 
   auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellDataItem) -> bool
   {

@@ -50,7 +50,7 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
   }
   
   std::vector<std::tuple<int, int, level_data::object_type>> objectData;
-  level_data::CopyToObjectData(levelIndex, std::back_inserter(objectData));
+  level_data::CopyObjectData(levelIndex, std::back_inserter(objectData));
 
   for( auto&& object : objectData )
   {
