@@ -5,7 +5,17 @@
 namespace level_data
 {
 
-constexpr static std::array levelData_0 { 
+  constexpr int levelCount = 3;
+
+  enum class cell_type { empty, boundary };
+  enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret, enemy_guard };
+
+  constexpr auto ConvertToCellData(char value) -> cell_type;
+  constexpr auto ConvertToObjectData(char value) -> object_type;
+  auto CopyToCellData(int index, auto&& inserter) -> void;
+  auto CopyToObjectData(int index, auto&& inserter) -> void;
+
+  constexpr static std::array levelData_0 { 
     std::string_view { "XXXXXXXXXXXXXXXXX   XXX  X   XXXX" },
     std::string_view { "XXXXXXXXXXXXXX      X         XXX" },
     std::string_view { "XXXXXXXXXXXXX                  XX" },
@@ -107,19 +117,9 @@ constexpr static std::array levelData_0 {
     std::string_view { "XXXXXXXXXXXXX   XXXXXX    XXXXXXX" }
   };
 
-  constexpr int levelCount = 3;
-
-  enum class cell_type { empty, boundary };
-  enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret, enemy_guard };
-
-  constexpr auto ConvertToCellData(char value) -> cell_type;
-  constexpr auto ConvertToObjectData(char value) -> object_type;
-  auto CopyToCellData(int index, auto&& inserter) -> void;
-  auto CopyToObjectData(int index, auto&& inserter) -> void;
-
 };
 
-inline constexpr auto level_data::ConvertToCellData(char value) -> cell_type
+constexpr auto level_data::ConvertToCellData(char value) -> cell_type
 {
   switch( value )
   {
@@ -130,7 +130,7 @@ inline constexpr auto level_data::ConvertToCellData(char value) -> cell_type
   }
 }
 
-inline constexpr auto level_data::ConvertToObjectData(char value) -> object_type
+constexpr auto level_data::ConvertToObjectData(char value) -> object_type
 {
   switch( value )
   {
