@@ -15,15 +15,13 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
     return type == level_data::cell_type::empty;
   });
 
-  using cell_id = std::pair<int,int>;
-
-  auto emptyCellIds = std::ranges::views::transform(emptyCells, [](auto&& cellDataItem) -> cell_id
+  auto emptyCellIds = std::ranges::views::transform(emptyCells, [](auto&& cellDataItem) -> std::pair<int,int>
   {
     auto&& [column, row, value] = cellDataItem;
     return { column, row };
   });
 
-  std::set<cell_id> cellIdLookup;
+  std::set<std::pair<int,int>> cellIdLookup;
   std::ranges::copy(emptyCellIds, std::inserter(cellIdLookup, std::begin(cellIdLookup)));
   
   using line_data = std::pair<POINT_2I, POINT_2I>;
@@ -33,10 +31,10 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
   {
     auto&& [column, row] = cellId;
 
-    auto leftId = cell_id { column - 1, row };
-    auto aboveId = cell_id { column, row - 1 };
-    auto rightId = cell_id { column + 1, row };
-    auto belowId = cell_id { column, row + 1 };
+    auto leftId = std::pair<int,int> { column - 1, row };
+    auto aboveId = std::pair<int,int> { column, row - 1 };
+    auto rightId = std::pair<int,int> { column + 1, row };
+    auto belowId = std::pair<int,int> { column, row + 1 };
 
     if( !cellIdLookup.contains(leftId) )
     {
@@ -67,13 +65,10 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
     }
   }
 
-  using point_data_group = std::tuple<std::optional<POINT_2I>, POINT_2I, std::optional<POINT_2I>>;
-  using point_data_group_container = std::list<point_data_group>;
-
   std::map<POINT_2I, POINT_2I> pixelLines;
-  std::list<POINT_2I> pointData;
-  point_data_group_container pointDataGroups;
-  point_data_group_container normalizedPointDataGroups;
+  std::vector<POINT_2I> pointData;
+  std::vector<std::tuple<std::optional<POINT_2I>, POINT_2I, std::optional<POINT_2I>>> pointDataGroups;
+  std::vector<std::tuple<std::optional<POINT_2I>, POINT_2I, std::optional<POINT_2I>>> normalizedPointDataGroups;
   
   std::ranges::copy(lineData, std::inserter(pixelLines, std::begin(pixelLines)));
 
