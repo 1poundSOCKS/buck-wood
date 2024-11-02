@@ -16,39 +16,19 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
     return false;
   }
 
-  auto&& levelData = boundary_data::get(levelIndex);
+  std::vector<std::pair<int, int>> emptyCells;
+  LoadEmptyCellData(levelIndex, std::back_inserter(emptyCells));
 
-  auto cellData = std::ranges::views::transform(levelData, [](auto&& levelDataItem) -> level_data::cell_data
+  std::set<std::pair<int, int>> emptyCellLookup;
+  std::ranges::transform(emptyCells, std::inserter(emptyCellLookup, std::begin(emptyCellLookup)), [](auto&& cellDataItem) -> std::pair<int, int>
   {
-    auto&& [column,row,value] = levelDataItem;
-    return { column, row, level_data::ConvertToCellData(value) };
-  });
-
-  auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellDataItem) -> bool
-  {
-    auto&& [column, row, value] = cellDataItem;
-    return value == level_data::cell_type::empty;
-  });
-
-  std::set<cell_id> emptyCellLookup;
-  std::ranges::transform(emptyCells, std::inserter(emptyCellLookup, std::begin(emptyCellLookup)), [](auto&& cellDataItem) -> cell_id
-  {
-    auto&& [column, row, value] = cellDataItem;
+    auto&& [column, row] = cellDataItem;
     return { column, row };
   });
 
   if( LoadObjectData(levelIndex, emptyCellLookup, levelContainer) )
   {
-    auto emptyPixelIds = std::ranges::views::transform(emptyCells, [](auto&& emptyCell) -> pixel_geometry_loader::pixel_data
-    {
-      auto&& [column, row, value] = emptyCell;
-      return { column, row, ' ' };
-    });
-
-    std::vector<POINT_2I> pointData;
-    pixel_geometry_loader::pixelDataToOrderedPointData(emptyPixelIds, m_cellSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value != 'X'; });
-    auto boundaryData = std::ranges::views::transform(pointData, [](POINT_2I pointData) -> POINT_2F { return ToFloat(pointData); });
-    levelContainer.CreateBoundary(levelIndex, boundaryData);
+    levelContainer.CreateBoundary(levelIndex, boundary_data::getBoundary(levelIndex));
     return true;
   }
   else
@@ -62,25 +42,21 @@ auto game_level_data_loader::TestLoadLevel(int levelIndex) -> bool
   return levelIndex < level_data::levelCount;
 }
 
-auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<cell_id>& emptyCellLookup, level_container& levelContainer) -> bool
+auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::pair<int, int>>& emptyCellLookup, level_container& levelContainer) -> bool
 {
   if( !boundary_data::indexIsValid(levelIndex) )
   {
     return false;
   }
   
-  auto&& levelData = boundary_data::get(levelIndex);
-
-  auto objectData = std::ranges::views::transform(levelData, [](auto&& levelDataItem) -> level_data::object_data
-  {
-    auto&& [column,row,value] = levelDataItem;
-    return { column, row, level_data::ConvertToObjectData(value) };
-  });
+  std::vector<std::tuple<int, int, level_data::object_type>> objectData;
+  level_data::CopyToObjectData(levelIndex, std::back_inserter(objectData));
 
   for( auto&& object : objectData )
   {
-    auto cellId = cell_id { object.column, object.row };
-    auto position = ToFloat(m_cellSize.CellPosition(cellId));
+    auto&& [column, row, type] = object;
+    auto cellId = std::pair<int, int>(column, row);
+    auto position = ToFloat(m_cellSize.CellPosition(cell_id { column, row }));
     auto scale = SCALE_2F { 1.0f, 1.0f };
     auto angle = 0.0f;
 
@@ -88,7 +64,7 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<cell_
     enemy_ship::controller enemyController;
     std::vector<POINT_2F> movementPathPoints;
 
-    switch( object.type )
+    switch( type )
     {
       case level_data::object_type::player:
         objects.Add(std::in_place_type<player_ship>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
@@ -129,8 +105,12 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<cell_
   return true;
 }
 
-auto game_level_data_loader::cellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<cell_id> &emptyCellLookup) -> bool
+auto game_level_data_loader::cellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
 {
   cell_path cellPath { cellId1, cellId2 };
-  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId) { return visible && emptyCellLookup.contains(cellId); } );
+  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId)
+  {
+    auto cellPosition = cellId.Position();
+    return visible && emptyCellLookup.contains({cellPosition.x, cellPosition.y}); }
+  );
 }

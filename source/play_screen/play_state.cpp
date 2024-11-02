@@ -129,8 +129,8 @@ auto play_state::VisitObject(enemy_ship &object) const noexcept -> void
 {
   if( m_playerCell )
   {
-    auto enemyCell = game_level_data_loader::getCellFromPosition(object.Position());
-    auto lineOfFireIsClear = game_level_data_loader::cellsAreVisibleToEachOther(*m_playerCell, enemyCell, m_emptyCellLookup);
+    auto enemyCell = game_level_data_loader::getCellFromPosition(object.Position()).Position();
+    auto lineOfFireIsClear = game_level_data_loader::cellsAreVisibleToEachOther(*m_playerCell, { enemyCell.x, enemyCell.y }, m_emptyCellLookup);
     object.SetFireStatus(lineOfFireIsClear ? enemy_ship::fire_status::enabled : enemy_ship::fire_status::disabled);
   }
   else

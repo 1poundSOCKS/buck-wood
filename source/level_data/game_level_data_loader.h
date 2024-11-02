@@ -20,7 +20,7 @@ public:
   static [[nodiscard]] auto testLoadLevel(int levelIndex) -> bool;
   static auto loadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void;
   static [[nodiscard]] auto getCellFromPosition(POINT_2F position) noexcept -> cell_id;
-  static [[nodiscard]] auto cellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<cell_id> &emptyCellLookup) -> bool;
+  static [[nodiscard]] auto cellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
 
 private:
 
@@ -31,10 +31,10 @@ private:
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
-  [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<cell_id>& emptyCellLookup, level_container& levelContainer) -> bool;
+  [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<std::pair<int, int>>& emptyCellLookup, level_container& levelContainer) -> bool;
   static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
-  auto GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
-  auto GetEnemyMovementArea(cell_id cellId, const std::set<cell_id>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
+  auto GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
+  auto GetEnemyMovementArea(std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
 
 private:
 
@@ -76,55 +76,57 @@ inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexc
   return m_instance->m_cellSize.CellId(ToInt(position));
 }
 
-auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, cell_id cellId, const std::set<cell_id>& emptyCellLookup, auto&& pointInserter) noexcept -> void
+auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto&& pointInserter) noexcept -> void
 {
+  auto&& [column, row] = cellId;
+
   switch( pathType )
   {
     case movement_path_type::horizontal:
     {
-      auto leftCellId = cellId.ShiftColumn(-1);
+      auto leftCellId = std::pair<int, int>(column - 1, row);
 
       while( emptyCellLookup.contains(leftCellId) )
       {
         cellId = leftCellId;
-        leftCellId = leftCellId.ShiftColumn(-1);
+        leftCellId = { leftCellId.first - 1, leftCellId.second };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
 
-      auto rightCellId = cellId.ShiftColumn(1);
+      auto rightCellId = std::pair<int, int>(column + 1, row);
 
       while( emptyCellLookup.contains(rightCellId) )
       {
         cellId = rightCellId;
-        rightCellId = rightCellId.ShiftColumn(1);
+        rightCellId = { rightCellId.first + 1, rightCellId.second };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
       break;
     }
 
     case movement_path_type::vertical:
     {
-      auto leftCellId = cellId.ShiftRow(-1);
+      auto topCellId = std::pair<int, int>(column, row - 1);
 
-      while( emptyCellLookup.contains(leftCellId) )
+      while( emptyCellLookup.contains(topCellId) )
       {
-        cellId = leftCellId;
-        leftCellId = leftCellId.ShiftRow(-1);
+        cellId = topCellId;
+        topCellId = { topCellId.first, topCellId.second - 1 };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
 
-      auto rightCellId = cellId.ShiftRow(1);
+      auto bottomCellId = std::pair<int, int>(column, row + 1);
 
-      while( emptyCellLookup.contains(rightCellId) )
+      while( emptyCellLookup.contains(bottomCellId) )
       {
-        cellId = rightCellId;
-        rightCellId = rightCellId.ShiftRow(1);
+        cellId = bottomCellId;
+        bottomCellId = { bottomCellId.first, bottomCellId.second + 1 };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
       break;
     }
 
@@ -133,35 +135,41 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, c
   }
 }
 
-inline auto game_level_data_loader::GetEnemyMovementArea(cell_id cellId, const std::set<cell_id> &emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void
+inline auto game_level_data_loader::GetEnemyMovementArea(std::pair<int, int> cellId, const std::set<std::pair<int, int>> &emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void
 {
-  pointInserter = ToFloat(m_cellSize.CellPosition(cellId));
+  auto&& [column, row] = cellId;
 
-  auto cellPosition = ToFloat(cellId.Position());
+  pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(column, row)));
+
+  auto cellPosition = ToFloat(cell_id(column, row).Position());
 
   for( auto&& emptyCellId : emptyCellLookup )
   {
-    auto emptyCellPosition = ToFloat(emptyCellId.Position());
+    auto&& [emptyColumn, emptyRow] = emptyCellId;
+
+    auto emptyCellPosition = ToFloat(cell_id(emptyColumn, emptyRow).Position());
 
     if( direct2d::GetDistanceBetweenPoints(cellPosition, emptyCellPosition)  < maxDistance )
     {
-      pointInserter = ToFloat(m_cellSize.CellPosition(emptyCellId));
+      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(emptyColumn, emptyRow)));
     }
   }
 }
 
 auto game_level_data_loader::LoadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void
 {
-  std::vector<level_data::cell_data> cellData;
-  level_data::LoadCellData(levelIndex, std::back_inserter(cellData));
+  std::vector<std::tuple<int, int, level_data::cell_type>> cellData;
+  level_data::CopyToCellData(levelIndex, std::back_inserter(cellData));
 
-  auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellData) -> bool
+  auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellDataItem) -> bool
   {
-    return cellData.type == level_data::cell_type::empty;
+    auto&& [column, row, type] = cellDataItem;
+    return type == level_data::cell_type::empty;
   });
 
-  std::ranges::transform(emptyCells, cellDataInserter, [](auto&& cellData) -> cell_id
+  std::ranges::transform(emptyCells, cellDataInserter, [](auto&& cellDataItem) -> std::pair<int, int>
   {
-    return { cellData.column, cellData.row };
+    auto&& [column, row, type] = cellDataItem;
+    return { column, row };
   });
 }
