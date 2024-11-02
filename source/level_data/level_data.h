@@ -12,6 +12,7 @@ namespace level_data
 
   constexpr auto ConvertToCellData(char value) -> cell_type;
   constexpr auto ConvertToObjectData(char value) -> object_type;
+
   auto CopyToCellData(int index, auto&& inserter) -> void;
   auto CopyToObjectData(int index, auto&& inserter) -> void;
 
