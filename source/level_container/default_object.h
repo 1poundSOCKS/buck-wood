@@ -12,7 +12,6 @@ public:
     player_bullet, 
     enemy_bullet, 
     power_up, 
-    portal, 
     enemy_ship, 
     boundary_walls
   >;

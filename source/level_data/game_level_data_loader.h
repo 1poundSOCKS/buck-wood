@@ -19,7 +19,6 @@ public:
   static [[nodiscard]] auto testLoadLevel(int levelIndex) -> bool;
   static auto loadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void;
   static [[nodiscard]] auto getCellFromPosition(POINT_2F position) noexcept -> POINT_2I;
-  static [[nodiscard]] auto cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
 
 private:
 
@@ -31,7 +30,6 @@ private:
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
   [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<std::pair<int, int>>& emptyCellLookup, level_container& levelContainer) -> bool;
-  static [[nodiscard]] auto CreateObject(default_object_collection& objectCollection, level_data::object_type objectType, POINT_2F position, SCALE_2F scale, float angle) -> default_object&;
   auto GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
   auto GetEnemyMovementArea(std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
 
@@ -143,13 +141,13 @@ inline auto game_level_data_loader::GetEnemyMovementArea(std::pair<int, int> cel
 
   pointInserter = ToFloat(POINT_2I { column * m_cellWidth, row * m_cellHeight });
 
-  auto cellPosition = ToFloat(cell_id(column, row).Position());
+  auto cellPosition = ToFloat(POINT_2I { cellId.first, cellId.second });
 
   for( auto&& emptyCellId : emptyCellLookup )
   {
     auto&& [emptyColumn, emptyRow] = emptyCellId;
 
-    auto emptyCellPosition = ToFloat(cell_id(emptyColumn, emptyRow).Position());
+    auto emptyCellPosition = ToFloat(POINT_2I { emptyColumn, emptyRow });
 
     if( direct2d::GetDistanceBetweenPoints(cellPosition, emptyCellPosition)  < maxDistance )
     {

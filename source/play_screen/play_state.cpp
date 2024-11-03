@@ -2,6 +2,7 @@
 #include "play_state.h"
 #include "save_data.h"
 #include "player_state.h"
+#include "cell_path.h"
 
 play_state::play_state() : 
   m_score { std::make_shared<game_score>(game_score::value_type::total) }, 
@@ -130,11 +131,21 @@ auto play_state::VisitObject(enemy_ship &object) const noexcept -> void
   if( m_playerCell )
   {
     auto enemyCell = game_level_data_loader::getCellFromPosition(object.Position());
-    auto lineOfFireIsClear = game_level_data_loader::cellsAreVisibleToEachOther(*m_playerCell, enemyCell, m_emptyCellLookup);
+    auto lineOfFireIsClear = cellsAreVisibleToEachOther(*m_playerCell, enemyCell, m_emptyCellLookup);
     object.SetFireStatus(lineOfFireIsClear ? enemy_ship::fire_status::enabled : enemy_ship::fire_status::disabled);
   }
   else
   {
     object.SetFireStatus(enemy_ship::fire_status::disabled);
   }
+}
+
+auto play_state::cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
+{
+  cell_path cellPath { cellId1, cellId2 };
+
+  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId)
+  {
+    return visible && emptyCellLookup.contains({cellId.x, cellId.y});
+  });
 }

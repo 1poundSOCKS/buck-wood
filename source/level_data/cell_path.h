@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cell_id.h"
+#include "framework.h"
 
 class cell_path
 {
@@ -15,34 +15,35 @@ public:
     enum class type { none, begin, end };
 
     using difference_type = std::ptrdiff_t;
-    using value_type = cell_id;
+    using value_type = POINT_2I;
 
-    const_iterator(const cell_path& c, cell_id cellId);
+    const_iterator() = default;
+    const_iterator(const cell_path* c, POINT_2I cellId);
 
     auto operator++() -> const_iterator&;
     auto operator++(int) -> const_iterator;
-    auto operator*() const -> const cell_id&;
+    auto operator*() const -> const POINT_2I&;
     auto operator==(const const_iterator& i) const -> bool;
 
   private:
 
-    const cell_path& m_container;
-    cell_id m_cellId;
+    const cell_path* m_container { nullptr };
+    POINT_2I m_cellId;
 
   };
 
   friend class const_iterator;
 
-  cell_path(cell_id begin, cell_id end);
+  cell_path(POINT_2I begin, POINT_2I end);
 
   [[nodiscard]] auto begin() const -> const_iterator;
   [[nodiscard]] auto end() const -> const_iterator;
 
 private:
 
-  [[nodiscard]] auto Next(cell_id cellId) const noexcept -> cell_id;
+  [[nodiscard]] auto Next(POINT_2I cellId) const noexcept -> POINT_2I;
 
-  cell_id m_begin;
-  cell_id m_end;
+  POINT_2I m_begin;
+  POINT_2I m_end;
 
 };

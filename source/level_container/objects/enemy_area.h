@@ -1,8 +1,6 @@
 #pragma once
 
 #include "enemy_destination.h"
-#include "cell_id.h"
-#include "cell_size.h"
 
 class enemy_area
 {

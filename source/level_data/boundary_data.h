@@ -3,7 +3,6 @@
 #include "framework.h"
 #include "geometry/image_data.h"
 #include "level_data.h"
-#include "cell_size.h"
 #include "geometry/point_data.h"
 
 class boundary_data

@@ -65,12 +65,12 @@ namespace point_data
     std::ranges::copy(lineData, std::inserter(pixelLines, std::begin(pixelLines)));
 
     auto currentLine = std::begin(pixelLines);
-    auto cellSize = cell_size { cellWidth, cellHeight };
 
     while( currentLine != std::end(pixelLines) )
     {
       const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
-      auto pixelRect = cellSize.CellRect({pixelLineStart.x, pixelLineStart.y});
+      auto pixelPosition = POINT_2I { pixelLineStart.x * cellWidth, pixelLineStart.y * cellHeight };
+      auto pixelRect =  RECT_I { pixelPosition.x - cellWidth / 2, pixelPosition.y - cellHeight / 2, pixelPosition.x + cellWidth / 2, pixelPosition.y + cellHeight / 2 };
       pointData.emplace_back(pixelRect.left, pixelRect.top);
       pixelLines.erase(currentLine);
       currentLine = pixelLines.find(pixelLineEnd);

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "default_object_renderer.h"
+#include "geometry/level_geometries.h"
+#include "geometric_object_transform.h"
 
 default_object_renderer::default_object_renderer()
 {
@@ -60,13 +62,6 @@ auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* ge
 auto default_object_renderer::Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void
 {
   m_mineRenderer.Write(object, geometry);
-}
-
-auto default_object_renderer::Write(const portal& object, ID2D1Geometry* geometry) const -> void
-{
-#ifdef _ENABLE_PORTAL_RENDERING
-  m_portalRenderer.Write(object, geometry);
-#endif
 }
 
 auto default_object_renderer::Write(const power_up& object, ID2D1Geometry* geometry) const -> void

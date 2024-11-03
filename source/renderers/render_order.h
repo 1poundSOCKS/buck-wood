@@ -44,11 +44,6 @@ namespace render_order
       return 2;
     }
 
-    constexpr auto operator()(const portal&) -> value_type
-    {
-      return 1;
-    }
-
     constexpr auto operator()(const boundary_walls&) -> value_type
     {
       return 0;

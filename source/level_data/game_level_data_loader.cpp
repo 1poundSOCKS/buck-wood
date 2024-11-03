@@ -2,7 +2,6 @@
 #include "game_level_data_loader.h"
 #include "level_data.h"
 #include "visitor.h"
-#include "cell_path.h"
 #include "boundary_data.h"
 
 game_level_data_loader::game_level_data_loader(int cellWidth, int cellHeight) : m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
@@ -101,14 +100,4 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
   }
 
   return true;
-}
-
-auto game_level_data_loader::cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
-{
-  cell_path cellPath { { cellId1.x, cellId1.y }, { cellId2.x, cellId2.y } };
-  return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId)
-  {
-    auto cellPosition = cellId.Position();
-    return visible && emptyCellLookup.contains({cellPosition.x, cellPosition.y}); }
-  );
 }
