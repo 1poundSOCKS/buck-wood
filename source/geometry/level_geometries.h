@@ -36,7 +36,6 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
-  // static [[nodiscard]] auto LoadAndCentreGeometryData(auto pixelDataBegin, auto pixelDataEnd, int pixelSize, auto&& pointDataInserter) -> void;
   static [[nodiscard]] auto LoadAndCentreGeometryData(std::ranges::input_range auto&& pixelData, int pixelSize, auto&& pointDataInserter) -> void;
   static [[nodiscard]] auto LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto LoadGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, float shiftX, float shiftY) -> winrt::com_ptr<ID2D1Geometry>;
@@ -161,18 +160,16 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
   return m_instance->m_hudTargetGeometries;
 }
 
-// inline auto level_geometries::LoadAndCentreGeometryData(auto pixelDataBegin, auto pixelDataEnd, int pixelSize, auto &&pointDataInserter) -> void
 inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range auto&& pixelData, int pixelSize, auto &&pointDataInserter) -> void
 {
-  std::vector<std::tuple<int, int, char>> pixelValues;
-  std::copy_if(std::begin(pixelData), std::end(pixelData), std::back_inserter(pixelValues), [](auto&& pixelValue) -> bool
+  auto populatedPixels = std::ranges::views::filter(pixelData, [](auto&& pixelValue) -> bool
   {
     auto&& [column, row, value] = pixelValue;
     return value == '0';
   });
   
   std::vector<POINT_2F> orderedPoints;
-  point_data::CellsToBoundary(pixelValues, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+  point_data::CellsToBoundary(populatedPixels, pixelSize, pixelSize, std::back_inserter(orderedPoints));
 
   auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
