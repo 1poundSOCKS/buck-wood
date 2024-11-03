@@ -21,8 +21,6 @@ public:
 
 private:
 
-  enum class alignment { centred, below };
-
   level_geometries();
 
   [[nodiscard]] auto Get(const player_ship &object) -> winrt::com_ptr<ID2D1Geometry>;
