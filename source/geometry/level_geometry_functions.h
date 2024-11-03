@@ -3,46 +3,6 @@
 namespace level_geometry_functions
 {
 
-  inline constexpr [[nodiscard]] auto GetPlayerGeometryData()
-  {
-    constexpr float width { 7 };
-    constexpr float height { 10 };
-
-    return std::array {
-      D2D1_POINT_2F { 0, -height },
-      D2D1_POINT_2F { width, height },
-      D2D1_POINT_2F { -width, height }
-    };
-  }
-
-  inline constexpr [[nodiscard]] auto GetPlayerBulletGeometryData()
-  {
-    constexpr float width { 7 };
-    constexpr float height { 20 };
-
-    return std::array {
-      D2D1_POINT_2F { -width, -height },
-      D2D1_POINT_2F { width, -height },
-      D2D1_POINT_2F { width, height },
-      D2D1_POINT_2F { -width, height }
-    };
-  }
-
-  inline auto [[nodiscard]] GetDuctFanGeometryData(float size)
-  {
-    static constexpr auto ductFanGeometryData = std::array {
-      D2D1_POINT_2F { -0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, 0.5 },
-      D2D1_POINT_2F { -0.5, 0.5 }
-    };
-
-    return ductFanGeometryData | std::ranges::views::transform([size](D2D1_POINT_2F gamePoint) -> D2D1_POINT_2F
-    {
-      return { gamePoint.x * size, gamePoint.y * size  };
-    });
-  }
-
   inline constexpr auto [[nodiscard]] GetRectangleGeometryData()
   {
     return std::array {
@@ -50,83 +10,6 @@ namespace level_geometry_functions
       D2D1_POINT_2F { 0.5, -0.5 },
       D2D1_POINT_2F { 0.5, 0.5 },
       D2D1_POINT_2F { -0.5, 0.5 }
-    };
-  }
-
-  constexpr float geometryWidth = 1.0f;
-  constexpr float exitWidth = 0.2f;
-  constexpr float exitHeight = 0.1f;
-
-  inline constexpr auto [[nodiscard]] GetBoundaryWallsGeometryData()
-  {
-    return std::array {
-      D2D1_POINT_2F { -geometryWidth / 2.0f, -geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { geometryWidth / 2.0f, -geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { geometryWidth / 2.0f, -exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, -exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f, exitWidth / 2.0f },
-
-      D2D1_POINT_2F { geometryWidth / 2.0f, geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { -geometryWidth / 2.0f, geometryWidth / 2.0f },
-
-      D2D1_POINT_2F { -geometryWidth / 2.0f, exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, -exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f, -exitWidth / 2.0f }
-    };
-  }
-
-  inline constexpr auto [[nodiscard]] GetBoundaryLeftExitGeometryData()
-  {
-    return std::array {
-      D2D1_POINT_2F { -geometryWidth / 2.0f, exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f - exitHeight, -exitWidth / 2.0f },
-      D2D1_POINT_2F { -geometryWidth / 2.0f, -exitWidth / 2.0f }
-    };
-  }
-
-  inline constexpr auto [[nodiscard]] GetBoundaryTopExitGeometryData()
-  {
-    return std::array {
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f - exitHeight },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, -geometryWidth / 2.0f }
-    };
-  }
-
-  inline constexpr auto [[nodiscard]] GetBoundaryRightExitGeometryData()
-  {
-    return std::array {
-      D2D1_POINT_2F { geometryWidth / 2.0f, -exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, -exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f + exitHeight, exitWidth / 2.0f },
-      D2D1_POINT_2F { geometryWidth / 2.0f, exitWidth / 2.0f }
-    };
-  }
-
-  inline constexpr auto [[nodiscard]] GetBoundaryBottomExitGeometryData()
-  {
-    return std::array {
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f },
-      D2D1_POINT_2F { 0.0f + exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f + exitHeight },
-      D2D1_POINT_2F { 0.0f - exitWidth / 2.0f, geometryWidth / 2.0f }
     };
   }
 
@@ -160,16 +43,5 @@ namespace level_geometry_functions
       D2D1_POINT_2F { -0.3, -0.5 }
     };
   }
-
-  inline auto GetPlayerShieldElipse() -> D2D1_ELLIPSE
-  {
-    return D2D1::Ellipse({ 0, 0 }, 50, 50);
-  }
-
-  inline auto GetCircle() -> D2D1_ELLIPSE
-  {
-    return D2D1::Ellipse({ 0, 0 }, 1, 1);
-  }
-
 
 }
