@@ -179,10 +179,6 @@ inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range
 
 inline auto level_geometries::LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, int pixelSize) -> winrt::com_ptr<ID2D1Geometry>
 {
-  // std::vector<POINT_2I> pointData;
-  // pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
-  // auto pointDataAsFloat = std::ranges::views::transform(pointData, [](auto&& pointData) { return ToFloat(pointData); });
-
   auto populatedPixels = std::ranges::views::filter(pixelData, [](auto&& pixelValue) -> bool
   {
     auto&& [column, row, value] = pixelValue;
