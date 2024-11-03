@@ -66,12 +66,9 @@ inline auto image_data<container_type>::const_iterator::operator++() -> const_it
 template <typename container_type>
 inline auto image_data<container_type>::const_iterator::operator++(int) -> const_iterator
 {
-  auto thisCopy = *this;
-  auto next = m_container->Next(m_column, m_row);
-  m_column = next.m_column;
-  m_row = next.m_row;
-  m_value = { m_column, m_row, m_container->Get(m_column, m_row) };
-  return thisCopy;
+  auto copyOfThis = *this;
+  ++(*this);
+  return copyOfThis;
 }
 
 template <typename container_type>
