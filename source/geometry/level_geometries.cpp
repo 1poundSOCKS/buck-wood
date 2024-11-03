@@ -30,8 +30,7 @@ level_geometries::level_geometries()
   m_portal = LoadAndCentreGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadAndCentreGeometry(m_powerupPixelImage, { 20, 20 });
 
-  image_data imageData { m_playerThrustPixelImage };
-  LoadAndCentreGeometryData(std::begin(imageData), std::end(imageData), 16, std::back_inserter(m_playerThrustData));
+  LoadAndCentreGeometryData(image_data { m_playerThrustPixelImage }, 16, std::back_inserter(m_playerThrustData));
   auto playerThrustBoundary = point_data::GetBounds(m_playerThrustData);
   for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
   m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);

@@ -10,9 +10,11 @@ public:
 
   public:
 
+    using iterator_category = std::input_iterator_tag;
     using difference_type = std::ptrdiff_t;
     using value_type = std::tuple<int, int, char>;
 
+    const_iterator() = default;
     const_iterator(const image_data* container, int column, int row);
 
     auto operator++() -> const_iterator&;
@@ -22,10 +24,10 @@ public:
 
   private:
 
-    const image_data* m_container;
-    int m_column;
-    int m_row;
-    value_type m_value;
+    const image_data* m_container { nullptr };
+    int m_column { 0 };
+    int m_row { 0 };
+    value_type m_value { 0, 0, ' ' };
 
   };
 
