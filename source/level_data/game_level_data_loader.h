@@ -2,7 +2,6 @@
 
 #include "level_update_event.h"
 #include "fractional_counter.h"
-#include "cell_size.h"
 #include "level_data.h"
 #include "geometry/image_data.h"
 
@@ -19,8 +18,8 @@ public:
   static auto loadLevel(int levelIndex, level_container& levelContainer) -> bool;
   static [[nodiscard]] auto testLoadLevel(int levelIndex) -> bool;
   static auto loadEmptyCellData(int levelIndex, auto&& cellDataInserter) noexcept -> void;
-  static [[nodiscard]] auto getCellFromPosition(POINT_2F position) noexcept -> cell_id;
-  static [[nodiscard]] auto cellsAreVisibleToEachOther(cell_id cellId1, cell_id cell_id2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
+  static [[nodiscard]] auto getCellFromPosition(POINT_2F position) noexcept -> POINT_2I;
+  static [[nodiscard]] auto cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
 
 private:
 
@@ -72,11 +71,11 @@ inline auto game_level_data_loader::loadEmptyCellData(int levelIndex, auto && ce
   m_instance->LoadEmptyCellData(levelIndex, cellDataInserter);
 }
 
-inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexcept -> cell_id
+inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexcept -> POINT_2I
 {
   auto integerPosition = ToInt(position);
   auto shiftedPosition = POINT_2I { integerPosition.x + m_instance->m_cellWidth / 2, integerPosition.y + m_instance->m_cellHeight / 2 };
-  return cell_id { shiftedPosition.x / m_instance->m_cellWidth, shiftedPosition.y / m_instance->m_cellHeight };
+  return { shiftedPosition.x / m_instance->m_cellWidth, shiftedPosition.y / m_instance->m_cellHeight };
 }
 
 auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto&& pointInserter) noexcept -> void

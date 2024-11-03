@@ -103,9 +103,9 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
   return true;
 }
 
-auto game_level_data_loader::cellsAreVisibleToEachOther(cell_id cellId1, cell_id cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
+auto game_level_data_loader::cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
 {
-  cell_path cellPath { cellId1, cellId2 };
+  cell_path cellPath { { cellId1.x, cellId1.y }, { cellId2.x, cellId2.y } };
   return std::accumulate(std::begin(cellPath), std::end(cellPath), true, [&emptyCellLookup](bool visible, auto&& cellId)
   {
     auto cellPosition = cellId.Position();

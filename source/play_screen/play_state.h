@@ -42,7 +42,7 @@ private:
   std::set<std::pair<int,int>> m_emptyCellLookup;
   std::optional<player_ship_state> m_playerState;
   player_ship_state m_lastPlayerState;
-  std::optional<cell_id> m_playerCell;
+  std::optional<POINT_2I> m_playerCell;
 };
 
 auto play_state::VisitObject(auto &&object) const noexcept -> void
