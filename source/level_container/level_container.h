@@ -56,10 +56,8 @@ private:
   auto DoCollisions() -> void;
 
   auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void;
-  auto OnCollision(player_bullet& bullet, level_cell& wall, geometry_collision::result result) -> void;
   auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
-  auto OnCollision(enemy_bullet& bullet, level_cell& wall, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;

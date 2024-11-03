@@ -1,14 +1,6 @@
 #include "pch.h"
 #include "level_collision_geometry.h"
 
-auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, level_cell& object) -> void
-{
-  if( object.Type() == level_cell_type::wall )
-  {
-    m_wallGeometries.Add(defaultObject);
-  }
-}
-
 auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void
 {
   m_playerGeometries.Add(defaultObject);

@@ -17,7 +17,6 @@ public:
 
 private:
 
-  auto AddCollisionGeometry(default_object& defaultObject, level_cell& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, player_ship& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, player_bullet& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, enemy_ship& object) -> void;

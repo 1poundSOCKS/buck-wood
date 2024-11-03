@@ -143,14 +143,6 @@ auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geom
   }
 }
 
-auto level_container::OnCollision(player_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    bullet.Destroy();
-  }
-}
-
 auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::containment )
@@ -162,14 +154,6 @@ auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundar
 
 auto level_container::OnCollision(enemy_ship &enemyShip, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
 {
-}
-
-auto level_container::OnCollision(enemy_bullet &bullet, level_cell &wall, geometry_collision::result result) -> void
-{
-  if( result != geometry_collision::result::none )
-  {
-    bullet.Destroy();
-  }
 }
 
 auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry_collision::result result) -> void

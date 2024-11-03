@@ -8,7 +8,5 @@
 #include "objects/power_up.h"
 #include "objects/blank_object.h"
 #include "objects/background_object.h"
-#include "objects/level_cell.h"
 #include "objects/particle.h"
 #include "objects/boundary_walls.h"
-#include "objects/boundary_exit.h"

@@ -8,15 +8,13 @@ class default_object
 public:
 
   using object_type = std::variant<
-    level_cell, 
     player_ship, 
     player_bullet, 
     enemy_bullet, 
     power_up, 
     portal, 
     enemy_ship, 
-    boundary_walls,
-    boundary_exit
+    boundary_walls
   >;
 
   template <typename variant_type, typename...Args>
