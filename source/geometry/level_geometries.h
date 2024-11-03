@@ -3,6 +3,7 @@
 #include "default_object.h"
 #include "level_geometry_functions.h"
 #include "geometry/point_data.h"
+#include "boundary_data.h"
 
 class level_geometries
 {
@@ -15,8 +16,11 @@ public:
   static [[nodiscard]] auto get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>;
+  static [[nodiscard]] auto updateBoundaryWalls(int levelIndex) -> void;
+  
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&;
+  
 
 private:
 
@@ -122,7 +126,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_enemyBullet;
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
-  std::map<int, winrt::com_ptr<ID2D1Geometry>> m_boundaryWallsLookup;
+  winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;
 
 };
 
@@ -139,6 +143,11 @@ inline [[nodiscard]] auto level_geometries::get(const default_object& defaultObj
 inline auto level_geometries::getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>
 {
   return m_instance->m_playerThrust;
+}
+
+inline auto level_geometries::updateBoundaryWalls(int levelIndex) -> void
+{
+  m_instance->m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(levelIndex), D2D1_FIGURE_END_CLOSED);
 }
 
 auto level_geometries::Get(auto &&object) -> winrt::com_ptr<ID2D1Geometry>

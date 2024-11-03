@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "level_geometries.h"
 #include "level_data.h"
-#include "boundary_data.h"
 
 auto level_geometries::create() -> void
 {
@@ -36,12 +35,7 @@ level_geometries::level_geometries()
   for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
   m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
 
-  std::transform(boundary_data::begin(), boundary_data::end(), std::inserter(m_boundaryWallsLookup, std::begin(m_boundaryWallsLookup)), [](auto&& dataEntry) -> std::pair<int, winrt::com_ptr<ID2D1Geometry>>
-  {
-    auto&& [index, data] = dataEntry;
-    auto geometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), data, D2D1_FIGURE_END_CLOSED);
-    return { index, geometry };
-  });
+  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(0), D2D1_FIGURE_END_CLOSED);
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
@@ -85,8 +79,7 @@ auto level_geometries::Get(const power_up &object) -> winrt::com_ptr<ID2D1Geomet
 
 auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>
 {
-  auto geometryEntry = m_boundaryWallsLookup.find(object.Level());
-  return geometryEntry != m_boundaryWallsLookup.end() ? geometryEntry->second : m_rectangleGeometry;
+  return m_boundaryWalls;
 }
 
 auto level_geometries::LoadHudTargetGeometries(auto&& geometryInserter) -> void
