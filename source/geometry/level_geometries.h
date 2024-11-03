@@ -2,7 +2,6 @@
 
 #include "default_object.h"
 #include "level_geometry_functions.h"
-#include "pixel_geometry_loader.h"
 #include "geometry/point_data.h"
 
 class level_geometries
