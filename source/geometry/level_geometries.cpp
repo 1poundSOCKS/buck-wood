@@ -20,13 +20,8 @@ auto level_geometries::destroy() -> void
 
 level_geometries::level_geometries()
 {
-  LoadAndCentreGeometryData(m_playerThrustPixelImage, { 16, 16 }, std::back_inserter(m_playerThrustData));
-  auto playerThrustBoundary = pixel_geometry_loader::getGeometryBounds(m_playerThrustData);
-  for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
-
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
   m_player = LoadAndCentreGeometry(m_playerPixelImage, { 16, 16 });
-  m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
   m_playerBullet = LoadAndCentreGeometry(m_playerBulletPixelImage, { 40, 40 });
   m_enemy1 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
   m_enemy2 = LoadAndCentreGeometry(m_enemyStalkerPixelImage, { 16, 16 });
@@ -34,6 +29,12 @@ level_geometries::level_geometries()
   m_enemyBullet = LoadAndCentreGeometry(m_enemyBulletPixelImage, { 70, 70 });
   m_portal = LoadAndCentreGeometry(m_portalPixelImage, { 40, 40 });
   m_powerUp = LoadAndCentreGeometry(m_powerupPixelImage, { 20, 20 });
+
+  image_data imageData { m_playerThrustPixelImage };
+  LoadAndCentreGeometryData(std::begin(imageData), std::end(imageData), 16, std::back_inserter(m_playerThrustData));
+  auto playerThrustBoundary = point_data::GetBounds(m_playerThrustData);
+  for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
+  m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
 
   std::transform(boundary_data::begin(), boundary_data::end(), std::inserter(m_boundaryWallsLookup, std::begin(m_boundaryWallsLookup)), [](auto&& dataEntry) -> std::pair<int, winrt::com_ptr<ID2D1Geometry>>
   {

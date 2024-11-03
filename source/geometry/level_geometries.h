@@ -3,6 +3,7 @@
 #include "default_object.h"
 #include "level_geometry_functions.h"
 #include "pixel_geometry_loader.h"
+#include "geometry/point_data.h"
 
 class level_geometries
 {
@@ -35,7 +36,7 @@ private:
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
 
-  static [[nodiscard]] auto LoadAndCentreGeometryData(std::ranges::input_range auto &&pixelData, cell_size pixelSize, auto&& pointDataInserter) -> void;
+  static [[nodiscard]] auto LoadAndCentreGeometryData(auto pixelDataBegin, auto pixelDataEnd, int pixelSize, auto&& pointDataInserter) -> void;
   static [[nodiscard]] auto LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto LoadGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize, float shiftX, float shiftY) -> winrt::com_ptr<ID2D1Geometry>;
 
@@ -159,15 +160,23 @@ inline [[nodiscard]] auto level_geometries::HudTargetGeometries() -> const std::
   return m_instance->m_hudTargetGeometries;
 }
 
-inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range auto &&pixelData, cell_size pixelSize, auto &&pointDataInserter) -> void
+inline auto level_geometries::LoadAndCentreGeometryData(auto pixelDataBegin, auto pixelDataEnd, int pixelSize, auto &&pointDataInserter) -> void
 {
-  std::vector<POINT_2I> pointData;
-  pixel_geometry_loader::imageDataToOrderedPointData(pixelData, pixelSize, std::back_inserter(pointData), [](auto&& pixelData) -> bool { return pixelData.value == '0'; });
-  auto pointDataAsFloat = std::ranges::views::transform(pointData, [](auto&& pointData) { return ToFloat(pointData); });
-  auto geometryBounds = pixel_geometry_loader::getGeometryBounds(pointDataAsFloat);
+  std::vector<std::tuple<int, int, char>> pixelValues;
+  std::copy_if(pixelDataBegin, pixelDataEnd, std::back_inserter(pixelValues), [](auto&& pixelValue) -> bool
+  {
+    auto&& [column, row, value] = pixelValue;
+    return value == '0';
+  });
+  
+  std::vector<POINT_2F> orderedPoints;
+  point_data::CellsToBoundary(pixelValues, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+
+  auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
   auto shiftUp = ( geometryBounds.bottom + geometryBounds.top ) / 2.0f;
-  std::ranges::transform(pointData, pointDataInserter, [shiftLeft,shiftUp](auto&& pointData) -> POINT_2F { return { pointData.x - shiftLeft, pointData.y - shiftUp }; });
+
+  std::ranges::transform(orderedPoints, pointDataInserter, [shiftLeft,shiftUp](auto&& pointData) -> POINT_2F { return { pointData.x - shiftLeft, pointData.y - shiftUp }; });
 }
 
 inline auto level_geometries::LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, cell_size pixelSize) -> winrt::com_ptr<ID2D1Geometry>
