@@ -40,7 +40,8 @@ private:
 
   inline static game_level_data_loader* m_instance { nullptr };
 
-  cell_size m_cellSize;
+  int m_cellWidth;
+  int m_cellHeight;
 
 };
 
@@ -73,7 +74,9 @@ inline auto game_level_data_loader::loadEmptyCellData(int levelIndex, auto && ce
 
 inline auto game_level_data_loader::getCellFromPosition(POINT_2F position) noexcept -> cell_id
 {
-  return m_instance->m_cellSize.CellId(ToInt(position));
+  auto integerPosition = ToInt(position);
+  auto shiftedPosition = POINT_2I { integerPosition.x + m_instance->m_cellWidth / 2, integerPosition.y + m_instance->m_cellHeight / 2 };
+  return cell_id { shiftedPosition.x / m_instance->m_cellWidth, shiftedPosition.y / m_instance->m_cellHeight };
 }
 
 auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto&& pointInserter) noexcept -> void
@@ -92,7 +95,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, s
         leftCellId = { leftCellId.first - 1, leftCellId.second };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
+      pointInserter = ToFloat(POINT_2I { cellId.first * m_cellWidth, cellId.second * m_cellHeight });
 
       auto rightCellId = std::pair<int, int>(column + 1, row);
 
@@ -102,7 +105,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, s
         rightCellId = { rightCellId.first + 1, rightCellId.second };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
+      pointInserter = ToFloat(POINT_2I { cellId.first * m_cellWidth, cellId.second * m_cellHeight });
       break;
     }
 
@@ -116,7 +119,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, s
         topCellId = { topCellId.first, topCellId.second - 1 };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
+      pointInserter = ToFloat(POINT_2I { cellId.first * m_cellWidth, cellId.second * m_cellHeight });
 
       auto bottomCellId = std::pair<int, int>(column, row + 1);
 
@@ -126,7 +129,7 @@ auto game_level_data_loader::GetEnemyMovementPath(movement_path_type pathType, s
         bottomCellId = { bottomCellId.first, bottomCellId.second + 1 };
       }
 
-      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(cellId.first, cellId.second)));
+      pointInserter = ToFloat(POINT_2I { cellId.first * m_cellWidth, cellId.second * m_cellHeight });
       break;
     }
 
@@ -139,7 +142,7 @@ inline auto game_level_data_loader::GetEnemyMovementArea(std::pair<int, int> cel
 {
   auto&& [column, row] = cellId;
 
-  pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(column, row)));
+  pointInserter = ToFloat(POINT_2I { column * m_cellWidth, row * m_cellHeight });
 
   auto cellPosition = ToFloat(cell_id(column, row).Position());
 
@@ -151,7 +154,7 @@ inline auto game_level_data_loader::GetEnemyMovementArea(std::pair<int, int> cel
 
     if( direct2d::GetDistanceBetweenPoints(cellPosition, emptyCellPosition)  < maxDistance )
     {
-      pointInserter = ToFloat(m_cellSize.CellPosition(cell_id(emptyColumn, emptyRow)));
+      pointInserter = ToFloat(POINT_2I { emptyColumn * m_cellWidth, emptyRow * m_cellHeight });
     }
   }
 }

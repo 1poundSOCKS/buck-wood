@@ -5,7 +5,7 @@
 #include "cell_path.h"
 #include "boundary_data.h"
 
-game_level_data_loader::game_level_data_loader(int cellWidth, int cellHeight) : m_cellSize { cellWidth, cellHeight }
+game_level_data_loader::game_level_data_loader(int cellWidth, int cellHeight) : m_cellWidth { cellWidth }, m_cellHeight { cellHeight }
 {
 }
 
@@ -57,7 +57,7 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
   {
     auto&& [column, row, type] = object;
     auto cellId = std::pair<int, int>(column, row);
-    auto position = ToFloat(m_cellSize.CellPosition(cell_id { column, row }));
+    auto position = ToFloat(POINT_2I { cellId.first * m_cellWidth, cellId.second * m_cellHeight });
     auto scale = SCALE_2F { 1.0f, 1.0f };
     auto angle = 0.0f;
 
@@ -99,9 +99,6 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
         break;
     }
   }
-
-  auto visible = cellsAreVisibleToEachOther({0,0}, {1,1}, emptyCellLookup);
-  visible;
 
   return true;
 }
