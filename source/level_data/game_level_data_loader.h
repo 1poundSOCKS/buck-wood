@@ -29,6 +29,7 @@ private:
   [[nodiscard]] auto LoadLevel(int levelIndex, level_container& levelContainer) -> bool;
   [[nodiscard]] auto TestLoadLevel(int levelIndex) -> bool;
   auto LoadEmptyCellData(int levelIndex, auto &&cellDataInserter) noexcept -> void;
+  auto LoadInnerWalls(auto&& innerWalls) -> void;
   [[nodiscard]] auto LoadObjectData(int levelIndex, const std::set<std::pair<int, int>>& emptyCellLookup, level_container& levelContainer) -> bool;
   auto GetEnemyMovementPath(movement_path_type pathType, std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, auto &&pointInserter) noexcept -> void;
   auto GetEnemyMovementArea(std::pair<int, int> cellId, const std::set<std::pair<int, int>>& emptyCellLookup, float maxDistance, auto &&pointInserter) noexcept -> void;
@@ -172,4 +173,8 @@ auto game_level_data_loader::LoadEmptyCellData(int levelIndex, auto&& cellDataIn
     auto&& [column, row, type] = cellDataItem;
     return { column, row };
   });
+}
+
+inline auto game_level_data_loader::LoadInnerWalls(auto && innerWalls) -> void
+{
 }

@@ -26,6 +26,15 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
   });
 
   levelContainer.Objects().Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, levelIndex);
+
+  std::vector<int> innerWalls;
+  LoadInnerWalls(std::back_inserter(innerWalls));
+
+  for( auto innerWall : innerWalls )
+  {
+    levelContainer.Objects().Add(std::in_place_type<inner_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, innerWall);
+  }
+
   return LoadObjectData(levelIndex, emptyCellLookup, levelContainer);
 }
 

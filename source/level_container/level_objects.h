@@ -9,3 +9,4 @@
 #include "objects/background_object.h"
 #include "objects/particle.h"
 #include "objects/boundary_walls.h"
+#include "objects/inner_walls.h"
