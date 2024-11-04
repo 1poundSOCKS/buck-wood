@@ -40,7 +40,7 @@ namespace level_data
     std::string_view { "XXXXXXXX            XX       XXXX" },
     std::string_view { "XXXXXXXXX                       X" },
     std::string_view { "XXXXXX         O               XX" },
-    std::string_view { "XXXXXXX           Y       P      " },
+    std::string_view { "XXXXXXX           X       P      " },
     std::string_view { "XXXXXXXX                       XX" },
     std::string_view { "XXXXXXXXXXXXX   X  X X    XXXXXXX" }
   };
