@@ -10,8 +10,7 @@ level_container::level_container() : level_container(range_comparison_runner::ex
 }
 
 level_container::level_container(range_comparison_runner::execution ex, collision_type collisionType) : 
-  m_collisionRunner { ex, collisionType },
-  m_boundary { 0.0f, 0.0f, 0.0f, 0.0f }
+  m_collisionRunner { ex, collisionType }
 {
 }
 

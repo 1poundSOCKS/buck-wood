@@ -28,14 +28,10 @@ public:
   level_container(range_comparison_runner::execution ex, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto CreateBoundary(int levelIndex, std::ranges::input_range auto&& pointData) -> void;
-
   auto Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void;
   auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
-
-  [[nodiscard]] auto Boundary() const -> RECT_F;
 
   [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
   [[nodiscard]] auto Objects() noexcept -> default_object_collection&;
@@ -70,8 +66,6 @@ private:
   static constexpr auto m_cellWidth { static_cast<float>(m_cellSize) };
   static constexpr auto m_cellHeight { static_cast<float>(m_cellSize) };
 
-  RECT_F m_boundary;
-
   default_object_collection m_objects;
 
   level_collision_geometry m_collisionGeometry;
@@ -88,21 +82,6 @@ inline auto level_container::PlayerState() const noexcept -> const std::optional
     auto&& playerShip = object.GetIf<player_ship>();
     return object.HoldsAlternative<player_ship>() ? std::optional<player_ship_state>(playerShip->StateValue()) : playerState;
   });
-}
-
-auto level_container::CreateBoundary(int levelIndex, std::ranges::input_range auto&& pointData) -> void
-{
-  m_objects.Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, levelIndex);
-
-  m_boundary = std::accumulate(std::begin(pointData), std::end(pointData), RECT_F { 0, 0, 0, 0 }, [](RECT_F bounds, POINT_2F pointData) -> RECT_F
-  {
-    return { std::min(bounds.left, pointData.x), std::min(bounds.top, pointData.y), std::max(bounds.right, pointData.x), std::max(bounds.bottom, pointData.y) };
-  });
-}
-
-inline [[nodiscard]] auto level_container::Boundary() const -> RECT_F
-{
-  return m_boundary;
 }
 
 inline auto level_container::Objects() const noexcept -> const default_object_collection &

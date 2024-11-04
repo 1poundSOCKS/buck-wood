@@ -25,15 +25,8 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
     return { column, row };
   });
 
-  if( LoadObjectData(levelIndex, emptyCellLookup, levelContainer) )
-  {
-    levelContainer.CreateBoundary(levelIndex, boundary_data::get(levelIndex));
-    return true;
-  }
-  else
-  {
-    return false;
-  }
+  levelContainer.Objects().Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, levelIndex);
+  return LoadObjectData(levelIndex, emptyCellLookup, levelContainer);
 }
 
 auto game_level_data_loader::TestLoadLevel(int levelIndex) -> bool
