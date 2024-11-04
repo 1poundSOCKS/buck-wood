@@ -19,6 +19,7 @@ private:
 
   boundary_data(int cellWidth, int cellHeight);
   auto Add(int index, int cellWidth, int cellHeight) noexcept -> void;
+  static [[nodiscard]] auto Bounds(std::ranges::input_range auto&& cellData) noexcept -> RECT_I;
 
   inline static boundary_data* m_instance { nullptr };
   std::map<int, std::vector<std::tuple<int, int, level_data::cell_type>>> m_levelData;
@@ -53,4 +54,15 @@ inline boundary_data::boundary_data(int cellWidth, int cellHeight)
   Add(0, cellWidth, cellHeight);
   Add(1, cellWidth, cellHeight);
   Add(2, cellWidth, cellHeight);
+}
+
+auto boundary_data::Bounds(std::ranges::input_range auto &&cellData) noexcept -> RECT_I
+{
+  static_assert(std::is_same_v<std::ranges::range_value_t<decltype(cellData)>, std::tuple<int, int, level_data::cell_type>>);
+
+  return std::accumulate(std::begin(cellData), std::end(cellData), RECT_I { 0, 0, 0, 0 }, [](RECT_I bounds, auto&& cell) -> RECT_I
+  {
+    auto&& [column, row, type] = cell;
+    return { std::min(bounds.left, column), std::min(bounds.top, row), std::max(bounds.right, column), std::max(bounds.bottom, row) };
+  });
 }

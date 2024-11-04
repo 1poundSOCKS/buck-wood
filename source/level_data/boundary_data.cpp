@@ -6,6 +6,8 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
   std::vector<std::tuple<int, int, level_data::cell_type>> cellData;
   level_data::CopyCellData(index, std::back_inserter(cellData));
 
+  auto bounds = Bounds(cellData);
+
   m_levelData.insert({index, cellData});
 
   auto emptyCells = std::ranges::views::filter(cellData, [](auto&& cellDataItem) -> bool
