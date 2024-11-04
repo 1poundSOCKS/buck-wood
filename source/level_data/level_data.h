@@ -157,35 +157,26 @@ auto level_data::CopyCellData(int index, auto &&inserter) -> void
   switch( index )
   {
     case 0:
-    {
-      image_data imageData { levelData_0 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
+      std::ranges::transform(image_data { levelData_0 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToCellData(value) };
       });
       break;
-    }
     case 1:
-    {
-      image_data imageData { levelData_1 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
+      std::ranges::transform(image_data { levelData_1 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToCellData(value) };
       });
       break;
-    }
     case 2:
-    {
-      image_data imageData { levelData_2 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
+      std::ranges::transform(image_data { levelData_2 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, cell_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToCellData(value) };
       });
       break;
-    }
   }
 }
 
@@ -194,34 +185,25 @@ auto level_data::CopyObjectData(int index, auto &&inserter) -> void
   switch( index )
   {
     case 0:
-    {
-      image_data imageData { levelData_0 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
+      std::ranges::transform(image_data { levelData_0 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToObjectData(value) };
       });
       break;
-    }
     case 1:
-    {
-      image_data imageData { levelData_1 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
+      std::ranges::transform(image_data { levelData_1 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToObjectData(value) };
       });
       break;
-    }
     case 2:
-    {
-      image_data imageData { levelData_2 };
-      std::transform(std::begin(imageData), std::end(imageData), inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
+      std::ranges::transform(image_data { levelData_2 }, inserter, [](auto&& dataItem) -> std::tuple<int, int, object_type>
       {
         auto&& [column, row, value] = dataItem;
         return { column, row, ConvertToObjectData(value) };
       });
       break;
-    }
   }
 }
