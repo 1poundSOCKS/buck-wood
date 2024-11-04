@@ -17,7 +17,7 @@ auto level_geometries::destroy() -> void
   }
 }
 
-level_geometries::level_geometries()
+level_geometries::level_geometries() : m_currentLevelIndex { 0 }
 {
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
 
@@ -35,7 +35,7 @@ level_geometries::level_geometries()
   for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
   m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
 
-  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(0), D2D1_FIGURE_END_CLOSED);
+  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(m_currentLevelIndex), D2D1_FIGURE_END_CLOSED);
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }
@@ -79,6 +79,12 @@ auto level_geometries::Get(const power_up &object) -> winrt::com_ptr<ID2D1Geomet
 
 auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1Geometry>
 {
+  if( object.Level() != m_currentLevelIndex )
+  {
+    m_currentLevelIndex = object.Level();
+    updateBoundaryWalls(m_currentLevelIndex);
+  }
+
   return m_boundaryWalls;
 }
 

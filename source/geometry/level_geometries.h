@@ -16,11 +16,9 @@ public:
   static [[nodiscard]] auto get(const default_object& defaultObject) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto get(auto&& object) -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>;
-  static [[nodiscard]] auto updateBoundaryWalls(int levelIndex) -> void;
   
   static [[nodiscard]] auto RectangleGeometry() -> winrt::com_ptr<ID2D1Geometry>;
   static [[nodiscard]] auto HudTargetGeometries() -> const std::vector<winrt::com_ptr<ID2D1Geometry>>&;
-  
 
 private:
 
@@ -36,6 +34,8 @@ private:
 
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
+  
+  static [[nodiscard]] auto updateBoundaryWalls(int levelIndex) -> void;
 
   static [[nodiscard]] auto LoadAndCentreGeometryData(std::ranges::input_range auto&& pixelData, int pixelSize, auto&& pointDataInserter) -> void;
   static [[nodiscard]] auto LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, int pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
@@ -126,6 +126,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_enemyBullet;
   winrt::com_ptr<ID2D1Geometry> m_portal;
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
+  int m_currentLevelIndex;
   winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;
 
 };
