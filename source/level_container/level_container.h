@@ -62,10 +62,6 @@ private:
 
 private:
 
-  static constexpr int m_cellSize { 250 };
-  static constexpr auto m_cellWidth { static_cast<float>(m_cellSize) };
-  static constexpr auto m_cellHeight { static_cast<float>(m_cellSize) };
-
   default_object_collection m_objects;
 
   level_collision_geometry m_collisionGeometry;
