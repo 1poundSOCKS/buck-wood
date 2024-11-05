@@ -35,7 +35,7 @@ level_geometries::level_geometries() : m_currentLevelIndex { 0 }
   for( auto&& pointData : m_playerThrustData ) { pointData.y -= playerThrustBoundary.top; }
   m_playerThrust = direct2d::CreatePathGeometry(d2d_factory::get_raw(), m_playerThrustData, D2D1_FIGURE_END_CLOSED);
 
-  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(m_currentLevelIndex), D2D1_FIGURE_END_CLOSED);
+  UpdateBoundaryWalls(m_currentLevelIndex);
 
   LoadHudTargetGeometries(std::back_inserter(m_hudTargetGeometries));
 }

@@ -34,8 +34,9 @@ private:
 
   static [[nodiscard]] auto Scale(ID2D1Geometry* geometry, SIZE_F size) -> SCALE_2F;
   static [[nodiscard]] auto LoadHudTargetGeometries(auto&& geometryInserter) -> void;
-  
   static [[nodiscard]] auto updateBoundaryWalls(int levelIndex) -> void;
+  
+  auto UpdateBoundaryWalls(int levelIndex) -> void;
 
   static [[nodiscard]] auto LoadAndCentreGeometryData(std::ranges::input_range auto&& pixelData, int pixelSize, auto&& pointDataInserter) -> void;
   static [[nodiscard]] auto LoadAndCentreGeometry(std::ranges::input_range auto &&pixelData, int pixelSize) -> winrt::com_ptr<ID2D1Geometry>;
@@ -128,6 +129,7 @@ private:
   winrt::com_ptr<ID2D1Geometry> m_powerUp;
   int m_currentLevelIndex;
   winrt::com_ptr<ID2D1Geometry> m_boundaryWalls;
+  std::map<int, winrt::com_ptr<ID2D1Geometry>> m_innerWalls;
 
 };
 
@@ -148,7 +150,19 @@ inline auto level_geometries::getPlayerThrust() -> winrt::com_ptr<ID2D1Geometry>
 
 inline auto level_geometries::updateBoundaryWalls(int levelIndex) -> void
 {
-  m_instance->m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(levelIndex), D2D1_FIGURE_END_CLOSED);
+  m_instance->UpdateBoundaryWalls(levelIndex);
+}
+
+inline auto level_geometries::UpdateBoundaryWalls(int levelIndex) -> void
+{
+  m_boundaryWalls = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::get(levelIndex), D2D1_FIGURE_END_CLOSED);
+
+  m_innerWalls.clear();
+
+  for( auto wallIndex = 0; wallIndex < boundary_data::getInnerWallCount(levelIndex); ++wallIndex )
+  {
+    m_innerWalls[wallIndex] = direct2d::CreatePathGeometry(d2d_factory::get_raw(), boundary_data::getInnerWall(levelIndex, wallIndex), D2D1_FIGURE_END_CLOSED);
+  }
 }
 
 auto level_geometries::Get(auto &&object) -> winrt::com_ptr<ID2D1Geometry>

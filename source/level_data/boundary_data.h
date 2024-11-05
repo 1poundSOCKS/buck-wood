@@ -12,7 +12,9 @@ public:
 
   static auto create(int cellWidth, int cellHeight) noexcept -> void;
   static auto destroy() noexcept -> void;
-  static auto get(int index) -> const std::vector<POINT_2F>&;
+  static auto get(int levelIndex) -> const std::vector<POINT_2F>&;
+  static auto getInnerWallCount(int levelIndex) -> int;
+  static auto getInnerWall(int levelIndex, int innerWallIndex) -> const std::vector<POINT_2F>&;
   static [[nodiscard]] auto indexIsValid(int index) noexcept -> bool;
 
 private:
@@ -22,8 +24,8 @@ private:
   static [[nodiscard]] auto Bounds(std::ranges::input_range auto&& cellData) noexcept -> RECT_I;
 
   inline static boundary_data* m_instance { nullptr };
-  std::map<int, std::vector<std::tuple<int, int, level_data::cell_type>>> m_levelData;
   std::map<int, std::vector<POINT_2F>> m_boundaryData;
+  std::map<int, std::vector<std::vector<POINT_2F>>> m_innerWallData;
 
 };
 
@@ -44,9 +46,19 @@ inline auto boundary_data::get(int index) -> const std::vector<POINT_2F> &
   return m_instance->m_boundaryData[index];
 }
 
+inline auto boundary_data::getInnerWallCount(int levelIndex) -> int
+{
+  return static_cast<int>(m_instance->m_innerWallData[levelIndex].size());
+}
+
+inline auto boundary_data::getInnerWall(int levelIndex, int innerWallIndex) -> const std::vector<POINT_2F> &
+{
+  return m_instance->m_innerWallData[levelIndex][innerWallIndex];
+}
+
 inline auto boundary_data::indexIsValid(int index) noexcept -> bool
 {
-  return m_instance->m_levelData.contains(index);
+  return m_instance->m_boundaryData.contains(index);
 }
 
 inline boundary_data::boundary_data(int cellWidth, int cellHeight)
