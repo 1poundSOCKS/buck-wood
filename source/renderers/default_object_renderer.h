@@ -21,11 +21,13 @@ public:
   auto Write(const enemy_bullet& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const power_up& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const boundary_walls& object, ID2D1Geometry* geometry) const -> void;
+  auto Write(const inner_walls& object, ID2D1Geometry* geometry) const -> void;
   auto Write(const auto& object, ID2D1Geometry* geometry) const -> void;
 
 private:
 
   geometry_renderer m_insideLevelWallsRenderer { screen_render_brush_black.CreateBrush(), screen_render_brush_grey.CreateBrush(), 20.0f };
+  geometry_renderer m_innnerWallRenderer { screen_render_brush_dark_grey.CreateBrush(), screen_render_brush_grey.CreateBrush(), 20.0f };
   geometry_renderer m_backgroundObjectRenderer { screen_render_brush_very_dark_grey.CreateBrush() };
   color_scale_brushes m_targetBrushes { color_scale { screen_render_brush_red.Get(), screen_render_brush_black.Get(), 10 } };
   player_ship_renderer m_playerShipRenderer;

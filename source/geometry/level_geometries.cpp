@@ -88,6 +88,11 @@ auto level_geometries::Get(const boundary_walls &object) -> winrt::com_ptr<ID2D1
   return m_boundaryWalls;
 }
 
+auto level_geometries::Get(const inner_walls &object) -> winrt::com_ptr<ID2D1Geometry>
+{
+  return m_innerWalls[object.Level()];
+}
+
 auto level_geometries::LoadHudTargetGeometries(auto&& geometryInserter) -> void
 {
   auto topLeftGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetHudTargetTopLeftGeometryData(), D2D1_FIGURE_END_OPEN);

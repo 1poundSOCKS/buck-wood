@@ -73,3 +73,8 @@ auto default_object_renderer::Write(const boundary_walls &object, ID2D1Geometry 
 {
   m_insideLevelWallsRenderer.Write(geometry);
 }
+
+auto default_object_renderer::Write(const inner_walls &object, ID2D1Geometry *geometry) const -> void
+{
+  m_innnerWallRenderer.Write(geometry);
+}

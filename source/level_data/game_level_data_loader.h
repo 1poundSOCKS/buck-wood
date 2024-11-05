@@ -174,7 +174,3 @@ auto game_level_data_loader::LoadEmptyCellData(int levelIndex, auto&& cellDataIn
     return { column, row };
   });
 }
-
-inline auto game_level_data_loader::LoadInnerWalls(auto && innerWalls) -> void
-{
-}
