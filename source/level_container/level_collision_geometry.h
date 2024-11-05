@@ -23,6 +23,7 @@ private:
   auto AddCollisionGeometry(default_object& defaultObject, enemy_bullet& object) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, power_up& powerUp) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, boundary_walls& boundaryWalls) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, inner_walls& innerWalls) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, auto& object) -> void;
 
 private:

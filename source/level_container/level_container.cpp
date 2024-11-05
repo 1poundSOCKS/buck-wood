@@ -151,6 +151,15 @@ auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundar
   }
 }
 
+auto level_container::OnCollision(player_bullet &bullet, inner_walls &innerWalls, geometry_collision::result result) -> void
+{
+  if( result != geometry_collision::result::none )
+  {
+    m_particles.Create(particle::type::impact, bullet.Position(), { 0.0f, 0.0f }, 1.0f);
+    bullet.Destroy();
+  }
+}
+
 auto level_container::OnCollision(enemy_ship &enemyShip, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
 {
 }

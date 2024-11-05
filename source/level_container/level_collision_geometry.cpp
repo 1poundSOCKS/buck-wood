@@ -30,3 +30,8 @@ auto level_collision_geometry::AddCollisionGeometry(default_object &defaultObjec
 {
   m_boundaryGeometries.Add(defaultObject);
 }
+
+auto level_collision_geometry::AddCollisionGeometry(default_object &defaultObject, inner_walls &innerWalls) -> void
+{
+  m_boundaryGeometries.Add(defaultObject);
+}

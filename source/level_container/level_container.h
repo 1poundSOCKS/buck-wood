@@ -53,11 +53,13 @@ private:
 
   auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
+  auto OnCollision(player_bullet& bullet, inner_walls& innerWalls, geometry_collision::result result) -> void;
   auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
+  auto OnCollision(auto&& object, inner_walls& innerWalls, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
 private:
@@ -116,6 +118,14 @@ auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_colli
 auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
 {
   if( result != geometry_collision::result::containment )
+  {
+    object.Destroy();
+  }
+}
+
+inline auto level_container::OnCollision(auto &&object, inner_walls &innerWalls, geometry_collision::result result) -> void
+{
+  if( result != geometry_collision::result::none )
   {
     object.Destroy();
   }
