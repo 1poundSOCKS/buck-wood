@@ -174,7 +174,7 @@ inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range
     return value == '0';
   });
   
-  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> std::pair<int,int>
+  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> POINT_2I
   {
     auto&& [column, row, value] = pixelDataItem;
     return { column, row };
@@ -198,7 +198,7 @@ inline auto level_geometries::LoadAndCentreGeometry(std::ranges::input_range aut
     return value == '0';
   });
 
-  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> std::pair<int,int>
+  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> POINT_2I
   {
     auto&& [column, row, value] = pixelDataItem;
     return { column, row };

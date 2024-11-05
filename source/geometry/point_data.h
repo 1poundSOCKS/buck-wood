@@ -7,9 +7,9 @@ namespace point_data
 
   auto CellsToBoundary(std::ranges::input_range auto&& emptyCellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void
   {
-    static_assert(std::is_same_v<std::ranges::range_value_t<decltype(emptyCellIds)>, std::pair<int, int>>);
+    static_assert(std::is_same_v<std::ranges::range_value_t<decltype(emptyCellIds)>, POINT_2I>);
     
-    std::set<std::pair<int,int>> cellIdLookup;
+    std::set<POINT_2I> cellIdLookup;
     std::ranges::copy(emptyCellIds, std::inserter(cellIdLookup, std::begin(cellIdLookup)));
     
     using line_data = std::pair<POINT_2I, POINT_2I>;
@@ -19,10 +19,10 @@ namespace point_data
     {
       auto&& [column, row] = cellId;
 
-      auto leftId = std::pair<int,int> { column - 1, row };
-      auto aboveId = std::pair<int,int> { column, row - 1 };
-      auto rightId = std::pair<int,int> { column + 1, row };
-      auto belowId = std::pair<int,int> { column, row + 1 };
+      auto leftId = POINT_2I { column - 1, row };
+      auto aboveId = POINT_2I { column, row - 1 };
+      auto rightId = POINT_2I { column + 1, row };
+      auto belowId = POINT_2I { column, row + 1 };
 
       if( !cellIdLookup.contains(leftId) )
       {

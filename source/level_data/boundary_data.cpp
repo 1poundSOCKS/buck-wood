@@ -16,7 +16,7 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
     return type == level_data::cell_type::empty;
   });
 
-  auto emptyCellIds = std::ranges::views::transform(emptyCells, [](auto&& cellDataItem) -> std::pair<int,int>
+  auto emptyCellIds = std::ranges::views::transform(emptyCells, [](auto&& cellDataItem) -> POINT_2I
   {
     auto&& [column, row, value] = cellDataItem;
     return { column, row };
