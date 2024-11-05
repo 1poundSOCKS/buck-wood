@@ -25,5 +25,8 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
   std::vector<POINT_2F> boundaryData;
   point_data::CellsIdsToOrderedBoundaryPoints(emptyCellIds, cellWidth, cellHeight, std::back_inserter(boundaryData));
 
+  std::vector<std::vector<POINT_2F>> boundaries;
+  point_data::CellsIdsToBoundaries(emptyCellIds, cellWidth, cellHeight, std::back_inserter(boundaries));
+
   m_boundaryData[index] = boundaryData;
 }
