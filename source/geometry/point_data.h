@@ -6,7 +6,7 @@ namespace point_data
 {
   auto CellsIdsToOrderedBoundaryPoints(std::ranges::input_range auto&& cellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void;
   auto CellsIdsToBoundaryLines(std::ranges::input_range auto&& cellIds, auto lineInserter) -> void;
-  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter) -> void;
+  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter, auto remainingLineInserter) -> void;
   auto BoundaryPointsToNormalizedBoundaryPoints(std::ranges::input_range auto&& pointData, auto boundaryInserter) -> void;
   auto GetBounds(std::ranges::input_range auto &&pointData) -> RECT_F;
 
@@ -18,7 +18,17 @@ namespace point_data
     CellsIdsToBoundaryLines(cellIds, std::back_inserter(lineData));
 
     std::vector<POINT_2I> pointData;
-    LinesToOrderedPoints(lineData, cellWidth, cellHeight, std::back_inserter(pointData));
+    std::vector<std::pair<POINT_2I, POINT_2I>> remainingLineData;
+    LinesToOrderedPoints(lineData, cellWidth, cellHeight, std::back_inserter(pointData), std::back_inserter(remainingLineData));
+
+    while( remainingLineData.size() > 0 )
+    {
+      std::vector<POINT_2I> nextBoundaryPoints;
+      std::vector<std::pair<POINT_2I, POINT_2I>> additionalRemainingLineData;
+      LinesToOrderedPoints(remainingLineData, cellWidth, cellHeight, std::back_inserter(nextBoundaryPoints), std::back_inserter(additionalRemainingLineData));
+      remainingLineData.clear();
+      std::ranges::copy(additionalRemainingLineData, std::back_inserter(remainingLineData));
+    }
 
     BoundaryPointsToNormalizedBoundaryPoints(pointData, boundaryInserter);
   }
@@ -69,7 +79,7 @@ namespace point_data
     }
   }
 
-  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter) -> void
+  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter, auto remainingLineInserter) -> void
   {
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(lineData)>, std::pair<POINT_2I, POINT_2I>>);
 
@@ -86,6 +96,8 @@ namespace point_data
       pixelLines.erase(currentLine);
       currentLine = pixelLines.find(pixelLineEnd);
     }
+
+    std::ranges::copy(pixelLines, remainingLineInserter);
   }
 
   auto BoundaryPointsToNormalizedBoundaryPoints(std::ranges::input_range auto&& pointData, auto boundaryInserter) -> void
