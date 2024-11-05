@@ -5,7 +5,7 @@
 namespace point_data
 {
 
-  auto CellsToBoundary(std::ranges::input_range auto&& emptyCellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void
+  auto CellsIdsToOrderedBoundaryPoints(std::ranges::input_range auto&& emptyCellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void
   {
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(emptyCellIds)>, POINT_2I>);
     

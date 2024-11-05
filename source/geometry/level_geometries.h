@@ -181,7 +181,7 @@ inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range
   });
 
   std::vector<POINT_2F> orderedPoints;
-  point_data::CellsToBoundary(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+  point_data::CellsIdsToOrderedBoundaryPoints(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
 
   auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
@@ -205,7 +205,7 @@ inline auto level_geometries::LoadAndCentreGeometry(std::ranges::input_range aut
   });
 
   std::vector<POINT_2F> orderedPoints;
-  point_data::CellsToBoundary(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+  point_data::CellsIdsToOrderedBoundaryPoints(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
 
   auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
