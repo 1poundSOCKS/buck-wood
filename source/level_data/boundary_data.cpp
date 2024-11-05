@@ -22,11 +22,14 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
     return { column, row };
   });
 
-  std::vector<POINT_2F> boundaryData;
-  point_data::CellsIdsToOrderedBoundaryPoints(emptyCellIds, cellWidth, cellHeight, std::back_inserter(boundaryData));
+  std::vector<POINT_2F> outerBoundaryData;
+  auto remainingLines = point_data::CellsIdsToBoundary(emptyCellIds, cellWidth, cellHeight, std::back_inserter(outerBoundaryData));
 
-  std::vector<std::vector<POINT_2F>> boundaries;
-  point_data::CellsIdsToBoundaries(emptyCellIds, cellWidth, cellHeight, std::back_inserter(boundaries));
+  while( remainingLines.size() )
+  {
+    std::vector<POINT_2F> innerBoundaryData;
+    remainingLines = point_data::LinesToBoundary(remainingLines, cellWidth, cellHeight, std::back_inserter(innerBoundaryData));
+  }
 
-  m_boundaryData[index] = boundaryData;
+  m_boundaryData[index] = outerBoundaryData;
 }
