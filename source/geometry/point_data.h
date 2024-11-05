@@ -6,6 +6,7 @@ namespace point_data
 {
   auto CellsIdsToOrderedBoundaryPoints(std::ranges::input_range auto&& cellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void;
   auto CellsIdsToBoundaryLines(std::ranges::input_range auto&& cellIds, auto lineInserter) -> void;
+  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter) -> void;
   auto BoundaryPointsToNormalizedBoundaryPoints(std::ranges::input_range auto&& pointData, auto boundaryInserter) -> void;
   auto GetBounds(std::ranges::input_range auto &&pointData) -> RECT_F;
 
@@ -16,20 +17,8 @@ namespace point_data
     std::vector<std::pair<POINT_2I, POINT_2I>> lineData;
     CellsIdsToBoundaryLines(cellIds, std::back_inserter(lineData));
 
-    std::map<POINT_2I, POINT_2I> pixelLines;
-    std::ranges::copy(lineData, std::inserter(pixelLines, std::begin(pixelLines)));
-
     std::vector<POINT_2I> pointData;
-    auto currentLine = std::begin(pixelLines);
-    while( currentLine != std::end(pixelLines) )
-    {
-      const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
-      auto pixelPosition = POINT_2I { pixelLineStart.x * cellWidth, pixelLineStart.y * cellHeight };
-      auto pixelRect =  RECT_I { pixelPosition.x - cellWidth / 2, pixelPosition.y - cellHeight / 2, pixelPosition.x + cellWidth / 2, pixelPosition.y + cellHeight / 2 };
-      pointData.emplace_back(pixelRect.left, pixelRect.top);
-      pixelLines.erase(currentLine);
-      currentLine = pixelLines.find(pixelLineEnd);
-    }
+    LinesToOrderedPoints(lineData, cellWidth, cellHeight, std::back_inserter(pointData));
 
     BoundaryPointsToNormalizedBoundaryPoints(pointData, boundaryInserter);
   }
@@ -77,6 +66,25 @@ namespace point_data
         auto pixelLineEnd = POINT_2I { column, row + 1 };
         lineInserter = std::pair<POINT_2I, POINT_2I>(pixelLineStart, pixelLineEnd);
       }
+    }
+  }
+
+  auto LinesToOrderedPoints(std::ranges::input_range auto&& lineData, int cellWidth, int cellHeight, auto pointInserter) -> void
+  {
+    static_assert(std::is_same_v<std::ranges::range_value_t<decltype(lineData)>, std::pair<POINT_2I, POINT_2I>>);
+
+    std::map<POINT_2I, POINT_2I> pixelLines;
+    std::ranges::copy(lineData, std::inserter(pixelLines, std::begin(pixelLines)));
+
+    auto currentLine = std::begin(pixelLines);
+    while( currentLine != std::end(pixelLines) )
+    {
+      const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
+      auto pixelPosition = POINT_2I { pixelLineStart.x * cellWidth, pixelLineStart.y * cellHeight };
+      auto pixelRect =  RECT_I { pixelPosition.x - cellWidth / 2, pixelPosition.y - cellHeight / 2, pixelPosition.x + cellWidth / 2, pixelPosition.y + cellHeight / 2 };
+      pointInserter = POINT_2I { pixelRect.left, pixelRect.top };
+      pixelLines.erase(currentLine);
+      currentLine = pixelLines.find(pixelLineEnd);
     }
   }
 
