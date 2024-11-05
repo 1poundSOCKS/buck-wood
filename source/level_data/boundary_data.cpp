@@ -16,8 +16,14 @@ auto boundary_data::Add(int index, int cellWidth, int cellHeight) noexcept -> vo
     return type == level_data::cell_type::empty;
   });
 
+  auto emptyCellIds = std::ranges::views::transform(emptyCells, [](auto&& cellDataItem) -> std::pair<int,int>
+  {
+    auto&& [column, row, value] = cellDataItem;
+    return { column, row };
+  });
+
   std::vector<POINT_2F> boundaryData;
-  point_data::CellsToBoundary(emptyCells, cellWidth, cellHeight, std::back_inserter(boundaryData));
+  point_data::CellsToBoundary(emptyCellIds, cellWidth, cellHeight, std::back_inserter(boundaryData));
 
   m_boundaryData[index] = boundaryData;
 }

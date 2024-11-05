@@ -5,14 +5,10 @@
 namespace point_data
 {
 
-  auto CellsToBoundary(std::ranges::input_range auto&& cells, int cellWidth, int cellHeight, auto boundaryInserter) -> void
+  auto CellsToBoundary(std::ranges::input_range auto&& emptyCellIds, int cellWidth, int cellHeight, auto boundaryInserter) -> void
   {
-    auto emptyCellIds = std::ranges::views::transform(cells, [](auto&& cellDataItem) -> std::pair<int,int>
-    {
-      auto&& [column, row, value] = cellDataItem;
-      return { column, row };
-    });
-
+    static_assert(std::is_same_v<std::ranges::range_value_t<decltype(emptyCellIds)>, std::pair<int, int>>);
+    
     std::set<std::pair<int,int>> cellIdLookup;
     std::ranges::copy(emptyCellIds, std::inserter(cellIdLookup, std::begin(cellIdLookup)));
     

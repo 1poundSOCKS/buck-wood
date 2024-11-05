@@ -174,8 +174,14 @@ inline auto level_geometries::LoadAndCentreGeometryData(std::ranges::input_range
     return value == '0';
   });
   
+  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> std::pair<int,int>
+  {
+    auto&& [column, row, value] = pixelDataItem;
+    return { column, row };
+  });
+
   std::vector<POINT_2F> orderedPoints;
-  point_data::CellsToBoundary(populatedPixels, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+  point_data::CellsToBoundary(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
 
   auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
@@ -191,9 +197,15 @@ inline auto level_geometries::LoadAndCentreGeometry(std::ranges::input_range aut
     auto&& [column, row, value] = pixelValue;
     return value == '0';
   });
-  
+
+  auto pixelIds = std::ranges::views::transform(populatedPixels, [](auto&& pixelDataItem) -> std::pair<int,int>
+  {
+    auto&& [column, row, value] = pixelDataItem;
+    return { column, row };
+  });
+
   std::vector<POINT_2F> orderedPoints;
-  point_data::CellsToBoundary(populatedPixels, pixelSize, pixelSize, std::back_inserter(orderedPoints));
+  point_data::CellsToBoundary(pixelIds, pixelSize, pixelSize, std::back_inserter(orderedPoints));
 
   auto geometryBounds = point_data::GetBounds(orderedPoints);
   auto shiftLeft = ( geometryBounds.left + geometryBounds.right ) / 2.0f;
