@@ -15,7 +15,8 @@ namespace point_data
   auto CellsIdsToBoundary(std::ranges::input_range auto&& cellIds, int cellWidth, int cellHeight, auto pointInserter) -> std::vector<std::pair<POINT_2I, POINT_2I>>
   {
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(cellIds)>, POINT_2I>);
-    
+    // static_assert(std::is_same_v<decltype(pointInserter), std::back_insert_iterator<std::vector<POINT_2F>>>);
+     
     std::vector<std::pair<POINT_2I, POINT_2I>> lineData;
     CellsIdsToBoundaryLines(cellIds, std::back_inserter(lineData));
 

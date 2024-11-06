@@ -40,6 +40,12 @@ struct RECT_I
   int32_t bottom;
 };
 
+struct LINE_2I
+{
+  POINT_2I start;
+  POINT_2I end;
+};
+
 inline [[nodiscard]] auto ToFloat(POINT_2I value) -> POINT_2F
 {
   return { static_cast<float>(value.x), static_cast<float>(value.y) };
