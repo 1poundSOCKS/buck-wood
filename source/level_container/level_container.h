@@ -29,7 +29,6 @@ public:
   level_container(const level_container& levelContainer) = delete;
 
   auto Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void;
-  auto UpdateVelocity(VELOCITY_2F changeInVelocity, float interval) -> void;
 
   [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
 
