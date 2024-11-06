@@ -62,6 +62,12 @@ private:
   auto OnCollision(auto&& object, inner_walls& innerWalls, geometry_collision::result result) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
 
+  auto OnDestroyed(const player_ship& object) -> void;
+  auto OnDestroyed(const enemy_ship& object) -> void;
+  auto OnDestroyed(const enemy_bullet& object) -> void;
+  auto OnDestroyed(const power_up& object) -> void;
+  auto OnDestroyed(auto&& object) -> void;
+
 private:
 
   default_object_collection m_objects;
@@ -129,4 +135,8 @@ inline auto level_container::OnCollision(auto &&object, inner_walls &innerWalls,
   {
     object.Destroy();
   }
+}
+
+auto level_container::OnDestroyed(auto&& object) -> void
+{
 }

@@ -34,36 +34,9 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_s
 
   auto destroyedObjects = std::ranges::views::filter(m_objects, [](const auto& object) { return object.Destroyed(); });
 
-  auto onDestroyed = visitor
-  {
-    [this](const player_ship& object)
-    {
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
-    },
-    [this](const enemy_ship& object)
-    {
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
-      play_events::increment(play_events::counter_type::enemies_destroyed);
-    },
-    [this](const enemy_bullet& object)
-    {
-      m_particles.Add(level_explosion { object.Position() });
-      play_events::set(play_events::event_type::explosion, true);
-    },
-    [this](const power_up& object)
-    {
-      play_events::increment(play_events::counter_type::power_ups_collected);
-    },
-    [this](const auto& object)
-    {
-    }
-  };
-
   for( const auto& object : destroyedObjects )
   {
-    object.Visit(onDestroyed);
+    object.Visit([this](auto&& object) { OnDestroyed(object); });
   }
 
   m_particles.EraseDestroyed();
@@ -196,4 +169,28 @@ auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, ge
   {
     powerUp.Destroy();
   }
+}
+
+auto level_container::OnDestroyed(const player_ship& object) -> void
+{
+  m_particles.Add(level_explosion { object.Position() });
+  play_events::set(play_events::event_type::explosion, true);
+}
+
+auto level_container::OnDestroyed(const enemy_ship& object) -> void
+{
+  m_particles.Add(level_explosion { object.Position() });
+  play_events::set(play_events::event_type::explosion, true);
+  play_events::increment(play_events::counter_type::enemies_destroyed);
+}
+
+auto level_container::OnDestroyed(const enemy_bullet& object) -> void
+{
+  m_particles.Add(level_explosion { object.Position() });
+  play_events::set(play_events::event_type::explosion, true);
+}
+
+auto level_container::OnDestroyed(const power_up& object) -> void
+{
+  play_events::increment(play_events::counter_type::power_ups_collected);
 }
