@@ -7,9 +7,7 @@
 play_state::play_state() : 
   m_score { std::make_shared<game_score>(game_score::value_type::total) }, 
   m_levelIndex { game_state::level_index() }, 
-  m_levelContainer { std::make_shared<level_container>() },
-  m_playerState { m_levelContainer->PlayerState() },
-  m_lastPlayerState { m_playerState ? *m_playerState : m_lastPlayerState }
+  m_levelContainer { std::make_shared<level_container>() }
 {
   m_score->Set(game_state::score());
 }
@@ -22,8 +20,6 @@ auto play_state::LoadCurrentLevel() -> bool
   {
     m_emptyCellLookup.clear();
     game_level_data_loader::loadEmptyCellData(m_levelIndex, std::inserter(m_emptyCellLookup, std::begin(m_emptyCellLookup)));
-    m_playerState = m_levelContainer->PlayerState();
-    m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
     log::write(log::type::info, "Load current level successful: index={}", m_levelIndex);
     return true;
   }
@@ -42,8 +38,6 @@ auto play_state::LoadNextLevel() -> bool
     game_state::set_level_index(m_levelIndex);
     m_emptyCellLookup.clear();
     game_level_data_loader::loadEmptyCellData(m_levelIndex, std::inserter(m_emptyCellLookup, std::begin(m_emptyCellLookup)));
-    m_playerState = m_levelContainer->PlayerState();
-    m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
     log::write(log::type::info, "Load next level successful: index={}", m_levelIndex);
     return true;
   }
@@ -56,11 +50,10 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
-  m_playerCell = m_playerState ? std::optional<POINT_2I>(game_level_data_loader::getCellFromPosition(m_playerState->Position())) : std::nullopt;
+  auto&& playerState = m_levelContainer->PlayerState();
+  m_playerCell = game_level_data_loader::getCellFromPosition(playerState.Position());
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
-  m_levelContainer->Update(interval, view, m_lastPlayerState, LevelComplete());
-  m_playerState = m_levelContainer->PlayerState();
-  m_lastPlayerState = m_playerState ? *m_playerState : m_lastPlayerState;
+  m_levelContainer->Update(interval, view, LevelComplete());
   m_score->Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
   m_score->Add(play_events::get(play_events::counter_type::bullets_destroyed) * 20);
   player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
@@ -75,17 +68,17 @@ auto play_state::SaveGameState() noexcept -> void
 
 auto play_state::LevelOver() const noexcept -> bool
 {
-  return !m_playerState || PowerUpCount() == 0;
+  return m_levelContainer->PlayerState().Destroyed() || PowerUpCount() == 0;
 }
 
 auto play_state::LevelComplete() const noexcept -> bool
 {
-  return m_playerState && PowerUpCount() == 0;
+  return !m_levelContainer->PlayerState().Destroyed() && PowerUpCount() == 0;
 }
 
 auto play_state::GameOver() const noexcept -> bool
 {
-  return !m_playerState;
+  return m_levelContainer->PlayerState().Destroyed();
 }
 
 auto play_state::GameComplete() const noexcept -> bool
@@ -111,11 +104,6 @@ auto play_state::GameComplete() const noexcept -> bool
 [[nodiscard]] auto play_state::Score() -> game_score&
 {
   return *m_score;
-}
-
-auto play_state::LastPlayerState() const noexcept -> player_ship_state
-{
-  return m_lastPlayerState;
 }
 
 [[nodiscard]] auto play_state::PowerUpCount() const noexcept -> std::size_t

@@ -10,18 +10,24 @@ level_container::level_container() : level_container(range_comparison_runner::ex
 }
 
 level_container::level_container(range_comparison_runner::execution ex, collision_type collisionType) : 
-  m_collisionRunner { ex, collisionType }
+  m_playerState { POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, VELOCITY_2F { 0.0f, 0.0f } },  m_collisionRunner { ex, collisionType }
 {
 }
 
-auto level_container::Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::AddPlayer(POINT_2F position) noexcept -> void
+{
+  m_playerState.SetPosition(position);
+  m_objects.AddPlayer(m_playerState);
+}
+
+auto level_container::Update(float interval, D2D1_RECT_F viewRect, bool levelComplete) -> void
 {
   auto updateStart = performance_counter::QueryValue();
 
   m_particles.Update(interval);
 
-  m_objects.Visit([this,interval,&playerState,levelComplete](auto& object) { UpdateObject(object, interval, playerState, levelComplete); });
-  m_objects.Visit([this,interval,&playerState,levelComplete](auto& object) { VisitObject(object, playerState, levelComplete); });
+  m_objects.Visit([this,interval,levelComplete](auto& object) { UpdateObject(object, interval, levelComplete); });
+  m_objects.Visit([this,interval,levelComplete](auto& object) { VisitObject(object, levelComplete); });
 
   auto collisionsStart = performance_counter::QueryValue();
 
@@ -65,7 +71,7 @@ auto level_container::DoCollisions() -> void
     [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
 }
 
-auto level_container::UpdateObject(player_ship &object, float interval, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::UpdateObject(player_ship &object, float interval, bool levelComplete) -> void
 {
   if( !object.State().Celebrating() && levelComplete )
   {
@@ -81,27 +87,27 @@ auto level_container::UpdateObject(player_ship &object, float interval, player_s
   }
 }
 
-auto level_container::UpdateObject(enemy_ship &object, float interval, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::UpdateObject(enemy_ship &object, float interval, bool levelComplete) -> void
 {
-  object.Update(interval, playerState.Position());
+  object.Update(interval, m_playerState.Position());
 }
 
-auto level_container::VisitObject(player_ship &object, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::VisitObject(player_ship &object, bool levelComplete) -> void
 {
   if( object.State().CanShoot() && object.State().ShootAngle() )
   {
     auto shootAngle = *(object.State().ShootAngle());
-    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), { 1, 1 }, shootAngle, direct2d::CalculateVelocity(2500, shootAngle));
+    m_objects.Add(std::in_place_type<player_bullet>, object.Position(), SCALE_2F { 1.0f, 1.0f }, shootAngle, direct2d::CalculateVelocity(2500, shootAngle));
     play_events::set(play_events::event_type::shot, true);
   }
 }
 
-auto level_container::VisitObject(enemy_ship& object, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::VisitObject(enemy_ship& object, bool levelComplete) -> void
 {
-  if( !playerState.Destroyed() && object.CanShootAt(playerState.Position()) )
+  if( !m_playerState.Destroyed() && object.CanShootAt(m_playerState.Position()) )
   {
-    auto angle = direct2d::GetAngleBetweenPoints(object.Position(), playerState.Position());
-    m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), { 1, 1 }, angle, direct2d::CalculateVelocity(1200, angle));
+    auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
+    m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), SCALE_2F { 1.0f, 1.0f }, angle, direct2d::CalculateVelocity(1200, angle));
     play_events::set(play_events::event_type::shot, true);
   }
 }

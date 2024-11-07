@@ -59,7 +59,7 @@ auto play_scene::Render() const -> void
 
 auto play_scene::CameraPosition() const -> camera_sequence::camera_position
 {
-  auto playerState = m_playState->LastPlayerState();
+  auto&& playerState = m_playState->LevelContainer().PlayerState();
   auto playerPosition = playerState.Position();
   return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
@@ -89,9 +89,9 @@ auto play_scene::PlaySoundEffects() const -> void
     audio_events::PowerUpCollected();
   }
 
-  auto playerState = m_playState->LevelContainer().PlayerState();
+  auto&& playerState = m_playState->LevelContainer().PlayerState();
 
-  if( playerState && !playerState->Destroyed() &&  playerState->ThrusterPower() > 0.0f )
+  if( !playerState.Destroyed() && playerState.ThrusterPower() > 0.0f )
   {
     audio_events::StartPlayerThruster();
   }

@@ -28,9 +28,11 @@ public:
   level_container(range_comparison_runner::execution ex, collision_type collisionType);
   level_container(const level_container& levelContainer) = delete;
 
-  auto Update(float interval, D2D1_RECT_F viewRect, player_ship_state playerState, bool levelComplete) -> void;
+  auto AddPlayer(POINT_2F position) noexcept -> void;
+  auto Update(float interval, D2D1_RECT_F viewRect, bool levelComplete) -> void;
 
-  [[nodiscard]] auto PlayerState() const noexcept -> const std::optional<player_ship_state>;
+  [[nodiscard]] auto PlayerState() const noexcept -> const player_ship_state&;
+  [[nodiscard]] auto PlayerState() noexcept -> player_ship_state&;
 
   [[nodiscard]] auto Objects() const noexcept -> const default_object_collection&;
   [[nodiscard]] auto Objects() noexcept -> default_object_collection&;
@@ -40,13 +42,13 @@ public:
 
 private:
 
-  auto UpdateObject(player_ship& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
-  auto UpdateObject(enemy_ship& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
-  auto UpdateObject(auto& object, float interval, player_ship_state playerState, bool levelComplete) -> void;
+  auto UpdateObject(player_ship& object, float interval, bool levelComplete) -> void;
+  auto UpdateObject(enemy_ship& object, float interval, bool levelComplete) -> void;
+  auto UpdateObject(auto& object, float interval, bool levelComplete) -> void;
 
-  auto VisitObject(player_ship& object, player_ship_state playerState, bool levelComplete) -> void;
-  auto VisitObject(enemy_ship& object, player_ship_state playerState, bool levelComplete) -> void;
-  auto VisitObject(auto &object, player_ship_state playerState, bool levelComplete) -> void;
+  auto VisitObject(player_ship& object, bool levelComplete) -> void;
+  auto VisitObject(enemy_ship& object, bool levelComplete) -> void;
+  auto VisitObject(auto &object, bool levelComplete) -> void;
 
   auto DoCollisions() -> void;
 
@@ -70,6 +72,7 @@ private:
 private:
 
   default_object_collection m_objects;
+  player_ship_state m_playerState;
 
   level_collision_geometry m_collisionGeometry;
   geometry_collision_runner m_collisionRunner;
@@ -77,14 +80,14 @@ private:
   particle_collection m_particles;
 };
 
-inline auto level_container::PlayerState() const noexcept -> const std::optional<player_ship_state>
+inline auto level_container::PlayerState() const noexcept -> const player_ship_state&
 {
-  std::optional<player_ship_state> playerState;
-  return std::accumulate(std::begin(m_objects), std::end(m_objects), playerState, [](std::optional<player_ship_state> playerState, const default_object& object)
-  {
-    auto&& playerShip = object.GetIf<player_ship>();
-    return object.HoldsAlternative<player_ship>() ? std::optional<player_ship_state>(playerShip->StateValue()) : playerState;
-  });
+  return m_playerState;
+}
+
+inline auto level_container::PlayerState() noexcept -> player_ship_state &
+{
+  return m_playerState;
 }
 
 inline auto level_container::Objects() const noexcept -> const default_object_collection &
@@ -107,12 +110,12 @@ inline auto level_container::Particles() noexcept -> particle_collection &
   return m_particles;
 }
 
-auto level_container::UpdateObject(auto &object, float interval, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::UpdateObject(auto &object, float interval, bool levelComplete) -> void
 {
   object.Update(interval);
 }
 
-auto level_container::VisitObject(auto& object, player_ship_state playerState, bool levelComplete) -> void
+auto level_container::VisitObject(auto& object, bool levelComplete) -> void
 {
 }
 

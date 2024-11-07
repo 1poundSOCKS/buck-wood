@@ -26,7 +26,6 @@ public:
   [[nodiscard]] auto LevelContainer() -> level_container&;
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
-  [[nodiscard]] auto LastPlayerState() const noexcept -> player_ship_state;
   [[nodiscard]] auto PowerUpCount() const noexcept -> std::size_t;
 
 private:
@@ -42,8 +41,6 @@ private:
   std::shared_ptr<game_score> m_score;
   std::shared_ptr<level_container> m_levelContainer;
   std::set<std::pair<int,int>> m_emptyCellLookup;
-  std::optional<player_ship_state> m_playerState;
-  player_ship_state m_lastPlayerState;
   std::optional<POINT_2I> m_playerCell;
 };
 

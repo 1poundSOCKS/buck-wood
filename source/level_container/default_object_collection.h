@@ -13,8 +13,8 @@ public:
 
 public:
 
-  template <typename variant_type, typename...Args> auto Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) -> default_object&;
-  auto Add(default_object object) -> default_object&;
+  template <typename variant_type, typename...Args> auto Add(std::in_place_type_t<variant_type> variantType, Args...args) -> default_object&;
+  auto AddPlayer(player_ship_state& playerState) noexcept -> void;
   auto Visit(auto&& visitor) -> void;
   auto EraseDestroyed() -> void;
 
@@ -30,14 +30,14 @@ private:
 };
 
 template <typename variant_type, typename...Args>
-auto default_object_collection::Add(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) -> default_object&
+auto default_object_collection::Add(std::in_place_type_t<variant_type> variantType, Args...args) -> default_object&
 {
-  return m_objects.emplace_back(variantType, position, scale, angle, std::forward<Args>(args)...);
+  return m_objects.emplace_back(variantType, std::forward<Args>(args)...);
 }
 
-inline auto default_object_collection::Add(default_object object) -> default_object &
+inline auto default_object_collection::AddPlayer(player_ship_state& playerState) noexcept -> void
 {
-  m_objects.push_back(object);
+  m_objects.emplace_back(playerState);
 }
 
 auto default_object_collection::Visit(auto &&visitor) -> void

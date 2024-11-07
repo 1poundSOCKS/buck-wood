@@ -18,7 +18,9 @@ public:
   >;
 
   template <typename variant_type, typename...Args>
-  default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args);
+  default_object(std::in_place_type_t<variant_type> variantType, Args...args);
+
+  default_object(player_ship_state& state);
 
   template <typename type> [[nodiscard]] auto GetIf() const -> const type*;
   template <typename type> [[nodiscard]] auto GetIf() -> type*;
@@ -42,8 +44,12 @@ private:
 };
 
 template <typename variant_type, typename...Args>
-default_object::default_object(std::in_place_type_t<variant_type> variantType, POINT_2F position, SCALE_2F scale, float angle, Args...args) :
-  m_object { variantType, position, scale, angle, std::forward<Args>(args)... }
+default_object::default_object(std::in_place_type_t<variant_type> variantType, Args...args) :
+  m_object { variantType, std::forward<Args>(args)... }
+{
+}
+
+inline default_object::default_object(player_ship_state &state) : m_object { std::in_place_type<player_ship>, state }
 {
 }
 
@@ -71,7 +77,7 @@ template <typename type>
   return std::holds_alternative<type>(m_object);
 }
 
-auto default_object::Visit(auto&& visitor) noexcept
+auto default_object::Visit(auto &&visitor) noexcept
 {
   return std::visit(visitor, m_object);
 }

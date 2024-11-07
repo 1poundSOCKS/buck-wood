@@ -11,7 +11,7 @@ class player_ship
 
 public:
 
-  player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity);
+  player_ship(player_ship_state& state);
 
   auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
 
@@ -24,10 +24,9 @@ public:
 
   [[nodiscard]] auto State() const -> const player_ship_state&;
   [[nodiscard]] auto State() -> player_ship_state&;
-  [[nodiscard]] auto StateValue() const -> player_ship_state;
 
 private:
 
-  player_ship_state m_state;
+  player_ship_state& m_state;
 
 };

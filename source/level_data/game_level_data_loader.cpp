@@ -25,11 +25,11 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
     return { column, row };
   });
 
-  levelContainer.Objects().Add(std::in_place_type<boundary_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, levelIndex);
+  levelContainer.Objects().Add(std::in_place_type<boundary_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, levelIndex);
 
   for( auto wallIndex = 0; wallIndex < boundary_data::getInnerWallCount(levelIndex); ++wallIndex )
   {
-    levelContainer.Objects().Add(std::in_place_type<inner_walls>, { 0.0f, 0.0f }, { 1.0f, 1.0f }, 0.0f, wallIndex);
+    levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, wallIndex);
   }
 
   return LoadObjectData(levelIndex, emptyCellLookup, levelContainer);
@@ -62,10 +62,14 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
     enemy_ship::controller enemyController;
     std::vector<POINT_2F> movementPathPoints;
 
+    // player_ship_state& playerState = levelContainer.PlayerState();
+
     switch( type )
     {
       case level_data::object_type::player:
-        objects.Add(std::in_place_type<player_ship>, position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
+        // levelContainer.SetPlayerState(position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
+        // objects.Add(std::in_place_type<player_ship>, playerState);
+        levelContainer.AddPlayer(position);
         break;
 
       case level_data::object_type::power_up:
@@ -92,7 +96,7 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
       case level_data::object_type::enemy_guard:
         GetEnemyMovementArea(cellId, emptyCellLookup, 5.0f, std::back_inserter(movementPathPoints));
         enemyController = enemy_ship::controller { std::in_place_type<enemy_area>, movementPathPoints };
-        objects.Add(std::in_place_type<enemy_ship>, position, { 2.0f, 2.0f }, angle, enemy_ship::type::guard, 400.0f, enemyController);
+        objects.Add(std::in_place_type<enemy_ship>, position, SCALE_2F { 2.0f, 2.0f }, angle, enemy_ship::type::guard, 400.0f, enemyController);
         break;
     }
   }

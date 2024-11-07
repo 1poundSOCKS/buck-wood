@@ -2,8 +2,8 @@
 #include "player_ship.h"
 #include "player_state.h"
 
-player_ship::player_ship(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : 
-  m_state { position, scale, angle, velocity }
+player_ship::player_ship(player_ship_state& state) : 
+  m_state { state }
 {
 }
 
@@ -48,11 +48,6 @@ auto player_ship::State() const -> const player_ship_state&
 }
 
 auto player_ship::State() -> player_ship_state&
-{
-  return m_state;
-}
-
-auto player_ship::StateValue() const -> player_ship_state
 {
   return m_state;
 }
