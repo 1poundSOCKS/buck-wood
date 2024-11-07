@@ -105,6 +105,7 @@ auto play_screen::RestartLevel() -> bool
   {
     m_currentScene = std::make_unique<main_play_scene>(m_playState);
     m_currentSceneType = scene_type::main;
+    m_currentScene->Begin();
     return true;
   }
   else
