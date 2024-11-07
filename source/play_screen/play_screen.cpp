@@ -74,7 +74,7 @@ auto play_screen::NextScene() -> bool
       return true;
       
     case scene_type::closing:
-      return m_playState->GameOver() ? false : StartNextLevel();
+      return m_playState->GameOver() ? RestartLevel() : StartNextLevel();
 
     default:
       return false;
@@ -88,6 +88,21 @@ auto play_screen::StartNextLevel() -> bool
     m_currentScene = std::make_unique<opening_play_scene>(m_playState);
     m_currentSceneType = scene_type::opening;
     m_currentScene->Begin();
+    return true;
+  }
+  else
+  {
+    game_state::set_level_index(0);
+    return false;
+  }
+}
+
+auto play_screen::RestartLevel() -> bool
+{
+  if( m_playState->LoadCurrentLevel() )
+  {
+    m_currentScene = std::make_unique<main_play_scene>(m_playState);
+    m_currentSceneType = scene_type::main;
     return true;
   }
   else
