@@ -62,13 +62,9 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
     enemy_ship::controller enemyController;
     std::vector<POINT_2F> movementPathPoints;
 
-    // player_ship_state& playerState = levelContainer.PlayerState();
-
     switch( type )
     {
       case level_data::object_type::player:
-        // levelContainer.SetPlayerState(position, scale, angle, VELOCITY_2F { 0.0f, 0.0f });
-        // objects.Add(std::in_place_type<player_ship>, playerState);
         levelContainer.AddPlayer(position);
         break;
 
