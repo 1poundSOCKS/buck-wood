@@ -3,7 +3,9 @@
 #include "diagnostics.h"
 #include "game_settings.h"
 #include "opening_play_scene.h"
+#include "main_play_scene.h"
 #include "closing_play_scene.h"
+#include "final_play_scene.h"
 #include "game_state.h"
 
 play_screen::play_screen() : 

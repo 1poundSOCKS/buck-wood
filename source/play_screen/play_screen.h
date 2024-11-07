@@ -3,8 +3,6 @@
 #include "framework.h"
 #include "play_scene.h"
 #include "play_state.h"
-#include "main_play_scene.h"
-#include "closing_play_scene.h"
 
 class play_screen
 {
@@ -31,7 +29,7 @@ private:
   std::shared_ptr<play_state> m_playState;
   bool m_playerDestroyed { false };
 
-  enum class scene_type { none, opening, main, closing };
+  enum class scene_type { none, opening, main, closing, final };
   scene_type m_currentSceneType;
 
   std::unique_ptr<play_scene> m_currentScene;
