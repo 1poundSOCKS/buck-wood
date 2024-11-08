@@ -50,8 +50,6 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
-  auto&& playerState = m_levelContainer->PlayerState();
-  m_playerCell = game_level_data_loader::getCellFromPosition(playerState.Position());
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
   m_levelContainer->Update(interval, view, LevelComplete());
   m_score.Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
@@ -115,10 +113,13 @@ auto play_state::GameComplete() const noexcept -> bool
 
 auto play_state::VisitObject(enemy_ship &object) const noexcept -> void
 {
-  if( m_playerCell )
+  auto&& playerState = m_levelContainer->PlayerState();
+
+  if( !playerState.Destroyed() )
   {
+    auto playerCell = game_level_data_loader::getCellFromPosition(playerState.Position());
     auto enemyCell = game_level_data_loader::getCellFromPosition(object.Position());
-    auto lineOfFireIsClear = cellsAreVisibleToEachOther(*m_playerCell, enemyCell, m_emptyCellLookup);
+    auto lineOfFireIsClear = CellsAreVisibleToEachOther(playerCell, enemyCell, m_emptyCellLookup);
     object.SetFireStatus(lineOfFireIsClear ? enemy_ship::fire_status::enabled : enemy_ship::fire_status::disabled);
   }
   else
@@ -127,7 +128,7 @@ auto play_state::VisitObject(enemy_ship &object) const noexcept -> void
   }
 }
 
-auto play_state::cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
+auto play_state::CellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool
 {
   cell_path cellPath { cellId1, cellId2 };
 

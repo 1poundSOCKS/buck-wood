@@ -33,7 +33,7 @@ private:
   auto VisitObject(enemy_ship& object) const noexcept -> void;
   auto VisitObject(auto&& object) const noexcept -> void;
 
-  static [[nodiscard]] auto cellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
+  static [[nodiscard]] auto CellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
 
 private:
 
@@ -41,7 +41,7 @@ private:
   game_score m_score;
   std::shared_ptr<level_container> m_levelContainer;
   std::set<std::pair<int,int>> m_emptyCellLookup;
-  std::optional<POINT_2I> m_playerCell;
+
 };
 
 auto play_state::VisitObject(auto &&object) const noexcept -> void
