@@ -13,7 +13,7 @@ public:
 
   player_ship(player_ship_state& state);
 
-  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
+  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval, bool levelComplete) -> void;
 
   [[nodiscard]] auto Position() const noexcept -> POINT_2F;
   [[nodiscard]] auto Scale() const noexcept -> SCALE_2F;

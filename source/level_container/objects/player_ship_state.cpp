@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "player_ship_state.h"
 
-auto player_ship_state::Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
+auto player_ship_state::Update(VELOCITY_2F environmentalForces, float airResistance, float interval, bool levelComplete) -> void
 {
-  m_celebrating ? UpdateWhenCelebrating(interval) : UpdateWhenActive(environmentalForces, airResistance, interval);
+  levelComplete ? UpdateWhenCelebrating(interval) : UpdateWhenActive(environmentalForces, airResistance, interval);
 }
 
 auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void

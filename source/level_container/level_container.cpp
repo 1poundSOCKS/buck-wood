@@ -32,7 +32,7 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, bool levelCom
   auto collisionsStart = performance_counter::QueryValue();
 
   m_collisionGeometry.Update(m_objects);
-  DoCollisions();
+  DoCollisions(levelComplete);
   
   auto collisionsEnd = performance_counter::QueryValue();
 
@@ -53,38 +53,31 @@ auto level_container::Update(float interval, D2D1_RECT_F viewRect, bool levelCom
   diagnostics::addTime(L"level_container::update", updateEnd - updateStart, game_settings::swapChainRefreshRate());
 }
 
-auto level_container::DoCollisions() -> void
+auto level_container::DoCollisions(bool levelComplete) -> void
 {
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::wall), 
-    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
+    [this, levelComplete](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType, levelComplete); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::wall), 
-    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
+    [this, levelComplete](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType, levelComplete); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::enemy), 
-    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
+    [this, levelComplete](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType, levelComplete); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::player), m_collisionGeometry(level_collision_geometry::type::boundary), 
-    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
+    [this, levelComplete](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType, levelComplete); });
 
   m_collisionRunner(m_collisionGeometry(level_collision_geometry::type::enemy), m_collisionGeometry(level_collision_geometry::type::boundary), 
-    [this](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType); });
+    [this, levelComplete](auto& object1, auto&object2, geometry_collision::result resultType) { OnCollision(object1, object2, resultType, levelComplete); });
 }
 
 auto level_container::UpdateObject(player_ship &object, float interval, bool levelComplete) -> void
 {
-  if( !object.State().Celebrating() && levelComplete )
-  {
-    object.State().Celebrate();
-  }
-  else
-  {
-    constexpr VELOCITY_2F forceOfGravity = { 0.0f, 0.0f };
-    constexpr float airResistance = { 0.6f };
-    
-    player_controls::Update(object.State(), interval);
-    object.Update(forceOfGravity, airResistance, interval);
-  }
+  constexpr VELOCITY_2F forceOfGravity = { 0.0f, 0.0f };
+  constexpr float airResistance = { 0.6f };
+  
+  player_controls::Update(object.State(), interval);
+  object.Update(forceOfGravity, airResistance, interval, levelComplete);
 }
 
 auto level_container::UpdateObject(enemy_ship &object, float interval, bool levelComplete) -> void
@@ -94,7 +87,7 @@ auto level_container::UpdateObject(enemy_ship &object, float interval, bool leve
 
 auto level_container::VisitObject(player_ship &object, bool levelComplete) -> void
 {
-  if( object.State().CanShoot() && object.State().ShootAngle() )
+  if( object.State().CanShoot() && object.State().ShootAngle() && !levelComplete )
   {
     auto shootAngle = *(object.State().ShootAngle());
     m_objects.Add(std::in_place_type<player_bullet>, object.Position(), SCALE_2F { 1.0f, 1.0f }, shootAngle, direct2d::CalculateVelocity(2500, shootAngle));
@@ -112,16 +105,16 @@ auto level_container::VisitObject(enemy_ship& object, bool levelComplete) -> voi
   }
 }
 
-auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void
 {
-  if( result != geometry_collision::result::none )
+  if( result != geometry_collision::result::none && !levelComplete )
   {
     enemy.ApplyDamage(bullet.Damage());
     bullet.Destroy();
   }
 }
 
-auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundaryWalls, geometry_collision::result result, bool levelComplete) -> void
 {
   if( result != geometry_collision::result::containment )
   {
@@ -130,7 +123,7 @@ auto level_container::OnCollision(player_bullet &bullet, boundary_walls &boundar
   }
 }
 
-auto level_container::OnCollision(player_bullet &bullet, inner_walls &innerWalls, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_bullet &bullet, inner_walls &innerWalls, geometry_collision::result result, bool levelComplete) -> void
 {
   if( result != geometry_collision::result::none )
   {
@@ -139,39 +132,31 @@ auto level_container::OnCollision(player_bullet &bullet, inner_walls &innerWalls
   }
 }
 
-auto level_container::OnCollision(enemy_ship &enemyShip, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
+auto level_container::OnCollision(enemy_ship &enemyShip, boundary_walls &boundaryWalls, geometry_collision::result result, bool levelComplete) -> void
 {
 }
 
-auto level_container::OnCollision(player_ship& ship, enemy_ship& enemy, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_ship& player, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void
 {
-  if( result != geometry_collision::result::none )
+  if( result != geometry_collision::result::none && !levelComplete )
   {
-    if( !ship.State().Celebrating() )
-    {
-      ship.Destroy();
-    }
-
+    player.Destroy();
     enemy.Destroy();
   }
 }
 
-auto level_container::OnCollision(player_ship& player, enemy_bullet& enemyBullet, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_ship& player, enemy_bullet& enemyBullet, geometry_collision::result result, bool levelComplete) -> void
 {
-  if( result != geometry_collision::result::none )
+  if( result != geometry_collision::result::none  && !levelComplete )
   {
-    if( !player.State().Celebrating() )
-    {
-      player.Destroy();
-    }
-
+    player.Destroy();
     enemyBullet.Destroy();
   }
 }
 
-auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void
+auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result, bool levelComplete) -> void
 {
-  if( result != geometry_collision::result::none )
+  if( result != geometry_collision::result::none && !levelComplete )
   {
     powerUp.Destroy();
   }

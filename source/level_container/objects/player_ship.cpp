@@ -7,9 +7,9 @@ player_ship::player_ship(player_ship_state& state) :
 {
 }
 
-auto player_ship::Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void
+auto player_ship::Update(VELOCITY_2F environmentalForces, float airResistance, float interval, bool levelComplete) -> void
 {
-  m_state.Update(environmentalForces, airResistance, interval);
+  m_state.Update(environmentalForces, airResistance, interval, levelComplete);
 }
 
 auto player_ship::Position() const noexcept -> POINT_2F

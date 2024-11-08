@@ -50,18 +50,18 @@ private:
   auto VisitObject(enemy_ship& object, bool levelComplete) -> void;
   auto VisitObject(auto &object, bool levelComplete) -> void;
 
-  auto DoCollisions() -> void;
+  auto DoCollisions(bool levelComplete) -> void;
 
-  auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result) -> void;
-  auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
-  auto OnCollision(player_bullet& bullet, inner_walls& innerWalls, geometry_collision::result result) -> void;
-  auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result) -> void;
-  auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result) -> void;
-  auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result) -> void;
-  auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result) -> void;
-  auto OnCollision(auto&& object, inner_walls& innerWalls, geometry_collision::result result) -> void;
-  auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void;
+  auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_bullet& bullet, inner_walls& innerWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(auto&& object, inner_walls& innerWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result, bool levelComplete) -> void;
 
   auto OnDestroyed(const player_ship& object) -> void;
   auto OnDestroyed(const enemy_ship& object) -> void;
@@ -119,11 +119,11 @@ auto level_container::VisitObject(auto& object, bool levelComplete) -> void
 {
 }
 
-auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision::result result) -> void
+auto level_container::OnCollision(auto&& object1, auto&& object2, geometry_collision::result result, bool levelComplete) -> void
 {
 }
 
-auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, geometry_collision::result result) -> void
+auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, geometry_collision::result result, bool levelComplete) -> void
 {
   if( result != geometry_collision::result::containment )
   {
@@ -131,7 +131,7 @@ auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, 
   }
 }
 
-inline auto level_container::OnCollision(auto &&object, inner_walls &innerWalls, geometry_collision::result result) -> void
+inline auto level_container::OnCollision(auto &&object, inner_walls &innerWalls, geometry_collision::result result, bool levelComplete) -> void
 {
   if( result != geometry_collision::result::none )
   {

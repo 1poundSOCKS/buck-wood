@@ -13,7 +13,7 @@ public:
 
   player_ship_state(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) noexcept;
 
-  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
+  auto Update(VELOCITY_2F environmentalForces, float airResistance, float interval, bool levelComplete) -> void;
 
   auto ApplyDamage(int value) -> void;
   auto ApplyFatalDamage() -> void;
@@ -32,9 +32,6 @@ public:
   auto SetRotationSpeed(float value) -> void;
   auto RotateBy(float angle, float interval) -> void;
 
-  auto Celebrate() noexcept -> void;
-  [[nodiscard]] auto Celebrating() const noexcept -> bool;
-
 private:
 
   auto UpdateWhenActive(VELOCITY_2F environmentalForces, float airResistance, float interval) -> void;
@@ -42,7 +39,6 @@ private:
 
 private:
 
-  bool m_celebrating { false };
   object_velocity m_velocity;
   fractional_counter m_stateChange;
   health_status m_shieldStatus { 10 };
@@ -60,7 +56,7 @@ inline player_ship_state::player_ship_state(POINT_2F position, SCALE_2F scale, f
 
 inline auto player_ship_state::ApplyDamage(int value) -> void
 {
-  if( !m_celebrating && m_shieldStatus.ApplyDamage(value) == 0 )
+  if( m_shieldStatus.ApplyDamage(value) == 0 )
   {
     Destroy();
   }
@@ -68,11 +64,8 @@ inline auto player_ship_state::ApplyDamage(int value) -> void
 
 inline auto player_ship_state::ApplyFatalDamage() -> void
 {
-  if( !m_celebrating )
-  {
-    m_shieldStatus.ApplyFatalDamage();
-    Destroy();
-  }
+  m_shieldStatus.ApplyFatalDamage();
+  Destroy();
 }
 
 inline [[nodiscard]] auto player_ship_state::ShieldStatus() const -> const health_status&
@@ -125,14 +118,4 @@ inline auto player_ship_state::SetRotationSpeed(float value) -> void
 inline auto player_ship_state::RotateBy(float angle, float interval) -> void
 {
   m_angle += angle * interval;
-}
-
-inline auto player_ship_state::Celebrate() noexcept -> void
-{
-  m_celebrating = true;
-}
-
-inline auto player_ship_state::Celebrating() const noexcept -> bool
-{
-  return m_celebrating;
 }
