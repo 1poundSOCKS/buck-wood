@@ -6,7 +6,7 @@ class play_events
 public:
 
   enum class event_type { shot, explosion };
-  enum class counter_type { enemies_destroyed, bullets_destroyed, power_ups_collected };
+  enum class counter_type { enemies_destroyed, power_ups_collected };
 
   static auto create(auto&&...args) -> void;
   static auto destroy() -> void;

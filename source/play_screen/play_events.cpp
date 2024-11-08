@@ -21,9 +21,6 @@ auto play_events::Increment(counter_type counterType) -> void
     case counter_type::enemies_destroyed:
       ++m_enemiesDestroyed;
       break;
-    case counter_type::bullets_destroyed:
-      ++m_bulletsDestroyed;
-      break;
     case counter_type::power_ups_collected:
       ++m_powerUpsCollected;
       break;
@@ -60,8 +57,6 @@ auto play_events::Reset() -> void
   {
     case counter_type::enemies_destroyed:
       return m_enemiesDestroyed;
-    case counter_type::bullets_destroyed:
-      return m_bulletsDestroyed;
     case counter_type::power_ups_collected:
       return m_powerUpsCollected;
     default:
