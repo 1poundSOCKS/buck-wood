@@ -38,7 +38,7 @@ private:
 private:
 
   int m_levelIndex { 0 };
-  std::shared_ptr<game_score> m_score;
+  game_score m_score;
   std::shared_ptr<level_container> m_levelContainer;
   std::set<std::pair<int,int>> m_emptyCellLookup;
   std::optional<POINT_2I> m_playerCell;
