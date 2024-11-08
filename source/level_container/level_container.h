@@ -71,13 +71,13 @@ private:
 
 private:
 
-  default_object_collection m_objects;
   player_ship_state m_playerState;
+  default_object_collection m_objects;
+  particle_collection m_particles;
 
   level_collision_geometry m_collisionGeometry;
   geometry_collision_runner m_collisionRunner;
 
-  particle_collection m_particles;
 };
 
 inline auto level_container::PlayerState() const noexcept -> const player_ship_state&
