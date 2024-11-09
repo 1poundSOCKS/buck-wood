@@ -31,22 +31,19 @@ auto play_screen::Update(int64_t ticks) -> bool
 {
   if( PausePressed() )
   {
-    TogglePause();
-    
-    if( Paused() )
-    {
-      m_currentScene->Pause(*m_levelContainer);
-    }
+    m_paused = !m_paused;    
+
+    if( m_paused ) m_currentScene->Pause(*m_levelContainer);
   }
 
-  if( Paused() )
+  if( m_paused )
   {
     m_menuController.Update();
 
     switch( m_menuController.Selection() )
     {
       case play_menu_controller::selection::resume:
-        TogglePause();
+        m_paused = false;
         m_currentScene->Resume(*m_levelContainer);
         break;
       case play_menu_controller::selection::quit:
@@ -73,8 +70,9 @@ auto play_screen::Update(int64_t ticks) -> bool
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
 
   auto renderView = m_currentScene->GetRenderTargetView(*m_levelContainer);
-  m_levelContainer->Update(interval, renderView, m_playState->LevelComplete(*m_levelContainer));
-
+  auto levelComplete = m_playState->LevelComplete(*m_levelContainer);
+  m_levelContainer->Update(interval, renderView, levelComplete);
+  m_playState->Update(interval);
   return m_currentScene->Complete(*m_levelContainer, *m_playState) ? NextScene() : true;
 }
 
@@ -142,7 +140,7 @@ auto play_screen::Render() -> void
 
   m_currentScene->Render(*m_levelContainer, *m_playState);
 
-  if( Paused() )
+  if( m_paused )
   {
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
     D2D1_SIZE_F renderTargetSize = render_target::get()->GetSize();
@@ -168,16 +166,6 @@ auto play_screen::RenderDiagnostics() -> void
 [[nodiscard]] auto play_screen::PausePressed() -> bool
 {
   return keyboard_reader::pressed(DIK_ESCAPE) || gamepad_reader::button_pressed(XINPUT_GAMEPAD_BACK);
-}
-
-auto play_screen::TogglePause() noexcept -> void
-{
-  m_paused = !m_paused; 
-}
-
-auto play_screen::Paused() const noexcept -> bool
-{
-  return m_paused;
 }
 
 auto play_screen::PlaySoundEffects() const -> void

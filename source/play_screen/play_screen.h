@@ -20,20 +20,16 @@ private:
   auto Render() -> void;
   auto RenderDiagnostics() -> void;
   [[nodiscard]] auto PausePressed() -> bool;
-  auto TogglePause() noexcept -> void;
-  [[nodiscard]] auto Paused() const noexcept -> bool;
   auto PlaySoundEffects() const -> void;
   auto LoadLevel(int levelIndex) -> bool;
   auto VisitObject(enemy_ship& object) const noexcept -> void;
   auto VisitObject(auto&& object) const noexcept -> void;
   static [[nodiscard]] auto CellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
 
-
 private:
 
   play_menu_controller m_menuController;
   std::shared_ptr<play_state> m_playState;
-  bool m_playerDestroyed { false };
   bool m_paused { false };
 
   std::shared_ptr<level_container> m_levelContainer;
