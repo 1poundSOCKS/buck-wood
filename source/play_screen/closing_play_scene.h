@@ -10,38 +10,12 @@ class closing_play_scene : public play_scene
 
 public:
 
-  closing_play_scene(auto&&...args) : play_scene(std::forward<decltype(args)>(args)...)
-  {
-  }
+  closing_play_scene(auto&&...args);
 
-  auto Begin(const level_container& levelContainer) -> void override
-  {
-    m_stopwatch.Reset(m_sceneSeconds);
-    SetCameraZoom(GetPlayCameraZoom());
-    m_renderTransform = RenderTransform(levelContainer);
-  }
-
-  auto Update(const level_container& levelContainer, int64_t ticks) -> void override
-  {
-    play_scene::Update(levelContainer, ticks);
-    m_complete = !m_stopwatch.Update(ticks);
-  }
-
-  auto Render(const level_container& levelContainer) const -> void override
-  {
-    play_scene::Render(levelContainer);
-    
-    render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    // renderer::render(m_playState->Score());
-    game_score powerUps(game_score::value_type::power_ups);
-    powerUps.Add(player_state::missile_count());
-    renderer::render(powerUps);
-  }
-
-  auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override
-  {
-    return m_complete;
-  }
+  auto Begin(const level_container& levelContainer) -> void override;
+  auto Update(const level_container& levelContainer, int64_t ticks) -> void override;
+  auto Render(const level_container& levelContainer) const -> void override;
+  auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override;
 
 private:
 
@@ -50,3 +24,36 @@ private:
   bool m_complete { false };
 
 };
+
+closing_play_scene::closing_play_scene(auto&&...args) : play_scene(std::forward<decltype(args)>(args)...)
+{
+}
+
+inline auto closing_play_scene::Begin(const level_container& levelContainer) -> void
+{
+  m_stopwatch.Reset(m_sceneSeconds);
+  SetCameraZoom(GetPlayCameraZoom());
+  m_renderTransform = RenderTransform(levelContainer);
+}
+
+inline auto closing_play_scene::Update(const level_container& levelContainer, int64_t ticks) -> void
+{
+  play_scene::Update(levelContainer, ticks);
+  m_complete = !m_stopwatch.Update(ticks);
+}
+
+inline auto closing_play_scene::Render(const level_container& levelContainer) const -> void
+{
+  play_scene::Render(levelContainer);
+  
+  render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
+  // renderer::render(m_playState->Score());
+  game_score powerUps(game_score::value_type::power_ups);
+  powerUps.Add(player_state::missile_count());
+  renderer::render(powerUps);
+}
+
+inline auto closing_play_scene::Complete(const level_container& levelContainer, const play_state& playState) const -> bool
+{
+  return m_complete;
+}
