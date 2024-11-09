@@ -12,12 +12,13 @@ public:
   main_play_scene(auto&&...args);
   ~main_play_scene();
 
-  auto Begin() -> void override;
-  auto End() -> void override;
-  auto Pause() -> void override;
-  auto Resume() -> void override;
-  auto Update(int64_t ticks) -> bool override;
-  auto Render() const -> void override;
+  auto Begin(const level_container& levelContainer) -> void override;
+  auto End(const level_container& levelContainer) -> void override;
+  auto Pause(const level_container& levelContainer) -> void override;
+  auto Resume(const level_container& levelContainer) -> void override;
+  auto Update(const level_container& levelContainer, int64_t ticks) -> void override;
+  auto Render(const level_container& levelContainer) const -> void override;
+  auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override;
 
 };
 

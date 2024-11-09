@@ -8,44 +8,44 @@ main_play_scene::~main_play_scene()
   audio_events::StopGameplayTheme();
 }
 
-auto main_play_scene::Begin() -> void
+auto main_play_scene::Begin(const level_container& levelContainer) -> void
 {
   audio_events::StartGameplayTheme();
   SetCameraZoom(GetPlayCameraZoom());
-  m_renderTransform = RenderTransform();
+  m_renderTransform = RenderTransform(levelContainer);
 }
 
-auto main_play_scene::End() -> void
+auto main_play_scene::End(const level_container& levelContainer) -> void
 {
   audio_events::StopPlayerThruster();
   audio_events::StopGameplayTheme();
 }
 
-auto main_play_scene::Pause() -> void
+auto main_play_scene::Pause(const level_container& levelContainer) -> void
 {
   audio_events::StopPlayerThruster();
   audio_events::StopGameplayTheme();
   audio_events::StartMainMenuTheme();
 }
 
-auto main_play_scene::Resume() -> void
+auto main_play_scene::Resume(const level_container& levelContainer) -> void
 {
   audio_events::StopMainMenuTheme();
   audio_events::StartGameplayTheme();
 }
 
-auto main_play_scene::Update(int64_t ticks) -> bool
+auto main_play_scene::Update(const level_container& levelContainer, int64_t ticks) -> void
 {
-  return play_scene::Update(ticks) && !m_playState->LevelOver();
+  play_scene::Update(levelContainer, ticks);
 }
 
-auto main_play_scene::Render() const -> void
+auto main_play_scene::Render(const level_container& levelContainer) const -> void
 {
-  play_scene::Render();
+  play_scene::Render(levelContainer);
 
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   
-  renderer::render(m_playState->Score());
+  // renderer::render(m_playState->Score());
 
   game_score powerUps(game_score::value_type::power_ups);
   powerUps.Add(player_state::missile_count());
@@ -54,4 +54,9 @@ auto main_play_scene::Render() const -> void
 #ifdef RENDER_RADAR
   renderer::render(level_radar { m_playState->LevelContainer().PlayerPosition() }, m_playState->LevelContainer().Targets());
 #endif
+}
+
+auto main_play_scene::Complete(const level_container& levelContainer, const play_state& playState) const -> bool
+{
+  return playState.LevelOver();
 }

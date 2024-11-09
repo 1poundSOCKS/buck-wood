@@ -22,17 +22,17 @@ private:
   [[nodiscard]] auto PausePressed() -> bool;
   auto TogglePause() noexcept -> void;
   [[nodiscard]] auto Paused() const noexcept -> bool;
+  auto PlaySoundEffects() const -> void;
 
 private:
 
   play_menu_controller m_menuController;
   std::shared_ptr<play_state> m_playState;
   bool m_playerDestroyed { false };
+  bool m_paused { false };
 
   enum class scene_type { none, opening, main, closing, final };
   scene_type m_currentSceneType;
-
   std::unique_ptr<play_scene> m_currentScene;
-  bool m_paused { false };
 
 };

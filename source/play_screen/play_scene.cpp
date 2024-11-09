@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "play_scene.h"
-#include "game_clock.h"
 #include "hud_target.h"
 #include "audio_events.h"
 #include "line_to_target.h"
@@ -8,8 +7,8 @@
 #include "game_state.h"
 #include "energy_bar_rect.h"
 
-play_scene::play_scene(std::shared_ptr<play_state> playState) : 
-  m_playState { playState }, m_levelTitle { game_state::level_index() }, m_cameraZoom { GetPlayCameraZoom() }
+play_scene::play_scene(const level_container& levelContainer) : 
+  m_levelTitle { game_state::level_index() }, m_cameraZoom { GetPlayCameraZoom() }, m_renderTransform { RenderTransform(levelContainer) }
 {
 }
 
@@ -17,88 +16,51 @@ play_scene::~play_scene()
 {
 }
 
-auto play_scene::Begin() -> void
+auto play_scene::Begin(const level_container& levelContainer) -> void
 {
 }
 
-auto play_scene::End() -> void
+auto play_scene::End(const level_container& levelContainer) -> void
 {
 }
 
-auto play_scene::Pause() -> void
+auto play_scene::Pause(const level_container& levelContainer) -> void
 {
   m_paused = true;
 }
 
-auto play_scene::Resume() -> void
+auto play_scene::Resume(const level_container& levelContainer) -> void
 {
   m_paused = false;
 }
 
-auto play_scene::Update(__int64 ticks) -> bool
-{
-  PlaySoundEffects();
-  play_events::reset();
-  m_playState->Update(game_clock::getInterval(ticks), GetRenderTargetView());
-  return true;
-}
-
-auto play_scene::Render() const -> void
+auto play_scene::Render(const level_container& levelContainer) const -> void
 {
   render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
-  render_target::get()->SetTransform(RenderTransform());
-  RenderLevelContainer();
+  render_target::get()->SetTransform(RenderTransform(levelContainer));
+  RenderLevelContainer(levelContainer);
 }
 
-[[nodiscard]] auto play_scene::RenderTransform() const noexcept -> D2D1::Matrix3x2F
+[[nodiscard]] auto play_scene::RenderTransform(const level_container& levelContainer) const noexcept -> D2D1::Matrix3x2F
 {
-  auto cameraPosition = CameraPosition();
+  auto cameraPosition = CameraPosition(levelContainer);
   auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
   return cameraTransform.Get();
 }
 
-auto play_scene::CameraPosition() const -> camera_sequence::camera_position
+auto play_scene::CameraPosition(const level_container& levelContainer) const -> camera_sequence::camera_position
 {
-  auto&& playerState = m_playState->LevelContainer().PlayerState();
+  auto&& playerState = levelContainer.PlayerState();
   auto playerPosition = playerState.Position();
   return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
 }
 
-auto play_scene::RenderLevelContainer() const -> void
+auto play_scene::RenderLevelContainer(const level_container& levelContainer) const -> void
 {
   auto renderStart = performance_counter::QueryValue();
-  renderer::render(m_playState->LevelContainer());
+  renderer::render(levelContainer);
   auto renderEnd = performance_counter::QueryValue();
   diagnostics::addTime(L"render", renderEnd - renderStart, game_settings::swapChainRefreshRate());
-}
-
-auto play_scene::PlaySoundEffects() const -> void
-{
-  if( play_events::get(play_events::event_type::shot) )
-  {
-    audio_events::PlayerShot();
-  }
-
-  if( play_events::get(play_events::event_type::explosion) )
-  {
-    audio_events::Explosion();
-  }
-
-  if( play_events::get(play_events::counter_type::power_ups_collected) )
-  {
-    audio_events::PowerUpCollected();
-  }
-
-  auto&& playerState = m_playState->LevelContainer().PlayerState();
-
-  if( !playerState.Destroyed() && playerState.ThrusterPower() > 0.0f )
-  {
-    audio_events::StartPlayerThruster();
-  }
-  else
-  {
-    audio_events::StopPlayerThruster();
-  }
 }
 
 auto play_scene::SetCameraZoom(float value) -> void
@@ -112,9 +74,14 @@ auto play_scene::SetCameraZoom(float value) -> void
   return renderTargetSize.height / 6000.0f;
 }
 
-auto play_scene::GetRenderTargetView() const -> D2D1_RECT_F
+auto play_scene::GetRenderTargetView(const level_container& levelContainer) const -> D2D1_RECT_F
 {
   return GetRenderTargetView(m_renderTransform);
+}
+
+auto play_scene::Complete(const level_container &levelContainer, const play_state& playState) const -> bool
+{
+  return true;
 }
 
 auto play_scene::GetRenderTargetView(D2D1::Matrix3x2F transform) -> D2D1_RECT_F

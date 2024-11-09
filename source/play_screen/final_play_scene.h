@@ -14,31 +14,31 @@ public:
     m_menuController.OpenRoot();
   }
 
-  auto Begin() -> void override
+  auto Begin(const level_container& levelContainer) -> void override
   {
     m_stopwatch.Reset(m_sceneSeconds);
     SetCameraZoom(GetPlayCameraZoom());
-    m_renderTransform = RenderTransform();
+    m_renderTransform = RenderTransform(levelContainer);
   }
 
-  auto Update(int64_t ticks) -> bool override
+  auto Update(const level_container& levelContainer, int64_t ticks) -> void override
   {
-    play_scene::Update(ticks);
+    play_scene::Update(levelContainer, ticks);
 
     if( !m_paused && m_stopwatch.Expired() )
     {
       m_menuController.Update();
     }
 
-    return m_stopwatch.Update(ticks) || m_menuController.Selection() == end_of_level_menu_controller::selection::NONE ? true : false;
+    m_complete = m_stopwatch.Update(ticks) || m_menuController.Selection() == end_of_level_menu_controller::selection::NONE ? false : true;
   }
 
-  auto Render() const -> void override
+  auto Render(const level_container& levelContainer) const -> void override
   {
-    play_scene::Render();
+    play_scene::Render(levelContainer);
     
     render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderer::render(m_playState->Score());
+    // renderer::render(m_playState->Score());
     game_score powerUps(game_score::value_type::power_ups);
     powerUps.Add(player_state::missile_count());
     renderer::render(powerUps);
@@ -50,10 +50,16 @@ public:
     }
   }
 
+  auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override
+  {
+    return m_complete;
+  }
+
 private:
 
   constexpr static float m_sceneSeconds { 3.0f };
   stopwatch m_stopwatch { m_sceneSeconds };
   end_of_level_menu_controller m_menuController;
+  bool m_complete { false };
 
 };
