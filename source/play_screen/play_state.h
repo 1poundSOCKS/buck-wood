@@ -41,7 +41,8 @@ private:
   game_score m_score;
   std::shared_ptr<level_container> m_levelContainer;
   std::set<std::pair<int,int>> m_emptyCellLookup;
-  float m_timeRemaining { 10.0f };
+  constexpr static float m_levelTimeLimit { 30.0f };
+  float m_timeRemaining { m_levelTimeLimit };
 
 };
 

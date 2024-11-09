@@ -14,7 +14,7 @@ play_state::play_state() :
 
 auto play_state::LoadCurrentLevel() -> bool
 {
-  m_timeRemaining = 10.0f;
+  m_timeRemaining = m_levelTimeLimit;
 
   m_levelContainer = std::make_shared<level_container>();
 
@@ -33,7 +33,7 @@ auto play_state::LoadCurrentLevel() -> bool
 
 auto play_state::LoadNextLevel() -> bool
 {
-  m_timeRemaining = 10.0f;
+  m_timeRemaining = m_levelTimeLimit;
 
   if( game_level_data_loader::testLoadLevel(m_levelIndex + 1) )
   {
@@ -54,14 +54,9 @@ auto play_state::LoadNextLevel() -> bool
 
 auto play_state::Update(float interval, RECT_F view) -> void
 {
-  if( !LevelComplete() )
+  if( !LevelComplete() && ( m_timeRemaining -= interval ) < 0.0f )
   {
-    m_timeRemaining -= interval;
-
-    if( m_timeRemaining < 0.0f )
-    {
-      m_levelContainer->PlayerState().Destroy();
-    }
+    m_levelContainer->PlayerState().Destroy();
   }
 
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
