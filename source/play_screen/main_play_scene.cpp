@@ -58,5 +58,5 @@ auto main_play_scene::Render(const level_container& levelContainer, const play_s
 
 auto main_play_scene::Complete(const level_container& levelContainer, const play_state& playState) const -> bool
 {
-  return playState.LevelOver();
+  return playState.LevelOver(levelContainer);
 }

@@ -12,40 +12,28 @@ public:
 
   play_state();
 
-  auto LoadCurrentLevel() -> bool;
-  auto LoadNextLevel() -> bool;
-  auto Update(float interval, RECT_F view) -> void;
+  auto Update(float interval) -> void;
   auto SaveGameState() noexcept -> void;
+  auto Reset() noexcept -> void;
 
-  [[nodiscard]] auto LevelOver() const noexcept -> bool;
-  [[nodiscard]] auto LevelComplete() const noexcept -> bool;
-  [[nodiscard]] auto GameOver() const noexcept -> bool;
-  [[nodiscard]] auto GameComplete() const noexcept -> bool;
+  [[nodiscard]] auto LevelIndex() const noexcept -> int;
+  [[nodiscard]] auto IncrementLevelIndex() noexcept -> int;
+  [[nodiscard]] auto TimedOut() const noexcept -> bool;
 
-  [[nodiscard]] auto LevelContainer() const -> const level_container&;
-  [[nodiscard]] auto LevelContainer() -> level_container&;
+  [[nodiscard]] auto LevelOver(const level_container& levelContainer) const noexcept -> bool;
+  [[nodiscard]] auto LevelComplete(const level_container& levelContainer) const noexcept -> bool;
+  [[nodiscard]] auto GameOver(const level_container& levelContainer) const noexcept -> bool;
+  [[nodiscard]] auto GameComplete(const level_container& levelContainer) const noexcept -> bool;
+
   [[nodiscard]] auto Score() const -> const game_score&;
   [[nodiscard]] auto Score() -> game_score&;
-  [[nodiscard]] auto PowerUpCount() const noexcept -> std::size_t;
-
-private:
-
-  auto VisitObject(enemy_ship& object) const noexcept -> void;
-  auto VisitObject(auto&& object) const noexcept -> void;
-
-  static [[nodiscard]] auto CellsAreVisibleToEachOther(POINT_2I cellId1, POINT_2I cellId2, const std::set<std::pair<int, int>> &emptyCellLookup) -> bool;
+  [[nodiscard]] auto PowerUpCount(const level_container& levelContainer) const noexcept -> std::size_t;
 
 private:
 
   int m_levelIndex { 0 };
   game_score m_score;
-  std::shared_ptr<level_container> m_levelContainer;
-  std::set<std::pair<int,int>> m_emptyCellLookup;
   constexpr static float m_levelTimeLimit { 30.0f };
   float m_timeRemaining { m_levelTimeLimit };
 
 };
-
-auto play_state::VisitObject(auto &&object) const noexcept -> void
-{
-}
