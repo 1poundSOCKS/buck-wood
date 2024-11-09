@@ -17,7 +17,7 @@ public:
   auto Pause(const level_container& levelContainer) -> void override;
   auto Resume(const level_container& levelContainer) -> void override;
   auto Update(const level_container& levelContainer, int64_t ticks) -> void override;
-  auto Render(const level_container& levelContainer) const -> void override;
+  auto Render(const level_container& levelContainer, const play_state& playState) const -> void override;
   auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override;
 
 };

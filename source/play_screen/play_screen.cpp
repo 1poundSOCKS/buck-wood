@@ -125,7 +125,7 @@ auto play_screen::Render() -> void
 {
   render_guard renderGuard { render_target::get() };
 
-  m_currentScene->Render(m_playState->LevelContainer());
+  m_currentScene->Render(m_playState->LevelContainer(), *m_playState);
 
   if( Paused() )
   {

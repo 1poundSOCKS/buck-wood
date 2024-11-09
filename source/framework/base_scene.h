@@ -28,7 +28,7 @@ public:
   {
   }
 
-  virtual auto Render(const level_container& levelContainer) const -> void
+  virtual auto Render(const level_container& levelContainer, const play_state& playState) const -> void
   {
   }
 

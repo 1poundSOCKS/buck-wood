@@ -39,13 +39,13 @@ auto main_play_scene::Update(const level_container& levelContainer, int64_t tick
   play_scene::Update(levelContainer, ticks);
 }
 
-auto main_play_scene::Render(const level_container& levelContainer) const -> void
+auto main_play_scene::Render(const level_container& levelContainer, const play_state& playState) const -> void
 {
-  play_scene::Render(levelContainer);
+  play_scene::Render(levelContainer, playState);
 
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
   
-  // renderer::render(m_playState->Score());
+  renderer::render(playState.Score());
 
   game_score powerUps(game_score::value_type::power_ups);
   powerUps.Add(player_state::missile_count());

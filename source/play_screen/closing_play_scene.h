@@ -14,7 +14,7 @@ public:
 
   auto Begin(const level_container& levelContainer) -> void override;
   auto Update(const level_container& levelContainer, int64_t ticks) -> void override;
-  auto Render(const level_container& levelContainer) const -> void override;
+  auto Render(const level_container& levelContainer, const play_state& playState) const -> void override;
   auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override;
 
 private:
@@ -42,12 +42,12 @@ inline auto closing_play_scene::Update(const level_container& levelContainer, in
   m_complete = !m_stopwatch.Update(ticks);
 }
 
-inline auto closing_play_scene::Render(const level_container& levelContainer) const -> void
+inline auto closing_play_scene::Render(const level_container& levelContainer, const play_state& playState) const -> void
 {
-  play_scene::Render(levelContainer);
+  play_scene::Render(levelContainer, playState);
   
   render_target::get()->SetTransform(D2D1::Matrix3x2F::Identity());
-  // renderer::render(m_playState->Score());
+  renderer::render(playState.Score());
   game_score powerUps(game_score::value_type::power_ups);
   powerUps.Add(player_state::missile_count());
   renderer::render(powerUps);

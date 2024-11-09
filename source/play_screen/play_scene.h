@@ -24,7 +24,7 @@ public:
   auto End(const level_container& levelContainer) -> void override;
   auto Pause(const level_container& levelContainer) -> void override;
   auto Resume(const level_container& levelContainer) -> void override;
-  auto Render(const level_container& levelContainer) const -> void override;
+  auto Render(const level_container& levelContainer, const play_state& playState) const -> void override;
   auto GetRenderTargetView(const level_container& levelContainer) const -> D2D1_RECT_F override;
   auto Complete(const level_container& levelContainer, const play_state& playState) const -> bool override;
 
