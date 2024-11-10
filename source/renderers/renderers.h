@@ -4,6 +4,7 @@
 #include "target_position.h"
 #include "player_destination.h"
 #include "level_container.h"
+#include "play_state_renderer.h"
 
 #include "default_object_renderer.h"
 
@@ -39,6 +40,7 @@ public:
   static auto render(const auto& object, std::ranges::input_range auto&& objects) -> void;
   static auto render_all(std::ranges::input_range auto&& objects) -> void;
   static auto renderDiagnostics() -> void;
+  static auto write(auto&& object) -> void;
 
 private:
 
@@ -54,6 +56,7 @@ private:
   auto Render(const energy_bar& energyBar) const -> void;
   auto Render(const level_container& levelContainer) const -> void;
   auto Write(const default_object& object) const -> void;
+  auto Write(const play_state& playState) const -> void;
   auto Write(const auto& object) const -> void;
 
   auto Health(const default_object& object) const -> std::optional<float>;
@@ -75,6 +78,7 @@ private:
   level_title_renderer m_levelTitleRenderer;
 
   default_object_renderer m_defaultObjectRenderer;
+  play_state_renderer m_playStateRenderer;
   geometry_renderer m_boundaryRenderer { screen_render_brush_grey.CreateBrush(), 20 };
   particle_renderer m_particleRenderer;
   winrt::com_ptr<ID2D1SolidColorBrush> m_gridBrush { screen_render_brush_dark_grey.CreateBrush() };
@@ -107,6 +111,11 @@ auto renderer::render_all(std::ranges::input_range auto&& objects) -> void
 inline auto renderer::renderDiagnostics() -> void
 {
   m_instance->m_diagnosticsRenderer.Write();
+}
+
+inline auto renderer::write(auto &&object) -> void
+{
+  m_instance->Write(object);
 }
 
 inline auto renderer::Render(const blank_object& blankObject) const -> void
@@ -147,29 +156,6 @@ inline auto renderer::Render(const level_title& levelTitle) const -> void
 inline auto renderer::Render(const line_to_target& lineToTarget) const -> void
 {
   render_target::get()->DrawLine(lineToTarget.m_start, lineToTarget.m_end, m_lineToTargetBrush.get(), 10);
-}
-
-inline auto renderer::Render(const energy_bar& energyBar) const -> void
-{
-  auto fillRect = energyBar.position;
-  fillRect.right = fillRect.left + ( fillRect.right - fillRect.left ) * energyBar.value;
-  render_target::get()->FillRectangle(fillRect, m_energyBarFillBrush.get());
-  render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
-}
-
-inline auto renderer::Write(const default_object &object) const -> void
-{
-  object.Visit([this](const auto& object) { Write(object); });
-
-  auto health = Health(object);
-
-  if( health )
-  {
-    transformed_default_object_geometry geometry { object };
-    auto energyBarRect = energy_bar_rect { geometry.Bounds() };
-    auto energyBar = energy_bar { energyBarRect.Get(), *health };
-    Render(energyBar);
-  }
 }
 
 inline auto renderer::Write(const auto &object) const -> void

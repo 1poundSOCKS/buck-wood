@@ -51,6 +51,8 @@ auto main_play_scene::Render(const level_container& levelContainer, const play_s
   powerUps.Add(player_state::missile_count());
   renderer::render(powerUps);
 
+  renderer::write(playState);
+
 #ifdef RENDER_RADAR
   renderer::render(level_radar { m_playState->LevelContainer().PlayerPosition() }, m_playState->LevelContainer().Targets());
 #endif

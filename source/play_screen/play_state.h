@@ -19,6 +19,7 @@ public:
   [[nodiscard]] auto LevelIndex() const noexcept -> int;
   [[nodiscard]] auto IncrementLevelIndex() noexcept -> int;
   [[nodiscard]] auto TimedOut() const noexcept -> bool;
+  [[nodiscard]] auto TimeRemaining() const noexcept -> float;
 
   [[nodiscard]] auto LevelOver(const level_container& levelContainer) const noexcept -> bool;
   [[nodiscard]] auto LevelComplete(const level_container& levelContainer) const noexcept -> bool;

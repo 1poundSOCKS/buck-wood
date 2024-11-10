@@ -44,3 +44,31 @@ auto renderer::Render(const level_container &levelContainer) const -> void
     Render(particle);
   }
 }
+
+auto renderer::Render(const energy_bar& energyBar) const -> void
+{
+  auto fillRect = energyBar.position;
+  fillRect.right = fillRect.left + ( fillRect.right - fillRect.left ) * energyBar.value;
+  render_target::get()->FillRectangle(fillRect, m_energyBarFillBrush.get());
+  render_target::get()->DrawRectangle(energyBar.position, m_energyBarBorderBrush.get(), 5);
+}
+
+auto renderer::Write(const default_object &object) const -> void
+{
+  object.Visit([this](const auto& object) { Write(object); });
+
+  auto health = Health(object);
+
+  if( health )
+  {
+    transformed_default_object_geometry geometry { object };
+    auto energyBarRect = energy_bar_rect { geometry.Bounds() };
+    auto energyBar = energy_bar { energyBarRect.Get(), *health };
+    Render(energyBar);
+  }
+}
+
+auto renderer::Write(const play_state &playState) const -> void
+{
+  m_playStateRenderer.Write(playState);
+}

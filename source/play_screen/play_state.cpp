@@ -44,6 +44,11 @@ auto play_state::TimedOut() const noexcept -> bool
   return m_timeRemaining < 0.0f;
 }
 
+auto play_state::TimeRemaining() const noexcept -> float
+{
+  return m_timeRemaining;
+}
+
 auto play_state::LevelOver(const level_container& levelContainer) const noexcept -> bool
 {
   return levelContainer.PlayerState().Destroyed() || PowerUpCount(levelContainer) == 0;
