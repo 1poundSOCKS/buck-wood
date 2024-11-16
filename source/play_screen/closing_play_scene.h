@@ -51,6 +51,7 @@ inline auto closing_play_scene::Render(const level_container& levelContainer, co
   game_score powerUps(game_score::value_type::power_ups);
   powerUps.Add(player_state::missile_count());
   renderer::render(powerUps);
+  renderer::write(playState);
 }
 
 inline auto closing_play_scene::Complete(const level_container& levelContainer, const play_state& playState) const -> bool

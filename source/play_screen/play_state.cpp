@@ -46,7 +46,7 @@ auto play_state::TimedOut() const noexcept -> bool
 
 auto play_state::TimeRemaining() const noexcept -> float
 {
-  return m_timeRemaining;
+  return std::max(0.0f, m_timeRemaining);
 }
 
 auto play_state::LevelOver(const level_container& levelContainer) const noexcept -> bool

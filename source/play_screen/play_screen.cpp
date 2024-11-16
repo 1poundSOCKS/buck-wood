@@ -57,15 +57,16 @@ auto play_screen::Update(int64_t ticks) -> bool
   PlaySoundEffects();
   play_events::reset();
 
-  auto interval = m_currentSceneType == scene_type::opening ? 0.0f : game_clock::getInterval(ticks);
-
   m_levelContainer->Objects().Visit([this](auto&& object) { VisitObject(object); });
 
   auto renderView = m_currentScene->GetRenderTargetView(*m_levelContainer);
   auto levelComplete = m_playState->LevelComplete(*m_levelContainer);
-  m_levelContainer->Update(interval, renderView, levelComplete);
 
-  m_playState->Update(interval);
+  auto levelUpdateinterval = m_currentSceneType == scene_type::opening ? 0.0f : game_clock::getInterval(ticks);
+  m_levelContainer->Update(levelUpdateinterval, renderView, levelComplete);
+
+  auto playStateUpdateinterval = m_currentSceneType == scene_type::main ? game_clock::getInterval(ticks) : 0.0f;
+  m_playState->Update(playStateUpdateinterval);
 
   if( !m_playState->LevelComplete(*m_levelContainer) && m_playState->TimedOut() )
   {
