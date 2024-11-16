@@ -13,8 +13,13 @@ play_state::play_state() :
 auto play_state::Update(float interval) -> void
 {
   m_timeRemaining -= interval;
-  m_score.Add(play_events::get(play_events::counter_type::enemies_destroyed) * 50);
-  player_state::add_missiles(play_events::get(play_events::counter_type::power_ups_collected));
+
+  auto powerUpsCollected = play_events::get(play_events::counter_type::power_ups_collected);
+  auto enemiesDestroyed = play_events::get(play_events::counter_type::enemies_destroyed);
+
+  m_score.Add(enemiesDestroyed * 50);
+  player_state::add_missiles(powerUpsCollected);
+  m_timeRemaining += powerUpsCollected * 5.0f;
 }
 
 auto play_state::SaveGameState() noexcept -> void
