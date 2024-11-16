@@ -8,19 +8,19 @@ class power_up : public base_object
 
 public:
 
-  power_up(POINT_2F position, SCALE_2F scale, float angle, VELOCITY_2F velocity) : base_object { position , scale, angle }, m_velocity { 0, 0 }
+  enum class type { time_bonus, level_completion };
+
+  power_up(POINT_2F position, SCALE_2F scale, float angle, type objectType) : base_object { position , scale, angle }, m_type { objectType }
   {
   }
 
   auto Update(float interval) noexcept -> void
   {
     base_object::Update(interval);
-    m_position.x += m_velocity.x * interval;
-    m_position.y += m_velocity.y * interval;
   }
 
 private:
 
-  VELOCITY_2F m_velocity;
+  type m_type;
 
 };
