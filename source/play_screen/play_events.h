@@ -5,8 +5,7 @@ class play_events
 
 public:
 
-  enum class event_type { shot, explosion, basic };
-  enum class counter_type { enemies_destroyed, power_ups_collected };
+  enum class event_type { basic };
   enum class basic_event_type { power_up_collected, time_bonus_collected, player_destroyed, enemy_destroyed, enemy_bullet_destroyed, player_shot, enemy_shot };
 
   using event_details = std::variant<basic_event_type>;
@@ -17,12 +16,6 @@ public:
 
   static auto reset() -> void;
 
-  static auto set(event_type eventType, bool value) -> void;
-  static auto increment(counter_type counterType) -> void;
-
-  static [[nodiscard]] auto get(event_type eventType) -> bool;
-  static [[nodiscard]] auto get(counter_type counterType) -> int;
-
   template <typename...Args>
   static [[nodiscard]] auto add(event_type eventType, Args...args) -> void;
 
@@ -32,24 +25,9 @@ private:
 
   auto Reset() -> void;
 
-  auto Set(event_type eventType, bool value) -> void;
-  auto Increment(counter_type counterType) -> void;
-
-  [[nodiscard]] auto Get(event_type eventType) const -> bool;
-  [[nodiscard]] auto operator[](event_type eventType) const -> bool;
-
-  [[nodiscard]] auto Get(counter_type counterType) const -> int;
-  [[nodiscard]] auto operator[](counter_type counterType) const -> int;
-
 private:
 
   inline static play_events* m_instance { nullptr };
-
-  bool m_shot { false };
-  bool m_explosion { false };
-  int m_enemiesDestroyed { 0 };
-  int m_bulletsDestroyed { 0 };
-  int m_powerUpsCollected { 0 };
 
   event_details_collection m_eventDetails;
 
@@ -70,26 +48,6 @@ inline auto play_events::destroy() -> void
 inline auto play_events::reset() -> void
 {
   m_instance->Reset();
-}
-
-inline auto play_events::set(event_type eventType, bool value) -> void
-{
-  m_instance->Set(eventType, value);
-}
-
-inline auto play_events::increment(counter_type counterType) -> void
-{
-  m_instance->Increment(counterType);
-}
-
-inline [[nodiscard]] auto play_events::get(event_type eventType) -> bool
-{
-  return m_instance->Get(eventType);
-}
-
-inline [[nodiscard]] auto play_events::get(counter_type counterType) -> int
-{
-  return m_instance->Get(counterType);
 }
 
 template <typename...Args>

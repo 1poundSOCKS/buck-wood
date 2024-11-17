@@ -182,8 +182,6 @@ auto level_container::OnDestroyed(const enemy_bullet& object) -> void
 
 auto level_container::OnDestroyed(const power_up& object) -> void
 {
-  play_events::increment(play_events::counter_type::power_ups_collected);
-
   switch( object.Type() )
   {
     case power_up::type::level_completion:
