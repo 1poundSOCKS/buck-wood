@@ -184,4 +184,14 @@ auto level_container::OnDestroyed(const enemy_bullet& object) -> void
 auto level_container::OnDestroyed(const power_up& object) -> void
 {
   play_events::increment(play_events::counter_type::power_ups_collected);
+
+  switch( object.Type() )
+  {
+    case power_up::type::level_completion:
+      play_events::add(play_events::event_type::basic, play_events::basic_event_type::power_up_collected);
+      break;
+    case power_up::type::time_bonus:    
+      play_events::add(play_events::event_type::basic, play_events::basic_event_type::time_bonus_collected);
+      break;
+  }
 }

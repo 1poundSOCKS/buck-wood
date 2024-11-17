@@ -5,8 +5,12 @@ class play_events
 
 public:
 
-  enum class event_type { shot, explosion };
+  enum class event_type { shot, explosion, basic };
   enum class counter_type { enemies_destroyed, power_ups_collected };
+  enum class basic_event_type { power_up_collected, time_bonus_collected };
+
+  using event_details = std::variant<basic_event_type>;
+  using event_details_collection = std::vector<event_details>;
 
   static auto create(auto&&...args) -> void;
   static auto destroy() -> void;
@@ -18,6 +22,11 @@ public:
 
   static [[nodiscard]] auto get(event_type eventType) -> bool;
   static [[nodiscard]] auto get(counter_type counterType) -> int;
+
+  template <typename...Args>
+  static [[nodiscard]] auto add(event_type eventType, Args...args) -> void;
+
+  static [[nodiscard]] auto eventDetails() noexcept -> const event_details_collection&;
 
 private:
 
@@ -41,6 +50,8 @@ private:
   int m_enemiesDestroyed { 0 };
   int m_bulletsDestroyed { 0 };
   int m_powerUpsCollected { 0 };
+
+  event_details_collection m_eventDetails;
 
 };
 
@@ -79,4 +90,15 @@ inline [[nodiscard]] auto play_events::get(event_type eventType) -> bool
 inline [[nodiscard]] auto play_events::get(counter_type counterType) -> int
 {
   return m_instance->Get(counterType);
+}
+
+template <typename...Args>
+inline auto play_events::add(event_type eventType, Args...args) -> void
+{
+  m_instance->m_eventDetails.emplace_back(std::in_place_type<basic_event_type>, std::forward<Args>(args)...);
+}
+
+inline auto play_events::eventDetails() noexcept -> const event_details_collection &
+{
+  return m_instance->m_eventDetails;
 }

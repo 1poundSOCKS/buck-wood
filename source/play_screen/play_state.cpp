@@ -14,12 +14,14 @@ auto play_state::Update(float interval) -> void
 {
   m_timeRemaining -= interval;
 
-  auto powerUpsCollected = play_events::get(play_events::counter_type::power_ups_collected);
   auto enemiesDestroyed = play_events::get(play_events::counter_type::enemies_destroyed);
 
   m_score.Add(enemiesDestroyed * 50);
-  player_state::add_missiles(powerUpsCollected);
-  m_timeRemaining += powerUpsCollected * 5.0f;
+
+  for( auto&& eventDetail : play_events::eventDetails() )
+  {
+    std::visit([this](auto&& detail) { OnPlayEvent(detail); }, eventDetail);
+  }
 }
 
 auto play_state::SaveGameState() noexcept -> void
@@ -91,4 +93,17 @@ auto play_state::GameComplete(const level_container& levelContainer) const noexc
     auto&& object = defaultObject.GetIf<power_up>();
     return object != nullptr && object->Type() == power_up::type::level_completion ? count + 1 : count;
   });
+}
+
+auto play_state::OnPlayEvent(play_events::basic_event_type basicEventType) noexcept -> void
+{
+  switch( basicEventType )
+  {
+    case play_events::basic_event_type::power_up_collected:
+      player_state::add_missiles(1);
+      break;
+    case play_events::basic_event_type::time_bonus_collected:
+      m_timeRemaining += 5.0f;
+      break;
+  }
 }

@@ -31,6 +31,7 @@ auto play_events::Reset() -> void
 {
   m_shot = m_explosion = false;
   m_enemiesDestroyed = m_bulletsDestroyed = m_powerUpsCollected = 0;
+  m_eventDetails.clear();
 }
 
 [[nodiscard]] auto play_events::Get(event_type eventType) const -> bool

@@ -32,9 +32,16 @@ public:
 
 private:
 
+  auto OnPlayEvent(auto&& detail) noexcept -> void;
+  auto OnPlayEvent(play_events::basic_event_type basicEventType) noexcept -> void;
+
   int m_levelIndex { 0 };
   game_score m_score;
   constexpr static float m_levelTimeLimit { 30.0f };
   float m_timeRemaining { m_levelTimeLimit };
 
 };
+
+auto play_state::OnPlayEvent(auto &&detail) noexcept -> void
+{
+}
