@@ -69,6 +69,10 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
         break;
 
       case level_data::object_type::power_up:
+        objects.Add(std::in_place_type<power_up>, position, scale, angle, power_up::type::level_completion);
+        break;
+
+      case level_data::object_type::time_bonus:
         objects.Add(std::in_place_type<power_up>, position, scale, angle, power_up::type::time_bonus);
         break;
 

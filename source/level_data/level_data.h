@@ -8,7 +8,7 @@ namespace level_data
   constexpr int levelCount = 3;
 
   enum class cell_type { empty, boundary };
-  enum class object_type { none, player, power_up, enemy_stalker, enemy_random, enemy_turret, enemy_guard };
+  enum class object_type { none, player, power_up, time_bonus, enemy_stalker, enemy_random, enemy_turret, enemy_guard };
 
   constexpr auto ConvertToCellData(char value) -> cell_type;
   constexpr auto ConvertToObjectData(char value) -> object_type;
@@ -25,24 +25,24 @@ namespace level_data
     std::string_view { "XXXXXX        X                XX" },
     std::string_view { "XXXXX      X              XXXXXXX" },
     std::string_view { "XXXXXXXX                XXXXXXXXX" },
-    std::string_view { "XXXXXXXXXX          XXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX            XXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXXXX       XXXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX          XXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX           XXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXX      1   XXXXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX      1     XXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXXX          XXXXXXXXXXXX" },
     std::string_view { "XXXXXXXXXX   1       XXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXX          XXXXXXXXXXXXX" },
-    std::string_view { "XXXXXXXXXXXX            XXXXXXXXX" },
+    std::string_view { "XXXXXXXXXX            XXXXXXXXXXX" },
+    std::string_view { "XXXXXXXXXXXX    T       XXXXXXXXX" },
     std::string_view { "XXXXXXXXXX                 XXXXXX" },
-    std::string_view { "XXXXXXXXXXX               XXXXXXX" },
-    std::string_view { "XXXXXXXXXX                XXXXXXX" },
+    std::string_view { "XXXXXXX                   XXXXXXX" },
+    std::string_view { "XXXXXX                    XXXXXXX" },
     std::string_view { "XXXXXXXX         XX X        XXXX" },
-    std::string_view { "XXXXXXXX       XXXXXXX          X" },
-    std::string_view { "XXXXXX           XX            XX" },
+    std::string_view { "XXXXX          XXXXXXXX         X" },
+    std::string_view { "XXXXXX           XXX           XX" },
     std::string_view { "XXXXXXX           X              " },
     std::string_view { "XXXXXXXX                 P     XX" },
-    std::string_view { "XXXXXXXX                       XX" },
+    std::string_view { "XXXXXXXXX                      XX" },
     std::string_view { "XXXXXXXX                       XX" },
     std::string_view { "XXXXXXXXXXXXX   X  X X    XXXXXXX" }
   };
@@ -141,6 +141,8 @@ constexpr auto level_data::ConvertToObjectData(char value) -> object_type
       return object_type::player;
     case 'O':
       return object_type::power_up;
+    case 'T':
+      return object_type::time_bonus;
     case '1':
       return object_type::enemy_stalker;
     case '2':
