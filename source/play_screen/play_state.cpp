@@ -88,6 +88,7 @@ auto play_state::GameComplete(const level_container& levelContainer) const noexc
 {
   return std::accumulate(std::begin(levelContainer.Objects()), std::end(levelContainer.Objects()), static_cast<std::size_t>(0), [](std::size_t count, auto&& defaultObject)
   {
-    return defaultObject.HoldsAlternative<power_up>() ? count + 1 : count;
+    auto&& object = defaultObject.GetIf<power_up>();
+    return object != nullptr && object->Type() == power_up::type::level_completion ? count + 1 : count;
   });
 }
