@@ -66,7 +66,18 @@ auto default_object_renderer::Write(const enemy_bullet& object, ID2D1Geometry* g
 
 auto default_object_renderer::Write(const power_up& object, ID2D1Geometry* geometry) const -> void
 {
-  m_powerUpRenderer.Write(geometry);
+  switch( object.Type() )
+  {
+    case power_up::type::level_completion:
+      m_powerUpRenderer.Write(geometry);
+      break;
+    case power_up::type::time_bonus:
+      m_timeBonusRenderer.Write(geometry);
+      break;
+    default:
+      m_powerUpRenderer.Write(geometry);
+      break;
+  }
 }
 
 auto default_object_renderer::Write(const boundary_walls &object, ID2D1Geometry *geometry) const -> void

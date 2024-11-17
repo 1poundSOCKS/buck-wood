@@ -14,6 +14,11 @@ public:
   {
   }
 
+  [[nodiscard]] auto Type() const noexcept -> type
+  {
+    return m_type;
+  }
+
   auto Update(float interval) noexcept -> void
   {
     base_object::Update(interval);

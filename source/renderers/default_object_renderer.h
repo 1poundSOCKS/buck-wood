@@ -39,6 +39,7 @@ private:
   flashing_geometry_renderer m_enemyGuard_renderer { color_scale { screen_render_brush_white.Get(), screen_render_brush_black.Get(), 20 }, 10 };
   mine_renderer m_mineRenderer;
   geometry_renderer m_powerUpRenderer { screen_render_brush_cyan.CreateBrush() };
+  geometry_renderer m_timeBonusRenderer { screen_render_brush_yellow.CreateBrush() };
   geometry_renderer m_defaultGeometryRenderer { screen_render_brush_white.CreateBrush() };
   geometry_renderer m_damagedEnemyGeometryRenderer { screen_render_brush_white.CreateBrush() };
 
