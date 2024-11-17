@@ -172,7 +172,7 @@ auto level_container::OnDestroyed(const enemy_ship& object) -> void
 {
   m_particles.Add(level_explosion { object.Position() });
   play_events::set(play_events::event_type::explosion, true);
-  play_events::increment(play_events::counter_type::enemies_destroyed);
+  play_events::add(play_events::event_type::basic, play_events::basic_event_type::enemy_destroyed);
 }
 
 auto level_container::OnDestroyed(const enemy_bullet& object) -> void

@@ -14,10 +14,6 @@ auto play_state::Update(float interval) -> void
 {
   m_timeRemaining -= interval;
 
-  auto enemiesDestroyed = play_events::get(play_events::counter_type::enemies_destroyed);
-
-  m_score.Add(enemiesDestroyed * 50);
-
   for( auto&& eventDetail : play_events::eventDetails() )
   {
     std::visit([this](auto&& detail) { OnPlayEvent(detail); }, eventDetail);
@@ -104,6 +100,9 @@ auto play_state::OnPlayEvent(play_events::basic_event_type basicEventType) noexc
       break;
     case play_events::basic_event_type::time_bonus_collected:
       m_timeRemaining += 5.0f;
+      break;
+    case play_events::basic_event_type::enemy_destroyed:
+      m_score.Add(50);
       break;
   }
 }
