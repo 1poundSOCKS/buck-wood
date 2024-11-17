@@ -91,7 +91,7 @@ auto level_container::VisitObject(player_ship &object, bool levelComplete) -> vo
   {
     auto shootAngle = *(object.State().ShootAngle());
     m_objects.Add(std::in_place_type<player_bullet>, object.Position(), SCALE_2F { 1.0f, 1.0f }, shootAngle, direct2d::CalculateVelocity(2500, shootAngle));
-    play_events::set(play_events::event_type::shot, true);
+    play_events::add(play_events::event_type::basic, play_events::basic_event_type::player_shot);
   }
 }
 
@@ -101,7 +101,7 @@ auto level_container::VisitObject(enemy_ship& object, bool levelComplete) -> voi
   {
     auto angle = direct2d::GetAngleBetweenPoints(object.Position(), m_playerState.Position());
     m_objects.Add(std::in_place_type<enemy_bullet>, object.Position(), SCALE_2F { 1.0f, 1.0f }, angle, direct2d::CalculateVelocity(1200, angle));
-    play_events::set(play_events::event_type::shot, true);
+    play_events::add(play_events::event_type::basic, play_events::basic_event_type::enemy_shot);
   }
 }
 
@@ -165,20 +165,19 @@ auto level_container::OnCollision(player_ship& playerShip, power_up& powerUp, ge
 auto level_container::OnDestroyed(const player_ship& object) -> void
 {
   m_particles.Add(level_explosion { object.Position() });
-  play_events::set(play_events::event_type::explosion, true);
+  play_events::add(play_events::event_type::basic, play_events::basic_event_type::player_destroyed);
 }
 
 auto level_container::OnDestroyed(const enemy_ship& object) -> void
 {
   m_particles.Add(level_explosion { object.Position() });
-  play_events::set(play_events::event_type::explosion, true);
   play_events::add(play_events::event_type::basic, play_events::basic_event_type::enemy_destroyed);
 }
 
 auto level_container::OnDestroyed(const enemy_bullet& object) -> void
 {
   m_particles.Add(level_explosion { object.Position() });
-  play_events::set(play_events::event_type::explosion, true);
+  play_events::add(play_events::event_type::basic, play_events::basic_event_type::enemy_bullet_destroyed);
 }
 
 auto level_container::OnDestroyed(const power_up& object) -> void

@@ -9,6 +9,7 @@
 #include "game_state.h"
 #include "game_clock.h"
 #include "cell_path.h"
+#include "sound_effect_events.h"
 
 play_screen::play_screen() : 
   m_playState { std::make_shared<play_state>() }, 
@@ -172,17 +173,19 @@ auto play_screen::RenderDiagnostics() -> void
 
 auto play_screen::PlaySoundEffects() const -> void
 {
-  if( play_events::get(play_events::event_type::shot) )
+  sound_effect_events soundEffectEvents;
+
+  if( soundEffectEvents.PlayerShot() )
   {
     audio_events::PlayerShot();
   }
 
-  if( play_events::get(play_events::event_type::explosion) )
+  if( soundEffectEvents.Explosion() )
   {
     audio_events::Explosion();
   }
 
-  if( play_events::get(play_events::counter_type::power_ups_collected) )
+  if( soundEffectEvents.ItemCollected() )
   {
     audio_events::PowerUpCollected();
   }

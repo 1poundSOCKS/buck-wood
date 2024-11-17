@@ -32,8 +32,8 @@ public:
 
 private:
 
-  auto OnPlayEvent(auto&& detail) noexcept -> void;
   auto OnPlayEvent(play_events::basic_event_type basicEventType) noexcept -> void;
+  auto OnPlayEvent(auto&& detail) noexcept -> void;
 
   int m_levelIndex { 0 };
   game_score m_score;

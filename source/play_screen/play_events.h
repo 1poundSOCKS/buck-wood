@@ -7,7 +7,7 @@ public:
 
   enum class event_type { shot, explosion, basic };
   enum class counter_type { enemies_destroyed, power_ups_collected };
-  enum class basic_event_type { power_up_collected, time_bonus_collected, enemy_destroyed };
+  enum class basic_event_type { power_up_collected, time_bonus_collected, player_destroyed, enemy_destroyed, enemy_bullet_destroyed, player_shot, enemy_shot };
 
   using event_details = std::variant<basic_event_type>;
   using event_details_collection = std::vector<event_details>;
