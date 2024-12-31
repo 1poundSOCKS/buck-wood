@@ -45,6 +45,10 @@ CMakeFiles
 *.cmake
 *CMakeCache.txt
 *.sln
+*.lastbuildstate
+*.tlog
+x64/Debug/ALL_BUILD/ALL_BUILD.tlog/CustomBuild.read.1.tlog
+x64/Debug/ZERO_CHECK/ZERO_CHECK.tlog/CustomBuild.read.1.tlog
 
 # my project
 log.txt

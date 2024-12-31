@@ -61,6 +61,6 @@ private:
   inline static gamepad_reader* m_instance { nullptr };
   std::unique_ptr<gamepad_state> m_currentState;
   std::unique_ptr<gamepad_state> m_previousState;
-  float m_stickDeadzone { 0.2 };
+  float m_stickDeadzone { 0.2f };
   bool m_yAxisInverted { false };
 };

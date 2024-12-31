@@ -6,10 +6,10 @@ namespace level_geometry_functions
   inline constexpr auto [[nodiscard]] GetRectangleGeometryData()
   {
     return std::array {
-      D2D1_POINT_2F { -0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, -0.5 },
-      D2D1_POINT_2F { 0.5, 0.5 },
-      D2D1_POINT_2F { -0.5, 0.5 }
+      D2D1_POINT_2F { -0.5f, -0.5f },
+      D2D1_POINT_2F { 0.5f, -0.5f },
+      D2D1_POINT_2F { 0.5f, 0.5f },
+      D2D1_POINT_2F { -0.5f, 0.5f }
     };
   }
 
@@ -38,9 +38,9 @@ namespace level_geometry_functions
   inline constexpr auto GetHudTargetTopLeftGeometryData()
   {
     return std::array {
-      D2D1_POINT_2F { -0.5, -0.3 },
-      D2D1_POINT_2F { -0.5, -0.5 },
-      D2D1_POINT_2F { -0.3, -0.5 }
+      D2D1_POINT_2F { -0.5f, -0.3f },
+      D2D1_POINT_2F { -0.5f, -0.5f },
+      D2D1_POINT_2F { -0.3f, -0.5f }
     };
   }
 
