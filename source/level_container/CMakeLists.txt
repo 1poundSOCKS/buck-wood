@@ -1,0 +1,16 @@
+set(FILES
+default_object_collection.cpp
+default_object_geometry_collection.cpp
+level_collision_geometry.cpp
+level_container.cpp
+objects/enemy_bullet.cpp
+objects/enemy_object.cpp
+objects/enemy_ship.cpp
+objects/object_velocity.cpp
+objects/player_bullet.cpp
+objects/player_ship.cpp
+objects/player_ship_state.cpp
+particle_collection.cpp
+player_controls.cpp
+reload_timer.cpp
+)

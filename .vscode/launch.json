@@ -5,7 +5,7 @@
       "name": "(Windows) Launch",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/app.exe",
+      "program": "${workspaceFolder}/Debug/buck_wood.exe",
       "args": ["-w"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

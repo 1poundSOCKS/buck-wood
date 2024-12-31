@@ -1,6 +1,6 @@
-^C:\USERS\MATHE\SOURCE\REPOS\BUCK-WOOD\CMAKELISTS.TXT
+^C:\SOURCE\REPOS\BUCK-WOOD\CMAKELISTS.TXT
 setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/mathe/source/repos/buck-wood -BC:/Users/mathe/source/repos/buck-wood --check-stamp-file C:/Users/mathe/source/repos/buck-wood/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/source/repos/buck-wood -BC:/source/repos/buck-wood --check-stamp-file C:/source/repos/buck-wood/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

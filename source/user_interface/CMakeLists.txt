@@ -1,0 +1,12 @@
+set(FILES
+button.cpp
+column_def.cpp
+common_menu_controller.cpp
+game_volume_controller.cpp
+menu.cpp
+menu_controller.cpp
+menu_control_data.cpp
+menu_item.cpp
+row_def.cpp
+setting_slider.cpp
+)
