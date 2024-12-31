@@ -1,0 +1,10 @@
+^C:\USERS\MATHE\SOURCE\REPOS\BUCK-WOOD\CMAKEFILES\2DFAC9C16A45C4A34B2E76069A1EA7DB\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/mathe/source/repos/buck-wood -BC:/Users/mathe/source/repos/buck-wood --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/mathe/source/repos/buck-wood/Project.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

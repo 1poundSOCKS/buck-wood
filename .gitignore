@@ -38,6 +38,14 @@
 # DLL required to run
 !jsoncpp.dll
 
+# cmake
+CMakeFiles
+*.vcxproj
+*.vcxproj.filters
+*.cmake
+*CMakeCache.txt
+*.sln
+
 # my project
 log.txt
 save_data/game_state.dat
