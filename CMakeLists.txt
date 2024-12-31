@@ -7,9 +7,15 @@ foreach(FILE ${FILES})
   set(sourceFiles ${sourceFiles} source/${FILE})
 endforeach()
 
-add_executable(buck_wood ${sourceFiles})
+include(source/collisions/CMakeLists.txt)
+foreach(FILE ${FILES})
+  set(collisionsFiles ${collisionsFiles} source/collisions/${FILE})
+endforeach()
+
+add_executable(buck_wood ${sourceFiles} ${collisionsFiles})
 
 target_include_directories(buck_wood PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/source
   ${CMAKE_CURRENT_SOURCE_DIR}/source/framework
   ${CMAKE_CURRENT_SOURCE_DIR}/source/collisions
   ${CMAKE_CURRENT_SOURCE_DIR}/source/geometry
