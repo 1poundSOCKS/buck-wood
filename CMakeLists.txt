@@ -4,15 +4,20 @@ set(CMAKE_CXX_STANDARD 20)
 
 include(source/CMakeLists.txt)
 foreach(FILE ${FILES})
-  set(sourceFiles ${sourceFiles} source/${FILE})
+  set(source ${source} source/${FILE})
+endforeach()
+
+include(source/framework/CMakeLists.txt)
+foreach(FILE ${FILES})
+  set(framework ${framework} source/framework/${FILE})
 endforeach()
 
 include(source/collisions/CMakeLists.txt)
 foreach(FILE ${FILES})
-  set(collisionsFiles ${collisionsFiles} source/collisions/${FILE})
+  set(collisions ${collisions} source/collisions/${FILE})
 endforeach()
 
-add_executable(buck_wood ${sourceFiles} ${collisionsFiles})
+add_executable(buck_wood ${source} ${framework} ${collisions})
 
 target_include_directories(buck_wood PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/source

@@ -1,0 +1,34 @@
+set(FILES
+  clock_frequency.cpp
+  color_scale.cpp
+  color_scale_brushes.cpp
+  command_line.cpp
+  config_file.cpp
+  d2d_factory.cpp
+  diagnostics.cpp
+  direct2d_functions.cpp
+  directx_functions.cpp
+  direct_input.cpp
+  dwrite_factory.cpp
+  fractional_counter.cpp
+  frame_data.cpp
+  gamepad_reader.cpp
+  keyboard_device.cpp
+  keyboard_reader.cpp
+  log.cpp
+  main_window.cpp
+  performance_counter.cpp
+  perlin_simplex_noise.cpp
+  render_brush_def.cpp
+  render_guard.cpp
+  render_target.cpp
+  render_target_area.cpp
+  render_text_format_def.cpp
+  shape_generator.cpp
+  sound_buffer.cpp
+  swap_chain.cpp
+  text_renderer.cpp
+  wav_file_data.cpp
+  windows_message_loop.cpp
+  xaudio2_functions.cpp
+)
