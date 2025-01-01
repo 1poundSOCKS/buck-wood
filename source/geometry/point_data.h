@@ -123,7 +123,8 @@ namespace point_data
     auto currentLine = std::begin(pixelLines);
     while( currentLine != std::end(pixelLines) )
     {
-      const auto& [pixelLineStart, pixelLineEnd] = *currentLine;
+      const auto pixelLineStart = currentLine->first;
+      const auto pixelLineEnd = currentLine->second;
       auto pixelPosition = POINT_2I { pixelLineStart.x * cellWidth, pixelLineStart.y * cellHeight };
       auto pixelRect =  RECT_I { pixelPosition.x - cellWidth / 2, pixelPosition.y - cellHeight / 2, pixelPosition.x + cellWidth / 2, pixelPosition.y + cellHeight / 2 };
       pointInserter = POINT_2I { pixelRect.left, pixelRect.top };
@@ -137,7 +138,7 @@ namespace point_data
       return { start, end };
     });
   }
-
+  
   auto BoundaryPointsToNormalizedBoundaryPoints(std::ranges::input_range auto&& pointData, auto boundaryInserter) -> void
   {
     static_assert(std::is_same_v<std::ranges::range_value_t<decltype(pointData)>, POINT_2I>);
