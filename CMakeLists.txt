@@ -27,6 +27,11 @@ foreach(FILE ${FILES})
   set(level_container ${level_container} source/level_container/${FILE})
 endforeach()
 
+include(source/level_container/objects/CMakeLists.txt)
+foreach(FILE ${FILES})
+  set(level_objects ${level_objects} source/level_container/objects/${FILE})
+endforeach()
+
 include(source/level_data/CMakeLists.txt)
 foreach(FILE ${FILES})
   set(level_data ${level_data} source/level_data/${FILE})
@@ -47,7 +52,7 @@ foreach(FILE ${FILES})
   set(user_interface ${user_interface} source/user_interface/${FILE})
 endforeach()
 
-add_executable(buck_wood WIN32 ${source} ${framework} ${collisions} ${geometry} ${level_container} ${level_data} ${play_screen} ${renderers} ${user_interface})
+add_executable(buck_wood WIN32 ${source} ${framework} ${collisions} ${geometry} ${level_container} ${level_objects} ${level_data} ${play_screen} ${renderers} ${user_interface})
 
 target_include_directories(buck_wood PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/source

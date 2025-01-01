@@ -2,10 +2,10 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\source\repos\buck-wood\x64\Debug\ZERO_CHECK</FullPath>
+      <FullPath>C:\Users\mathe\source\repos\buck-wood\x64\Debug\ZERO_CHECK</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>C:\source\repos\buck-wood\Debug\buck_wood.exe</FullPath>
+      <FullPath>C:\Users\mathe\source\repos\buck-wood\Debug\buck_wood.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

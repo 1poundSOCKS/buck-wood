@@ -1,0 +1,9 @@
+set(FILES
+  enemy_bullet.cpp
+  enemy_object.cpp
+  enemy_ship.cpp
+  object_velocity.cpp
+  player_bullet.cpp
+  player_ship.cpp
+  player_ship_state.cpp
+)
