@@ -44,7 +44,8 @@ auto play_scene::Render(const level_container& levelContainer, const play_state&
 [[nodiscard]] auto play_scene::RenderTransform(const level_container& levelContainer) const noexcept -> D2D1::Matrix3x2F
 {
   auto cameraPosition = CameraPosition(levelContainer);
-  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, 0, cameraPosition.scale, render_target::get()->GetSize() };
+  constexpr auto cameraAngle = 0;
+  auto cameraTransform = play_camera_transform { cameraPosition.x, cameraPosition.y, cameraAngle, cameraPosition.scale, render_target::get()->GetSize() };
   return cameraTransform.Get();
 }
 

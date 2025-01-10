@@ -85,8 +85,8 @@ auto APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdLin
 
 auto initialize_all(HINSTANCE instance) -> void
 {
-  constexpr int cellWidth { 250 };
-  constexpr int cellHeight { 250 };
+  constexpr int cellWidth { 500 };
+  constexpr int cellHeight { 500 };
 
   DXGI_SWAP_CHAIN_DESC swapChainDesc;
   format(swapChainDesc);

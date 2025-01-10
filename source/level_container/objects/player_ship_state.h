@@ -111,7 +111,7 @@ inline auto player_ship_state::ThrusterPower() const noexcept -> float
 
 inline auto player_ship_state::SetRotationSpeed(float value) -> void
 {
-  constexpr float rotationSpeedMultiplier = 200.0f;
+  constexpr float rotationSpeedMultiplier = 100.0f;
   m_rotationSpeed = value * rotationSpeedMultiplier;
 }
 
