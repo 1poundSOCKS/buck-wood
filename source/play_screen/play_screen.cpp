@@ -69,10 +69,12 @@ auto play_screen::Update(int64_t ticks) -> bool
   auto playStateUpdateinterval = m_currentSceneType == scene_type::main ? game_clock::getInterval(ticks) : 0.0f;
   m_playState->Update(playStateUpdateinterval);
 
+#ifdef ENABLE_TIMEOUT
   if( !m_playState->LevelComplete(*m_levelContainer) && m_playState->TimedOut() )
   {
     m_levelContainer->PlayerState().Destroy();
   }
+#endif
 
   m_currentScene->Update(*m_levelContainer, ticks);
 
