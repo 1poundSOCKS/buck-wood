@@ -36,7 +36,8 @@ auto play_scene::Resume(const level_container& levelContainer) -> void
 
 auto play_scene::Render(const level_container& levelContainer, const play_state& playState) const -> void
 {
-  render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
+  // render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
+  render_target::get()->Clear(D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f));
   render_target::get()->SetTransform(RenderTransform(levelContainer));
   RenderLevelContainer(levelContainer);
 }

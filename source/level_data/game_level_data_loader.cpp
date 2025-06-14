@@ -25,7 +25,7 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
     return { column, row };
   });
 
-  levelContainer.Objects().Add(std::in_place_type<boundary_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, levelIndex);
+  // levelContainer.Objects().Add(std::in_place_type<boundary_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, levelIndex);
 
   for( auto wallIndex = 0; wallIndex < boundary_data::getInnerWallCount(levelIndex); ++wallIndex )
   {
