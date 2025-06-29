@@ -54,7 +54,7 @@ auto default_object_renderer::Write(const player_ship& object, ID2D1Geometry* ge
   auto shiftedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), playerThrust.get(), scalePlayerThrust * movePlayerThrustDown);
   auto transform = geometric_object_transform { object };
   auto transformedThrustGeometry = direct2d::CreateTransformedGeometry(d2d_factory::get_raw(), shiftedThrustGeometry.get(), transform.Get());
-  m_playerThrustRenderer.Write(transformedThrustGeometry.get());
+  // m_playerThrustRenderer.Write(transformedThrustGeometry.get());
 
   m_playerShipRenderer.Write(object, geometry);
 }

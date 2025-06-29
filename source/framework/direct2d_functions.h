@@ -99,7 +99,8 @@ namespace direct2d
   {
     float radians = atan2(endPoint.y, endPoint.x);
     float degrees = RADTODEG(radians);
-    return degrees + 90.0f;
+    degrees += 90.0f;
+    return degrees < 0.0f ? degrees + 360.0f : degrees;
   }
 
   inline [[nodiscard]] auto GetRectAtPosition(D2D1_POINT_2F position, float cx, float cy) -> D2D1_RECT_F

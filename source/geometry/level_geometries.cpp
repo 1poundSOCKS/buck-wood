@@ -22,7 +22,7 @@ level_geometries::level_geometries() : m_currentLevelIndex { 0 }
   m_rectangleGeometry = direct2d::CreatePathGeometry(d2d_factory::get_raw(), level_geometry_functions::GetRectangleGeometryData(), D2D1_FIGURE_END_CLOSED);
 
   m_player = LoadAndCentreGeometry(image_data { m_playerPixelImage }, 16);
-  m_playerBullet = LoadAndCentreGeometry(image_data { m_playerBulletPixelImage }, 40);
+  m_playerBullet = LoadAndCentreGeometry(image_data { m_playerBulletPixelImage }, 60);
   m_enemy1 = LoadAndCentreGeometry(image_data { m_enemyStalkerPixelImage }, 16);
   m_enemy2 = LoadAndCentreGeometry(image_data { m_enemyStalkerPixelImage }, 16);
   m_enemy3 = LoadAndCentreGeometry(image_data { m_enemyTurretPixelImage }, 16);
