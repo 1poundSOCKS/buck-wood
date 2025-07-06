@@ -65,7 +65,7 @@ auto game_level_data_loader::LoadObjectData(int levelIndex, const std::set<std::
     switch( type )
     {
       case level_data::object_type::player:
-        levelContainer.AddPlayer(position);
+        levelContainer.AddPlayer({0.0f, 0.0f});
         break;
 
       case level_data::object_type::power_up:

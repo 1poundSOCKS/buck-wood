@@ -36,9 +36,10 @@ auto play_scene::Resume(const level_container& levelContainer) -> void
 
 auto play_scene::Render(const level_container& levelContainer, const play_state& playState) const -> void
 {
-  // render_target::get()->Clear(D2D1::ColorF(0.15f, 0.15f, 0.15f, 1.0f));
   render_target::get()->Clear(D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f));
-  render_target::get()->SetTransform(RenderTransform(levelContainer));
+  auto playerPosition = levelContainer.PlayerState().Position();
+  RECT_F viewRect = { 0, playerPosition.y - 5000, 10000, playerPosition.y + 5000 };
+  render_target::get()->SetTransform(RenderTransform(viewRect));
   RenderLevelContainer(levelContainer);
 }
 
@@ -50,11 +51,25 @@ auto play_scene::Render(const level_container& levelContainer, const play_state&
   return cameraTransform.Get();
 }
 
+[[nodiscard]] auto play_scene::RenderTransform(RECT_F viewRect) const noexcept -> D2D1::Matrix3x2F
+{
+
+  auto renderTargetHeight = render_target::get()->GetSize().height;
+
+  float viewHeight = viewRect.bottom - viewRect.top;
+  float viewScale = renderTargetHeight / viewHeight;
+
+  float translateX = -viewRect.left * viewScale;
+  float translateY = -viewRect.top * viewScale;
+
+  return D2D1::Matrix3x2F::Scale(viewScale, viewScale) * D2D1::Matrix3x2F::Translation(translateX, translateY);
+}
+
 auto play_scene::CameraPosition(const level_container& levelContainer) const -> camera_sequence::camera_position
 {
   auto&& playerState = levelContainer.PlayerState();
   auto playerPosition = playerState.Position();
-  return camera_sequence::camera_position { playerPosition.x, playerPosition.y, m_cameraZoom };
+  return camera_sequence::camera_position { 0.0f, playerPosition.y, m_cameraZoom };
 }
 
 auto play_scene::RenderLevelContainer(const level_container& levelContainer) const -> void
@@ -73,7 +88,7 @@ auto play_scene::SetCameraZoom(float value) -> void
 [[nodiscard]] auto play_scene::GetPlayCameraZoom() const -> float
 {
   auto renderTargetSize = render_target::get()->GetSize();
-  return renderTargetSize.height / 6000.0f;
+  return renderTargetSize.height / 10000.0f;
 }
 
 auto play_scene::GetRenderTargetView(const level_container& levelContainer) const -> D2D1_RECT_F

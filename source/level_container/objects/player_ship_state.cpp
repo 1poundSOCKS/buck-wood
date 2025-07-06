@@ -12,13 +12,9 @@ auto player_ship_state::UpdateWhenActive(VELOCITY_2F environmentalForces, float 
 
   RotateBy(m_rotationSpeed, interval);
 
-  // VELOCITY_2F thrustVelocityChange = direct2d::CalculateVelocity(ThrusterPower(), m_angle);
-  // VELOCITY_2F velocityChange = { thrustVelocityChange.x + environmentalForces.x, thrustVelocityChange.y + environmentalForces.y };
-
   if( m_thrusterState.has_value() )
   {
     VELOCITY_2F velocityChange = direct2d::CalculateVelocity(m_thrusterState.value().power * 10.0f,  m_thrusterState.value().angle);
-    // VELOCITY_2F velocityChange = { thrustVelocityChange.x + environmentalForces.x, thrustVelocityChange.y + environmentalForces.y };
   
     m_velocity.Update(velocityChange, interval);
     m_velocity.RelativeUpdate(-airResistance, interval);

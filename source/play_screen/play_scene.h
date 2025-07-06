@@ -31,6 +31,7 @@ public:
 protected:
 
   [[nodiscard]] auto RenderTransform(const level_container& levelContainer) const noexcept -> D2D1::Matrix3x2F;
+  [[nodiscard]] auto RenderTransform(RECT_F viewRect) const noexcept -> D2D1::Matrix3x2F;
   auto RenderLevelContainer(const level_container& levelContainer) const -> void;
   auto SetCameraZoom(float value) -> void;
   auto CameraPosition(const level_container& levelContainer) const -> camera_sequence::camera_position;
@@ -48,7 +49,7 @@ protected:
   std::shared_ptr<level_container> m_levelContainer;
   level_title m_levelTitle;
   bool m_renderLevelTitle { false };
-  float m_cameraZoom { 0.4f };
+  float m_cameraZoom { 5.0f };
   D2D1::Matrix3x2F m_renderTransform;
 
 };
