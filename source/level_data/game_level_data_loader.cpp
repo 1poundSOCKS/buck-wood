@@ -15,22 +15,24 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
     return false;
   }
 
-  std::vector<std::pair<int, int>> emptyCells;
-  LoadEmptyCellData(levelIndex, std::back_inserter(emptyCells));
+  // std::vector<std::pair<int, int>> emptyCells;
+  // LoadEmptyCellData(levelIndex, std::back_inserter(emptyCells));
 
   std::set<std::pair<int, int>> emptyCellLookup;
-  std::ranges::transform(emptyCells, std::inserter(emptyCellLookup, std::begin(emptyCellLookup)), [](auto&& cellDataItem) -> std::pair<int, int>
-  {
-    auto&& [column, row] = cellDataItem;
-    return { column, row };
-  });
+  // std::ranges::transform(emptyCells, std::inserter(emptyCellLookup, std::begin(emptyCellLookup)), [](auto&& cellDataItem) -> std::pair<int, int>
+  // {
+  //   auto&& [column, row] = cellDataItem;
+  //   return { column, row };
+  // });
 
   // levelContainer.Objects().Add(std::in_place_type<boundary_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, levelIndex);
 
-  for( auto wallIndex = 0; wallIndex < boundary_data::getInnerWallCount(levelIndex); ++wallIndex )
-  {
-    levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, wallIndex);
-  }
+  // for( auto wallIndex = 0; wallIndex < boundary_data::getInnerWallCount(levelIndex); ++wallIndex )
+  // {
+  //   levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, wallIndex);
+  // }
+
+  levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, 0);
 
   return LoadObjectData(levelIndex, emptyCellLookup, levelContainer);
 }
