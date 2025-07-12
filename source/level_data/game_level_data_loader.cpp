@@ -32,7 +32,19 @@ auto game_level_data_loader::LoadLevel(int levelIndex, level_container& levelCon
   //   levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, wallIndex);
   // }
 
-  levelContainer.Objects().Add(std::in_place_type<inner_walls>, POINT_2F { 0.0f, 0.0f }, SCALE_2F { 1.0f, 1.0f }, 0.0f, 0);
+  for( float x = 0; x < 10000; x+=1000 )
+  {
+    for( float y = 0; y > -10000; y-=1000 )
+    {
+      float realX = static_cast<float>(x);
+      float realY = static_cast<float>(y);
+      float noiseValue = psn::GetNoise(x,y);
+      if( noiseValue > 0.6f )
+      {
+        levelContainer.Objects().Add(std::in_place_type<static_asteroid>, POINT_2F { realX, realY }, SCALE_2F { 400.0f, 400.0f }, 0.0f);
+      }
+    }
+  }
 
   return LoadObjectData(levelIndex, emptyCellLookup, levelContainer);
 }

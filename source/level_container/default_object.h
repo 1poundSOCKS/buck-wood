@@ -14,7 +14,8 @@ public:
     player_bullet, 
     enemy_bullet, 
     power_up, 
-    enemy_ship
+    enemy_ship,
+    static_asteroid
   >;
 
   template <typename variant_type, typename...Args>
