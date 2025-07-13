@@ -24,6 +24,7 @@ private:
   auto AddCollisionGeometry(default_object& defaultObject, power_up& powerUp) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, boundary_walls& boundaryWalls) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, inner_walls& innerWalls) -> void;
+  auto AddCollisionGeometry(default_object& defaultObject, static_asteroid& staticAsteroid) -> void;
   auto AddCollisionGeometry(default_object& defaultObject, auto& object) -> void;
 
 private:

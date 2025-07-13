@@ -45,6 +45,12 @@ auto renderer::Render(const level_container &levelContainer) const -> void
   }
 }
 
+auto renderer::Render(const static_asteroid &object) const -> void
+{
+  auto transformedGeometry = transformed_level_object_geometry { object };
+  m_boundaryRenderer.Write(transformedGeometry.GetRaw());
+}
+
 auto renderer::Render(const energy_bar& energyBar) const -> void
 {
   auto fillRect = energyBar.position;

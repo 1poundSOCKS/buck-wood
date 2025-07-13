@@ -55,12 +55,14 @@ private:
   auto OnCollision(player_bullet& bullet, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(player_bullet& bullet, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(player_bullet& bullet, inner_walls& innerWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(player_bullet& bullet, static_asteroid& staticAsteroid, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(enemy_ship& enemyShip, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(player_ship& playerShip, enemy_ship& enemy, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(player_ship& playerShip, enemy_bullet& enemyBullet, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(player_ship& playerShip, power_up& powerUp, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(auto&& object, boundary_walls& boundaryWalls, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(auto&& object, inner_walls& innerWalls, geometry_collision::result result, bool levelComplete) -> void;
+  auto OnCollision(auto&& object, static_asteroid& staticAsteroid, geometry_collision::result result, bool levelComplete) -> void;
   auto OnCollision(auto&& object1, auto&& object2, geometry_collision::result result, bool levelComplete) -> void;
 
   auto OnDestroyed(const player_ship& object) -> void;
@@ -132,6 +134,14 @@ auto level_container::OnCollision(auto &&object, boundary_walls &boundaryWalls, 
 }
 
 inline auto level_container::OnCollision(auto &&object, inner_walls &innerWalls, geometry_collision::result result, bool levelComplete) -> void
+{
+  if( result != geometry_collision::result::none )
+  {
+    object.Destroy();
+  }
+}
+
+auto level_container::OnCollision(auto&& object, static_asteroid& staticAsteroid, geometry_collision::result result, bool levelComplete) -> void
 {
   if( result != geometry_collision::result::none )
   {

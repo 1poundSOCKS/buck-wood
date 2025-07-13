@@ -55,6 +55,7 @@ private:
   auto Render(const line_to_target& lineToTarget) const -> void;
   auto Render(const energy_bar& energyBar) const -> void;
   auto Render(const level_container& levelContainer) const -> void;
+  auto Render(const static_asteroid& object) const -> void;
   auto Write(const default_object& object) const -> void;
   auto Write(const play_state& playState) const -> void;
   auto Write(const auto& object) const -> void;

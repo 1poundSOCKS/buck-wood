@@ -35,3 +35,8 @@ auto level_collision_geometry::AddCollisionGeometry(default_object &defaultObjec
 {
   m_boundaryGeometries.Add(defaultObject);
 }
+
+auto level_collision_geometry::AddCollisionGeometry(default_object& defaultObject, static_asteroid& staticAsteroid) -> void
+{
+  m_enemyGeometries.Add(defaultObject);
+}
